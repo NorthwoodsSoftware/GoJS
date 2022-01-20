@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A simple logic circuit editor and simulator."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Logic Circuit</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -57,7 +57,10 @@
     var green = "forestgreen";  // 1 or true
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
@@ -67,7 +70,7 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
+      myDiagram.addDiagramListener("Modified", e => {
         var button = document.getElementById("saveModel");
         if (button) button.disabled = !myDiagram.isModified;
         var idx = document.title.indexOf("*");
@@ -100,7 +103,7 @@
         $("ToolTip",
           { "Border.figure": "RoundedRectangle" },
           $(go.TextBlock, { margin: 2 },
-            new go.Binding("text", "", function(d) { return d.category; })));
+            new go.Binding("text", "", d => d.category)));
 
       // define some common property settings
       function nodeStyle() {
@@ -146,7 +149,7 @@
           $(go.Shape, "Rectangle", portStyle(false),  // the only port
             { portId: "", alignment: new go.Spot(1, 0.5) }),
           { // if double-clicked, an input node will change its value, represented by the color.
-            doubleClick: function(e, obj) {
+            doubleClick: (e, obj) => {
               e.diagram.startTransaction("Toggle Input");
               var shp = obj.findObject("NODESHAPE");
               shp.fill = (shp.fill === green) ? red : green;
@@ -274,7 +277,7 @@
 
     // update the diagram every 250 milliseconds
     function loop() {
-      setTimeout(function() { updateStates(); loop(); }, 250);
+      setTimeout(() => { updateStates(); loop(); }, 250);
     }
 
     // update the value and appearance of each node according to its type and input values
@@ -282,13 +285,13 @@
       var oldskip = myDiagram.skipsUndoManager;
       myDiagram.skipsUndoManager = true;
       // do all "input" nodes first
-      myDiagram.nodes.each(function(node) {
+      myDiagram.nodes.each(node => {
         if (node.category === "input") {
           doInput(node);
         }
       });
       // now we can do all other kinds of nodes
-      myDiagram.nodes.each(function(node) {
+      myDiagram.nodes.each(node => {
         switch (node.category) {
           case "and": doAnd(node); break;
           case "or": doOr(node); break;
@@ -311,7 +314,7 @@
 
     // helper function for propagating results
     function setOutputLinks(node, color) {
-      node.findLinksOutOf().each(function(link) { link.findObject("SHAPE").stroke = color; });
+      node.findLinksOutOf().each(link => link.findObject("SHAPE").stroke = color);
     }
 
     // update nodes by the specific function for its type
@@ -346,13 +349,13 @@
 
     function doXor(node) {
       var truecount = 0;
-      node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+      node.findLinksInto().each(link => { if (linkIsTrue(link)) truecount++; });
       var color = truecount % 2 !== 0 ? green : red;
       setOutputLinks(node, color);
     }
     function doXnor(node) {
       var truecount = 0;
-      node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+      node.findLinksInto().each(link => { if (linkIsTrue(link)) truecount++; });
       var color = truecount % 2 === 0 ? green : red;
       setOutputLinks(node, color);
     }
@@ -360,7 +363,7 @@
     function doOutput(node) {
       // assume there is just one input link
       // we just need to update the node's Shape.fill
-      node.linksConnected.each(function(link) { node.findObject("NODESHAPE").fill = link.findObject("SHAPE").stroke; });
+      node.linksConnected.each(link => { node.findObject("NODESHAPE").fill = link.findObject("SHAPE").stroke; });
     }
 
     // save a model to and load a model from JSON text, displayed below the Diagram

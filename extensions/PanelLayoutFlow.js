@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -62,10 +62,10 @@ go.Diagram.inherit(PanelLayoutFlow, go.PanelLayout);
 /**
  * Gets or sets the initial direction in which elements are laid out.
  * The value must be 0 or 180, which results in rows, or 90 or 270, which results in columns.
- * 
+ *
  * The default value is 0, resulting in rows that go rightward.
  * A value of 90 results in columns that go downward.
- * 
+ *
  * Setting this property does not notify about any changed event,
  * nor does a change in value automatically cause the panel layout to be performed again.
  */
@@ -79,9 +79,9 @@ Object.defineProperty(PanelLayoutFlow.prototype, "direction", {
 
 /**
  * Gets or sets the space between adjacent elements in the panel and the space between adjacent rows or columns.
- * 
+ *
  * The default value is (0, 0).  The size is in the panel's coordinate system.
- * 
+ *
  * Setting this property does not notify about any changed event,
  * nor does a change in value automatically cause the panel layout to be performed again.
  */

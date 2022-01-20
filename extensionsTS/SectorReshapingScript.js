@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -52,7 +52,7 @@
             $(go.Node, 'Spot', {
                 locationSpot: go.Spot.Center, locationObjectName: 'LAMP',
                 selectionObjectName: 'LAMP', selectionAdorned: false
-            }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+            }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
             // selecting a Node brings it forward in the z-order
             new go.Binding('layerName', 'isSelected', function (s) { return s ? 'Foreground' : ''; }).ofObject(), $(go.Panel, 'Spot', { name: 'LAMP' }, $(go.Shape, // arc
             { fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 }, new go.Binding('geometry', '', makeSector)), $(go.Shape, 'Circle', { name: 'SHAPE', width: 6, height: 6 })), $(go.TextBlock, {

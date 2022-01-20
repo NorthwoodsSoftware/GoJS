@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Building GraphObjects -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Building GraphObjects -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -133,18 +133,456 @@
 
 <h1>Building Parts with GraphObjects</h1>
 <p>
-You can construct a <a>Node</a> or other kind of <a>Part</a> in traditional JavaScript code.
-<b>GoJS</b> also offers a more declarative-looking manner of building parts that has several advantages over code.
+The following pages will discuss the basic kinds of objects you can use to build Parts.
+These pages build up a diagram by explicitly creating and adding nodes and links.
+Later pages will show how to build diagrams using models rather than adding Parts directly.
+</p>
+
+<h2 id="BuildingBlocks">The Building Blocks of GoJS</h2>
+<p>
+  GoJS Diagrams display top-level <b>Parts</b> and <b>Part</b> subclasses: <b>Nodes</b>, <b>Links</b>, and <b>Groups</b>.
 </p>
 <p>
-The following pages will discuss the basic kinds of objects you can use to build a node.
-These pages build up a diagram by explicitly creating and adding nodes and links.
-Later pages will show how to build diagrams using models rather than using such code.
+  <b>Parts</b> are <b>Panels</b>, which can hold any number of <b>Shapes</b>, <b>Pictures</b>, <b>TextBlocks</b>, or other, nested <b>Panels</b>.
+  All together, these are subclasses of <b>GraphObject</b>.
+</p>
+<pre class="lang-js" id="BuildingBlocksDiagram" style="display:none"><code>
+  diagram.layout = new go.GridLayout({ spacing: new go.Size(25,25) });
+  function sh(color) { return new go.Shape({ strokeWidth: 2, margin: 4, width: 20, height: 20, fill: color }) };
+  diagram.allowHorizontalScroll = false;
+  diagram.allowVerticalScroll = false;
+
+  var panelBackgroundColor = 'palegreen';
+  function makepanel(type, desc) {
+    return new go.Node("Vertical")
+      .add(new go.TextBlock("go.Panel(\""+ type + "\")", { margin: 4, font: "13px monospace" }))
+      .add(new go.Panel(type, { background: panelBackgroundColor })
+        .add(sh('lightpink').set({ figure: 'RoundedRectangle' }))
+        .add(sh('lightsalmon').set({ figure: 'Triangle', row: 1, width: 15, height: 15 }))
+        .add(sh('lightcoral').set({ figure: 'Ellipse', column: 3, width: 25, height: 25 }))
+        .add(sh('red').set({ column: 1, row: 2 }))
+      )
+  }
+
+  function makepanelAuto() {
+    return new go.Node("Vertical")
+      .add(new go.TextBlock('go.Panel("Auto")', { margin: 4, font: "13px monospace" }))
+      .add(new go.Panel("Auto", { background: panelBackgroundColor })
+        .add(new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', fill: 'lightpink' }))
+        .add(new go.TextBlock('Auto Panel\'s first element\nexpands dynamically to\n fit all other elements.\nIn this case, a single TextBlock\nwith a long string.',
+        { margin: 8, textAlign: 'center' }))
+      )
+  }
+
+  function makepanelSpot() {
+    return new go.Node("Vertical")
+      .add(new go.TextBlock('go.Panel("Spot")', { margin: 4, font: "13px monospace" }))
+      .add(new go.Panel("Spot", { background: panelBackgroundColor })
+        .add(new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', width: 50, height: 50, fill: 'lightpink' }))
+        .add(sh('lightsalmon').set({ figure: 'Triangle', alignment: go.Spot.Left }))
+        .add(sh('lightcoral').set({ figure: 'Ellipse', alignment: go.Spot.Right }))
+        .add(sh('red').set({ alignment: go.Spot.Top }))
+      )
+  }
+
+  diagram.nodeTemplateMap.add('Horizontal', makepanel("Horizontal"));
+  diagram.nodeTemplateMap.add('Vertical', makepanel("Vertical"));
+  diagram.nodeTemplateMap.add('Table', makepanel("Table"));
+  diagram.nodeTemplateMap.add('Auto', makepanelAuto());
+  diagram.nodeTemplateMap.add('Spot', makepanelSpot());
+  diagram.nodeTemplateMap.add('Info',
+  new go.Node("Spot")
+    .add(new go.Shape("RoundedRectangle", { strokeWidth: 1.5, fill: 'pink', width: 90, height: 30 }))
+    .add(new go.TextBlock({ font: "16px san-serif" }).bind('text', 'key'))
+  )
+
+
+diagram.nodeTemplateMap.add('TextBlock',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.TextBlock("Some Text")',
+    { spacingBelow: 4, font: "13px monospace" }))
+    .add(new go.TextBlock("Some Text", { font: "26px serif" }))
+  )
+
+  diagram.nodeTemplateMap.add('Picture',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.Picture("images/55x55.png")',
+    { spacingBelow: 4, font: "13px monospace" }))
+    .add(new go.Picture("images/55x55.png", { width: 50, height: 50 }))
+  )
+
+  diagram.nodeTemplateMap.add('Shape',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.Shape("Triangle")',
+    { spacingBelow: 4, font: "13px monospace" }))
+    .add(new go.Shape("Triangle", { width: 50, height: 50, fill: '#00FAFA' }))
+  )
+
+  diagram.nodeTemplateMap.add('Panel',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.Panel("[PanelType]")',
+    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
+    .add(new go.TextBlock("Panels have no visual unless\na background is specified.\nThey hold other GraphObjects,\nand can be nested.",{
+      textAlign: 'center'
+    }))
+  )
+
+  diagram.nodeTemplateMap.add('Node',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.Node("[PanelType]")',
+    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
+    .add(new go.TextBlock("Nodes can connect with links\n and be members of a Group.",{
+      textAlign: 'center'
+    }))
+  )
+
+  diagram.nodeTemplateMap.add('Link',
+  new go.Node("Vertical")
+    .add(new go.TextBlock('go.Link()',
+    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
+    .add(new go.TextBlock("Nodes can connect with links\n and be members of a Group.",{
+      textAlign: 'center'
+    }))
+  )
+
+  diagram.groupTemplate = new go.Group("Vertical", {
+    locationSpot: go.Spot.Center,
+    layout: new go.GridLayout({ wrappingColumn: 2 })})
+    .bind("layout")
+    .bind("location", "loc")
+    .add(new go.TextBlock({ margin: 4, font: '13pt sans-serif' }).bind("text"))
+    .add(new go.Panel("Auto")
+      .add(new go.Shape("RoundedRectangle", { fill: 'whitesmoke', stroke: 'darkgray' }))
+      .add(new go.Placeholder({ padding: 5 }))
+    )
+
+    diagram.linkTemplate = new go.Link(
+      {
+        routing: go.Link.Orthogonal,
+        toShortLength: 2
+      })
+      .add(new go.Shape({strokeWidth: 2}))
+      .add(new go.Shape({ toArrow: 'Standard' }))
+
+diagram.model = new go.GraphLinksModel([
+  { group: 'Panels', category: 'Horizontal' },
+  { group: 'Panels', category: 'Vertical' },
+  { group: 'Panels', category: 'Table' },
+  { group: 'Panels', category: 'Auto' },
+  { group: 'Panels', category: 'Spot' },
+  { key: 'GraphObjects', isGroup: true, text: "GraphObjects are the building blocks of GoJS", layout: new go.TreeLayout() },
+  { key: 'Panels', isGroup: true, text: "Common Panel Types" },
+
+
+  { group: 'GraphObjects', category: 'Info', key: 'GraphObject' },
+  { group: 'GraphObjects', category: 'Info', key: 'TextBlock' },
+  { group: 'GraphObjects', category: 'Info', key: 'Picture' },
+  { group: 'GraphObjects', category: 'Info', key: 'Shape' },
+  { group: 'GraphObjects', category: 'Info', key: 'Panel' },
+
+  { group: 'GraphObjects', category: 'Info', key: 'Part' },
+  { group: 'GraphObjects', category: 'Info', key: 'Node' },
+  { group: 'GraphObjects', category: 'Info', key: 'Link' },
+  { group: 'GraphObjects', category: 'Info', key: 'Group' },
+
+  // { group: 'GraphObjects', category: 'TextBlock' },
+  // { group: 'GraphObjects', category: 'Picture' },
+  // { group: 'GraphObjects', category: 'Shape' },
+  // { group: 'GraphObjects', category: 'Panel', key:'PanelExample' },
+
+  //{ key: 'Parts', isGroup: true, text: "Parts (Nodes, Links, Groups) are Top-level Panels" },
+  //{ group: 'Parts', category: 'Part' },
+  //{ group: 'Parts', category: 'Node' },
+  //{ group: 'Parts', category: 'Group' },
+  //{ group: 'Parts', category: 'Link' },
+],
+[
+  { from: 'GraphObject', to: 'Picture' },
+  { from: 'GraphObject', to: 'TextBlock' },
+  { from: 'GraphObject', to: 'Shape' },
+  { from: 'GraphObject', to: 'Panel' },
+  { from: 'Panel', to: 'Part' },
+  { from: 'Part', to: 'Node' },
+  { from: 'Part', to: 'Link' },
+  { from: 'Node', to: 'Group' },
+
+
+]);
+</code></pre>
+<script>goCode("BuildingBlocksDiagram", 750, 750)</script>
+
+<p>
+<b>Nodes</b> and <b>Links</b> are usually composed of many GraphObjects, including several <a>Panel</a>s that may be nested.
+</p>
+
+<h2 id="BuildingWithCode">Building with Code</h2>
+<p>
+A very simple Node might consist of a Shape and a TextBlock.
+You can build such a visual tree of GraphObjects using code such as:
+</p>
+<pre class="lang-js" id="simpleCode"><code>
+  var node = new go.Node("Auto");
+  var shape = new go.Shape();
+  shape.figure = "RoundedRectangle";
+  shape.fill = "lightblue";
+  shape.strokeWidth = 3;
+  node.add(shape);
+  var textblock = new go.TextBlock();
+  textblock.text = "Hello!";
+  textblock.margin = 5;
+  node.add(textblock);
+  diagram.add(node);
+</code></pre>
+<p>
+This code produces the following diagram.  It is a "live" diagram,
+so you can click on the node to select it and then drag it around.
+</p>
+<script>goCode("simpleCode", 250, 150)</script>
+<p>
+Although building a node in this manner will work, as the nodes get more complicated
+the code will become more complicated to read and to maintain.
+Fortunately <b>GoJS</b> has a better way to make Parts out of GraphObjects.
+</p>
+<p>
+Furthermore, later sections will discuss how Nodes and Links should be created automatically using models, templates, and data-binding.
+Until that time, these pages will create Nodes explicitly and add them to Diagrams directly.
+</p>
+
+<h2 id="BuildingWithChainingFunctions">Building with Chaining Functions</h2>
+
+<p>
+Starting in GoJS 2.2, many GraphObject and Diagram methods return the object instance, such as
+<a>Panel.add</a> and <a>GraphObject.bind</a>. These methods can be chained to build Parts.
+</p>
+
+<p>
+  Every GraphObject constructor optionally takes a common setting as its first argument. These are:
+</p>
+<ul>
+  <li>
+    TextBlock: The <a>TextBlock.text</a> - for example, <code>new go.TextBlock("Hello")</code>
+  </li>
+  <li>
+    Picture: The <a>Picture.source</a> - for example, <code>new go.Picture("https://example.com/image1.png")</code>
+  </li>
+  <li>
+    Shape: The <a>Shape.figure</a> - for example, <code>new go.Shape("RoundedRectangle")</code>
+  </li>
+  <li>
+    Panel: The <a>panel.type</a> as a string  - for example, <code>new go.Panel("Auto")</code>. Possible values are "Position", "Vertical", "Horizontal", "Auto", "Spot", "Table", and a few specialty panels. See the page on <a href="panels.html">Panels</a> for more.
+  </li>
+  <li>
+    Nodes, Parts, and Groups all inherit from Panel, and take the same constructor argument.
+  </li>
+  <li>
+    Links are a special type of Panel that are always of the "Link" type.
+  </li>
+</ul>
+
+<p>
+  Every GraphObject additionally takes an optional constructor argument that is a JavaScript object, which can be used to set any object properties. For exmaple, instead of writing:
+</p>
+
+<pre class="lang-js"><code>
+var shape = new go.Shape();
+shape.figure = "RoundedRectangle";
+shape.fill = "lightblue";
+shape.strokeWidth = 3;
+</code></pre>
+
+<p>We could write this:</p>
+
+<pre class="lang-js"><code>
+var shape = new go.Shape("RoundedRectangle", {
+  fill: "lightblue",
+  strokeWidth: 3
+});
+</code></pre>
+<p>
+The first argument is the Shape.figure, the second argument is an object setting other Shape properties.
+If you use TypeScript and the npm gojs package, this code will also be type-checked for you.
+</p>
+<p>
+To rewrite the code block in the previous section, that had a Node with one Shape and one TextBlock added, we would write this:
+</p>
+
+<pre class="lang-js"><code>
+// Create a node and .add a Shape and TextBlock to it
+myDiagram.add(
+  new go.Node("Auto")
+  .add(new go.Shape("RoundedRectangle", {
+    fill: "lightblue",
+    strokeWidth: 3
+  }))
+  .add(new go.TextBlock("Hello!", {
+    margin: 5
+  }))
+);
+</code></pre>
+<p>
+Unlike the GraphObject.make methodology below, this code is typed at compile time or in your IDE, if using TypeScript.
+</p>
+
+<h2 id="BuildingWithMake">Building with <b>GraphObject.make</b></h2>
+
+<p><em>Unlike building with .add, GraphObject.make is not well type-checked when using TypeScript definitions. However, it is more flexible, and many of our samples use it.</em></p>
+
+<p>
+<b>GoJS</b> defines a static function, <a>GraphObject,make</a>, that is very useful in
+constructing GraphObjects without having to think of and keep track of temporary variable names.
+This static function also supports building objects in a nested fashion,
+where the indentation gives you a clue about depth in the visual tree,
+unlike the simple linear code shown above.
+</p>
+<p>
+<a>GraphObject,make</a> is a function whose first argument must be a class type,
+typically a subclass of <a>GraphObject</a>.
+</p>
+<p>
+Additional arguments to <a>GraphObject,make</a> may be of several types:
+</p>
+<ul>
+<li>a plain JavaScript object with property/value pairs -- these property values are set on the object being constructed</li>
+<li>a <a>GraphObject</a>, which is added as an element to the <a>Panel</a> that is being constructed</li>
+<li>a <b>GoJS</b> enumerated value constant, which is used as the value of the unique property of the object being constructed that can accept such a value</li>
+<li>a string, which sets the <a>TextBlock.text</a>, <a>Shape.figure</a>, <a>Picture.source</a>, or <a>Panel.type</a> property of the object that is being constructed</li>
+<li>a <a>RowColumnDefinition</a>, for describing rows or columns in Table <a>Panel</a>s</li>
+<li>a JavaScript Array, holding arguments to <a>GraphObject,make</a>, useful when returning more than one argument from a function</li>
+<li>other specialized objects that are used in the appropriate manner for the object being constructed</li>
+</ul>
+<p>
+We can rewrite the code above with <b>go.GraphObject.make</b> to produce exactly the same results:
+</p>
+<pre class="lang-js" id="simpleJSAML"><code>
+  var $ = go.GraphObject.make;
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape,
+        { figure: "RoundedRectangle",
+          fill: "lightblue" }),
+      $(go.TextBlock,
+        { text: "Hello!",
+          margin: 5 })
+    ));
+</code></pre>
+<script>goCode("simpleJSAML", 250, 150)</script>
+<p>
+This can be simplified a bit by using string arguments:
+</p>
+<pre class="lang-js" id="simpleJSAML2"><code>
+  var $ = go.GraphObject.make;
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
+      $(go.TextBlock, "Hello!", { margin: 5 })
+    ));
+</code></pre>
+<script>goCode("simpleJSAML2", 250, 150)</script>
+<p>
+Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.
+</p>
+<p>
+The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy
+that we will assume its use from now on.
+Having the call to <b>go.GraphObject.make</b> be minimized into a single character
+helps remove clutter from the code and lets the indentation match the nesting of
+<a>GraphObject</a>s in the visual tree that is being constructed.
+</p>
+<p>
+Some other JavaScript libraries automatically define "$" to be a handy-to-type function name,
+assuming that they are the only library that matters.
+But you cannot have the same symbol have two different meanings at the same time in the same scope, of course.
+So you may want to choose to use a different short name, such as "$$" or "GO" when using <b>GoJS</b>.
+The <b>GoJS</b> documentation and samples make use of "$" because it makes the resulting code most clear.
+</p>
+<p class="box bg-info">
+  Another advantage of using <a>GraphObject,make</a> is that it will make sure that any
+  properties that you set are defined properties on the class.
+  If you have a typo in the name of the property, it will throw an error, for which you can see a message in the console log.
+</p>
+<p>
+<a>GraphObject,make</a> also works to build <b>GoJS</b> classes other than ones inheriting from <a>GraphObject</a>.
+Here is an example of using <b>go.GraphObject.make</b> to build a <a>Brush</a>
+rather than a <a>GraphObject</a> subclass.
+</p>
+<pre class="lang-js" id="gradientJSAML"><code>
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: $(go.Brush, "Linear",
+                  { 0.0: "Violet", 1.0: "Lavender" }) }),
+      $(go.TextBlock, "Hello!",
+        { margin: 5 })
+    ));
+</code></pre>
+<script>goCode("gradientJSAML", 250, 150)</script>
+<p>
+It is also common to use <a>GraphObject,make</a> to build a <a>Diagram</a>.
+In such a use a string argument, which if provided must be the second argument, will name the DIV HTML element that the Diagram should use.
+Equivalently you can pass a direct reference to the DIV element as the second argument.
+</p>
+<p>
+Also, when setting properties on a Diagram, you can use property names that are strings consisting of two identifiers separated by a period.
+The name before the period is used as the name of a property on the Diagram or on the <a>Diagram.toolManager</a> that returns an object whose property is to be set.
+The name after the period is the name of the property that is set.
+Note that because there is an embedded period, JavaScript property syntax requires that you use quotes.
+</p>
+<p>
+You can also declare <a>DiagramEvent</a> listeners, as if calling <a>Diagram.addDiagramListener</a>,
+by pretending to set a Diagram property that is actually the name of a DiagramEvent.
+Because all DiagramEvents have names that are capitalized, the names will not conflict with any Diagram property names.
+</p>
+<p>
+The Diagram constructor automatically uses GraphObject.make in its constructor:
+</p>
+<pre class="lang-js"><code>
+  var myDiagram = new go.Diagram("myDiagramDiv",  // must name or refer to the DIV HTML element
+      {
+        // don't initialize some properties until after a new model has been loaded
+        "InitialLayoutCompleted": loadDiagramProperties,  // a DiagramEvent listener
+
+        // have mouse wheel events zoom in and out instead of scroll up and down
+        "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+
+        // specify a data object to copy for each new Node that is created by clicking
+        "clickCreatingTool.archetypeNodeData": { text: "new node" }
+      });
+
+  // the DiagramEvent listener for "InitialLayoutCompleted"
+  function loadDiagramProperties(e) { . . . }
+</code></pre>
+
+<p>
+All of this initialization using <a>GraphObject,make</a> is still JavaScript code, so we can call functions
+and easily share objects such as brushes:
+</p>
+<pre class="lang-js" id="codeJSAML"><code>
+  var violetbrush = $(go.Brush, "Linear", { 0.0: "Violet", 1.0: "Lavender" });
+
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: violetbrush }),
+      $(go.TextBlock, "Hello!",
+        { margin: 5 })
+    ));
+
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "Ellipse",
+        { fill: violetbrush }),
+      $(go.TextBlock, "Goodbye!",
+        { margin: 5 })
+    ));
+</code></pre>
+<script>goCode("codeJSAML", 250, 150)</script>
+<p>
+<a>Brush</a>es and <a>Geometry</a> objects may be shared, but <a>GraphObject</a>s may not be shared.
 </p>
 
 <h2 id="VisualStructureOfNodesAndLinks">The Visual Structure of Nodes and Links</h2>
 <p>
-First, look at a diagram that includes comments about the GraphObjects used to build some example nodes and links:
+Here is a diagram that includes comments about the GraphObjects used to build some example nodes and links, using a number of GoJS concepts:
 </p>
 <pre class="lang-js" id="commented" style="display:none"><code>
   diagram.nodeTemplate =
@@ -333,209 +771,13 @@ First, look at a diagram that includes comments about the GraphObjects used to b
   diagram.model = model;
 </code></pre>
 <script>goCode("commented", 650, 450)</script>
-<p>
-As you can see, a node or a link can be composed of many GraphObjects, including <a>Panel</a>s that may be nested.
-You can drag around any comment in order to see the area covered by the GraphObject at the end of the comment link to it,
-except for the GraphObjects within the Link itself.
-</p>
-
-<h2 id="BuildingWithCode">Building with Code</h2>
-<p>
-A <a>GraphObject</a> is a JavaScript object that can be constructed and initialized
-in the same manner as any other object.
-A <a>Node</a> is a <a>GraphObject</a> that contains <a>GraphObject</a>s such as <a>TextBlock</a>s, <a>Shape</a>s,
-<a>Picture</a>s, and <a>Panel</a>s that may contain yet more GraphObjects.
-</p>
-<p>
-A very simple Node might consist of a Shape and a TextBlock.
-You can build such a visual tree of GraphObjects using code such as:
-</p>
-<pre class="lang-js" id="simpleCode"><code>
-  var node = new go.Node(go.Panel.Auto);
-  var shape = new go.Shape();
-  shape.figure = "RoundedRectangle";
-  shape.fill = "lightblue";
-  node.add(shape);
-  var textblock = new go.TextBlock();
-  textblock.text = "Hello!";
-  textblock.margin = 5;
-  node.add(textblock);
-  diagram.add(node);
-</code></pre>
-<p>
-This code produces the following diagram.  It is a "live" diagram, not a screenshot image,
-so you can click on the node to select it and then drag it around.
-</p>
-<script>goCode("simpleCode", 250, 150)</script>
-<p>
-Although building a node in this manner will work, as the nodes get more complicated
-the code will become more complicated to read and to maintain.
-Fortunately <b>GoJS</b> has a better way to make Parts out of GraphObjects.
-</p>
-<p>
-Furthermore, later sections will discuss how Nodes and Links should be created automatically using models, templates, and data-binding.
-Until that time, these pages will create Nodes explicitly and add them to Diagrams directly.
-</p>
-
-<h2 id="BuildingWithMake">Building with <b>GraphObject.make</b></h2>
-<p>
-<b>GoJS</b> defines a static function, <a>GraphObject,make</a>, that is very useful in
-constructing GraphObjects without having to think of and keep track of temporary variable names.
-This static function also supports building objects in a nested fashion,
-where the indentation gives you a clue about depth in the visual tree,
-unlike the simple linear code shown above.
-</p>
-<p>
-<a>GraphObject,make</a> is a function whose first argument must be a class type,
-typically a subclass of <a>GraphObject</a>.
-</p>
-<p>
-Additional arguments to <a>GraphObject,make</a> may be of several types:
-</p>
-<ul>
-<li>a plain JavaScript object with property/value pairs -- these property values are set on the object being constructed</li>
-<li>a <a>GraphObject</a>, which is added as an element to the <a>Panel</a> that is being constructed</li>
-<li>a <b>GoJS</b> enumerated value constant, which is used as the value of the unique property of the object being constructed that can accept such a value</li>
-<li>a string, which sets the <a>TextBlock.text</a>, <a>Shape.figure</a>, <a>Picture.source</a>, or <a>Panel.type</a> property of the object that is being constructed</li>
-<li>a <a>RowColumnDefinition</a>, for describing rows or columns in Table <a>Panel</a>s</li>
-<li>a JavaScript Array, holding arguments to <a>GraphObject,make</a>, useful when returning more than one argument from a function</li>
-<li>other specialized objects that are used in the appropriate manner for the object being constructed</li>
-</ul>
-<p>
-We can rewrite the code above with <b>go.GraphObject.make</b> to produce exactly the same results:
-</p>
-<pre class="lang-js" id="simpleJSAML"><code>
-  var $ = go.GraphObject.make;
-  diagram.add(
-    $(go.Node, go.Panel.Auto,
-      $(go.Shape,
-        { figure: "RoundedRectangle",
-          fill: "lightblue" }),
-      $(go.TextBlock,
-        { text: "Hello!",
-          margin: 5 })
-    ));
-</code></pre>
-<script>goCode("simpleJSAML", 250, 150)</script>
-<p>
-This can be simplified a bit by using string arguments:
-</p>
-<pre class="lang-js" id="simpleJSAML2"><code>
-  var $ = go.GraphObject.make;
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
-      $(go.TextBlock, "Hello!", { margin: 5 })
-    ));
-</code></pre>
-<script>goCode("simpleJSAML2", 250, 150)</script>
-<p>
-Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.
-</p>
-<p>
-The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy
-that we will assume its use from now on.
-Having the call to <b>go.GraphObject.make</b> be minimized into a single character
-helps remove clutter from the code and lets the indentation match the nesting of
-<a>GraphObject</a>s in the visual tree that is being constructed.
-</p>
-<p>
-Some other JavaScript libraries automatically define "$" to be a handy-to-type function name,
-assuming that they are the only library that matters.
-But you cannot have the same symbol have two different meanings at the same time in the same scope, of course.
-So you may want to choose to use a different short name, such as "$$" or "GO" when using <b>GoJS</b>.
-The <b>GoJS</b> documentation and samples make use of "$" because it makes the resulting code most clear.
-</p>
-<p class="box bg-info">
-  Another advantage of using <a>GraphObject,make</a> is that it will make sure that any
-  properties that you set are defined properties on the class.
-  If you have a typo in the name of the property, it will throw an error, for which you can see a message in the console log.
-</p>
-<p>
-<a>GraphObject,make</a> also works to build <b>GoJS</b> classes other than ones inheriting from <a>GraphObject</a>.
-Here is an example of using <b>go.GraphObject.make</b> to build a <a>Brush</a>
-rather than a <a>GraphObject</a> subclass.
-</p>
-<pre class="lang-js" id="gradientJSAML"><code>
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: $(go.Brush, "Linear",
-                  { 0.0: "Violet", 1.0: "Lavender" }) }),
-      $(go.TextBlock, "Hello!",
-        { margin: 5 })
-    ));
-</code></pre>
-<script>goCode("gradientJSAML", 250, 150)</script>
-<p>
-It is also common to use <a>GraphObject,make</a> to build a <a>Diagram</a>.
-In such a use a string argument, which if provided must be the second argument, will name the DIV HTML element that the Diagram should use.
-Equivalently you can pass a direct reference to the DIV element as the second argument.
-</p>
-<p>
-Also, when setting properties on a Diagram, you can use property names that are strings consisting of two identifiers separated by a period.
-The name before the period is used as the name of a property on the Diagram or on the <a>Diagram.toolManager</a> that returns an object whose property is to be set.
-The name after the period is the name of the property that is set.
-Note that because there is an embedded period, JavaScript property syntax requires that you use quotes.
-</p>
-<p>
-You can also declare <a>DiagramEvent</a> listeners, as if calling <a>Diagram.addDiagramListener</a>,
-by pretending to set a Diagram property that is actually the name of a DiagramEvent.
-Because all DiagramEvents have names that are capitalized, the names will not conflict with any Diagram property names.
-</p>
-<p>
-Here is a moderately extensive usage of GraphObject.make to build a Diagram:
-</p>
-<pre class="lang-js"><code>
-  var myDiagram =
-    $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
-      {
-        // don't initialize some properties until after a new model has been loaded
-        "InitialLayoutCompleted": loadDiagramProperties,  // a DiagramEvent listener
-
-        // have mouse wheel events zoom in and out instead of scroll up and down
-        "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
-
-        // specify a data object to copy for each new Node that is created by clicking
-        "clickCreatingTool.archetypeNodeData": { text: "new node" }
-      });
-
-  // the DiagramEvent listener for "InitialLayoutCompleted"
-  function loadDiagramProperties(e) { . . . }
-</code></pre>
-
-<p>
-All of this initialization using <a>GraphObject,make</a> is still JavaScript code, so we can call functions
-and easily share objects such as brushes:
-</p>
-<pre class="lang-js" id="codeJSAML"><code>
-  var violetbrush = $(go.Brush, "Linear", { 0.0: "Violet", 1.0: "Lavender" });
-
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: violetbrush }),
-      $(go.TextBlock, "Hello!",
-        { margin: 5 })
-    ));
-
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse",
-        { fill: violetbrush }),
-      $(go.TextBlock, "Goodbye!",
-        { margin: 5 })
-    ));
-</code></pre>
-<script>goCode("codeJSAML", 250, 150)</script>
-<p>
-<a>Brush</a>es and <a>Geometry</a> objects may be shared, but <a>GraphObject</a>s may not be shared.
-</p>
 
 <p>
 The following pages will provide more details about the basic building block classes,
 <a>TextBlock</a>, <a>Shape</a>, and <a>Picture</a>, and about ways of aggregating them with the <a>Panel</a> class.
 </p>
+
+
 
       </div>
     </div>
@@ -617,7 +859,7 @@ The following pages will provide more details about the basic building block cla
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

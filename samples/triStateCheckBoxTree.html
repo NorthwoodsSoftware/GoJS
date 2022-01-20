@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>GoJS Tree View with Check Boxes</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,7 @@
     <script id="code">
 
     // This button assumes data binding to the "checked" property.
-    go.GraphObject.defineBuilder("TriStateCheckBoxButton", function(args) {
+    go.GraphObject.defineBuilder("TriStateCheckBoxButton", args => {
       var button = /** @type {Panel} */ (
         go.GraphObject.make("Button",
           {
@@ -71,29 +71,29 @@
               background: null,
               visible: false  // visible set to false: not checked, unless data.checked is true
             },
-            new go.Binding("visible", "checked", function(p) { return p === true || p === null; }),
-            new go.Binding("stroke", "checked", function(p) { return p === null ? null : "black"; }),
-            new go.Binding("background", "checked", function(p) { return p === null ? "gray" : null; })
+            new go.Binding("visible", "checked", p => p === true || p === null),
+            new go.Binding("stroke", "checked", p => p === null ? null : "black"),
+            new go.Binding("background", "checked", p => p === null ? "gray" : null)
           )
         )
       );
 
       function updateCheckBoxesDown(node, val) {
         node.diagram.model.setDataProperty(node.data, "checked", val);
-        node.findTreeChildrenNodes().each(function(child) { updateCheckBoxesDown(child, val); })
+        node.findTreeChildrenNodes().each(child => updateCheckBoxesDown(child, val))
       }
 
       function updateCheckBoxesUp(node) {
         var parent = node.findTreeParentNode();
         if (parent !== null) {
-          var anychecked = parent.findTreeChildrenNodes().any(function(n) { return n.data.checked !== false && n.data.checked !== undefined; });
-          var allchecked = parent.findTreeChildrenNodes().all(function(n) { return n.data.checked === true; });
+          var anychecked = parent.findTreeChildrenNodes().any(n => n.data.checked !== false && n.data.checked !== undefined);
+          var allchecked = parent.findTreeChildrenNodes().all(n =>n.data.checked === true);
           node.diagram.model.setDataProperty(parent.data, "checked", (allchecked ? true : (anychecked ? null : false)));
           updateCheckBoxesUp(parent);
         }
       }
 
-      button.click = function(e, button) {
+      button.click = (e, button) => {
         if (!button.isEnabledObject()) return;
         var diagram = e.diagram;
         if (diagram === null || diagram.isReadOnly) return;
@@ -118,7 +118,10 @@
     });
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -148,7 +151,7 @@
             selectionAdorned: false,
             // a custom function to allow expanding/collapsing on double-click
             // this uses similar logic to a TreeExpanderButton
-            doubleClick: function(e, node) {
+            doubleClick: (e, node) => {
               var cmd = myDiagram.commandHandler;
               if (node.isTreeExpanded) {
                 if (!cmd.canCollapseTree(node)) return;
@@ -174,11 +177,11 @@
             }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(16, 0), margin: new go.Margin(0, 2, 0, 0), defaultAlignment: go.Spot.Center },
-            new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
+            new go.Binding("background", "isSelected", s => s ? "lightblue" : "white").ofObject(),
             $("TriStateCheckBoxButton"),
             $(go.TextBlock,
               { font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) },
-              new go.Binding("text", "key", function(s) { return "item " + s; }))
+              new go.Binding("text", "key", s =>"item " + s))
           )  // end Horizontal Panel
         );  // end Node
 

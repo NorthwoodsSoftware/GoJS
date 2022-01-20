@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Arrange nodes into concentric circles using CircularLayout."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Double Circle</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates in this function
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates in this function
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
@@ -85,15 +88,14 @@
     }
 
     function doubleCircleLayout(diagram) {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
       diagram.startTransaction("Multi Circle Layout");
 
       var radius = 100;
       var layer = 1;
       var nodes = null;
       while (nodes = nodesByLayer(diagram, layer), nodes.count > 0) {
-        var layout = $(go.CircularLayout,
-          { radius: radius });
+        var layout = new go.CircularLayout();
+        layout.radius = radius;
         layout.doLayout(nodes);
         // recenter at (0, 0)
         var cntr = layout.actualCenter;
@@ -103,14 +105,14 @@
         layer++;
       }
 
-      nodesByLayer(diagram, 0).each(function(n) { n.location = new go.Point(0, 0); });
+      nodesByLayer(diagram, 0).each(n => n.location = new go.Point(0, 0));
 
       diagram.commitTransaction("Multi Circle Layout");
     }
 
     function nodesByLayer(diagram, layer) {
       var set = new go.Set(/*go.Node*/);
-      diagram.nodes.each(function(part) {
+      diagram.nodes.each(part => {
         if (part instanceof go.Node && part.data.layer === layer) set.add(part);
       });
       return set;

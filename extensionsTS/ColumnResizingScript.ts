@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -152,14 +152,10 @@ export function init() {
     );
 
   myDiagram.model =
-    $(go.GraphLinksModel,
+    new go.GraphLinksModel(
       {
         linkFromPortIdProperty: 'fromPort',
         linkToPortIdProperty: 'toPort',
-        // automatically update the model that is shown on this page
-        'Changed': function (e: go.ChangedEvent) {
-          if (e.isTransactionFinished) showModel();
-        },
         nodeDataArray: [
           {
             key: 'Record1',
@@ -188,7 +184,9 @@ export function init() {
           { from: 'Record1', fromPort: 'field2', to: 'Record2', toPort: 'fieldD' },
           { from: 'Record1', fromPort: 'fieldThree', to: 'Record2', toPort: 'fieldB' }
         ]
-      });
+      }).addChangedListener(function (e: go.ChangedEvent) { // automatically update the model that is shown on this page
+          if (e.isTransactionFinished) showModel();
+        });
 
   showModel();  // show the diagram's initial model
 

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -41,7 +41,7 @@
                     nodeSpacing: 4,
                     compaction: go.TreeLayout.CompactionNone
                 }),
-                model: $(go.TreeModel, {
+                model: new go.TreeModel({
                     nodeKeyProperty: 'k',
                     nodeParentKeyProperty: 'p'
                 })

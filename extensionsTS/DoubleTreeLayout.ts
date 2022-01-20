@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -192,7 +192,7 @@ export class DoubleTreeLayout extends go.Layout {
       });
     }
     if (root === null) return;
-  
+
     // the ROOT node is shared by both subtrees
     leftParts.add(root);
     rightParts.add(root);

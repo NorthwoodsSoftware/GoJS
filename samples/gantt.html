@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A Gantt chart that supports zooming into the timeline."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Gantt chart</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // Diagram refers to its DIV HTML element by id
@@ -72,14 +75,14 @@
           $(go.Shape, "Rectangle",
             { height: 15 },
             new go.Binding("fill", "color"),
-            new go.Binding("width", "width", function(w) { return scaleWidth(w); })),
+            new go.Binding("width", "width", w => scaleWidth(w))),
           $(go.TextBlock,
             { margin: 2, alignment: go.Spot.Left },
             new go.Binding("text", "key")),
           // using a function in the Binding allows the value to
           // change when Diagram.updateAllTargetBindings is called
           new go.Binding("location", "loc",
-            function(l) { return new go.Point(scaleWidth(l.x), l.y); })
+            l => new go.Point(scaleWidth(l.x), l.y))
         ));
 
       // create the template for the start node
@@ -99,11 +102,7 @@
           $(go.Shape, "Diamond",
             { height: 15, width: 15 }),
           // make the location of the end node (with location.x < 0) scalable
-          new go.Binding("location", "loc",
-            function(l) {
-              if (l.x >= 0) return new go.Point(scaleWidth(l.x), l.y);
-              else return l;
-            })
+          new go.Binding("location", "loc", l => (l.x >= 0) ? new go.Point(scaleWidth(l.x), l.y) : l)
         ));
 
       // create the link template
@@ -161,7 +160,7 @@
               name: "labels",
               font: "10pt sans-serif",
               alignmentFocus: new go.Spot(0, 0, -3, -3),
-              graduatedFunction: function(v) {
+              graduatedFunction: v => {
                 var d = new Date(2017, 6, 23);
                 d.setDate(d.getDate() + v * 7);
                 // format date output to string

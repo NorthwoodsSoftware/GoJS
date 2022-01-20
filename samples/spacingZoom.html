@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Zooming only changes the distance between nodes, not the apparent size of each node."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Spacing rather than Scaling when Zooming</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,13 +52,16 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
-          commandHandler: $(SpacingCommandHandler),
+          commandHandler: new SpacingCommandHandler(),
           // update the SpacingCommandHandler.space from the model at the end of each transaction
-          "ModelChanged": function(e) {
+          "ModelChanged": e => {
             if (e.isTransactionFinished) {
               myDiagram.commandHandler.space = myDiagram.model.modelData.space;
             }
@@ -107,9 +110,9 @@
     // Conversion functions -- these only work with myDiagram, assuming it uses a SpacingCommandHandler
 
     function spacedLocationParse(str) {
-      var cmd = myDiagram.commandHandler;
+      const cmd = myDiagram.commandHandler;
       if (!(cmd instanceof SpacingCommandHandler)) throw new Error("not using SpacingCommandHandler");
-      var pt = go.Point.parse(str);
+      const pt = go.Point.parse(str);
       pt.x = (pt.x - cmd.spaceCenter.x) * cmd.space + cmd.spaceCenter.x;
       if (cmd.isYSpaced) {
         pt.y = (pt.y - cmd.spaceCenter.y) * cmd.space + cmd.spaceCenter.y;
@@ -118,7 +121,7 @@
     }
 
     function spacedLocationStringify(pt, data) {
-      var cmd = myDiagram.commandHandler;
+      const cmd = myDiagram.commandHandler;
       if (!cmd._isUpdating) {
         pt = pt.copy();
         pt.x = (pt.x - cmd.spaceCenter.x) / cmd.space + cmd.spaceCenter.x;
@@ -133,62 +136,61 @@
 
 
     // The custom CommandHandler that avoids changing the Diagram.scale
-    function SpacingCommandHandler() {
-      go.CommandHandler.call(this);
-      this._space = 1.0;  // replaces Diagram.scale; also copied to/from Model.modelData.space
-      this._spaceCenter = new go.Point(0, 0);  // not currently used -- should this be saved on modelData too?
-      this._isYSpaced = true;  // scale Y along with X?  This option is just for demonstration purposes.
-      this._isUpdating = false;
-    }
-    go.Diagram.inherit(SpacingCommandHandler, go.CommandHandler);
+    class SpacingCommandHandler extends go.CommandHandler {
+      constructor() {
+        super();
+        this._space = 1.0;  // replaces Diagram.scale; also copied to/from Model.modelData.space
+        this._spaceCenter = new go.Point(0, 0);  // not currently used -- should this be saved on modelData too?
+        this._isYSpaced = true;  // scale Y along with X?  This option is just for demonstration purposes.
+        this._isUpdating = false;
+      }
 
-    // Overrides of commands that scale the diagram -- change the space instead
+      // Overrides of commands that scale the diagram -- change the space instead
 
-    SpacingCommandHandler.prototype.decreaseZoom = function(factor) {
-      if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-      this.setSpace(this.space * factor);
-    };
-    SpacingCommandHandler.prototype.canDecreaseZoom = function(factor) {
-      if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-      return this.checkSpace(this.space * factor);
-    };
+      decreaseZoom(factor) {
+        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
+        this.setSpace(this.space * factor);
+      }
+      canDecreaseZoom(factor) {
+        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
+        return this.checkSpace(this.space * factor);
+      }
 
-    SpacingCommandHandler.prototype.increaseZoom = function(factor) {
-      if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-      this.setSpace(this.space / factor);
-    };
-    SpacingCommandHandler.prototype.canIncreaseZoom = function(factor) {
-      if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-      return this.checkSpace(this.space / factor);
-    };
+      increaseZoom(factor) {
+        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
+        this.setSpace(this.space / factor);
+      }
+      canIncreaseZoom(factor) {
+        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
+        return this.checkSpace(this.space / factor);
+      }
 
-    SpacingCommandHandler.prototype.resetZoom = function(newspace) {
-      if (newspace === undefined/*notpresent*/) newspace = 1.0;
-      this.setSpace(newspace);
-    };
-    SpacingCommandHandler.prototype.canResetZoom = function(newspace) {
-      return this.checkSpace(newspace);
-    };
+      resetZoom(newspace) {
+        if (newspace === undefined/*notpresent*/) newspace = 1.0;
+        this.setSpace(newspace);
+      }
+      canResetZoom(newspace) {
+        return this.checkSpace(newspace);
+      }
 
-    // actually set a new value for SPACE
-    SpacingCommandHandler.prototype.setSpace = function(s) {
-      this.space = Math.max(0.1, Math.min(10.0, s));
-    };
+      // actually set a new value for SPACE
+      setSpace(s) {
+        this.space = Math.max(0.1, Math.min(10.0, s));
+      }
 
-    // validity check for a new value for SPACE
-    SpacingCommandHandler.prototype.checkSpace = function(s) {
-      return 0.1 <= s && s <= 10.0;
-    };
+      // validity check for a new value for SPACE
+      checkSpace(s) {
+        return 0.1 <= s && s <= 10.0;
+      }
 
 
-    // Properties for SpacingCommandHandler
+      // Properties for SpacingCommandHandler
 
-    Object.defineProperty(SpacingCommandHandler.prototype, "space", {
-      get: function() { return this._space; },
-      set: function(val) {
+      get space() { return this._space; }
+      set space(val) {
         if (val !== this._space) {
           this._space = val;
-          var diagram = this.diagram;
+          const diagram = this.diagram;
           if (diagram !== null) {  // store in model too, and support undo
             diagram.model.setDataProperty(diagram.model.modelData, "space", val);
           }
@@ -197,46 +199,38 @@
           document.getElementById("SPACE").textContent = val.toString();
         }
       }
-    });
 
-    Object.defineProperty(SpacingCommandHandler.prototype, "spaceCenter", {
-      get: function() { return this._spaceCenter; },
-      set: function(val) {
+      get spaceCenter() { return this._spaceCenter; }
+      set spaceCenter(val) {
         if (!val.equals(this._spaceCenter)) {
           this._spaceCenter = val.copy();
         }
       }
-    });
 
-    Object.defineProperty(SpacingCommandHandler.prototype, "isYSpaced", {
-      get: function() { return this._isYSpaced; },
-      set: function(val) {
+      get isYSpaced() { return this._isYSpaced; }
+      set isYSpaced(val) {
         if (val !== this._isYSpaced) {
           this._isYSpaced = val;
           this.updateAllLocations();
         }
       }
-    });
 
-    // If the spacing or isYSpaced properties change value,
-    // we need to update the effective locations of all nodes.
-    // Assume Node.location is data bound to "loc" property.
-    SpacingCommandHandler.prototype.updateAllLocations = function() {
-      var diagram = this.diagram;
-      if (diagram === null) return;
-      this._isUpdating = true;
-      diagram.skipsUndoManager = true;
-      diagram.startTransaction("respace nodes");
-      diagram.parts.each(function(p) {
-        p.updateTargetBindings("loc");
-      });
-      diagram.nodes.each(function(n) {
-        n.updateTargetBindings("loc");
-      });
-      diagram.commitTransaction("respace nodes");
-      diagram.skipsUndoManager = false;
-      this._isUpdating = false;
-    };
+      // If the spacing or isYSpaced properties change value,
+      // we need to update the effective locations of all nodes.
+      // Assume Node.location is data bound to "loc" property.
+      updateAllLocations() {
+        const diagram = this.diagram;
+        if (diagram === null) return;
+        this._isUpdating = true;
+        diagram.skipsUndoManager = true;
+        diagram.startTransaction("respace nodes");
+        diagram.parts.each(p => p.updateTargetBindings("loc"));
+        diagram.nodes.each(n => n.updateTargetBindings("loc"));
+        diagram.commitTransaction("respace nodes");
+        diagram.skipsUndoManager = false;
+        this._isUpdating = false;
+      }
+    }
     // end SpacingCommandHandler class
 
 

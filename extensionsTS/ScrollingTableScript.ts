@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -73,7 +73,7 @@ export function init() {
       )
     );
 
-  myDiagram.model = $(go.GraphLinksModel,
+  myDiagram.model = new go.GraphLinksModel(
     {
       linkFromPortIdProperty: 'fromPort',
       linkToPortIdProperty: 'toPort',

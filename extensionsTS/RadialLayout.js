@@ -1,11 +1,11 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -150,25 +150,6 @@ var __extends = (this && this.__extends) || (function () {
                 throw new Error('RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on');
             this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
             this.findDistances(rootvert);
-            // sort all results into Arrays of RadialVertexes with the same distance
-            var verts = [];
-            var maxlayer = 0;
-            var it = this.network.vertexes.iterator;
-            while (it.next()) {
-                var vv = it.value;
-                vv.laid = false;
-                var layer = vv.distance;
-                if (layer === Infinity)
-                    continue; // Infinity used as init value (set in findDistances())
-                if (layer > maxlayer)
-                    maxlayer = layer;
-                var layerverts = verts[layer];
-                if (layerverts === undefined) {
-                    layerverts = [];
-                    verts[layer] = layerverts;
-                }
-                layerverts.push(vv);
-            }
             // now recursively position nodes (using radlay1()), starting with the root
             rootvert.centerX = this.arrangementOrigin.x;
             rootvert.centerY = this.arrangementOrigin.y;
@@ -183,30 +164,30 @@ var __extends = (this && this.__extends) || (function () {
         RadialLayout.prototype.radlay1 = function (vert, layer, angle, sweep) {
             if (layer > this.maxLayers)
                 return; // no need to position nodes outside of maxLayers
-            var verts = []; // array of all RadialVertexes connected to 'vert' in layer 'layer'
-            var vit = vert.vertexes.iterator;
-            while (vit.next()) {
-                var v = vit.value;
-                if (v.laid)
-                    continue;
-                if (v.distance === layer)
-                    verts.push(v);
-            }
-            // vert.vertexes.each((v: go.LayoutVertex) => {
-            //   if (!(v instanceof RadialVertex)) return; // typeguard
-            //   if (v.laid) return;
-            //   if (v.distance === layer) verts.push(v);
-            // });
+            var verts = vert.children; // array of all RadialVertexes connected to 'vert' in layer 'layer'
             var found = verts.length;
             if (found === 0)
                 return;
+            var fracs = []; // relative proportions that each child vertex should occupy
+            var tot = 0;
+            for (var i = 0; i < found; i++) {
+                var v = verts[i];
+                var f = this.computeBreadth(v);
+                fracs.push(f);
+                tot += f;
+            }
+            if (tot <= 0)
+                return;
+            // convert into fractions 0.0 <= frac <= 1.0
+            for (var i = 0; i < found; i++)
+                fracs[i] /= tot;
             var radius = layer * this.layerThickness;
-            var separator = sweep / found; // distance between nodes in their sweep portion
-            var start = angle - sweep / 2 + separator / 2;
+            var a = angle - sweep / 2; // the angle to rotate the node to
             // for each vertex in this layer, place it in its correct layer and position
             for (var i = 0; i < found; i++) {
                 var v = verts[i];
-                var a = start + i * separator; // the angle to rotate the node to
+                var breadth = fracs[i] * sweep;
+                a += breadth / 2;
                 if (a < 0)
                     a += 360;
                 else if (a > 360)
@@ -217,13 +198,37 @@ var __extends = (this && this.__extends) || (function () {
                 p.rotate(a);
                 v.centerX = p.x + this.arrangementOrigin.x;
                 v.centerY = p.y + this.arrangementOrigin.y;
-                v.laid = true;
                 v.angle = a;
-                v.sweep = separator;
+                v.sweep = breadth;
                 v.radius = radius;
                 // keep going for all layers
-                this.radlay1(v, layer + 1, a, sweep / found);
+                this.radlay1(v, layer + 1, a, sweep * fracs[i]);
+                a += breadth / 2;
+                if (a < 0)
+                    a += 360;
+                else if (a > 360)
+                    a -= 360;
             }
+        };
+        /**
+         * Compute the proportion of arc that the given vertex should take relative to its siblings.
+         *
+         * The default behavior is to give each child arc according to the sum of the maximum breadths of each of its children.
+         * This assumes that all nodes have the same breadth -- i.e. that they will occupy the same sweep of arc.
+         * It does not take the Node.actualBounds into account, nor the angle at which the node will be location relative to the origin,
+         * nor the distance the node will be from the root node.
+         *
+         * In order to give each child of a vertex the same fraction of arc, override this method:
+         * <code>computeBreadth(v) { return 1; }</code>
+         *
+         * In order to give each child of a vertex a fraction of arc proportional to how many children the child has:
+         * <code>computeBreadth(v) { return Math.max(1, v.children.length); }
+         */
+        RadialLayout.prototype.computeBreadth = function (v) {
+            var _this = this;
+            var b = 0;
+            v.children.forEach(function (w) { b += _this.computeBreadth(w); }); // inefficient
+            return Math.max(b, 1);
         };
         /**
          * Update RadialVertex.distance for every vertex.
@@ -232,15 +237,12 @@ var __extends = (this && this.__extends) || (function () {
             if (this.network === null)
                 return;
             // keep track of distances from the source node
-            var vit = this.network.vertexes.iterator;
-            while (vit.next()) {
-                var v = vit.value;
+            this.network.vertexes.each(function (v) {
+                if (!(v instanceof RadialVertex))
+                    return; // typeguard
                 v.distance = Infinity;
-            }
-            // this.network.vertexes.each((v: go.LayoutVertex) => {
-            //   if (!(v instanceof RadialVertex)) return; // typeguard
-            //   v.distance = Infinity;
-            // });
+                v.laid = false;
+            });
             // the source node starts with distance 0
             source.distance = 0;
             // keep track of nodes for we have set a non-Infinity distance,
@@ -269,16 +271,16 @@ var __extends = (this && this.__extends) || (function () {
                 // look at the unfinished vertex with the shortest distance so far
                 var least = leastVertex(seen);
                 if (least === null)
-                    return { value: void 0 };
+                    return "break";
                 var leastdist = least.distance;
                 // by the end of this loop we will have finished examining this LEAST vertex
                 seen.remove(least);
                 finished.add(least);
                 // look at all edges connected with this vertex
                 least.edges.each(function (e) {
-                    if (least === null)
-                        return;
                     var neighbor = e.getOtherVertex(least);
+                    if (!neighbor)
+                        return;
                     // skip vertexes that we have finished
                     if (finished.contains(neighbor))
                         return;
@@ -297,9 +299,30 @@ var __extends = (this && this.__extends) || (function () {
             };
             while (seen.count > 0) {
                 var state_1 = _loop_1();
-                if (typeof state_1 === "object")
-                    return state_1.value;
+                if (state_1 === "break")
+                    break;
             }
+            // now update the RadialVertex.children Arrays to form a tree-structure
+            this.network.vertexes.each(function (v) {
+                if (!(v instanceof RadialVertex))
+                    return;
+                var dist = v.distance;
+                var arr = v.children;
+                if (!arr)
+                    arr = v.children = [];
+                v.vertexes.each(function (w) {
+                    if (!(w instanceof RadialVertex))
+                        return;
+                    // use the RadialVertex.laid property for avoiding already-traversed vertexes
+                    if (!w.laid && w !== v && w.distance === dist + 1) {
+                        arr.push(w);
+                        w.laid = true;
+                    }
+                });
+            });
+            // reset RadialVertex.laid in case of future use
+            this.network.vertexes.each(function (v) { if (v instanceof RadialVertex)
+                v.laid = false; });
         };
         /**
          * This override positions each Node and also calls {@link #rotateNode}.
@@ -346,6 +369,7 @@ var __extends = (this && this.__extends) || (function () {
             _this.angle = 0; // the direction at which the node is placed relative to the root node
             _this.sweep = 0; // the angle subtended by the vertex
             _this.radius = 0; // the inner radius of the layer containing this vertex
+            _this.children = []; // vertexes connected to this vertex that have a distance one greater than this distance
             return _this;
         }
         return RadialVertex;

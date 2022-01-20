@@ -12,6 +12,7 @@ import { FloorplanPalette } from './FloorplanPalette';
 export function init(JQUERY: any) {
 
   const editorHelper = new EditorHelper(1, 2, '../../projects/storage', Floorplan, JQUERY);
+  (window as any).editorHelper = editorHelper;
 
   // replace generic palettes with FloorplanPalettes
   const myFloorplan: Floorplan = editorHelper.diagrams[0] as Floorplan;
@@ -179,4 +180,7 @@ export function init(JQUERY: any) {
     EditorHelper.prototype.handlePromise.call(editorHelper, action);
   };
 
+  (window as any).myFloorplan = myFloorplan;
+  (window as any).furniturePalette = furniturePalette;
+  (window as any).wallPartsPalette = wallPartsPalette;
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A diagram where nodes may belong to multiple groups."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Shared States</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
@@ -111,36 +114,32 @@
       load();
     }
 
-    // A custom layout that sizes each "Super" node to be big enough to cover all of it member nodes
-    function CustomLayout() {
-      go.Layout.call(this);
-    }
-    go.Diagram.inherit(CustomLayout, go.Layout);
-
-    CustomLayout.prototype.doLayout = function(coll) {
+  // A custom layout that sizes each "Super" node to be big enough to cover all of it member nodes
+  class CustomLayout extends go.Layout {
+    doLayout(coll) {
       coll = this.collectParts(coll);
 
-      var supers = new go.Set(/*go.Node*/);
-      coll.each(function(p) {
+      const supers = new go.Set(/*go.Node*/);
+      coll.each(p => {
         if (p instanceof go.Node && p.category === "Super") supers.add(p);
       });
 
       function membersOf(sup, diag) {
-        var set = new go.Set(/*go.Part*/);
-        var arr = sup.data._members;
-        for (var i = 0; i < arr.length; i++) {
-          var d = arr[i];
+        const set = new go.Set(/*go.Part*/);
+        const arr = sup.data._members;
+        for (let i = 0; i < arr.length; i++) {
+          const d = arr[i];
           set.add(diag.findNodeForData(d));
         }
         return set;
       }
 
       function isReady(sup, supers, diag) {
-        var arr = sup.data._members;
-        for (var i = 0; i < arr.length; i++) {
-          var d = arr[i];
+        const arr = sup.data._members;
+        for (let i = 0; i < arr.length; i++) {
+          const d = arr[i];
           if (d.category !== "Super") continue;
-          var n = diag.findNodeForData(d);
+          const n = diag.findNodeForData(d);
           if (supers.has(n)) return false;
         }
         return true;
@@ -151,8 +150,8 @@
       this.diagram.startTransaction("Custom Layout");
 
       while (supers.count > 0) {
-        var ready = null;
-        var it = supers.iterator;
+        let ready = null;
+        const it = supers.iterator;
         while (it.next()) {
           if (isReady(it.value, supers, this.diagram)) {
             ready = it.value;
@@ -160,53 +159,48 @@
           }
         }
         supers.remove(ready);
-        var b = this.diagram.computePartsBounds(membersOf(ready, this.diagram));
+        const b = this.diagram.computePartsBounds(membersOf(ready, this.diagram));
         ready.location = b.position;
-        var body = ready.findObject("BODY");
+        const body = ready.findObject("BODY");
         if (body) body.desiredSize = b.size;
       }
 
       this.diagram.commitTransaction("Custom Layout");
-    };
-    // end CustomLayout
-
-
-    // Define a custom DraggingTool
-    function CustomDraggingTool() {
-      go.DraggingTool.call(this);
     }
-    go.Diagram.inherit(CustomDraggingTool, go.DraggingTool);
+  }
+  // end CustomLayout
 
-    CustomDraggingTool.prototype.moveParts = function(parts, offset, check) {
-      go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
+
+  // Define a custom DraggingTool
+  class CustomDraggingTool extends go.DraggingTool {
+    moveParts(parts, offset, check) {
+      super.moveParts(parts, offset, check);
       this.diagram.layoutDiagram(true);
-    };
+    }
 
-    CustomDraggingTool.prototype.computeEffectiveCollection = function(parts) {
-      var coll = new go.Set(/*go.Part*/).addAll(parts);
-      var tool = this;
-      parts.each(function(p) {
-        tool.walkSubTree(p, coll);
-      });
-      return go.DraggingTool.prototype.computeEffectiveCollection.call(this, coll);
+    computeEffectiveCollection(parts) {
+      const coll = new go.Set(/*go.Part*/).addAll(parts);
+      parts.each(p => this.walkSubTree(p, coll));
+      return super.computeEffectiveCollection(coll);
     };
 
     // Find other attached nodes.
-    CustomDraggingTool.prototype.walkSubTree = function(sup, coll) {
+    walkSubTree(sup, coll) {
       if (sup === null) return;
       coll.add(sup);
       if (sup.category !== "Super") return;
       // recurse through this super state's members
-      var model = this.diagram.model;
-      var mems = sup.data._members;
+      const model = this.diagram.model;
+      const mems = sup.data._members;
       if (mems) {
-        for (var i = 0; i < mems.length; i++) {
-          var mdata = mems[i];
+        for (let i = 0; i < mems.length; i++) {
+          const mdata = mems[i];
           this.walkSubTree(this.diagram.findNodeForData(mdata), coll);
         }
       }
-    };
-    // end CustomDraggingTool class
+    }
+  }
+  // end CustomDraggingTool class
 
     // Show the diagram's model in JSON format
     function save() {
@@ -218,13 +212,13 @@
 
       // make sure all data have up-to-date "members" collections
       // this does not prevent any "cycles" of membership, which would result in undefined behavior
-      var arr = myDiagram.model.nodeDataArray;
-      for (var i = 0; i < arr.length; i++) {
-        var data = arr[i];
-        var supers = data.supers;
+      const arr = myDiagram.model.nodeDataArray;
+      for (let i = 0; i < arr.length; i++) {
+        const data = arr[i];
+        const supers = data.supers;
         if (supers) {
-          for (var j = 0; j < supers.length; j++) {
-            var sdata = myDiagram.model.findNodeDataForKey(supers[j]);
+          for (let j = 0; j < supers.length; j++) {
+            const sdata = myDiagram.model.findNodeDataForKey(supers[j]);
             if (sdata) {
               // update _supers to be an Array of references to node data
               if (!data._supers) {

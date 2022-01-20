@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Floorplan Class
@@ -9,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -29,6 +29,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Floorplan = void 0;
     var go = require("../../../release/go");
     var NodeLabelDraggingTool_js_1 = require("./NodeLabelDraggingTool.js");
     var WallBuildingTool_js_1 = require("./WallBuildingTool.js");
@@ -46,7 +47,7 @@ var __extends = (this && this.__extends) || (function () {
              * Initialize Floor Plan, Floor Plan Listeners, Floor Plan Overview
              */
             // When a FloorplanPalette instance is made, it is automatically added to a Floorplan's "palettes" property
-            _this._palettes = [];
+            _this._palettes = new Array();
             // Point Nodes, Dimension Links, Angle Nodes on the Floorplan (never in model data)
             _this._pointNodes = new go.Set();
             _this._dimensionLinks = new go.Set();
@@ -91,7 +92,7 @@ var __extends = (this && this.__extends) || (function () {
             });
             // If a node has been dropped onto the Floorplan from a Palette...
             _this.addDiagramListener('ExternalObjectsDropped', function (e) {
-                var garbage = [];
+                var garbage = new Array();
                 var fp = e.diagram;
                 fp.selection.iterator.each(function (node) {
                     // if floor node dropped, try to make a room node here with that floor brush style
@@ -124,7 +125,7 @@ var __extends = (this && this.__extends) || (function () {
                 floorplan.startTransaction('remove dimension links and angle nodes');
                 floorplan.pointNodes.iterator.each(function (node) { e.diagram.remove(node); });
                 floorplan.dimensionLinks.iterator.each(function (link) { e.diagram.remove(link); });
-                var missedDimensionLinks = []; // used only in undo situations
+                var missedDimensionLinks = new Array(); // used only in undo situations
                 floorplan.links.iterator.each(function (link) { if (link.data.category === 'DimensionLink')
                     missedDimensionLinks.push(link); });
                 for (var i = 0; i < missedDimensionLinks.length; i++) {
@@ -313,28 +314,28 @@ var __extends = (this && this.__extends) || (function () {
             // Get / set array of all Palettes associated with this Floorplans
             get: function () { return this._palettes; },
             set: function (value) { this._palettes = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Floorplan.prototype, "pointNodes", {
             // Get / set pointNodes
             get: function () { return this._pointNodes; },
             set: function (value) { this._pointNodes = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Floorplan.prototype, "dimensionLinks", {
             // Get / set dimensionLinks
             get: function () { return this._dimensionLinks; },
             set: function (value) { this._dimensionLinks = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Floorplan.prototype, "angleNodes", {
             // Get / set angleNodes
             get: function () { return this._angleNodes; },
             set: function (value) { this._angleNodes = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -735,7 +736,7 @@ var __extends = (this && this.__extends) || (function () {
             var wrt = fp.toolManager.mouseDownTools.elt(3);
             var rooms = fp.findNodesByExample({ category: 'RoomNode' });
             // rooms to remove
-            var garbage = [];
+            var garbage = new Array();
             rooms.iterator.each(function (r) {
                 // do this until you've tried all wall intersections for the room OR the room boundaries have been successfully updated
                 var boundsFound = false;
@@ -816,13 +817,13 @@ var __extends = (this && this.__extends) || (function () {
                          $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'red' })
                        )
                      );
-            
+
                      fp.add(
                        $(go.Node, 'Spot', { locationSpot: go.Spot.Center, location: ip },
                          $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'green' })
                        )
                      );
-            
+
                      fp.add(
                        $(go.Node, 'Spot', { locationSpot: go.Spot.Center, location: newPt },
                          $(go.Shape, 'Circle', { desiredSize: new go.Size(5, 5), fill: 'cyan' })
@@ -929,7 +930,7 @@ var __extends = (this && this.__extends) || (function () {
             // get the all the walls, in order from closest to farthest, the line from pt upwards would hit
             var walls = fp.findNodesByExample({ category: 'WallGroup' });
             var oPt = new go.Point(pt.x, pt.y - 10000);
-            var wallsDistArr = []; // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
+            var wallsDistArr = new Array(); // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
             walls.iterator.each(function (w) {
                 var ip = fp.getSegmentsIntersection(pt, oPt, w.data.startpoint, w.data.endpoint);
                 if (ip !== null) {
@@ -950,7 +951,7 @@ var __extends = (this && this.__extends) || (function () {
             });
             // helper function -- copies a "path" (list of walls) up to a certain wall node
             function selectivelyCopyPath(path, nodeToStopAt) {
-                var p = [];
+                var p = new Array();
                 var copyNoMore = false;
                 for (var i = 0; i < path.length; i++) {
                     var entry = path[i];
@@ -1026,7 +1027,7 @@ var __extends = (this && this.__extends) || (function () {
                 });
                 // offset the intersection walls (maintain relative order) s.t. wall "wall" is first
                 var intersectionWalls = ccWalls.toArray();
-                var intersectionWallsReordered = [];
+                var intersectionWallsReordered = new Array();
                 var j = intersectionWalls.indexOf(wall);
                 for (var i = 0; i < intersectionWalls.length; i++) {
                     var w = intersectionWalls[j];
@@ -1053,7 +1054,7 @@ var __extends = (this && this.__extends) || (function () {
                     else if (seenWalls !== null && !seenWalls.contains(w)) {
                         // define path as all walls that came up until this wall
                         if (path === undefined || path === null) {
-                            path = [];
+                            path = new Array();
                             // First wall is special case; just find out which mitering side is closer to the original point used for this room construction
                             // get intersection point from pt-oPt each of walls's mitering sides
                             // It's possible pt-oPt does not intersect one or both of the actual segments making up the mitering sides of wall,
@@ -1089,7 +1090,7 @@ var __extends = (this && this.__extends) || (function () {
                 var w = entry[0];
                 // I'm pretty sure the first possbilePath is always the right one
                 // This is an ordered path of all the walls that make up this room. It's  Map, where keys are walls and values are the wall sides used for room boundaries (1 or 2)
-                var path = [];
+                var path = new Array();
                 var possiblePaths = new go.Set();
                 possiblePaths = recursivelyFindPaths(w, null, possiblePaths, null, w, null);
                 if (possiblePaths === null || possiblePaths.count === 0)
@@ -1242,7 +1243,7 @@ var __extends = (this && this.__extends) || (function () {
             });
             // offset the intersection walls (maintain relative order) s.t. wall "wall" is first
             var intersectionWalls = walls.toArray();
-            var intersectionWallsReordered = [];
+            var intersectionWallsReordered = new Array();
             var j = intersectionWalls.indexOf(wall);
             for (var i = 0; i < intersectionWalls.length; i++) {
                 var w = intersectionWalls[j];
@@ -1439,7 +1440,7 @@ var __extends = (this && this.__extends) || (function () {
                         if (bw1 !== null) {
                             intersectionWalls_1 = fp.sortWallsClockwiseWithSetStartWall(intersectionWalls_1, bw1);
                         }
-                        var path = []; // path of walls/sides for the offending walls as key+side (i.e. [[wall, number], [wall, number]] )
+                        var path = new Array(); // path of walls/sides for the offending walls as key+side (i.e. [[wall, number], [wall, number]] )
                         // recurse through all intersection walls until you reach bw2
                         var seenIp = new go.Set();
                         if (bw1 !== null && bw2 !== null) {
@@ -1585,7 +1586,7 @@ var __extends = (this && this.__extends) || (function () {
                 // need to do special calculation to get the proper mitering side for w
                 var side = null; // the mitering side of w, will only be set if w is the first wall
                 if (path === null || path === undefined) {
-                    path = [];
+                    path = new Array();
                     // First wall is special case; just find out which mitering side is closer to the original point used for this room construction
                     // get intersection point from pt-mPt each of walls's mitering sides
                     // It's possible pt-mPt does not intersect one or both of the actual segments making up the mitering sides of w,
@@ -1770,7 +1771,7 @@ var __extends = (this && this.__extends) || (function () {
             } // end recursivelyFindHolePath
             // A set of specially formatted Arrays, representing the paths of the holes
             // IMPORTANT: Hole paths must be clockwise to ensure proper geometry construction in updateRoom() function!
-            var holes = [];
+            var holes = new Array();
             offendingWalls.iterator.each(function (ow) {
                 // if we haven't gotten a path for a hole that contains this wall yet...
                 if (!seenWalls.contains(ow)) {
@@ -1778,7 +1779,7 @@ var __extends = (this && this.__extends) || (function () {
                     var sPt = ow.data.startpoint;
                     var ePt = ow.data.endpoint;
                     var mPt_1 = new go.Point((sPt.x + ePt.x) / 2, (sPt.y + ePt.y) / 2);
-                    var wallsDistArr_1 = []; // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
+                    var wallsDistArr_1 = new Array(); // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
                     offendingWalls.iterator.each(function (w) {
                         var ip = fp.getSegmentsIntersection(pt, mPt_1, w.data.startpoint, w.data.endpoint);
                         if (ip !== null) {
@@ -2045,7 +2046,7 @@ var __extends = (this && this.__extends) || (function () {
             var shape = room.findObject('SHAPE');
             var geo = new go.Geometry();
             // build the room geo from wall boundary array in data
-            var pts = [];
+            var pts = new Array();
             var bw = room.data.boundaryWalls;
             if (bw === null)
                 return;
@@ -2289,7 +2290,7 @@ var __extends = (this && this.__extends) || (function () {
                         angle = (angle + 180) % 360;
                     }
                     // store all endpoints along with the part they correspond to (used later to either create DimensionLinks or simply adjust them)
-                    var wallPartEndpoints = [];
+                    var wallPartEndpoints = new Array();
                     wall.memberParts.iterator.each(function (wallPart) {
                         if (wallPart.isSelected) {
                             var endpoints = getWallPartEndpoints(wallPart);
@@ -2548,7 +2549,7 @@ var __extends = (this && this.__extends) || (function () {
             floorplan.startTransaction('display angles');
             if (floorplan.model.modelData.preferences.showWallAngles) {
                 floorplan.angleNodes.iterator.each(function (node) { node.visible = true; });
-                var selectedWalls_1 = [];
+                var selectedWalls_1 = new Array();
                 floorplan.selection.iterator.each(function (part) {
                     if (part.category === 'WallGroup') {
                         var w = part;
@@ -2570,7 +2571,7 @@ var __extends = (this && this.__extends) || (function () {
                             if (intersectionPoint_1 !== null) {
                                 var wrt = floorplan.toolManager.mouseDownTools.elt(3);
                                 var wallsInvolved = wrt.getAllWallsAtIntersection(intersectionPoint_1);
-                                var endpoints_1 = []; // store endpoints and their corresponding walls here
+                                var endpoints_1 = new Array(); // store endpoints and their corresponding walls here
                                 // gather endpoints of each wall in wallsInvolved; discard endpoints within a tolerance distance of intersectionPoint
                                 wallsInvolved.iterator.each(function (w) {
                                     var tolerance = (floorplan.model.modelData.gridSize >= 10) ? floorplan.model.modelData.gridSize : 10;
@@ -2625,7 +2626,7 @@ var __extends = (this && this.__extends) || (function () {
                                     var angle = a1;
                                     //    construct proper key for angleNode
                                     //    proper angleNode key syntax is "wallWwallX...wallYangleNodeZ" such that W < Y < Y; angleNodes are sorted clockwise around the intersectionPoint by Z
-                                    var keyArray = []; // used to construct proper key
+                                    var keyArray = new Array(); // used to construct proper key
                                     wallsInvolved.iterator.each(function (w) { keyArray.push(w); });
                                     keyArray.sort(function (a, b) {
                                         var aIndex = a.data.key.match(/\d+/g);
@@ -2681,11 +2682,11 @@ var __extends = (this && this.__extends) || (function () {
                     _loop_2(i);
                 }
                 // garbage collection (angleNodes that should not exist any more)
-                var garbage_1 = [];
+                var garbage_1 = new Array();
                 floorplan.angleNodes.iterator.each(function (node) {
                     var keyNums = node.data.key.match(/\d+/g); // values X for all wall keys involved, given key "wallX"
-                    var numWalls = (node.data.key.match(/wall/g) || []).length; // # of walls involved in in "node"'s construction
-                    var wallsInvolved = [];
+                    var numWalls = (node.data.key.match(/wall/g) || new Array()).length; // # of walls involved in in "node"'s construction
+                    var wallsInvolved = new Array();
                     // add all walls involved in angleNode's construction to wallsInvolved
                     for (var i = 0; i < keyNums.length - 1; i++) {
                         wallsInvolved.push('wall' + keyNums[i]);
@@ -2741,13 +2742,13 @@ var __extends = (this && this.__extends) || (function () {
          * @return {go.Point}
          */
         Floorplan.prototype.findClosestLocOnWall = function (wall, part) {
-            var orderedConstrainingPts = []; // wall endpoints and wallPart endpoints
+            var orderedConstrainingPts = new Array(); // wall endpoints and wallPart endpoints
             var startpoint = wall.data.startpoint.copy();
             var endpoint = wall.data.endpoint.copy();
             // store all possible constraining endpoints (wall endpoints and wallPart endpoints) in the order in which they appear (left/top to right/bottom)
             var firstWallPt = ((startpoint.x + startpoint.y) <= (endpoint.x + endpoint.y)) ? startpoint : endpoint;
             var lastWallPt = ((startpoint.x + startpoint.y) > (endpoint.x + endpoint.y)) ? startpoint : endpoint;
-            var wallPartEndpoints = [];
+            var wallPartEndpoints = new Array();
             wall.memberParts.iterator.each(function (wallPart) {
                 var endpoints = getWallPartEndpoints(wallPart);
                 wallPartEndpoints.push(endpoints[0]);
@@ -2769,7 +2770,7 @@ var __extends = (this && this.__extends) || (function () {
             orderedConstrainingPts = orderedConstrainingPts.concat(wallPartEndpoints);
             orderedConstrainingPts.push(lastWallPt);
             // go through all constraining points; if there's a free stretch along the wall "part" could fit in, remember it
-            var possibleStretches = [];
+            var possibleStretches = new Array();
             for (var i = 0; i < orderedConstrainingPts.length; i += 2) {
                 var point1 = orderedConstrainingPts[i];
                 var point2 = orderedConstrainingPts[i + 1];
@@ -2812,7 +2813,7 @@ var __extends = (this && this.__extends) || (function () {
     }(go.Diagram)); // end Floorplan class definition
     exports.Floorplan = Floorplan;
     /*
-    * Copyright (C) 1998-2021 by Northwoods Software Corporation
+    * Copyright (C) 1998-2022 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - GENERAL
@@ -2828,7 +2829,7 @@ var __extends = (this && this.__extends) || (function () {
         floorplan.startTransaction('group selection');
         // ungroup all selected nodes; then group them; if one of the selected nodes is a group, ungroup all its nodes
         var sel = floorplan.selection;
-        var nodes = [];
+        var nodes = new Array();
         sel.iterator.each(function (n) {
             if (n instanceof go.Group) {
                 n.memberParts.iterator.each(function (part) {
@@ -2876,7 +2877,7 @@ var __extends = (this && this.__extends) || (function () {
         }
         // ungroup any selected nodes; remember groups that are selected
         var sel = floorplan.selection;
-        var groups = [];
+        var groups = new Array();
         sel.iterator.each(function (n) {
             if (!(n instanceof go.Group)) {
                 ungroupNode(n);
@@ -2886,7 +2887,7 @@ var __extends = (this && this.__extends) || (function () {
             }
         });
         // go through selected groups, and ungroup their memberparts too
-        var nodes = [];
+        var nodes = new Array();
         for (var i = 0; i < groups.length; i++) {
             groups[i].memberParts.iterator.each(function (n) { nodes.push(n); });
         }
@@ -2899,7 +2900,7 @@ var __extends = (this && this.__extends) || (function () {
     // Clear all the groups that have no nodes
     function clearEmptyGroups(floorplan) {
         var nodes = floorplan.nodes;
-        var arr = [];
+        var arr = new Array();
         nodes.iterator.each(function (node) {
             if (node instanceof go.Group && node.memberParts.count === 0 && node.category !== 'WallGroup') {
                 arr.push(node);
@@ -2929,7 +2930,7 @@ var __extends = (this && this.__extends) || (function () {
     // Context Menu -- referenced by Node, Diagram and Group Templates
     function makeContextMenu() {
         var $ = go.GraphObject.make;
-        return $(go.Adornment, 'Vertical', 
+        return $(go.Adornment, 'Vertical',
         // Make Room Button
         $('ContextMenuButton', $(go.TextBlock, 'Make Room'), {
             click: function (e, obj) {
@@ -2938,7 +2939,7 @@ var __extends = (this && this.__extends) || (function () {
                 var pt = e.diagram.lastInput.documentPoint;
                 fp.maybeAddRoomNode(pt, 'images/textures/floor1.jpg');
             }
-        }), 
+        }),
         // Make group button
         $('ContextMenuButton', $(go.TextBlock, 'Make Group'), {
             click: function (e, obj) {
@@ -2960,7 +2961,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
             });
             return flag;
-        }).ofObject()), 
+        }).ofObject()),
         // Ungroup Selection Button
         $('ContextMenuButton', $(go.TextBlock, 'Ungroup'), {
             click: function (e, obj) {
@@ -2978,7 +2979,7 @@ var __extends = (this && this.__extends) || (function () {
                     (node instanceof go.Group && node.category === ''));
             }
             return false;
-        }).ofObject()), 
+        }).ofObject()),
         // Copy Button
         $('ContextMenuButton', $(go.TextBlock, 'Copy'), {
             click: function (e, obj) {
@@ -2999,7 +3000,7 @@ var __extends = (this && this.__extends) || (function () {
                 return flag_1;
             }
             return false;
-        }).ofObject()), 
+        }).ofObject()),
         // Cut Button
         $('ContextMenuButton', $(go.TextBlock, 'Cut'), {
             click: function (e, obj) {
@@ -3020,7 +3021,7 @@ var __extends = (this && this.__extends) || (function () {
                 return flag_2;
             }
             return false;
-        }).ofObject()), 
+        }).ofObject()),
         // Delete Button
         $('ContextMenuButton', $(go.TextBlock, 'Delete'), {
             click: function (e, obj) {
@@ -3034,7 +3035,7 @@ var __extends = (this && this.__extends) || (function () {
                 return obj.part.diagram.selection.count > 0;
             }
             return false;
-        }).ofObject()), 
+        }).ofObject()),
         // Paste Button
         $('ContextMenuButton', $(go.TextBlock, 'Paste'), {
             click: function (e, obj) {
@@ -3103,20 +3104,20 @@ var __extends = (this && this.__extends) || (function () {
         { name: 'SHAPE', height: 0, width: 0 }), $(go.Shape, // arc
         { strokeWidth: 1.5, fill: null }, new go.Binding('geometry', '', makeArc).ofObject(), new go.Binding('stroke', 'sweep', function (sweep) {
             return (sweep % 45 < 1 || sweep % 45 > 44) ? 'dodgerblue' : 'lightblue';
-        })), 
+        })),
         // Arc label panel
-        $(go.Panel, 'Auto', { name: 'ARCLABEL' }, 
+        $(go.Panel, 'Auto', { name: 'ARCLABEL' },
         // position the label in the center of the arc
         new go.Binding('alignment', 'sweep', function (sweep, panel) {
             var rad = Math.min(30, panel.part.data.maxRadius);
             var angle = panel.part.data.angle;
             var cntr = new go.Point(rad, 0).rotate(angle + sweep / 2);
             return new go.Spot(0.5, 0.5, cntr.x, cntr.y);
-        }), 
+        }),
         // rectangle containing angle text
         $(go.Shape, { fill: 'white' }, new go.Binding('stroke', 'sweep', function (sweep) {
             return (sweep % 45 < 1 || sweep % 45 > 44) ? 'dodgerblue' : 'lightblue';
-        })), 
+        })),
         // angle text
         $(go.TextBlock, { font: '7pt sans-serif', margin: 2 }, new go.Binding('text', 'sweep', function (sweep) {
             return sweep.toFixed(2) + String.fromCharCode(176);
@@ -3139,20 +3140,20 @@ var __extends = (this && this.__extends) || (function () {
             stroke = 'gray';
         }
         var $ = go.GraphObject.make;
-        return $(go.Link, 
+        return $(go.Link,
         // link itself
-        $(go.Shape, { stroke: stroke, strokeWidth: strokeWidth, name: 'SHAPE', opacity: opacity }), 
+        $(go.Shape, { stroke: stroke, strokeWidth: strokeWidth, name: 'SHAPE', opacity: opacity }),
         // to arrow shape
-        $(go.Shape, { toArrow: 'OpenTriangle', stroke: stroke, strokeWidth: strokeWidth, opacity: opacity }), $(go.Shape, 
+        $(go.Shape, { toArrow: 'OpenTriangle', stroke: stroke, strokeWidth: strokeWidth, opacity: opacity }), $(go.Shape,
         // from arrow shape
-        { fromArrow: 'BackwardOpenTriangle', stroke: stroke, strokeWidth: strokeWidth, opacity: opacity }), $(go.Panel, 'Auto', 
+        { fromArrow: 'BackwardOpenTriangle', stroke: stroke, strokeWidth: strokeWidth, opacity: opacity }), $(go.Panel, 'Auto',
         // bind angle of textblock to angle of link -- always make text rightside up and readable
         new go.Binding('angle', 'angle', function (angle, link) {
             if (angle > 90 && angle < 270) {
                 return (angle + 180) % 360;
             }
             return angle;
-        }), $(go.Shape, 'RoundedRectangle', { fill: 'beige', opacity: .8, stroke: null }), 
+        }), $(go.Shape, 'RoundedRectangle', { fill: 'beige', opacity: .8, stroke: null }),
         // dimension link text
         $(go.TextBlock, { text: 'sometext', segmentOffset: new go.Point(0, -10), font: '13px sans-serif' }, new go.Binding('text', '', function (link) {
             var floorplan = link.diagram;
@@ -3160,11 +3161,11 @@ var __extends = (this && this.__extends) || (function () {
             var unitsDist = floorplan.convertPixelsToUnits(pxDist).toFixed(2);
             var unitsAbbreviation = floorplan.model.modelData.unitsAbbreviation;
             return unitsDist.toString() + unitsAbbreviation;
-        }).ofObject(), 
+        }).ofObject(),
         // default poisiton text above / below dimension link based on angle
         new go.Binding('segmentOffset', 'angle', function (angle, textblock) {
             return new go.Point(0, 10);
-        }).ofObject(), 
+        }).ofObject(),
         // scale font size according to the length of the link
         new go.Binding('font', '', function (link) {
             var distance = link.data.length;
@@ -3181,7 +3182,7 @@ var __extends = (this && this.__extends) || (function () {
         ));
     }
     /*
-    * Copyright (C) 1998-2021 by Northwoods Software Corporation
+    * Copyright (C) 1998-2022 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - FURNITURE
@@ -3273,16 +3274,16 @@ var __extends = (this && this.__extends) || (function () {
             minSize: new go.Size(5, 5),
             locationSpot: go.Spot.Center,
             selectionAdornmentTemplate: makeTextureSelectionAdornment(null)
-        }, 
+        },
         // remember Node location
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         // move selected Node to Foreground layer so it's not obscuerd by non-selected Parts
         new go.Binding('layerName', 'isSelected', function (s) {
             return s ? 'Foreground' : '';
         }).ofObject(), $(go.Shape, 'Ellipse', {
             name: 'SHAPE', stroke: '#000000',
             fill: 'white'
-        }, new go.Binding('geometryString', 'geo'), new go.Binding('figure', 'shape').makeTwoWay(), new go.Binding('width').makeTwoWay(), new go.Binding('height').makeTwoWay(), new go.Binding('angle').makeTwoWay(), 
+        }, new go.Binding('geometryString', 'geo'), new go.Binding('figure', 'shape').makeTwoWay(), new go.Binding('width').makeTwoWay(), new go.Binding('height').makeTwoWay(), new go.Binding('angle').makeTwoWay(),
         // either use a texture (Pattern Brush) or color to fill the node
         new go.Binding('fill', 'texture', function (t, obj) {
             return updateNodeTexture(obj, t);
@@ -3310,11 +3311,11 @@ var __extends = (this && this.__extends) || (function () {
             resizeObjectName: 'SHAPE',
             rotateObjectName: 'SHAPE',
             minSize: new go.Size(5, 5)
-        }, 
+        },
         // remember location, angle, height, and width of the node
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         // move a selected part into the Foreground layer so it's not obscuerd by non-selected Parts
-        new go.Binding('layerName', 'isSelected', function (s) { return s ? 'Foreground' : ''; }).ofObject(), $(go.Shape, { strokeWidth: 1, name: 'SHAPE', fill: 'rgba(128, 128, 128, 0.5)' }, new go.Binding('angle').makeTwoWay(), new go.Binding('width').makeTwoWay(), new go.Binding('height').makeTwoWay(), 
+        new go.Binding('layerName', 'isSelected', function (s) { return s ? 'Foreground' : ''; }).ofObject(), $(go.Shape, { strokeWidth: 1, name: 'SHAPE', fill: 'rgba(128, 128, 128, 0.5)' }, new go.Binding('angle').makeTwoWay(), new go.Binding('width').makeTwoWay(), new go.Binding('height').makeTwoWay(),
         // either use a texture (Pattern Brush) or color to fill the node
         new go.Binding('fill', 'texture', function (t, obj) {
             return updateNodeTexture(obj, t);
@@ -3376,7 +3377,7 @@ var __extends = (this && this.__extends) || (function () {
         }
     }
     /*
-    * Copyright (C) 1998-2021 by Northwoods Software Corporation
+    * Copyright (C) 1998-2022 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - WALLS
@@ -3392,7 +3393,7 @@ var __extends = (this && this.__extends) || (function () {
     * @param {Node} part A reference to dragged Part
     * @param {Point} pt The Point describing the proposed location
     * @param {Point} gridPt Snapped location
-    
+
     var snapWalls = function (part, pt, gridPt) {
         var floorplan = part.diagram;
         floorplan.updateWallDimensions();
@@ -3674,7 +3675,7 @@ var __extends = (this && this.__extends) || (function () {
                 return node.data.usesTexture;
             }
             return true;
-        }).ofObject(), $(go.Placeholder), $(go.Panel, 'Horizontal', { name: 'BIGPANEL' }, 
+        }).ofObject(), $(go.Placeholder), $(go.Panel, 'Horizontal', { name: 'BIGPANEL' },
         // button to show or hide texture choices
         // Room Nodes use a button in their template, so this one is always invisible for room nodes
         $('Button', {
@@ -3838,7 +3839,7 @@ var __extends = (this && this.__extends) || (function () {
         var point2 = new go.Point((loc.x - (partLength / 2)), loc.y);
         point1.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
         point2.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
-        var arr = [];
+        var arr = new Array();
         arr.push(point1);
         arr.push(point2);
         return arr;
@@ -4055,13 +4056,13 @@ var __extends = (this && this.__extends) || (function () {
             dragComputation: dragWallParts,
             resizeAdornmentTemplate: makeWallPartResizeAdornment(),
             layerName: 'Foreground' // make sure windows are always in front of walls
-        }, 
+        },
         // remember location of the Node
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), new go.Binding('angle').makeTwoWay(), 
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), new go.Binding('angle').makeTwoWay(),
         // the door's locationSpot is affected by it's openingHeight, which is affected by the thickness of its containing wall
-        new go.Binding('locationSpot', 'doorOpeningHeight', function (doh, obj) { return new go.Spot(0.5, 1, 0, -(doh / 2)); }), 
+        new go.Binding('locationSpot', 'doorOpeningHeight', function (doh, obj) { return new go.Spot(0.5, 1, 0, -(doh / 2)); }),
         // this is the shape that reprents the door itself and its swing
-        $(go.Shape, { name: 'SHAPE', fill: 'rgba(0, 0, 0, 0)' }, new go.Binding('width', 'length'), new go.Binding('height', 'length').makeTwoWay(), new go.Binding('stroke', 'isSelected', function (s, obj) { return s ? 'dodgerblue' : 'black'; }).ofObject(), 
+        $(go.Shape, { name: 'SHAPE', fill: 'rgba(0, 0, 0, 0)' }, new go.Binding('width', 'length'), new go.Binding('height', 'length').makeTwoWay(), new go.Binding('stroke', 'isSelected', function (s, obj) { return s ? 'dodgerblue' : 'black'; }).ofObject(),
         // new go.Binding("fill", "color"),
         new go.Binding('geometryString', 'swing', function (swing) {
             if (swing === 'left') {
@@ -4070,7 +4071,7 @@ var __extends = (this && this.__extends) || (function () {
             else {
                 return 'F1 M275,175 v-150 a150,150 0 0,0 -150,150 ';
             }
-        })), 
+        })),
         // door opening shape
         $(go.Shape, {
             name: 'OPENING_SHAPE', fill: 'white',

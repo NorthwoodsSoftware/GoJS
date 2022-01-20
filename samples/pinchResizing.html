@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Customize the pinch-zooming action of GoJS."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Zoom Pinch GoJS Sample</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -51,12 +51,87 @@
     <script src="../release/go.js"></script>
     <div class="p-4 w-full">
     <script id="code">
+  // Override normal pinch zoom to zoom the selected node instead of the Diagram.
+  class PinchResizingTool extends go.ToolManager {
+    constructor() {
+      super();
+      this._originalScale = 1;
+      this._startDistance = 0; // how far apart the touches are at the start
+      this._isPinching = false;
+    }
+
+    // Initiates pinch-zooming on multi-touch devices.
+    standardPinchZoomStart() {
+      const diagram = this.diagram;
+      if (diagram === null) return;
+      const e = diagram.lastInput;
+
+      const first = e.getMultiTouchViewPoint(0, new go.Point());
+      const second = e.getMultiTouchViewPoint(1, new go.Point());
+      if (!first.isReal() || !second.isReal()) {
+        return;
+      }
+
+      // event.isMultiTouch
+      // call doCancel to stop the rest of typical toolManager.domousedown/domousemove behavior
+      this.doCancel();
+
+      const node = diagram.selection.first();
+      if (node === null) return;
+
+      this._originalScale = node.scale;
+      this._startDistance = Math.sqrt(first.distanceSquaredPoint(second));
+      e.bubbles = false;
+      e.handled = true;
+      this._isPinching = true;
+      myDiagram.startTransaction('zoom node');
+    }
+
+    // Continues pinch-zooming (started by {@link #standardPinchZoomStart} on multi-touch devices.
+    standardPinchZoomMove() {
+      const diagram = this.diagram;
+      if (diagram === null) return;
+      const e = diagram.lastInput;
+
+      const first = e.getMultiTouchViewPoint(0, new go.Point());
+      const second = e.getMultiTouchViewPoint(1, new go.Point());
+      if (!first.isReal() || !second.isReal()) {
+        return;
+      }
+
+      // event.isMultiTouch
+      // call doCancel to stop the rest of typical toolManager.domousedown/domousemove behavior
+      this.doCancel();
+
+      var dist = Math.sqrt(first.distanceSquaredPoint(second));
+      var scale = dist / this._startDistance;
+      var node = diagram.selection.first();
+      if (node instanceof go.Node) node.scale = this._originalScale * scale;
+      e.bubbles = false;
+      e.handled = true;
+    }
+
+    doMouseUp() {
+      if (this._isPinching) {
+        myDiagram.commitTransaction('zoom node');
+        this._isPinching = false;
+      }
+      super.doMouseUp();
+    }
+  }
+  // end of PinchResizingTool
+
+
     function init() {
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
+          toolManager: new PinchResizingTool(),
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
@@ -71,76 +146,6 @@
             // TextBlock.text is bound to Node.data.key
             new go.Binding("text", "key"))
         );
-
-      // Override normal pinch zoom to zoom the selected node instead of the Diagram.
-
-      var originalScale = 1;
-      var startDistance = 0; // how far apart the touches are at the start
-      var isPinching = false;
-      // Initiates pinch-zooming on multi-touch devices.
-      myDiagram.toolManager.standardPinchZoomStart = function() {
-        var diagram = this.diagram;
-        if (diagram === null) return;
-        var e = diagram.lastInput;
-
-        var first = e.getMultiTouchViewPoint(0, new go.Point());
-        var second = e.getMultiTouchViewPoint(1, new go.Point());
-        if (!first.isReal() || !second.isReal()) {
-          return;
-        }
-
-        // event.isMultiTouch
-        // call doCancel to stop the rest of typical toolManager.domousedown/domousemove behavior
-        this.doCancel();
-
-        var node = diagram.selection.first();
-        if (node === null) return;
-
-        originalScale = node.scale;
-        var x = second.x - first.x;
-        var y = second.y - first.y;
-        var dist = Math.sqrt((x * x) + (y * y));
-        startDistance = dist;
-        e.bubbles = false;
-        e.handled = true;
-        isPinching = true;
-        myDiagram.startTransaction('zoom node');
-      };
-
-      // Continues pinch-zooming (started by {@link #standardPinchZoomStart} on multi-touch devices.
-      myDiagram.toolManager.standardPinchZoomMove = function() {
-        var diagram = this.diagram;
-        if (diagram === null) return;
-        var e = diagram.lastInput;
-
-        var first = e.getMultiTouchViewPoint(0, new go.Point());
-        var second = e.getMultiTouchViewPoint(1, new go.Point());
-        if (!first.isReal() || !second.isReal()) {
-          return;
-        }
-
-        // event.isMultiTouch
-        // call doCancel to stop the rest of typical toolManager.domousedown/domousemove behavior
-        this.doCancel();
-
-        var x = second.x - first.x;
-        var y = second.y - first.y;
-        var dist = Math.sqrt((x * x) + (y * y));
-        var scale = dist / startDistance;
-        var oldskip = myDiagram.skipsUndoManager;
-        var node = diagram.selection.first();
-        if (node !== null) node.scale = originalScale * scale;
-        e.bubbles = false;
-        e.handled = true;
-      };
-
-      myDiagram.toolManager.doMouseUp = function() {
-        if (isPinching) {
-          myDiagram.commitTransaction('zoom node');
-          isPinching = false;
-        }
-        go.ToolManager.prototype.doMouseUp.call(this);
-      }
 
       myDiagram.model = new go.GraphLinksModel(
         [

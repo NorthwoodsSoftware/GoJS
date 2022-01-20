@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Interactive diagram showing all distances from a node, and highlighting all paths between two nodes."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Graph Distances and Paths</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv", // must be the ID or a reference to a DIV
@@ -81,13 +84,9 @@
                 desiredSize: new go.Size(30, 30),
                 portId: ""  // so links will go to the shape, not the whole node
               },
-              new go.Binding("fill", "isSelected", function(s, obj) {
-                  return s ? "red" : obj.part.data.color;
-                }).ofObject()),
+              new go.Binding("fill", "isSelected", (s, obj) => s ? "red" : obj.part.data.color).ofObject()),
             $(go.TextBlock,
-              new go.Binding("text", "distance", function(d) {
-                  return (d === Infinity) ? "INF" : d | 0;
-                }))),
+              new go.Binding("text", "distance", d => (d === Infinity) ? "INF" : d | 0))),
           $(go.TextBlock,
             new go.Binding("text"))
         );
@@ -102,7 +101,7 @@
           },
           $(go.Shape,  // this shape only shows when it isHighlighted
             { isPanelMain: true, stroke: null, strokeWidth: 5 },
-            new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : null; }).ofObject()),
+            new go.Binding("stroke", "isHighlighted", h => h ? "red" : null).ofObject()),
           $(go.Shape,
             // mark each Shape to get the link geometry with isPanelMain: true
             { isPanelMain: true, stroke: "black", strokeWidth: 1 },
@@ -113,7 +112,7 @@
       // Override the clickSelectingTool's standardMouseSelect
       // If less than 2 nodes are selected, always add to the selection
       myDiagram.toolManager.clickSelectingTool.standardMouseSelect = function() {
-        var diagram = this.diagram;
+        const diagram = this.diagram;
         if (diagram === null || !diagram.allowSelect) return;
         var e = diagram.lastInput;
         var count = diagram.selection.count;
@@ -253,7 +252,7 @@
       // update the Selection element with a bunch of Option elements, one per path
       var sel = document.getElementById("myPaths");
       sel.innerHTML = "";  // clear out any old Option elements
-      paths.each(function(p) {
+      paths.each(p => {
         var opt = document.createElement("option");
         opt.text = pathToString(p);
         sel.add(opt, null);
@@ -286,7 +285,7 @@
       for (var i = 0; i < path.count - 1; i++) {
         var f = path.get(i);
         var t = path.get(i + 1);
-        f.findLinksTo(t).each(function(l) { l.isHighlighted = true; });
+        f.findLinksTo(t).each(l => l.isHighlighted = true);
       }
     }
 
@@ -406,7 +405,7 @@
       var coll = new go.List(/*go.List*/);
 
       function find(source, end) {
-        source.findNodesOutOf().each(function(n) {
+        source.findNodesOutOf().each(n => {
           if (n === source) return;  // ignore reflexive links
           if (n === end) {  // success
             var path = stack.copy();

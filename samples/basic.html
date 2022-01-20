@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Interactive GoJS diagram demonstrating creating new nodes and links, reconnecting links, grouping and ungrouping, and context menus and tooltips for nodes, for links, and for the diagram background."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Basic GoJS Sample</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
     <script id="code">
     function init() {
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
@@ -78,14 +81,14 @@
           $(go.TextBlock, text),
           { click: action },
           // don't bother with binding GraphObject.visible if there's no predicate
-          visiblePredicate ? new go.Binding("visible", "", function(o, e) { return o.diagram ? visiblePredicate(o, e) : false; }).ofObject() : {});
+          visiblePredicate ? new go.Binding("visible", "", (o, e) => o.diagram ? visiblePredicate(o, e) : false).ofObject() : {});
       }
 
       // a context menu is an Adornment with a bunch of buttons in them
       var partContextMenu =
         $("ContextMenu",
           makeButton("Properties",
-            function(e, obj) {  // OBJ is this Button
+            (e, obj) => {  // OBJ is this Button
               var contextmenu = obj.part;  // the Button is in the context menu Adornment
               var part = contextmenu.adornedPart;  // the adornedPart is the Part that the context menu adorns
               // now can do something with PART, or with its data, or with the Adornment (the context menu)
@@ -94,29 +97,29 @@
               else alert(nodeInfo(part.data));
             }),
           makeButton("Cut",
-            function(e, obj) { e.diagram.commandHandler.cutSelection(); },
-            function(o) { return o.diagram.commandHandler.canCutSelection(); }),
+            (e, obj) => e.diagram.commandHandler.cutSelection(),
+            o => o.diagram.commandHandler.canCutSelection()),
           makeButton("Copy",
-            function(e, obj) { e.diagram.commandHandler.copySelection(); },
-            function(o) { return o.diagram.commandHandler.canCopySelection(); }),
+            (e, obj) => e.diagram.commandHandler.copySelection(),
+            o => o.diagram.commandHandler.canCopySelection()),
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
+            (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+            o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
           makeButton("Delete",
-            function(e, obj) { e.diagram.commandHandler.deleteSelection(); },
-            function(o) { return o.diagram.commandHandler.canDeleteSelection(); }),
+            (e, obj) => e.diagram.commandHandler.deleteSelection(),
+            o => o.diagram.commandHandler.canDeleteSelection()),
           makeButton("Undo",
-            function(e, obj) { e.diagram.commandHandler.undo(); },
-            function(o) { return o.diagram.commandHandler.canUndo(); }),
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()),
           makeButton("Redo",
-            function(e, obj) { e.diagram.commandHandler.redo(); },
-            function(o) { return o.diagram.commandHandler.canRedo(); }),
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo()),
           makeButton("Group",
-            function(e, obj) { e.diagram.commandHandler.groupSelection(); },
-            function(o) { return o.diagram.commandHandler.canGroupSelection(); }),
+            (e, obj) => e.diagram.commandHandler.groupSelection(),
+            o => o.diagram.commandHandler.canGroupSelection()),
           makeButton("Ungroup",
-            function(e, obj) { e.diagram.commandHandler.ungroupSelection(); },
-            function(o) { return o.diagram.commandHandler.canUngroupSelection(); })
+            (e, obj) => e.diagram.commandHandler.ungroupSelection(),
+            o => o.diagram.commandHandler.canUngroupSelection())
         );
 
       function nodeInfo(d) {  // Tooltip info for a node data object
@@ -197,7 +200,7 @@
         var g = adornment.adornedPart;  // get the Group that the tooltip adorns
         var mems = g.memberParts.count;
         var links = 0;
-        g.memberParts.each(function(part) {
+        g.memberParts.each(part => {
           if (part instanceof go.Link) links++;
         });
         return "Group " + g.data.key + ": " + g.data.text + "\n" + mems + " members including " + links + " links";
@@ -261,14 +264,14 @@
       myDiagram.contextMenu =
         $("ContextMenu",
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
+            (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+            o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
           makeButton("Undo",
-            function(e, obj) { e.diagram.commandHandler.undo(); },
-            function(o) { return o.diagram.commandHandler.canUndo(); }),
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()),
           makeButton("Redo",
-            function(e, obj) { e.diagram.commandHandler.redo(); },
-            function(o) { return o.diagram.commandHandler.canRedo(); })
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo())
         );
 
       // Create the Diagram's Model:

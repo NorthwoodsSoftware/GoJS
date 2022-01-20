@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Belts &amp; gears: chains, pulleys, tensioners, conveyor belts, rollers."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Belts</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,12 +53,15 @@
     <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          "InitialLayoutCompleted": function(e) {
+          "InitialLayoutCompleted": e => {
             updateBelts();  // changes the bounds of the "Belt"s
             e.diagram.alignDocument(go.Spot.Center, go.Spot.Center);
           },
@@ -66,7 +69,7 @@
           "undoManager.isEnabled": true,
           allowCopy: false,
           allowDelete: false,
-          "draggingTool.moveParts": function(parts, offset, check) {
+          "draggingTool.moveParts": function(parts, offset, check) {  // override
             go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
             updateBelts();  // this is inefficient if there are a lot of belts
           }
@@ -78,7 +81,7 @@
         {
           locationSpot: go.Spot.Center, locationObjectName: "GUIDE",
           selectionAdorned: false,
-          dragComputation: function(node, newloc, snaploc) {
+          dragComputation: (node, newloc, snaploc) => {
             // don't allow rollers or drums to overlap each other
             var oldloc = node.location;
             var noderad = node.findObject("GUIDE").actualBounds.width/2;
@@ -202,7 +205,7 @@
       var next = guides[(i + 1) % guides.length];
       var follow = guides[(i + 2) % guides.length];
       // is NEXT on the wrong side of the line from GUIDE to FOLLOW?
-      var wrongside = comparePointWithLine(guide.from.x, guide.from.y, follow.to.x, follow.to.y, next.to.x, next.to.y) < 0;
+      var wrongside = next.to.compareWithLineSegmentPoint(guide.from, follow.to) < 0;
       if (next.outside) wrongside = !wrongside;
       if (wrongside) {
         computeContacts(guide, follow);
@@ -249,24 +252,6 @@
       node.ensureBounds();
     }
   }  // end updateBelt
-
-  function comparePointWithLine(a1x, a1y, a2x, a2y, p1x, p1y) {
-    var x2 = a2x - a1x;
-    var y2 = a2y - a1y;
-    var px = p1x - a1x;
-    var py = p1y - a1y;
-    var ccw = px * y2 - py * x2;
-    if (ccw === 0) {
-      ccw = px * x2 + py * y2;
-      if (ccw > 0) {
-        px -= x2;
-        py -= y2;
-        ccw = px * x2 + py * y2;
-        if (ccw < 0) ccw = 0;
-      }
-    }
-    return (ccw < 0) ? -1 : ((ccw > 0) ? 1 : 0);
-  }
 
   function computeContacts(guideA, guideB) {
     var locA = guideA.location;
@@ -331,7 +316,7 @@
     if (beltAnimation) beltAnimation.stop();
     var animation = new go.Animation();
     animation.easing = go.Animation.EaseLinear;
-    myDiagram.nodes.each(function(node) {
+    myDiagram.nodes.each(node => {
       if (node.category !== "Belt") return;
       animation.add(node.findObject("BELT"), "strokeDashOffset", 36, 0)
     });

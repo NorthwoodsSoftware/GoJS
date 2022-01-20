@@ -1,6 +1,6 @@
 'use strict';
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -344,10 +344,10 @@ GeometryReshapingTool.prototype.makeAdornment = function(selelt) {
 
 /**
  * @this {GeometryReshapingTool}
- * @param {*} selelt 
- * @param {*} fig 
- * @param {*} seg 
- * @returns 
+ * @param {*} selelt
+ * @param {*} fig
+ * @param {*} seg
+ * @returns
  */
 GeometryReshapingTool.prototype.makeHandle = function(selelt, fig, seg) {
   var h = this.handleArchetype;
@@ -357,10 +357,10 @@ GeometryReshapingTool.prototype.makeHandle = function(selelt, fig, seg) {
 
 /**
  * @this {GeometryReshapingTool}
- * @param {*} pathshape 
- * @param {*} fig 
- * @param {*} seg 
- * @returns 
+ * @param {*} pathshape
+ * @param {*} fig
+ * @param {*} seg
+ * @returns
  */
 GeometryReshapingTool.prototype.makeResegmentHandle = function(pathshape, fig, seg) {
   var h = this.midHandleArchetype;

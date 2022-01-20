@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -64,7 +64,7 @@
         var click = function (e, obj) {
             var u = obj._url;
             if (typeof u === 'function')
-                u = u(obj.findTemplateBinder());
+                u = u(obj.findBindingPanel());
             if (u)
                 window.open(u, '_blank');
         };
@@ -74,7 +74,7 @@
             obj = obj.part.adornedObject;
             var u = obj._url;
             if (typeof u === 'function')
-                u = u(obj.findTemplateBinder());
+                u = u(obj.findBindingPanel());
             return u;
         }).ofObject()), new go.Binding('visible', 'text', function (t) { return !!t; }).ofObject('TB'));
         // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
@@ -87,7 +87,7 @@
                 mouseEnter: function (e, obj) {
                     var u = obj._url;
                     if (typeof u === 'function')
-                        u = u(obj.findTemplateBinder());
+                        u = u(obj.findBindingPanel());
                     if (u && obj instanceof go.TextBlock)
                         obj.isUnderline = true;
                 },
@@ -128,7 +128,7 @@
                     var tb = findTextBlock_1(panel);
                     var u = panel._url;
                     if (typeof u === 'function')
-                        u = u(panel.findTemplateBinder());
+                        u = u(panel.findBindingPanel());
                     if (tb !== null && u)
                         tb.isUnderline = true;
                 },

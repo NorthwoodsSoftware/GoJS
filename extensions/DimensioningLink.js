@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom routed Link for showing the distances between a point on one node and a point on another node.
@@ -209,5 +209,6 @@ DimensioningLink.prototype.computePoints = function() {
     }
   }
 
+  this.updateTargetBindings();
   return true;
 };

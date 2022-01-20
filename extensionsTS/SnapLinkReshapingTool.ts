@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -16,7 +16,7 @@ import * as go from '../release/go.js';
  * The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.
  * If {@link #avoidsNodes} is true and the link is orthogonal,
  * it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.
- * 
+ *
  * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
  * @category Tool Extension
  */

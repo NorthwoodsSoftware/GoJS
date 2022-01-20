@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -130,31 +130,13 @@ RadialLayout.prototype.doLayout = function(coll) {
   if (this.root === null) {  // nothing to do
     this.network = null;
     return;
-  }  
+  }
 
   var rootvert = this.network.findVertex(this.root);
   if (rootvert === null) throw new Error("RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on")
 
   this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
   this.findDistances(rootvert);
-
-  // sort all results into Arrays of RadialVertexes with the same distance
-  var verts = [];
-  var maxlayer = 0;
-  var it = this.network.vertexes.iterator;
-  while (it.next()) {
-    var v = it.value;
-    v.laid = false;
-    var layer = v.distance;
-    if (layer === Infinity) continue; // Infinity used as init value (set in findDistances())
-    if (layer > maxlayer) maxlayer = layer;
-    var layerverts = verts[layer];
-    if (layerverts === undefined) {
-      layerverts = [];
-      verts[layer] = layerverts;
-    }
-    layerverts.push(v);
-  }
 
   // now recursively position nodes (using radlay1()), starting with the root
   rootvert.centerX = this.arrangementOrigin.x;
@@ -177,21 +159,29 @@ RadialLayout.prototype.doLayout = function(coll) {
 */
 RadialLayout.prototype.radlay1 = function(vert, layer, angle, sweep) {
   if (layer > this.maxLayers) return; // no need to position nodes outside of maxLayers
-  var verts = []; // array of all RadialVertexes connected to 'vert' in layer 'layer'
-  vert.vertexes.each(function(v) {
-    if (v.laid) return;
-    if (v.distance === layer) verts.push(v);
-  });
+  var verts = vert.children; // array of all RadialVertexes connected to 'vert' in layer 'layer'
   var found = verts.length;
   if (found === 0) return;
 
+  var fracs = []; // relative proportions that each child vertex should occupy
+  var tot = 0;
+  for (var i = 0; i < found; i++) {
+    var v = verts[i];
+    var f = this.computeBreadth(v);
+    fracs.push(f);
+    tot += f;
+  }
+  if (tot <= 0) return;
+  // convert into fractions 0.0 <= frac <= 1.0
+  for (var i = 0; i < found; i++) fracs[i] /= tot;
+
   var radius = layer * this.layerThickness;
-  var separator = sweep / found; // distance between nodes in their sweep portion
-  var start = angle - sweep / 2 + separator / 2;
+  var a = angle - sweep / 2; // the angle to rotate the node to
   // for each vertex in this layer, place it in its correct layer and position
   for (var i = 0; i < found; i++) {
     var v = verts[i];
-    var a = start + i * separator; // the angle to rotate the node to
+    var breadth = fracs[i] * sweep;
+    a += breadth / 2;
     if (a < 0) a += 360; else if (a > 360) a -= 360;
     // the point to place the node at -- this corresponds with the layer the node is in
     // all nodes in the same layer are placed at a constant point, then rotated accordingly
@@ -199,25 +189,52 @@ RadialLayout.prototype.radlay1 = function(vert, layer, angle, sweep) {
     p.rotate(a);
     v.centerX = p.x + this.arrangementOrigin.x;
     v.centerY = p.y + this.arrangementOrigin.y;
-    v.laid = true;
     v.angle = a;
-    v.sweep = separator;
+    v.sweep = breadth;
     v.radius = radius;
     // keep going for all layers
-    this.radlay1(v, layer + 1, a, sweep / found);
+    this.radlay1(v, layer + 1, a, sweep * fracs[i]);
+    a += breadth / 2;
+    if (a < 0) a += 360; else if (a > 360) a -= 360;
   }
 };
 
 /**
+ * Compute the proportion of arc that the given vertex should take relative to its siblings.
+ *
+ * The default behavior is to give each child arc according to the sum of the maximum breadths of each of its children.
+ * This assumes that all nodes have the same breadth -- i.e. that they will occupy the same sweep of arc.
+ * It does not take the Node.actualBounds into account, nor the angle at which the node will be location relative to the origin,
+ * nor the distance the node will be from the root node.
+ *
+ * In order to give each child of a vertex the same fraction of arc, override this method:
+ * <code>computeBreadth(v) { return 1; }</code>
+ *
+ * In order to give each child of a vertex a fraction of arc proportional to how many children the child has:
+ * <code>computeBreadth(v) { return Math.max(1, v.children.length); }
+ *
+ * @this {RadialLayout}
+ * @param {RadialVertex} v
+ * @return {number}
+ */
+ RadialLayout.prototype.computeBreadth = function(v) {
+  var lay = this;
+  var b = 0;
+  v.children.forEach(function(w) { b += lay.computeBreadth(w); });  // inefficient
+  return Math.max(b, 1);
+}
+
+/**
 * @ignore
-* Update RadialVertex.distance for every vertex.
+* Update RadialVertex.distance and .children for every vertex.
 * @this {RadialLayout}
 * @param {RadialVertex} source
 */
 RadialLayout.prototype.findDistances = function(source) {
-  var diagram = this.diagram;
+  if (this.network === null) return;
+
   // keep track of distances from the source node
-  this.network.vertexes.each(function(v) { v.distance = Infinity; });
+  this.network.vertexes.each(function(v) { v.distance = Infinity; v.laid = false; });
   // the source node starts with distance 0
   source.distance = 0;
   // keep track of nodes for we have set a non-Infinity distance,
@@ -269,6 +286,23 @@ RadialLayout.prototype.findDistances = function(source) {
       }
     });
   }
+
+  // now update the RadialVertex.children Arrays to form a tree-structure
+  this.network.vertexes.each(function(v) {
+    var dist = v.distance;
+    var arr = v.children;
+    if (!arr) arr = v.children = [];
+    v.vertexes.each(function(w) {  // use LayoutVertex.vertexes to remove duplicates
+      // use the RadialVertex.laid property for avoiding already-traversed vertexes
+      if (!w.laid && w !== v && w.distance === dist+1) {
+        arr.push(w);
+        w.laid = true;
+      }
+    });
+  });
+
+  // reset RadialVertex.laid in case of future use
+  this.network.vertexes.each(function(v) { v.laid = false; });
 }
 
 /**
@@ -326,6 +360,7 @@ function RadialVertex(network) {
   this.angle = 0;  // the direction at which the node is placed relative to the root node
   this.sweep = 0;  // the angle subtended by the vertex
   this.radius = 0;  // the inner radius of the layer containing this vertex
+  this.children = [];  // vertexes connected to this vertex that have a distance one greater than this distance
 }
 go.Diagram.inherit(RadialVertex, go.LayoutVertex);
 

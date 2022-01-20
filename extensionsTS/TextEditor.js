@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -111,7 +111,13 @@
             var textwidth = (textBlock.naturalBounds.width * textscale) + 6;
             var textheight = (textBlock.naturalBounds.height * textscale) + 2;
             var left = (loc.x - pos.x) * sc;
-            var top = (loc.y - pos.y) * sc;
+            var yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
+            var valign = textBlock.verticalAlignment;
+            var oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
+            var allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
+            var center = (0.5 * textheight) - (0.5 * allLinesHeight);
+            // add offset to yCenter to get the appropriate position:
+            var yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
             textarea.value = textBlock.text;
             // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides
             // in the future maybe have textarea contained in its own div
@@ -124,7 +130,7 @@
             textarea.style['lineHeight'] = 'normal';
             textarea.style['width'] = (textwidth) + 'px';
             textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
-            textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';
+            textarea.style['top'] = (((yCenter + yOffset) | 0) - paddingsize) + 'px';
             textarea.style['textAlign'] = textBlock.textAlign;
             textarea.style['margin'] = '0';
             textarea.style['padding'] = paddingsize + 'px';

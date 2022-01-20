@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -53,7 +53,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
     const click = (e, obj) => {
         let u = obj._url;
         if (typeof u === 'function')
-            u = u(obj.findTemplateBinder());
+            u = u(obj.findBindingPanel());
         if (u)
             window.open(u, '_blank');
     };
@@ -63,7 +63,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         obj = obj.part.adornedObject;
         let u = obj._url;
         if (typeof u === 'function')
-            u = u(obj.findTemplateBinder());
+            u = u(obj.findBindingPanel());
         return u;
     }).ofObject()), new go.Binding('visible', 'text', function (t) { return !!t; }).ofObject('TB'));
     // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
@@ -76,7 +76,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
             mouseEnter: function (e, obj) {
                 let u = obj._url;
                 if (typeof u === 'function')
-                    u = u(obj.findTemplateBinder());
+                    u = u(obj.findBindingPanel());
                 if (u && obj instanceof go.TextBlock)
                     obj.isUnderline = true;
             },
@@ -117,7 +117,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
                 const tb = findTextBlock(panel);
                 let u = panel._url;
                 if (typeof u === 'function')
-                    u = u(panel.findTemplateBinder());
+                    u = u(panel.findBindingPanel());
                 if (tb !== null && u)
                     tb.isUnderline = true;
             },

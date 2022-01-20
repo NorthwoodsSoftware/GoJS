@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -120,24 +120,6 @@ export class RadialLayout extends go.Layout {
     this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
     this.findDistances(rootvert);
 
-    // sort all results into Arrays of RadialVertexes with the same distance
-    const verts = [];
-    let maxlayer = 0;
-    const it = this.network.vertexes.iterator;
-    while (it.next()) {
-      const vv = it.value as RadialVertex;
-      vv.laid = false;
-      const layer = vv.distance;
-      if (layer === Infinity) continue; // Infinity used as init value (set in findDistances())
-      if (layer > maxlayer) maxlayer = layer;
-      let layerverts: Array<go.LayoutVertex> = verts[layer];
-      if (layerverts === undefined) {
-        layerverts = [];
-        verts[layer] = layerverts;
-      }
-      layerverts.push(vv);
-    }
-
     // now recursively position nodes (using radlay1()), starting with the root
     rootvert.centerX = this.arrangementOrigin.x;
     rootvert.centerY = this.arrangementOrigin.y;
@@ -153,28 +135,29 @@ export class RadialLayout extends go.Layout {
    */
   private radlay1(vert: RadialVertex, layer: number, angle: number, sweep: number): void {
     if (layer > this.maxLayers) return; // no need to position nodes outside of maxLayers
-    const verts: Array<RadialVertex> = []; // array of all RadialVertexes connected to 'vert' in layer 'layer'
-    const vit = vert.vertexes.iterator;
-    while (vit.next()) {
-      const v = vit.value as RadialVertex;
-      if (v.laid) continue;
-      if (v.distance === layer) verts.push(v);
-    }
-    // vert.vertexes.each((v: go.LayoutVertex) => {
-    //   if (!(v instanceof RadialVertex)) return; // typeguard
-    //   if (v.laid) return;
-    //   if (v.distance === layer) verts.push(v);
-    // });
+    const verts: Array<RadialVertex> = vert.children; // array of all RadialVertexes connected to 'vert' in layer 'layer'
     const found = verts.length;
     if (found === 0) return;
 
+    const fracs = []; // relative proportions that each child vertex should occupy
+    let tot = 0;
+    for (let i = 0; i < found; i++) {
+      const v = verts[i];
+      const f = this.computeBreadth(v);
+      fracs.push(f);
+      tot += f;
+    }
+    if (tot <= 0) return;
+    // convert into fractions 0.0 <= frac <= 1.0
+    for (let i = 0; i < found; i++) fracs[i] /= tot;
+
     const radius = layer * this.layerThickness;
-    const separator = sweep / found; // distance between nodes in their sweep portion
-    const start = angle - sweep / 2 + separator / 2;
+    let a = angle - sweep / 2; // the angle to rotate the node to
     // for each vertex in this layer, place it in its correct layer and position
     for (let i = 0; i < found; i++) {
       const v = verts[i];
-      let a = start + i * separator; // the angle to rotate the node to
+      const breadth = fracs[i] * sweep;
+      a += breadth / 2;
       if (a < 0) a += 360; else if (a > 360) a -= 360;
       // the point to place the node at -- this corresponds with the layer the node is in
       // all nodes in the same layer are placed at a constant point, then rotated accordingly
@@ -182,13 +165,34 @@ export class RadialLayout extends go.Layout {
       p.rotate(a);
       v.centerX = p.x + this.arrangementOrigin.x;
       v.centerY = p.y + this.arrangementOrigin.y;
-      v.laid = true;
       v.angle = a;
-      v.sweep = separator;
+      v.sweep = breadth;
       v.radius = radius;
       // keep going for all layers
-      this.radlay1(v, layer + 1, a, sweep / found);
+      this.radlay1(v, layer + 1, a, sweep * fracs[i]);
+      a += breadth / 2;
+      if (a < 0) a += 360; else if (a > 360) a -= 360;
     }
+  }
+
+  /**
+   * Compute the proportion of arc that the given vertex should take relative to its siblings.
+   *
+   * The default behavior is to give each child arc according to the sum of the maximum breadths of each of its children.
+   * This assumes that all nodes have the same breadth -- i.e. that they will occupy the same sweep of arc.
+   * It does not take the Node.actualBounds into account, nor the angle at which the node will be location relative to the origin,
+   * nor the distance the node will be from the root node.
+   *
+   * In order to give each child of a vertex the same fraction of arc, override this method:
+   * <code>computeBreadth(v) { return 1; }</code>
+   *
+   * In order to give each child of a vertex a fraction of arc proportional to how many children the child has:
+   * <code>computeBreadth(v) { return Math.max(1, v.children.length); }
+   */
+  public computeBreadth(v: RadialVertex): number {
+    let b = 0;
+    v.children.forEach(w => { b += this.computeBreadth(w); });  // inefficient
+    return Math.max(b, 1);
   }
 
   /**
@@ -198,15 +202,11 @@ export class RadialLayout extends go.Layout {
     if (this.network === null) return;
 
     // keep track of distances from the source node
-    const vit = this.network.vertexes.iterator;
-    while (vit.next()) {
-      const v = vit.value as RadialVertex;
+    this.network.vertexes.each(v => {
+      if (!(v instanceof RadialVertex)) return; // typeguard
       v.distance = Infinity;
-    }
-    // this.network.vertexes.each((v: go.LayoutVertex) => {
-    //   if (!(v instanceof RadialVertex)) return; // typeguard
-    //   v.distance = Infinity;
-    // });
+      v.laid = false;
+    });
     // the source node starts with distance 0
     source.distance = 0;
     // keep track of nodes for we have set a non-Infinity distance,
@@ -236,30 +236,49 @@ export class RadialLayout extends go.Layout {
     while (seen.count > 0) {
       // look at the unfinished vertex with the shortest distance so far
       const least = leastVertex(seen);
-      if (least === null) return;
+      if (least === null) break;
       const leastdist = least.distance;
       // by the end of this loop we will have finished examining this LEAST vertex
       seen.remove(least);
       finished.add(least);
       // look at all edges connected with this vertex
-      least.edges.each(function(e) {
-        if (least === null) return;
-        const neighbor = e.getOtherVertex(least);
+      least.edges.each(e => {
+        const neighbor = e.getOtherVertex(least) as RadialVertex;
+        if (!neighbor) return;
         // skip vertexes that we have finished
-        if (finished.contains(neighbor as any)) return;
-        const neighbordist = (neighbor as any).distance;
+        if (finished.contains(neighbor)) return;
+        const neighbordist = neighbor.distance;
         // assume "distance" along a link is unitary, but could be any non-negative number.
         const dist = leastdist + 1;
         if (dist < neighbordist) {
           // if haven't seen that vertex before, add it to the SEEN collection
           if (neighbordist === Infinity) {
-            seen.add(neighbor as any);
+            seen.add(neighbor);
           }
           // record the new best distance so far to that node
-          (neighbor as any).distance = dist;
+          neighbor.distance = dist;
         }
       });
     }
+
+    // now update the RadialVertex.children Arrays to form a tree-structure
+    this.network.vertexes.each(v => {
+      if (!(v instanceof RadialVertex)) return;
+      const dist = v.distance;
+      let arr = v.children;
+      if (!arr) arr = v.children = [];
+      v.vertexes.each(w => {  // use LayoutVertex.vertexes to remove duplicates
+        if (!(w instanceof RadialVertex)) return;
+        // use the RadialVertex.laid property for avoiding already-traversed vertexes
+        if (!w.laid && w !== v && w.distance === dist+1) {
+          arr.push(w);
+          w.laid = true;
+        }
+      });
+    });
+
+    // reset RadialVertex.laid in case of future use
+    this.network.vertexes.each(v => { if (v instanceof RadialVertex) v.laid = false; });
   }
 
   /**
@@ -309,4 +328,5 @@ class RadialVertex extends go.LayoutVertex {
   public angle: number = 0;  // the direction at which the node is placed relative to the root node
   public sweep: number = 0;  // the angle subtended by the vertex
   public radius: number = 0;  // the inner radius of the layer containing this vertex
+  public children: Array<RadialVertex> = [];  // vertexes connected to this vertex that have a distance one greater than this distance
 }

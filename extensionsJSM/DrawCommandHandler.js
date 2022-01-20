@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -341,7 +341,7 @@ export class DrawCommandHandler extends go.CommandHandler {
         // assign each selected Part.zOrder to the computed value for each Layer
         diagram.selection.each(function (part) {
             const z = layers.get(part.layer) || 0;
-            DrawCommandHandler._assignZOrder(part, 
+            DrawCommandHandler._assignZOrder(part,
             // make sure a group's nested nodes are also behind everything else
             z - 1 - DrawCommandHandler._findGroupDepth(part));
         });

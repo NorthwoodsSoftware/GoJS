@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Go One Drive
@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -28,6 +28,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GoOneDrive = void 0;
     var gcs = require("./GoCloudStorage.js");
     /**
      * Class for saving / loading GoJS {@link Diagram#model}s to / from Microsoft One Drive.
@@ -70,7 +71,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._oauthToken; },
             set: function (value) { this._oauthToken = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoOneDrive.prototype, "oneDriveFilepicker", {
@@ -78,7 +79,7 @@ var __extends = (this && this.__extends) || (function () {
              * Get <a href="https://dev.onedrive.com/sdk/js-v72/js-picker-overview.htm">OneDrive Filepicker</a> object. Used to display a Microsoft user's OneDrive files.
              */
             get: function () { return this._oneDriveFilepicker; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

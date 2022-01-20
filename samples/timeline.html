@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A stretchable timeline."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Timeline</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
     <script id="code">
     function init() {
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
@@ -66,17 +69,17 @@
         });
 
       function changeScale(factor) {
-        var oldscale = myDiagram.model.modelData.scale || 1.0;
-        var newscale = factor ? (oldscale * factor) : 1.0;
+        const oldscale = myDiagram.model.modelData.scale || 1.0;
+        const newscale = factor ? (oldscale * factor) : 1.0;
         setScale(newscale);
       }
 
       function setScale(scale) {
-        var docpt = myDiagram.lastInput.documentPoint.copy();
-        var line = null;
-        myDiagram.commit(function(diag) {
+        const docpt = myDiagram.lastInput.documentPoint.copy();
+        let line = null;
+        myDiagram.commit(diag => {
           diag.model.set(diag.model.modelData, "scale", scale);
-          diag.nodes.each(function(n) {
+          diag.nodes.each(n => {
             if (n.category === "Line") {
               line = n;
               n.updateTargetBindings();
@@ -113,7 +116,7 @@
                   stroke: "#A074C4",
                   textAlign: "center", margin: 4
                 },
-                new go.Binding("text", "date", function(d) { return d.toLocaleDateString(); })
+                new go.Binding("text", "date", d => d.toLocaleDateString())
               )
             )
           )
@@ -137,8 +140,8 @@
           new go.Binding("graduatedMax", "", timelineDays),
           $(go.Shape, "LineH",
             { name: "MAIN", stroke: "#519ABA", height: 1, strokeWidth: 3 },
-            new go.Binding("width", "length", function(l, shape) { return l * (shape.diagram.model.modelData.scale || 1.0); })
-              .makeTwoWay(function(w, data, model) { return w/(model.modelData.scale || 1.0); })
+            new go.Binding("width", "length", (l, shape) => l * (shape.diagram.model.modelData.scale || 1.0))
+              .makeTwoWay((w, data, model) => w/(model.modelData.scale || 1.0))
           ),
           $(go.Shape, { geometryString: "M0 0 V10", interval: 7, stroke: "#519ABA", strokeWidth: 2 }),
           $(go.TextBlock,
@@ -174,7 +177,7 @@
 
       // Setup the model data -- an object describing the timeline bar node
       // and an object for each event node:
-      var data = [
+      const data = [
         { // this defines the actual time "Line" bar
           key: "timeline", category: "Line",
           lineSpacing: 30,  // distance between timeline and event nodes
@@ -199,55 +202,49 @@
       ];
 
       // prepare the model by adding links to the Line
-      for (var i = 0; i < data.length; i++) {
-        var d = data[i];
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i];
         if (d.key !== "timeline") d.parent = "timeline";
       }
 
-      myDiagram.model = $(go.TreeModel, { nodeDataArray: data });
+      myDiagram.model = new go.TreeModel( { nodeDataArray: data });
     }
 
     function timelineDays() {
-      var timeline = myDiagram.model.findNodeDataForKey("timeline");
-      var startDate = timeline.start;
-      var endDate = timeline.end;
+      const timeline = myDiagram.model.findNodeDataForKey("timeline");
+      const startDate = timeline.start;
+      const endDate = timeline.end;
 
       function treatAsUTC(date) {
-        var result = new Date(date);
+        const result = new Date(date);
         result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
         return result;
       }
 
-      function daysBetween(startDate, endDate) {
-        var millisecondsPerDay = 24 * 60 * 60 * 1000;
-        return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
-      }
-      return daysBetween(startDate, endDate);
+      const millisecondsPerDay = 24 * 60 * 60 * 1000;
+      return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
     }
 
-    // This custom Layout locates the timeline bar at (0,0)
-    // and alternates the event Nodes above and below the bar at
-    // the X-coordinate locations determined by their data.date values.
-    function TimelineLayout() {
-      go.Layout.call(this);
-    };
-    go.Diagram.inherit(TimelineLayout, go.Layout);
 
-    TimelineLayout.prototype.doLayout = function(coll) {
-      var diagram = this.diagram;
+  // This custom Layout locates the timeline bar at (0,0)
+  // and alternates the event Nodes above and below the bar at
+  // the X-coordinate locations determined by their data.date values.
+  class TimelineLayout extends go.Layout {
+    doLayout(coll) {
+      const diagram = this.diagram;
       if (diagram === null) return;
       coll = this.collectParts(coll);
       diagram.startTransaction("TimelineLayout");
 
-      var line = null;
-      var parts = [];
-      var it = coll.iterator;
+      let line = null;
+      const parts = [];
+      const it = coll.iterator;
       while (it.next()) {
-        var part = it.value;
+        const part = it.value;
         if (part instanceof go.Link) continue;
         if (part.category === "Line") { line = part; continue; }
         parts.push(part);
-        var d = part.data.date;
+        let d = part.data.date;
         if (d === undefined) { d = new Date(); part.data.date = d; }
       }
       if (!line) throw Error("No node of category 'Line' for TimelineLayout");
@@ -257,26 +254,26 @@
       // lay out the events above the timeline
       if (parts.length > 0) {
         // determine the offset from the main shape to the timeline's boundaries
-        var main = line.findMainElement();
-        var sw = main.strokeWidth;
-        var mainOffX = main.actualBounds.x;
-        var mainOffY = main.actualBounds.y;
+        const main = line.findMainElement();
+        const sw = main.strokeWidth;
+        const mainOffX = main.actualBounds.x;
+        const mainOffY = main.actualBounds.y;
         // spacing is between the Line and the closest Nodes, defaults to 30
-        var spacing = line.data.lineSpacing;
+        let spacing = line.data.lineSpacing;
         if (!spacing) spacing = 30;
-        for (var i = 0; i < parts.length; i++) {
-          var part = parts[i];
-          var bnds = part.actualBounds;
-          var dt = part.data.date;
-          var val = dateToValue(dt);
-          var pt = line.graduatedPointForValue(val);
-          var tempLoc = new go.Point(pt.x, pt.y - bnds.height / 2 - spacing);
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          const bnds = part.actualBounds;
+          const dt = part.data.date;
+          const val = dateToValue(dt);
+          const pt = line.graduatedPointForValue(val);
+          const tempLoc = new go.Point(pt.x, pt.y - bnds.height / 2 - spacing);
           // check if this node will overlap with previously placed events, and offset if needed
-          for (var j = 0; j < i; j++) {
-            var partRect = new go.Rect(tempLoc.x, tempLoc.y, bnds.width, bnds.height);
-            var otherLoc = parts[j].location;
-            var otherBnds = parts[j].actualBounds;
-            var otherRect = new go.Rect(otherLoc.x, otherLoc.y, otherBnds.width, otherBnds.height);
+          for (let j = 0; j < i; j++) {
+            const partRect = new go.Rect(tempLoc.x, tempLoc.y, bnds.width, bnds.height);
+            const otherLoc = parts[j].location;
+            const otherBnds = parts[j].actualBounds;
+            const otherRect = new go.Rect(otherLoc.x, otherLoc.y, otherBnds.width, otherBnds.height);
             if (partRect.intersectsRect(otherRect)) {
               tempLoc.offset(0, -otherBnds.height - 10);
               j = 0; // now that we have a new location, we need to recheck in case we overlap with an event we didn't overlap before
@@ -287,21 +284,18 @@
       }
 
       diagram.commitTransaction("TimelineLayout");
-    };
-    // end TimelineLayout class
-
-    // This custom Link class was adapted from several of the samples
-    function BarLink() {
-      go.Link.call(this);
     }
-    go.Diagram.inherit(BarLink, go.Link);
+  }
+  // end TimelineLayout class
 
-    BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      var r = port.getDocumentBounds();
-      var op = otherport.getDocumentPoint(go.Spot.Center);
-      var main = node.category === "Line" ? node.findMainElement() : othernode.findMainElement();
-      var mainOffY = main.actualBounds.y;
-      var y = r.top;
+  // This custom Link class was adapted from several of the samples
+  class BarLink extends go.Link {
+    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
+      const r = port.getDocumentBounds();
+      const op = otherport.getDocumentPoint(go.Spot.Center);
+      const main = node.category === "Line" ? node.findMainElement() : othernode.findMainElement();
+      const mainOffY = main.actualBounds.y;
+      let y = r.top;
       if (node.category === "Line") {
         y += mainOffY;
         if (op.x < r.left) return new go.Point(r.left, y);
@@ -310,25 +304,26 @@
       } else {
         return new go.Point(r.centerX, r.bottom);
       }
-    };
-    // end BarLink class
+    }
+  }
+  // end BarLink class
 
     function valueToDate(n) {
-      var timeline = myDiagram.model.findNodeDataForKey("timeline");
-      var startDate = timeline.start;
-      var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
-      var msPerDay = 24 * 60 * 60 * 1000;
-      var date = new Date(startDateMs + n * msPerDay);
+      const timeline = myDiagram.model.findNodeDataForKey("timeline");
+      const startDate = timeline.start;
+      const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+      const msPerDay = 24 * 60 * 60 * 1000;
+      const date = new Date(startDateMs + n * msPerDay);
       return date.toLocaleDateString();
     }
 
     function dateToValue(d) {
-      var timeline = myDiagram.model.findNodeDataForKey("timeline");
-      var startDate = timeline.start;
-      var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
-      var dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
-      var msSinceStart = dateInMs - startDateMs;
-      var msPerDay = 24 * 60 * 60 * 1000;
+      const timeline = myDiagram.model.findNodeDataForKey("timeline");
+      const startDate = timeline.start;
+      const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+      const dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
+      const msSinceStart = dateInMs - startDateMs;
+      const msPerDay = 24 * 60 * 60 * 1000;
       return msSinceStart / msPerDay;
     }
     window.addEventListener('DOMContentLoaded', init);

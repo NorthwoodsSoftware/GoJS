@@ -383,12 +383,12 @@ export class EditorHelper {
 
   public geHideShowWindow(id: string, doShow?: boolean) {
     const geWindow = document.getElementById(id) as HTMLElement;
-    let vis = null;
+    let vis: string | null = null;
     if (doShow === undefined) vis = geWindow.style.visibility === 'visible' ? 'hidden' : 'visible';
     else if (doShow) vis = 'visible';
     else vis = 'hidden';
 
-    let pn = null;
+    let pn: ParentNode | null = null;
     if (((geWindow as HTMLElement).parentNode as HTMLElement).classList.contains('ge-menu')) {
       pn = geWindow.parentNode;
     }
@@ -397,7 +397,6 @@ export class EditorHelper {
     }
     geWindow.style.visibility = vis;
   }
-
 
 }
 

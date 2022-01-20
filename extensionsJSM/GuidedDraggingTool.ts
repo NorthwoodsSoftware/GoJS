@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -75,18 +75,18 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * Gets or sets the margin of error for which guidelines show up.
    *
    * The default value is 6.
-   * Guidelines will show up when the aligned nods are ± 6px away from perfect alignment.
+   * Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.
    */
   get guidelineSnapDistance(): number { return this._guidelineSnapDistance; }
   set guidelineSnapDistance(val: number) {
-    if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('new value for GuideddraggingTool.guidelineSnapDistance must be a non-negative number');
+    if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number');
     if (this._guidelineSnapDistance !== val) {
       this._guidelineSnapDistance = val;
     }
   }
 
   /**
-   * Gets or sets whether the guidelines are enabled or disable.
+   * Gets or sets whether the guidelines are enabled or disables.
    *
    * The default value is true.
    */

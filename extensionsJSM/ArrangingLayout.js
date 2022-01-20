@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -303,7 +303,7 @@ export class ArrangingLayout extends go.Layout {
     * The default value is Spot.BottomSide.
     * Currently only handles a single side.
     * @name ArrangingLayout#side
-    
+
     * @return {Spot}
     */
     get side() { return this._side; }
@@ -320,7 +320,7 @@ export class ArrangingLayout extends go.Layout {
     * Gets or sets the space between the main layout and the side layout.
     * The default value is Size(20, 20).
     * @name ArrangingLayout#spacing
-    
+
     * @return {Size}
     */
     get spacing() { return this._spacing; }

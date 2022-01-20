@@ -1,9 +1,9 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS
-* GraphObject templates for Wall Groups, Wall Part Nodes (and their dependecies) used in the Floor Planner sample   
+* GraphObject templates for Wall Groups, Wall Part Nodes (and their dependecies) used in the Floor Planner sample
 * Includes Wall Group, Palette Wall Node, Window Node, Door Node
 */
 

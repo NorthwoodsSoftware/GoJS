@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A traditional tree view using TreeLayout and orthogonal links."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>GoJS Tree View</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,7 @@
     <div class="p-4 w-full">
     <script id="code">
     // use a V figure instead of MinusLine in the TreeExpanderButton
-    go.Shape.defineFigureGenerator("ExpandedLine", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("ExpandedLine", (shape, w, h) => {
       return new go.Geometry()
             .add(new go.PathFigure(0, 0.25*h, false)
                   .add(new go.PathSegment(go.PathSegment.Line, .5 * w, 0.75*h))
@@ -60,7 +60,7 @@
     });
 
     // use a sideways V figure instead of PlusLine in the TreeExpanderButton
-    go.Shape.defineFigureGenerator("CollapsedLine", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("CollapsedLine", (shape, w, h) => {
       return new go.Geometry()
             .add(new go.PathFigure(0.25*w, 0, false)
                   .add(new go.PathSegment(go.PathSegment.Line, 0.75*w, .5 * h))
@@ -68,7 +68,10 @@
     });
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -98,7 +101,7 @@
             selectionAdorned: false,
             // a custom function to allow expanding/collapsing on double-click
             // this uses similar logic to a TreeExpanderButton
-            doubleClick: function(e, node) {
+            doubleClick: (e, node) => {
               var cmd = myDiagram.commandHandler;
               if (node.isTreeExpanded) {
                 if (!cmd.canCollapseTree(node)) return;
@@ -124,7 +127,7 @@
             }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(18, 0) },
-            new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
+            new go.Binding("background", "isSelected", s => s ? "lightblue" : "white").ofObject(),
             $(go.Picture,
               {
                 width: 18, height: 18,
@@ -137,7 +140,7 @@
               new go.Binding("source", "isTreeLeaf", imageConverter).ofObject()),
             $(go.TextBlock,
               { font: '9pt Verdana, sans-serif' },
-              new go.Binding("text", "key", function(s) { return "item " + s; }))
+              new go.Binding("text", "key", s => "item " + s))
           )  // end Horizontal Panel
         );  // end Node
 

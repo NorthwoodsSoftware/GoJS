@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER: WALL RESHAPING TOOL
@@ -2069,7 +2069,7 @@ export class WallReshapingTool extends go.Tool {
     const point2 = new go.Point((loc.x - (partLength / 2)), loc.y);
     point1.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
     point2.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
-    const arr = []; arr.push(point1); arr.push(point2);
+    const arr = new Array(); arr.push(point1); arr.push(point2);
     return arr;
   }
 

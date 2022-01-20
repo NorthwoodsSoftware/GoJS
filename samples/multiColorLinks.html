@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Links that can render different colors for equal lengths along the link path."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Multi-color Links</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -54,45 +54,46 @@
 
   // Assume that a Link may have a  linkdata.colors  property that is an Array of CSS color strings.
   // Also assume that each Link has as many Shapes in it that are marked with  isPanelMain: true
-  // as you want to get a color from the data.colors Array.
-  function MultiColorLink() {
-    go.Link.call(this);
-  }
-  go.Diagram.inherit(MultiColorLink, go.Link);
-
-  MultiColorLink.prototype.makeGeometry = function() {
-    var geo = go.Link.prototype.makeGeometry.call(this);
-    var colors = this.data.colors;
-    if (Array.isArray(colors) && colors.length > 0) {
-      var paths = [];  // find all path Shapes
-      this.elements.each(function(elt) {
-        if (elt.isPanelMain && elt instanceof go.Shape) {
-          paths.push(elt);
-        }
-      });
-      var numcolors = Math.min(colors.length, paths.length);
-      if (numcolors > 0) {
-        var seclen = geo.flattenedTotalLength / numcolors;  // length of each color section
-        for (var i = 0; i < paths.length; i++) {  // go through all path Shapes
-          var shape = paths[i];
-          if (i < numcolors) {
-            shape.visible = true;  // make sure this Shape can be seen
-            shape.stroke = colors[i];  // and assign a color
-            if (i > 0) {  // and a stroke dash array so that it only draws the needed fraction
-              shape.strokeDashArray = [0, i * seclen, seclen, 99999];
+  // as you want to get a color from the linkdata.colors Array, because each Shape can only show one color.
+  class MultiColorLink extends go.Link {
+    makeGeometry() {
+      const geo = super.makeGeometry();
+      const colors = this.data.colors;
+      if (Array.isArray(colors) && colors.length > 0) {
+        const paths = [];  // find all path Shapes
+        this.elements.each(elt => {
+          if (elt.isPanelMain && elt instanceof go.Shape) {
+            paths.push(elt);
+          }
+        });
+        const numcolors = Math.min(colors.length, paths.length);
+        if (numcolors > 0) {
+          const seclen = geo.flattenedTotalLength / numcolors;  // length of each color section
+          for (let i = 0; i < paths.length; i++) {  // go through all path Shapes
+            const shape = paths[i];
+            if (i < numcolors) {
+              shape.visible = true;  // make sure this Shape can be seen
+              shape.stroke = colors[i];  // and assign a color
+              if (i > 0) {  // and a stroke dash array so that it only draws the needed fraction
+                shape.strokeDashArray = [0, i * seclen, seclen, 99999];
+              }
+            } else {  // unneeded Shapes are not visible
+              shape.visible = false;
             }
-          } else {  // unneeded Shapes are not visible
-            shape.visible = false;
           }
         }
       }
+      return geo;
     }
-    return geo;
   }
+  // end of MultiColorLink class
 
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",

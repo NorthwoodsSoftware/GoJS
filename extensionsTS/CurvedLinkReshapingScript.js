@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -55,7 +55,7 @@
         });
         // define the Node template
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
             // define the node's outer shape, which will surround the TextBlock
             $(go.Shape, 'RoundedRectangle', {
                 parameter1: 20,
@@ -76,7 +76,7 @@
         // unlike the normal selection Adornment, this one includes a Button
         myDiagram.nodeTemplate.selectionAdornmentTemplate =
             $(go.Adornment, 'Spot', $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'blue', strokeWidth: 2 }), $(go.Placeholder) // this represents the selected Node
-            ), 
+            ),
             // the button to create a "next" node, at the top-right corner
             $('Button', {
                 alignment: go.Spot.TopRight,
@@ -122,7 +122,7 @@
         // replace the default Link template in the linkTemplateMap
         myDiagram.linkTemplate =
             $(go.Link, // the whole link panel
-            { curve: go.Link.Bezier, reshapable: true }, 
+            { curve: go.Link.Bezier, reshapable: true },
             // don't need to save Link.points, so don't need TwoWay Binding on "points"
             new go.Binding('curviness', 'curviness').makeTwoWay(), // but save "curviness" automatically
             $(go.Shape, // the link shape

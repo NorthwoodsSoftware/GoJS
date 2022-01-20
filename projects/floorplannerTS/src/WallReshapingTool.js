@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER: WALL RESHAPING TOOL
@@ -9,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -29,6 +29,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.WallReshapingTool = void 0;
     var go = require("../../../release/go");
     var WallReshapingTool = /** @class */ (function (_super) {
         __extends(WallReshapingTool, _super);
@@ -62,84 +63,84 @@ var __extends = (this && this.__extends) || (function () {
         Object.defineProperty(WallReshapingTool.prototype, "handleArchetype", {
             // Get the archetype for the handle (a Shape)
             get: function () { return this._handleArchetype; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "handle", {
             // Get / set current handle being used to reshape the wall
             get: function () { return this._handle; },
             set: function (value) { this._handle = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "adornedShape", {
             // Get / set adorned shape (shape of the Wall Group being reshaped)
             get: function () { return this._adornedShape; },
             set: function (value) { this._adornedShape = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "angle", {
             // Get / set current angle
             get: function () { return this._angle; },
             set: function (value) { this._angle = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "length", {
             // Get / set length of the wall being reshaped (used only with SHIFT + drag)
             get: function () { return this._length; },
             set: function (value) { this._length = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "reshapeObjectName", {
             // Get / set the name of the object being reshaped
             get: function () { return this._reshapeObjectName; },
             set: function (value) { this._reshapeObjectName = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "isBuilding", {
             // Get / set flag telling tool whether it's reshaping a new wall (isBuilding = true) or reshaping an old wall (isBuilding = false)
             get: function () { return this._isBuilding; },
             set: function (value) { this._isBuilding = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "returnData", {
             // Get set loc data for wallParts to return to if reshape is cancelled
             get: function () { return this._returnData; },
             set: function (value) { this._returnData = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "returnPoint", {
             // Get / set the point to return the reshaping wall endpoint to if reshape is cancelled
             get: function () { return this._returnPoint; },
             set: function (value) { this._returnPoint = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "isIntersecting", {
             // Get / set whether the reshaping wall is intersecting at least one other wall. if so, ignore grid snap
             get: function () { return this._isIntersecting; },
             set: function (value) { this._isIntersecting = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "wallIntersecting", {
             // Get / set the wall the reshaping endpoint is currently intersecting
             get: function () { return this._wallIntersecting; },
             set: function (value) { this._wallIntersecting = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallReshapingTool.prototype, "joinedWalls", {
             // Get / set the wall created during after a reshape event by combining some colinear walls
             get: function () { return this._joinedWalls; },
             set: function (value) { this._joinedWalls = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -1964,7 +1965,7 @@ var __extends = (this && this.__extends) || (function () {
             var point2 = new go.Point((loc.x - (partLength / 2)), loc.y);
             point1.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
             point2.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
-            var arr = [];
+            var arr = new Array();
             arr.push(point1);
             arr.push(point2);
             return arr;

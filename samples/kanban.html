@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An interactive Kanban board editor, a visual control used for organizing work items."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Kanban Board</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,10 +53,11 @@
   <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
     <script id="code">
 
-    // define a custom grid layout that makes sure the length of each lane is the same
-    // and that each lane is broad enough to hold its subgraph
-    function PoolLayout() {
-      go.GridLayout.call(this);
+  // define a custom grid layout that makes sure the length of each lane is the same
+  // and that each lane is broad enough to hold its subgraph
+  class PoolLayout extends go.GridLayout {
+    constructor() {
+      super();
       this.MINLENGTH = 200;  // this controls the minimum length of any swimlane
       this.MINBREADTH = 100;  // this controls the minimum breadth of any non-collapsed swimlane
       this.cellSize = new go.Size(1, 1);
@@ -65,42 +66,40 @@
       this.spacing = new go.Size(0, 0);
       this.alignment = go.GridLayout.Position;
     }
-    go.Diagram.inherit(PoolLayout, go.GridLayout);
 
-    PoolLayout.prototype.doLayout = function(coll) {
-      var diagram = this.diagram;
+    doLayout(coll) {
+      const diagram = this.diagram;
       if (diagram === null) return;
       diagram.startTransaction("PoolLayout");
       // make sure all of the Group Shapes are big enough
-      var minlen = this.computeMinPoolLength();
-      var lay = this;
-      diagram.findTopLevelGroups().each(function(lane) {
+      const minlen = this.computeMinPoolLength();
+      diagram.findTopLevelGroups().each(lane => {
         if (!(lane instanceof go.Group)) return;
-        var shape = lane.selectionObject;
+        const shape = lane.selectionObject;
         if (shape !== null) {  // change the desiredSize to be big enough in both directions
-          var sz = lay.computeLaneSize(lane);
+          const sz = this.computeLaneSize(lane);
           shape.width = (!isNaN(shape.width)) ? Math.max(shape.width, sz.width) : sz.width;
           // if you want the height of all of the lanes to shrink as the maximum needed height decreases:
           shape.height = minlen;
           // if you want the height of all of the lanes to remain at the maximum height ever needed:
           //shape.height = (isNaN(shape.height) ? minlen : Math.max(shape.height, minlen));
-          var cell = lane.resizeCellSize;
+          const cell = lane.resizeCellSize;
           if (!isNaN(shape.width) && !isNaN(cell.width) && cell.width > 0) shape.width = Math.ceil(shape.width / cell.width) * cell.width;
           if (!isNaN(shape.height) && !isNaN(cell.height) && cell.height > 0) shape.height = Math.ceil(shape.height / cell.height) * cell.height;
         }
       });
       // now do all of the usual stuff, according to whatever properties have been set on this GridLayout
-      go.GridLayout.prototype.doLayout.call(this, coll);
+      super.doLayout(coll);
       diagram.commitTransaction("PoolLayout");
     };
 
     // compute the minimum length of the whole diagram needed to hold all of the Lane Groups
-    PoolLayout.prototype.computeMinPoolLength = function() {
-      var len = this.MINLENGTH;
-      myDiagram.findTopLevelGroups().each(function(lane) {
-        var holder = lane.placeholder;
+    computeMinPoolLength() {
+      let len = this.MINLENGTH;
+      myDiagram.findTopLevelGroups().each(lane => {
+        const holder = lane.placeholder;
         if (holder !== null) {
-          var sz = holder.actualBounds;
+          const sz = holder.actualBounds;
           len = Math.max(len, sz.height);
         }
       });
@@ -108,26 +107,30 @@
     }
 
     // compute the minimum size for a particular Lane Group
-    PoolLayout.prototype.computeLaneSize = function(lane) {
+    computeLaneSize(lane) {
       // assert(lane instanceof go.Group);
-      var sz = new go.Size(lane.isSubGraphExpanded ? this.MINBREADTH : 1, this.MINLENGTH);
+      const sz = new go.Size(lane.isSubGraphExpanded ? this.MINBREADTH : 1, this.MINLENGTH);
       if (lane.isSubGraphExpanded) {
-        var holder = lane.placeholder;
+        const holder = lane.placeholder;
         if (holder !== null) {
-          var hsz = holder.actualBounds;
+          const hsz = holder.actualBounds;
           sz.width = Math.max(sz.width, hsz.width);
         }
       }
       // minimum breadth needs to be big enough to hold the header
-      var hdr = lane.findObject("HEADER");
+      const hdr = lane.findObject("HEADER");
       if (hdr !== null) sz.width = Math.max(sz.width, hdr.actualBounds.width);
       return sz;
     }
-    // end PoolLayout class
+  }
+  // end PoolLayout class
 
 
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -137,7 +140,7 @@
             // use a simple layout to stack the top-level Groups next to each other
             layout: $(PoolLayout),
             // disallow nodes to be dragged to the diagram's background
-            mouseDrop: function(e) {
+            mouseDrop: e => {
               e.diagram.currentTool.doCancel();
             },
             // a clipboard copied node is pasted into the original node's group (i.e. lane).
@@ -165,12 +168,12 @@
 
       // this is called after nodes have been moved
       function relayoutDiagram() {
-        myDiagram.selection.each(function(n) { n.invalidateLayout(); });
+        myDiagram.selection.each(n => n.invalidateLayout());
         myDiagram.layoutDiagram();
       }
 
       // There are only three note colors by default, blue, red, and yellow but you could add more here:
-      var noteColors = ['#009CCC', '#CC293D', '#FFD700'];
+      const noteColors = ['#009CCC', '#CC293D', '#FFD700'];
       function getNoteColor(num) {
         return noteColors[Math.min(num, noteColors.length - 1)];
       }
@@ -182,9 +185,9 @@
             fill: '#009CCC', strokeWidth: 1, stroke: '#009CCC',
             width: 6, stretch: go.GraphObject.Vertical, alignment: go.Spot.Left,
             // if a user clicks the colored portion of a node, cycle through colors
-            click: function(e, obj) {
+            click: (e, obj) => {
               myDiagram.startTransaction("Update node color");
-              var newColor = parseInt(obj.part.data.color) + 1;
+              let newColor = parseInt(obj.part.data.color) + 1;
               if (newColor > noteColors.length - 1) newColor = 0;
               myDiagram.model.setDataProperty(obj.part.data, "color", newColor);
               myDiagram.commitTransaction("Update node color");
@@ -215,13 +218,13 @@
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           {
             selectable: false,
-            click: function(e, node) {
+            click: (e, node) => {
               myDiagram.startTransaction('add node');
-              var newdata = { group: "Problems", loc: "0 50", text: "New item " + node.containingGroup.memberParts.count, color: 0 };
+              const newdata = { group: "Problems", loc: "0 50", text: "New item " + node.containingGroup.memberParts.count, color: 0 };
               myDiagram.model.addNodeData(newdata);
               myDiagram.commitTransaction('add node');
-              var node = myDiagram.findNodeForData(newdata);
-              myDiagram.select(node);
+              const newnode = myDiagram.findNodeForData(newdata);
+              myDiagram.select(newnode);
               myDiagram.commandHandler.editTextBlock();
             },
             background: 'white'
@@ -237,7 +240,7 @@
       // While dragging, highlight the dragged-over group
       function highlightGroup(grp, show) {
         if (show) {
-          var part = myDiagram.toolManager.draggingTool.currentPart;
+          const part = myDiagram.toolManager.draggingTool.currentPart;
           if (part.containingGroup !== grp) {
             grp.isHighlighted = true;
             return;
@@ -258,31 +261,31 @@
                 cellSize: new go.Size(1, 1),
                 spacing: new go.Size(5, 5),
                 alignment: go.GridLayout.Position,
-                comparer: function(a, b) {  // can re-order tasks within a lane
-                  var ay = a.location.y;
-                  var by = b.location.y;
+                comparer: (a, b) => {  // can re-order tasks within a lane
+                  const ay = a.location.y;
+                  const by = b.location.y;
                   if (isNaN(ay) || isNaN(by)) return 0;
                   if (ay < by) return -1;
                   if (ay > by) return 1;
                   return 0;
                 }
               }),
-            click: function(e, grp) {  // allow simple click on group to clear selection
+            click: (e, grp) => {  // allow simple click on group to clear selection
               if (!e.shift && !e.control && !e.meta) e.diagram.clearSelection();
             },
             computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
             handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(grp, true); },
-            mouseDragLeave: function(e, grp, next) { highlightGroup(grp, false); },
-            mouseDrop: function(e, grp) {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
+            mouseDragEnter: (e, grp, prev) => highlightGroup(grp, true),
+            mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
+            mouseDrop: (e, grp) => {  // dropping a copy of some Nodes and Links onto this Group adds them to this Group
               // don't allow drag-and-dropping a mix of regular Nodes and Groups
-              if (e.diagram.selection.all(function(n) { return !(n instanceof go.Group); })) {
-                var ok = grp.addMembers(grp.diagram.selection, true);
+              if (e.diagram.selection.all(n => !(n instanceof go.Group))) {
+                const ok = grp.addMembers(grp.diagram.selection, true);
                 if (!ok) grp.diagram.currentTool.doCancel();
               }
             },
-            subGraphExpandedChanged: function(grp) {
-              var shp = grp.selectionObject;
+            subGraphExpandedChanged: grp => {
+              const shp = grp.selectionObject;
               if (grp.diagram.undoManager.isUndoingRedoing) return;
               if (grp.isSubGraphExpanded) {
                 shp.width = grp.data.savedBreadth;
@@ -307,7 +310,7 @@
           $(go.Panel, "Auto",  // the lane consisting of a background Shape and a Placeholder representing the subgraph
             $(go.Shape, "Rectangle",  // this is the resized object
               { name: "SHAPE", fill: "#F1F1F1", stroke: null, strokeWidth: 4 },  // strokeWidth controls space between lanes
-              new go.Binding("fill", "isHighlighted", function(h) { return h ? "#D6D6D6" : "#F1F1F1"; }).ofObject(),
+              new go.Binding("fill", "isHighlighted", h => h ? "#D6D6D6" : "#F1F1F1").ofObject(),
               new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
             $(go.Placeholder,
               { padding: 12, alignment: go.Spot.TopLeft }),
@@ -316,7 +319,7 @@
                 name: "LABEL", font: "15px Lato, sans-serif", editable: true,
                 angle: 90, alignment: go.Spot.TopLeft, margin: new go.Margin(4, 0, 0, 2)
               },
-              new go.Binding("visible", "isSubGraphExpanded", function(e) { return !e; }).ofObject(),
+              new go.Binding("visible", "isSubGraphExpanded", e => !e).ofObject(),
               new go.Binding("text").makeTwoWay())
           )  // end Auto Panel
         );  // end Group

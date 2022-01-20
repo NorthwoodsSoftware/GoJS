@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -125,7 +125,7 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
     }
     return $(go.Panel, 'Table', {
         _updateScrollBar: updateScrollBar
-    }, 
+    },
     // this actually holds the item elements
     $(go.Panel, 'Table', {
         name: tablename,
@@ -134,9 +134,9 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
         background: 'whitesmoke',
         rowSizing: go.RowColumnDefinition.None,
         defaultAlignment: go.Spot.Top
-    }), 
+    }),
     // this is the scrollbar
-    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, 'Table', { column: 1, stretch: go.GraphObject.Vertical, background: '#DDDDDD' }, 
+    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, 'Table', { column: 1, stretch: go.GraphObject.Vertical, background: '#DDDDDD' },
     // the scroll up button
     $('AutoRepeatButton', {
         name: 'UP',
@@ -145,7 +145,7 @@ go.GraphObject.defineBuilder('ScrollingTable', function (args) {
         'ButtonBorder.figure': 'Rectangle',
         'ButtonBorder.fill': 'lightgray',
         click: function (e, obj) { incrTableIndex(obj, -1); }
-    }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })), 
+    }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })),
     // (someday implement a thumb here and support dragging to scroll)
     // the scroll down button
     $('AutoRepeatButton', {

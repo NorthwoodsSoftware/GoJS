@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Floorplan Class
@@ -31,7 +31,7 @@ export class Floorplan extends go.Diagram {
      */
 
     // When a FloorplanPalette instance is made, it is automatically added to a Floorplan's "palettes" property
-    this._palettes = [];
+    this._palettes = new Array();
 
     // Point Nodes, Dimension Links, Angle Nodes on the Floorplan (never in model data)
     this._pointNodes = new go.Set<go.Node>();
@@ -86,7 +86,7 @@ export class Floorplan extends go.Diagram {
 
     // If a node has been dropped onto the Floorplan from a Palette...
     this.addDiagramListener('ExternalObjectsDropped', function(e) {
-      const garbage: Array<go.Part> = [];
+      const garbage: Array<go.Part> = new Array();
       const fp: Floorplan = e.diagram as Floorplan;
       fp.selection.iterator.each(function(node) {
         // if floor node dropped, try to make a room node here with that floor brush style
@@ -124,7 +124,7 @@ export class Floorplan extends go.Diagram {
       floorplan.pointNodes.iterator.each(function(node) { e.diagram.remove(node); });
       floorplan.dimensionLinks.iterator.each(function(link) { e.diagram.remove(link); });
 
-      const missedDimensionLinks: Array<go.Link> = []; // used only in undo situations
+      const missedDimensionLinks: Array<go.Link> = new Array(); // used only in undo situations
       floorplan.links.iterator.each(function(link) { if (link.data.category === 'DimensionLink') missedDimensionLinks.push(link); });
       for (let i: number = 0; i < missedDimensionLinks.length; i++) {
         e.diagram.remove(missedDimensionLinks[i]);
@@ -750,7 +750,7 @@ export class Floorplan extends go.Diagram {
     const wrt: WallReshapingTool = fp.toolManager.mouseDownTools.elt(3) as WallReshapingTool;
     const rooms: go.Iterator<go.Node> = fp.findNodesByExample({ category: 'RoomNode' });
     // rooms to remove
-    const garbage: Array<go.Node> = [];
+    const garbage: Array<go.Node> = new Array();
 
     rooms.iterator.each(function(r: go.Node) {
 
@@ -956,7 +956,7 @@ export class Floorplan extends go.Diagram {
     // get the all the walls, in order from closest to farthest, the line from pt upwards would hit
     const walls: go.Iterator<go.Group> = fp.findNodesByExample({ category: 'WallGroup' }) as go.Iterator<go.Group>;
     const oPt: go.Point = new go.Point(pt.x, pt.y - 10000);
-    const wallsDistArr: Array<any> = []; // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
+    const wallsDistArr: Array<any> = new Array(); // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
     walls.iterator.each(function(w) {
       const ip: go.Point | null = fp.getSegmentsIntersection(pt, oPt, w.data.startpoint, w.data.endpoint);
       if (ip !== null) {
@@ -976,7 +976,7 @@ export class Floorplan extends go.Diagram {
 
     // helper function -- copies a "path" (list of walls) up to a certain wall node
     function selectivelyCopyPath(path: Array<any>, nodeToStopAt: go.Node) {
-      const p = [];
+      const p = new Array<Array<any>>();
       let copyNoMore: boolean = false;
       for (let i: number = 0; i < path.length; i++) {
         const entry = path[i];
@@ -1059,7 +1059,7 @@ export class Floorplan extends go.Diagram {
 
       // offset the intersection walls (maintain relative order) s.t. wall "wall" is first
       const intersectionWalls: Array<go.Group> = ccWalls.toArray();
-      const intersectionWallsReordered: Array<go.Group> = [];
+      const intersectionWallsReordered: Array<go.Group> = new Array();
 
       let j: number = intersectionWalls.indexOf(wall);
       for (let i: number = 0; i < intersectionWalls.length; i++) {
@@ -1089,7 +1089,7 @@ export class Floorplan extends go.Diagram {
         } else if (seenWalls !== null && !seenWalls.contains(w)) {
           // define path as all walls that came up until this wall
           if (path === undefined || path === null) {
-            path = [];
+            path = new Array();
             // First wall is special case; just find out which mitering side is closer to the original point used for this room construction
             // get intersection point from pt-oPt each of walls's mitering sides
 
@@ -1125,15 +1125,15 @@ export class Floorplan extends go.Diagram {
 
     // iterate over these ordered walls until one allows for us to identify the room boundaries
     // if none of these walls allow for that, "pt" is not enclosed by walls, so there is no room
-    let roomOuterBoundaryPts = null;
-    let roomOuterBoundaryPath = null; // an array with entries [[wall, side], [wall, side]...]
+    let roomOuterBoundaryPts: null | go.List<go.Point> = null;
+    let roomOuterBoundaryPath: null | Array<any> = null; // an array with entries [[wall, side], [wall, side]...]
     for (let i: number = 0; i < wallsDistArr.length; i++) {
       const entry = wallsDistArr[i];
       const w: go.Group = entry[0];
 
       // I'm pretty sure the first possbilePath is always the right one
       // This is an ordered path of all the walls that make up this room. It's  Map, where keys are walls and values are the wall sides used for room boundaries (1 or 2)
-      let path = [];
+      let path = new Array<any>();
       let possiblePaths: go.Set<any> | null = new go.Set<any>();
       possiblePaths = recursivelyFindPaths(w, null, possiblePaths, null, w, null);
       if (possiblePaths === null || possiblePaths.count === 0) continue; // no path
@@ -1171,7 +1171,7 @@ export class Floorplan extends go.Diagram {
     if (roomOuterBoundaryPts !== null) {
       // check if there are any walls with an endpoint in the room's outer boundaries polygon.
       // If so, update room's boundaryWalls data and geometry to add those internal wall(s)
-      const newRoomBoundaryWalls: Array<any> = fp.addInternalWallsToRoom(roomOuterBoundaryPts, roomOuterBoundaryPath);
+      const newRoomBoundaryWalls: Array<any> = fp.addInternalWallsToRoom(roomOuterBoundaryPts, roomOuterBoundaryPath!);
       // let newRoomBoundaryWalls = roomOuterBoundaryPath;
 
       return newRoomBoundaryWalls;
@@ -1299,7 +1299,7 @@ export class Floorplan extends go.Diagram {
 
     // offset the intersection walls (maintain relative order) s.t. wall "wall" is first
     const intersectionWalls: Array<go.Group> = walls.toArray();
-    const intersectionWallsReordered: Array<go.Group> = [];
+    const intersectionWallsReordered: Array<go.Group> = new Array();
 
     let j: number = intersectionWalls.indexOf(wall);
     for (let i: number = 0; i < intersectionWalls.length; i++) {
@@ -1485,7 +1485,7 @@ export class Floorplan extends go.Diagram {
         // edge case -- bw1 is the first entry in boundaryWalls array and bw2 is the last -- if so, switch them
         if (ip !== null && bw1 !== null && bw2 !== null &&
           roomOuterBoundaryPath[0][0] === bw1.data.key && roomOuterBoundaryPath[roomOuterBoundaryPath.length - 1][0] === bw2.data.key) {
-          let temp = null;
+          let temp: null | go.Group = null;
           temp = bw1;
           bw1 = bw2;
           bw2 = temp;
@@ -1517,7 +1517,7 @@ export class Floorplan extends go.Diagram {
             intersectionWalls = fp.sortWallsClockwiseWithSetStartWall(intersectionWalls, bw1);
           }
 
-          const path: Array<any> = []; // path of walls/sides for the offending walls as key+side (i.e. [[wall, number], [wall, number]] )
+          const path: Array<any> = new Array(); // path of walls/sides for the offending walls as key+side (i.e. [[wall, number], [wall, number]] )
           // recurse through all intersection walls until you reach bw2
           const seenIp: go.Set<string> = new go.Set<string>();
           if (bw1 !== null && bw2 !== null) {
@@ -1666,7 +1666,7 @@ export class Floorplan extends go.Diagram {
       // need to do special calculation to get the proper mitering side for w
       let side: number | null = null; // the mitering side of w, will only be set if w is the first wall
       if (path === null || path === undefined) {
-        path = [];
+        path = new Array();
         // First wall is special case; just find out which mitering side is closer to the original point used for this room construction
         // get intersection point from pt-mPt each of walls's mitering sides
 
@@ -1797,7 +1797,7 @@ export class Floorplan extends go.Diagram {
 
           } else if (iw.count === 1 && path !== null && path.indexOf('isDone') === -1) {
             // find the current entry in path with fw
-            let entry = null;
+            let entry: null | Array<any> = null;
             for (let i = 0; i < path.length; i++) {
               const pwk: string = path[i][0];
               const pw: go.Group = fp.findNodeForKey(pwk) as go.Group;
@@ -1870,7 +1870,7 @@ export class Floorplan extends go.Diagram {
 
     // A set of specially formatted Arrays, representing the paths of the holes
     // IMPORTANT: Hole paths must be clockwise to ensure proper geometry construction in updateRoom() function!
-    const holes: Array<Array<any>> = [];
+    const holes: Array<Array<any>> = new Array();
     offendingWalls.iterator.each(function(ow) {
 
       // if we haven't gotten a path for a hole that contains this wall yet...
@@ -1878,7 +1878,7 @@ export class Floorplan extends go.Diagram {
         // draw segement from pt to the ow's midpoint (mPt). Find all walls intersected by this segment
         const sPt: go.Point = ow.data.startpoint; const ePt: go.Point = ow.data.endpoint;
         const mPt: go.Point = new go.Point((sPt.x + ePt.x) / 2, (sPt.y + ePt.y) / 2);
-        const wallsDistArr: Array<any> = []; // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
+        const wallsDistArr: Array<any> = new Array(); // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
         offendingWalls.iterator.each(function(w) {
           const ip: go.Point | null = fp.getSegmentsIntersection(pt, mPt, w.data.startpoint, w.data.endpoint);
           if (ip !== null) {
@@ -2171,7 +2171,7 @@ export class Floorplan extends go.Diagram {
     const shape: go.Shape = room.findObject('SHAPE') as go.Shape;
     const geo: go.Geometry = new go.Geometry();
     // build the room geo from wall boundary array in data
-    const pts: Array<go.Point> = [];
+    const pts: Array<go.Point> = new Array();
     const bw: Array<any> = room.data.boundaryWalls;
     if (bw === null) return;
     let fig: go.PathFigure | null = null;
@@ -2446,7 +2446,7 @@ export class Floorplan extends go.Diagram {
         }
 
         // store all endpoints along with the part they correspond to (used later to either create DimensionLinks or simply adjust them)
-        const wallPartEndpoints: Array<go.Point> = [];
+        const wallPartEndpoints: Array<go.Point> = new Array();
         wall.memberParts.iterator.each(function(wallPart) {
           if (wallPart.isSelected) {
             const endpoints = getWallPartEndpoints(wallPart);
@@ -2499,7 +2499,7 @@ export class Floorplan extends go.Diagram {
           k += 2;
         }
         // total wall Dimension Link constructed of a kth and k+1st pointNode
-        let totalWallDimensionLink = null;
+        let totalWallDimensionLink: null | go.Link = null;
         floorplan.dimensionLinks.iterator.each(function(link) {
           if (link.fromNode !== null && link.toNode !== null && (link.fromNode.data.key === wall.data.key + 'PointNode' + i + k) &&
             (link.toNode.data.key === wall.data.key + 'PointNode' + i + (k + 1))) {
@@ -2706,7 +2706,7 @@ export class Floorplan extends go.Diagram {
     floorplan.startTransaction('display angles');
     if (floorplan.model.modelData.preferences.showWallAngles) {
       floorplan.angleNodes.iterator.each(function(node) { node.visible = true; });
-      const selectedWalls: Array<go.Group> = [];
+      const selectedWalls: Array<go.Group> = new Array();
       floorplan.selection.iterator.each(function(part) {
         if (part.category === 'WallGroup') {
           const w: go.Group = part as go.Group;
@@ -2729,7 +2729,7 @@ export class Floorplan extends go.Diagram {
             if (intersectionPoint !== null) {
               const wrt: WallReshapingTool = floorplan.toolManager.mouseDownTools.elt(3) as WallReshapingTool;
               const wallsInvolved: go.List<go.Group> = wrt.getAllWallsAtIntersection(intersectionPoint);
-              const endpoints: Array<any> = []; // store endpoints and their corresponding walls here
+              const endpoints: Array<any> = new Array(); // store endpoints and their corresponding walls here
               // gather endpoints of each wall in wallsInvolved; discard endpoints within a tolerance distance of intersectionPoint
               wallsInvolved.iterator.each(function(w) {
                 const tolerance: number = (floorplan.model.modelData.gridSize >= 10) ? floorplan.model.modelData.gridSize : 10;
@@ -2781,7 +2781,7 @@ export class Floorplan extends go.Diagram {
 
                 //    construct proper key for angleNode
                 //    proper angleNode key syntax is "wallWwallX...wallYangleNodeZ" such that W < Y < Y; angleNodes are sorted clockwise around the intersectionPoint by Z
-                const keyArray: Array<go.Group> = []; // used to construct proper key
+                const keyArray: Array<go.Group> = new Array(); // used to construct proper key
                 wallsInvolved.iterator.each(function(w) { keyArray.push(w); });
                 keyArray.sort(function(a, b) {
                   const aIndex = a.data.key.match(/\d+/g);
@@ -2828,11 +2828,11 @@ export class Floorplan extends go.Diagram {
         });
       }
       // garbage collection (angleNodes that should not exist any more)
-      const garbage: Array<go.Node> = [];
+      const garbage: Array<go.Node> = new Array();
       floorplan.angleNodes.iterator.each(function(node) {
         const keyNums = node.data.key.match(/\d+/g); // values X for all wall keys involved, given key "wallX"
-        const numWalls: number = (node.data.key.match(/wall/g) || []).length; // # of walls involved in in "node"'s construction
-        const wallsInvolved: Array<string> = [];
+        const numWalls: number = (node.data.key.match(/wall/g) || new Array()).length; // # of walls involved in in "node"'s construction
+        const wallsInvolved: Array<string> = new Array();
 
         // add all walls involved in angleNode's construction to wallsInvolved
         for (let i: number = 0; i < keyNums.length - 1; i++) {
@@ -2889,13 +2889,13 @@ export class Floorplan extends go.Diagram {
    * @return {go.Point}
    */
   public findClosestLocOnWall(wall: go.Group, part: go.Part): go.Point | null {
-    let orderedConstrainingPts = []; // wall endpoints and wallPart endpoints
+    let orderedConstrainingPts = new Array(); // wall endpoints and wallPart endpoints
     const startpoint = wall.data.startpoint.copy();
     const endpoint = wall.data.endpoint.copy();
     // store all possible constraining endpoints (wall endpoints and wallPart endpoints) in the order in which they appear (left/top to right/bottom)
     const firstWallPt = ((startpoint.x + startpoint.y) <= (endpoint.x + endpoint.y)) ? startpoint : endpoint;
     const lastWallPt = ((startpoint.x + startpoint.y) > (endpoint.x + endpoint.y)) ? startpoint : endpoint;
-    const wallPartEndpoints: Array<any> = [];
+    const wallPartEndpoints: Array<any> = new Array();
     wall.memberParts.iterator.each(function(wallPart) {
       const endpoints = getWallPartEndpoints(wallPart);
       wallPartEndpoints.push(endpoints[0]);
@@ -2911,7 +2911,7 @@ export class Floorplan extends go.Diagram {
     orderedConstrainingPts.push(lastWallPt);
 
     // go through all constraining points; if there's a free stretch along the wall "part" could fit in, remember it
-    const possibleStretches = [];
+    const possibleStretches = new Array();
     for (let i = 0; i < orderedConstrainingPts.length; i += 2) {
       const point1 = orderedConstrainingPts[i];
       const point2 = orderedConstrainingPts[i + 1];
@@ -2920,7 +2920,7 @@ export class Floorplan extends go.Diagram {
     }
 
     // go through all possible stretches along the wall the part *could* fit in; find the one closest to the part's current location
-    let closestDist = Number.MAX_VALUE; let closestStretch = null;
+    let closestDist = Number.MAX_VALUE; let closestStretch: any = null;
     for (let i = 0; i < possibleStretches.length; i++) {
       const testStretch = possibleStretches[i];
       const testPoint1 = testStretch.pt1;
@@ -2956,7 +2956,7 @@ export class Floorplan extends go.Diagram {
 } // end Floorplan class definition
 
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - GENERAL
@@ -2974,7 +2974,7 @@ function makeSelectionGroup(floorplan: Floorplan) {
   floorplan.startTransaction('group selection');
   // ungroup all selected nodes; then group them; if one of the selected nodes is a group, ungroup all its nodes
   const sel = floorplan.selection;
-  const nodes: Array<go.Part> = [];
+  const nodes: Array<go.Part> = new Array();
   sel.iterator.each(function(n) {
     if (n instanceof go.Group) {
       n.memberParts.iterator.each(function(part) {
@@ -3019,7 +3019,7 @@ function ungroupSelection(floorplan: Floorplan) {
   }
   // ungroup any selected nodes; remember groups that are selected
   const sel = floorplan.selection;
-  const groups: Array<go.Group> = [];
+  const groups: Array<go.Group> = new Array();
   sel.iterator.each(function(n) {
     if (!(n instanceof go.Group)) {
       ungroupNode(n);
@@ -3028,7 +3028,7 @@ function ungroupSelection(floorplan: Floorplan) {
     }
   });
   // go through selected groups, and ungroup their memberparts too
-  const nodes: Array<go.Part> = [];
+  const nodes: Array<go.Part> = new Array();
   for (let i = 0; i < groups.length; i++) { groups[i].memberParts.iterator.each(function(n) { nodes.push(n); }); }
   for (let i = 0; i < nodes.length; i++) { ungroupNode(nodes[i]); }
   clearEmptyGroups(floorplan);
@@ -3038,7 +3038,7 @@ function ungroupSelection(floorplan: Floorplan) {
 // Clear all the groups that have no nodes
 function clearEmptyGroups(floorplan: Floorplan) {
   const nodes = floorplan.nodes;
-  const arr: Array<go.Part> = [];
+  const arr: Array<go.Part> = new Array();
   nodes.iterator.each(function(node) {
     if (node instanceof go.Group && node.memberParts.count === 0 && node.category !== 'WallGroup') {
       arr.push(node);
@@ -3384,7 +3384,7 @@ function makeDimensionLink(opacity?: number, stroke?: string, strokeWidth?: numb
 }
 
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - FURNITURE
@@ -3625,7 +3625,7 @@ function updateNodeTexture(obj: go.Shape, t: string) {
 }
 
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER CODE: TEMPLATES - WALLS
@@ -4146,7 +4146,7 @@ function getWallPartEndpoints(wallPart: go.Part): Array<any> {
   const point2 = new go.Point((loc.x - (partLength / 2)), loc.y);
   point1.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
   point2.offset(-loc.x, -loc.y).rotate(angle).offset(loc.x, loc.y);
-  const arr = []; arr.push(point1); arr.push(point2);
+  const arr = new Array(); arr.push(point1); arr.push(point2);
   return arr;
 }
 

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -57,14 +57,18 @@ export class ZoomSlider {
   private _initialScale: number;
   private _diagramDiv: HTMLDivElement | null;
   private _sliderDiv: HTMLDivElement | null;
+  private _zoomSliderOut: HTMLButtonElement | null;
+  private _zoomSliderIn: HTMLButtonElement | null;
+  private _zoomSliderRange: HTMLInputElement | null;
+  private _zoomSliderRangeCtn: HTMLDivElement | null;
 
   // Slider options defaults:
-  private _size: number = 125;
-  private _buttonSize: number = 25;
+  private _size = 125;
+  private _buttonSize = 25;
   private _alignment: go.Spot = go.Spot.BottomRight;
   private _alignmentFocus: go.Spot = go.Spot.BottomRight;
-  private _orientation: string = 'vertical';
-  private _opacity: number = .75;
+  private _orientation = 'vertical';
+  private _opacity = .75;
 
   // Function used to keep the slider up to date
   private updateOnViewportBoundsChanged: ((e: go.DiagramEvent) => void);
@@ -80,6 +84,11 @@ export class ZoomSlider {
     this._initialScale = diagram.scale;
     this._diagramDiv = diagram.div;
     this._sliderDiv = null;
+
+    this._zoomSliderOut = null;
+    this._zoomSliderIn = null;
+    this._zoomSliderRange = null;
+    this._zoomSliderRangeCtn = null;
 
     // Set properties based on options
     if (options !== undefined) {
@@ -210,18 +219,18 @@ export class ZoomSlider {
 
     // Initialize buttons and range input
     const zoomOutBtn = document.createElement('button');
-    zoomOutBtn.id = 'zoomSliderOut';
+    this._zoomSliderOut = zoomOutBtn;
     zoomOutBtn.className = 'zoomButton';
     zoomOutBtn.innerHTML = '-';
     this._sliderDiv.appendChild(zoomOutBtn);
 
     const zoomRangeContainer = document.createElement('div');
-    zoomRangeContainer.id = 'zoomSliderRangeCtn';
+    this._zoomSliderRangeCtn = zoomRangeContainer;
     zoomRangeContainer.className = 'zoomRangeContainer';
     this._sliderDiv.appendChild(zoomRangeContainer);
 
     const zoomRangeInput = document.createElement('input');
-    zoomRangeInput.id = 'zoomSliderRange';
+    this._zoomSliderRange = zoomRangeInput;
     zoomRangeInput.className = 'zoomRangeInput';
     zoomRangeInput.type = 'range';
     zoomRangeInput.min = '-50';
@@ -229,7 +238,7 @@ export class ZoomSlider {
     zoomRangeContainer.appendChild(zoomRangeInput);
 
     const zoomInBtn = document.createElement('button');
-    zoomInBtn.id = 'zoomSliderIn';
+    this._zoomSliderIn = zoomInBtn;
     zoomInBtn.className = 'zoomButton';
     zoomInBtn.innerHTML = '+';
     this._sliderDiv.appendChild(zoomInBtn);
@@ -250,9 +259,9 @@ export class ZoomSlider {
    * Add a diagram listener.
    */
   private sliderListenerSetup() {
-    const zoomOutBtn = document.getElementById('zoomSliderOut');
-    const zoomInBtn = document.getElementById('zoomSliderIn');
-    const zoomRangeInput = document.getElementById('zoomSliderRange') as HTMLInputElement;
+    const zoomOutBtn = this._zoomSliderOut;
+    const zoomInBtn = this._zoomSliderIn;
+    const zoomRangeInput = this._zoomSliderRange;
 
     if (zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
 
@@ -287,10 +296,10 @@ export class ZoomSlider {
     let sliderWidth = 0;
     let sliderHeight = 0;
 
-    const zoomOutBtn = document.getElementById('zoomSliderOut');
-    const zoomInBtn = document.getElementById('zoomSliderIn');
-    const zoomRangeContainer = document.getElementById('zoomSliderRangeCtn');
-    const zoomRangeInput = document.getElementById('zoomSliderRange');
+    const zoomOutBtn = this._zoomSliderOut;
+    const zoomInBtn = this._zoomSliderIn;
+    const zoomRangeContainer = this._zoomSliderRangeCtn;
+    const zoomRangeInput = this._zoomSliderRange;
 
     if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null ||
         zoomRangeContainer === null || zoomRangeInput === null) return;
@@ -347,9 +356,9 @@ export class ZoomSlider {
    * Reorient the slider, changing the transform and the order of the buttons within the div.
    */
   private reorient() {
-    const zoomOutBtn = document.getElementById('zoomSliderOut');
-    const zoomInBtn = document.getElementById('zoomSliderIn');
-    const zoomRangeInput = document.getElementById('zoomSliderRange');
+    const zoomOutBtn = this._zoomSliderOut;
+    const zoomInBtn = this._zoomSliderIn;
+    const zoomRangeInput = this._zoomSliderRange;
 
     if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
 
@@ -406,7 +415,8 @@ export class ZoomSlider {
    * Update the value of the slider input to match the diagram's scale.
    */
   private scaleToValue() {
-    const slider = document.getElementById('zoomSliderRange') as HTMLInputElement;
+    const slider = this._zoomSliderRange;
+    if (slider === null) return;
     const diagram = this.diagram;
     const A = this._initialScale;
     const B = diagram.commandHandler.zoomFactor;
@@ -419,7 +429,8 @@ export class ZoomSlider {
    * Update the diagram's scale to match the value of the slider input.
    */
   private valueToScale() {
-    const slider = document.getElementById('zoomSliderRange') as HTMLInputElement;
+    const slider = this._zoomSliderRange;
+    if (slider === null) return;
     const diagram = this.diagram;
     const x = parseFloat(slider.value);
     const A = this._initialScale;

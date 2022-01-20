@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -63,7 +63,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
   const click =
     (e: go.InputEvent, obj: go.GraphObject) => {
       let u = (obj as any)._url;
-      if (typeof u === 'function') u = u(obj.findTemplateBinder());
+      if (typeof u === 'function') u = u(obj.findBindingPanel());
       if (u) window.open(u, '_blank');
     };
 
@@ -76,7 +76,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
           // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
           obj = obj.part.adornedObject;
           let u = obj._url;
-          if (typeof u === 'function') u = u(obj.findTemplateBinder());
+          if (typeof u === 'function') u = u(obj.findBindingPanel());
           return u;
         }).ofObject()
       ),
@@ -92,7 +92,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         cursor: 'pointer',
         mouseEnter: function(e: go.InputEvent, obj: go.GraphObject) {
           let u = (obj as any)._url;
-          if (typeof u === 'function') u = u(obj.findTemplateBinder());
+          if (typeof u === 'function') u = u(obj.findBindingPanel());
           if (u && obj instanceof go.TextBlock) obj.isUnderline = true;
         },
         mouseLeave: (e: go.InputEvent, obj: go.GraphObject) => { if (obj instanceof go.TextBlock) obj.isUnderline = false; },
@@ -127,7 +127,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         mouseEnter: (e: go.InputEvent, panel: go.GraphObject) => {
           const tb = findTextBlock(panel);
           let u = (panel as any)._url;
-          if (typeof u === 'function') u = u(panel.findTemplateBinder());
+          if (typeof u === 'function') u = u(panel.findBindingPanel());
           if (tb !== null && u) tb.isUnderline = true;
         },
         mouseLeave: (e: go.InputEvent, panel: go.GraphObject) => {

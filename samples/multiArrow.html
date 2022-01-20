@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Multi-Arrow Links</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element
@@ -118,35 +121,35 @@
     }
 
 
-    // Produce a Geometry that includes an arrowhead at the end of each segment.
-    // This only works with orthogonal non-Bezier routing.
-    function MultiArrowLink() {
-      go.Link.call(this);
+  // Produce a Geometry that includes an arrowhead at the end of each segment.
+  // This only works with orthogonal non-Bezier routing.
+  class MultiArrowLink extends go.Link {
+    constructor() {
+      super();
       this.routing = go.Link.Orthogonal;
     }
-    go.Diagram.inherit(MultiArrowLink, go.Link);
 
     // produce a Geometry from the Link's route
-    MultiArrowLink.prototype.makeGeometry = function() {
+    makeGeometry() {
       // get the Geometry created by the standard behavior
-      var geo = go.Link.prototype.makeGeometry.call(this);
+      const geo = super.makeGeometry();
       if (geo.type !== go.Geometry.Path || geo.figures.length === 0) return geo;
-      var mainfig = geo.figures.elt(0);  // assume there's just one PathFigure
-      var mainsegs = mainfig.segments;
+      const mainfig = geo.figures.elt(0);  // assume there's just one PathFigure
+      const mainsegs = mainfig.segments;
 
-      var arrowLen = 8;  // length for each arrowhead
-      var arrowWid = 3;  // actually half-width of each arrowhead
-      var fx = mainfig.startX;
-      var fy = mainfig.startY;
-      for (var i = 0; i < mainsegs.length; i++) {
-        var a = mainsegs.elt(i);
+      const arrowLen = 8;  // length for each arrowhead
+      const arrowWid = 3;  // actually half-width of each arrowhead
+      let fx = mainfig.startX;
+      let fy = mainfig.startY;
+      for (let i = 0; i < mainsegs.length; i++) {
+        const a = mainsegs.elt(i);
         // assume each arrowhead is a simple triangle
-        var ax = a.endX;
-        var ay = a.endY;
-        var bx = ax;
-        var by = ay;
-        var cx = ax;
-        var cy = ay;
+        const ax = a.endX;
+        const ay = a.endY;
+        let bx = ax;
+        let by = ay;
+        let cx = ax;
+        let cy = ay;
         if (fx < ax - arrowLen) {
           bx -= arrowLen; by += arrowWid;
           cx -= arrowLen; cy -= arrowWid;
@@ -168,7 +171,10 @@
       }
 
       return geo;
-    };
+    }
+  }
+  // end of MultiArrowLink class
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 

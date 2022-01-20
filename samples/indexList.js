@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved. */
 /**
  * Be sure to add any new samples to this list, to assets/js/goSamples.js, and to samples/all.html.
  */
@@ -1711,7 +1711,7 @@ arr.push([
 arr.push([
   "htmlDragDrop",
   "HTML Drag and Drop",
-  "Demonstrates dragging and dropping from HTML.",
+  "Demonstrates dragging and dropping from HTML, and pasting from the external clipboard.",
   "htmlDragDrop",
   ["palette", "html"]
 ]);

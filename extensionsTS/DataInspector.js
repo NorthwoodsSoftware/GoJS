@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -40,7 +40,7 @@
      * Options for properties:
      *   - `show` ***boolean | function*** a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
      *   - `readOnly` ***boolean | function*** whether or not the property is read-only
-     *   - `type` ***string*** a string describing the data type. Supported values: "string|number|boolean|color|arrayofnumber|point|rect|size|spot|margin|select"
+     *   - `type` ***string*** a string describing the data type. Supported values: "string|number|boolean|color|arrayofnumber|point|rect|size|spot|margin|select|date|datetime-local|time"
      *   - `defaultValue` ***any*** a default value for the property. Defaults to the empty string.
      *   - `choices` ***Array | function*** when type === "select", the Array of choices to use or a function that returns the Array of choices.
      *

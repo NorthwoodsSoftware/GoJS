@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Keeping a TreeModel in synch with a GraphLinksModel in a Regrouping editor."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Regrouping Demo with Tree View</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,26 +52,27 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
             // what to do when a drag-drop occurs in the Diagram's background
-            mouseDrop: function(e) { finishDrop(e, null); },
+            mouseDrop: e => finishDrop(e, null),
             layout:  // Diagram has simple horizontal layout
               $(go.GridLayout,
                 { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
             "commandHandler.archetypeGroupData": { isGroup: true, category: "OfNodes" },
             "undoManager.isEnabled": true,
             // when a node is selected in the main Diagram, select the corresponding tree node
-            "ChangedSelection": function(e) {
+            "ChangedSelection": e => {
               if (myChangingSelection) return;
               myChangingSelection = true;
               var diagnodes = new go.Set();
-              myDiagram.selection.each(function(n) {
-                diagnodes.add(myTreeView.findNodeForData(n.data));
-              });
+              myDiagram.selection.each(n => diagnodes.add(myTreeView.findNodeForData(n.data)));
               myTreeView.clearSelection();
               myTreeView.selectCollection(diagnodes);
               myChangingSelection = false;
@@ -81,7 +82,7 @@
       var myChangingSelection = false;  // to protect against recursive selection changes
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
+      myDiagram.addDiagramListener("Modified", e => {
         var button = document.getElementById("saveModel");
         if (button) button.disabled = !myDiagram.isModified;
         var idx = document.title.indexOf("*");
@@ -127,8 +128,8 @@
           {
             background: "transparent",
             // highlight when dragging into the Group
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-            mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
+            mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+            mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
             computesBoundsAfterDrag: true,
             // when the selection is dropped into a Group, add the selected Parts into that Group;
             // if it fails, cancel the tool, rolling back any changes
@@ -142,7 +143,7 @@
                   cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
                 })
           },
-          new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
+          new go.Binding("background", "isHighlighted", h => h ? "rgba(255,0,0,0.2)" : "transparent").ofObject(),
           $(go.Shape, "Rectangle",
             { fill: null, stroke: "#E69900", strokeWidth: 2 }),
           $(go.Panel, go.Panel.Vertical,  // title above Placeholder
@@ -171,8 +172,8 @@
             background: "transparent",
             ungroupable: true,
             // highlight when dragging into the Group
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-            mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
+            mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+            mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
             computesBoundsAfterDrag: true,
             // when the selection is dropped into a Group, add the selected Parts into that Group;
             // if it fails, cancel the tool, rolling back any changes
@@ -186,7 +187,7 @@
                   cellSize: new go.Size(1, 1), spacing: new go.Size(4, 4)
                 })
           },
-          new go.Binding("background", "isHighlighted", function(h) { return h ? "rgba(255,0,0,0.2)" : "transparent"; }).ofObject(),
+          new go.Binding("background", "isHighlighted", h => h ? "rgba(255,0,0,0.2)" : "transparent").ofObject(),
           $(go.Shape, "Rectangle",
             { fill: null, stroke: "#0099CC", strokeWidth: 2 }),
           $(go.Panel, go.Panel.Vertical,  // title above Placeholder
@@ -213,7 +214,7 @@
       myDiagram.nodeTemplate =
         $(go.Node, go.Panel.Auto,
           { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-            mouseDrop: function(e, nod) { finishDrop(e, nod.containingGroup); }
+            mouseDrop: (e, nod) => finishDrop(e, nod.containingGroup)
           },
           $(go.Shape, "Rectangle",
             { fill: "#ACE600", stroke: "#558000", strokeWidth: 2 },
@@ -230,7 +231,7 @@
 
       var myChangingModel = false;  // to protect against recursive model changes
 
-      myDiagram.addModelChangedListener(function(e) {
+      myDiagram.addModelChangedListener(e => {
         if (e.model.skipsUndoManager) return;
         if (myChangingModel) return;
         myChangingModel = true;
@@ -282,13 +283,11 @@
                   arrangementSpacing: new go.Size(0, 0)
                 }),
             // when a node is selected in the tree, select the corresponding node in the main diagram
-            "ChangedSelection": function(e) {
+            "ChangedSelection": e => {
               if (myChangingSelection) return;
               myChangingSelection = true;
               var diagnodes = new go.Set();
-              myTreeView.selection.each(function(n) {
-                diagnodes.add(myDiagram.findNodeForData(n.data));
-              });
+              myTreeView.selection.each(n => diagnodes.add(myDiagram.findNodeForData(n.data)));
               myDiagram.clearSelection();
               myDiagram.selectCollection(diagnodes);
               myChangingSelection = false;
@@ -309,7 +308,7 @@
             }),
           $(go.Panel, "Horizontal",
             { position: new go.Point(16, 0) },
-            new go.Binding("background", "isSelected", function(s) { return (s ? "lightblue" : "white"); }).ofObject(),
+            new go.Binding("background", "isSelected", s => s ? "lightblue" : "white").ofObject(),
             // Icon is not needed?
             //$(go.Picture,
             //  {
@@ -329,9 +328,9 @@
 
       // cannot share the model itself, but can share all of the node data from the main Diagram,
       // pretending the "group" relationship is the "tree parent" relationship
-      myTreeView.model = $(go.TreeModel, { nodeParentKeyProperty: "group" });
+      myTreeView.model = new go.TreeModel( { nodeParentKeyProperty: "group" });
 
-      myTreeView.addModelChangedListener(function(e) {
+      myTreeView.addModelChangedListener(e => {
         if (e.model.skipsUndoManager) return;
         if (myChangingModel) return;
         myChangingModel = true;

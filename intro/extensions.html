@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> Extending GoJS -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> Extending GoJS -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -163,7 +163,7 @@
   If you intend to use an extension in production, you should copy the code to your own source directory.
 </p>
 
-<p class="box bg-danger">
+<p class="box bg-info">
   When using modern JavaScript, use arrow functions (<code>e => {}</code>) for event handlers and conversion functions.
   Use <code>function</code> only when overriding a method and you want access to <code>this</code> object
   whose method you have overridden.
@@ -276,7 +276,7 @@
         return;
       }
     }
-    // otherwise, call the base functionality
+    // otherwise, call the base (would be super in ES6) functionality
     go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
   }
 
@@ -296,37 +296,11 @@
 
 <h2 id="OverridingMethodsBySubclassingLayout">Overriding Methods by Subclassing a Layout</h2>
 <p>
-  Layouts can be subclassed to create custom Layouts that inherit the properties and methods of an existing layout.
-  Subclassing in traditional JavaScript for <b>GoJS</b> requires a few key steps:
+  Layouts and Tools can be subclassed to create custom classes that inherit the properties and methods of the predefined class.
 </p>
 
-<ul>
-  <li>Create a new class (function), and call the base class constructor.
-  <li>Call <a>Diagram,inherit</a> with the new class and the base class.
-  <li>Modify the prototype of your derived class to add new functionality.
-</ul>
-
 <p>
-  To create a new Layout, called <code>CascadeLayout</code>, we would start with the following scaffolding:
-</p>
-<pre class="lang-js"><code>
-  function CascadeLayout() {
-    // Note the direct constructor call, no use of "prototype"
-    go.Layout.call(this);
-    // new properties go here, on "this"
-  }
-  go.Diagram.inherit(CascadeLayout, go.Layout);
-
-  // Note setting the method on the prototype
-  CascadeLayout.prototype.doLayout = function(coll) {
-    // Layout logic goes here.
-    // You can reliably use "this" to refer to the layout instance
-    // on which this method was called.
-  }
-</code></pre>
-
-<p>
-  Note that if you are writing in modern JavaScript (ECMAScript 6) or in TypeScript, you can use newer syntax for defining classes:
+  In modern JavaScript (ECMAScript 6) or in TypeScript, you can use newer syntax for defining classes:
 </p>
 <pre class="lang-js"><code>
   export class CascadeLayout extends go.Layout {
@@ -347,40 +321,11 @@
 </code></pre>
 
 <p>
-  Layouts commonly need additional properties that act as layout options.
-  To add a "offset" property to <code>CascadeLayout</code>, we will use the convention that an underscore member is private, and will set a default value in the constructor:
-</p>
-<pre class="lang-js"><code>
-  function CascadeLayout() {
-    go.Layout.call(this);
-    this._offset = new go.Size(12, 12);
-  }
-</code></pre>
-
-<p>
-  Then, we use <code>Object.defineProperty</code> to make a "public" getter and setter.
-  Getters and setters allow us to do type checking and have side effects.
-  This setter makes sure the offset value is a <code>go.Size</code> object and invalidates the layout only if the value has changed.
-</p>
-<pre class="lang-js"><code>
-  Object.defineProperty(CascadeLayout.prototype, "offset", {
-    get: function() { return this._offset; },
-    set: function(val) {
-      if (!(val instanceof go.Size)) {
-        throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
-      }
-      if (!this._offset.equals(val)) {
-        this._offset = val;
-        this.invalidateLayout();
-      }
-    }
-  });
-</code></pre>
-
-<p>
   If you are writing in ECMAScript 6 or TypeScript, you can define property getters and setters.
 </p>
 <pre class="lang-js"><code>
+  this._offset = new go.Size(12, 12);
+
   get offset() { return this._offset; }
   set offset(val) {
     if (!(val instanceof go.Size)) {
@@ -398,8 +343,8 @@
   you will need to make sure the instance that you set in the Group template can be copied correctly.
 </p>
 <pre class="lang-js"><code>
-  CascadeLayout.prototype.cloneProtected = function(copy) {
-    go.Layout.prototype.cloneProtected.call(this, copy);
+  cloneProtected(copy) {
+    super.cloneProtected(copy);
     copy._offset = this._offset;
   }
 </code></pre>
@@ -411,60 +356,52 @@
   All together, we can see the cascade layout in action:
 </p>
 <pre class="lang-js" id="example"><code>
-  /**
-  * @constructor
-  * @extends Layout
-  * @class
-  * This layout arranges nodes in a cascade specified by the offset property
-  */
-  function CascadeLayout() {
-    go.Layout.call(this);
-    this._offset = new go.Size(12, 12);
-  }
-  go.Diagram.inherit(CascadeLayout, go.Layout);
+/**
+* This layout arranges nodes in a cascade specified by the offset property
+*/
+class CascadeLayout extends go.Layout {
+  this._offset = new go.Size(12, 12);
 
-  CascadeLayout.prototype.cloneProtected = function(copy) {
-    go.Layout.prototype.cloneProtected.call(this, copy);
+  cloneProtected(copy) {
+    super.cloneProtected(copy);
     copy._offset = this._offset;
   }
 
-  Object.defineProperty(CascadeLayout.prototype, "offset", {
-    get: function() { return this._offset; },
-    set: function(val) {
-      if (!(val instanceof go.Size)) {
-        throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
-      }
-      if (!this._offset.equals(val)) {
-        this._offset = val;
-        this.invalidateLayout();
-      }
+  get offset() { return this._offset; },
+  set offset(val) {
+    if (!(val instanceof go.Size)) {
+      throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
     }
-  });
+    if (!this._offset.equals(val)) {
+      this._offset = val;
+      this.invalidateLayout();
+    }
+  }
 
   /**
   * This method positions all Nodes and ignores all Links.
-  * @this {CascadeLayout}
   * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
   */
-  CascadeLayout.prototype.doLayout = function(coll) {
+  doLayout(coll) {
     // get the Nodes and Links to be laid out
-    var parts = this.collectParts(coll);
+    const parts = this.collectParts(coll);
 
     // Start the layout at the arrangement origin, a property inherited from Layout
-    var x = this.arrangementOrigin.x;
-    var y = this.arrangementOrigin.y;
-    var offset = this.offset;
+    let x = this.arrangementOrigin.x;
+    let y = this.arrangementOrigin.y;
+    const offset = this.offset;
 
-    var it = parts.iterator;
+    const it = parts.iterator;
     while (it.next()) {
-      var node = it.value;
+      const node = it.value;
       if (!(node instanceof go.Node)) continue;  // ignore Links
       node.move(new go.Point(x, y));
       x += offset.width;
       y += offset.height;
     }
   }
-  // end of CascadeLayout
+}
+// end of CascadeLayout
 
   // Regular diagram setup:
 
@@ -569,7 +506,7 @@
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

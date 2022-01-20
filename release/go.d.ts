@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v2.1.56
+ * Type definitions for GoJS v2.2.0
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright (C) 1998-2021 by Northwoods Software Corporation.
+ * Copyright (C) 1998-2022 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 
@@ -22,7 +22,7 @@ export interface ObjectData {
     [index: string]: any;
 }
 /**
- * Undocumented
+ * (undocumented)
  * @unrestricted
  */
 export class EnumValue {
@@ -34,10 +34,10 @@ export class EnumValue {
     constructor(classfunc: Function, name: string, val: number);
     /**
      */
-    readonly classType: Function;
+    get classType(): Function;
     /**
      */
-    readonly name: string;
+    get name(): string;
 }
 /**
  * This interface is implemented by the List, Set, and Map
@@ -205,7 +205,7 @@ export interface Iterator<T> extends Iterable<T> {
     readonly count: number;
 }
 /**
- * Undocumented interface used for both the SVGSurface and the CanvasSurface, which are undocumented classes.
+ * (undocumented) interface used for both the SVGSurface and the CanvasSurface, which are undocumented classes.
  */
 export interface ISurface {
     domElement: Element;
@@ -221,7 +221,7 @@ export interface ISurface {
     style: CSSStyleDeclaration;
 }
 /**
- * Undocumented interface used for both the SVGContext and the CanvasSurfaceContext, which are undocumented classes.
+ * (undocumented) interface used for both the SVGContext and the CanvasSurfaceContext, which are undocumented classes.
  */
 export interface IContext {
     fillStyle: string | CanvasGradient | CanvasPattern | SGradient;
@@ -240,6 +240,8 @@ export interface IContext {
     textAlign: string;
     imageSmoothingEnabled: boolean;
     clipInsteadOfFill: boolean;
+    cachedTransform: any;
+    commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
     arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise: boolean, lx?: number, ly?: number): void;
     beginPath(): void;
@@ -569,7 +571,8 @@ export class List<T> implements Iterable<T> {
      */
     sort(sortfunc: ((a: T, b: T) => number)): List<T>;
     /**
-     * Undocumented
+     * (undocumented)
+     * Sorts a range of consecutive elements in this List based on the given comparison function.
      * @param {function(*,*):number} sortfunc  This function is passed two elements in the list.
      * It should return zero if they are equal,
      * less than zero if the first value should come before the second value,
@@ -589,15 +592,15 @@ export class List<T> implements Iterable<T> {
     /**
      * This read-only property is the length of the List.
      */
-    readonly count: number;
+    get count(): number;
     /**
      * This read-only property is the length of the List.
      */
-    readonly size: number;
+    get size(): number;
     /**
      * This read-only property is the length of the List, a synonym for the #count property.
      */
-    readonly length: number;
+    get length(): number;
     /**
      * Gets an object that you can use for iterating over the List.
      * The key will be an integer from zero to the count-1.
@@ -610,7 +613,7 @@ export class List<T> implements Iterable<T> {
      *   }
      * ```
      */
-    readonly iterator: Iterator<T>;
+    get iterator(): Iterator<T>;
     /**
      * Gets an object that you can use for iterating over the List in backwards order.
      * The key will be an integer from count-1 to zero.
@@ -624,7 +627,7 @@ export class List<T> implements Iterable<T> {
      *   }
      * ```
      */
-    readonly iteratorBackwards: Iterator<T>;
+    get iteratorBackwards(): Iterator<T>;
 }
 /**
  * <span style="color: red; font-weight: bold;">NOTE: For 2.0 the #constructor argument has changed.
@@ -860,11 +863,11 @@ export class Set<T> implements Iterable<T> {
     /**
      * This read-only property is the number of elements in the Set.
      */
-    readonly count: number;
+    get count(): number;
     /**
      * This read-only property is the number of elements in the Set.
      */
-    readonly size: number;
+    get size(): number;
     /**
      * Gets an object that you can use for iterating over the Set.
      * The value will be a member of the Set.
@@ -876,26 +879,26 @@ export class Set<T> implements Iterable<T> {
      *   }
      * ```
      */
-    readonly iterator: Iterator<T>;
+    get iterator(): Iterator<T>;
     /**
-     * Undocumented.
+     * (undocumented)
      * Set the unique hash ID for an object.
      * This should be called at the beginning of each constructor that does not inherit from another class.
      */
     static uniqueHash(obj: ObjectData): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Get the unique hash ID for an object, making it if necessary.
      */
     static hashIdUnique(obj: ObjectData): number;
     /**
-     * Undocumented.
+     * (undocumented)
      * Get the unique hash ID for an object; may return undefined.
      */
     static hashId(obj: ObjectData): number | undefined;
 }
 /**
- * Undocumented
+ * (undocumented)
  * @template K,V
  * @unrestricted
  */
@@ -921,7 +924,7 @@ export class KeyValuePair<K, V> {
     value: V;
 }
 /**
- * Undocumented.
+ * (undocumented)
  * Iterating over Maps is very similar to an Iterator<KeyValuePair<K, V>>,
  * but not exactly, because the type of the value property is V, not KeyValuePair<K, V>.
  */
@@ -1194,11 +1197,11 @@ export class Map<K, V> {
     /**
      * This read-only property is the number of associations in the Map.
      */
-    readonly count: number;
+    get count(): number;
     /**
      * This read-only property is the number of associations in the Map.
      */
-    readonly size: number;
+    get size(): number;
     /**
      * Gets an object that you can use for iterating over the key-value pairs of a Map.
      * Typical usage:
@@ -1209,7 +1212,7 @@ export class Map<K, V> {
      *   }
      * ```
      */
-    readonly iterator: IMapIterator<K, V>;
+    get iterator(): IMapIterator<K, V>;
     /**
      * Gets an object that you can use for iterating over the keys of a Map.
      * Typical usage:
@@ -1221,7 +1224,7 @@ export class Map<K, V> {
      * ```
      * @since 1.4
      */
-    readonly iteratorKeys: Iterator<K>;
+    get iteratorKeys(): Iterator<K>;
     /**
      * Gets an object that you can use for iterating over the values of a Map.
      * Typical usage:
@@ -1233,7 +1236,7 @@ export class Map<K, V> {
      * ```
      * @since 1.4
      */
-    readonly iteratorValues: Iterator<V>;
+    get iteratorValues(): Iterator<V>;
 }
 /**
  * A Point represents an x- and y-coordinate pair in two-dimensional space.
@@ -1319,7 +1322,8 @@ export class Point {
      */
     equalTo(x: number, y: number): boolean;
     /**
-     * Undocumented
+     * (undocumented)
+     * True when the given Point is nearly equal to this Point.
      * @param {Point} p The Point to compare to the current Point.
      * @return {boolean} True if the two Points have X and Y values that
      * are equal with a tolerance of 0.5, false otherwise.
@@ -1404,7 +1408,41 @@ export class Point {
      */
     direction(px: number, py: number): number;
     /**
-     * Undocumented.
+     * This static function compares a point with a finite line segment.
+     *
+     * If the point is on the finite line segment, this returns zero.
+     * If the point is on the left side of the segment, this returns a positive number.
+     * If the point is on the right side of the segment, this returns a negative number.
+     * If the point is on the infinitely extended line but not within the segment,
+     * then this returns a positive number if the point is beyond the end of the segment when going from A1 to A2,
+     * or this returns a negative number if the point comes before the segment's start at A1.
+     * @param {number} a1x
+     * @param {number} a1y
+     * @param {number} a2x
+     * @param {number} a2y
+     * @param {number} px
+     * @param {number} py
+     * @return {number} &lt;0 if on the left side, or &gt;0 if on the right side, or zero if exactly on the finite line segment
+     * @since 2.2
+     */
+    static compareWithLineSegment(a1x: number, a1y: number, a2x: number, a2y: number, px: number, py: number): number;
+    /**
+     * Compare this point with a finite line segment given by two Points.
+     *
+     * This method compares this point with a finite line segment determined by the given two Points.
+     * If the point is on the finite line segment, this returns zero.
+     * If the point is on the left side of the segment, this returns a positive number.
+     * If the point is on the right side of the segment, this returns a negative number.
+     * If the point is on the infinitely extended line but not within the segment,
+     * then this returns a positive number if the point is beyond the end of the segment when going from A1 to A2,
+     * or this returns a negative number if the point comes before the segment's start at A1.
+     * @param {Point} p one end of the finite line segment
+     * @param {Point} q the other end of the finite line segment
+     * @return {number} &lt;0 if on the left side, or &gt;0 if on the right side, or zero if exactly on the finite line segment
+     * @since 2.2
+     */
+    compareWithLineSegmentPoint(p: Point, q: Point): number;
+    /**
      * This static function is true if two finite straight line segments intersect each other.
      * @param {number} a1x
      * @param {number} a1y
@@ -1514,11 +1552,13 @@ export class Point {
     /**
      * Gets or sets the x value of the Point.
      */
-    x: number;
+    get x(): number;
+    set x(value: number);
     /**
      * Gets or sets the y value of the Point.
      */
-    y: number;
+    get y(): number;
+    set y(value: number);
     /**
      * True if this Point has X and Y values that are real numbers and not infinity.
      * @return {boolean}
@@ -1627,7 +1667,8 @@ export class Size {
      */
     equalTo(w: number, h: number): boolean;
     /**
-     * Undocumented
+     * (undocumented)
+     * True when the given Size is nearly equal to this Size.
      * @param {Size} s The Size to compare to the current Size.
      * @return {boolean} True if the two Sizes have Width and Height values that
      * are equal with a tolerance of 0.5, false otherwise.
@@ -1637,12 +1678,14 @@ export class Size {
      * Gets or sets the width value of the Size.
      * The value must not be negative.
      */
-    width: number;
+    get width(): number;
+    set width(value: number);
     /**
      * Gets or sets the height value of the Size.
      * The value must not be negative.
      */
-    height: number;
+    get height(): number;
+    set height(value: number);
     /**
      * True if this Size has Width and Height values that are real numbers and not infinity.
      * @return {boolean}
@@ -1763,7 +1806,8 @@ export class Rect {
      */
     equalTo(x: number, y: number, w: number, h: number): boolean;
     /**
-     * Undocumented
+     * (undocumented)
+     * True when the given Rect is nearly equal to this Rect.
      * @param {Rect} r The Rect to compare to the current Rect.
      * @return {boolean} True if the two Rects have respective X, Y, Width,
      * and Height values within 0.5, false otherwise.
@@ -1954,7 +1998,6 @@ export class Rect {
      */
     static intersects(rx: number, ry: number, rw: number, rh: number, x: number, y: number, w: number, h: number): boolean;
     /**
-     * Undocumented.
      * This static function is true if a rectangular area is intersected by a finite straight line segment.
      * @param {number} x The X coordinate of the rectangle to check for intersection with the line segment.
      * @param {number} y The Y coordinate of the rectangle to check for intersection with the line segment.
@@ -1971,62 +2014,75 @@ export class Rect {
     /**
      * Gets or sets the top-left x coordinate of the Rect.
      */
-    x: number;
+    get x(): number;
+    set x(value: number);
     /**
      * Gets or sets the top-left y coordinate of the Rect.
      */
-    y: number;
+    get y(): number;
+    set y(value: number);
     /**
      * Gets or sets the width of the Rect.
      * The value must not be negative.
      */
-    width: number;
+    get width(): number;
+    set width(value: number);
     /**
      * Gets or sets the height of the Rect.
      * The value must not be negative.
      */
-    height: number;
+    get height(): number;
+    set height(value: number);
     /**
      * Gets or sets the leftmost value of the Rect.
      * This is the same as the X value.
      */
-    left: number;
+    get left(): number;
+    set left(value: number);
     /**
      * Gets or sets the topmost value of the Rect.
      * This is the same as the Y value.
      */
-    top: number;
+    get top(): number;
+    set top(value: number);
     /**
      * Gets or sets the x-axis value of the right of the Rect.
      * This is equal to the sum of the x value and the width.
      */
-    right: number;
+    get right(): number;
+    set right(value: number);
     /**
      * Gets or sets the y-axis value of the bottom of the Rect.
      * This is equal to the sum of the y value and the height.
      */
-    bottom: number;
+    get bottom(): number;
+    set bottom(value: number);
     /**
      * Gets or sets the x- and y-axis position of the Rect as a Point.
      */
-    position: Point;
+    get position(): Point;
+    set position(value: Point);
     /**
      * Gets or sets the width and height of the Rect as a Size.
      */
-    size: Size;
+    get size(): Size;
+    set size(value: Size);
     /**
      * Gets or sets the Point at the center of this Rect.
      * Setting this property just shifts the X and Y values.
      */
-    center: Point;
+    get center(): Point;
+    set center(value: Point);
     /**
      * Gets or sets the horizontal center X coordinate of the Rect.
      */
-    centerX: number;
+    get centerX(): number;
+    set centerX(value: number);
     /**
      * Gets or sets the vertical center Y coordinate of the Rect.
      */
-    centerY: number;
+    get centerY(): number;
+    set centerY(value: number);
     /**
      * True if this Rect has X, Y, Width, and Height values that are real numbers and not infinity.
      * @return {boolean}
@@ -2162,7 +2218,8 @@ export class Margin {
      */
     equalTo(t: number, r: number, b: number, l: number): boolean;
     /**
-     * Undocumented
+     * (undocumented)
+     * True when the given Margin is nearly equal to this Margin.
      * @param {Margin} m The Margin to compare to the current Margin.
      * @return {boolean} True if the two Margins have Top, Right,
      * Bottom and Left values within 0.5, false otherwise.
@@ -2171,19 +2228,23 @@ export class Margin {
     /**
      * Gets or sets the top value of this margin. Default is 0.
      */
-    top: number;
+    get top(): number;
+    set top(value: number);
     /**
      * Gets or sets the right value of this margin. Default is 0.
      */
-    right: number;
+    get right(): number;
+    set right(value: number);
     /**
      * Gets or sets the bottom value of this margin. Default is 0.
      */
-    bottom: number;
+    get bottom(): number;
+    set bottom(value: number);
     /**
      * Gets or sets the left value of this margin. Default is 0.
      */
-    left: number;
+    get left(): number;
+    set left(value: number);
     /**
      * True if this Margin has values that are real numbers and not infinity.
      * @return {boolean}
@@ -2301,7 +2362,8 @@ export class Spot {
      * The Spot(0.5,1) would be at the middle of the bottom side.
      * That value is commonly available as Spot.MiddleBottom.
      */
-    x: number;
+    get x(): number;
+    set x(value: number);
     /**
      * Gets or sets the y value of the Spot, a fractional value between zero and one.
      *
@@ -2310,7 +2372,8 @@ export class Spot {
      * The Spot(1,0.5) would be at the middle of the right side.
      * That value is commonly available as Spot.MiddleRight.
      */
-    y: number;
+    get y(): number;
+    set y(value: number);
     /**
      * Gets or sets the offsetX value of the Spot.
      * The value may be negative.
@@ -2320,7 +2383,8 @@ export class Spot {
      * A Spot(1,1,5,5) would be near the bottom-right corner, outside the rectangle.
      * A Spot(1,1,-5,-5) would also be near the bottom-right corner, but inside the rectangle.
      */
-    offsetX: number;
+    get offsetX(): number;
+    set offsetX(value: number);
     /**
      * Gets or sets the offsetY value of the Spot.
      * The value may be negative.
@@ -2330,7 +2394,8 @@ export class Spot {
      * A Spot(1,1,5,5) would be near the bottom-right corner, outside the rectangle.
      * A Spot(1,1,-5,-5) would also be near the bottom-right corner, but inside the rectangle.
      */
-    offsetY: number;
+    get offsetY(): number;
+    set offsetY(value: number);
     /**
      * True if this is a specific spot, not a side nor Spot.None.
      * @return {boolean}
@@ -2609,7 +2674,7 @@ export class Geometry {
      */
     static Path: EnumValue;
     /**
-     * Undocumented
+     * (undocumented)
      * @param {Geometry} g
      * @return {boolean}
      */
@@ -2708,7 +2773,6 @@ export class Geometry {
      */
     rotate(angle: number, x?: number, y?: number): Geometry;
     /**
-     * Undocumented.
      * Returns true if the Geometry contains the point.
      * @param {Point} p in local geometry coordinates
      * @param {number=} sw half the stroke width that a Shape has or that you want to pretend it has
@@ -2739,62 +2803,68 @@ export class Geometry {
      */
     getFractionForPoint(pt: Point): number;
     /**
-     * Undocumented.
+     * (undocumented)
      * Flattened segments represents a series of points making up a Geometry.
      * The inner arrays consist of a sequence of PathSegment coordinates making up a PathFigure,
      * while the outer array represents the whole Geometry of these PathFigures.
      */
-    readonly flattenedSegments: Array<Array<number>>;
+    get flattenedSegments(): Array<Array<number>>;
     /**
-     * Undocumented.
+     * (undocumented)
      * Flattened lengths represents a series of lengths of the paths making up a Geometry.
      * The inner arrays consist of a sequence of PathSegment lengths making up a PathFigure,
      * while the outer array represents the whole Geometry of these PathFigures.
      */
-    readonly flattenedLengths: Array<Array<number>>;
+    get flattenedLengths(): Array<Array<number>>;
     /**
-     * Undocumented.
+     * (undocumented)
      * This read-only property returns the approximate length of the path.
      * This is the overall distance of all the PathSegments that make up the geometry.
      */
-    readonly flattenedTotalLength: number;
+    get flattenedTotalLength(): number;
     /**
      * Gets or sets the type of the Geometry.
      * The default type is Geometry.Path.
      * Other permissible values are Geometry.Line, Geometry.Ellipse,
      * or Geometry.Rectangle.
      */
-    type: EnumValue;
+    get type(): EnumValue;
+    set type(value: EnumValue);
     /**
      * Gets or sets the starting X coordinate of the Geometry if it is of type
      * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
-    startX: number;
+    get startX(): number;
+    set startX(value: number);
     /**
      * Gets or sets the starting Y coordinate of the Geometry if it is of type
      * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
-    startY: number;
+    get startY(): number;
+    set startY(value: number);
     /**
      * Gets or sets the ending X coordinate of the Geometry if it is of type
      * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
-    endX: number;
+    get endX(): number;
+    set endX(value: number);
     /**
      * Gets or sets the ending Y coordinate of the Geometry if it is of type
      * Geometry.Line|Line, Geometry.Rectangle|Rectangle, or Geometry.Ellipse|Ellipse.
      * The initial value is zero.
      */
-    endY: number;
+    get endY(): number;
+    set endY(value: number);
     /**
      * Gets or sets the List of PathFigures
      * that describes the content of the
      * path for Geometries of type Geometry.Path|Path.
      */
-    figures: List<PathFigure>;
+    get figures(): List<PathFigure>;
+    set figures(value: List<PathFigure>);
     /**
      * Add a PathFigure to the #figures list.
      * @param {PathFigure} figure a newly allocated unshared PathFigure that will become owned by this Geometry
@@ -2803,7 +2873,8 @@ export class Geometry {
      */
     add(figure: PathFigure): Geometry;
     /**
-     * Undocumented
+     * (undocumented)
+     * Set #spot1 and #spot2 without allocating new Spots.
      * @param {number} f1x spot1.x
      * @param {number} f1y spot1.y
      * @param {number} f2x spot2.x
@@ -2820,13 +2891,15 @@ export class Geometry {
      * when the Shape#spot1 value is Spot.Default.
      * The default value is Spot.TopLeft, at the top-left point of the bounds of the Shape.
      */
-    spot1: Spot;
+    get spot1(): Spot;
+    set spot1(value: Spot);
     /**
      * Gets or sets the spot an "Auto" Panel will use for the bottom-right corner of any panel content
      * when the Shape#spot2 value is Spot.Default.
      * The default value is Spot.BottomRight, at the bottom-right point of the bounds of the Shape.
      */
-    spot2: Spot;
+    get spot2(): Spot;
+    set spot2(value: Spot);
     /**
      * Gets or sets the Shape#geometryStretch value the Shape should use by default
      * when the Shape#geometryStretch value is GraphObject.None.
@@ -2835,12 +2908,13 @@ export class Geometry {
      * in order to preserve its aspect ratio when used by a Shape that may have different sizes.
      * @since 1.5
      */
-    defaultStretch: EnumValue;
+    get defaultStretch(): EnumValue;
+    set defaultStretch(value: EnumValue);
     /**
      * This read-only property returns a rectangle that contains all points within the Geometry.
      * The result will always contain the origin (0, 0).
      */
-    readonly bounds: Rect;
+    get bounds(): Rect;
 }
 /**
  * A PathFigure represents a section of a Geometry.
@@ -2876,7 +2950,7 @@ export class PathFigure {
      */
     copy(): PathFigure;
     /**
-     * Undocumented
+     * (undocumented)
      * @param {PathFigure} f
      * @return {boolean}
      */
@@ -2885,27 +2959,32 @@ export class PathFigure {
      * Gets or sets whether this PathFigure is drawn filled.
      * The default value is true.
      */
-    isFilled: boolean;
+    get isFilled(): boolean;
+    set isFilled(value: boolean);
     /**
      * Gets or sets whether this PathFigure will render a shadow if one is defined.
      * This is used for turning off shadows on specific subpaths.
      * The default value is true.
      */
-    isShadowed: boolean;
+    get isShadowed(): boolean;
+    set isShadowed(value: boolean);
     /**
      * Gets or sets the starting point X coordinate of the PathFigure.
      * The default value is zero.
      */
-    startX: number;
+    get startX(): number;
+    set startX(value: number);
     /**
      * Gets or sets the starting point Y coordinate of the PathFigure.
      * The default value is zero.
      */
-    startY: number;
+    get startY(): number;
+    set startY(value: number);
     /**
      * Gets or sets the List of PathSegments that define this PathFigure.
      */
-    segments: List<PathSegment>;
+    get segments(): List<PathSegment>;
+    set segments(value: List<PathSegment>);
     /**
      * Add a PathSegment to the #segments list.
      * @param {PathSegment} segment a newly allocated unshared PathSegment that will become owned by this PathFigure
@@ -3002,7 +3081,7 @@ export class PathSegment {
      */
     copy(): PathSegment;
     /**
-     * Undocumented
+     * (undocumented)
      * @param {PathSegment} s
      * @return {boolean}
      */
@@ -3049,7 +3128,8 @@ export class PathSegment {
      * Gets or sets whether the path is closed after this PathSegment.
      * Default value is false.
      */
-    isClosed: boolean;
+    get isClosed(): boolean;
+    set isClosed(value: boolean);
     /**
      * Gets or sets the type of the PathSegment.
      * The value must be one of the following:
@@ -3057,65 +3137,78 @@ export class PathSegment {
      * PathSegment.QuadraticBezier, PathSegment.Arc,
      * PathSegment.Move, PathSegment.Arc, and PathSegment.SvgArc.
      */
-    type: EnumValue;
+    get type(): EnumValue;
+    set type(value: EnumValue);
     /**
      * Gets or sets the X coordinate of the end point for all types of PathSegment except PathSegment.Arc|Arc.
      * The default value is zero.
      */
-    endX: number;
+    get endX(): number;
+    set endX(value: number);
     /**
      * Gets or sets the Y coordinate of the end point for all types of PathSegment except PathSegment.Arc|Arc.
      * The default value is zero.
      */
-    endY: number;
+    get endY(): number;
+    set endY(value: number);
     /**
      * Gets or sets the X value of the first control point for a PathSegment
      * of type PathSegment.Bezier|Bezier or PathSegment.QuadraticBezier|QuadraticBezier.
      */
-    point1X: number;
+    get point1X(): number;
+    set point1X(value: number);
     /**
      * Gets or sets the Y value of the first control point for a PathSegment
      * of type PathSegment.Bezier|Bezier or PathSegment.QuadraticBezier|QuadraticBezier.
      */
-    point1Y: number;
+    get point1Y(): number;
+    set point1Y(value: number);
     /**
      * Gets or sets the X value of the second control point for a PathSegment
      * of type cubic PathSegment.Bezier|Bezier.
      */
-    point2X: number;
+    get point2X(): number;
+    set point2X(value: number);
     /**
      * Gets or sets the Y value of the second control point for a PathSegment
      * of type cubic PathSegment.Bezier|Bezier.
      */
-    point2Y: number;
+    get point2Y(): number;
+    set point2Y(value: number);
     /**
      * Gets or sets the center X value of the Arc for a PathSegment of type PathSegment.Arc|Arc.
      */
-    centerX: number;
+    get centerX(): number;
+    set centerX(value: number);
     /**
      * Gets or sets the center Y value of the Arc for a PathSegment of type PathSegment.Arc|Arc.
      */
-    centerY: number;
+    get centerY(): number;
+    set centerY(value: number);
     /**
      * Gets or sets the X value of the radius for a PathSegment of type PathSegment.Arc|Arc or PathSegment.SvgArc|SvgArc.
      * Value must be a positive number.
      */
-    radiusX: number;
+    get radiusX(): number;
+    set radiusX(value: number);
     /**
      * Gets or sets the Y value of the radius for a PathSegment of type PathSegment.Arc|Arc or PathSegment.SvgArc|SvgArc.
      * Value must be a positive number.
      */
-    radiusY: number;
+    get radiusY(): number;
+    set radiusY(value: number);
     /**
      * Gets or sets the starting angle for a PathSegment of type PathSegment.Arc|Arc.
      * Value must within the range: (0 <= value < 360).
      */
-    startAngle: number;
+    get startAngle(): number;
+    set startAngle(value: number);
     /**
      * Gets or sets the length of angle in degrees, or amount of arc to "sweep" for a PathSegment of type PathSegment.Arc|Arc.
      * Must be between -360 and 360, inclusive.
      */
-    sweepAngle: number;
+    get sweepAngle(): number;
+    set sweepAngle(value: number);
     /**
      * Gets or sets the clockwise-flag for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * SVG Arcs specify a radius and an endpoint, and are always a portion of an ellipse.
@@ -3126,7 +3219,8 @@ export class PathSegment {
      * For more information see the visual examples in the
      * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG Arc specification (w3.org)</a>
      */
-    isClockwiseArc: boolean;
+    get isClockwiseArc(): boolean;
+    set isClockwiseArc(value: boolean);
     /**
      * Gets or sets the large-arc-flag for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * SVG Arcs specify a radius and an endpoint, and are always a portion of an ellipse.
@@ -3136,14 +3230,16 @@ export class PathSegment {
      * For more information see the visual examples in the
      * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG Arc specification (w3.org)</a>
      */
-    isLargeArc: boolean;
+    get isLargeArc(): boolean;
+    set isLargeArc(value: boolean);
     /**
      * Gets or sets the X-axis rotation for a PathSegment of type PathSegment.SvgArc|SvgArc.
      * X-axis rotation is used to rotate the ellipse that the arc is created from,
      * and must be between 0 and 360 degrees.
      * Default is 0.
      */
-    xAxisRotation: number;
+    get xAxisRotation(): number;
+    set xAxisRotation(value: number);
 }
 /**
  * An InputEvent represents a mouse or keyboard or touch event.
@@ -3189,7 +3285,8 @@ export class InputEvent {
     /**
      * Gets the source diagram associated with the event.
      */
-    diagram: Diagram;
+    get diagram(): Diagram;
+    set diagram(value: Diagram);
     /**
      * Gets or sets the point at which this input event occurred.
      * The Point is in view coordinates within the viewport, not in document coordinates.
@@ -3199,7 +3296,8 @@ export class InputEvent {
      * @see Diagram#transformViewToDoc
      * @see Diagram#transformDocToView
      */
-    viewPoint: Point;
+    get viewPoint(): Point;
+    set viewPoint(value: Point);
     /**
      * Gets or sets the point at which this input event occurred, in document coordinates.
      * The Point is in document coordinates, the same as the GraphObject#position
@@ -3210,7 +3308,8 @@ export class InputEvent {
      * @see Diagram#transformViewToDoc
      * @see Diagram#transformDocToView
      */
-    documentPoint: Point;
+    get documentPoint(): Point;
+    set documentPoint(value: Point);
     /**
      * Gets or sets the modifier keys that were used with the mouse or keyboard event.
      * The number will be a combination of flags representing Control, Shift, Alt or Meta.
@@ -3219,7 +3318,8 @@ export class InputEvent {
      * @see #alt
      * @see #meta
      */
-    modifiers: number;
+    get modifiers(): number;
+    set modifiers(value: number);
     /**
      * Gets or sets the numerical value representing the mouse button that caused this event.
      *
@@ -3248,7 +3348,8 @@ export class InputEvent {
      * @see #middle
      * @see #right
      */
-    button: number;
+    get button(): number;
+    set button(value: number);
     /**
      * Gets or sets the set of buttons that are currently being held down.
      * If this is a `mouseup` event, this set of buttons does not include
@@ -3272,42 +3373,49 @@ export class InputEvent {
      * @see #middle
      * @see #right
      */
-    buttons: number;
+    get buttons(): number;
+    set buttons(value: number);
     /**
      * Gets or sets the key pressed or released as this event.
      * This property is valid if this is a keyboard event.
      */
-    key: string;
+    get key(): string;
+    set key(value: string);
     /**
      * Gets or sets whether the InputEvent represents a mouse-down or a key-down event.
      * The default value is false.
      * @since 1.1
      */
-    down: boolean;
+    get down(): boolean;
+    set down(value: boolean);
     /**
      * Gets or sets whether the InputEvent represents a mouse-up or a key-up event.
      * The default value is false.
      * @since 1.1
      */
-    up: boolean;
+    get up(): boolean;
+    set up(value: boolean);
     /**
      * Gets or sets whether this event represents a click or a double-click.
      * It is zero if not a click; one if a single-click; two if a double-click.
      * This property is valid if this is a mouse event.
      */
-    clickCount: number;
+    get clickCount(): number;
+    set clickCount(value: number);
     /**
      * Gets or sets the amount of change associated with a mouse-wheel rotation.
      * It is an abstract number, either positive or negative.
      * This property is valid if this is a mouse-wheel event.
      */
-    delta: number;
+    get delta(): number;
+    set delta(value: number);
     /**
      * This property is true when the InputEvent is caused by a touch event that registered more than one touch.
      * @see #isTouchEvent
      * @since 1.5
      */
-    isMultiTouch: boolean;
+    get isMultiTouch(): boolean;
+    set isMultiTouch(value: boolean);
     /**
      * Gets or sets whether an InputEvent that applies to a GraphObject and bubbles
      * up the chain of containing Panels is stopped from continuing up the chain.
@@ -3315,32 +3423,45 @@ export class InputEvent {
      * Some event handlers may set this to true to avoid getting any behavior from the containing Panels.
      * The default value is false.
      */
-    handled: boolean;
+    get handled(): boolean;
+    set handled(value: boolean);
     /**
-     * Undocumented
+     * Gets or sets whether the underlying #event is prevented from bubbling up
+     * the hierarchy of HTML elements outside of the Diagram and whether any default action is canceled.
+     * Setting this is uncommon, but may be needed in some CommandHandler overrides in order to
+     * pass along events, such as keystrokes, to parent elements of the Diagram.
+     *
+     * Some event handlers may set this to true if the event should continue beyond the diagram's DIV
+     * and result in any default behaviors by the user-agent.
+     * The default value is false.
+     * @since 2.2
      * @see #handled
      */
-    bubbles: boolean;
+    get bubbles(): boolean;
+    set bubbles(value: boolean);
     /**
      * Gets or sets the platform's user-agent-supplied event for this event.
      * It may be null if no underlying event exists.
      * @see #timestamp
      */
-    event: Event | null;
+    get event(): Event | null;
+    set event(value: Event | null);
     /**
      * This read-only property is true when the InputEvent is caused by a touch event.
      * @see #isMultiTouch
      * @since 1.5
      */
-    readonly isTouchEvent: boolean;
+    get isTouchEvent(): boolean;
     /**
      * Gets or sets the time at which the event occurred, in milliseconds.
      */
-    timestamp: number;
+    get timestamp(): number;
+    set timestamp(value: number);
     /**
      * Gets or sets the diagram associated with the canvas that the event is currently targeting.
      */
-    targetDiagram: Diagram | null;
+    get targetDiagram(): Diagram | null;
+    set targetDiagram(value: Diagram | null);
     /**
      * Gets or sets the GraphObject that is at the current mouse point, if any.
      *
@@ -3348,7 +3469,8 @@ export class InputEvent {
      * this property provides access to the original GraphObject where the input event occurred.
      * @see #handled
      */
-    targetObject: GraphObject | null;
+    get targetObject(): GraphObject | null;
+    set targetObject(value: GraphObject | null);
     /**
      * Gets or sets whether the control key is being held down.
      * This is true if the key was pressed at the time of the event.
@@ -3357,7 +3479,8 @@ export class InputEvent {
      * @see #alt
      * @see #meta
      */
-    control: boolean;
+    get control(): boolean;
+    set control(value: boolean);
     /**
      * Gets or sets whether the shift key is being held down.
      * This is true if the key was pressed at the time of the event.
@@ -3366,7 +3489,8 @@ export class InputEvent {
      * @see #alt
      * @see #meta
      */
-    shift: boolean;
+    get shift(): boolean;
+    set shift(value: boolean);
     /**
      * Gets or sets whether the alt key is being held down.
      * This is true if the key was pressed at the time of the event.
@@ -3375,7 +3499,8 @@ export class InputEvent {
      * @see #shift
      * @see #meta
      */
-    alt: boolean;
+    get alt(): boolean;
+    set alt(value: boolean);
     /**
      * Gets or sets whether the meta key is being held down.
      * This is true if the key was pressed at the time of the event.
@@ -3384,7 +3509,8 @@ export class InputEvent {
      * @see #shift
      * @see #alt
      */
-    meta: boolean;
+    get meta(): boolean;
+    set meta(value: boolean);
     /**
      * Gets or sets whether the logical left mouse button is being held down.
      * This is true if the button was pressed at the time of the event.
@@ -3397,7 +3523,8 @@ export class InputEvent {
      * @see #middle
      * @see #right
      */
-    left: boolean;
+    get left(): boolean;
+    set left(value: boolean);
     /**
      * Gets or sets whether the logical right mouse button is being held down.
      * This is true if the button was pressed at the time of the event.
@@ -3405,7 +3532,8 @@ export class InputEvent {
      * @see #left
      * @see #middle
      */
-    right: boolean;
+    get right(): boolean;
+    set right(value: boolean);
     /**
      * Gets or sets whether the logical middle mouse button is being held down.
      * This is true if the button was pressed at the time of the event.
@@ -3413,7 +3541,8 @@ export class InputEvent {
      * @see #left
      * @see #right
      */
-    middle: boolean;
+    get middle(): boolean;
+    set middle(value: boolean);
 }
 /**
  * A DiagramEvent represents a more abstract event than an InputEvent.
@@ -3574,23 +3703,27 @@ export class DiagramEvent {
     /**
      * Gets the diagram associated with the event.
      */
-    diagram: Diagram;
+    get diagram(): Diagram;
+    set diagram(value: Diagram);
     /**
      * Gets or sets the name of the kind of diagram event that this represents.
      * This property should always be set to one of the recognized list of names,
      * as listed in the documentation for DiagramEvent.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets an optional object that is the subject of the diagram event.
      * This property defaults to null.
      */
-    subject: any;
+    get subject(): any;
+    set subject(value: any);
     /**
      * Gets or sets an optional object that describes the change to the subject of the diagram event.
      * This property defaults to null.
      */
-    parameter: any;
+    get parameter(): any;
+    set parameter(value: any);
 }
 /**
  * The signature for a function acting as a handler for DiagramEvents.
@@ -3829,21 +3962,24 @@ export class ChangedEvent {
      * However this property and the #diagram property may both be null simultaneously,
      * when no particular model or diagram applies.
      */
-    model: Model | null;
+    get model(): Model | null;
+    set model(value: Model | null);
     /**
      * Gets or sets the Diagram that was modified.
      * When this property is non-null, the #model property will be null.
      * However this property and the #model property may both be null simultaneously,
      * when no particular model or diagram applies.
      */
-    diagram: Diagram | null;
+    get diagram(): Diagram | null;
+    set diagram(value: Diagram | null);
     /**
      * Gets or sets the nature of change that occurred.
      * The default is ChangedEvent.Property.
      * Other values are ChangedEvent.Insert, ChangedEvent.Remove,
      * and ChangedEvent.Transaction.
      */
-    change: EnumValue;
+    get change(): EnumValue;
+    set change(value: EnumValue);
     /**
      * Gets or sets the name of the model change, reflecting a change to
      * model data in addition to a change to the model itself.
@@ -3853,7 +3989,8 @@ export class ChangedEvent {
      * For a list of possible model change names, see the documentation for ChangedEvent.
      * The names are compared in a case-sensitive manner.
      */
-    modelChange: string;
+    get modelChange(): string;
+    set modelChange(value: string);
     /**
      * Gets or sets the name of the property change.
      * The default is an empty string, which is not a valid property name.
@@ -3863,7 +4000,8 @@ export class ChangedEvent {
      * (for ChangedEvent.Insert or ChangedEvent.Remove)
      * or the stage of the current transaction (for ChangedEvent.Transaction).
      */
-    propertyName: string | ((a: ObjectData, b: any) => any);
+    get propertyName(): string | ((a: ObjectData, b: any) => any);
+    set propertyName(value: string | ((a: ObjectData, b: any) => any));
     /**
      * This read-only property is true when this ChangedEvent is of type ChangedEvent.Transaction and represents the end of a transactional change.
      * It is implemented as:
@@ -3874,19 +4012,21 @@ export class ChangedEvent {
      *          this.propertyName === "FinishedRedo"));
      * ```
      */
-    readonly isTransactionFinished: boolean;
+    get isTransactionFinished(): boolean;
     /**
      * Gets or sets the Object that was modified.
      * The default is null.
      *
      * For ChangedEvent.Transaction changes, this may be the Transaction.
      */
-    object: ObjectData | null;
+    get object(): ObjectData | null;
+    set object(value: ObjectData | null);
     /**
      * Gets or sets the previous or old value that the property had.
      * The default is null.
      */
-    oldValue: any;
+    get oldValue(): any;
+    set oldValue(value: any);
     /**
      * Gets or sets an optional value associated with the old value.
      * Most properties do not require any parameter to describe the change.
@@ -3894,12 +4034,14 @@ export class ChangedEvent {
      * It is null if it is not used.
      * The default is null.
      */
-    oldParam: any;
+    get oldParam(): any;
+    set oldParam(value: any);
     /**
      * Gets or sets the next or current value that the property has.
      * The default is null.
      */
-    newValue: any;
+    get newValue(): any;
+    set newValue(value: any);
     /**
      * Gets or sets an optional value associated with the new value.
      * Most properties do not require any parameter to describe the change.
@@ -3907,7 +4049,8 @@ export class ChangedEvent {
      * It is null if it is not used.
      * The default is null.
      */
-    newParam: any;
+    get newParam(): any;
+    set newParam(value: any);
 }
 /**
  * The signature for a function acting as a handler for ChangedEvents.
@@ -3973,8 +4116,10 @@ export class Transaction {
      */
     redo(): void;
     /**
-     * Undocumented and experimental.
      * Remove all but the first and last Property ChangedEvents for each property for each object.
+     *
+     * This is now called by DraggingTool#stopTransaction in order to reduce the memory saved by each dragging transaction.
+     * @since 2.2
      */
     optimize(): void;
     /**
@@ -3983,18 +4128,20 @@ export class Transaction {
      *
      * You should not modify this list.
      */
-    readonly changes: List<ChangedEvent>;
+    get changes(): List<ChangedEvent>;
     /**
      * Gets or sets the transaction name for this collection of changes.
      * This is set by a top-level call to UndoManager#commitTransaction.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets whether we can add more ChangedEvents to this list of changes.
      * This is initially false.
      * It is set to true by UndoManager#commitTransaction and UndoManager#rollbackTransaction.
      */
-    isComplete: boolean;
+    get isComplete(): boolean;
+    set isComplete(value: boolean);
 }
 /**
  * An UndoManager observes and records model and diagram changes in transactions and
@@ -4079,10 +4226,10 @@ export class UndoManager {
      */
     clear(): void;
     /**
-     * @expose
-     * Undocumented.
+     * (undocumented)
      * Copy persistent properties from an old UndoManager to this new one.
      * This is called by the Diagram#model property setter.
+     * @expose
      * @param old
      */
     copyProperties(old: UndoManager): void;
@@ -4238,7 +4385,7 @@ export class UndoManager {
      * @see #addModel
      * @see #removeModel
      */
-    readonly models: Iterator<Model>;
+    get models(): Iterator<Model>;
     /**
      * Gets or sets whether this UndoManager records any changes.
      * The default value is false -- you need to set this to true if
@@ -4247,30 +4394,31 @@ export class UndoManager {
      * You can temporarily turn off recording by setting Diagram#skipsUndoManager
      * and Model#skipsUndoManager to true.
      */
-    isEnabled: boolean;
+    get isEnabled(): boolean;
+    set isEnabled(value: boolean);
     /**
      * This read-only property returns the Transaction in the #history to be undone next.
      * The value may be null if the UndoManager is not ready to perform an undo.
      * @see #transactionToRedo
      */
-    readonly transactionToUndo: Transaction | null;
+    get transactionToUndo(): Transaction | null;
     /**
      * This read-only property returns the Transaction in the #history to be redone next.
      * The value may be null if the UndoManager is not ready to perform a redo.
      * @see #transactionToUndo
      */
-    readonly transactionToRedo: Transaction | null;
+    get transactionToRedo(): Transaction | null;
     /**
      * This read-only property is true during a call to #undo or #redo.
      */
-    readonly isUndoingRedoing: boolean;
+    get isUndoingRedoing(): boolean;
     /**
      * This read-only property returns the whole history, a list of all of the Transactions,
      * each representing a transaction with some number of ChangedEvents.
      *
      * You should not modify this List.
      */
-    readonly history: List<Transaction>;
+    get history(): List<Transaction>;
     /**
      * Gets or sets the maximum number of transactions that this undo manager will remember.
      * When a transaction is committed and the number exceeds this value,
@@ -4288,12 +4436,13 @@ export class UndoManager {
      * Decreasing this value will not necessarily remove any existing Transactions
      * if there currently exist more in #history than the new value permits.
      */
-    maxHistoryLength: number;
+    get maxHistoryLength(): number;
+    set maxHistoryLength(value: number);
     /**
      * This read-only property returns the index into #history for the current undoable Transaction.
      * The value is -1 if there is no undoable Transaction to be undone.
      */
-    readonly historyIndex: number;
+    get historyIndex(): number;
     /**
      * This read-only property returns the current Transaction for recording additional model change events.
      * This is initialized and augmented by #handleChanged
@@ -4301,7 +4450,7 @@ export class UndoManager {
      * to #commitTransaction.
      * The value will be null between transactions.
      */
-    readonly currentTransaction: Transaction | null;
+    get currentTransaction(): Transaction | null;
     /**
      * This read-only property returns the current transaction level.
      * The value is zero when there is no ongoing transaction.
@@ -4312,7 +4461,7 @@ export class UndoManager {
      * and #canRedo will be false, because
      * additional logically related model change events may occur.
      */
-    readonly transactionLevel: number;
+    get transactionLevel(): number;
     /**
      * This read-only property is true after the first call to #startTransaction
      * and before a corresponding call to #commitTransaction or #rollbackTransaction.
@@ -4320,7 +4469,8 @@ export class UndoManager {
      * During a transaction #canUndo and #canRedo will be false.
      * #currentTransaction may be non-null if any ChangedEvents were recorded.
      */
-    readonly isInTransaction: boolean;
+    get isInTransaction(): boolean;
+    set checksTransactionLevel(value: boolean);
     /**
      * This read-only property returns a stack of ongoing transaction names.
      * The outermost transaction name will be the first item in the list.
@@ -4329,7 +4479,7 @@ export class UndoManager {
      *
      * You should not modify this List.
      */
-    readonly nestedTransactionNames: List<string>;
+    get nestedTransactionNames(): List<string>;
 }
 /**
  * Tools handle mouse, keyboard, and touch events.
@@ -4402,7 +4552,8 @@ export abstract class Tool {
      * This read-only property returns the Diagram that owns this tool and
      * for which this tool is handling input events.
      */
-    diagram: Diagram;
+    get diagram(): Diagram;
+    set diagram(val: Diagram);
     /**
      * The diagram asks each tool to update any adornments the tool might
      * use for a given part.
@@ -4673,7 +4824,11 @@ export abstract class Tool {
      * This is normally called in an override of #doDeactivate,
      * if #startTransaction was called in #doActivate.
      * Alternatively, you can surround a block of code that sets the #transactionResult
-     * with calls to startTransaction and stopTransaction.
+     * with calls to `startTransaction` and `stopTransaction`.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @expose
      * @return {boolean} the result of the call to rollback or commit the transaction.
      */
     stopTransaction(): boolean;
@@ -4876,7 +5031,8 @@ export abstract class Tool {
      * This name is sometimes used by tools that use Adornments as the Part#category for their Adornments.
      * It is also sometimes used by tools that conduct transactions as the transaction name.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets whether this tool can be started by a mouse event.
      *
@@ -4889,7 +5045,8 @@ export abstract class Tool {
      *
      * The default value is true.
      */
-    isEnabled: boolean;
+    get isEnabled(): boolean;
+    set isEnabled(value: boolean);
     /**
      * Gets or sets whether this tool is started and is actively doing something.
      *
@@ -4903,7 +5060,8 @@ export abstract class Tool {
      * The default value is false.
      * This is normally set by #doActivate and #doDeactivate.
      */
-    isActive: boolean;
+    get isActive(): boolean;
+    set isActive(value: boolean);
     /**
      * Gets or sets the name of the transaction to be committed by #stopTransaction
      *
@@ -4923,7 +5081,8 @@ export abstract class Tool {
      * for their transaction to be committed.
      * #doCancel also sets this property to null.
      */
-    transactionResult: string | null;
+    get transactionResult(): string | null;
+    set transactionResult(value: string | null);
 }
 /**
  * This special Tool is responsible for managing all of the Diagram's
@@ -5022,7 +5181,8 @@ export class ToolManager extends Tool {
      *
      * The default value is ToolManager.WheelScroll.
      */
-    mouseWheelBehavior: EnumValue;
+    get mouseWheelBehavior(): EnumValue;
+    set mouseWheelBehavior(value: EnumValue);
     /**
      * Gets or sets the ToolManager's touch pinching behavior.
      * Allowed values are ToolManager.GestureZoom and
@@ -5036,7 +5196,8 @@ export class ToolManager extends Tool {
      *
      * @since 1.5
      */
-    gestureBehavior: EnumValue;
+    get gestureBehavior(): EnumValue;
+    set gestureBehavior(value: EnumValue);
     /**
      * Initialize the three mouse tool lists with instances of the standard tools.
      * This adds new instances of tools to the following three mouse tool lists:
@@ -5186,7 +5347,8 @@ export class ToolManager extends Tool {
     /**
      * This read-only property returns the currently showing tooltip, or null if there is none.
      */
-    currentToolTip: Adornment | HTMLInfo | null;
+    get currentToolTip(): Adornment | HTMLInfo | null;
+    set currentToolTip(value: Adornment | HTMLInfo | null);
     /**
      * Iterate over the #mouseUpTools list and start the first tool
      * for which its Tool#canStart predicate returns true.
@@ -5254,9 +5416,9 @@ export class ToolManager extends Tool {
      * from the list in which it was found.
      * @return {Tool} the old tool that was replaced by the new one; this is null if none was found and the new tool was not added to any mouse tool list
      */
-    replaceTool(name: string, newtool: Tool): Tool;
+    replaceTool(name: string, newtool: Tool): Tool | null;
     /**
-     * (Undocumented)
+     * (undocumented)
      * @param {string} name
      * @param {Tool} newtool
      * @param {List.<Tool>} list
@@ -5278,7 +5440,7 @@ export class ToolManager extends Tool {
      *   - #rotatingTool, a RotatingTool
      *   - #resizingTool, a ResizingTool
      */
-    readonly mouseDownTools: List<Tool>;
+    get mouseDownTools(): List<Tool>;
     /**
      * This read-only property returns the list of Tools that might be started upon a mouse or finger move event.
      * When the ToolManager handles a mouse-move or touch-move event in #doMouseMove,
@@ -5294,7 +5456,7 @@ export class ToolManager extends Tool {
      *   - #dragSelectingTool, a DragSelectingTool
      *   - #panningTool, a PanningTool
      */
-    readonly mouseMoveTools: List<Tool>;
+    get mouseMoveTools(): List<Tool>;
     /**
      * This read-only property returns the list of Tools that might be started upon a mouse or finger up event.
      * When the ToolManager handles a mouse-up or touch-up event in #doMouseUp,
@@ -5310,7 +5472,7 @@ export class ToolManager extends Tool {
      *   - #clickCreatingTool, a ClickCreatingTool
      *   - #clickSelectingTool, a ClickSelectingTool
      */
-    readonly mouseUpTools: List<Tool>;
+    get mouseUpTools(): List<Tool>;
     /**
      * Gets or sets the time between when the mouse stops moving and a hover event,
      * in milliseconds. This value affects the delay before GraphObject#toolTips are shown.
@@ -5318,20 +5480,23 @@ export class ToolManager extends Tool {
      *
      * Set #toolTipDuration to control how long a tooltip will remain visible.
      */
-    hoverDelay: number;
+    get hoverDelay(): number;
+    set hoverDelay(value: number);
     /**
      * Gets or sets the time between when the mouse stops moving and a hold event,
      * in milliseconds.
      * The default value is 850 milliseconds.
      */
-    holdDelay: number;
+    get holdDelay(): number;
+    set holdDelay(value: number);
     /**
      * Gets or sets the distance in view coordinates within which a mouse down-and-up is considered a click and beyond which a mouse movement is considered a drag.
      * The default value is 2 pixels horizontally and vertically for mouse events, and increases by 6 pixels for touch events.
      * This value is used by Tool#isBeyondDragSize.
      * @since 1.2
      */
-    dragSize: Size;
+    get dragSize(): Size;
+    set dragSize(value: Size);
     /**
      * Gets or sets how long a tool tip is visible.
      * The default value is 5000 milliseconds.
@@ -5340,85 +5505,99 @@ export class ToolManager extends Tool {
      *
      * Set #hoverDelay to control how long the mouse should stay stationary before it shows a tooltip.
      */
-    toolTipDuration: number;
+    get toolTipDuration(): number;
+    set toolTipDuration(value: number);
     /**
      * Gets or sets the mode-less ActionTool, normally one of the #mouseDownTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    actionTool: ActionTool;
+    get actionTool(): ActionTool;
+    set actionTool(value: ActionTool);
     /**
      * Gets or sets the mode-less RelinkingTool, normally one of the #mouseDownTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    relinkingTool: RelinkingTool;
+    get relinkingTool(): RelinkingTool;
+    set relinkingTool(value: RelinkingTool);
     /**
      * Gets or sets the mode-less LinkReshapingTool, normally one of the #mouseDownTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    linkReshapingTool: LinkReshapingTool;
+    get linkReshapingTool(): LinkReshapingTool;
+    set linkReshapingTool(value: LinkReshapingTool);
     /**
      * Gets or sets the mode-less ResizingTool, normally one of the #mouseDownTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    resizingTool: ResizingTool;
+    get resizingTool(): ResizingTool;
+    set resizingTool(value: ResizingTool);
     /**
      * Gets or sets the mode-less RotatingTool, normally one of the #mouseDownTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    rotatingTool: RotatingTool;
+    get rotatingTool(): RotatingTool;
+    set rotatingTool(value: RotatingTool);
     /**
      * Gets or sets the mode-less LinkingTool, normally one of the #mouseMoveTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    linkingTool: LinkingTool;
+    get linkingTool(): LinkingTool;
+    set linkingTool(value: LinkingTool);
     /**
      * Gets or sets the mode-less DraggingTool, normally one of the #mouseMoveTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    draggingTool: DraggingTool;
+    get draggingTool(): DraggingTool;
+    set draggingTool(value: DraggingTool);
     /**
      * Gets or sets the mode-less DragSelectingTool, normally one of the #mouseMoveTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    dragSelectingTool: DragSelectingTool;
+    get dragSelectingTool(): DragSelectingTool;
+    set dragSelectingTool(value: DragSelectingTool);
     /**
      * Gets or sets the mode-less PanningTool, normally one of the #mouseMoveTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    panningTool: PanningTool;
+    get panningTool(): PanningTool;
+    set panningTool(value: PanningTool);
     /**
      * Gets or sets the mode-less ContextMenuTool, normally one of the #mouseUpTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    contextMenuTool: ContextMenuTool;
+    get contextMenuTool(): ContextMenuTool;
+    set contextMenuTool(value: ContextMenuTool);
     /**
      * Gets or sets the mode-less TextEditingTool, normally one of the #mouseUpTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    textEditingTool: TextEditingTool;
+    get textEditingTool(): TextEditingTool;
+    set textEditingTool(value: TextEditingTool);
     /**
      * Gets or sets the mode-less ClickCreatingTool, normally one of the #mouseUpTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    clickCreatingTool: ClickCreatingTool;
+    get clickCreatingTool(): ClickCreatingTool;
+    set clickCreatingTool(value: ClickCreatingTool);
     /**
      * Gets or sets the mode-less ClickSelectingTool, normally one of the #mouseUpTools.
      *
      * You can disable this tool by setting its Tool#isEnabled property to false.
      */
-    clickSelectingTool: ClickSelectingTool;
+    get clickSelectingTool(): ClickSelectingTool;
+    set clickSelectingTool(value: ClickSelectingTool);
 }
 /**
  * The DraggingTool is used to move or copy selected parts with the mouse.
@@ -5543,7 +5722,8 @@ export class DraggingTool extends Tool {
      * Setting this property does not raise any events.
      * @since 1.4
      */
-    isCopyEnabled: boolean;
+    get isCopyEnabled(): boolean;
+    set isCopyEnabled(value: boolean);
     /**
      * Gets or sets whether for a copying operation the extended selection
      * is copied or only the selected parts.
@@ -5553,7 +5733,8 @@ export class DraggingTool extends Tool {
      * The CommandHandler#copiesConnectedLinks property serves a similar role for the CommandHandler#copySelection command,
      * when the user types control-C to copy the currently selected parts.
      */
-    copiesEffectiveCollection: boolean;
+    get copiesEffectiveCollection(): boolean;
+    set copiesEffectiveCollection(value: boolean);
     /**
      * Gets or sets the DraggingTool's DraggingOptions instance, which controls several dragging properties.
      *
@@ -5571,7 +5752,8 @@ export class DraggingTool extends Tool {
      * Setting this property does not raise any events.
      * @since 2.0
      */
-    dragOptions: DraggingOptions;
+    get dragOptions(): DraggingOptions;
+    set dragOptions(value: DraggingOptions);
     /**
      * Gets or sets whether the DraggingTool snaps objects to grid points.
      * Whether the snapping movement of the dragged parts occurs during the drag or only upon a drop
@@ -5585,14 +5767,16 @@ export class DraggingTool extends Tool {
      *
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
-    isGridSnapEnabled: boolean;
+    get isGridSnapEnabled(): boolean;
+    set isGridSnapEnabled(value: boolean);
     /**
      * Gets or sets whether link routing takes some short-cuts during dragging.
      * When false Links whose routing is AvoidsNodes are not routed to avoid Nodes, in order to improve dragging performance.
      * The default value is true.
      * @since 1.4
      */
-    isComplexRoutingRealtime: boolean;
+    get isComplexRoutingRealtime(): boolean;
+    set isComplexRoutingRealtime(value: boolean);
     /**
      * Gets or sets whether the DraggingTool snaps objects to grid points during the drag.
      * This property is ignored unless #isGridSnapEnabled is true.
@@ -5602,7 +5786,8 @@ export class DraggingTool extends Tool {
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      * @since 1.1
      */
-    isGridSnapRealtime: boolean;
+    get isGridSnapRealtime(): boolean;
+    set isGridSnapRealtime(value: boolean);
     /**
      * Gets or sets the size of the grid cell used when snapping during a drag
      * if the value of #isGridSnapEnabled is true.
@@ -5611,7 +5796,8 @@ export class DraggingTool extends Tool {
      *
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
-    gridSnapCellSize: Size;
+    get gridSnapCellSize(): Size;
+    set gridSnapCellSize(value: Size);
     /**
      * Gets or sets the Spot that specifies what point in the grid cell dragged parts snap to,
      * if the value of #isGridSnapEnabled is true.
@@ -5621,7 +5807,8 @@ export class DraggingTool extends Tool {
      *
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
-    gridSnapCellSpot: Spot;
+    get gridSnapCellSpot(): Spot;
+    set gridSnapCellSpot(value: Spot);
     /**
      * Gets or sets the snapping grid's origin point, in document coordinates,
      * if the value of #isGridSnapEnabled is true.
@@ -5631,7 +5818,8 @@ export class DraggingTool extends Tool {
      *
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
-    gridSnapOrigin: Point;
+    get gridSnapOrigin(): Point;
+    set gridSnapOrigin(value: Point);
     /**
      * Gets or sets whether the user can drag a single Link,
      * disconnecting it from its connected nodes and possibly connecting it
@@ -5645,7 +5833,8 @@ export class DraggingTool extends Tool {
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      * @since 1.3
      */
-    dragsLink: boolean;
+    get dragsLink(): boolean;
+    set dragsLink(value: boolean);
     /**
      * Gets or sets whether moving or copying a node also includes all of the
      * node's tree children and their descendants, along with the links to those additional nodes.
@@ -5657,33 +5846,35 @@ export class DraggingTool extends Tool {
      *
      * This property is a convenience getter/setter, and sets a value on dragOptions.
      */
-    dragsTree: boolean;
+    get dragsTree(): boolean;
+    set dragsTree(value: boolean);
     /**
-     * Undocumented.
      * The cursor to show when a drop is allowed and will result in a copy.
      * This defaults to 'copy'.
      * @since 2.2
      */
-    copyCursor: string;
+    get copyCursor(): string;
+    set copyCursor(c: string);
     /**
-     * Undocumented.
      * The cursor to show when a drop is allowed and will result in a move.
      * This defaults to the empty string, which refers to the Diagram#defaultCursor.
      * @since 2.2
      */
-    moveCursor: string;
+    get moveCursor(): string;
+    set moveCursor(c: string);
     /**
-     * Undocumented.
      * The cursor to show when a drop is not allowed.
      * This defaults to 'no-drop'.
      * @since 2.2
      */
-    nodropCursor: string;
+    get nodropCursor(): string;
+    set nodropCursor(c: string);
     /**
      * Gets the Part found at the mouse point.
      * This is normally set by a call to #standardMouseSelect.
      */
-    currentPart: Part | null;
+    get currentPart(): Part | null;
+    set currentPart(value: Part | null);
     /**
      * Gets the collection of Parts that this tool has copied.
      * The value is a Map mapping Parts to DraggingInfo Objects
@@ -5692,7 +5883,8 @@ export class DraggingTool extends Tool {
      *
      * #draggedParts provides the map of Parts that are being moved and from which this collection was copied.
      */
-    copiedParts: Map<Part, DraggingInfo> | null;
+    get copiedParts(): Map<Part, DraggingInfo> | null;
+    set copiedParts(value: Map<Part, DraggingInfo> | null);
     /**
      * Gets the collection of Parts being moved.
      * The value is a Map mapping Parts to DraggingInfo Objects
@@ -5700,13 +5892,16 @@ export class DraggingTool extends Tool {
      *
      * #copiedParts provides the map of Parts that have been copied during a copying operation, if any.
      */
-    draggedParts: Map<Part, DraggingInfo> | null;
+    get draggedParts(): Map<Part, DraggingInfo> | null;
+    set draggedParts(value: Map<Part, DraggingInfo> | null);
     /**
-     * Undocumented.
+     * (undocumented)
      * This read-only property returns a Set that holds all of the Parts that are currently being dragged for either copying or moving.
      * @return {Set.<Part>} Returns the Map#toKeySet of either #copiedParts or #draggedParts, or else an empty Set.
      */
-    readonly draggingParts: Set<Part>;
+    get draggingParts(): Set<Part>;
+    set draggedLink(value: Link);
+    set isDragOutStarted(value: boolean);
     /**
      * Gets or sets the mouse point from which parts start to move.
      * The value is a Point in document coordinates.
@@ -5714,14 +5909,16 @@ export class DraggingTool extends Tool {
      * but may be set to a different point if parts are being copied from a different control.
      * Setting this property does not raise any events.
      */
-    startPoint: Point;
+    get startPoint(): Point;
+    set startPoint(value: Point);
     /**
      * On touch gestures only, this property gets or sets the time in milliseconds
      * for which the mouse must be stationary before this tool can be started.
      * The default value is 100 milliseconds.
      * Setting this property does not raise any events.
      */
-    delay: number;
+    get delay(): number;
+    set delay(value: number);
     /**
      * This tool can run if the diagram allows selection and moves/copies/dragging-out,
      * if the mouse has moved far enough away to be a drag and not a click,
@@ -5785,6 +5982,17 @@ export class DraggingTool extends Tool {
      */
     doDeactivate(): void;
     /**
+     * This calls the super Tool#stopTransaction method, and if the result is `true`,
+     * attempts to optimize the transaction by removing all changes except the first and last
+     * by calling Transaction#optimize.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @expose
+     * @return {boolean} the result of the call to rollback or commit the transaction.
+     */
+    stopTransaction(): boolean;
+    /**
      * Abort any dragging operation.
      */
     doCancel(): void;
@@ -5818,7 +6026,7 @@ export class DraggingTool extends Tool {
      */
     moveParts(parts: Map<Part, DraggingInfo>, offset: Point, check?: boolean): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * @expose
      * @param pt
      * @return {GraphObject|null}
@@ -5877,7 +6085,7 @@ export class DraggingTool extends Tool {
      */
     doMouseUp(): void;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {Event} e
      * @param {Point} modelpt
@@ -5886,7 +6094,7 @@ export class DraggingTool extends Tool {
      */
     simulatedMouseMove(e: Event | Touch | null, modelpt: Point, overdiag: Diagram | null): boolean;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {Event} e
      * @param {Point} modelpt
@@ -5966,7 +6174,8 @@ export abstract class LinkingBaseTool extends Tool {
      * The value must be non-negative.
      * Setting this property does not raise any events.
      */
-    portGravity: number;
+    get portGravity(): number;
+    set portGravity(value: number);
     /**
      * Gets or sets whether it is valid to have partly or completely unconnected links.
      *
@@ -5974,75 +6183,87 @@ export abstract class LinkingBaseTool extends Tool {
      * Setting this property does not raise any events.
      * @since 1.3
      */
-    isUnconnectedLinkValid: boolean;
+    get isUnconnectedLinkValid(): boolean;
+    set isUnconnectedLinkValid(value: boolean);
     /**
-     * Undocumented.
      * Gets or sets the cursor used during the linking or relinking operation.
      * This defaults to 'pointer'.
      * @since 2.2
      */
-    linkingCursor: string;
+    get linkingCursor(): string;
+    set linkingCursor(c: string);
     /**
      * Gets or sets the temporary Link that is shown while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
      */
-    temporaryLink: Link;
+    get temporaryLink(): Link;
+    set temporaryLink(value: Link);
     /**
      * Gets or sets the temporary Node at the "from" end of the #temporaryLink
      * while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
      */
-    temporaryFromNode: Node;
+    get temporaryFromNode(): Node;
+    set temporaryFromNode(value: Node);
     /**
      * Gets or sets the GraphObject that is the port at the "from" end of the #temporaryLink
      * while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
      */
-    temporaryFromPort: GraphObject;
+    get temporaryFromPort(): GraphObject;
+    set temporaryFromPort(value: GraphObject);
     /**
      * Gets or sets the temporary Node at the "to" end of the #temporaryLink
      * while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
      */
-    temporaryToNode: Node;
+    get temporaryToNode(): Node;
+    set temporaryToNode(value: Node);
     /**
      * Gets or sets the GraphObject that is the port at the "to" end of the #temporaryLink
      * while the user is drawing or reconnecting a link.
      * Setting this property does not raise any events.
      */
-    temporaryToPort: GraphObject;
+    get temporaryToPort(): GraphObject;
+    set temporaryToPort(value: GraphObject);
     /**
      * Gets or sets the original Link being reconnected by the RelinkingTool.
      * Setting this property does not raise any events.
      */
-    originalLink: Link | null;
+    get originalLink(): Link | null;
+    set originalLink(value: Link | null);
     /**
      * Gets or sets the original Node from which the new link is being drawn
      * or from which the #originalLink was connected when being relinked.
      * Setting this property does not raise any events.
      */
-    originalFromNode: Node | null;
+    get originalFromNode(): Node | null;
+    set originalFromNode(value: Node | null);
     /**
      * Gets or sets the GraphObject that is the port in the #originalFromNode.
      * Setting this property does not raise any events.
      */
-    originalFromPort: GraphObject | null;
+    get originalFromPort(): GraphObject | null;
+    set originalFromPort(value: GraphObject | null);
     /**
      * Gets or sets the original Node to which the new link is being drawn
      * or to which the #originalLink was connected when being relinked.
      * Setting this property does not raise any events.
      */
-    originalToNode: Node | null;
+    get originalToNode(): Node | null;
+    set originalToNode(value: Node | null);
     /**
      * Gets or sets the GraphObject that is the port in the #originalToNode.
      * Setting this property does not raise any events.
      */
-    originalToPort: GraphObject | null;
+    get originalToPort(): GraphObject | null;
+    set originalToPort(value: GraphObject | null);
     /**
      * Gets whether the linking operation is in the forwards direction,
      * connecting from the "From" port to the "To" port.
      */
-    isForwards: boolean;
+    get isForwards(): boolean;
+    set isForwards(value: boolean);
     /**
      * Gets or sets a proposed GraphObject port for connecting a link.
      * Whether this is a "to" port or a "from" port depends on the direction
@@ -6052,7 +6273,8 @@ export abstract class LinkingBaseTool extends Tool {
      * with the result of a call to #findTargetPort.
      * Setting this property does not raise any events.
      */
-    targetPort: GraphObject | null;
+    get targetPort(): GraphObject | null;
+    set targetPort(value: GraphObject | null);
     /**
      * Make a temporary port look and act like a real one.
      *
@@ -6245,7 +6467,8 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    linkValidation: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
+    get linkValidation(): ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
+    set linkValidation(value: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null);
     /**
      * Gets or sets a function that is called as the tool targets the nearest valid port.
      * The first two arguments specify the port by providing the Node that it is in
@@ -6263,7 +6486,8 @@ export abstract class LinkingBaseTool extends Tool {
      * nor may it change the validity of any potential link connection.
      * @since 1.2
      */
-    portTargeted: ((node: Node | null, port: GraphObject | null, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null;
+    get portTargeted(): ((node: Node | null, port: GraphObject | null, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null;
+    set portTargeted(value: ((node: Node | null, port: GraphObject | null, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void) | null);
 }
 /**
  * The LinkingTool lets a user draw a new Link between two ports,
@@ -6342,7 +6566,8 @@ export class LinkingTool extends LinkingBaseTool {
      * Setting this property does not raise any events.
      * This property is ignored if the Diagram#model is not a GraphLinksModel.
      */
-    archetypeLinkData: ObjectData | null;
+    get archetypeLinkData(): ObjectData | null;
+    set archetypeLinkData(value: ObjectData | null);
     /**
      * Gets or sets an optional node data object representing a link label, that is copied by #insertLink
      * and added to the GraphLinksModel when creating a new Link.
@@ -6356,14 +6581,16 @@ export class LinkingTool extends LinkingBaseTool {
      * Setting this property does not raise any events.
      * This property is ignored if the Diagram#model is not a GraphLinksModel.
      */
-    archetypeLabelNodeData: ObjectData | null;
+    get archetypeLabelNodeData(): ObjectData | null;
+    set archetypeLabelNodeData(value: ObjectData | null);
     /**
      * Gets or sets the direction in which new links may be drawn.
      * Possible values are LinkingTool.ForwardsOnly, LinkingTool.BackwardsOnly, or LinkingTool.Either.
      * This defaults to LinkingTool.Either.
      * Setting this property does not raise any events.
      */
-    direction: EnumValue;
+    get direction(): EnumValue;
+    set direction(value: EnumValue);
     /**
      * Gets or sets the GraphObject at which #findLinkablePort should start its search.
      * The default value is null.
@@ -6381,7 +6608,8 @@ export class LinkingTool extends LinkingBaseTool {
      *   tool.doActivate();
      * ```
      */
-    startObject: GraphObject | null;
+    get startObject(): GraphObject | null;
+    set startObject(value: GraphObject | null);
     /**
      * This tool can run when the diagram allows linking, the model is modifiable,
      * the left-button mouse drag has moved far enough away to not be a click, and
@@ -6539,13 +6767,17 @@ export class RelinkingTool extends LinkingBaseTool {
      */
     updateAdornments(part: Part): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Create and return an Adornment that lets the user grab a handle to reconnect one end of the selected link.
+     *
+     * This method may be overridden, but we recommend that you call this base method.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {GraphObject} selelt the GraphObject of the Link being relinked.
      * @param {boolean} toend
      * @return {Adornment}
      */
-    makeAdornment(selelt: GraphObject, toend: boolean): Adornment;
+    makeAdornment(selelt: GraphObject, toend: boolean): Adornment | null;
     /**
      * Gets or sets a small GraphObject that is copied as a relinking handle for the selected link path
      * at the "from" end of the link.
@@ -6560,7 +6792,8 @@ export class RelinkingTool extends LinkingBaseTool {
      * ```
      * @see #toHandleArchetype
      */
-    fromHandleArchetype: GraphObject | null;
+    get fromHandleArchetype(): GraphObject | null;
+    set fromHandleArchetype(value: GraphObject | null);
     /**
      * Gets or sets a small GraphObject that is copied as a relinking handle for the selected link path
      * at the "to" end of the link.
@@ -6575,7 +6808,8 @@ export class RelinkingTool extends LinkingBaseTool {
      * ```
      * @see #fromHandleArchetype
      */
-    toHandleArchetype: GraphObject | null;
+    get toHandleArchetype(): GraphObject | null;
+    set toHandleArchetype(value: GraphObject | null);
     /**
      * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "RelinkFrom" or "RelinkTo".
@@ -6584,7 +6818,8 @@ export class RelinkingTool extends LinkingBaseTool {
      * This property is also settable, but should only be set either within an override of #doActivate
      * or prior to calling #doActivate.
      */
-    handle: GraphObject | null;
+    get handle(): GraphObject | null;
+    set handle(value: GraphObject | null);
     /**
      * This tool can run when the diagram allows relinking, the model is modifiable,
      * and there is a relink handle at the mouse-down point.
@@ -6758,20 +6993,23 @@ export class LinkReshapingTool extends Tool {
      */
     updateAdornments(part: Part): void;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {GraphObject} pathshape
      * @return {Adornment}
      */
-    makeAdornment(pathshape: GraphObject): Adornment;
+    makeAdornment(pathshape: GraphObject): Adornment | null;
     /**
-     * Undocumented
+     * (undocumented)
+     * Create and return a GraphObject that the user can "grab" to relink the selected Link.
+     * By default this returns a copy of #handleArchetype, a Shape that is a small blue rectangle.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {GraphObject} pathshape the GraphObject path of the link being reshaped.
      * @param {number} idx the index of the route point to be moved.
      * @return {GraphObject}
      */
-    makeHandle(pathshape: GraphObject, idx: number): GraphObject;
+    makeHandle(pathshape: GraphObject, idx: number): GraphObject | null;
     /**
      * Gets or sets a small GraphObject that is copied as a reshape handle at each movable point in the selected link's route.
      * By default this is a Shape that is a small blue rectangle.
@@ -6785,15 +7023,19 @@ export class LinkReshapingTool extends Tool {
      * ```
      * @see #midHandleArchetype
      */
-    handleArchetype: GraphObject | null;
+    get handleArchetype(): GraphObject | null;
+    set handleArchetype(value: GraphObject | null);
     /**
-     * Undocumented
+     * (undocumented)
+     * Create and return a GraphObject that the user can "grab" to add a segment to the selected Link.
+     * By default this returns a copy of #midHandleArchetype, a Shape that is a small blue diamond.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {GraphObject} pathshape the GraphObject path of the link being reshaped.
      * @param {number} idx the index of the route point to be moved.
      * @return {GraphObject}
      */
-    makeResegmentHandle(pathshape: GraphObject, idx: number): GraphObject;
+    makeResegmentHandle(pathshape: GraphObject, idx: number): GraphObject | null;
     /**
      * Gets or sets a small GraphObject that is copied as a resegment handle at each mid-point in the selected Link's route.
      * By default this is a Shape that is a small blue diamond.
@@ -6807,18 +7049,20 @@ export class LinkReshapingTool extends Tool {
      * @see #handleArchetype
      * @since 1.2
      */
-    midHandleArchetype: GraphObject | null;
+    get midHandleArchetype(): GraphObject | null;
+    set midHandleArchetype(value: GraphObject | null);
     /**
      * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "LinkReshaping".
      * Its Adornment#adornedPart is the same as the #adornedLink.
      * This is normally set by #doActivate, remembering the result of the call to Tool#findToolHandleAt.
      */
-    handle: GraphObject | null;
+    get handle(): GraphObject | null;
+    set handle(value: GraphObject | null);
     /**
      * This read-only property returns the Link that is being routed manually.
      */
-    readonly adornedLink: Link | null;
+    get adornedLink(): Link | null;
     /**
      * This tool may run when there is a mouse-down event on a reshape handle.
      *
@@ -6846,7 +7090,10 @@ export class LinkReshapingTool extends Tool {
      */
     doCancel(): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * If the handle clicked during activation was a resegment handle, return the point at which to start a new segment.
+     * By default this returns the center of the handle that was clicked.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @return {Point} the point where resegmenting begins
      */
@@ -6861,6 +7108,7 @@ export class LinkReshapingTool extends Tool {
      * and then raise a "LinkReshaped" DiagramEvent before stopping this tool.
      */
     doMouseUp(): void;
+    set resegmentingDistance(value: number);
     /**
      * Change the route of the #adornedLink by moving the point corresponding to the current
      * #handle to be at the given Point.
@@ -6892,13 +7140,13 @@ export class LinkReshapingTool extends Tool {
      * This read-only property returns the Point that was the original location of the handle that is being dragged to reshape the Link.
      * @since 1.1
      */
-    readonly originalPoint: Point;
+    get originalPoint(): Point;
     /**
      * This read-only property returns the List of Points that was the original route of the Link that is being reshaped.
      * This List should not be modified; its value is indeterminate until a reshaping has been activated.
      * @since 1.1
      */
-    readonly originalPoints: List<Point>;
+    get originalPoints(): List<Point>;
 }
 /**
  * The ResizingTool is used to interactively change the size of a GraphObject
@@ -6988,14 +7236,19 @@ export class ResizingTool extends Tool {
      */
     updateAdornments(part: Part): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Create and return an Adornment that lets the user grab a handle to resize the selected part.
+     * The Adornment will be a "Spot" Panel with a Placeholder and eight copies of #handleArchetype.
+     * Each handle will have one of the standard Spots as their GraphObject#alignment.
+     *
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {GraphObject} resizeObj the GraphObject being resized.
      * @return {Adornment}
      */
-    makeAdornment(resizeObj: GraphObject): Adornment;
+    makeAdornment(resizeObj: GraphObject): Adornment | null;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {GraphObject} elt
      * @param {number} angle
@@ -7018,7 +7271,8 @@ export class ResizingTool extends Tool {
      * holding eight copies of this handle archetype, each with a GraphObject#alignment being one of the
      * standard eight Spots.
      */
-    handleArchetype: GraphObject | null;
+    get handleArchetype(): GraphObject | null;
+    set handleArchetype(value: GraphObject | null);
     /**
      * Returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "ResizingTool".
@@ -7028,7 +7282,8 @@ export class ResizingTool extends Tool {
      * This property is also settable, but should only be set either within an override of #doActivate
      * or prior to calling #doActivate.
      */
-    handle: GraphObject | null;
+    get handle(): GraphObject | null;
+    set handle(value: GraphObject | null);
     /**
      * Gets the GraphObject that is being resized.
      * This may be the same object as the selected Part or it may be contained within that Part.
@@ -7036,7 +7291,8 @@ export class ResizingTool extends Tool {
      * This property is also settable, but should only be set when overriding functions
      * in ResizingTool, and not during normal operation.
      */
-    adornedObject: GraphObject | null;
+    get adornedObject(): GraphObject | null;
+    set adornedObject(value: GraphObject | null);
     /**
      * This tool may run when there is a mouse-down event on a resize handle,
      * the diagram is not read-only and it allows resizing,
@@ -7126,12 +7382,13 @@ export class ResizingTool extends Tool {
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      *
      * For example, to always keep the object's original aspect ratio, override this method to return false.
-     * When calling GraphObject.make to initialize a Diagram:
+     * When initializing a Diagram:
      * ```js
-     * $(go.Diagram, . . .,
+     * const diagram = new go.Diagram, "myDiagramDiv"
      *   {
      *     "resizingTool.computeReshape": function() { return false; },
-     *     . . . })
+     *     // ... rest of Diagram init
+     *   })
      * ```
      * Or when overriding the method dynamically:
      * ```js
@@ -7187,7 +7444,8 @@ export class ResizingTool extends Tool {
      * Any new value must be of type Size; `NaN` width or height values are treated as zero.
      * Setting this property does not raise any events.
      */
-    minSize: Size;
+    get minSize(): Size;
+    set minSize(value: Size);
     /**
      * Gets or sets the maximum size to which the user can resize.
      * The effective maximum size is the minimum of this value and the GraphObject#maxSize,
@@ -7197,7 +7455,8 @@ export class ResizingTool extends Tool {
      * Any new value must be of type Size; `NaN` width or height values are treated as Infinity.
      * Setting this property does not raise any events.
      */
-    maxSize: Size;
+    get maxSize(): Size;
+    set maxSize(value: Size);
     /**
      * Gets or sets the width and height multiples with which the user must resize.
      * The effective cell size is computed by first looking at the Adornment#adornedPart's Part#resizeCellSize.
@@ -7208,38 +7467,42 @@ export class ResizingTool extends Tool {
      * The default value is `go.Size(NaN, NaN)`.
      * Setting this property does not raise any events.
      */
-    cellSize: Size;
+    get cellSize(): Size;
+    set cellSize(value: Size);
     /**
      * Gets or sets whether the ResizingTool snaps object sizes to the diagram's background grid during the resize.
      * By default this property is false.
      * Setting this property does not raise any events.
      */
-    isGridSnapEnabled: boolean;
+    get isGridSnapEnabled(): boolean;
+    set isGridSnapEnabled(value: boolean);
     /**
      * Gets or sets whether the ResizingTool moves the member Parts of a Group that has no Group#placeholder.
      * By default this property is true.
      * Setting this property does not raise any events.
      * @since 2.1.26
      */
-    dragsMembers: boolean;
+    get dragsMembers(): boolean;
+    set dragsMembers(value: boolean);
     /**
-     * Undocumented.
      * Gets the Point opposite to the chosen, dragged handle of the "Resizing" Adornment.
      * This property has no meaning until after #doActivate has been called.
+     * @since 2.2
      */
-    oppositePoint: Point;
+    get oppositePoint(): Point;
+    set oppositePoint(value: Point);
     /**
      * This read-only property returns the Size that was the original value of the GraphObject#desiredSize
      * of the element that is being resized.
      * @since 1.1
      */
-    readonly originalDesiredSize: Size;
+    get originalDesiredSize(): Size;
     /**
      * This read-only property returns the Point that was the original value of the Part#location
      * of the Part that is being resized.
      * @since 1.1
      */
-    readonly originalLocation: Point;
+    get originalLocation(): Point;
 }
 /**
  * The RotatingTool is used to interactively change the GraphObject#angle of a GraphObject
@@ -7310,12 +7573,14 @@ export class RotatingTool extends Tool {
      */
     updateAdornments(part: Part): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Create and return an Adornment that lets the user grab a handle to rotate an object in the selected part.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @param {GraphObject} rotateObj the GraphObject being rotated.
      * @return {Adornment}
      */
-    makeAdornment(rotateObj: GraphObject): Adornment;
+    makeAdornment(rotateObj: GraphObject): Adornment | null;
     /**
      * Gets or sets a small GraphObject that is copied as a rotation handle for the selected part.
      * By default this is a Shape that is a small yellow circle.
@@ -7330,7 +7595,8 @@ export class RotatingTool extends Tool {
      *
      * This property is ignored when a custom rotating Adornment is specified as the Part#rotateAdornmentTemplate.
      */
-    handleArchetype: GraphObject | null;
+    get handleArchetype(): GraphObject | null;
+    set handleArchetype(value: GraphObject | null);
     /**
      * This read-only property returns the GraphObject that is the tool handle being dragged by the user.
      * This will be contained by an Adornment whose category is "RotatingTool".
@@ -7339,7 +7605,8 @@ export class RotatingTool extends Tool {
      * This property is also settable, but should only be set either within an override of #doActivate
      * or prior to calling #doActivate.
      */
-    handle: GraphObject | null;
+    get handle(): GraphObject | null;
+    set handle(value: GraphObject | null);
     /**
      * Gets the GraphObject that is being rotated.
      * This may be the same object as the selected Part or it may be contained within that Part.
@@ -7347,7 +7614,8 @@ export class RotatingTool extends Tool {
      * This property is also settable, but should only be set when overriding functions
      * in RotatingTool, and not during normal operation.
      */
-    adornedObject: GraphObject | null;
+    get adornedObject(): GraphObject | null;
+    set adornedObject(value: GraphObject | null);
     /**
      * This tool may run when there is a mouse-down event on a rotate handle,
      * the diagram is not read-only and it allows rotation,
@@ -7435,7 +7703,8 @@ export class RotatingTool extends Tool {
      * A value of zero for #snapAngleMultiple results in no snapping at all.
      * Setting this property does not raise any events.
      */
-    snapAngleMultiple: number;
+    get snapAngleMultiple(): number;
+    set snapAngleMultiple(value: number);
     /**
      * Gets or sets the the closeness to a desired angle at which the angle is "snapped to".
      *
@@ -7447,21 +7716,23 @@ export class RotatingTool extends Tool {
      * #snapAngleMultiple -- no other angles between them.
      * Setting this property does not raise any events.
      */
-    snapAngleEpsilon: number;
+    get snapAngleEpsilon(): number;
+    set snapAngleEpsilon(value: number);
     /**
      * This read-only property returns the angle that was the original value of the GraphObject#angle
      * of the GraphObject that is being rotated.
      * The value is invalid when this tool is not active.
      * @since 1.1
      */
-    readonly originalAngle: number;
+    get originalAngle(): number;
     /**
      * Gets or sets the Point at which the axis of the rotation should be.
      * #doActivate saves here the value returned by the call to #computeRotationPoint.
      * The value is invalid when this tool is not active.
      * @since 2.0
      */
-    rotationPoint: Point;
+    get rotationPoint(): Point;
+    set rotationPoint(value: Point);
     /**
      * Gets or sets the spot to locate the Adornment for the rotation handle when it does not have a Placeholder.
      * This assumes the Adornment's location will be at the center of the rotation handle.
@@ -7472,7 +7743,8 @@ export class RotatingTool extends Tool {
      * with respect to the #rotationPoint.
      * @since 2.0
      */
-    handleAngle: number;
+    get handleAngle(): number;
+    set handleAngle(value: number);
     /**
      * Gets or sets the spot to locate the Adornment at a particular distance from the #adornedObject.
      * This assumes the Adornment's location will be at the center of the rotation handle.
@@ -7481,7 +7753,8 @@ export class RotatingTool extends Tool {
      * so that it is placed to the right of an un-rotated object.
      * @since 2.0
      */
-    handleDistance: number;
+    get handleDistance(): number;
+    set handleDistance(value: number);
 }
 /**
  * The ClickSelectingTool selects and deselects Parts when there is a click.
@@ -7655,21 +7928,23 @@ export class ClickCreatingTool extends Tool {
      * @param {Point} loc a Point in document coordinates.
      * @return {Part} the newly created Part, or null if it failed.
      */
-    insertPart(loc: Point): Part;
+    insertPart(loc: Point): Part | null;
     /**
      * Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes.
      * The default value is null.
      * The value must be non-null for this tool to be able to run.
      * Setting this property does not raise any events.
      */
-    archetypeNodeData: ObjectData | null;
+    get archetypeNodeData(): ObjectData | null;
+    set archetypeNodeData(value: ObjectData | null);
     /**
      * Gets or sets whether a double click rather than a single-click is required
      * to insert a new Part at the mouse-up point.
      * The default value is true -- only a double-click will cause a node to be created.
      * Setting this property does not raise any events.
      */
-    isDoubleClick: boolean;
+    get isDoubleClick(): boolean;
+    set isDoubleClick(value: boolean);
     /**
      * Gets or sets whether the ClickCreatingTool snaps object sizes to the diagram's background grid during creation.
      * By default this property is false.
@@ -7677,7 +7952,8 @@ export class ClickCreatingTool extends Tool {
      *
      * @since 2.0
      */
-    isGridSnapEnabled: boolean;
+    get isGridSnapEnabled(): boolean;
+    set isGridSnapEnabled(value: boolean);
 }
 /**
  * The DragSelectingTool lets the user select multiple parts within a rectangular area drawn by the user.
@@ -7791,14 +8067,16 @@ export class DragSelectingTool extends Tool {
      * The default value is 175 milliseconds.
      * Setting this property does not raise any events.
      */
-    delay: number;
+    get delay(): number;
+    set delay(value: number);
     /**
      * Gets or sets whether a selectable Part may be only partly
      * or must be completely enclosed by the rectangle given to #selectInRect.
      * The default value is false: parts must be completely inside the rectangle.
      * Setting this property does not raise any events.
      */
-    isPartialInclusion: boolean;
+    get isPartialInclusion(): boolean;
+    set isPartialInclusion(value: boolean);
     /**
      * Gets or sets the Part used as the "rubber-band selection box"
      * that is stretched to follow the mouse, as feedback for what area will
@@ -7820,7 +8098,8 @@ export class DragSelectingTool extends Tool {
      *
      * Modifying this property while this tool Tool#isActive might have no effect.
      */
-    box: Part | null;
+    get box(): Part | null;
+    set box(value: Part | null);
 }
 /**
  * The PanningTool supports manual panning, where the user can shift the
@@ -7888,12 +8167,13 @@ export class PanningTool extends Tool {
      *
      * The default value is false.
      */
-    bubbles: boolean;
+    get bubbles(): boolean;
+    set bubbles(value: boolean);
     /**
      * This read-only property returns the Point that was the original value of Diagram#position when the panning operation started.
      * @since 1.1
      */
-    readonly originalPosition: Point;
+    get originalPosition(): Point;
 }
 /**
  * HTMLInfo is used to show and hide custom HTML page elements, such as a context menu, tooltip, or text editor made of HTML.
@@ -7982,7 +8262,8 @@ export class HTMLInfo {
      * This is set only for convenience; the default value for this property is null.
      * @see #hide
      */
-    mainElement: HTMLElement | null;
+    get mainElement(): HTMLElement | null;
+    set mainElement(value: HTMLElement | null);
     /**
      * Gets or sets the function to call when an HTMLInfo is to be shown,
      * such as when used as the GraphObject#contextMenu or Diagram#toolTip or TextBlock#textEditor.
@@ -7999,7 +8280,8 @@ export class HTMLInfo {
      * When used as a context menu, typically shown elements, such as buttons, should call
      * `diagram.currentTool.stopTool();` when their action is completed.
      */
-    show: ((a: GraphObject, b: Diagram, c: Tool) => void) | null;
+    get show(): ((a: GraphObject, b: Diagram, c: Tool) => void) | null;
+    set show(value: ((a: GraphObject, b: Diagram, c: Tool) => void) | null);
     /**
      * Gets or sets the function to call when an HTMLInfo is to be hidden.
      * The function should "hide" the HTMLInfo, either by removing any traces of it or otherwise
@@ -8014,14 +8296,16 @@ export class HTMLInfo {
      *
      * @see #mainElement
      */
-    hide: ((a: Diagram, b: Tool) => void) | null;
+    get hide(): ((a: Diagram, b: Tool) => void) | null;
+    set hide(value: ((a: Diagram, b: Tool) => void) | null);
     /**
      * Gets or sets a function that returns the primary value associated with this HTMLInfo,
      * such as the string value of a text editor, which would be solicited by the TextEditingTool.
      *
      * This typically returns a string.
      */
-    valueFunction: (() => any) | null;
+    get valueFunction(): (() => any) | null;
+    set valueFunction(value: (() => any) | null);
 }
 /**
  * The ContextMenuTool is used to create and show a context menu.
@@ -8205,7 +8489,8 @@ export class ContextMenuTool extends Tool {
      * This is typically only set in #showContextMenu and not by the user.
      * It is also typically set to null in #hideContextMenu.
      */
-    currentContextMenu: Adornment | HTMLInfo | null;
+    get currentContextMenu(): Adornment | HTMLInfo | null;
+    set currentContextMenu(value: Adornment | HTMLInfo | null);
     /**
      * Gets or sets the HTMLInfo or Adornment that acts as the default touch context menu.
      * On touch devices, this context menu will appear even there is no context menu defined.
@@ -8215,7 +8500,8 @@ export class ContextMenuTool extends Tool {
      * By default shows a set of HTML elements acting as a context menu.
      * @since 1.7
      */
-    defaultTouchContextMenu: Adornment | HTMLInfo | null;
+    get defaultTouchContextMenu(): Adornment | HTMLInfo | null;
+    set defaultTouchContextMenu(value: Adornment | HTMLInfo | null);
     /**
      * Gets or sets the GraphObject found at the mouse point that has a context menu.
      * This property remembers the result returned by #findObjectWithContextMenu if it is a GraphObject.
@@ -8223,11 +8509,12 @@ export class ContextMenuTool extends Tool {
      * The value will be null if the context menu is for the diagram rather than for a particular GraphObject.
      * @since 1.4
      */
-    currentObject: GraphObject | null;
+    get currentObject(): GraphObject | null;
+    set currentObject(value: GraphObject | null);
     /**
      * This read-only property returns the original mouse-down point in document coordinates.
      */
-    readonly mouseDownPoint: Point;
+    get mouseDownPoint(): Point;
 }
 /**
  * The TextEditingTool is used to let the user interactively edit text in place.
@@ -8356,11 +8643,13 @@ export class TextEditingTool extends Tool {
      * However, if you set this property beforehand, TextEditingTool#doActivate
      * will not set it, and this tool will edit the given TextBlock.
      */
-    textBlock: TextBlock | null;
+    get textBlock(): TextBlock | null;
+    set textBlock(value: TextBlock | null);
     /**
      * Gets or sets the HTMLInfo that is editing the text.
      */
-    currentTextEditor: HTMLInfo | null;
+    get currentTextEditor(): HTMLInfo | null;
+    set currentTextEditor(value: HTMLInfo | null);
     /**
      * Gets or sets the default HTMLInfo that edits the text.
      *
@@ -8375,7 +8664,8 @@ export class TextEditingTool extends Tool {
      *
      * For typical operation, HTMLInfo implementations should have a way of calling TextEditingTool#acceptText.
      */
-    defaultTextEditor: HTMLInfo;
+    get defaultTextEditor(): HTMLInfo;
+    set defaultTextEditor(value: HTMLInfo);
     /**
      * Gets or sets how user gestures can start in-place editing of text.
      *
@@ -8383,7 +8673,8 @@ export class TextEditingTool extends Tool {
      *
      * The default is TextEditingTool.SingleClickSelected
      */
-    starting: EnumValue;
+    get starting(): EnumValue;
+    set starting(value: EnumValue);
     /**
      * This may run when there is a mouse-click on a TextBlock for which the
      * TextBlock#editable property is true in a Part
@@ -8495,13 +8786,16 @@ export class TextEditingTool extends Tool {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    textValidation: ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
+    get textValidation(): ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
+    set textValidation(value: ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null);
+    set minimumEditorScale(value: number);
     /**
      * Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated.
      * The default is true.
      * @since 1.5
      */
-    selectsTextOnActivate: boolean;
+    get selectsTextOnActivate(): boolean;
+    set selectsTextOnActivate(value: boolean);
     /**
      * Gets or sets the state of the TextEditingTool.
      * The only accepted values are listed as constant properties of TextEditingTool, including:
@@ -8518,7 +8812,8 @@ export class TextEditingTool extends Tool {
      * Once accepted and the tool begins the "TextEditing" transaction, the value is set to TextEditingTool.StateValidated.
      * @since 1.7
      */
-    state: EnumValue;
+    get state(): EnumValue;
+    set state(value: EnumValue);
     /**
      * This method returns a temporary TextBlock used for measuring text during editing.
      * The TextBlock.text is set to the parameter's value,
@@ -8552,19 +8847,17 @@ export type EasingFunction = ((currentTime: number, startValue: number, byValue:
  * The #defaultAnimation, if running, will stop if a new transaction is started, if an undo or redo is called,
  * if a layout is invalidated, or if a model is replaced.
  * When an Animation is stopped, the Diagram immediately finishes the animation and draws the final state.
- * Animations can be stopped programatically with the methods AnimationManager#stopAnimation or Animation#stop.
+ * Animations can be stopped programmatically with the methods AnimationManager#stopAnimation or Animation#stop.
  * @since 1.4
  * @unrestricted
  */
 export class AnimationManager {
     /**
      * You do not normally need to create an instance of this class because one already exists as the Diagram#animationManager, which you can modify.
+     * @param {Partial<AnimationManager>=} init Optional initialization properties.
+     * This is typically only used in the Diagram constructor to set properties on the Diagram#animationManager.
      */
-    constructor();
-    /**
-     * Undocumented
-     */
-    readonly animationReasons: Set<string>;
+    constructor(init?: Partial<AnimationManager>);
     /**
      * This method is passed the reason a default animation is to begin,
      * and must return true or false based on whether or not the animation is to be allowed.
@@ -8632,7 +8925,8 @@ export class AnimationManager {
      * Setting this property does not raise any events.
      * @see #canStart
      */
-    isEnabled: boolean;
+    get isEnabled(): boolean;
+    set isEnabled(value: boolean);
     /**
      * Gets or sets the default duration, in milliseconds, used as the duration for the #defaultAnimation
      * and for animations that have their Animation#duration set to `NaN`.
@@ -8643,7 +8937,8 @@ export class AnimationManager {
      *
      * @see Animation#duration
      */
-    duration: number;
+    get duration(): number;
+    set duration(value: number);
     /**
      * This read-only property is true when the animation manager is currently animating any animation,
      * including the #defaultAnimation.
@@ -8651,14 +8946,14 @@ export class AnimationManager {
      * This value cannot be set, but animation can be stopped by calling #stopAnimation,
      * and it can be prevented by setting #isEnabled.
      */
-    readonly isAnimating: boolean;
+    get isAnimating(): boolean;
     /**
      * This read-only property is true when the animation manager is in the middle of an animation tick.
      * Animation only operates on GraphObjects during ticks, but code outside of AnimationManager's control may execute between ticks.
      *
      * `isTicking` can only be true when #isAnimating is also true.
      */
-    readonly isTicking: boolean;
+    get isTicking(): boolean;
     /**
      * Gets or sets whether a default animation is performed on an initial layout.
      *
@@ -8667,7 +8962,8 @@ export class AnimationManager {
      * Setting this property does not raise any events.
      * @since 1.6
      */
-    isInitial: boolean;
+    get isInitial(): boolean;
+    set isInitial(value: boolean);
     /**
      * This read-only property gets the Animation that carries out the default built-in GoJS animations.
      * This animation is usually only referenced to modify default animation properties,
@@ -8681,12 +8977,12 @@ export class AnimationManager {
      * See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail.
      * @since 2.1
      */
-    readonly defaultAnimation: Animation;
+    get defaultAnimation(): Animation;
     /**
      * Gets the set of currently animating Animations being managed by this AnimationManager, including any running #defaultAnimation.
      * @since 2.1
      */
-    readonly activeAnimations: Set<Animation>;
+    get activeAnimations(): Set<Animation>;
     /**
      * Gets or sets the initial animation style that is set up by the #defaultAnimation.
      * This can be AnimationManager.Default, AnimationManager.AnimateLocations, or AnimationManager.None.
@@ -8712,7 +9008,8 @@ export class AnimationManager {
      *
      * @since 2.1
      */
-    initialAnimationStyle: EnumValue;
+    get initialAnimationStyle(): EnumValue;
+    set initialAnimationStyle(value: EnumValue);
     /**
      * Defines a new named effect to be used in animation, along with a function that tells the AnimationManager how to modify that property.
      *
@@ -8824,40 +9121,41 @@ export class Animation {
     constructor();
     /**
      * @expose
-     * Undocumented. Debug only.
+     * (undocumented) Debug only.
      */
     suspend(): void;
     /**
      * @expose
-     * Undocumented. Debug only.
+     * (undocumented) Debug only.
      */
     advanceTo(duration: number, resume?: boolean): void;
     /**
      * Start this animation.
      *
      * This adds the Animation to its AnimationManager's list of active animations.
-     * The AnimationManager is inferred from the list of objects to be animted, by inspecting their Diagram.
+     * The AnimationManager is inferred from the list of objects to be animated, by inspecting their Diagram.
      *
      * This does nothing if there are no objects to animate.
      */
     start(): void;
     /**
-     * Add a temporary Part to this animation.
-     * This part will be added to the Diagram when the animation is started,
-     * and removed from the Diagram when the animation completes.
-     * This is intended to be used with #add, to animate properties of this Part or its elements.
-     *
-     * The temporary part added is typically either a GraphObject#copy of an existing Part,
-     * which is to be deleted and requires a copy for animated effects, or else a wholly new temporary Part,
-     * constructed in memory for the purpose of creating some effect.
-     *
-     *
-     * @param {Part} part A part to add to the Diagram at the start of the animation and remove at the end.
-     *                    This is typically either a copied Part already in the Diagram, to animate its deletion,
-     *                    or a Part created programmatically to be used for some effect.
-     * @param {Diagram=} diagram The Diagram to add the temporary part to, and remove it from, at the start and end of animation, respectively.
-     */
-    addTemporaryPart(part: Part, diagram: Diagram): void;
+   * Add a temporary Part to this animation.
+   * This part will be added to the Diagram when the animation is started,
+   * and removed from the Diagram when the animation completes.
+   * This is intended to be used with #add, to animate properties of this Part or its elements.
+   *
+   * The temporary part added is typically either a GraphObject#copy of an existing Part,
+   * which is to be deleted and requires a copy for animated effects, or else a wholly new temporary Part,
+   * constructed in memory for the purpose of creating some effect.
+   *
+   *
+   * @param {Part} part A part to add to the Diagram at the start of the animation and remove at the end.
+   *                    This is typically either a copied Part already in the Diagram, to animate its deletion,
+   *                    or a Part created programmatically to be used for some effect.
+   * @param {Diagram=} diagram The Diagram to add the temporary part to, and remove it from, at the start and end of animation, respectively.
+   * @return {Animation} this Animation
+   */
+    addTemporaryPart(part: Part, diagram: Diagram): this;
     /**
      * Add an object (GraphObject or Diagram) and effect name, with specified start and end values, to this Animation.
      *
@@ -8892,8 +9190,9 @@ export class Animation {
      * @param {boolean=} cosmetic Determines if the animation should revert the property value to the start value at the end of animation.
      * Default false. This is commonly used when animating opacity or scale of "disappearing" nodes during collapse.
      * Even though the node may appear to go to scale 0.001, the programmer usually wants the scale to reflect its prior value, once hidden.
+     * @return {Animation} this Animation
      */
-    add(obj: GraphObject | Diagram, effectName: string, startValue: any, endValue: any, cosmetic?: boolean): void;
+    add(obj: GraphObject | Diagram, effectName: string, startValue: any, endValue: any, cosmetic?: boolean): this;
     /**
      * Stops a running Animation and updates the animating objects to their final state.
      *
@@ -8909,7 +9208,8 @@ export class Animation {
      * The value must be a number greater than or equal to 1, or `NaN`.
      * Setting this property does not raise any events.
      */
-    duration: number;
+    get duration(): number;
+    set duration(value: number);
     /**
      * Gets or sets whether this Animation will repeat its animation in reverse at the end of the duration. Default false.
      *
@@ -8918,7 +9218,8 @@ export class Animation {
      *
      * This property should not be set on the AnimationManager#defaultAnimation
      */
-    reversible: boolean;
+    get reversible(): boolean;
+    set reversible(value: boolean);
     /**
      * Gets or sets whether this Animation should be repeat, and how many times. The default is 1, which means the animation does not repeat.
      *
@@ -8928,13 +9229,15 @@ export class Animation {
      *
      * @see #reversible
      */
-    runCount: number;
+    get runCount(): number;
+    set runCount(value: number);
     /**
      * Gets or sets the function to execute when the user Animation finishes.
      *
      * By default this property is null.
      */
-    finished: ((animation: Animation) => void) | null;
+    get finished(): ((animation: Animation) => void) | null;
+    set finished(value: ((animation: Animation) => void) | null);
     /**
      * Gets or sets the easing function this Animation will use to modify default properties.
      *
@@ -8948,7 +9251,8 @@ export class Animation {
      * Animation.EaseOutQuad, Animation.EaseInExpo, Animation.EaseOutExpo.
      *
      */
-    easing: EasingFunction;
+    get easing(): EasingFunction;
+    set easing(value: EasingFunction);
     /**
      * Gets or sets whether this Animation should allow an unconstrained viewport during the runtime of the animation.
      * This temporarily sets the Diagram#scrollMode to Diagram.InfiniteScroll, and restores the value at the end of the animation.
@@ -8957,13 +9261,14 @@ export class Animation {
      * This may be useful to set for animations that have objects or the Diagram bounds animate from outside the viewport into the view.
      * The default value is true.
      */
-    isViewportUnconstrained: boolean;
+    get isViewportUnconstrained(): boolean;
+    set isViewportUnconstrained(value: boolean);
     /**
      * This read-only property is true when the Animation is currently running.
      *
      * This value cannot be set, but Animation can be stopped by calling #stop.
      */
-    readonly isAnimating: boolean;
+    get isAnimating(): boolean;
     /**
      * Gets the ObjectData associated with this GraphObject or Diagram.
      * If no state exists, this creates and returns a new ObjectData.
@@ -9104,7 +9409,7 @@ export class AnimationTrigger {
     copy(): AnimationTrigger;
     /**
      * Gets or sets the name of the property to animate on the target GraphObject.
-     * The default value is set during constructor initalization.
+     * The default value is set during constructor initialization.
      *
      * You can only specify properties that exist on the GraphObject, and are also registered with AnimationManager.defineAnimationEffect.
      * By default these properties are the same as the list of possible Animation effects:
@@ -9126,7 +9431,8 @@ export class AnimationTrigger {
      *
      * Examples of defining additional properties by adding animation effects are given in the <a href="../../intro/animation.html">Introduction Page on Animations</a>.
      */
-    propertyName: string;
+    get propertyName(): string;
+    set propertyName(value: string);
     /**
      * These settings are only used if the #startCondition is AnimationTrigger.Immediate.
      * Creating a new AnimationTrigger with animationSettings in the constructor automatically sets #startCondition to AnimationTrigger.Immediate
@@ -9147,11 +9453,16 @@ export class AnimationTrigger {
      * * **finished**: a `Function`, corresponding to Animation#finished.
      * * **easing**: an `EasingFunction`, corresponding to Animation#easing.
      */
-    animationSettings: {
+    get animationSettings(): {
         duration?: number;
         finished?: (animation: Animation) => void;
         easing?: EasingFunction;
     };
+    set animationSettings(value: {
+        duration?: number;
+        finished?: (animation: Animation) => void;
+        easing?: EasingFunction;
+    });
     /**
      * Gets or sets the starting condition for this trigger.
      *
@@ -9170,7 +9481,8 @@ export class AnimationTrigger {
      * It will start immediately if there is no ongoing transaction
      * or if Diagram#skipsUndoManager is true, and otherwise bundle them.
      */
-    startCondition: EnumValue;
+    get startCondition(): EnumValue;
+    set startCondition(value: EnumValue);
     /**
      * Used as a value for #startCondition.
      * GoJS will attempt to AnimationTrigger.Bundled or AnimationTrigger.Immediate based on the state of the transaction.
@@ -9312,23 +9624,24 @@ export class Layer {
      * This read-only property returns an iterator for this Layer's Parts.
      * The Parts can be Nodes, Links, Groups, Adornments, or simple Parts.
      */
-    readonly parts: Iterator<Part>;
+    get parts(): Iterator<Part>;
     /**
      * This read-only property returns a backwards iterator for this Layer's Parts,
      * for iterating over the parts in reverse order.
      * The Parts can be Nodes, Links, Groups, Adornments, or simple Parts.
      */
-    readonly partsBackwards: Iterator<Part>;
+    get partsBackwards(): Iterator<Part>;
     /**
      * This read-only property returns the Diagram that is using this Layer.
      */
-    readonly diagram: Diagram | null;
+    get diagram(): Diagram | null;
     /**
      * Gets or sets the name for this layer.
      * The initial value is an empty string, which is also the name of the default layer.
      * The name should be unique among the diagram's Diagram#layers.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets the opacity for all parts in this layer.
      * The value must be between 0.0 (fully transparent) and 1.0 (no additional transparency).
@@ -9341,7 +9654,8 @@ export class Layer {
      * @see GraphObject#opacity
      * @see Diagram#opacity
      */
-    opacity: number;
+    get opacity(): number;
+    set opacity(value: number);
     /**
      * Gets or sets whether the objects in this layer are considered temporary.
      *
@@ -9353,8 +9667,14 @@ export class Layer {
      * so that temporary objects created while dragging are included in the bounds.
      *
      * Default value is false.
+     *
+     * When this is set to true, #isInDocumentBounds on this layer is set to false.
+     * You can override this behavior by setting #isInDocumentBounds after setting this property.
+     *
+     * @see #isInDocumentBounds
      */
-    isTemporary: boolean;
+    get isTemporary(): boolean;
+    set isTemporary(value: boolean);
     /**
      * Gets or sets whether the user may view any of the objects in this layer.
      *
@@ -9362,7 +9682,8 @@ export class Layer {
      * When this property is false, all of the "find..." methods will fail to find parts that are in this layer.
      * @see GraphObject#visible
      */
-    visible: boolean;
+    get visible(): boolean;
+    set visible(value: boolean);
     /**
      * Gets or sets whether methods such as #findObjectAt find any of the objects in this layer.
      *
@@ -9378,74 +9699,154 @@ export class Layer {
      * @since 1.2
      * @see GraphObject#pickable
      */
-    pickable: boolean;
+    get pickable(): boolean;
+    set pickable(value: boolean);
     /**
-     * Undocumented.
      * Gets or sets whether or not a layer is included in the documentBounds computation.
-     * Default value is true unless before v3.0 you set isTemporary to true.
+     * Default value is `true`. However, setting isTemporary to `true` also sets this property to `false` before version 3.
      * @since 2.2
+     * @see #isTemporary
      */
-    isInDocumentBounds: boolean;
+    get isInDocumentBounds(): boolean;
+    set isInDocumentBounds(value: boolean);
     /**
      * Gets or sets whether the user may copy objects in this layer.
      * The initial value is true.
      */
-    allowCopy: boolean;
+    get allowCopy(): boolean;
+    set allowCopy(value: boolean);
     /**
      * Gets or sets whether the user may delete objects in this layer.
      * The initial value is true.
      */
-    allowDelete: boolean;
+    get allowDelete(): boolean;
+    set allowDelete(value: boolean);
     /**
      * Gets or sets whether the user may do in-place text editing in this layer.
      * The initial value is true.
      */
-    allowTextEdit: boolean;
+    get allowTextEdit(): boolean;
+    set allowTextEdit(value: boolean);
     /**
      * Gets or sets whether the user may group parts together in this layer.
      * The initial value is true.
      */
-    allowGroup: boolean;
+    get allowGroup(): boolean;
+    set allowGroup(value: boolean);
     /**
      * Gets or sets whether the user may ungroup existing groups in this layer.
      * The initial value is true.
      */
-    allowUngroup: boolean;
+    get allowUngroup(): boolean;
+    set allowUngroup(value: boolean);
     /**
      * Gets or sets whether the user may draw new links in this layer.
      * The initial value is true.
      */
-    allowLink: boolean;
+    get allowLink(): boolean;
+    set allowLink(value: boolean);
     /**
      * Gets or sets whether the user may reconnect existing links in this layer.
      * The initial value is true.
      */
-    allowRelink: boolean;
+    get allowRelink(): boolean;
+    set allowRelink(value: boolean);
     /**
      * Gets or sets whether the user may move objects in this layer.
      * The initial value is true.
      */
-    allowMove: boolean;
+    get allowMove(): boolean;
+    set allowMove(value: boolean);
     /**
      * Gets or sets whether the user may reshape parts in this layer.
      * The initial value is true.
      */
-    allowReshape: boolean;
+    get allowReshape(): boolean;
+    set allowReshape(value: boolean);
     /**
      * Gets or sets whether the user may resize parts in this layer.
      * The initial value is true.
      */
-    allowResize: boolean;
+    get allowResize(): boolean;
+    set allowResize(value: boolean);
     /**
      * Gets or sets whether the user may rotate parts in this layer.
      * The initial value is true.
      */
-    allowRotate: boolean;
+    get allowRotate(): boolean;
+    set allowRotate(value: boolean);
     /**
      * Gets or sets whether the user may select objects in this layer.
      * The initial value is true.
      */
-    allowSelect: boolean;
+    get allowSelect(): boolean;
+    set allowSelect(value: boolean);
+}
+/**
+ * DiagramInitOptions are used in the Diagram constructor to concisely initialize a Diagram by settings its properties,
+ * and also set properties on its Tools, CommandHandler, AnimationManager, and set DiagramEvents.
+ *
+ * @category Type
+ */
+export type DiagramInitOptions = Partial<Diagram | {
+    [P in DiagramEventName]?: ((e: DiagramEvent) => void);
+} | DiagramInitStrings>;
+/**
+ */
+export type DiagramEvents = {
+    [P in DiagramEventName]?: ((e: DiagramEvent) => void);
+};
+interface DiagramInitStrings {
+    [index: string]: any;
+    'grid.visible': boolean;
+    'grid.gridCellSize': Size;
+    'grid.gridOrigin': Point;
+    'toolManager.mouseWheelBehavior'?: EnumValue;
+    'toolManager.gestureBehavior'?: EnumValue;
+    'toolManager.currentToolTip'?: Adornment | HTMLInfo | null;
+    'toolManager.hoverDelay'?: number;
+    'toolManager.holdDelay'?: number;
+    'toolManager.dragSize'?: Size;
+    'toolManager.toolTipDuration'?: number;
+    'commandHandler.copiesClipboardData'?: boolean;
+    'commandHandler.copiesConnectedLinks'?: boolean;
+    'commandHandler.deletesConnectedLinks'?: boolean;
+    'commandHandler.copiesTree'?: boolean;
+    'commandHandler.deletesTree'?: boolean;
+    'commandHandler.copiesParentKey'?: boolean;
+    'commandHandler.copiesGroupKey'?: boolean;
+    'commandHandler.archetypeGroupData'?: ObjectData;
+    'commandHandler.memberValidation'?: ((aGroup: Group, somePart: Part) => boolean) | null;
+    'commandHandler.defaultScale'?: number;
+    'commandHandler.zoomFactor'?: number;
+    'commandHandler.isZoomToFitRestoreEnabled'?: boolean;
+    'commandHandler.scrollToPartPause'?: number;
+    'animationManager.isEnabled'?: boolean;
+    'animationManager.duration'?: number;
+    'animationManager.isInitial'?: boolean;
+    'animationManager.initialAnimationStyle'?: EnumValue;
+    'draggingTool.isCopyEnabled'?: boolean;
+    'draggingTool.copiesEffectiveCollection'?: boolean;
+    'draggingTool.dragOptions'?: DraggingOptions;
+    'draggingTool.isGridSnapEnabled'?: boolean;
+    'draggingTool.isComplexRoutingRealtime'?: boolean;
+    'draggingTool.isGridSnapRealtime'?: boolean;
+    'draggingTool.gridSnapCellSize'?: Size;
+    'draggingTool.gridSnapCellSpot'?: Spot;
+    'draggingTool.gridSnapOrigin'?: Point;
+    'draggingTool.dragsLink'?: boolean;
+    'draggingTool.dragsTree'?: boolean;
+    'draggingTool.copyCursor'?: string;
+    'draggingTool.moveCursor'?: string;
+    'draggingTool.nodropCursor'?: string;
+    'draggingTool.currentPart'?: Part | null;
+    'draggingTool.copiedParts'?: Map<Part, DraggingInfo> | null;
+    'draggingTool.draggedParts'?: Map<Part, DraggingInfo> | null;
+    'draggingTool.draggedLink'?: Link;
+    'draggingTool.isDragOutStarted'?: boolean;
+    'draggingTool.startPoint'?: Point;
+    'draggingTool.delay'?: number;
+    'undoManager.isEnabled'?: boolean;
 }
 /**
  * A Diagram is associated with an HTML DIV element. Constructing a Diagram creates
@@ -9460,9 +9861,8 @@ export class Layer {
  *
  * JavaScript:
  * ```js
- * var $ = go.GraphObject.make;  // for conciseness
  *
- * myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+ * myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
  *               {
  *                 "undoManager.isEnabled": true  // enable undo & redo
  *               });
@@ -9645,12 +10045,12 @@ export class Diagram {
      * If you remove a part of the HTML DOM containing a Div with a Diagram, you will need to
      * set #div to null in order for the page to recover the memory.
      *
-     * It is commonplace to use the static function GraphObject.make to build a Diagram:
-     * ```js
-     * var $ = go.GraphObject.make;
+     * Unlike GraphObject, the Diagram constructor passes its init options to GraphObject.make.
+     * This allows you to quickly set sub-properties when initializing a Diagram, such as setting properties
+     * on the Diagram's #undoManager or #commandHandler. For example:
      *
-     * var diagram =
-     *   $(go.Diagram, "myDiagramDiv",
+     * ```js
+     * var diagram = new go.Diagram("myDiagramDiv",
      *     {
      *       allowZoom: false,
      *       "animationManager.isEnabled": false,  // turn off automatic animations
@@ -9668,30 +10068,61 @@ export class Diagram {
      *       "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
      *       "draggingTool.dragsTree": true,  // dragging for both move and copy
      *       "draggingTool.isGridSnapEnabled": true,
-     *       layout: $(go.TreeLayout,
-     *                 { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+     *       layout: new go.TreeLayout(
+     *         { angle: 90, sorting: go.TreeLayout.SortingAscending }),
      *       "undoManager.isEnabled": true,  // enable undo & redo
      *       // a Changed listener on the Diagram.model
      *       "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
      *     });
      * ```
      * @param {Element|string=} div A reference to a DIV HTML element or its ID as a string.
-     * If no DIV is supplied one will be created in memory. The Diagram's Diagram#div property
+     * If no DIV is supplied, a Diagram will be created in memory. The Diagram's Diagram#div property
      * can then be set later on.
+     * @param {DiagramInitOptions=} init A JavaScript object specifying optional initialization properties object.
+     * Can specify Diagram properties, Diagram sub-properties such as `"undoManager.isEnabled": true`,
+     * and DiagramEvent listeners. Example:
+     * ```js
+     * {
+     *   allowZoom: false,
+     *   "animationManager.isEnabled": false,
+     *   "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     * }
+     * ```
      */
-    constructor(div?: Element | string);
+    constructor(div?: Element | string, init?: DiagramInitOptions);
     /**
-     * Undocumented
-     * This static function returns true if Diagrams are using a DOM, false otherwise.
-     * This can be false if there is no root <code>document</code> in the JavaScript context,
-     * or if the DOM was disabled through #useDOM.
+     *
+     * @param {DiagramInitOptions=} init A JavaScript object specifying optional initialization properties object.
+     * Can specify Diagram properties, Diagram sub-properties such as `"undoManager.isEnabled": true`,
+     * and DiagramEvent listeners. Example:
+     * ```js
+     * {
+     *   allowZoom: false,
+     *   "animationManager.isEnabled": false,
+     *   "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     * }
+     * ```
+     */
+    constructor(init?: DiagramInitOptions);
+    private reset2;
+    /**
+     * This static function returns `true` if GoJS detects a DOM.
+     * In browser environments this is expected to be `true`, in Node-like environments, `false`.
+     * Specifically, this will be `false` if there is no root `document` in the JavaScript context,
+     * or if the DOM was disabled explicitly by calling Diagram.useDOM.
+     *
+     * Incomplete or mock implementations of a DOM may make this return true when
+     * it is more appropriate that it returns false. If that is the case, set it to false by calling
+     * Diagram.useDOM.
+     * @since 2.2
      */
     static isUsingDOM(): boolean;
     /**
-     * Undocumented
      * This static function sets whether or not GoJS should use a DOM, if one exists.
-     * Can be set to false to simulate a DOM-less environment.
+     * This can be set to `false` to simulate a DOM-less environment.
+     * It is uncommon to set this, but may be required in some testing environments.
      * @param {boolean} value
+     * @since 2.2
      */
     static useDOM(value: boolean): void;
     /**
@@ -9708,20 +10139,21 @@ export class Diagram {
      */
     clear(): void;
     /**
-     * Undocumented
+     * (undocumented)
      * Call #clear and also restore the templates, layers, layout and various Diagram properties to their original state.
      * @expose
      */
     reset(): void;
     /**
      * @expose
-     * Undocumented.
+     * (undocumented)
      * Used in Diagram constructor setup, this computes the pixel width of the scrollbars
      * @param {HTMLElement=} elem
      */
     setRTL(elem?: HTMLElement): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Computes the pixel width of the scrollbars
      * @expose
      * @param {HTMLElement=} elem
      */
@@ -9749,25 +10181,36 @@ export class Diagram {
      * You should not attempt to manually modify the contents of this Div.
      * Changing this property value does not raise a Changed event.
      */
-    div: HTMLDivElement | null;
+    get div(): HTMLDivElement | null;
+    set div(value: HTMLDivElement | null);
     /**
-     * Undocumented, but may be useful for change detection calls in Angular.
+     * (undocumented), but may be useful for change detection calls in Angular.
      * @expose
      */
     addEventListener(DOMElement: Element | Window | Document, name: string, listener: any, capture: boolean): void;
     /**
-     * Undocumented, but may be useful for change detection calls in Angular.
+     * (undocumented), but may be useful for change detection calls in Angular.
      * @expose
      */
     removeEventListener(DOMElement: Element | Window | Document, name: string, listener: any, capture: boolean): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Computes the device pixel ratio divided by the backing store pixel ratio
+     * Used to set this._pixelRatio to a value other than 1.
      * @expose
      * @return {number}
      */
     computePixelRatio(): number;
     /**
-     * Undocumented
+     * (undocumented)
+     * Focus the Diagram's canvas, allowing it to receive keyboard events.
+     * This is called upon activation of mouseDown or mouseMove tools, or on any mouseUp.
+     *
+     * This is normally implemented as a simple call to #focus.
+     * Override this if you do not wish to focus the canvas under certain circumstances.
+     * However the method should call #focus most of the time in order to get the normal behaviors.
+     *
+     * #lastInput can be used to inspect the mouseDown event that calls this method.
      * @expose
      */
     doFocus(): void;
@@ -9790,9 +10233,10 @@ export class Diagram {
      *
      * To compute the bounds of a collection of Parts, call #computePartsBounds.
      * @expose
-     * @return {Rect} a Rect in document coordinates.
+     * @param {Rect=} rect An optional Rect to modify and return, instead of returning a new Rect
+     * @return {Rect} a Rect in document coordinates. If the argument rect was specified, it returns that modified rect.
      */
-    protected computeBounds(): Rect;
+    protected computeBounds(rect?: Rect): Rect;
     /**
      * Find the union of the GraphObject#actualBounds of all of the Parts in the given collection,
      * excluding Links unless the second argument is true.
@@ -9829,7 +10273,7 @@ export class Diagram {
      */
     alignDocument(documentspot: Spot, viewportspot: Spot): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Sets the GraphObject on which to focus the viewport.
      * @param {GraphObject | null} obj
      * @since 2.1
@@ -10051,15 +10495,14 @@ export class Diagram {
      */
     findObjectsNear<T extends GraphObject, S extends List<T> | Set<T> = Set<T>>(p: Point, dist: number, navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null, partialInclusion?: boolean | S, coll?: S): S;
     /**
-     * Undocumented.
+     * (undocumented)
      * Requests that the Diagram updates its #documentBounds in the near-future.
      */
     invalidateDocumentBounds(): void;
     /**
-     * Undocumented
-     *
+     * (undocumented)
      * Invalidates all non-layout diagram state and forces an immediate redraw.
-     * Because this can be very inefficent, to discourage its use it remains an undocumented part of the API.
+     * Because this can be very inefficient, to discourage its use it remains an undocumented part of the API.
      * @expose
      */
     redraw(): void;
@@ -10093,48 +10536,105 @@ export class Diagram {
      */
     requestUpdate(alwaysQueueUpdate?: boolean): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * The use of this method at the wrong time may have some unexpected side-effects.
      */
     maybeUpdate(): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Get value of a given rendering hint.
      * @param {string} name
      * @return {*}
      */
     getRenderingHint(name: string): any;
     /**
-     * Undocumented
+     * (undocumented)
+     * Set a rendering hint and draw immediately.
      * @param {string} name
      * @param {*} val
      */
     setRenderingHint(name: string, val: any): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Get value of a given input option
      * @param {string} name
      * @return {*}
      */
     getInputOption(name: string): any;
     /**
-     * Undocumented
+     * (undocumented)
+     * Set value of a given input option
      * @param {string} name
      * @param {*} val
      */
     setInputOption(name: string, val: any): void;
     /**
+     * Set any number of properties on this Diagram. This is common in initialization.
+     * This method can only be used to set existing properties on this object. To attach new properties,
+     * or to set properties of sub-objects such as the Diagram#toolManager, Diagram#animationManager,
+     * or Diagram#commandHandler, use Diagram#attach.
+     *
+     * This method uses TypeScript compile-time type checking, but does no runtime type checking.
+     *
+     *
+     * @since 2.2
+     * @param {Partial<this>} config
+     * @return {Diagram} this Diagram
+     * @see #setProperties
+     */
+    set(config: Partial<this>): this;
+    /**
      * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
      * in the same manner as GraphObject.make does when constructing a Diagram with an argument that is a simple JavaScript Object.
      *
+     * This method does not use TypeScript compile-time type checking like Diagram#set does,
+     * but is considerably more flexible in allowing you to set sub-properties and DiagramEvents by quoted string names.
+     *
      * You can set properties on an object that is the value of a property of the Diagram,
-     * or on the Diagram#toolManager, by using a *subpropname.property* syntax for the property name.
+     * or on the Diagram#toolManager, Diagram#animationManager, or Diagram#commandHandler
+     * by using a `"subpropname.property"` syntax for the property name.
      * At the current time only a single dot is permitted in the property "name".
      *
      * The property name may also be the name of a DiagramEvent, in which case this calls #addDiagramListener with that DiagramEvent name.
      * ```js
-     * aDiagram.setProperties({
+     * aDiagram.attach({
      *   allowDelete: false,
-     *   // display a background grid for the whole diagram
-     *   "grid.visible": true,
-     *   "grid.gridCellSize": new go.Size(20, 20),
+     *   "animationManager.isEnabled": false,  // turn off automatic animations
+     *   // specify a group membership validation predicate
+     *   "commandHandler.memberValidation": function(group, part) { return ...; },
+     *   "commandHandler.copiesTree": true,  // for the copy command
+     *   // mouse wheel zooms instead of scrolls
+     *   "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+     *   "draggingTool.dragsTree": true,  // dragging for both move and copy
+     *   "draggingTool.isGridSnapEnabled": true,
+     *   layout: $(go.TreeLayout),
+     *   // add a DiagramEvent listener
+     *   "ExternalObjectsDropped": function(e) { e.subject.each(function(part) { ... }); }
+     * });
+     * ```
+     * @param {Object} props a plain JavaScript object with various property values to be set on this Diagram or on a part of this Diagram.
+     * @since 2.2
+     * @return {Diagram} this Diagram
+     * @see #setProperties a synonym of this method
+     * @see #set a type-safe method to set a collection of properties
+     */
+    attach(props: ObjectData): this;
+    /**
+     * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
+     * in the same manner as GraphObject.make does when constructing a Diagram with an argument that is a simple JavaScript Object.
+     *
+     * This method does not use TypeScript compile-time type checking like Diagram#set does,
+     * but is considerably more flexible in allowing you to set sub-properties and DiagramEvents by quoted string names.
+     *
+     * You can set properties on an object that is the value of a property of the Diagram,
+     * or on the Diagram#toolManager, Diagram#animationManager, or Diagram#commandHandler
+     * by using a `"subpropname.property"` syntax for the property name.
+     * At the current time only a single dot is permitted in the property "name".
+     *
+     * The property name may also be the name of a DiagramEvent, in which case this calls #addDiagramListener with that DiagramEvent name.
+     * ```js
+     * aDiagram.attach({
+     *   allowDelete: false,
      *   "animationManager.isEnabled": false,  // turn off automatic animations
      *   // specify a group membership validation predicate
      *   "commandHandler.memberValidation": function(group, part) { return ...; },
@@ -10150,8 +10650,11 @@ export class Diagram {
      * ```
      * @param {Object} props a plain JavaScript object with various property values to be set on this Diagram or on a part of this Diagram.
      * @since 1.5
+     * @return {Diagram} this Diagram
+     * @see #attach a synonym of this method
+     * @see #set a type-safe method to set a collection of properties
      */
-    setProperties(props: ObjectData): void;
+    setProperties(props: ObjectData): this;
     /**
      * Adds a Part to the Layer that matches the Part's Part#layerName,
      * or else the default layer, which is named with the empty string.
@@ -10239,6 +10742,7 @@ export class Diagram {
      * @since 2.0
      */
     computeMove(n: Part, newloc: Point, dragOptions: DraggingOptions, result?: Point): Point;
+    set draggedLink(value: Link);
     /**
      * Adds a new Layer to the list of layers.
      * If Layer#isTemporary is false, the layer is added after all existing non-temporary layers.
@@ -10248,8 +10752,9 @@ export class Diagram {
      * @see #addLayerAfter
      * @see #removeLayer
      * @see #findLayer
+     * @return {Diagram} this Diagram
      */
-    addLayer(layer: Layer): void;
+    addLayer(layer: Layer): this;
     /**
      * Adds a layer to the list of layers before a specified layer.
      * This method can also re-order layers.
@@ -10258,8 +10763,9 @@ export class Diagram {
      * @see #addLayer
      * @see #addLayerAfter
      * @see #removeLayer
+     * @return {Diagram} this Diagram
      */
-    addLayerBefore(layer: Layer, existingLayer: Layer): void;
+    addLayerBefore(layer: Layer, existingLayer: Layer): this;
     /**
      * Adds a layer to the list of layers after a specified layer.
      * This method can also re-order layers.
@@ -10268,8 +10774,9 @@ export class Diagram {
      * @see #addLayer
      * @see #addLayerBefore
      * @see #removeLayer
+     * @return {Diagram} this Diagram
      */
-    addLayerAfter(layer: Layer, existingLayer: Layer): void;
+    addLayerAfter(layer: Layer, existingLayer: Layer): this;
     /**
      * Removes the given layer from the list of layers.
      *
@@ -10303,21 +10810,34 @@ export class Diagram {
      * because when this diagram's Model is replaced, one does not need to call Model#removeChangedListener on the old Model
      * and then Model#addChangedListener again on the new Model.
      *
-     * You can establish Model Changed listeners when you create a Diagram with GraphObject.make.  For example:
+     * You can establish Model Changed listeners when you create a Diagram.
+     * The Diagram init options are passsed to GraphObject.make, which accepts "ModelChanged" as a shorthand.
+     * For example:
      * ```js
-     * $(go.Diagram, . . .,
+     * new go.Diagram("myDiagramDiv",
      *    {
      *        "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(e.model); }
-     *        . . .
+     *        // ... other Diagram properties
      *    })
+     * ```
+     *
+     * This is equivalent to:
+     *
+     * ```js
+     * new go.Diagram("myDiagramDiv",
+     *    {
+     *        // ... Diagram properties
+     *    })
+     *    .addModelChangedListener(function(e) { if (e.isTransactionFinished) saveModel(e.model); })
      * ```
      *
      * Do not add or remove Changed listeners during the execution of a Changed listener.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #removeModelChangedListener
      * @since 1.6
+     * @return {Diagram} this Diagram
      */
-    addModelChangedListener(listener: ((e: ChangedEvent) => void)): void;
+    addModelChangedListener(listener: ((e: ChangedEvent) => void)): this;
     /**
      * Unregister a ChangedEvent handler from this Diagram's Diagram#model.
      * The function argument must be the same reference as was passed to #addChangedListener.
@@ -10337,8 +10857,9 @@ export class Diagram {
      * Do not add or remove Changed listeners during the execution of a Changed listener.
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #removeChangedListener
+     * @return {Diagram} this Diagram
      */
-    addChangedListener(listener: ((e: ChangedEvent) => void)): void;
+    addChangedListener(listener: ((e: ChangedEvent) => void)): this;
     /**
      * Unregister a ChangedEvent handler.
      * The function argument must be the same reference as was passed to #addChangedListener.
@@ -10350,7 +10871,7 @@ export class Diagram {
      * This read-only property returns the AnimationManager for this Diagram.
      * @since 1.4
      */
-    readonly animationManager: AnimationManager;
+    get animationManager(): AnimationManager;
     /**
      * This read-only property returns the UndoManager for this Diagram, which actually belongs to the #model.
      *
@@ -10360,7 +10881,7 @@ export class Diagram {
      * Note that the UndoManager might be shared with other Diagrams that are showing the same Model.
      * The UndoManager might also be shared with other Models too.
      */
-    readonly undoManager: UndoManager;
+    get undoManager(): UndoManager;
     /**
      * Gets or sets whether ChangedEvents are not recorded by the UndoManager.
      * The initial and normal value is false.
@@ -10383,11 +10904,15 @@ export class Diagram {
      * Setting this property also sets Model#skipsUndoManager to the same value.
      * Setting this property does not notify about any changed event.
      */
-    skipsUndoManager: boolean;
+    get skipsUndoManager(): boolean;
+    set skipsUndoManager(value: boolean);
     /**
-     * Undocumented
+     * (undocumented)
+     * When set to true Diagram layouts will not get invalidated.
+     * Used by some tools stop real-time layouts from occuring during their operation.
      */
-    delaysLayout: boolean;
+    get delaysLayout(): boolean;
+    set delaysLayout(value: boolean);
     /**
      * Begin a transaction, where the changes are held by a Transaction object
      * in the UndoManager.
@@ -10588,7 +11113,7 @@ export class Diagram {
      */
     centerRect(r: Rect): void;
     /**
-     * Given a Point in document coorindates, return a new Point in viewport coordinates.
+     * Given a Point in document coordinates, return a new Point in viewport coordinates.
      * @param {Point} p
      * @return {Point} The given Point converted into View coordinates.
      * @see #transformViewToDoc
@@ -10682,25 +11207,28 @@ export class Diagram {
      * @see Layer#opacity
      * @see GraphObject#opacity
      */
-    opacity: number;
+    get opacity(): number;
+    set opacity(value: number);
     /**
      * Gets or sets what kinds of graphs this diagram allows the user to draw.
      * By default this property is Diagram.CycleAll -- all kinds of cycles are permitted.
      * Common values include Diagram.CycleDestinationTree and Diagram.CycleNotDirected.
      */
-    validCycle: EnumValue;
+    get validCycle(): EnumValue;
+    set validCycle(value: EnumValue);
     /**
      * This read-only property returns an iterator for this Diagram's Layers.
      * @see #addLayer
      * @see #removeLayer
      */
-    readonly layers: Iterator<Layer>;
+    get layers(): Iterator<Layer>;
     /**
      * Gets or sets whether the Diagram's Diagram#model is Model#isReadOnly.
      * @see #isReadOnly
      * @see #isEnabled
      */
-    isModelReadOnly: boolean;
+    get isModelReadOnly(): boolean;
+    set isModelReadOnly(value: boolean);
     /**
      * Gets or sets whether the Diagram may be modified by the user,
      * while still allowing the user to scroll, zoom, and select.
@@ -10708,108 +11236,128 @@ export class Diagram {
      * @see #isModelReadOnly
      * @see #isEnabled
      */
-    isReadOnly: boolean;
+    get isReadOnly(): boolean;
+    set isReadOnly(value: boolean);
     /**
      * Gets or sets whether the user may interact with the Diagram.
      * @see #isReadOnly
      * @see #isModelReadOnly
      */
-    isEnabled: boolean;
+    get isEnabled(): boolean;
+    set isEnabled(value: boolean);
     /**
      * Gets or sets whether the user may copy to or paste parts from the internal clipboard.
      * This allows use of CommandHandler#cutSelection,
      * CommandHandler#copySelection and CommandHandler#pasteSelection.
      * The initial value is true.
      */
-    allowClipboard: boolean;
+    get allowClipboard(): boolean;
+    set allowClipboard(value: boolean);
     /**
      * Gets or sets whether the user may copy objects.
      * The initial value is true.
      */
-    allowCopy: boolean;
+    get allowCopy(): boolean;
+    set allowCopy(value: boolean);
     /**
      * Gets or sets whether the user may delete objects from the Diagram.
      * The initial value is true.
      */
-    allowDelete: boolean;
+    get allowDelete(): boolean;
+    set allowDelete(value: boolean);
     /**
      * Gets or sets whether the user may start a drag-and-drop in this Diagram,
      * possibly dropping in a different element.
      * The initial value is false.
      */
-    allowDragOut: boolean;
+    get allowDragOut(): boolean;
+    set allowDragOut(value: boolean);
     /**
      * Gets or sets whether the user may end a drag-and-drop operation in this Diagram.
      * This is typically set to true when a Diagram is used with a Palette.
      *
      * The initial value is true.
      */
-    allowDrop: boolean;
+    get allowDrop(): boolean;
+    set allowDrop(value: boolean);
     /**
      * Gets or sets whether the user may do in-place text editing.
      * The initial value is true.
      */
-    allowTextEdit: boolean;
+    get allowTextEdit(): boolean;
+    set allowTextEdit(value: boolean);
     /**
      * Gets or sets whether the user may group parts together.
      * The initial value is true.
      */
-    allowGroup: boolean;
+    get allowGroup(): boolean;
+    set allowGroup(value: boolean);
     /**
      * Gets or sets whether the user may ungroup existing groups.
      * The initial value is true.
      */
-    allowUngroup: boolean;
+    get allowUngroup(): boolean;
+    set allowUngroup(value: boolean);
     /**
      * Gets or sets whether the user may add parts to the Diagram.
      * The initial value is true.
      */
-    allowInsert: boolean;
+    get allowInsert(): boolean;
+    set allowInsert(value: boolean);
     /**
      * Gets or sets whether the user may draw new links.
      * The initial value is true.
      */
-    allowLink: boolean;
+    get allowLink(): boolean;
+    set allowLink(value: boolean);
     /**
      * Gets or sets whether the user may reconnect existing links.
      * The initial value is true.
      */
-    allowRelink: boolean;
+    get allowRelink(): boolean;
+    set allowRelink(value: boolean);
     /**
      * Gets or sets whether the user may move objects.
      * The initial value is true.
      */
-    allowMove: boolean;
+    get allowMove(): boolean;
+    set allowMove(value: boolean);
     /**
      * Gets or sets whether the user may reshape parts.
      * The initial value is true.
      */
-    allowReshape: boolean;
+    get allowReshape(): boolean;
+    set allowReshape(value: boolean);
     /**
      * Gets or sets whether the user may resize parts.
      * The initial value is true.
      */
-    allowResize: boolean;
+    get allowResize(): boolean;
+    set allowResize(value: boolean);
     /**
      * Gets or sets whether the user may rotate parts.
      * The initial value is true.
      */
-    allowRotate: boolean;
+    get allowRotate(): boolean;
+    set allowRotate(value: boolean);
     /**
      * Gets or sets whether the user may select objects.
      * The initial value is true.
      */
-    allowSelect: boolean;
+    get allowSelect(): boolean;
+    set allowSelect(value: boolean);
     /**
      * Gets or sets whether the user may undo or redo any changes.
      * The initial value is true.
      */
-    allowUndo: boolean;
+    get allowUndo(): boolean;
+    set allowUndo(value: boolean);
     /**
      * Gets or sets whether the user may zoom into or out of the Diagram.
      * The initial value is true.
      */
-    allowZoom: boolean;
+    get allowZoom(): boolean;
+    set allowZoom(value: boolean);
     /**
      * Gets or sets whether the Diagram has a vertical Scrollbar.
      *
@@ -10821,7 +11369,8 @@ export class Diagram {
      * @see #allowVerticalScroll
      * @see #hasHorizontalScrollbar
      */
-    hasVerticalScrollbar: boolean;
+    get hasVerticalScrollbar(): boolean;
+    set hasVerticalScrollbar(value: boolean);
     /**
      * Gets or sets whether the Diagram has a horizontal Scrollbar.
      *
@@ -10833,21 +11382,24 @@ export class Diagram {
      * @see #allowHorizontalScroll
      * @see #hasVerticalScrollbar
      */
-    hasHorizontalScrollbar: boolean;
+    get hasHorizontalScrollbar(): boolean;
+    set hasHorizontalScrollbar(value: boolean);
     /**
      * Gets or sets whether the user is allowed to use the horizontal scrollbar.
      * The initial value is true.
      * @see #hasHorizontalScrollbar
      * @see #allowVerticalScroll
      */
-    allowHorizontalScroll: boolean;
+    get allowHorizontalScroll(): boolean;
+    set allowHorizontalScroll(value: boolean);
     /**
      * Gets or sets whether the user is allowed to use the vertical scrollbar.
      * The initial value is true.
      * @see #hasVerticalScrollbar
      * @see #allowHorizontalScroll
      */
-    allowVerticalScroll: boolean;
+    get allowVerticalScroll(): boolean;
+    set allowVerticalScroll(value: boolean);
     /**
      * Gets or sets the distance in screen pixels that the horizontal scrollbar will scroll
      * when scrolling by a line.
@@ -10855,7 +11407,8 @@ export class Diagram {
      * The default value is 16.
      * @see #scrollVerticalLineChange
      */
-    scrollHorizontalLineChange: number;
+    get scrollHorizontalLineChange(): number;
+    set scrollHorizontalLineChange(value: number);
     /**
      * Gets or sets the distance in screen pixels that the vertical scrollbar will scroll
      * when scrolling by a line.
@@ -10863,7 +11416,8 @@ export class Diagram {
      * The default value is 16.
      * @see #scrollHorizontalLineChange
      */
-    scrollVerticalLineChange: number;
+    get scrollVerticalLineChange(): number;
+    set scrollVerticalLineChange(value: number);
     /**
      * Gets or sets the last InputEvent that occurred.
      *
@@ -10873,14 +11427,17 @@ export class Diagram {
      * Setting this property does not notify about any changed event.
      * @see #firstInput
      */
-    lastInput: InputEvent;
+    get lastInput(): InputEvent;
+    set lastInput(value: InputEvent);
+    set previousInput(value: InputEvent);
     /**
      * Gets or sets the most recent mouse-down InputEvent that occurred.
      *
      * Setting this property does not notify about any changed event.
      * @see #lastInput
      */
-    firstInput: InputEvent;
+    get firstInput(): InputEvent;
+    set firstInput(value: InputEvent);
     /**
      * Gets or sets the current cursor for the Diagram, overriding the #defaultCursor.
      *
@@ -10901,7 +11458,8 @@ export class Diagram {
      * @see #defaultCursor
      * @see GraphObject#cursor
      */
-    currentCursor: string;
+    get currentCursor(): string;
+    set currentCursor(value: string);
     /**
      * Gets or sets the cursor to be used for the Diagram
      * when no GraphObject specifies a different cursor.
@@ -10918,7 +11476,8 @@ export class Diagram {
      * @see #currentCursor
      * @see GraphObject#cursor
      */
-    defaultCursor: string;
+    get defaultCursor(): string;
+    set defaultCursor(value: string);
     /**
      * Gets or sets the function to execute when the user single-primary-clicks
      * on the background of the Diagram.
@@ -10939,7 +11498,8 @@ export class Diagram {
      * @see #contextClick
      * @see GraphObject#click
      */
-    click: ((e: InputEvent) => void) | null;
+    get click(): ((e: InputEvent) => void) | null;
+    set click(value: ((e: InputEvent) => void) | null);
     /**
      * Gets or sets the function to execute when the user double-primary-clicks
      * on the background of the Diagram.
@@ -10960,7 +11520,8 @@ export class Diagram {
      * @see #contextClick
      * @see GraphObject#doubleClick
      */
-    doubleClick: ((e: InputEvent) => void) | null;
+    get doubleClick(): ((e: InputEvent) => void) | null;
+    set doubleClick(value: ((e: InputEvent) => void) | null);
     /**
      * Gets or sets the function to execute when the user single-secondary-clicks
      * on the background of the Diagram.
@@ -10981,9 +11542,10 @@ export class Diagram {
      * @see #doubleClick
      * @see GraphObject#contextClick
      */
-    contextClick: ((e: InputEvent) => void) | null;
+    get contextClick(): ((e: InputEvent) => void) | null;
+    set contextClick(value: ((e: InputEvent) => void) | null);
     /**
-     * Gets or sets the function to execute when the user moves the mouse in
+     * Gets or sets the function to execute when the user moves the mouse (pointer) in
      * the background of the Diagram without holding down any buttons,
      * not over any GraphObjects.
      * This property is used by the ToolManager.
@@ -10998,9 +11560,10 @@ export class Diagram {
      * @see #mouseHover
      * @see GraphObject#mouseOver
      */
-    mouseOver: ((e: InputEvent) => void) | null;
+    get mouseOver(): ((e: InputEvent) => void) | null;
+    set mouseOver(value: ((e: InputEvent) => void) | null);
     /**
-     * Gets or sets the function to execute when the user holds the mouse stationary in
+     * Gets or sets the function to execute when the user holds the mouse (pointer) stationary in
      * the background of the Diagram without holding down any buttons,
      * not over any GraphObjects.
      * This property is used by the ToolManager.
@@ -11015,9 +11578,10 @@ export class Diagram {
      * @see GraphObject#mouseHover
      * @see ToolManager#doMouseHover
      */
-    mouseHover: ((e: InputEvent) => void) | null;
+    get mouseHover(): ((e: InputEvent) => void) | null;
+    set mouseHover(value: ((e: InputEvent) => void) | null);
     /**
-     * Gets or sets the function to execute when the user holds the mouse stationary in
+     * Gets or sets the function to execute when the user holds the mouse (pointer) stationary in
      * the background of the Diagram while holding down a button,
      * not over any GraphObjects.
      * This property is used by the ToolManager.
@@ -11031,7 +11595,8 @@ export class Diagram {
      * @see GraphObject#mouseHold
      * @see ToolManager#doMouseHover
      */
-    mouseHold: ((e: InputEvent) => void) | null;
+    get mouseHold(): ((e: InputEvent) => void) | null;
+    set mouseHold(value: ((e: InputEvent) => void) | null);
     /**
      * Gets or sets the function to execute when the user is dragging the selection in
      * the background of the Diagram during a DraggingTool drag-and-drop,
@@ -11061,7 +11626,8 @@ export class Diagram {
      * @see GraphObject#mouseDragEnter
      * @see GraphObject#mouseDragLeave
      */
-    mouseDragOver: ((e: InputEvent) => void) | null;
+    get mouseDragOver(): ((e: InputEvent) => void) | null;
+    set mouseDragOver(value: ((e: InputEvent) => void) | null);
     /**
      * Gets or sets the function to execute when the user drops the selection in
      * the background of the Diagram at the end of a DraggingTool drag-and-drop,
@@ -11080,7 +11646,8 @@ export class Diagram {
      * @see #mouseDragOver
      * @see GraphObject#mouseDrop
      */
-    mouseDrop: ((e: InputEvent) => void) | null;
+    get mouseDrop(): ((e: InputEvent) => void) | null;
+    set mouseDrop(value: ((e: InputEvent) => void) | null);
     /**
      * Gets or sets whether drag-and-drop events may be bubbled up to the diagram if not handled by a part.
      * The default value is false -- each Node or Link that in the diagram needs to define
@@ -11101,9 +11668,10 @@ export class Diagram {
      * @see GraphObject#mouseDrop
      * @since 2.0
      */
-    handlesDragDropForTopLevelParts: boolean;
+    get handlesDragDropForTopLevelParts(): boolean;
+    set handlesDragDropForTopLevelParts(value: boolean);
     /**
-     * Gets or sets the function to execute when the mouse enters the Diagram.
+     * Gets or sets the function to execute when the mouse (pointer) enters the Diagram.
      * (When the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/Events/mouseenter">mouseEnter</a> event fires on the Diagram canvas.)
      *
      * If this property value is a function, it is called with an InputEvent.
@@ -11116,9 +11684,10 @@ export class Diagram {
      * @see GraphObject#mouseEnter
      * @since 2.0
      */
-    mouseEnter: ((e: InputEvent) => void) | null;
+    get mouseEnter(): ((e: InputEvent) => void) | null;
+    set mouseEnter(value: ((e: InputEvent) => void) | null);
     /**
-     * Gets or sets the function to execute when the mouse leaves the Diagram.
+     * Gets or sets the function to execute when the mouse (pointer) leaves the Diagram.
      *
      * If this property value is a function, it is called with an InputEvent.
      * By default this property is null.
@@ -11130,9 +11699,10 @@ export class Diagram {
      * @see GraphObject#mouseLeave
      * @since 2.0
      */
-    mouseLeave: ((e: InputEvent) => void) | null;
+    get mouseLeave(): ((e: InputEvent) => void) | null;
+    set mouseLeave(value: ((e: InputEvent) => void) | null);
     /**
-     * This Adornment or HTMLInfo is shown when the mouse stays motionless in the background.
+     * This Adornment or HTMLInfo is shown when the mouse (pointer) stays motionless in the background.
      * The default value is null, which means no tooltip is shown.
      *
      * Here is a simple example:
@@ -11147,7 +11717,8 @@ export class Diagram {
      * @see GraphObject#toolTip
      * @see ToolManager#doToolTip
      */
-    toolTip: Adornment | HTMLInfo | null;
+    get toolTip(): Adornment | HTMLInfo | null;
+    set toolTip(value: Adornment | HTMLInfo | null);
     /**
      * This Adornment or HTMLInfo is shown when the use context clicks in the background.
      * The default value is null, which means no context menu is shown.
@@ -11174,7 +11745,8 @@ export class Diagram {
      * @see GraphObject#contextMenu
      * @see ContextMenuTool
      */
-    contextMenu: Adornment | HTMLInfo | null;
+    get contextMenu(): Adornment | HTMLInfo | null;
+    set contextMenu(value: Adornment | HTMLInfo | null);
     /**
      * Gets or sets the CommandHandler for this Diagram.
      *
@@ -11183,7 +11755,8 @@ export class Diagram {
      * Setting this property does not notify about any changed event.
      * The value cannot be null and must not be shared with other Diagrams.
      */
-    commandHandler: CommandHandler;
+    get commandHandler(): CommandHandler;
+    set commandHandler(value: CommandHandler);
     /**
      * Gets or sets the ToolManager for this Diagram.
      * This tool is used for mode-less operation.
@@ -11198,7 +11771,8 @@ export class Diagram {
      * If you set this property, you will probably also want to set #defaultTool.
      * @see #defaultTool
      */
-    toolManager: ToolManager;
+    get toolManager(): ToolManager;
+    set toolManager(value: ToolManager);
     /**
      * Gets or sets the default tool for this Diagram that becomes the current tool when the current tool stops.
      * Initially this value is the same tool as #toolManager, which is an instance of ToolManager.
@@ -11210,7 +11784,8 @@ export class Diagram {
      * @see #currentTool
      * @see #toolManager
      */
-    defaultTool: Tool;
+    get defaultTool(): Tool;
+    set defaultTool(value: Tool);
     /**
      * Gets or sets the current tool for this Diagram that handles all input events.
      * This value is frequently replaced by the #toolManager as different tools run.
@@ -11231,7 +11806,8 @@ export class Diagram {
      * @see #defaultTool
      * @see #toolManager
      */
-    currentTool: Tool;
+    get currentTool(): Tool;
+    set currentTool(value: Tool);
     /**
      * This read-only property returns the read-only collection of selected objects.
      * Most commands and many tools operate on this collection.
@@ -11251,7 +11827,7 @@ export class Diagram {
      * Note that selection collection and Part#isSelected property are completely independent
      * of the #highlighteds collection and the Part#isHighlighted property.
      */
-    readonly selection: Set<Part>;
+    get selection(): Set<Part>;
     /**
      * Gets or sets the maximum number of selected objects.
      * The default value is a large positive integer.
@@ -11259,7 +11835,8 @@ export class Diagram {
      * Decreasing this value may cause objects to be removed from #selection
      * in order to meet the new lower limit.
      */
-    maxSelectionCount: number;
+    get maxSelectionCount(): number;
+    set maxSelectionCount(value: number);
     /**
      * Gets or sets the default selection Adornment template, used to adorn selected Parts other than Groups or Links.
      *
@@ -11268,7 +11845,8 @@ export class Diagram {
      *
      * This Adornment must not be in the visual tree of any Diagram.
      */
-    nodeSelectionAdornmentTemplate: Adornment;
+    get nodeSelectionAdornmentTemplate(): Adornment;
+    set nodeSelectionAdornmentTemplate(value: Adornment);
     /**
      * Gets or sets the default selection Adornment template, used to adorn selected Groups.
      *
@@ -11276,7 +11854,8 @@ export class Diagram {
      *
      * This Adornment must not be in the visual tree of any Diagram.
      */
-    groupSelectionAdornmentTemplate: Adornment;
+    get groupSelectionAdornmentTemplate(): Adornment;
+    set groupSelectionAdornmentTemplate(value: Adornment);
     /**
      * Gets or sets the default selection Adornment template, used to adorn selected Links.
      *
@@ -11284,7 +11863,8 @@ export class Diagram {
      *
      * This Adornment must not be in the visual tree of any Diagram.
      */
-    linkSelectionAdornmentTemplate: Adornment;
+    get linkSelectionAdornmentTemplate(): Adornment;
+    set linkSelectionAdornmentTemplate(value: Adornment);
     /**
      * This read-only property returns the read-only collection of highlighted parts.
      *
@@ -11299,7 +11879,7 @@ export class Diagram {
      * of the #selection collection and the Part#isSelected property.
      * No predefined command or tool operates on this highlighteds collection.
      */
-    readonly highlighteds: Set<Part>;
+    get highlighteds(): Set<Part>;
     /**
      * Gets or sets whether this Diagram's state has been modified.
      * Setting this property does not notify about any changed event,
@@ -11314,7 +11894,8 @@ export class Diagram {
      * The "Modified" DiagramEvent is also raised when an undo or a redo has finished.
      * A "Modified" DiagramEvent listener must not modify this Diagram or its Model.
      */
-    isModified: boolean;
+    get isModified(): boolean;
+    set isModified(value: boolean);
     /**
      * Gets or sets the Model holding data corresponding to the
      * data-bound nodes and links of this Diagram.
@@ -11339,17 +11920,20 @@ export class Diagram {
      *
      * It is an error to replace the Diagram.model while a transaction is in progress.
      */
-    model: Model;
+    get model(): Model;
+    set model(value: Model);
     /**
      * Gets or sets the license key.
      * @since 2.0
      */
-    static licenseKey: string;
+    static get licenseKey(): string;
+    static set licenseKey(value: string);
     /**
      * Gets the current GoJS version.
      * @since 2.0
      */
-    static readonly version: string;
+    static get version(): string;
+    set skipsModelSourceBindings(value: boolean);
     /**
      * Remove all of the Parts created from model data
      * and then create them again.
@@ -11485,7 +12069,8 @@ export class Diagram {
      *
      * This Part must not be in the visual tree of any Diagram.
      */
-    nodeTemplate: Part;
+    get nodeTemplate(): Part;
+    set nodeTemplate(value: Part);
     /**
      * Gets or sets a Map mapping template names to Parts.
      * These nodes are copied for each node data that is added to the #model.
@@ -11500,7 +12085,8 @@ export class Diagram {
      *
      * If you want to create Groups, use #groupTemplateMap instead.
      */
-    nodeTemplateMap: Map<string, Part>;
+    get nodeTemplateMap(): Map<string, Part>;
+    set nodeTemplateMap(value: Map<string, Part>);
     /**
      * Gets or sets the default Group template used as the archetype
      * for group data that is added to the #model.
@@ -11510,7 +12096,8 @@ export class Diagram {
      * The value must not be null and must be a Group, not a Node or simple Part.
      * This Part must not be in the visual tree of any Diagram.
      */
-    groupTemplate: Group;
+    get groupTemplate(): Group;
+    set groupTemplate(value: Group);
     /**
      * Gets or sets a Map mapping template names to Groups.
      * These groups are copied for each group data that is added to the #model.
@@ -11522,7 +12109,8 @@ export class Diagram {
      * If you modify this Map, by replacing a Group in it or by adding or
      * removing a map entry, you need to explicitly call #rebuildParts afterwards.
      */
-    groupTemplateMap: Map<string, Group>;
+    get groupTemplateMap(): Map<string, Group>;
+    set groupTemplateMap(value: Map<string, Group>);
     /**
      * Gets or sets the default Link template used as the archetype
      * for link data that is added to the #model.
@@ -11532,7 +12120,8 @@ export class Diagram {
      * The value must not be null and must be a Link, not a Node or simple Part.
      * This Link must not be in the visual tree of any Diagram.
      */
-    linkTemplate: Link;
+    get linkTemplate(): Link;
+    set linkTemplate(value: Link);
     /**
      * Gets or sets a Map mapping template names to Links.
      * These links are copied for each link data that is added to the #model.
@@ -11544,13 +12133,15 @@ export class Diagram {
      * If you modify this Map, by replacing a Link in it or by adding or
      * removing a map entry, you need to explicitly call #rebuildParts afterwards.
      */
-    linkTemplateMap: Map<string, Link>;
+    get linkTemplateMap(): Map<string, Link>;
+    set linkTemplateMap(value: Map<string, Link>);
     /**
      * Gets or sets whether mouse events initiated within the Diagram will be captured.
      * The initial value is true.
      * Setting this property does not notify about any changed event.
      */
-    isMouseCaptured: boolean;
+    get isMouseCaptured(): boolean;
+    set isMouseCaptured(value: boolean);
     /**
      * Gets or sets the coordinates of this Diagram in the viewport.
      * Value must be of type Point in document coordinates.
@@ -11570,7 +12161,8 @@ export class Diagram {
      * You may want to set #initialPosition instead of setting this property around the time
      * that you are loading a model.
      */
-    position: Point;
+    get position(): Point;
+    set position(value: Point);
     /**
      * Gets or sets the initial coordinates of this Diagram in the viewport, eventually setting the #position.
      * This value is relevant on initialization of a #model or if #delayInitialization is called.
@@ -11585,7 +12177,8 @@ export class Diagram {
      * @see #initialViewportSpot
      * @since 1.1
      */
-    initialPosition: Point;
+    get initialPosition(): Point;
+    set initialPosition(value: Point);
     /**
      * Gets or sets the initial scale of this Diagram in the viewport, eventually setting the #scale.
      * This value is relevant on initialization of a #model or if #delayInitialization is called.
@@ -11595,12 +12188,14 @@ export class Diagram {
      * an "InitialLayoutCompleted" DiagramEvent listener that sets #scale.
      * @since 1.1
      */
-    initialScale: number;
+    get initialScale(): number;
+    set initialScale(value: number);
     /**
      * Gets or sets a Panel of type Panel.Grid acting as the background grid
      * extending across the whole viewport of this diagram.
      */
-    grid: Panel;
+    get grid(): Panel;
+    set grid(value: Panel);
     /**
      * This read-only property returns the bounds of the portion of the Diagram in document coordinates that is viewable from its HTML Canvas.
      * Typically when the viewport bounds are smaller than the #documentBounds, the user can scroll or pan the view.
@@ -11609,7 +12204,7 @@ export class Diagram {
      * and the width and height are equal to the Diagram's canvas width and height,
      * divided by the #scale.
      */
-    readonly viewportBounds: Rect;
+    get viewportBounds(): Rect;
     /**
      * Gets or sets a fixed size in document coordinates to be returned by #viewportBounds. This is typically only set when the Diagram's #div is `null`.
      * This property is intended to be used in DOM-less environments where there is no Diagram #div expected, to simulate the size of the DIV.
@@ -11624,7 +12219,8 @@ export class Diagram {
      * @see #viewportBounds
      * @since 2.0
      */
-    viewSize: Size;
+    get viewSize(): Size;
+    set viewSize(value: Size);
     /**
      * Gets or sets a fixed bounding rectangle to be returned by #documentBounds
      * and #computeBounds.
@@ -11632,7 +12228,8 @@ export class Diagram {
      * will compute the union of all of the parts in the Diagram to determine the #documentBounds.
      * If all x/y/width/height values are real numbers, this value is used as the #documentBounds.
      */
-    fixedBounds: Rect;
+    get fixedBounds(): Rect;
+    set fixedBounds(value: Rect);
     /**
      * Gets or sets a scrollable area in document coordinates that surrounds the document bounds, allowing the user to scroll into empty space.
      *
@@ -11641,7 +12238,8 @@ export class Diagram {
      * The default value is a margin of 0, all around the edge of the document.
      * @since 1.5
      */
-    scrollMargin: MarginLike;
+    get scrollMargin(): MarginLike;
+    set scrollMargin(value: MarginLike);
     /**
      * Gets or sets the scrollMode of the Diagram, allowing the user to either
      * scroll to document bound borders with Diagram.DocumentScroll,
@@ -11651,7 +12249,8 @@ export class Diagram {
      * Changing this property value does not raise a Changed event.
      * @since 1.5
      */
-    scrollMode: EnumValue;
+    get scrollMode(): EnumValue;
+    set scrollMode(value: EnumValue);
     /**
      * Gets or sets whether the page may be scrolled when the diagram receives focus.
      * This happens in some browsers when the top-left corner of the diagram's HTMLDivElement
@@ -11660,7 +12259,8 @@ export class Diagram {
      * The default value is false.
      * @since 1.8
      */
-    scrollsPageOnFocus: boolean;
+    get scrollsPageOnFocus(): boolean;
+    set scrollsPageOnFocus(value: boolean);
     /**
      * Gets or sets the function used to determine the position that this Diagram can be scrolled or moved to.
      *
@@ -11679,12 +12279,14 @@ export class Diagram {
      * The function, if supplied, must not have any side-effects.
      * @since 1.5
      */
-    positionComputation: ((thisDiagram: Diagram, newPosition: Point) => Point) | null;
+    get positionComputation(): ((thisDiagram: Diagram, newPosition: Point) => Point) | null;
+    set positionComputation(value: ((thisDiagram: Diagram, newPosition: Point) => Point) | null);
     /**
      * Gets or sets the function used to determine valid scale values for this Diagram.
      * @since 1.5
      */
-    scaleComputation: ((thisDiagram: Diagram, newScale: number) => number) | null;
+    get scaleComputation(): ((thisDiagram: Diagram, newScale: number) => number) | null;
+    set scaleComputation(value: ((thisDiagram: Diagram, newScale: number) => number) | null);
     /**
      * This read-only property returns the bounds of the diagram's contents, in document coordinates.
      *
@@ -11700,7 +12302,7 @@ export class Diagram {
      * you can disable scrollbars themselves with the #hasHorizontalScrollbar
      * and #hasVerticalScrollbar properties.
      */
-    readonly documentBounds: Rect;
+    get documentBounds(): Rect;
     /**
      * Ensures that the #documentBounds are up to date.
      * This is sometimes necessary when operations need updated document bounds immediately.
@@ -11712,9 +12314,10 @@ export class Diagram {
      */
     ensureBounds(): void;
     /**
-     * Undocumented
+     * (undocumented)
      */
-    isVirtualized: boolean;
+    get isVirtualized(): boolean;
+    set isVirtualized(value: boolean);
     /**
      * Gets or sets the scale transform of this Diagram.
      * Value must be a positive number.
@@ -11735,7 +12338,8 @@ export class Diagram {
      * You may want to set #initialScale instead of setting this property around the time
      * that you are loading a model.
      */
-    scale: number;
+    get scale(): number;
+    set scale(value: number);
     /**
      * Gets or sets the Diagram#scale set by CommandHandler#resetZoom
      * and when computing stretch values, such as when #autoScale or
@@ -11746,7 +12350,8 @@ export class Diagram {
      * Setting this property does not raise any events.
      * @since 2.0
      */
-    defaultScale: number;
+    get defaultScale(): number;
+    set defaultScale(value: number);
     /**
      * Gets or sets the autoScale behavior of the Diagram, controlling whether or not the
      * Diagram's bounds automatically scale to fit the view.
@@ -11769,7 +12374,8 @@ export class Diagram {
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
      */
-    autoScale: EnumValue;
+    get autoScale(): EnumValue;
+    set autoScale(value: EnumValue);
     /**
      * Gets or sets how the scale of the diagram is automatically
      * set at the time of the "InitialLayoutCompleted" DiagramEvent, after the model has been replaced.
@@ -11791,7 +12397,8 @@ export class Diagram {
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
      */
-    initialAutoScale: EnumValue;
+    get initialAutoScale(): EnumValue;
+    set initialAutoScale(value: EnumValue);
     /**
      * Gets or sets the spot in the viewport that should be coincident with the
      * #initialDocumentSpot of the document when the document is first initialized.
@@ -11806,7 +12413,8 @@ export class Diagram {
      * @see #initialDocumentSpot
      * @see #initialContentAlignment
      */
-    initialViewportSpot: Spot;
+    get initialViewportSpot(): Spot;
+    set initialViewportSpot(value: Spot);
     /**
      * Gets or sets the spot in the document's area that should be coincident with the
      * #initialViewportSpot of the viewport when the document is first initialized.
@@ -11822,7 +12430,8 @@ export class Diagram {
      * @see #initialPosition
      * @see #initialContentAlignment
      */
-    initialDocumentSpot: Spot;
+    get initialDocumentSpot(): Spot;
+    set initialDocumentSpot(value: Spot);
     /**
      * Gets or sets the smallest value greater than zero that #scale may take.
      * This property is only used to limit the range of new values of #scale.
@@ -11832,7 +12441,8 @@ export class Diagram {
      * Setting this to a value that is greater than the current #scale
      * will cause the current diagram scale to be set to this new value.
      */
-    minScale: number;
+    get minScale(): number;
+    set minScale(value: number);
     /**
      * Gets or sets the largest value that #scale may take.
      * This property is only used to limit the range of new values of #scale.
@@ -11842,7 +12452,8 @@ export class Diagram {
      * Setting this to a value that is less than the current #scale
      * will cause the current diagram scale to be set to this new value.
      */
-    maxScale: number;
+    get maxScale(): number;
+    set maxScale(value: number);
     /**
      * Gets or sets the zoom point of this Diagram, in viewport coordinates.
      * This is used by Tool#standardMouseWheel and scale-setting commands to control where to zoom in or out.
@@ -11859,7 +12470,8 @@ export class Diagram {
      * Setting this property does not notify about any changed event.
      * @since 1.2
      */
-    zoomPoint: Point;
+    get zoomPoint(): Point;
+    set zoomPoint(value: Point);
     /**
      * Gets or sets the content alignment Spot of this Diagram, to be used in determining
      * how parts are positioned when the #viewportBounds width or height is larger than the #documentBounds.
@@ -11876,7 +12488,8 @@ export class Diagram {
      * a "LayoutCompleted" DiagramEvent listener that scrolls the viewport to align the content.
      *
      */
-    contentAlignment: Spot;
+    get contentAlignment(): Spot;
+    set contentAlignment(value: Spot);
     /**
      * Gets or sets the initial content alignment Spot of this Diagram, to be used in determining
      * how parts are positioned initially relative to the viewport, when the #viewportBounds width or height is larger than the #documentBounds.
@@ -11895,7 +12508,8 @@ export class Diagram {
      * @see #initialDocumentSpot
      * @see #initialViewportSpot
      */
-    initialContentAlignment: Spot;
+    get initialContentAlignment(): Spot;
+    set initialContentAlignment(value: Spot);
     /**
      * Gets or sets the Margin that describes the Diagram's padding,
      * which controls how much extra space in document coordinates there is around the area occupied by the document.
@@ -11903,7 +12517,8 @@ export class Diagram {
      *
      * The default value is a margin of 5, all around the edge of the document.
      */
-    padding: MarginLike;
+    get padding(): MarginLike;
+    set padding(value: MarginLike);
     /**
      * This read-only property returns an iterator of all Nodes and Groups in the Diagram.
      *
@@ -11913,14 +12528,14 @@ export class Diagram {
      * @see #findTopLevelGroups
      * @see #findTreeRoots
      */
-    readonly nodes: Iterator<Node>;
+    get nodes(): Iterator<Node>;
     /**
      * This read-only property returns an iterator of all Links in the Diagram.
      *
      * This includes both data-bound and unbound links,
      * and both top-level links and links inside Groups.
      */
-    readonly links: Iterator<Link>;
+    get links(): Iterator<Link>;
     /**
      * This read-only property returns an iterator of all Parts in the Diagram
      * that are not Nodes or Links or Adornments.
@@ -11930,7 +12545,7 @@ export class Diagram {
      * Use the #nodes or #links properties for getting the
      * collection of all Nodes or Links in the diagram.
      */
-    readonly parts: Iterator<Part>;
+    get parts(): Iterator<Part>;
     /**
      * Returns an iterator of all Groups that are at top-level,
      * in other words that are not themselves inside other Groups.
@@ -11946,7 +12561,8 @@ export class Diagram {
      * that assigns positions to all parts that need it.
      * The value cannot be null and must not be shared with other Diagrams.
      */
-    layout: Layout;
+    get layout(): Layout;
+    set layout(value: Layout);
     /**
      * Perform all invalid layouts.
      * If the optional argument is true,
@@ -11967,7 +12583,8 @@ export class Diagram {
      * links going from the parent node to their children, or vice-versa.
      * By default this property is true: links go from the parent node to the child node.
      */
-    isTreePathToChildren: boolean;
+    get isTreePathToChildren(): boolean;
+    set isTreePathToChildren(value: boolean);
     /**
      * Returns an iterator of all top-level Nodes that have no tree parents.
      *
@@ -11977,15 +12594,17 @@ export class Diagram {
      * @since 1.2
      */
     findTreeRoots(): Iterator<Node>;
+    set treeCollapsePolicy(value: EnumValue);
     /**
      * Register an event handler that is called when there is a DiagramEvent of a given name.
      *
      * See the DiagramEvent documentation for a complete listing of diagram event names and their purposes.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
      * @param {function(DiagramEvent)} listener a function that takes a DiagramEvent as its argument.
+     * @return {Diagram} this Diagram
      * @see #removeDiagramListener
      */
-    addDiagramListener(name: DiagramEventName, listener: ((e: DiagramEvent) => void)): void;
+    addDiagramListener(name: DiagramEventName, listener: ((e: DiagramEvent) => void)): this;
     /**
      * Unregister a DiagramEvent handler.
      *
@@ -11996,7 +12615,8 @@ export class Diagram {
      */
     removeDiagramListener(name: DiagramEventName, listener: ((e: DiagramEvent) => void)): void;
     /**
-     * Undocumented.
+     * (undocumented)
+     * Notify any DiagramEvent listeners by calling all event handlers registered by #addDiagramListener.
      * @param {string} name the name is normally capitalized, but this method uses case-insensitive comparison.
      * @param {Object=} obj an optional subject of the event.
      * @param {*=} param an optional parameter describing the change to the subject of the event.
@@ -12005,39 +12625,43 @@ export class Diagram {
      */
     raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData, param?: any): void;
     /**
-     * Undocumented.
      * Gets or sets number of milliseconds between autoscroll events.
      * The default value is 250.
+     * @since 2.2
      */
-    autoScrollInterval: number;
+    get autoScrollInterval(): number;
+    set autoScrollInterval(value: number);
     /**
      * Gets or sets the Margin that describes the area along the inside edges of the viewport,
-     * in viewport coordinates, where autoscrolling will occur while the mouse is held there
+     * in viewport coordinates, where autoscrolling will occur while the mouse (pointer) is held there
      * during dragging or linking or drag-selecting.
      *
      * The default value is a Margin of 16 on all sides.
      * Increase this value in order to make it easier for the user to autoscroll by having
-     * a larger area in which to hold the mouse down during a dragging operation.
+     * a larger area in which to hold the mouse (pointer) down during a dragging operation.
      *
-     * When the mouse drag point is within this region on the left or right sides,
+     * When the mouse (pointer) drag point is within this region on the left or right sides,
      * the view will automatically scroll horizontally in that direction.
      * When the point is within the region on the top or bottom, the view will automatically scroll
      * vertically in that direction.
      * You can specify a Margin side of zero to disable autoscrolling in a particular direction;
      * a value of Margin(0,0,0,0) turns off autoscrolling in all four directions.
      */
-    autoScrollRegion: MarginLike;
+    get autoScrollRegion(): MarginLike;
+    set autoScrollRegion(value: MarginLike);
     /**
-     * Undocumented
+     * (undocumented)
+     * Called by DraggingTool and LinkingTool to implement auto-scrolling.
      * @param {Point} viewPt
      */
     doAutoScroll(viewPt: Point): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Stop any ongoing auto-scroll action.
      */
     stopAutoScroll(): void;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {Point} viewPnt in viewport coordinates
      * @return {Point} in document coordinates
@@ -12075,7 +12699,7 @@ export class Diagram {
      */
     makeSvg(options?: SvgRendererOptions): SVGElement;
     /**
-     * Undocumented.
+     * (undocumented)
      * Add a renderer to the Diagram. This property is only used when building GoJS from source.
      *
      * When building from source, to include SVG rendering functionality for Diagram#makeSvg,
@@ -12085,6 +12709,11 @@ export class Diagram {
      * @param {ISurface} surface Rendering class, either SVGSurface or CanvasSurface.
      */
     addRenderer(name: string, surface: ISurface): void;
+    /**
+     * (undocumented)
+     * Start or stop caching Group.findExternalLinksConnected
+     */
+    cacheGroupExternalLinks(start: boolean): void;
     /**
      *
      * Create an HTMLImageElement that contains a bitmap of the current Diagram.
@@ -12279,7 +12908,9 @@ export class DraggingInfo {
      * Gets or sets the initial location for a dragged object.
      * This is most commonly the Part.location of the dragged object, or a rounded Part.location if snapping.
      */
-    point: Point;
+    get point(): Point;
+    set point(value: Point);
+    set shifted(value: Point);
 }
 /**
  * New in 2.0, this class contains options for dragging and moving parts.
@@ -12417,9 +13048,33 @@ export interface ImageRendererOptions extends DiagramRendererOptions {
  */
 export class Palette extends Diagram {
     /**
-     * @param {HTMLDivElement|string} div A reference to a div or its ID as a string.
+     * @param {Element|string=} div A reference to a DIV HTML element or its ID as a string.
+     * If no DIV is supplied, a Palette will be created in memory. The Palette's Diagram#div property
+     * can then be set later on.
+     * @param {DiagramInitOptions=} init A JavaScript object specifying optional initialization properties object.
+     * Can specify Palette properties, and Palette sub-properties such as `"undoManager.isEnabled": true`,
+     * Example:
+     * ```js
+     * {
+     *   allowZoom: false,
+     *   "animationManager.isEnabled": false
+     * }
+     * ```
      */
-    constructor(div?: Element | string);
+    constructor(div?: Element | string, init?: Partial<Palette>);
+    /**
+     *
+     * @param {DiagramInitOptions=} init A JavaScript object specifying optional initialization properties object.
+     * Can specify Palette properties, and Palette sub-properties such as `"undoManager.isEnabled": true`
+     * Example:
+     * ```js
+     * {
+     *   allowZoom: false,
+     *   "animationManager.isEnabled": false
+     * }
+     * ```
+     */
+    constructor(init?: Partial<Palette>);
 }
 /**
  * An Overview is a Diagram that displays all of a different diagram,
@@ -12451,23 +13106,32 @@ export class Palette extends Diagram {
  */
 export class Overview extends Diagram {
     /**
-     * @param {Element|string} div A reference to a div or its ID as a string.
-     */
-    constructor(div?: Element | string);
+    * @param {Element|string=} div A reference to a DIV HTML element or its ID as a string.
+    * If no DIV is supplied, an Overview will be created in memory. The Overviews's Diagram#div property
+    * can then be set later on.
+    * @param {Partial<Overview>=} init Optional initialization properties.
+    */
+    constructor(div?: Element | string, init?: Partial<Overview>);
+    /**
+    * @param {Partial<Overview>=} init Optional initialization properties.
+    */
+    constructor(init?: Partial<Overview>);
     /**
      * Gets or sets the Diagram for which this Overview is
      * displaying a model and showing its viewport into that model.
      *
      * The value must be null or another Diagram, but may not be an Overview.
      */
-    observed: Diagram | null;
+    get observed(): Diagram | null;
+    set observed(value: Diagram | null);
     /**
      * Gets or sets the rectangular Part that represents the
      * viewport of the #observed Diagram.
      * By default the part contains only a magenta Shape.
      * The box's Part#selectionObject is what is resized by the Overview to the apparent size of the observed diagram's viewport.
      */
-    box: Part;
+    get box(): Part;
+    set box(value: Part);
     /**
      * Gets or sets whether this overview draws the temporary layers of the observed Diagram.
      * The default value is true.
@@ -12477,7 +13141,8 @@ export class Overview extends Diagram {
      * Setting this property does not notify about any changed event.
      * @since 1.2
      */
-    drawsTemporaryLayers: boolean;
+    get drawsTemporaryLayers(): boolean;
+    set drawsTemporaryLayers(value: boolean);
     /**
      * Gets or sets whether this overview draws the Diagram#grid of the observed Diagram,
      * if it is visible.  The default value is true.
@@ -12488,7 +13153,8 @@ export class Overview extends Diagram {
      * Setting this property does not notify about any changed event.
      * @since 2.2
      */
-    drawsGrid: boolean;
+    get drawsGrid(): boolean;
+    set drawsGrid(value: boolean);
     /**
      * Gets or sets how long it waits before updating, in milliseconds.
      * The default value is zero.
@@ -12497,7 +13163,8 @@ export class Overview extends Diagram {
      * Setting this property does not notify about any changed event.
      * @since 2.2
      */
-    updateDelay: number;
+    get updateDelay(): number;
+    set updateDelay(value: number);
 }
 /**
  * The Diagram#commandHandler implements various
@@ -12556,7 +13223,7 @@ export class CommandHandler {
      * This read-only property returns the Diagram that is using this CommandHandler,
      * after Diagram#commandHandler has been set to this object.
      */
-    readonly diagram: Diagram;
+    get diagram(): Diagram;
     /**
      * This is called by tools to handle keyboard commands.
      * For most commands, this calls the "can..." predicate; if that returns true it calls the command method.
@@ -12735,7 +13402,7 @@ export class CommandHandler {
      * If the value is null, the clipboard is cleared of all data.
      * @see #pasteFromClipboard
      */
-    copyToClipboard(coll: Iterable<Part>): void;
+    copyToClipboard(coll: Iterable<Part> | null): void;
     /**
      * If the clipboard holds a collection of Parts,
      * and if the Model#dataFormat matches that stored in the clipboard,
@@ -13281,6 +13948,7 @@ export class CommandHandler {
      * @see #showContextMenu
      */
     canShowContextMenu(obj?: GraphObject | Diagram): boolean;
+    set copiesClipboardData(value: boolean);
     /**
      * Gets or sets whether #copySelection should also copy Links that connect with selected Nodes.
      * The default value is true.
@@ -13290,14 +13958,16 @@ export class CommandHandler {
      * when the user holds down the control key to modify the drag into a copy operation.
      * @since 1.5
      */
-    copiesConnectedLinks: boolean;
+    get copiesConnectedLinks(): boolean;
+    set copiesConnectedLinks(value: boolean);
     /**
      * Gets or sets whether #deleteSelection should also delete links that are connected to nodes that are deleted.
      * The default value is true.
      * Setting this property does not raise any events.
      * @since 1.6
      */
-    deletesConnectedLinks: boolean;
+    get deletesConnectedLinks(): boolean;
+    set deletesConnectedLinks(value: boolean);
     /**
      * Gets or sets whether #copySelection should also copy subtrees.
      * The default value is false.
@@ -13306,13 +13976,15 @@ export class CommandHandler {
      * The DraggingTool#dragsTree property serves a similar role for the DraggingTool
      * for both moving and copying operations.
      */
-    copiesTree: boolean;
+    get copiesTree(): boolean;
+    set copiesTree(value: boolean);
     /**
      * Gets or sets whether #deleteSelection should also delete subtrees.
      * The default value is false.
      * Setting this property does not raise any events.
      */
-    deletesTree: boolean;
+    get deletesTree(): boolean;
+    set deletesTree(value: boolean);
     /**
      * Gets or sets whether #copySelection and #copyToClipboard copy the node data property
      * whose value is the tree-parent node data's key.
@@ -13323,7 +13995,8 @@ export class CommandHandler {
      * The default value is false.
      * @since 1.3
      */
-    copiesParentKey: boolean;
+    get copiesParentKey(): boolean;
+    set copiesParentKey(value: boolean);
     /**
      * Gets or sets whether #copySelection and #copyToClipboard copy the node data property
      * whose value is the containing group data's key.
@@ -13334,7 +14007,8 @@ export class CommandHandler {
      * The default value is false.
      * @since 1.3
      */
-    copiesGroupKey: boolean;
+    get copiesGroupKey(): boolean;
+    set copiesGroupKey(value: boolean);
     /**
      * Gets or sets a data object that is copied by #groupSelection
      * when creating a new Group.
@@ -13343,7 +14017,8 @@ export class CommandHandler {
      * If you set this to an Object, be sure that GraphLinksModel#isGroupForNodeData is true for that object.
      * Setting this property does not raise any events.
      */
-    archetypeGroupData: ObjectData;
+    get archetypeGroupData(): ObjectData;
+    set archetypeGroupData(value: ObjectData);
     /**
      * Gets or sets the predicate that determines whether or not a node may become a member of a group.
      * This predicate is called in addition to any existing group's Group#memberValidation predicate.
@@ -13355,12 +14030,14 @@ export class CommandHandler {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    memberValidation: ((aGroup: Group, somePart: Part) => boolean) | null;
+    get memberValidation(): ((aGroup: Group, somePart: Part) => boolean) | null;
+    set memberValidation(value: ((aGroup: Group, somePart: Part) => boolean) | null);
     /**
-     * Undocumented.
+     * (undocumented)
      * Deprecated in favor of Diagram#defaultScale.
      */
-    defaultScale: number;
+    get defaultScale(): number;
+    set defaultScale(value: number);
     /**
      * Gets or sets the amount by which #decreaseZoom and #increaseZoom change
      * the Diagram#scale.
@@ -13370,9 +14047,9 @@ export class CommandHandler {
      * Setting this property does not raise any events.
      * @since 1.1
      */
-    zoomFactor: number;
+    get zoomFactor(): number;
+    set zoomFactor(value: number);
     /**
-     * Undocumented.
      * Gets or sets whether the #zoomToFit command ever restores the previous
      * Diagram scale and position.
      * When this property is false, this command always calls Diagram#zoomToFit.
@@ -13381,7 +14058,9 @@ export class CommandHandler {
      * Setting this property does not raise any events.
      * @since 2.2
      */
-    isZoomToFitRestoreEnabled: boolean;
+    get isZoomToFitRestoreEnabled(): boolean;
+    set isZoomToFitRestoreEnabled(value: boolean);
+    set scrollToPartPause(value: number);
     /**
      * Find the actual collection of nodes and links to be moved or copied,
      * given an initial collection.
@@ -13810,7 +14489,8 @@ export abstract class GraphObject {
      * @see Part#isShadowed
      * @since 1.6
      */
-    shadowVisible: boolean | null;
+    get shadowVisible(): boolean | null;
+    set shadowVisible(value: boolean | null);
     /**
      * This predicate is true if this object is an element, perhaps indirectly,
      * of the given panel.
@@ -13857,7 +14537,8 @@ export abstract class GraphObject {
      * @see Panel#isEnabled
      * @since 1.7
      */
-    enabledChanged: ((thisObj: GraphObject, enabled: boolean) => void) | null;
+    get enabledChanged(): ((thisObj: GraphObject, enabled: boolean) => void) | null;
+    set enabledChanged(value: ((thisObj: GraphObject, enabled: boolean) => void) | null);
     /**
      * Gets or sets the orientation of a GraphObject that is in a Link or Panel.Graduated.
      * This controls the automatic rotation of the object by the Link Panel or Graduated Panel.
@@ -13884,7 +14565,8 @@ export abstract class GraphObject {
      * @see #segmentIndex
      * @see #segmentOffset
      */
-    segmentOrientation: EnumValue;
+    get segmentOrientation(): EnumValue;
+    set segmentOrientation(value: EnumValue);
     /**
      * Gets or sets the segment index of a GraphObject that is in a Link.
      * Non-negative numbers count up from zero, which is the first segment, at the "from" end of the Link.
@@ -13903,7 +14585,8 @@ export abstract class GraphObject {
      * @see #segmentOffset
      * @see #segmentOrientation
      */
-    segmentIndex: number;
+    get segmentIndex(): number;
+    set segmentIndex(value: number);
     /**
      * Gets or sets the fractional distance along a segment of a GraphObject that is in a Link.
      * The value should be between zero and one, where zero is at the point at the start of the segment,
@@ -13917,7 +14600,8 @@ export abstract class GraphObject {
      * @see #segmentOffset
      * @see #segmentOrientation
      */
-    segmentFraction: number;
+    get segmentFraction(): number;
+    set segmentFraction(value: number);
     /**
      * Gets or sets the offset of a GraphObject that is in a Link from a point on a segment
      * or in a Panel.Graduated from a point along the main element.
@@ -13937,7 +14621,8 @@ export abstract class GraphObject {
      * @see #segmentIndex
      * @see #segmentOrientation
      */
-    segmentOffset: Point;
+    get segmentOffset(): Point;
+    set segmentOffset(value: Point);
     /**
      * Gets or sets the stretch of the GraphObject.
      * This controls whether the width and/or height of this object automatically adjusts to fill
@@ -13965,7 +14650,8 @@ export abstract class GraphObject {
      * @see #scale
      * @see Picture#imageStretch
      */
-    stretch: EnumValue;
+    get stretch(): EnumValue;
+    set stretch(value: EnumValue);
     /**
      * Gets or sets the name for this object.
      * The default value is the empty string.
@@ -13978,7 +14664,8 @@ export abstract class GraphObject {
      * for example as the value of the Part#locationObjectName or
      * Part#selectionObjectName properties.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets the multiplicative opacity for this GraphObject and (if a Panel) all elements.
      * The value must be between 0.0 (fully transparent) and 1.0 (no additional transparency).
@@ -13997,7 +14684,8 @@ export abstract class GraphObject {
      * @see Diagram#opacity
      * @since 1.4
      */
-    opacity: number;
+    get opacity(): number;
+    set opacity(value: number);
     /**
      * Gets or sets whether a GraphObject is visible.
      * The default value is true.
@@ -14026,7 +14714,8 @@ export abstract class GraphObject {
      * @see #pickable
      * @see Layer#visible
      */
-    visible: boolean;
+    get visible(): boolean;
+    set visible(value: boolean);
     /**
      * Gets or sets whether or not this GraphObject can be chosen by visual "find" or "hit-test" methods such
      * as Diagram#findObjectAt.
@@ -14043,7 +14732,8 @@ export abstract class GraphObject {
      * @see Panel#isEnabled
      * @since 1.2
      */
-    pickable: boolean;
+    get pickable(): boolean;
+    set pickable(value: boolean);
     /**
      * Gets or sets whether the user may draw duplicate Links from this port.
      * This property is used by LinkingBaseTool#isValidLink.
@@ -14056,7 +14746,8 @@ export abstract class GraphObject {
      * @see #fromLinkableSelfNode
      * @see #toLinkableDuplicates
      */
-    fromLinkableDuplicates: boolean;
+    get fromLinkableDuplicates(): boolean;
+    set fromLinkableDuplicates(value: boolean);
     /**
      * Gets or sets whether the user may draw Links that connect from this port's Node.
      * This property is used by LinkingBaseTool#isValidLink.
@@ -14069,7 +14760,8 @@ export abstract class GraphObject {
      * @see #fromLinkableDuplicates
      * @see #toLinkableSelfNode
      */
-    fromLinkableSelfNode: boolean;
+    get fromLinkableSelfNode(): boolean;
+    set fromLinkableSelfNode(value: boolean);
     /**
      * Gets or sets whether the user may draw duplicate Links to this port.
      * This property is used by LinkingBaseTool#isValidLink.
@@ -14082,7 +14774,8 @@ export abstract class GraphObject {
      * @see #toLinkableSelfNode
      * @see #fromLinkableDuplicates
      */
-    toLinkableDuplicates: boolean;
+    get toLinkableDuplicates(): boolean;
+    set toLinkableDuplicates(value: boolean);
     /**
      * Gets or sets whether the user may draw Links that connect to this port's Node.
      * This property is used by LinkingBaseTool#isValidLink.
@@ -14095,7 +14788,8 @@ export abstract class GraphObject {
      * @see #toLinkableDuplicates
      * @see #fromLinkableSelfNode
      */
-    toLinkableSelfNode: boolean;
+    get toLinkableSelfNode(): boolean;
+    set toLinkableSelfNode(value: boolean);
     /**
      * Gets or sets whether a GraphObject is the "main" object for some types of Panel.
      * Panels that use a "main" object include Panel.Auto, Panel.Spot, and Panel.Link.
@@ -14105,7 +14799,8 @@ export abstract class GraphObject {
      *
      * Do not modify this property once this object is an element of a panel.
      */
-    isPanelMain: boolean;
+    get isPanelMain(): boolean;
+    set isPanelMain(value: boolean);
     /**
      * This property determines whether or not this GraphObject's events occur
      * before all other events, including selection. This enables the #actionDown,
@@ -14125,7 +14820,8 @@ export abstract class GraphObject {
      * @see #pickable
      * @see Panel#isEnabled
      */
-    isActionable: boolean;
+    get isActionable(): boolean;
+    set isActionable(value: boolean);
     /**
      * Gets or sets the areaBackground Brush of this GraphObject.
      * The areaBackground fills the rectangle described by this GraphObject's containing panel's coordinates.
@@ -14139,7 +14835,8 @@ export abstract class GraphObject {
      * @see #background
      * @see Shape#fill
      */
-    areaBackground: BrushLike;
+    get areaBackground(): BrushLike;
+    set areaBackground(value: BrushLike);
     /**
      * Gets or sets the background Brush of this GraphObject,
      * filling the rectangle of this object's local coordinate space.
@@ -14152,7 +14849,8 @@ export abstract class GraphObject {
      * @see #areaBackground
      * @see Shape#fill
      */
-    background: BrushLike;
+    get background(): BrushLike;
+    set background(value: BrushLike);
     /**
      * This read-only property returns the Part containing this object, if any.
      * The Part will be the root GraphObject in this GraphObject's visual tree.
@@ -14170,7 +14868,8 @@ export abstract class GraphObject {
      * If you want to find a Group that contains a Part, use the Part#containingGroup property:
      * `someObj.part.containingGroup`
      */
-    readonly part: Part | null;
+    get part(): Part | null;
+    set svg(value: SVGElement);
     /**
      * This read-only property returns the GraphObject's containing Panel, or null if this object is not in a Panel.
      *
@@ -14180,7 +14879,7 @@ export abstract class GraphObject {
      * This property is not settable.
      * Instead, call Panel#add in order to put a GraphObject in a Panel.
      */
-    readonly panel: Panel | null;
+    get panel(): Panel | null;
     /**
      * This read-only property returns the GraphObject's containing Layer, if there is any.
      * A plain GraphObject cannot belong directly to a Layer -- only a Part can belong directly to a Layer.
@@ -14189,7 +14888,7 @@ export abstract class GraphObject {
      * Normally one changes which Layer that a GraphObject is in by setting Part#layerName.
      * Adding a Part to a Diagram will automatically add that Part to a Layer in that Diagram based on the layerName.
      */
-    readonly layer: Layer | null;
+    get layer(): Layer | null;
     /**
      * This read-only property returns the Diagram that this GraphObject is in, if it is.
      *
@@ -14197,18 +14896,19 @@ export abstract class GraphObject {
      * Although you cannot add any plain GraphObject to a Diagram, you can call Diagram#add
      * to add a Part to a Diagram.
      */
-    readonly diagram: Diagram | null;
+    get diagram(): Diagram | null;
     /**
      * Gets or sets the position of this GraphObject in container coordinates
      * (either a Panel or the document).
      * Value must be of type Point.
      * You cannot modify the x or y of the value of this property --
      * if you want to change the position you must set this property to a different Point.
-     * Default is Point(NaN, NaN).
+     * Default is `Point(NaN, NaN)`.
      *
      * For Parts, see also Part#location.
      */
-    position: Point;
+    get position(): Point;
+    set position(value: Point);
     /**
      * This read-only property returns the bounds of this GraphObject in container coordinates. This means that
      * the actualBounds are in the coordinate space of the GraphObject's Panel,
@@ -14237,7 +14937,7 @@ export abstract class GraphObject {
      * @see #measuredBounds
      * @see #desiredSize
      */
-    readonly actualBounds: Rect;
+    get actualBounds(): Rect;
     /**
      * Gets or sets the scale transform of this GraphObject.
      * Value must be a number; larger values will make this object appear bigger.
@@ -14245,7 +14945,8 @@ export abstract class GraphObject {
      * @see #angle
      * @see #stretch
      */
-    scale: number;
+    get scale(): number;
+    set scale(value: number);
     /**
      * Gets or sets the angle transform, in degrees, of this GraphObject.
      * Value must be a number. If the value is not between (0 &lt;= value &lt; 360),
@@ -14261,7 +14962,8 @@ export abstract class GraphObject {
      * @see #scale
      * @see #stretch
      */
-    angle: number;
+    get angle(): number;
+    set angle(value: number);
     /**
      * Gets or sets the desired size of this GraphObject in local coordinates.
      * Value must be of type Size.
@@ -14284,7 +14986,8 @@ export abstract class GraphObject {
      * @see #measuredBounds
      * @see #actualBounds
      */
-    desiredSize: Size;
+    get desiredSize(): Size;
+    set desiredSize(value: Size);
     /**
      * Gets or sets the desired width of this GraphObject in local coordinates.
      * This just gets or sets the width component of the #desiredSize.
@@ -14296,7 +14999,8 @@ export abstract class GraphObject {
      * nor any pen thickness due to Shape#strokeWidth if this is a Shape.
      * If there is a containing Panel the Panel will determine the actual size.
      */
-    width: number;
+    get width(): number;
+    set width(value: number);
     /**
      * Gets or sets the desired height of this GraphObject in local coordinates.
      * This just gets or sets the height component of the #desiredSize.
@@ -14308,7 +15012,8 @@ export abstract class GraphObject {
      * nor any pen thickness due to Shape#strokeWidth if this is a Shape.
      * If there is a containing Panel the Panel will determine the actual size.
      */
-    height: number;
+    get height(): number;
+    set height(value: number);
     /**
      * Gets or sets the minimum size of this GraphObject in container coordinates
      * (either a Panel or the document).
@@ -14321,7 +15026,8 @@ export abstract class GraphObject {
      * @see #maxSize
      * @see #desiredSize
      */
-    minSize: Size;
+    get minSize(): Size;
+    set minSize(value: Size);
     /**
      * Gets or sets the maximum size of this GraphObject in container coordinates
      * (either a Panel or the document).
@@ -14334,7 +15040,8 @@ export abstract class GraphObject {
      * @see #minSize
      * @see #desiredSize
      */
-    maxSize: Size;
+    get maxSize(): Size;
+    set maxSize(value: Size);
     /**
      * This read-only property returns the measuredBounds of the GraphObject in container coordinates
      * (either a Panel or the document).
@@ -14347,7 +15054,7 @@ export abstract class GraphObject {
      * @see #desiredSize
      * @see #actualBounds
      */
-    readonly measuredBounds: Rect;
+    get measuredBounds(): Rect;
     /**
      * This read-only property returns the natural bounding rectangle of this GraphObject in local coordinates,
      * before any transformation by #scale or #angle,
@@ -14364,7 +15071,7 @@ export abstract class GraphObject {
      * @see #measuredBounds
      * @see #actualBounds
      */
-    readonly naturalBounds: Rect;
+    get naturalBounds(): Rect;
     /**
      * Gets or sets the size of empty area around this GraphObject, as a Margin,
      * in the containing Panel coordinates.
@@ -14383,7 +15090,8 @@ export abstract class GraphObject {
      * @see #actualBounds
      * @see Panel#padding
      */
-    margin: MarginLike;
+    get margin(): MarginLike;
+    set margin(value: MarginLike);
     /**********************************************************
     Panel-specific properties:
     ***********************************************************/
@@ -14404,31 +15112,37 @@ export abstract class GraphObject {
      * @see #alignmentFocus
      * @see Panel#defaultAlignment
      */
-    alignment: Spot;
+    get alignment(): Spot;
+    set alignment(value: Spot);
     /**
      * Gets or sets the column of this GraphObject if it is in a Table Panel.
      * The value must be a small non-negative integer. The default is 0.
      */
-    column: number;
+    get column(): number;
+    set column(value: number);
     /**
      * Gets or sets the number of columns spanned by this GraphObject if it is in a Table Panel.
      * The value must be a small positive integer. The default is 1.
      */
-    columnSpan: number;
+    get columnSpan(): number;
+    set columnSpan(value: number);
     /**
      * Gets or sets the row of this GraphObject if it is in a Table Panel.
      * The value must be a small non-negative integer. The default is 0.
      */
-    row: number;
+    get row(): number;
+    set row(value: number);
     /**
      * Gets or sets the number of rows spanned by this GraphObject if it is in a Table Panel.
      * The value must be a small positive integer. The default is 1.
      */
-    rowSpan: number;
+    get rowSpan(): number;
+    set rowSpan(value: number);
     /**
-     * Undocumented
+     * (undocumented)
      */
-    spanAllocation: ((a: GraphObject, b: RowColumnDefinition, c: number) => number) | null;
+    get spanAllocation(): ((a: GraphObject, b: RowColumnDefinition, c: number) => number) | null;
+    set spanAllocation(value: ((a: GraphObject, b: RowColumnDefinition, c: number) => number) | null);
     /**
      * Gets or sets the spot on this GraphObject to be used as the alignment point
      * in Spot and Fixed Panels.
@@ -14452,7 +15166,8 @@ export abstract class GraphObject {
      * This is what it has always described when using #alignmentFocus with Link Labels.
      * @see Panel#alignmentFocusName
      */
-    alignmentFocus: Spot;
+    get alignmentFocus(): Spot;
+    set alignmentFocus(value: Spot);
     /**********************************************************
     Port-specific properties:
     ***********************************************************/
@@ -14481,7 +15196,8 @@ export abstract class GraphObject {
      * @see Link#fromSpot
      * @see Link#toSpot
      */
-    portId: string;
+    get portId(): string;
+    set portId(value: string);
     /**
      * Gets or sets where a link should connect to this port.
      * The default value is Spot.None, meaning that the link routing
@@ -14504,7 +15220,8 @@ export abstract class GraphObject {
      * @see #fromSpot
      * @see #portId
      */
-    toSpot: Spot;
+    get toSpot(): Spot;
+    set toSpot(value: Spot);
     /**
      * Gets or sets the length of the last segment of a link going to this port.
      * This value is used when the computed "to spot" is not Spot.None.
@@ -14524,7 +15241,8 @@ export abstract class GraphObject {
      * @see #fromEndSegmentLength
      * @see #portId
      */
-    toEndSegmentLength: number;
+    get toEndSegmentLength(): number;
+    set toEndSegmentLength(value: number);
     /**
      * Gets or sets how far the end segment of a link going to this port stops short of the actual port.
      * Positive values are limited by the #toEndSegmentLength or Link#toEndSegmentLength.
@@ -14553,7 +15271,8 @@ export abstract class GraphObject {
      * @see Link#toShortLength
      * @see #portId
      */
-    toShortLength: number;
+    get toShortLength(): number;
+    set toShortLength(value: number);
     /**
      * Gets or sets whether the user may draw Links to this port.
      * This property is used by LinkingBaseTool#isValidTo.
@@ -14571,7 +15290,8 @@ export abstract class GraphObject {
      * @see #portId
      * @see #cursor
      */
-    toLinkable: boolean | null;
+    get toLinkable(): boolean | null;
+    set toLinkable(value: boolean | null);
     /**
      * Gets or sets the maximum number of links that may go into this port.
      * This property is used by LinkingBaseTool#isValidTo.
@@ -14586,7 +15306,8 @@ export abstract class GraphObject {
      * @see #fromMaxLinks
      * @see #portId
      */
-    toMaxLinks: number;
+    get toMaxLinks(): number;
+    set toMaxLinks(value: number);
     /**
      * Gets or sets where a link should connect from this port.
      * The default value is Spot.None, meaning that the link routing
@@ -14609,7 +15330,8 @@ export abstract class GraphObject {
      * @see #toSpot
      * @see #portId
      */
-    fromSpot: Spot;
+    get fromSpot(): Spot;
+    set fromSpot(value: Spot);
     /**
      * Gets or sets the length of the first segment of a link coming from this port.
      * This value is used when the computed "from spot" is not Spot.None.
@@ -14629,7 +15351,8 @@ export abstract class GraphObject {
      * @see #toEndSegmentLength
      * @see #portId
      */
-    fromEndSegmentLength: number;
+    get fromEndSegmentLength(): number;
+    set fromEndSegmentLength(value: number);
     /**
      * Gets or sets how far the end segment of a link coming from this port stops short of the actual port.
      * Positive values are limited by the #fromEndSegmentLength or Link#fromEndSegmentLength.
@@ -14658,7 +15381,8 @@ export abstract class GraphObject {
      * @see Link#fromShortLength
      * @see #portId
      */
-    fromShortLength: number;
+    get fromShortLength(): number;
+    set fromShortLength(value: number);
     /**
      * Gets or sets whether the user may draw Links from this port.
      * This property is used by LinkingBaseTool#isValidFrom.
@@ -14676,7 +15400,8 @@ export abstract class GraphObject {
      * @see #portId
      * @see #cursor
      */
-    fromLinkable: boolean | null;
+    get fromLinkable(): boolean | null;
+    set fromLinkable(value: boolean | null);
     /**
      * Gets or sets the maximum number of links that may come out of this port.
      * This property is used by LinkingBaseTool#isValidFrom.
@@ -14691,7 +15416,8 @@ export abstract class GraphObject {
      * @see #toMaxLinks
      * @see #portId
      */
-    fromMaxLinks: number;
+    get fromMaxLinks(): number;
+    set fromMaxLinks(value: number);
     /**********************************************************
     Event Handling:
     ***********************************************************/
@@ -14708,7 +15434,8 @@ export abstract class GraphObject {
      * @see Diagram#defaultCursor
      * @see Diagram#currentCursor
      */
-    cursor: string;
+    get cursor(): string;
+    set cursor(value: string);
     /**
      * Gets or sets the function to execute when the user single-primary-clicks on this object.
      * This typically involves a mouse-down followed by a prompt mouse-up
@@ -14743,7 +15470,8 @@ export abstract class GraphObject {
      * @see #contextClick
      * @see Diagram#click
      */
-    click: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get click(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set click(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user double-primary-clicks on this object.
      * This typically involves a mouse-down/up/down/up in rapid succession
@@ -14789,7 +15517,8 @@ export abstract class GraphObject {
      * @see #contextClick
      * @see Diagram#doubleClick
      */
-    doubleClick: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get doubleClick(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set doubleClick(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user single-secondary-clicks on this object.
      * This typically involves a mouse-down followed by a prompt mouse-up
@@ -14821,7 +15550,8 @@ export abstract class GraphObject {
      * @see #doubleClick
      * @see Diagram#contextClick
      */
-    contextClick: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get contextClick(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set contextClick(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * into this object without holding down any buttons.
@@ -14893,7 +15623,8 @@ export abstract class GraphObject {
      * @see #mouseHover
      * @see #mouseDragEnter
      */
-    mouseEnter: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
+    get mouseEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
+    set mouseEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this object without holding down any buttons.
@@ -14934,7 +15665,8 @@ export abstract class GraphObject {
      * @see #mouseHover
      * @see #mouseDragLeave
      */
-    mouseLeave: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
+    get mouseLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
+    set mouseLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * over this object without holding down any buttons.
@@ -14957,7 +15689,8 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see #mouseLeave
      */
-    mouseOver: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get mouseOver(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set mouseOver(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user holds the mouse still for a while
      * over this object without holding down any buttons.
@@ -14974,8 +15707,7 @@ export abstract class GraphObject {
      * a "mouse hover" event occurs, by setting ToolManager#hoverDelay.
      * For example:
      * ```js
-     * myDiagram =
-     *   $(go.Diagram, "myDiagramDiv",
+     * myDiagram = new go.Diagram("myDiagramDiv",
      *     { "toolManager.hoverDelay": 500 });  // 500 milliseconds
      * ```
      * or:
@@ -14986,7 +15718,8 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see #mouseLeave
      */
-    mouseHover: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get mouseHover(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set mouseHover(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user holds the mouse still for a while
      * over this object while holding down a button.
@@ -15003,8 +15736,7 @@ export abstract class GraphObject {
      * a "mouse hold" event occurs, by setting ToolManager#holdDelay.
      * For example:
      * ```js
-     * myDiagram =
-     *   $(go.Diagram, "myDiagramDiv",
+     * myDiagram = new go.Diagram("myDiagramDiv",
      *     { "toolManager.holdDelay": 500 });  // 500 milliseconds
      * ```
      * or:
@@ -15015,7 +15747,8 @@ export abstract class GraphObject {
      * @see #mouseDragLeave
      * @see #mouseHover
      */
-    mouseHold: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get mouseHold(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set mouseHold(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * into this stationary object during a DraggingTool drag;
@@ -15046,7 +15779,8 @@ export abstract class GraphObject {
      * @see #mouseEnter
      * @see Group#handlesDragDropForMembers
      */
-    mouseDragEnter: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
+    get mouseDragEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
+    set mouseDragEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this stationary object during a DraggingTool drag;
@@ -15077,7 +15811,8 @@ export abstract class GraphObject {
      * @see #mouseLeave
      * @see Group#handlesDragDropForMembers
      */
-    mouseDragLeave: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
+    get mouseDragLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
+    set mouseDragLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when a user drops the selection on this object
      * at the end of a DraggingTool drag;
@@ -15099,7 +15834,8 @@ export abstract class GraphObject {
      * @see #mouseHold
      * @see Group#handlesDragDropForMembers
      */
-    mouseDrop: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get mouseDrop(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set mouseDrop(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute on a mouse-down event when this GraphObject's #isActionable
      * is set to true.
@@ -15115,7 +15851,8 @@ export abstract class GraphObject {
      * @see #actionUp
      * @see #actionCancel
      */
-    actionDown: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get actionDown(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set actionDown(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute on a mouse-move event when this GraphObject's #isActionable
      * is set to true.
@@ -15131,7 +15868,8 @@ export abstract class GraphObject {
      * @see #actionUp
      * @see #actionCancel
      */
-    actionMove: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get actionMove(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set actionMove(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute on a mouse-up event when this GraphObject's #isActionable
      * is set to true.
@@ -15150,7 +15888,8 @@ export abstract class GraphObject {
      * @see #actionMove
      * @see #actionCancel
      */
-    actionUp: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get actionUp(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set actionUp(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * Gets or sets the function to execute when the ActionTool is cancelled and this GraphObject's #isActionable
      * is set to true.
@@ -15166,7 +15905,8 @@ export abstract class GraphObject {
      * @see #actionMove
      * @see #actionUp
      */
-    actionCancel: ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    get actionCancel(): ((e: InputEvent, thisObj: GraphObject) => void) | null;
+    set actionCancel(value: ((e: InputEvent, thisObj: GraphObject) => void) | null);
     /**
      * This Adornment or HTMLInfo is shown when the mouse hovers over this object.
      * The default value is null, which means no tooltip is shown.
@@ -15195,8 +15935,7 @@ export abstract class GraphObject {
      * Tooltips are shown after a timed delay given by the ToolManager#hoverDelay.
      * You can change the delay time by:
      * ```js
-     * myDiagram =
-     *   $(go.Diagram, "myDiagramDiv",
+     * myDiagram = new go.Diagram("myDiagramDiv",
      *     { "toolManager.hoverDelay": 500 });  // 500 milliseconds
      * ```
      * or:
@@ -15212,7 +15951,8 @@ export abstract class GraphObject {
      *
      * Read more about tooltips at <a href="../../intro/toolTips.html">ToolTips</a>.
      */
-    toolTip: Adornment | HTMLInfo | null;
+    get toolTip(): Adornment | HTMLInfo | null;
+    set toolTip(value: Adornment | HTMLInfo | null);
     /**
      * This Adornment or HTMLInfo is shown upon a context click on this object.
      * The default value is null, which means no context menu is shown.
@@ -15264,50 +16004,234 @@ export abstract class GraphObject {
      *
      * Read more about context menus at <a href="../../intro/contextMenus.html">Context Menus</a>.
      */
-    contextMenu: Adornment | HTMLInfo | null;
+    get contextMenu(): Adornment | HTMLInfo | null;
+    set contextMenu(value: Adornment | HTMLInfo | null);
     /**
-     * Add a data-binding of a property on this GraphObject to a property on a data object.
-     * It is unusual to call this method -- GraphObject.make will call this method for you
-     * when you pass it an instance of Binding.
+     * Add a data-binding to this GraphObject for the given property names and optional conversion function.
      *
      * Do not add, modify, or remove any Bindings after this object has been copied.
      *
+     * An example using `.bind` with the shorthand arguments:
+     *
+     * ```js
+     * myDiagram.nodeTemplate =
+     *   new go.Node("Horizontal")
+     *    .bind("location", "loc")
+     *    // ... rest of Node template
+     * ```
+     *
+     * An example using both shorthand and a new go.Binding with `.bind`:
+     *
+     * ```js
+     * new go.Shape({
+     *     // ... shape properties
+     *   })
+     *   // Shape.fill is bound to Node.data.color
+     *   .bind("fill", "color")
+     *   // Shape.stroke is red when Node.isHighlighted is true, black otherwise
+     *   .bind(new go.Binding("stroke", "isHighlighted",
+     *                 function(h) { return h ? "red" : "black"; }).ofObject())
+     * ```
+     *
+     * If you need to call Binding#makeTwoWay or Binding#ofObject, you will have to use a `new go.Binding()` as
+     * the argument to this method.
+     *
+     * Read more about Bindings at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     *
+     * @param {string=} targetprop A string naming the target property on the target object.
+     *   This should not be the empty string.
+     * @param {string=} sourceprop A string naming the source property on the bound data object.
+     *   If this is the empty string, the whole Panel#data object is used.
+     *   If this argument is not supplied, the source property is assumed to be the same as the target property.
+     * @param {TargetConversion} conv An optional side-effect-free function converting the data property value to the value to set the target property.
+     *   If the function is null or not supplied, no conversion takes place.
+     * @param {BackConversion} backconv An optional conversion function to convert property values back to data values.
+     * Specifying this modifies the binding to set its Binding#mode to be Binding.TwoWay.
+     * If you want a two-way binding without a back-conversion function, call this method with the new Binding
+     * argument instead, and call Binding#makeTwoWay on it: `.bind(new go.Binding(...).makeTwoWay())`
+     * @return {GraphObject} this GraphObject
+     * @since 2.2
+     */
+    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    /**
+     * Add a data-binding of a property on this GraphObject to a property on a data object.
+     *
+     * Do not add, modify, or remove any Bindings after this object has been copied.
+     *
+     * An example using `.bind` with the Binding argument:
+     *
+     * ```js
+     * myDiagram.nodeTemplate =
+     *   new go.Part("Horizontal")
+     *    .bind(new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify))
+     *    // ...
+     * ```
+     *
      * Read more about Bindings at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
      * @param {Binding} binding
+     * @return {GraphObject} this GraphObject
      */
-    bind(binding: Binding): void;
+    bind(binding: Binding): this;
     /**
-     * Undocumented
-     * @return {Panel}
+     * Set any number of properties on this GraphObject. This is common in initialization.
+     * This method can only be used to set existing properties on this object. To attach new properties,
+     * or to set properties of elements, use GraphObject#setProperties.
+     *
+     * This method uses TypeScript compile-time type checking, but does no runtime type checking.
+     * If you need to set properties without type checking, or attach new properties, use GraphObject#attach.
+     *
+     *
+     * ```
+     * // Common init for use in many different shapes:
+     * var shapeStyle = (() => { return { background: 'red', strokeWidth: 0 }; })
+     *
+     * // Constructor init is equivalent to "set"
+     * // But if you use common init (eg, shapeStyle())
+     * // You may wish to set additional properties via "set"
+     * new go.Shape(shapeStyle())
+     *  .bind("fill", "color")
+     *  .bind("strokeWidth", "width")
+     *  .set({ // more init via set
+     *    figure: "RoundedRectangle"
+     *  })
+     * ```
+     *
+     * @since 2.2
+     * @param {Partial<this>} config
+     * @return {GraphObject} this GraphObject
+     * @see #setProperties
      */
-    findTemplateBinder(): Panel | null;
+    set(config: Partial<this>): this;
     /**
-     * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
+     * This method sets a collection of properties according to the property/value pairs on the given Object, or array of Objects,
+     * in the same manner as GraphObject.make does when constructing a GraphObject.
+     *
+     * This method is used in initialization, but typically you should use #set instead,
+     * unless you need to attach new properties that do not exist on the GraphObject, or to set sub-properties.
+     * Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.
+     *
+     * ```
+     * new go.Shape()
+     *  .bind("fill", "color")
+     *  .bind("strokeWidth", "width")
+     *  .attach({ // use .attach for untyped property attachments
+     *    "_color": "Red"
+     *  })
+     * ```
+     *
+     * @since 2.2
+     * @param {any} config a JavaScript object containing properties to attach, or an array of such objects.
+     * @return {GraphObject} this GraphObject
+     * @see #setProperties a synonym of this method
+     * @see #set a type-safe method to set a collection of properties
+     */
+    attach(config: any): this;
+    /**
+     * This method takes a function that can be used to apply multiple settings, bindings,
+     * or {@Panel#add} calls, to different GraphObjects. This is common in initialization.
+     * If you are just adding settings, bindings, or GraphObjects to a single GraphObject,
+     * you do not need to use this, you can just chain calls to #set, #bind,
+     * and Panel#add instead. This method is mostly useful when setting the same values
+     * across multiple GraphObjects.
+     *
+     * For example:
+     *
+     * ```
+     * // This can be used by several node templates
+     * // to set multiple properties and bindings on each
+     * function nodeStyle(node) {
+     *   node
+     *     .set({ background: 'red' })
+     *     .bind("location")
+     *     .bind("desiredSize", "size", go.Size.Parse)
+     * }
+     *
+     * // ... in a Node template:
+     * new go.Node("Auto")
+     *  .apply(nodeStyle)
+     *  .add(new go.Shape( ... ))
+     *  .add(new go.Panel( ... ))
+     *  // ...rest of Node template
+     *
+     * // ... in another Node template:
+     * new go.Node("Vertical", { padding: 5 })
+     *  .apply(nodeStyle)
+     *  // ...rest of Node template
+     * ```
+     *
+     * @since 2.2
+     * @param {((thisObject: this) => void)} func a function that takes this GraphObject
+     * @return {GraphObject} this GraphObject
+     * @see #set a type-safe method to set a collection of properties
+     */
+    apply(func: ((thisObject: this) => void)): this;
+    /**
+     * This method sets a collection of properties according to the property/value pairs on the given Object,
      * in the same manner as GraphObject.make does when constructing a GraphObject with an argument that is a simple JavaScript Object.
+     *
+     * This method is common in initialization, but typically you should use #set instead,
+     * unless you need to attach new properties, or set sub-properties.
+     * Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.
      *
      * If this is a Panel, you can set properties on named elements within the panel by using a *name.property* syntax for the property name.
      * For example, if a Node has a Picture that is named "ICON" (because its #name property has been set to "ICON")
      * and a TextBlock whose name is "TB", one could set properties on the Node and on each of those named elements by:
      * ```js
      * aNode.setProperties({
-     *     background: "red",
-     *     "ICON.source": "https://www.example.com/images/alert.jpg",
-     *     "TB.font": "bold 12pt sans-serif"
+     *   background: "red",
+     *   "ICON.source": "https://www.example.com/images/alert.jpg",
+     *   "TB.font": "bold 12pt sans-serif"
      * });
      * ```
      *
      * At the current time only a single dot is permitted in the property "name".
      * Note that the use of all-upper-case object names is simply a convention.
      *
-     * Calling this method is much less efficient than setting properties directly.
      * @param {Object} props a plain JavaScript object with various property values to be set on this GraphObject.
      * @since 1.5
+     * @return {GraphObject} this GraphObject
+     * @see #attach a synonym of this method
+     * @see #set a type-safe method to set a collection of properties
      */
-    setProperties(props: ObjectData): void;
+    setProperties(props: ObjectData): this;
     /**
-     * Undocumented
+     * This static function creates an instance that was defined with GraphObject.defineBuilder.
+     * Once this is called one can use the name as the first argument for GraphObject.make.
+     * Names are case sensitive.
+     *
+     * The second is an optional settings configuration object, equivalent to calling GraphObject#set
+     * on the new object.
+     *
+     * Predefined builder names include: `"Button"`, `"TreeExpanderButton"`, `"SubGraphExpanderButton"`,
+     * `"PanelExpanderButton"`, and `"ContextMenuButton"`.
+     * The implementation of these builders is provided by <a href="../../extensions/Buttons.js">Buttons.js</a>
+     * in the Extensions directory.
+     *
+     * @param {string} name a capitalized name; must not be `""` or `"None"`
+     * @param {Partial<T>?} config a plain JavaScript object with various property values to be set on this GraphObject.
+     * @since 2.2
      */
-    trigger(trigger: AnimationTrigger): void;
+    static build<T extends GraphObject>(name: string, config?: Partial<T>): T;
+    /**
+     * (undocumented)
+     * This never-documented method has been renamed #findBindingPanel for v2.2 and will be removed in v3.0.
+     * @return {Panel}
+     */
+    findTemplateBinder(): Panel | null;
+    /**
+     * Walks up the visual tree and returns the first Panel whose Panel.data is bound to data.
+     * This can be useful when you need to inspect Panel#data objects.
+     * @since 2.2
+     * @return {Panel}
+     */
+    findBindingPanel(): Panel | null;
+    /**
+     * Adds an AnimationTrigger to this GraphObject.
+     * @since 2.2
+     * @param {AnimationTrigger} trigger an AnimationTrigger
+     * @return {Panel}
+     */
+    trigger(trigger: AnimationTrigger): this;
     /**
      * This static function builds an object given its class and additional arguments
      * providing initial properties or GraphObjects that become Panel elements.
@@ -15468,15 +16392,15 @@ export abstract class GraphObject {
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue | HTMLDivElement | Array<string | (Partial<InstanceType<CT>> & {
+    } : unknown)) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue | HTMLDivElement | Array<string | (Partial<InstanceType<CT>> & {
         [p: string]: any;
     } & (InstanceType<CT> extends Diagram ? DiagramEventsInterface & {
         Changed?: ChangedEventHandler;
         ModelChanged?: ChangedEventHandler;
-    } : {})) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue>>): InstanceType<CT>;
+    } : unknown)) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | EnumValue>>): InstanceType<CT>;
     /**
-     * This static function defines a named function that GraphObject.make can use to build objects.
-     * Once this is called one can use the name as the first argument for GraphObject.make.
+     * This static function defines a named function that GraphObject.make or GraphObject.build can use to build objects.
+     * Once this is called one can use the name as the first argument for GraphObject.make or GraphObject.build.
      * Names are case sensitive.
      *
      * The second argument must be a function that returns a newly created object, typically a GraphObject.
@@ -15552,7 +16476,6 @@ export class Brush {
     /**
      * Specify a particular color at a particular fraction of the distance.
      * If the #type is Brush.Solid, change the type to Brush.Linear.
-     * You should have a color stop at 0 and a color stop at 1.
      * You should not have duplicate color stop values at the same fractional distance.
      * @param {number} loc A number between 0 and 1 (inclusive).
      * @param {string} color A valid CSS color string.
@@ -15567,35 +16490,41 @@ export class Brush {
      * and if the #start or #end spots are not specific spots,
      * they are changed to be specific spots, depending on the type of brush.
      */
-    type: EnumValue;
+    get type(): EnumValue;
+    set type(value: EnumValue);
     /**
      * Gets or sets the color of a solid Brush.
      * The default value is 'black'.
      * The value must be a valid CSS color string.
      */
-    color: string;
+    get color(): string;
+    set color(value: string);
     /**
      * Gets or sets the starting location for a linear or radial gradient.
      * A Spot value specifies a relative point in the object's GraphObject#naturalBounds.
      * The default value is Spot.TopCenter for linear gradients and Spot.Center for radial gradients.
      */
-    start: Spot;
+    get start(): Spot;
+    set start(value: Spot);
     /**
      * Gets or sets the ending location for a linear or radial gradient.
      * A Spot value specifies a relative point in the object's GraphObject#naturalBounds.
      * The default value is Spot.BottomCenter for linear gradients and Spot.Center for radial gradients.
      */
-    end: Spot;
+    get end(): Spot;
+    set end(value: Spot);
     /**
      * Gets or sets the radius of a radial brush at the start location.
      * The default value is 0.
      */
-    startRadius: number;
+    get startRadius(): number;
+    set startRadius(value: number);
     /**
      * Gets or sets the radius of a radial brush at the end location.
      * The default value is NaN.
      */
-    endRadius: number;
+    get endRadius(): number;
+    set endRadius(value: number);
     /**
      * Gets or sets a Map holding all of the color stops used in this gradient,
      * where the key is a number, the fractional distance between 0 and 1 (inclusive),
@@ -15604,11 +16533,13 @@ export class Brush {
      * Call #addColorStop in order to add color stops to this brush.
      * This property value may be null if no gradient stops have been defined.
      */
-    colorStops: Map<number, string> | null;
+    get colorStops(): Map<number, string> | null;
+    set colorStops(value: Map<number, string> | null);
     /**
      * Gets or sets the pattern of a brush of type Brush.Pattern.
      */
-    pattern: HTMLCanvasElement | HTMLImageElement | null;
+    get pattern(): HTMLCanvasElement | HTMLImageElement | null;
+    set pattern(value: HTMLCanvasElement | HTMLImageElement | null);
     /**
      * This static function can be used to generate a random color.
      * @param {number=} min A number between 0 and 255, defaults to 128.
@@ -15789,15 +16720,16 @@ export abstract class PanelLayout {
     /**
      * Gets or sets the name of this instance of a particular panel layout.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * This class is abstract.  Define your own subclass if you want to implement a custom panel layout.
      */
     constructor();
     /**
-     * Undocumented
+     * (undocumented)
      */
-    readonly classType: Function;
+    get classType(): Function;
     /**
      * Given the available size, measure the Panel and
      * determine its expected drawing size.
@@ -15874,7 +16806,24 @@ export abstract class PanelLayout {
      */
     protected arrangeElement(obj: GraphObject, x: number, y: number, width: number, height: number, clipRect?: Rect): void;
     /**
-     * Undocumented
+     * Uncommon: Force a given GraphObject to remeasure in the near future.
+     * If a PanelLayout is not just measuring elements, but must also modify some of its elements,
+     * this must be called on those elements <em>before</em> modifications are made.
+     * This prevents the elements from potentially remeasuring
+     * the entire visual tree, which would cause an infinite loop.
+     *
+     * Normally, panels do not modify the dimensions of their elements. In other words, a Panel
+     * would not normally set a property like GraphObject#desiredSize or TextBlock#text
+     * or Shape#geometry on any of its elements. Some custom panels may wish to do this,
+     * especially if the programmer knows it will not affect the size of any containing Panel.
+     *
+     * Calling this method before changing a property preempts the remeasuring of any <em>containing</em> Panels,
+     * ensuring only the GraphObject and its own child elements will be remeasured.
+     *
+     * This is used in PanelLayout "Viewbox" on its one element.
+     * It modifies that element's GraphObject#scale and is certain that will not
+     * affect Panels up the visual tree.
+     * @since 2.2
      * @param {GraphObject} obj GraphObject to be invalidated.
      */
     remeasureObject(obj: GraphObject): void;
@@ -15909,17 +16858,16 @@ export abstract class PanelLayout {
  * The second argument may also be an instance of PanelLayout, if you want to use a custom panel layout.
  * ```js
  * // Either:
- * $(go.Panel, go.Panel.Horizontal, ...
+ * new go.Panel(go.Panel.Horizontal, ...
  * // Or:
- * $(go.Panel, "Horizontal", ...
+ * new go.Panel("Horizontal", ...
  *
  * // Full example:
- * $(go.Panel, "Horizontal",
- *   { width: 60, height: 60 }, // panel properties
+ * p = new go.Panel("Horizontal",
+ *   { width: 60, height: 60 }) // panel properties
  *   // elements in the panel:
- *   $(go.Shape, "Rectangle", { stroke: "lime" }),
- *   $(go.TextBlock, "Some Text")
- * ) // end of panel definition
+ *   .add(new go.Shape("Rectangle", { stroke: "lime" }))
+ *   .add(new go.TextBlock("Some Text"))
  * ```
  *
  * <p class="boxread">
@@ -15951,33 +16899,32 @@ export abstract class PanelLayout {
  *
  * Panel.Grid panels are often used for the Diagram's Diagram#grid.
  * ```js
- * $(go.Diagram, "myDiagramDiv",
+ * const diagram = new go.Diagram("myDiagramDiv",
+ *   // Diagram options:
  *   { . . .
- *     grid: $(go.Panel, "Grid",
- *             { gridCellSize: new go.Size(40, 40) },
- *             $(go.Shape, "LineH", { stroke: "lightgray" }),
- *             $(go.Shape, "LineV", { stroke: "lightgray" })
- *           ),
+ *     grid: new go.Panel("Grid",
+ *             { gridCellSize: new go.Size(40, 40) })
+ *             .add(new go.Shape("LineH", { stroke: "lightgray" }))
+ *             .add(new go.Shape("LineV", { stroke: "lightgray" })),
  *     . . .
  *   });
  * ```
  * Or to get a green bar effect:
  * ```js
- * $(go.Diagram, "myDiagramDiv",
+ *  const diagram = new go.Diagram("myDiagramDiv",
  *   { . . .
- *     grid: $(go.Panel, "Grid",
- *             { gridCellSize: new go.Size(100, 100) },
- *             $(go.Shape, "BarH", { fill: "lightgreen", height: 50 })
- *           ),
+ *     grid: new go.Panel("Grid",
+ *             { gridCellSize: new go.Size(100, 100) })
+ *             .add(new go.Shape("BarH", { fill: "lightgreen", height: 50 })),
  *     . . .
  *   });
  * ```
  * But Grid Panels can also be stand alone objects:
  * ```js
- * $(go.Node, go.Panel.Grid,
- *   { gridCellSize: new go.Size(6, 6), width: 60, height: 60 },
- *   $(go.Shape, "LineH", { stroke: "gray" }),
- *   $(go.Shape, "LineV", { stroke: "gray" }))
+ * new go.Node("Grid",
+ *   { gridCellSize: new go.Size(6, 6), width: 60, height: 60 })
+ *   .add(new go.Shape("LineH", { stroke: "gray" }))
+ *   .add(new go.Shape("LineV", { stroke: "gray" }))
  * ```
  *
  * A Grid Panel's elements do not participate in object picking.
@@ -15987,12 +16934,11 @@ export abstract class PanelLayout {
  * Panel.Graduated panels, like Spot and Auto Panels have a "main" element. The other elements within a Graduated Panel
  * are used to define ticks and labels to draw along the main shape's path.
  * ```js
- * $(go.Part, "Graduated",
- *   $(go.Shape, { geometryString: "M0 0 H400" }),
- *   $(go.Shape, { geometryString: "M0 0 V10" }),
+ * new go.Part("Graduated")
+ *   .add(new go.Shape({ geometryString: "M0 0 H400" }))
+ *   .add(new go.Shape({ geometryString: "M0 0 V10" }))
  *   // offset to display below ticks
- *   $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })
- * );
+ *   .add(new go.TextBlock({ segmentOffset: new go.Point(0, 12) }));
  * ```
  *
  * Only the main shape of a Graduated Panel participates in object picking, but a `background`
@@ -16083,10 +17029,27 @@ export class Panel extends GraphObject {
      * Constructs an empty Panel of the given #type. Default type is Panel.Position.
      * The panel type must be one of the enumerated values defined on the Panel class, including:
      * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
-     * Panel.Auto, Panel.Spot, or Panel.Viewbox.
-     * @param {EnumValue=} type If not supplied, the default Panel type is Panel.Position.
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox. The string value such as "Auto" may also be used.
+     *
+     * Usage example:
+     *
+     *```js
+     * const p = new go.Panel("Auto", {
+     *   margin: 5,
+     *   background: "red"
+     * });
+     * ```
+     *
+     * @param {string=} type Panel Type as either a string or PanelLayout. such as "Vertical", "Auto", or Panel.Vertical, Panel.Auto, are accepted.
+     * If not supplied, the default Panel type is "Position".
+     * @param {Partial<Panel>=} init Optional initialization properties.
      */
-    constructor(type?: PanelLayout);
+    constructor(type?: PanelLayout | string, init?: Partial<Panel>);
+    /**
+     * Constructs an empty Panel. Default type is Panel.Position.
+     * @param {Partial<Panel>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Panel>);
     /**
      * Creates a deep copy of this Panel and returns it.
      * @return {Panel}
@@ -16113,7 +17076,8 @@ export class Panel extends GraphObject {
      *
      * You must not modify this property once the Panel has been measured or the Panel has been added to another Panel.
      */
-    type: PanelLayout;
+    get type(): PanelLayout;
+    set type(value: PanelLayout);
     /**
      * This read-only property returns an iterator over the collection of the GraphObjects that this panel manages.
      *
@@ -16121,7 +17085,7 @@ export class Panel extends GraphObject {
      *
      * You can also get direct access to individual elements by calling #elt.
      */
-    readonly elements: Iterator<GraphObject>;
+    get elements(): Iterator<GraphObject>;
     /**
      * Gets or sets the space between this Panel's border and its content.
      * Unlike GraphObject#margin, padding expands the area inside of the Panel's border.
@@ -16136,20 +17100,23 @@ export class Panel extends GraphObject {
      * The default value is a Margin of zero.
      * @see GraphObject#margin
      */
-    padding: MarginLike;
+    get padding(): MarginLike;
+    set padding(value: MarginLike);
     /**
      * Gets or sets the default alignment spot of this Panel, used as
      * the alignment for an element when its GraphObject#alignment value is Spot.Default.
      * The default value is Spot.Default, which is interpreted by the Panel in whatever manner seems reasonable,
      * depending on the Panel type.
      */
-    defaultAlignment: Spot;
+    get defaultAlignment(): Spot;
+    set defaultAlignment(value: Spot);
     /**
      * Gets or sets the default stretch of this Panel, used as
      * the stretch for an element when its GraphObject#stretch value is GraphObject.Default.
      * The default value is GraphObject.Default, which typically resolves to GraphObject.None.
      */
-    defaultStretch: EnumValue;
+    get defaultStretch(): EnumValue;
+    set defaultStretch(value: EnumValue);
     /**
      * For Panel.Table|Table Panels: Gets or sets the additional padding for rows and columns.
      * Padding is applied both before and after a row or column's contents.
@@ -16158,7 +17125,8 @@ export class Panel extends GraphObject {
      * @see #defaultRowSeparatorStrokeWidth
      * @since 1.2
      */
-    defaultSeparatorPadding: MarginLike;
+    get defaultSeparatorPadding(): MarginLike;
+    set defaultSeparatorPadding(value: MarginLike);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default stroke (color) for rows
      * provided a given row has a nonzero RowColumnDefinition#separatorStrokeWidth.
@@ -16171,7 +17139,8 @@ export class Panel extends GraphObject {
      * @see #defaultColumnSeparatorStroke
      * @since 1.2
      */
-    defaultRowSeparatorStroke: BrushLike;
+    get defaultRowSeparatorStroke(): BrushLike;
+    set defaultRowSeparatorStroke(value: BrushLike);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default stroke width for a row's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
@@ -16180,7 +17149,8 @@ export class Panel extends GraphObject {
      * @see #defaultColumnSeparatorStrokeWidth
      * @since 1.2
      */
-    defaultRowSeparatorStrokeWidth: number;
+    get defaultRowSeparatorStrokeWidth(): number;
+    set defaultRowSeparatorStrokeWidth(value: number);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default dash array for a row's separator.
      * RowColumnDefinition#separatorDashArray can override this default value.
@@ -16197,7 +17167,8 @@ export class Panel extends GraphObject {
      * @see #defaultColumnSeparatorDashArray
      * @since 1.2
      */
-    defaultRowSeparatorDashArray: Array<number> | null;
+    get defaultRowSeparatorDashArray(): Array<number> | null;
+    set defaultRowSeparatorDashArray(value: Array<number> | null);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default stroke (color) for columns
      * provided a given column has a nonzero RowColumnDefinition#separatorStrokeWidth.
@@ -16209,7 +17180,8 @@ export class Panel extends GraphObject {
      * @see #defaultRowSeparatorStroke
      * @since 1.2
      */
-    defaultColumnSeparatorStroke: BrushLike;
+    get defaultColumnSeparatorStroke(): BrushLike;
+    set defaultColumnSeparatorStroke(value: BrushLike);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default stroke width for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
@@ -16218,7 +17190,8 @@ export class Panel extends GraphObject {
      * @see #defaultRowSeparatorStrokeWidth
      * @since 1.2
      */
-    defaultColumnSeparatorStrokeWidth: number;
+    get defaultColumnSeparatorStrokeWidth(): number;
+    set defaultColumnSeparatorStrokeWidth(value: number);
     /**
      * For Panel.Table|Table Panels: Gets or sets the default dash array for a column's separator.
      * RowColumnDefinition#separatorStrokeWidth can override this default value.
@@ -16235,57 +17208,65 @@ export class Panel extends GraphObject {
      * @see #defaultRowSeparatorDashArray
      * @since 1.2
      */
-    defaultColumnSeparatorDashArray: Array<number> | null;
+    get defaultColumnSeparatorDashArray(): Array<number> | null;
+    set defaultColumnSeparatorDashArray(value: Array<number> | null);
     /**
      * For Panel.Viewbox|Viewbox Panels: Gets or sets how the panel will resize its content.
      *
      * Possible values are GraphObject.Uniform and GraphObject.UniformToFill.
      * The default is GraphObject.Uniform.
      */
-    viewboxStretch: EnumValue;
+    get viewboxStretch(): EnumValue;
+    set viewboxStretch(value: EnumValue);
     /**
      * For Panel.Grid|Grid Panels: Gets or sets the distance between lines.
      * The units are in local coordinates.
      * The default is 10x10.  Any new width or height must be a positive real number.
      */
-    gridCellSize: Size;
+    get gridCellSize(): Size;
+    set gridCellSize(value: Size);
     /**
      * For Panel.Grid|Grid Panels: Gets or sets an origin point for the grid cells.
      * The units are in local coordinates.
      * The default is (0,0).  Any new value must use real numbers.
      */
-    gridOrigin: Point;
+    get gridOrigin(): Point;
+    set gridOrigin(value: Point);
     /**
      * For Panel.Graduated|Graduated Panels: Gets or sets the minimum value represented.
      * Must be less than #graduatedMax. The default is 0.
      * @since 1.7
      */
-    graduatedMin: number;
+    get graduatedMin(): number;
+    set graduatedMin(value: number);
     /**
      * For Panel.Graduated|Graduated Panels: Gets or sets the maximum value represented.
      * Must be greater than #graduatedMin. The default is 100.
      * @since 1.7
      */
-    graduatedMax: number;
+    get graduatedMax(): number;
+    set graduatedMax(value: number);
     /**
      * For Panel.Graduated|Graduated Panels: This read-only property returns the range of values represented by the Panel.
      *
      * For example, a #graduatedMin of 25 and #graduatedMax of 75 would return 50.
      * @since 1.7
      */
-    readonly graduatedRange: number;
+    get graduatedRange(): number;
     /**
      * For Panel.Graduated|Graduated Panels: Gets or sets the difference between two consecutive values marked by ticks.
      * Must be positive. The default is 10.
      * @since 1.7
      */
-    graduatedTickUnit: number;
+    get graduatedTickUnit(): number;
+    set graduatedTickUnit(value: number);
     /**
      * For Panel.Graduated|Graduated Panels: Gets or sets the base value which is marked with a tick.
      * The default is 0.
      * @since 1.7
      */
-    graduatedTickBase: number;
+    get graduatedTickBase(): number;
+    set graduatedTickBase(value: number);
     /**
      * Return an immediate child element whose GraphObject#isPanelMain is true,
      * or else just return the first child element.
@@ -16303,14 +17284,15 @@ export class Panel extends GraphObject {
      */
     findObject(name: string): GraphObject | null;
     /**
-     * Adds a GraphObject to the end of this Panel's list of elements, visually in front of all of the other elements.
+     * Adds a number of GraphObjects to the end of this Panel's list of elements, visually in front of all of the other elements.
      *
      * If the element to be added is already in this Panel's list of elements,
      * the object is moved to the end of the list.
      * You cannot add a GraphObject to a Panel if that GraphObject is already in a different Panel.
-     * @param {GraphObject} element A GraphObject.
+     * @return {Panel} this Panel
+     * @param {...GraphObject} elements Any number of GraphObjects.
      */
-    add(element: GraphObject): void;
+    add(...elements: Array<GraphObject>): this;
     /**
      * Returns the GraphObject in this Panel's list of elements at the specified index.
      * @param {number} idx
@@ -16341,7 +17323,7 @@ export class Panel extends GraphObject {
      * For Panel.Table|Table Panels: This read-only property returns the number of rows.
      * This value is only valid after the Panel has been measured.
      */
-    readonly rowCount: number;
+    get rowCount(): number;
     /**
      * For Panel.Table|Table Panels: Gets the RowColumnDefinition for a particular row.
      * If you ask for the definition of a row at or beyond the #rowCount,
@@ -16364,7 +17346,7 @@ export class Panel extends GraphObject {
      * For Panel.Table|Table Panels: This read-only property returns the number of columns.
      * This value is only valid after the Panel has been measured.
      */
-    readonly columnCount: number;
+    get columnCount(): number;
     /**
      * For Panel.Table|Table Panels: Gets the RowColumnDefinition for a particular column.
      * If you ask for the definition of a column at or beyond the #columnCount,
@@ -16389,7 +17371,8 @@ export class Panel extends GraphObject {
      * The default is RowColumnDefinition.ProportionalExtra.
      * @see RowColumnDefinition#sizing
      */
-    rowSizing: EnumValue;
+    get rowSizing(): EnumValue;
+    set rowSizing(value: EnumValue);
     /**
      * For Panel.Table|Table Panels: Gets or sets how this Panel's columns deal with extra space.
      * Valid values are RowColumnDefinition.ProportionalExtra and RowColumnDefinition.None.
@@ -16397,19 +17380,22 @@ export class Panel extends GraphObject {
      * @see RowColumnDefinition#sizing
      * @see #rowSizing
      */
-    columnSizing: EnumValue;
+    get columnSizing(): EnumValue;
+    set columnSizing(value: EnumValue);
     /**
      * For Panel.Table|Table Panels: Gets or sets the first row that this Panel displays.
      * The default value is 0.
      * @see #leftIndex
      */
-    topIndex: number;
+    get topIndex(): number;
+    set topIndex(value: number);
     /**
      * For Panel.Table|Table Panels: Gets or sets the first column that this Panel displays.
      * The default value is 0.
      * @see #topIndex
      */
-    leftIndex: number;
+    get leftIndex(): number;
+    set leftIndex(value: number);
     /**
      * For Panel.Table|Table Panels: Returns the row at a given y-coordinate in local coordinates.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
@@ -16485,7 +17471,8 @@ export class Panel extends GraphObject {
      * Call Model#setDataProperty for changing other properties that may be the sources
      * of Bindings on GraphObject properties that are in the visual tree of this panel/part.
      */
-    data: any | null;
+    get data(): any | null;
+    set data(value: any | null);
     /**
      * Gets the index of this Panel's data if it was created to represent an item in its containing Panel's Panel#itemArray.
      * The default value is NaN.
@@ -16522,15 +17509,16 @@ export class Panel extends GraphObject {
      * because it will not have been created by #rebuildItemElements.
      * @since 1.4
      */
-    itemIndex: number;
+    get itemIndex(): number;
+    set itemIndex(value: number);
     /**
-     * Undocumented.
-     * Make a deep copy of this Panel and allow it to be a template.
-     * This makes copies of Bindings, unlike the regular copy().
+     * Make a deep copy of this Panel and allow it to be used as a template.
+     * This makes copies of Bindings, unlike the regular `copy()` method.
      * Pass true as the argument in order to freeze the Bindings,
      * allowing it to operate efficiently as a template.
      * A false value (which is the default) allows further additions/modifications
-     * of the bindings in the copied panel.
+     * of the bindings in the copied Panel.
+     * @since 2.2
      * @param {boolean=} freeze whether to freeze the Bindings in the copy; default is false
      * @return {Panel}
      */
@@ -16579,7 +17567,17 @@ export class Panel extends GraphObject {
      *
      * Item Arrays should not be used with Grid Panels or Graduated Panels as they may not have nested Panels.
      */
-    itemArray: Array<any> | null;
+    get itemArray(): Array<any> | null;
+    set itemArray(value: Array<any> | null);
+    /**
+     * Return the Panel that was made for a particular data object in this panel's #itemArray.
+     * If this returns a Panel, its #data property will be the argument data object,
+     * and its containing GraphObject#panel will be this panel.
+     * @param {Object} data must be an Object, not a string or a number or a boolean or a function
+     * @return {Panel} or null if not found
+     * @since 1.6
+     */
+    findItemPanelForData(data: ObjectData): Panel | null;
     /**
      * Create and add new GraphObjects corresponding to and bound to the data in the #itemArray,
      * after removing all existing elements from this Panel.
@@ -16607,15 +17605,6 @@ export class Panel extends GraphObject {
      */
     rebuildItemElements(): void;
     /**
-     * Return the Panel that was made for a particular data object in this panel's #itemArray.
-     * If this returns a Panel, its #data property will be the argument data object,
-     * and its containing GraphObject#panel will be this panel.
-     * @param {Object} data must be an Object, not a string or a number or a boolean or a function
-     * @return {Panel} or null if not found
-     * @since 1.6
-     */
-    findItemPanelForData(data: ObjectData): Panel | null;
-    /**
      * Gets or sets the default Panel template used as the archetype
      * for item data that are in #itemArray.
      *
@@ -16627,7 +17616,8 @@ export class Panel extends GraphObject {
      * GraphObject#copy when copying a panel will share the #itemTemplateMap
      * between the original panel and the copied panel.
      */
-    itemTemplate: Panel;
+    get itemTemplate(): Panel;
+    set itemTemplate(value: Panel);
     /**
      * Gets or sets a Map mapping template names to Panels.
      * One of these Panels is copied for each item data that is in the #itemArray.
@@ -16642,7 +17632,8 @@ export class Panel extends GraphObject {
      * GraphObject#copy when copying a panel will share the #itemTemplateMap
      * between the original panel and the copied panel.
      */
-    itemTemplateMap: Map<string, Panel> | null;
+    get itemTemplateMap(): Map<string, Panel> | null;
+    set itemTemplateMap(value: Map<string, Panel> | null);
     /**
      * Gets or sets the name of the item data property that returns a string describing that data's category,
      * or a function that takes an item data object and returns that string;
@@ -16655,17 +17646,23 @@ export class Panel extends GraphObject {
      * the default category name, for all item data objects.
      * You must not change this property when the #itemArray already has a value.
      */
-    itemCategoryProperty: string | ((a: any) => string);
+    get itemCategoryProperty(): string | ((a: any) => string);
+    set itemCategoryProperty(value: string | ((a: any) => string));
+    set isAtomic(value: boolean);
     /**
      * For Spot Panels: Gets or sets whether this Panel's main element clips instead of fills.
      * The main element will not paint its stroke, if it has any.
      * This assumes that the main element is a Shape.
      *
+     * Since 2.2: For Groups: Gets or sets whether this Group's Placeholder clips its member nodes.
+     * For compatibility, if the Group is a Spot Panel, it will not clip its members.
+     *
      * When this property is `true`, the Spot panel will size itself to be the *intersection* of the main element bounds and
      * all other elements' bounds, rather than the union of these bounds.
      * @since 1.7
      */
-    isClipping: boolean;
+    get isClipping(): boolean;
+    set isClipping(value: boolean);
     /**
      * For Panel.Horizontal|Horizontal and Panel.Vertical|Vertical Panels: gets or sets whether this Panel arranges its contents from the
      * typical side (left and top, respectively), or the opposite side (right and bottom, respectively).
@@ -16673,7 +17670,8 @@ export class Panel extends GraphObject {
      * The default value is false.
      * @since 1.7
      */
-    isOpposite: boolean;
+    get isOpposite(): boolean;
+    set isOpposite(value: boolean);
     /**
      * Gets or sets whether this Panel or any GraphObject inside the panel actually responds to user click events.
      * It may be used as a Binding target.
@@ -16691,7 +17689,8 @@ export class Panel extends GraphObject {
      * @see GraphObject#pickable
      * @since 1.7
      */
-    isEnabled: boolean;
+    get isEnabled(): boolean;
+    set isEnabled(value: boolean);
     /**
      * For Panels which are elements of Spot Panels: Gets or sets the name
      * of this Panel's element that should be used as the alignment object instead of this Panel.
@@ -16699,7 +17698,8 @@ export class Panel extends GraphObject {
      * This allows Spot Panels to align objects that are nested in the element tree of its own elements.
      * @since 1.7
      */
-    alignmentFocusName: string;
+    get alignmentFocusName(): string;
+    set alignmentFocusName(value: string);
     /**
      * Register a PanelLayout. This is called when making new Panel types.
      * See the <a href="../../samples/panelLayout.html">PanelLayout sample</a> for an example.
@@ -16712,19 +17712,19 @@ export class Panel extends GraphObject {
      * The default #type, arranges each element according to their GraphObject#position.
      * @constant
      */
-    static readonly Position: PanelLayout;
+    static get Position(): PanelLayout;
     /**
      * This value for #type lays out the elements horizontally with
      * their GraphObject#alignment property dictating their alignment on the Y-axis.
      * @constant
      */
-    static readonly Horizontal: PanelLayout;
+    static get Horizontal(): PanelLayout;
     /**
      * This value for #type lays out the elements vertically with
      * their GraphObject#alignment property dictating their alignment on the X-axis.
      * @constant
      */
-    static readonly Vertical: PanelLayout;
+    static get Vertical(): PanelLayout;
     /**
      * This value for #type arranges GraphObjects about a main element using the
      * GraphObject#alignment and GraphObject#alignmentFocus properties;
@@ -16732,26 +17732,26 @@ export class Panel extends GraphObject {
      * or else the first GraphObject if none have that property set to true.
      * @constant
      */
-    static readonly Spot: PanelLayout;
+    static get Spot(): PanelLayout;
     /**
      * This value for #type resizes the main element to fit around the other elements;
      * the main element is the first GraphObject with GraphObject#isPanelMain set to true,
      * or else the first GraphObject if none have that property set to true.
      * @constant
      */
-    static readonly Auto: PanelLayout;
+    static get Auto(): PanelLayout;
     /**
      * This value for #type arranges GraphObjects into rows and columns;
      * set the GraphObject#row and GraphObject#column properties on each element.
      * @constant
      */
-    static readonly Table: PanelLayout;
+    static get Table(): PanelLayout;
     /**
      * This value for #type rescales a single GraphObject to fit inside the panel
      * depending on the panel's Panel#viewboxStretch property.
      * @constant
      */
-    static readonly Viewbox: PanelLayout;
+    static get Viewbox(): PanelLayout;
     /**
      * Organizational Panel type that is only valid inside of a Table panel;
      * This Panel ignores its angle and scale, and does not  have a meaningful size on its own,
@@ -16759,7 +17759,7 @@ export class Panel extends GraphObject {
      * @constant
      * @since 1.1
      */
-    static readonly TableRow: PanelLayout;
+    static get TableRow(): PanelLayout;
     /**
      * Organizational Panel type that is only valid inside of a Table panel;
      * This Panel ignores its angle and scale, and does not  have a meaningful size on its own,
@@ -16767,17 +17767,17 @@ export class Panel extends GraphObject {
      * @constant
      * @since 1.1
      */
-    static readonly TableColumn: PanelLayout;
+    static get TableColumn(): PanelLayout;
     /**
      * This value for #type is used for Links and adornments that act as Links.
      * @constant
      */
-    static readonly Link: PanelLayout;
+    static get Link(): PanelLayout;
     /**
      * This value for #type is used to draw regular patterns of lines.
      * @constant
      */
-    static readonly Grid: PanelLayout;
+    static get Grid(): PanelLayout;
     /**
      * This value for #type is used to draw regular tick marks and labels along some shape.
      * The main element is the first GraphObject with GraphObject#isPanelMain set to true,
@@ -16785,7 +17785,7 @@ export class Panel extends GraphObject {
      * @constant
      * @since 1.7
      */
-    static readonly Graduated: PanelLayout;
+    static get Graduated(): PanelLayout;
 }
 /**
  * The RowColumnDefinition class describes constraints on a row or a column
@@ -16819,27 +17819,33 @@ export class RowColumnDefinition {
      */
     static ProportionalExtra: EnumValue;
     /**
-     * Undocumented
+     * (undocumented)
+     * Get the spacing at the top or left of the row or column.
      * @return {number}
      * @see #computeEffectiveSpacing
      */
     computeEffectiveSpacingTop(): number;
     /**
-     * Undocumented
+     * (undocumented)
+     * Get the total spacing for a row or column.
+     *
+     * For a row, this would be the value of Panel#defaultRowSeparatorStrokeWidth or RowColumnDefinition#separatorStrokeWidth,
+     * plus the top and bottom values of Panel#defaultSeparatorPadding or RowColumnDefinition#separatorPadding.
      * @return {number}
      */
     computeEffectiveSpacing(): number;
     /**
      * This read-only property returns the Panel that this row or column definition is in.
      */
-    readonly panel: Panel | null;
+    get panel(): Panel | null;
     /**
      * This read-only property is true when this describes a row instead of a column in the #panel.
      * When this is true, the #height, #minimum, and #maximum
      * all describe the row height.
      * Otherwise #width and the other two properties describe the column width.
      */
-    isRow: boolean;
+    get isRow(): boolean;
+    set isRow(value: boolean);
     /**
      * This read-only property returns which row or column this RowColumnDefinition describes in the #panel.
      * The value is a zero-based integer.
@@ -16849,7 +17855,8 @@ export class RowColumnDefinition {
      * @see Panel#topIndex
      * @see #position
      */
-    index: number;
+    get index(): number;
+    set index(value: number);
     /**
      * Gets or sets the row height, in local coordinates.
      * This describes the row height if #isRow is true;
@@ -16869,7 +17876,8 @@ export class RowColumnDefinition {
      * @see #maximum
      * @see #sizing
      */
-    height: number;
+    get height(): number;
+    set height(value: number);
     /**
      * Gets or sets the column width, in local coordinates.
      * The size describes the column width if #isRow is false;
@@ -16889,7 +17897,8 @@ export class RowColumnDefinition {
      * @see #maximum
      * @see #sizing
      */
-    width: number;
+    get width(): number;
+    set width(value: number);
     /**
      * Gets or sets the minimum row height or column width, in local coordinates.
      * The minimum describes the row height if #isRow is true;
@@ -16905,7 +17914,8 @@ export class RowColumnDefinition {
      * @see #maximum
      * @see #sizing
      */
-    minimum: number;
+    get minimum(): number;
+    set minimum(value: number);
     /**
      * Gets or sets the maximum row height or column width, in local coordinates.
      * The maximum describes the row height if #isRow is true;
@@ -16921,7 +17931,8 @@ export class RowColumnDefinition {
      * @see #minimum
      * @see #sizing
      */
-    maximum: number;
+    get maximum(): number;
+    set maximum(value: number);
     /**
      * Gets or sets a default alignment for elements that are in this row or column.
      * The value must be a Spot.
@@ -16936,7 +17947,8 @@ export class RowColumnDefinition {
      * @see GraphObject#alignment
      * @see Panel#defaultAlignment
      */
-    alignment: Spot;
+    get alignment(): Spot;
+    set alignment(value: Spot);
     /**
      * Gets or sets the default stretch for elements that are in this row or column.
      * The only accepted values are listed as constant properties of GraphObject:
@@ -16955,7 +17967,8 @@ export class RowColumnDefinition {
      * @see #width
      * @see #height
      */
-    stretch: EnumValue;
+    get stretch(): EnumValue;
+    set stretch(value: EnumValue);
     /**
      * Gets or sets the additional padding for a particular row or column, in local coordinates.
      * Padding is applied on two sides - before and after a row or column's contents.
@@ -16971,7 +17984,8 @@ export class RowColumnDefinition {
      * @see #background
      * @since 1.2
      */
-    separatorPadding: MarginLike;
+    get separatorPadding(): MarginLike;
+    set separatorPadding(value: MarginLike);
     /**
      * Gets or sets the stroke (color) for the separator line that is drawn before a particular row or column,
      * provided that row or column has a nonzero #separatorStrokeWidth.
@@ -16991,7 +18005,8 @@ export class RowColumnDefinition {
      * @see #background
      * @since 1.2
      */
-    separatorStroke: BrushLike;
+    get separatorStroke(): BrushLike;
+    set separatorStroke(value: BrushLike);
     /**
      * Gets or sets the stroke width for a particular row or column's separator line, in local coordinates.
      *
@@ -17007,7 +18022,8 @@ export class RowColumnDefinition {
      * @see #background
      * @since 1.2
      */
-    separatorStrokeWidth: number;
+    get separatorStrokeWidth(): number;
+    set separatorStrokeWidth(value: number);
     /**
      * Gets or sets the dash array for dashing the separator line, provided this
      * row or column has a nonzero RowColumnDefinition#separatorStrokeWidth and non-null RowColumnDefinition#separatorStroke.
@@ -17031,7 +18047,8 @@ export class RowColumnDefinition {
      * @see #background
      * @since 1.2
      */
-    separatorDashArray: Array<number> | null;
+    get separatorDashArray(): Array<number> | null;
+    set separatorDashArray(value: Array<number> | null);
     /**
      * Gets or sets the background color for a particular row or column,
      * which fills the entire span of the row or column, including any separatorPadding.
@@ -17040,14 +18057,16 @@ export class RowColumnDefinition {
      * @see GraphObject#background
      * @since 1.2
      */
-    background: BrushLike;
+    get background(): BrushLike;
+    set background(value: BrushLike);
     /**
      * Determines whether or not the #background, if there is one, is in front of or behind the separators.
      *
      * The default value is false -- any background is drawn behind any separator lines.
      * @since 1.2
      */
-    coversSeparators: boolean;
+    get coversSeparators(): boolean;
+    set coversSeparators(value: boolean);
     /**
      * Gets or sets how this row or column deals with a Table Panel's extra space.
      * The value must be one of: RowColumnDefinition.None, RowColumnDefinition.ProportionalExtra,
@@ -17060,7 +18079,8 @@ export class RowColumnDefinition {
      * @see #height
      * @see #width
      */
-    sizing: EnumValue;
+    get sizing(): EnumValue;
+    set sizing(value: EnumValue);
     /**
      * This read-only property returns the usable row height or column width, after arrangement, in local coordinates,
      * that objects in this row or column can be arranged within.
@@ -17075,11 +18095,13 @@ export class RowColumnDefinition {
      * @see #width
      * @see #sizing
      */
-    actual: number;
+    get actual(): number;
+    set actual(value: number);
     /**
-     * Undocumented
+     * (undocumented)
      */
-    measured: number;
+    get measured(): number;
+    set measured(value: number);
     /**
      * This read-only property returns the total arranged row height or column width, after arrangement, in local coordinates.
      * This value gives the #actual size plus the #separatorPadding and #separatorStrokeWidth.
@@ -17094,7 +18116,7 @@ export class RowColumnDefinition {
      * @see #sizing
      * @since 1.2
      */
-    total: number;
+    get total(): number;
     /**
      * This read-only property returns the actual arranged row or column starting position, after arrangement, in local coordinates.
      * This value gives the Y position if #isRow is true;
@@ -17107,12 +18129,36 @@ export class RowColumnDefinition {
      * @see Panel#topIndex
      * @see #index
      */
-    position: number;
+    get position(): number;
+    set position(value: number);
     /**
-     * Add a data-binding of a property on this object to a property on a data object.
-     * @param {Binding} binding
+     * Add a data-binding to this RowColumnDefinition for the given property names and optional conversion function.
+     * You can pass in the argumetns to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
+     *
+     * @param {string=} targetprop A string naming the target property on the target object.
+     *   This should not be the empty string.
+     * @param {string=} sourceprop A string naming the source property on the bound data object.
+     *   If this is the empty string, the whole Panel#data object is used.
+     *   If this argument is not supplied, the source property is assumed to be the same as the target property.
+     * @param {TargetConversion=} conv An optional side-effect-free function converting the data property value to the value to set the target property.
+     *   If the function is null or not supplied, no conversion takes place.
+     * @param {BackConversion=} backconv An optional conversion function to convert property values back to data values.
+     * Specifying this modifies the binding to set its Binding#mode to be Binding.TwoWay.
+     * If you want a two-way binding without a back-conversion function, call this method with the new Binding
+     * argument instead, and call Binding#makeTwoWay on it: `.bind(new go.Binding(...).makeTwoWay())`
+     * @return {RowColumnDefinition} this RowColumnDefinition
+     * @since 2.2
      */
-    bind(binding: Binding): void;
+    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    /**
+     * Add a data-binding of a property on this RowColumnDefinition to a property on a data object.
+     * You can pass in the argumetns to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
+     *
+     * Read more about Bindings at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * @param {Binding} binding
+     * @return {RowColumnDefinition} this RowColumnDefinition
+     */
+    bind(binding: Binding): this;
 }
 /**
  * A Shape is a GraphObject that shows a geometric figure.
@@ -17127,33 +18173,30 @@ export class RowColumnDefinition {
  *
  * Some created Shapes:
  * ```js
- * var $ = go.GraphObject.make;  // for conciseness in defining GraphObjects
- *
  * // A shape with the figure set to RoundedRectangle:
- * $(go.Shape, { figure: "RoundedRectangle", fill: "lightgreen" })
+ * new go.Shape({ figure: "RoundedRectangle", fill: "lightgreen" })
  * // Alternatively:
- * $(go.Shape, "RoundedRectangle", { fill: "lightgreen" })
+ * new go.Shape("RoundedRectangle" { fill: "lightgreen" })
  *
- * // A shape with a custom geometry, using geometryString:
- * $(go.Shape,
+ * // A shape with a custom geometry:
+ * new go.Shape(
  *     { geometry: go.Geometry.parse("M120 0 L80 80 0 50z") })
  *
  * // A shape with a custom geometry, using geometryString:
- * $(go.Shape,
+ * new go.Shape(
  *    { geometryString: "F M120 0 L80 80 0 50z",
  *      fill: "lightgreen" })
  *
  * // A common link template, using two shapes,
  * // the first for the link path and the second for the arrowhead
+ * // The first shape in a link is special, its geometry is set by the Link's routing,
+ * // so it does not need a geometry or figure set manually
  * myDiagram.linkTemplate =
- *   $(go.Link,
- *     // The first shape in a link is special, its geometry is set by the Link's routing,
- *     // so it does not need a geometry or figure set manually
- *     $(go.Shape,
- *       { strokeWidth: 2, stroke: 'gray' }),
- *     $(go.Shape,
- *       { toArrow: "Standard", fill: 'gray', stroke: null })
- *   );
+ *   new go.Link()
+ *     .add(new go.Shape(
+ *       { strokeWidth: 2, stroke: 'gray' }))
+ *     .add(new go.Shape(
+ *       { toArrow: "Standard", fill: 'gray', stroke: null }))
  * ```
  * <p class="box">
  * You can see more custom geometry examples and read about geometryString
@@ -17188,8 +18231,64 @@ export class Shape extends GraphObject {
     /**
      * A newly constructed Shape has a default #figure of "None",
      * which constructs a rectangular geometry, and is filled and stroked with a black brush.
+     *
+     * Common usage:
+     * ```js
+     * new go.Shape("RoundedRectangle", {
+     *   strokeWidth: 2,
+     *   stroke: "red",
+     *   fill: "yellow"
+     * })
+     * ```
+     *
+     * Or when using a custom #geometryString instead of a #figure:
+     *
+     * ```js
+     * new go.Shape({
+     *   fill: "red",
+     *   stroke: null,
+     *   width: 100,
+     *   height: 100,
+     *   // This SVG-style path creates a thick "+" figure:
+     *   geometryString: "F M2 1 h1 v1 h1 v1 h-1 v1 h-1 v-1 h-1 v-1 h1 z"
+     * })
+     * ```
+     *
+     * Also common is to set some or all of the Shape properties dynamically,
+     * in the Node data, by way of bindings:
+     *
+     * ```js
+     * // A Node used as the node template, holding a single shape
+     * // The shape has many bindings
+     * myDiagram.nodeTemplate =
+     *   new go.Node("Horizontal")
+     *   .add(
+     *     new go.Shape()
+     *     .bind("width")
+     *     .bind("height")
+     *     .bind("fill", "color") // binds the data.color to shape.fill
+     *     .bind("figure"));
+     *
+     * // It could be used with model data like this:
+     * myDiagram.model = new go.GraphLinksModel(
+     *   [
+     *      { key: "1", width: 150, height: 150, color: "red", figure: "Triangle" },
+     *      { key: "2", width: 24, height: 24, color: "blue", figure: "Roundedrectangle" }
+     *   ]);
+     * ```
+     *
+     * @param {string=} figure The shape's figure, a predefined geometry.
+     * If no geometry is set then shapes will use the default figure of "None", a rectangle.
+     * Common values are "Rectangle", "Ellipse", "RoundedRectangle".
+     * @param {Partial<Shape>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(figure?: string, init?: Partial<Shape>);
+    /**
+     * A newly constructed Shape has a default #figure of "None",
+     * which constructs a rectangular geometry, and is filled and stroked with a black brush.
+     * @param {Partial<Shape>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Shape>);
     /**
      * Gets or sets the Shape's Geometry that defines the Shape's figure.
      * Setting a geometry is not necessary if a #figure is specified,
@@ -17201,7 +18300,8 @@ export class Shape extends GraphObject {
      * The default value is null.
      * @see #geometryString
      */
-    geometry: Geometry | null;
+    get geometry(): Geometry | null;
+    set geometry(value: Geometry | null);
     /**
      * When set, creates a Geometry and normalizes it from a given path string,
      * then sets the #geometry property on this Shape and
@@ -17212,7 +18312,8 @@ export class Shape extends GraphObject {
      * See the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page</a> for examples.
      * @since 1.1
      */
-    geometryString: string;
+    get geometryString(): string;
+    set geometryString(value: string);
     /**
      * Gets or sets the whether the GraphObject#position of this shape denotes
      * the top-left corner of this shape in panel coordinates or the origin of this geometry's coordinate system.
@@ -17221,7 +18322,8 @@ export class Shape extends GraphObject {
      * The default is false.
      * @since 1.1
      */
-    isGeometryPositioned: boolean;
+    get isGeometryPositioned(): boolean;
+    set isGeometryPositioned(value: boolean);
     /**
      * Gets or sets the Brush or string that describes how the geometry is filled when drawn.
      *
@@ -17237,7 +18339,8 @@ export class Shape extends GraphObject {
      *
      * The geometry is filled before the #stroke is drawn.
      */
-    fill: BrushLike;
+    get fill(): BrushLike;
+    set fill(value: BrushLike);
     /**
      * Gets or sets the Brush or string that describes how the geometry is drawn as if by a pen.
      *
@@ -17252,7 +18355,8 @@ export class Shape extends GraphObject {
      *
      * The stroke is drawn after the geometry is filled with the #fill Brush.
      */
-    stroke: BrushLike;
+    get stroke(): BrushLike;
+    set stroke(value: BrushLike);
     /**
      * Gets or sets the thickness of the stroke's pen.
      *
@@ -17266,21 +18370,24 @@ export class Shape extends GraphObject {
      * The stroke width will affect the GraphObject#measuredBounds and GraphObject#actualBounds of this shape.
      * The stroke is drawn centered on the path of the geometry.
      */
-    strokeWidth: number;
+    get strokeWidth(): number;
+    set strokeWidth(value: number);
     /**
      * Gets or sets the style for how the ends of the stroke's line are drawn.
      * The value must be one of "butt", "round", or "square". The default is "butt".
      *
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap">Stroke Line Cap (w3.org)</a>.
      */
-    strokeCap: ('butt' | 'round' | 'square');
+    get strokeCap(): ('butt' | 'round' | 'square');
+    set strokeCap(value: ('butt' | 'round' | 'square'));
     /**
      * Gets or sets the type of corner that will be drawn for a stroke at the intersection of two straight segments of the geometry.
      * The value must be one of "miter", "bevel", or "round". The default is "miter".
      *
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin">Stroke Line Join (w3.org)</a>.
      */
-    strokeJoin: ('miter' | 'bevel' | 'round');
+    get strokeJoin(): ('miter' | 'bevel' | 'round');
+    set strokeJoin(value: ('miter' | 'bevel' | 'round'));
     /**
      * Gets or sets the style for the stroke's mitre limit ratio.
      * The value must be a real number greater than or equal to one.
@@ -17288,7 +18395,8 @@ export class Shape extends GraphObject {
      *
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-miterlimit">Stroke Miter Limit (w3.org)</a>.
      */
-    strokeMiterLimit: number;
+    get strokeMiterLimit(): number;
+    set strokeMiterLimit(value: number);
     /**
      * Gets or sets the dash array for creating dashed or dotted lines.
      * The value must be an array of positive numbers and zeroes,
@@ -17300,7 +18408,8 @@ export class Shape extends GraphObject {
      * Setting an array with all zeroes will set the value to null.
      * @since 1.1
      */
-    strokeDashArray: Array<number> | null;
+    get strokeDashArray(): Array<number> | null;
+    set strokeDashArray(value: Array<number> | null);
     /**
      * Gets or sets the offset for dashed lines, used to start the drawing of the dash pattern with some space.
      * The value must be a real non-negative number. The default is zero.
@@ -17308,7 +18417,8 @@ export class Shape extends GraphObject {
      * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linedashoffset">Stroke Line Dash Offset (w3.org)</a>.
      * @since 1.1
      */
-    strokeDashOffset: number;
+    get strokeDashOffset(): number;
+    set strokeDashOffset(value: number);
     /**
      * Gets or sets the figure name, used to construct a Geometry.
      * The value must be a string. The default value is "None".
@@ -17322,7 +18432,8 @@ export class Shape extends GraphObject {
      *
      * You can define your own named figures by calling the static function Shape.defineFigureGenerator.
      */
-    figure: string;
+    get figure(): string;
+    set figure(value: string);
     /**
      * Gets or sets the name of the kind of arrowhead that this shape should take
      * when this shape is an element of a Link.
@@ -17349,7 +18460,8 @@ export class Shape extends GraphObject {
      *
      * You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.
      */
-    toArrow: string;
+    get toArrow(): string;
+    set toArrow(value: string);
     /**
      * Gets or sets the name of the kind of arrowhead that this shape should take
      * when this shape is an element of a Link.
@@ -17377,36 +18489,41 @@ export class Shape extends GraphObject {
      *
      * You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.
      */
-    fromArrow: string;
+    get fromArrow(): string;
+    set fromArrow(value: string);
     /**
      * Gets or sets the top-left Spot used by some Panels for determining where in the shape other objects may be placed.
      * The value is normally Spot.Default, but you may want to set it to override the value that many #figures use.
      */
-    spot1: Spot;
+    get spot1(): Spot;
+    set spot1(value: Spot);
     /**
      * Gets or sets the bottom-right Spot used by some Panels for determining where in the shape other objects may be placed.
      * The value is normally Spot.Default, but you may want to set it to override the value that many #figures use.
      */
-    spot2: Spot;
+    get spot2(): Spot;
+    set spot2(value: Spot);
     /**
      * Gets or sets a property for parameterizing the construction of a Geometry from a figure.
      * The meaning of this property depends on the particular figure.
      * The value must be a number; the default value is NaN.
      */
-    parameter1: number;
+    get parameter1(): number;
+    set parameter1(value: number);
     /**
      * Gets or sets a property for parameterizing the construction of a Geometry from a figure.
      * The meaning of this property depends on the particular figure.
      * The value must be a number; the default value is NaN.
      */
-    parameter2: number;
+    get parameter2(): number;
+    set parameter2(value: number);
     /**
      * This read-only property returns the natural bounds of this Shape as determined by its #geometry's bounds.
      * The bounds will always include the (0,0) point.
      * If the #desiredSize is set, it returns a Rect with the #desiredSize. If no geometry is available,
      * and no #desiredSize is set, this may have NaN values for the width and height.
      */
-    readonly naturalBounds: Rect;
+    get naturalBounds(): Rect;
     /**
      * Gets or sets a GraphObject that is drawn repeatedly along the path of the stroke of this shape.
      * This property may be set to a shared GraphObject; the GraphObject should not belong to any Panel.
@@ -17424,32 +18541,37 @@ export class Shape extends GraphObject {
      * Examples of path patterns can be seen in the <a href="../../samples/relationships.html">Relationships sample</a>.
      * @since 1.6
      */
-    pathPattern: GraphObject | null;
+    get pathPattern(): GraphObject | null;
+    set pathPattern(value: GraphObject | null);
     /**
      * Gets or sets how the shape's geometry is proportionally created given its computed size.
      * Possible values are GraphObject.None, GraphObject.Fill, GraphObject.Uniform, and GraphObject.Default.
      * The default is GraphObject.Default, which resolves to GraphObject.Fill for most figures, though
      * some regular figures such as "Circle" and "Square" default to GraphObject.Uniform.
      */
-    geometryStretch: EnumValue;
+    get geometryStretch(): EnumValue;
+    set geometryStretch(value: EnumValue);
     /**
      * Gets or sets how frequently this shape should be drawn within a "Grid" or "Graduated" Panel,
      * in multiples of the Panel#gridCellSize or Panel#graduatedTickUnit.
      * The default is 1.  Any new value must be a positive integer.
      */
-    interval: number;
+    get interval(): number;
+    set interval(value: number);
     /**
      * Gets or sets the fractional distance along the main shape of a "Graduated" Panel at which this kind of tick should start.
      * The default is 0. Any new value should range from 0 to 1.
      * @since 1.7
      */
-    graduatedStart: number;
+    get graduatedStart(): number;
+    set graduatedStart(value: number);
     /**
      * Gets or sets the fractional distance along the main shape of a "Graduated" Panel at which this kind of tick should end.
      * The default is 1. Any new value should range from 0 to 1.
      * @since 1.7
      */
-    graduatedEnd: number;
+    get graduatedEnd(): number;
+    set graduatedEnd(value: number);
     /**
      * Gets or sets the function to determine which values along a "Graduated" Panel will be skipped.
      * The default is null and doesn't skip any ticks.
@@ -17458,7 +18580,8 @@ export class Shape extends GraphObject {
      * The function will return a boolean, whether the tick will be skipped at the value of the argument.
      * @since 2.0
      */
-    graduatedSkip: ((val: number) => boolean) | null;
+    get graduatedSkip(): ((val: number) => boolean) | null;
+    set graduatedSkip(value: ((val: number) => boolean) | null);
     /**
      * This static function returns a read-only Map of named geometry generators.
      * The keys are figure names.
@@ -17541,12 +18664,10 @@ export class Shape extends GraphObject {
  *
  * Some created TextBlocks:
  * ```js
- * var $ = go.GraphObject.make;  // for conciseness in defining GraphObjects
- *
  * // A TextBlock with text and stroke properties set:
- * $(go.TextBlock, { text: "Hello World", stroke: "gray" })
+ * new go.TextBlock({ text: "Hello World", stroke: "gray" })
  * // Alternatively:
- * $(go.TextBlock, "Hello World", { stroke: "gray" })
+ * new go.TextBlock("Hello World", { stroke: "gray" })
  * ```
  *
  * TextBlocks typically receive a natural size based on their text and font strings,
@@ -17565,16 +18686,60 @@ export class Shape extends GraphObject {
  */
 export class TextBlock extends GraphObject {
     /**
+     * Constructs a TextBlock, which by default has no string to show; if it did,
+     * it would draw the text, wrapping if needed, in the default font using a black stroke.
+     *
+     * Typical usage:
+     *
+     * ```js
+     * new go.TextBlock("Hello World", { font: "12px sans-serif", stroke: "gray" })
+     * ```
+     *
+     * It is common to data-bind the #text:
+     *
+     * ```js
+     * // A Node used as the node template, holding a single TextBlock
+     * myDiagram.nodeTemplate =
+     *   new go.Node()
+     *   .add(
+     *     new go.TextBlock({ font: "12px sans-serif", stroke: "darkgray" })
+     *     .bind("text"));
+     *
+     * // It could be used with model data like this:
+     * myDiagram.model = new go.GraphLinksModel(
+     *   [
+     *      { key: "1", text: "First TextBlock" },
+     *      { key: "2", text: "Second TextBlock" }
+     *   ]);
+     * ```
+     *
+     * @param {string=} text The textblock's text.
+     * @param {Partial<TextBlock>=} init Optional initialization properties.
+     */
+    constructor(text?: string, init?: Partial<TextBlock>);
+    /**
      * A newly constructed TextBlock has no string to show; if it did,
      * it would draw the text, wrapping if needed, in the default font using a black stroke.
+     * @param {Partial<TextBlock>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<TextBlock>);
     /**
-     * Undocumented
+     * (undocumented)
+     * This static function gets the current ellipsis character or string for
+     * TextBlocks that have TextBlock#overflow set to TextBlock.Ellipsis.
      */
     static getEllipsis(): string;
     /**
-     * Undocumented
+     * (undocumented)
+     * This static function sets the ellipsis character or string for all
+     * TextBlocks that have TextBlock#overflow set to TextBlock.Ellipsis.
+     *
+     * The default is `"..."`, which works with all fonts.
+     *
+     * Note when using the ellipsis character, "&hellip;",  you will need to specify a compatible
+     * character set for your page, like UTF-8.
+     *
+     * Modifying the ellipsis character does not cause any TextBlocks to be remeasured or redrawn.
      * @param {string} val
      */
     static setEllipsis(val: string): void;
@@ -17593,7 +18758,7 @@ export class TextBlock extends GraphObject {
      * This computation affects drawing only, and does not change TextBlock measurement calculations.
      * It is expected this method will be called before or during initialization of any Diagram.
      * Diagrams will not redraw when this method has been called,
-     * and you should call Diagram#redraw if you are calling this method outside of your initialization.
+     * and you should call `Diagram.redraw()` if you are calling this method outside of your initialization.
      *
      * @param {(textBlock: TextBlock, textHeight: number) => number | null} value
      * @since 2.0
@@ -17614,7 +18779,7 @@ export class TextBlock extends GraphObject {
      * This computation affects drawing only, and does not change TextBlock measurement calculations.
      * It is expected this method will be called before or during initialization of any Diagram.
      * Diagrams will not redraw when this method has been called,
-     * and you should call Diagram#redraw if you are calling this method outside of your initialization.
+     * and you should call `Diagram.redraw()` if you are calling this method outside of your initialization.
      *
      * @param {(textBlock: TextBlock, textHeight: number) => number | null} value
      * @since 2.0
@@ -17659,13 +18824,17 @@ export class TextBlock extends GraphObject {
      */
     static OverflowEllipsis: EnumValue;
     /**
-     * Undocumented
+     * Used as the default value for TextBlock#formatting: the TextBlock will automatically trim any whitespace at the start
+     * or end of each line of text.
      * @constant
+     * @since 2.2
      */
     static FormatTrim: EnumValue;
     /**
-     * Undocumented
+     * Used as a value for TextBlock#formatting: the TextBlock will *not* trim any whitespace at the start
+     * or end of each line of text. This can be useful if your text is preformatted.
      * @constant
+     * @since 2.2
      */
     static FormatNone: EnumValue;
     /**
@@ -17685,9 +18854,11 @@ export class TextBlock extends GraphObject {
      *
      * The default font is "13px sans-serif".
      */
-    font: string;
+    get font(): string;
+    set font(value: string);
     /**
-     * Undocumented
+     * (undocumented)
+     * This static predicate returns true if the given font is a valid font.
      * @param {string} font
      * @return {boolean}
      */
@@ -17704,7 +18875,8 @@ export class TextBlock extends GraphObject {
      *
      * If #editable is set to true, users can edit textblocks with the TextEditingTool.
      */
-    text: string;
+    get text(): string;
+    set text(value: string);
     /**
      * Gets or sets the alignment location in the TextBlock's given space.
      * The only possible values are `"start"`, `"end"`, `"left"`, `"right"`, and `"center"`.
@@ -17718,7 +18890,8 @@ export class TextBlock extends GraphObject {
      * The default is `"start"`.
      * @see #verticalAlignment
      */
-    textAlign: ('start' | 'end' | 'left' | 'right' | 'center');
+    get textAlign(): ('start' | 'end' | 'left' | 'right' | 'center');
+    set textAlign(value: ('start' | 'end' | 'left' | 'right' | 'center'));
     /**
      * Gets or sets how the TextBlock is displayed: Either normally or with a Horizontal or Vertical flip or both.
      *
@@ -17726,7 +18899,8 @@ export class TextBlock extends GraphObject {
      * The default is GraphObject.None.
      * @since 2.0
      */
-    flip: EnumValue;
+    get flip(): EnumValue;
+    set flip(value: EnumValue);
     /**
      * Gets or sets the vertical alignment Spot of this TextBlock, used when
      * the TextBlock has more available vertical space than it needs to draw all lines.
@@ -17740,33 +18914,37 @@ export class TextBlock extends GraphObject {
      * @see #textAlign
      * @since 1.7
      */
-    verticalAlignment: Spot;
+    get verticalAlignment(): Spot;
+    set verticalAlignment(value: Spot);
     /**
      * This read-only property returns the natural bounds of this TextBlock in local coordinates,
      * as determined by its #font and #text string, and optionally its #desiredSize.
      */
-    readonly naturalBounds: Rect;
+    get naturalBounds(): Rect;
     /**
      * Gets or sets whether or not the text displays multiple lines or embedded newlines.
      * If this is false, all characters including and after the first newline will be omitted.
      * The default is true.
      * @see #maxLines
      */
-    isMultiline: boolean;
+    get isMultiline(): boolean;
+    set isMultiline(value: boolean);
     /**
      * Gets or sets whether or not the text is underlined.
      * The default is false.
      * @see #isStrikethrough
      * @since 1.2
      */
-    isUnderline: boolean;
+    get isUnderline(): boolean;
+    set isUnderline(value: boolean);
     /**
      * Gets or sets whether or not the text has a strikethrough line (line-through).
      * The default is false.
      * @see #isUnderline
      * @since 1.2
      */
-    isStrikethrough: boolean;
+    get isStrikethrough(): boolean;
+    set isStrikethrough(value: boolean);
     /**
      * Gets or sets whether the text should be wrapped if it is too long to fit on one line.
      *
@@ -17776,7 +18954,8 @@ export class TextBlock extends GraphObject {
      * The default value is TextBlock.WrapDesiredSize.
      * @see #overflow
      */
-    wrap: EnumValue;
+    get wrap(): EnumValue;
+    set wrap(value: EnumValue);
     /**
      * Gets or sets how text that is too long to display should be handled.
      *
@@ -17789,7 +18968,8 @@ export class TextBlock extends GraphObject {
      * @see #wrap
      * @since 1.4
      */
-    overflow: EnumValue;
+    get overflow(): EnumValue;
+    set overflow(value: EnumValue);
     /**
      * Gets or sets the Brush or string that describes the stroke (color) of the text that is drawn.
      *
@@ -17799,14 +18979,24 @@ export class TextBlock extends GraphObject {
      * More information about the syntax of CSS color strings is available at:
      * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
      */
-    stroke: BrushLike;
+    get stroke(): BrushLike;
+    set stroke(value: BrushLike);
     /**
      * This read-only property returns the total number of lines in this TextBlock, including lines created
      * from embedded newlines (`\n`), #wrapping, and #maxLines.
      *
      * This value may be meaningless before the TextBlock is measured.
+     * @see {#lineHeight}
      */
-    readonly lineCount: number;
+    get lineCount(): number;
+    /**
+     * This read-only property returns the height of a line of text in this TextBlock, not including any #spacingAbove or #spacingBelow.
+     *
+     * This value may be meaningless before the TextBlock is measured.
+     * @since 2.2
+     * @see {#lineCount}
+     */
+    get lineHeight(): number;
     /**
      * Gets or sets whether or not this TextBlock allows in-place editing of the #text
      * string by the user with the help of the TextEditingTool.
@@ -17814,7 +19004,8 @@ export class TextBlock extends GraphObject {
      *
      * See also Part#textEditable.
      */
-    editable: boolean;
+    get editable(): boolean;
+    set editable(value: boolean);
     /**
      * Gets or sets the HTMLInfo that this TextBlock uses as its text editor in the TextEditingTool.
      * If null, the TextBlock will use the default text editor of the TextEditingTool.
@@ -17826,31 +19017,36 @@ export class TextBlock extends GraphObject {
      *
      * For example usage, see the <a href="../../samples/customTextEditingTool.html">Custom TextEditingTool Sample</a>.
      */
-    textEditor: HTMLInfo | null;
+    get textEditor(): HTMLInfo | null;
+    set textEditor(value: HTMLInfo | null);
     /**
      * Gets or sets the function to call if a text edit made with the TextEditingTool is invalid.
      * The default is null.
      */
-    errorFunction: ((tool: TextEditingTool, oldString: string, newString: string) => void) | null;
+    get errorFunction(): ((tool: TextEditingTool, oldString: string, newString: string) => void) | null;
+    set errorFunction(value: ((tool: TextEditingTool, oldString: string, newString: string) => void) | null);
     /**
      * Gets or sets how frequently this text should be drawn within a "Graduated" Panel,
      * in multiples of the Panel#graduatedTickUnit.
      * The default is 1.  Any new value must be a positive integer.
      * @since 1.7
      */
-    interval: number;
+    get interval(): number;
+    set interval(value: number);
     /**
      * Gets or sets the fractional distance along the main shape of a "Graduated" Panel at which this text should start.
      * The default is 0; the value should range from 0 to 1.
      * @since 1.7
      */
-    graduatedStart: number;
+    get graduatedStart(): number;
+    set graduatedStart(value: number);
     /**
      * Gets or sets the fractional distance along the main shape of a "Graduated" Panel at which this kind of tick text should end.
      * The default is 1; the value should range from 0 to 1.
      * @since 1.7
      */
-    graduatedEnd: number;
+    get graduatedEnd(): number;
+    set graduatedEnd(value: number);
     /**
      * Gets or sets the function to convert from a value along a "Graduated" Panel to a string.
      * The default returns a string representing the value rounded to at most 2 decimals.
@@ -17859,7 +19055,8 @@ export class TextBlock extends GraphObject {
      * The function will return a string, the text that will appear at the value of the argument.
      * @since 1.7
      */
-    graduatedFunction: ((val: number) => string) | null;
+    get graduatedFunction(): ((val: number) => string) | null;
+    set graduatedFunction(value: ((val: number) => string) | null);
     /**
      * Gets or sets the function to determine which values along a "Graduated" Panel will be skipped.
      * The default is null and doesn't skip any text labels.
@@ -17868,7 +19065,8 @@ export class TextBlock extends GraphObject {
      * The function will return a boolean, whether the text label will be skipped at the value of the argument.
      * @since 2.0
      */
-    graduatedSkip: ((val: number) => boolean) | null;
+    get graduatedSkip(): ((val: number) => boolean) | null;
+    set graduatedSkip(value: ((val: number) => boolean) | null);
     /**
      * Gets or sets the predicate that determines whether or not a user-edited string of text is valid.
      * If this is non-null, the predicate is called in addition to any TextEditingTool#textValidation predicate.
@@ -17883,7 +19081,8 @@ export class TextBlock extends GraphObject {
      * The function, if supplied, must not have any side-effects, and must return true or false.
      * @see TextEditingTool#textValidation
      */
-    textValidation: ((thisTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
+    get textValidation(): ((thisTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
+    set textValidation(value: ((thisTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null);
     /**
      * Gets or sets the function that is called after the TextBlock's text has been edited by the TextEditingTool.
      *   - The first argument is a reference to this TextBlock.
@@ -17897,19 +19096,40 @@ export class TextBlock extends GraphObject {
      * The default value is null -- no function is called.
      * @since 1.7
      */
-    textEdited: ((thisTextBlock: TextBlock, oldString: string, newString: string) => void) | null;
+    get textEdited(): ((thisTextBlock: TextBlock, oldString: string, newString: string) => void) | null;
+    set textEdited(value: ((thisTextBlock: TextBlock, oldString: string, newString: string) => void) | null);
     /**
-     * Undocumented
+     * Gets or sets additional spacing above each line of text.
+     * The default is zero. The value may be negative.
+     *
+     * This can be useful when you need to adjust the font spacing on
+     * custom fonts or monospace fonts to suit your needs.
+     *
+     * @since 2.2
      */
-    spacingAbove: number;
+    get spacingAbove(): number;
+    set spacingAbove(value: number);
     /**
-     * Undocumented
+     * Gets or sets additional spacing below each line of text.
+     * The default is zero. The value may be negative.
+     *
+     * This can be useful when you need to adjust the font spacing on
+     * custom fonts or monospace fonts to suit your needs.
+     *
+     * @since 2.2
      */
-    spacingBelow: number;
+    get spacingBelow(): number;
+    set spacingBelow(value: number);
     /**
-     * Undocumented
+     * Gets or sets the policy for trimming whitespace on each line of text.
+     *
+     * Possible values are TextBlock#FormatTrim, which trims whitespace before and after every line of text,
+     * or TextBlock#FormatNone, which will not trim any whitespace and may be useful for preformatted text.
+     * The default is TextBlock#FormatTrim.
+     * @since 2.2
      */
-    formatting: EnumValue;
+    get formatting(): EnumValue;
+    set formatting(value: EnumValue);
     /**
      * Gets or sets the maximum number of lines that this TextBlock can display.
      * Value must be a greater than zero whole number or `Infinity`.
@@ -17920,7 +19140,8 @@ export class TextBlock extends GraphObject {
      * @see #isMultiline
      * @since 1.5
      */
-    maxLines: number;
+    get maxLines(): number;
+    set maxLines(value: number);
     /**
      * Gets or sets the an array of possible choices for a custom TextEditingTool.
      * The value must be an array of strings.
@@ -17929,7 +19150,8 @@ export class TextBlock extends GraphObject {
      * For example usage, see the <a href="../../samples/customTextEditingTool.html">Custom TextEditingTool Sample</a>.
      * @since 1.7
      */
-    choices: Array<string> | null;
+    get choices(): Array<string> | null;
+    set choices(value: Array<string> | null);
 }
 /**
  * A Picture is a GraphObject that shows an image, video-frame, or Canvas element.
@@ -17978,14 +19200,49 @@ export class TextBlock extends GraphObject {
  */
 export class Picture extends GraphObject {
     /**
-     * The constructor creates a picture that shows nothing until the
+     * The constructor creates a Picture that shows nothing until the
      * #source or #element is specified. It is also common to specify the
      * GraphObject#desiredSize to make sure that the picture's size is known
      * before the image is loaded asynchronously, so that layouts do not need to be recomputed.
+     *
+     * Common usage:
+     * ```js
+     * new go.Picture("example_image_url.png", {
+     *   width: 100,
+     *   height: 50
+     * })
+     * ```
+     *
+     * Or:
+     *
+     * ```js
+     * // specify a different source for each node in the node data
+     * new go.Picture({
+     *   width: 100,
+     *   height: 50
+     * }).bind("source")
+     * ```
+     *
+     * @param {string=} source Optionally set the Pictures's #source.
+     * @param {Partial<Picture>=} init Optional properties to initialize.
      */
-    constructor();
+    constructor(source?: string, init?: Partial<Picture>);
     /**
-     * Undocumented
+    * The constructor creates a Picture that shows nothing until the
+    * #source or #element is specified. It is also common to specify the
+    * GraphObject#desiredSize to make sure that the picture's size is known
+    * before the image is loaded asynchronously, so that layouts do not need to be recomputed.
+     * @param {Partial<Picture>=} init Optional properties to initialize.
+     */
+    constructor(init?: Partial<Picture>);
+    /**
+     * (undocumented)
+     * This static function clears the cache of loaded images, or removes the cached image for a particular URL.
+     *
+     * When an image is loaded by GoJS when specifying a Picture.source URL,
+     * GoJS creates an Image element using that source and caches it.
+     * That way, when many Picture elements refer to the same source,
+     * they can refer to the same single object in memory.
      * @param {string=} url optional, clear only a specified URL from the image cache. If relative urls are used as Picture sources, this must be in the same format.
      */
     static clearCache(url?: string): void;
@@ -18000,7 +19257,8 @@ export class Picture extends GraphObject {
      * If this property is set to an HTMLImageElement, and that element is not yet loaded before it is used, the Diagrams using that Element
      * will not redraw on their own. You must call `Diagram.redraw()` when the image is finished loading if you wish for the Diagram to redraw immediately.
      */
-    element: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null;
+    get element(): HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null;
+    set element(value: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null);
     /**
      * Gets or sets the Picture's source URL, which can be any valid image (png, jpg, gif, etc) URL.
      *
@@ -18021,7 +19279,8 @@ export class Picture extends GraphObject {
      * For cross-browser support of SVG sources additional care is needed.
      * See the final section of the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.
      */
-    source: string;
+    get source(): string;
+    set source(value: string);
     /**
      * Attempts to reload a Picture#source image. This can be useful if the content on a server has changed, or was missing before.
      * If a new image is loaded, this Picture may remeasure and/or redraw.
@@ -18053,7 +19312,8 @@ export class Picture extends GraphObject {
      * ```
      * @since 1.5
      */
-    sourceCrossOrigin: ((a: Picture) => string) | null;
+    get sourceCrossOrigin(): ((a: Picture) => string) | null;
+    set sourceCrossOrigin(value: ((a: Picture) => string) | null);
     /**
      * Gets or sets the rectangular area of the source image that this picture should display.
      * This is only common with sprite maps and image tables.
@@ -18061,7 +19321,8 @@ export class Picture extends GraphObject {
      * The value must be of type Rect.
      * The default value is Rect(NaN, NaN, NaN, NaN), which means the whole source image should be used.
      */
-    sourceRect: Rect;
+    get sourceRect(): Rect;
+    set sourceRect(value: Rect);
     /**
      * Gets or sets how the Picture's image is stretched within its bounding box.
      * Some images will be a different aspect ratio than their given size or #desiredSize.
@@ -18073,7 +19334,8 @@ export class Picture extends GraphObject {
      * The default is GraphObject.Fill.
      * @see #imageAlignment
      */
-    imageStretch: EnumValue;
+    get imageStretch(): EnumValue;
+    set imageStretch(value: EnumValue);
     /**
      * Gets or sets how the Picture is displayed: Either normally or with a Horizontal or Vertical flip or both.
      *
@@ -18081,7 +19343,8 @@ export class Picture extends GraphObject {
      * The default is GraphObject.None.
      * @since 2.0
      */
-    flip: EnumValue;
+    get flip(): EnumValue;
+    set flip(value: EnumValue);
     /**
      * Gets or sets the Spot to align the source image to, when the source image
      * is smaller than the Picture. This is only relevant when
@@ -18092,7 +19355,8 @@ export class Picture extends GraphObject {
      * @see #imageStretch
      * @since 1.7
      */
-    imageAlignment: Spot;
+    get imageAlignment(): Spot;
+    set imageAlignment(value: Spot);
     /**
      * Gets or sets the function to call if an image set by #source fails to load.
      * The arguments to this function are this Picture and the HTMLImageElement's "error" Event.
@@ -18103,7 +19367,8 @@ export class Picture extends GraphObject {
      * The default value is null, meaning that no specific action occurs when there is an error loading an image.
      * @see #successFunction
      */
-    errorFunction: ((a: Picture, b: Event) => void) | null;
+    get errorFunction(): ((a: Picture, b: Event) => void) | null;
+    set errorFunction(value: ((a: Picture, b: Event) => void) | null);
     /**
      * Gets or sets the function to call when an image set by #source loads successfully.
      * The arguments to this function are this Picture and the HTMLImageElement's "load" Event.
@@ -18117,13 +19382,14 @@ export class Picture extends GraphObject {
      * @see #errorFunction
      * @since 1.7
      */
-    successFunction: ((a: Picture, b: Event) => void) | null;
+    get successFunction(): ((a: Picture, b: Event) => void) | null;
+    set successFunction(value: ((a: Picture, b: Event) => void) | null);
     /**
      * This read-only property returns the natural size of this picture as determined by its source's width and height.
      * The value is initially NaN x NaN until the picture has been measured.
      * It will use the #element's `naturalWidth` and `naturalHeight` if available.
      */
-    readonly naturalBounds: Rect;
+    get naturalBounds(): Rect;
 }
 /**
  * This is the base class for all user-manipulated top-level objects.
@@ -18158,10 +19424,9 @@ export class Picture extends GraphObject {
  * ```js
  * // A simple Part template
  * myDiagram.nodeTemplate =
- *   $(go.Part, "Horizontal",
- *     $(go.Shape, "Circle", { width: 20, height: 20 }),
- *     $(go.TextBlock, "Hello World")
- *   );
+ *   new go.Part("Horizontal")
+ *     .add(new go.Shape("Circle", { width: 20, height: 20 }))
+ *     .add(new go.TextBlock("Hello World"))
  * // Node templates can be either Nodes, or simple Parts
  * // (But not Groups, Adornments, or Links)
  *
@@ -18281,9 +19546,9 @@ export class Picture extends GraphObject {
  * data bind the #location to a property on your node data with a TwoWay Binding
  * (call Binding#makeTwoWay). For example:
  * ```js
- * $(go.Part, "Horizontal",
- *   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
- *   ...
+ * new go.Part("Horizontal")
+ *   .bind(new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify))
+ *   // ...
  * ```
  *
  * Then as the nodes are moved, whether manually by the user or automatically by a Layout,
@@ -18301,10 +19566,36 @@ export class Picture extends GraphObject {
  */
 export class Part extends Panel {
     /**
-     * The constructor builds an empty Part.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
+     * Constructs an empty Part of the given #type. Default type is Panel.Position.
+     * The panel type must be one of the enumerated values defined on the Panel class, including:
+     * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox. The string value such as "Auto" may also be used.
+     *
+     * Usage example:
+     *
+     *```js
+     * // Constructs a Part, sets properties on it,
+     * // adds a data binding to it,
+     * // and adds two GraphObjects to the Part:
+     * const p = new go.Part("Auto", {
+     *   margin: 5,
+     *   background: "red"
+     * })
+     * .bind("location", "loc")
+     * .add(new go.Shape("RoundedRectangle"))
+     * .add(new go.TextBlock("Some Text"))
+     * ```
+     *
+     * @param {string=} type Panel Type as either a string or PanelLayout. such as "Vertical", "Auto", or Panel.Vertical, Panel.Auto, are accepted.
+     * If not supplied, the default Panel type is "Position".
+     * @param {Partial<Part>=} init Optional initialization properties.
      */
-    constructor(type?: PanelLayout);
+    constructor(type?: PanelLayout | string, init?: Partial<Part>);
+    /**
+     * Constructs an empty Panel. Default type is Panel.Position.
+     * @param {Partial<Part>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Part>);
     /**
      * This value may be used as the value of the Part#layoutConditions property to indicate that
      * no operation on this Part causes invalidation of the Layout responsible for this Part.
@@ -18403,7 +19694,7 @@ export class Part extends Panel {
      * @since 1.8
      * @see Model#getKeyForNodeData
      */
-    readonly key: Key;
+    get key(): Key;
     /**
      * This read-only property returns an iterator over all of the Adornments associated with this part.
      * After each call to the iterator's next() method that returns true,
@@ -18412,7 +19703,7 @@ export class Part extends Panel {
      *
      * Templates should not have any adornments.
      */
-    readonly adornments: Iterator<Adornment>;
+    get adornments(): Iterator<Adornment>;
     /**
      * Find an Adornment of a given category associated with this Part.
      *
@@ -18450,7 +19741,7 @@ export class Part extends Panel {
      */
     updateAdornments(): void;
     /**
-     * Undocumented
+     * (undocumented)
      */
     invalidateAdornments(): void;
     /**
@@ -18462,13 +19753,13 @@ export class Part extends Panel {
      * or if it has already been removed from a Diagram.
      * @see #layerName
      */
-    readonly layer: Layer | null;
+    get layer(): Layer | null;
     /**
      * This read-only property returns the Diagram that this Part is in.
      *
      * This will be null if it is not in a Layer.
      */
-    readonly diagram: Diagram | null;
+    get diagram(): Diagram | null;
     /**
      * Gets or sets the layer name for this part.
      * The initial value is an empty string, which is the name of the default layer.
@@ -18483,7 +19774,8 @@ export class Part extends Panel {
      * causes it to change layers if needed.
      * @see #layerChanged
      */
-    layerName: string;
+    get layerName(): string;
+    set layerName(value: string);
     /**
      * Gets or sets the function to execute when this part changes layers.
      * It is typically used to modify the appearance of the part.
@@ -18494,7 +19786,8 @@ export class Part extends Panel {
      * By default this property is null -- no function is called.
      * @see #layerName
      */
-    layerChanged: ((thisPart: Part, oldLayer: Layer | null, newLayer: Layer | null) => void) | null;
+    get layerChanged(): ((thisPart: Part, oldLayer: Layer | null, newLayer: Layer | null) => void) | null;
+    set layerChanged(value: ((thisPart: Part, oldLayer: Layer | null, newLayer: Layer | null) => void) | null);
     /**
      * Gets or sets the Z-ordering position of this Part within its Layer.
      *
@@ -18509,13 +19802,14 @@ export class Part extends Panel {
      * unless those groups are in different layers.
      * @since 1.6
      */
-    zOrder: number;
+    get zOrder(): number;
+    set zOrder(value: number);
     /**
      * This read-only property returns the GraphObject that determines the location of this Part.
      * The value will be in the visual tree of this Part and is usually named with
      * the value of #locationObjectName.
      */
-    readonly locationObject: GraphObject;
+    get locationObject(): GraphObject;
     /**
      * Gets or sets the minimum location of this Part to which the user may drag using the DraggingTool.
      *
@@ -18528,7 +19822,8 @@ export class Part extends Panel {
      * @see #dragComputation
      * @see #movable
      */
-    minLocation: Point;
+    get minLocation(): Point;
+    set minLocation(value: Point);
     /**
      * Gets or sets the maximum location of this Part to which the user may drag using the DraggingTool.
      *
@@ -18541,7 +19836,8 @@ export class Part extends Panel {
      * @see #dragComputation
      * @see #movable
      */
-    maxLocation: Point;
+    get maxLocation(): Point;
+    set maxLocation(value: Point);
     /**
      * Gets or sets the name of the GraphObject that provides the location of this Part.
      * This name determines the value of #locationObject.
@@ -18553,7 +19849,8 @@ export class Part extends Panel {
      * @see #location
      * @see #locationSpot
      */
-    locationObjectName: string;
+    get locationObjectName(): string;
+    set locationObjectName(value: string);
     /**
      * Gets or sets the location Spot of this Node, the spot on the #locationObject
      * that is used in positioning this part in the diagram.
@@ -18569,7 +19866,8 @@ export class Part extends Panel {
      * @see #location
      * @see #locationObjectName
      */
-    locationSpot: Spot;
+    get locationSpot(): Spot;
+    set locationSpot(value: Spot);
     /**
      * Move this part and any parts that are owned by this part to a new position.
      *
@@ -18628,14 +19926,6 @@ export class Part extends Panel {
      */
     isVisible(): boolean;
     /**
-     * Undocumented
-     * @param {GraphObject} elt
-     * @param {Spot} spot
-     * @param {Point=} result an optional Point that is modified and returned
-     * @return {Point}
-     */
-    getRelativePoint(elt: GraphObject, spot: Spot, result?: Point): Point;
-    /**
      * Returns the Rect in document coordinates for this object's bounds.
      * If this GraphObject is a Part, the rect will be identical to its #actualBounds.
      * @param {Rect=} result an optional Rect that is modified and returned.
@@ -18683,7 +19973,8 @@ export class Part extends Panel {
      * @see #minLocation
      * @see #dragComputation
      */
-    location: Point;
+    get location(): Point;
+    set location(value: Point);
     /**
      * Gets or sets the category of this part,
      * typically used to distinguish different kinds of nodes or links.
@@ -18714,7 +20005,9 @@ export class Part extends Panel {
      * Part#resizeAdornmentTemplate and sets its category to be "Resizing".
      * Changing the category of an existing Adornment will update any adorned part's association.
      */
-    category: string;
+    get category(): string;
+    set category(value: string);
+    set self(clone: Part);
     /**
      * This predicate returns true if #copyable is true,
      * if the layer's Layer#allowCopy is true, and
@@ -18819,13 +20112,15 @@ export class Part extends Panel {
      * The initial value is true.
      * @see #canCopy
      */
-    copyable: boolean;
+    get copyable(): boolean;
+    set copyable(value: boolean);
     /**
      * Gets or sets whether the user may delete this part.
      * The initial value is true.
      * @see #canDelete
      */
-    deletable: boolean;
+    get deletable(): boolean;
+    set deletable(value: boolean);
     /**
      * Gets or sets whether the user may do in-place text editing on TextBlocks in this part
      * that have TextBlock#editable set to true.
@@ -18833,7 +20128,8 @@ export class Part extends Panel {
      * @see #canEdit
      * @see TextBlock#editable
      */
-    textEditable: boolean;
+    get textEditable(): boolean;
+    set textEditable(value: boolean);
     /**
      * Gets or sets whether the user may group this part to be a member of a new Group.
      * The initial value is true.
@@ -18843,7 +20139,8 @@ export class Part extends Panel {
      * A Group can be ungrouped by the user if you set Group#ungroupable to true.
      * @see #canGroup
      */
-    groupable: boolean;
+    get groupable(): boolean;
+    set groupable(value: boolean);
     /**
      * Gets or sets whether the user may move this part.
      * The initial value is true.
@@ -18852,14 +20149,16 @@ export class Part extends Panel {
      * @see #maxLocation
      * @see #minLocation
      */
-    movable: boolean;
+    get movable(): boolean;
+    set movable(value: boolean);
     /**
      * Gets or sets whether a selection adornment is shown for this part when it is selected.
      * The initial value is true.
      * @see #selectionChanged
      * @see #selectionAdornmentTemplate
      */
-    selectionAdorned: boolean;
+    get selectionAdorned(): boolean;
+    set selectionAdorned(value: boolean);
     /**
      * Gets or sets whether this Part is part of the document bounds.
      *
@@ -18868,7 +20167,8 @@ export class Part extends Panel {
      * If the value is false, it is possible that user will not be able to scroll far enough to see this part,
      * if the part's GraphObject#actualBounds are outside of the Diagram#documentBounds.
      */
-    isInDocumentBounds: boolean;
+    get isInDocumentBounds(): boolean;
+    set isInDocumentBounds(value: boolean);
     /**
      * Gets or sets whether a Layout positions this Node or routes this Link.
      * This property affects the value of #canLayout.
@@ -18885,7 +20185,8 @@ export class Part extends Panel {
      * Another way of controlling when layouts are invalidated is by setting
      * Part#layoutConditions or Layout#isInitial or Layout#isOngoing.
      */
-    isLayoutPositioned: boolean;
+    get isLayoutPositioned(): boolean;
+    set isLayoutPositioned(value: boolean);
     /**
      * Gets or sets whether the user may select this part.
      * The initial value is true.
@@ -18900,14 +20201,16 @@ export class Part extends Panel {
      * @see #selectionAdornmentTemplate
      * @see #selectionChanged
      */
-    selectable: boolean;
+    get selectable(): boolean;
+    set selectable(value: boolean);
     /**
      * Gets or sets whether the user may reshape this part.
      * The initial value is false.
      * @see #canReshape
      * @see LinkReshapingTool
      */
-    reshapable: boolean;
+    get reshapable(): boolean;
+    set reshapable(value: boolean);
     /**
      * Gets or sets whether the user may resize this part.
      * The initial value is false.
@@ -18922,7 +20225,8 @@ export class Part extends Panel {
      * @see #resizeCellSize
      * @see #resizeAdornmentTemplate
      */
-    resizable: boolean;
+    get resizable(): boolean;
+    set resizable(value: boolean);
     /**
      * Gets or sets whether the user may rotate this part.
      * The initial value is false.
@@ -18936,7 +20240,8 @@ export class Part extends Panel {
      * @see #rotateObjectName
      * @see #rotateAdornmentTemplate
      */
-    rotatable: boolean;
+    get rotatable(): boolean;
+    set rotatable(value: boolean);
     /**
      * Gets or sets whether this Part is selected.
      * The initial value is false.
@@ -18954,7 +20259,8 @@ export class Part extends Panel {
      * @see #selectionObjectName
      * @see #selectionAdornmentTemplate
      */
-    isSelected: boolean;
+    get isSelected(): boolean;
+    set isSelected(value: boolean);
     /**
      * Gets or sets whether this Part is highlighted.
      * The initial value is false.
@@ -18964,13 +20270,14 @@ export class Part extends Panel {
      * One way of doing that is by using binding.
      * Consider part of the definition of a Node template:
      * ```js
-     *   $(go.Shape,
-     *     . . .,
-     *     // Shape.fill is bound to Node.data.color
-     *     new go.Binding("fill", "color"),
-     *     // Shape.stroke is red when Node.isHighlighted is true, black otherwise
-     *     new go.Binding("stroke", "isHighlighted",
-     *                    function(h) { return h ? "red" : "black"; }).ofObject()),
+     * new go.Shape({
+     *     // ... shape properties
+     *   })
+     *   // Shape.fill is bound to Node.data.color
+     *   .bind("fill", "color")
+     *   // Shape.stroke is red when Node.isHighlighted is true, black otherwise
+     *   .bind(new go.Binding("stroke", "isHighlighted",
+     *                  function(h) { return h ? "red" : "black"; }).ofObject())
      * ```
      * @see #highlightedChanged
      * @see Diagram#highlighteds
@@ -18979,7 +20286,8 @@ export class Part extends Panel {
      * @see Diagram#clearHighlighteds
      * @since 1.4
      */
-    isHighlighted: boolean;
+    get isHighlighted(): boolean;
+    set isHighlighted(value: boolean);
     /**
      * Gets or sets whether this part will draw shadows.
      * The initial value is false.
@@ -19004,13 +20312,15 @@ export class Part extends Panel {
      * @see #shadowBlur
      * @see GraphObject#shadowVisible
      */
-    isShadowed: boolean;
+    get isShadowed(): boolean;
+    set isShadowed(value: boolean);
     /**
      * Gets or sets whether this part may be animated.
      * The initial value is true.
      * @since 1.4
      */
-    isAnimated: boolean;
+    get isAnimated(): boolean;
+    set isAnimated(value: boolean);
     /**
      * Gets or sets the function to execute when this #isHighlighted changes.
      * It is typically used to modify the appearance of the part.
@@ -19022,7 +20332,8 @@ export class Part extends Panel {
      * @see #isHighlighted
      * @since 1.7
      */
-    highlightedChanged: ((thisPart: Part) => void) | null;
+    get highlightedChanged(): ((thisPart: Part) => void) | null;
+    set highlightedChanged(value: ((thisPart: Part) => void) | null);
     /**
      * Gets or sets the name of the GraphObject that should get a selection handle
      * when this part is selected.
@@ -19033,7 +20344,8 @@ export class Part extends Panel {
      * @see #selectable
      * @see #selectionObject
      */
-    selectionObjectName: string;
+    get selectionObjectName(): string;
+    set selectionObjectName(value: string);
     /**
      * Gets or sets the Adornment template used to create a selection handle for this Part.
      *
@@ -19046,7 +20358,8 @@ export class Part extends Panel {
      * @see #selectable
      * @see #selectionObjectName
      */
-    selectionAdornmentTemplate: Adornment | null;
+    get selectionAdornmentTemplate(): Adornment | null;
+    set selectionAdornmentTemplate(value: Adornment | null);
     /**
      * This read-only property returns the GraphObject that should get a selection handle when this part is selected.
      * The value will be in the visual tree of this Part and is usually named with
@@ -19055,7 +20368,7 @@ export class Part extends Panel {
      * @see #selectable
      * @see #selectionObjectName
      */
-    readonly selectionObject: GraphObject;
+    get selectionObject(): GraphObject;
     /**
      * Gets or sets the function to execute when this part is selected or deselected.
      * It is typically used to modify the appearance of the part.
@@ -19073,7 +20386,8 @@ export class Part extends Panel {
      * @see #selectionAdorned
      * @see #selectionAdornmentTemplate
      */
-    selectionChanged: ((thisPart: Part) => void) | null;
+    get selectionChanged(): ((thisPart: Part) => void) | null;
+    set selectionChanged(value: ((thisPart: Part) => void) | null);
     /**
      * Gets or sets the adornment template used to create a resize handle Adornment for this part.
      * This is used by the ResizingTool, ToolManager#resizingTool.
@@ -19084,7 +20398,8 @@ export class Part extends Panel {
      * @see #resizeObjectName
      * @see ResizingTool
      */
-    resizeAdornmentTemplate: Adornment | null;
+    get resizeAdornmentTemplate(): Adornment | null;
+    set resizeAdornmentTemplate(value: Adornment | null);
     /**
      * Gets or sets the name of the GraphObject that should get a resize handle
      * when this part is selected.
@@ -19094,7 +20409,8 @@ export class Part extends Panel {
      * @see #resizeObject
      * @see ResizingTool
      */
-    resizeObjectName: string;
+    get resizeObjectName(): string;
+    set resizeObjectName(value: string);
     /**
      * This read-only property returns the GraphObject that should get resize handles when this part is selected.
      * The value will be in the visual tree of this Part and is usually named with
@@ -19103,7 +20419,7 @@ export class Part extends Panel {
      * @see #resizeObjectName
      * @see ResizingTool
      */
-    readonly resizeObject: GraphObject;
+    get resizeObject(): GraphObject;
     /**
      * Gets or sets the width and height multiples used when resizing.
      * By default this property is the Size(NaN, NaN).
@@ -19111,7 +20427,8 @@ export class Part extends Panel {
      * @see #resizeObjectName
      * @see ResizingTool
      */
-    resizeCellSize: Size;
+    get resizeCellSize(): Size;
+    set resizeCellSize(value: Size);
     /**
      * Gets or sets the adornment template used to create a rotation handle Adornment for this part.
      * This is used by the RotatingTool, ToolManager#rotatingTool.
@@ -19122,7 +20439,8 @@ export class Part extends Panel {
      * @see #rotateObjectName
      * @see RotatingTool
      */
-    rotateAdornmentTemplate: Adornment | null;
+    get rotateAdornmentTemplate(): Adornment | null;
+    set rotateAdornmentTemplate(value: Adornment | null);
     /**
      * Gets or sets the name of the GraphObject that should get a rotate handle
      * when this part is selected.
@@ -19132,7 +20450,8 @@ export class Part extends Panel {
      * @see #rotateObject
      * @see RotatingTool
      */
-    rotateObjectName: string;
+    get rotateObjectName(): string;
+    set rotateObjectName(value: string);
     /**
      * This read-only property returns the GraphObject that should get rotate handles when this part is selected.
      * The value will be in the visual tree of this Part and is usually named with
@@ -19141,7 +20460,7 @@ export class Part extends Panel {
      * @see #rotateObjectName
      * @see RotatingTool
      */
-    readonly rotateObject: GraphObject;
+    get rotateObject(): GraphObject;
     /**
      * Gets or sets the spot on the #rotateObject
      * that is used in rotating this part with the RotatingTool.
@@ -19158,14 +20477,16 @@ export class Part extends Panel {
      * @see #rotateObjectName
      * @since 2.0
      */
-    rotationSpot: Spot;
+    get rotationSpot(): Spot;
+    set rotationSpot(value: Spot);
     /**
      * Gets or sets a text string that is associated with this part.
      *
      * The initial value is an empty string.
      * This value is often used for sorting.
      */
-    text: string;
+    get text(): string;
+    set text(value: string);
     /**
      * Gets or sets the Group of which this Part or Node is a member.
      * This will be null if this is a top-level part.
@@ -19179,7 +20500,8 @@ export class Part extends Panel {
      * @see #findTopLevelPart
      * @see #isTopLevel
      */
-    containingGroup: Group | null;
+    get containingGroup(): Group | null;
+    set containingGroup(value: Group | null);
     /**
      * Gets or sets the function that is called after this Part has changed which Group it belongs to, if any.
      * It is typically used to modify the appearance of the part.
@@ -19192,7 +20514,8 @@ export class Part extends Panel {
      *
      * The initial value is null -- no function is called.
      */
-    containingGroupChanged: ((thisPart: Part, oldGroup: Group | null, newGroup: Group | null) => void) | null;
+    get containingGroupChanged(): ((thisPart: Part, oldGroup: Group | null, newGroup: Group | null) => void) | null;
+    set containingGroupChanged(value: ((thisPart: Part, oldGroup: Group | null, newGroup: Group | null) => void) | null);
     /**
      * Return how deep this part is in the hierarchy of nested Groups.
      * For parts that have no #containingGroup this returns zero.
@@ -19218,7 +20541,7 @@ export class Part extends Panel {
      * @see #containingGroup
      * @see Node#labeledLink
      */
-    readonly isTopLevel: boolean;
+    get isTopLevel(): boolean;
     /**
      * This predicate is true if this part is a member of the given Part, perhaps indirectly.
      *
@@ -19261,7 +20584,8 @@ export class Part extends Panel {
      *
      * You can also control when layouts are invalidated is by setting Layout#isInitial or Layout#isOngoing.
      */
-    layoutConditions: number;
+    get layoutConditions(): number;
+    set layoutConditions(value: number);
     /**
      * This predicate is called by Layout implementations to decide whether this Part
      * should be positioned and might affect the positioning of other Parts.
@@ -19342,15 +20666,16 @@ export class Part extends Panel {
      * Note that for this functionality you will also probably want to set Diagram#autoScrollRegion to be a zero margin.
      * ```js
      *   myDiagram.nodeTemplate =
-     *     $(go.Node, . . .,
+     *     new go.Node(. . .,
      *       { dragComputation: stayInViewport },
      *       . . .
-     *     );
+     *     )
      * ```
      * @see #maxLocation
      * @see #minLocation
      */
-    dragComputation: ((thisPart: Part, newLoc: Point, snappedLoc: Point) => Point) | null;
+    get dragComputation(): ((thisPart: Part, newLoc: Point, snappedLoc: Point) => Point) | null;
+    set dragComputation(value: ((thisPart: Part, newLoc: Point, snappedLoc: Point) => Point) | null);
     /**
      * Gets or sets the X and Y offset of this part's shadow. This is only relevant if #isShadowed is true.
      * The initial value is (6, 6).
@@ -19358,7 +20683,8 @@ export class Part extends Panel {
      * @see #shadowColor
      * @see #shadowBlur
      */
-    shadowOffset: Point;
+    get shadowOffset(): Point;
+    set shadowOffset(value: Point);
     /**
      * Gets or sets the CSS string that describes a shadow color. Default is 'gray'.
      * Brushes cannot be used for this property -- only strings.
@@ -19370,7 +20696,8 @@ export class Part extends Panel {
      * @see #shadowOffset
      * @see #shadowBlur
      */
-    shadowColor: string;
+    get shadowColor(): string;
+    set shadowColor(value: string);
     /**
      * Gets or sets the numerical value that describes the shadow's blur. Number must be non-negative and non-infinity.
      * A value of 0 would mean the shadow does not blur and larger numbers represent increasingly more blur.
@@ -19381,7 +20708,8 @@ export class Part extends Panel {
      * @see #shadowOffset
      * @see #shadowColor
      */
-    shadowBlur: number;
+    get shadowBlur(): number;
+    set shadowBlur(value: number);
 }
 /**
  * An Adornment is a special kind of Part that is associated with another Part,
@@ -19429,25 +20757,52 @@ export class Part extends Panel {
  */
 export class Adornment extends Part {
     /**
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
+     * Constructs an empty Adornment of the given #type. Default type is Panel.Position.
+     * The panel type must be one of the enumerated values defined on the Panel class, including:
+     * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox. The string value such as "Auto" may also be used.
+     *
+     * Usage example:
+     *
+     *```js
+     * // Constructs an Adornment, sets properties on it,
+     * // adds a data binding to it,
+     * // and adds two GraphObjects to the Adornment:
+     * const a = new go.Adornment("Auto", {
+     *   margin: 5,
+     *   background: "red"
+     * })
+     * .add(new go.Shape("RoundedRectangle"))
+     * .add(new go.TextBlock("Some Text"))
+     * ```
+     *
+     * @param {string=} type Panel Type as either a string or PanelLayout. such as "Vertical", "Auto", or Panel.Vertical, Panel.Auto, are accepted.
+     * If not supplied, the default Panel type is "Position".
+     * @param {Partial<Adornment>=} init Optional initialization properties.
      */
-    constructor(type?: PanelLayout);
+    constructor(type?: PanelLayout | string, init?: Partial<Adornment>);
+    /**
+     * Constructs an empty Panel. Default type is Panel.Position.
+     * @param {Partial<Adornment>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Adornment>);
     /**
      * This read-only property returns a Placeholder that this Adornment may contain in its visual tree.
      * This may be null if there is no such placeholder object.
      */
-    readonly placeholder: Placeholder | null;
+    get placeholder(): Placeholder | null;
     /**
      * Gets or sets the GraphObject that is adorned.
      * Setting this property updates the adorned object's Part by calling Part#addAdornment.
      * This may be null if the Adornment does not adorn a particular object.
      */
-    adornedObject: GraphObject | null;
+    get adornedObject(): GraphObject | null;
+    set adornedObject(value: GraphObject | null);
     /**
      * This read-only property returns the Part that contains the adorned object.
      * This will be null if the #adornedObject is null.
      */
-    readonly adornedPart: Part | null;
+    get adornedPart(): Part | null;
 }
 /**
  * A Node is a Part that may connect to other nodes with Links,
@@ -19462,9 +20817,9 @@ export class Adornment extends Part {
  * It is more common to create a node by adding a node data object to the model
  * by calling Model#addNodeData. For example:
  * ```js
- *   myDiagram.startTransaction("make new node");
- *   myDiagram.model.addNodeData({ key: "Omega" });
- *   myDiagram.commitTransaction("make new node");
+ * myDiagram.startTransaction("make new node");
+ * myDiagram.model.addNodeData({ key: "Omega" });
+ * myDiagram.commitTransaction("make new node");
  * ```
  *
  * This will cause a Node or simple Part to be created (copying the template found in Diagram#nodeTemplateMap),
@@ -19512,9 +20867,9 @@ export class Adornment extends Part {
  *
  * Thus to add a link when using a GraphLinksModel you should do something like:
  * ```js
- *   myDiagram.startTransaction("make new link");
- *   myDiagram.model.addLinkData({ from: "Alpha", to: "Beta" });
- *   myDiagram.commitTransaction("make new link");
+ * myDiagram.startTransaction("make new link");
+ * myDiagram.model.addLinkData({ from: "Alpha", to: "Beta" });
+ * myDiagram.commitTransaction("make new link");
  * ```
  *
  * Where you would substitute the keys of the actual nodes that you want to connect with a link.
@@ -19643,11 +20998,36 @@ export class Adornment extends Part {
  */
 export class Node extends Part {
     /**
-     * Constructs an empty Node.
-     * The panel type must be one of the values permitted by Panel#type.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
+     * Constructs an empty Node of the given #type. Default type is Panel.Position.
+     * The panel type must be one of the enumerated values defined on the Panel class, including:
+     * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox. The string value such as "Auto" may also be used.
+     *
+     * Usage example:
+     *
+     *```js
+     * // Constructs a Node, sets properties on it,
+     * // adds a data binding to it,
+     * // and adds two GraphObjects to the Node:
+     * const n = new go.Node("Auto", {
+     *   margin: 5,
+     *   background: "red"
+     * })
+     * .bind("location", "loc")
+     * .add(new go.Shape("RoundedRectangle"))
+     * .add(new go.TextBlock("Some Text"))
+     * ```
+     *
+     * @param {string=} type Panel Type as either a string or PanelLayout. such as "Vertical", "Auto", or Panel.Vertical, Panel.Auto, are accepted.
+     * If not supplied, the default Panel type is "Position".
+     * @param {Partial<Node>=} init Optional initialization properties.
      */
-    constructor(type?: PanelLayout);
+    constructor(type?: PanelLayout | string, init?: Partial<Node>);
+    /**
+     * Constructs an empty Panel. Default type is Panel.Position.
+     * @param {Partial<Node>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Node>);
     /**
      * This value for Node#portSpreading indicates that links connecting with a port
      * should all connect at a single point on the side(s) indicated by a Spot that is Spot#isSide.
@@ -19668,14 +21048,17 @@ export class Node extends Part {
      */
     static SpreadingPacked: EnumValue;
     /**
-     * Undocumented
+     * (undocumented)
      * @param {Node} other
      * @param {string=} thisportid
      * @param {string=} otherportid
      */
     invalidateLinkBundle(other: Node, thisportid?: string, otherportid?: string): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * This invalidates the routes of all links connected to this node.
+     * Basically this calls Link#invalidateRoute on all connected links
+     * and invalidates any cached side-connection information.
      * @param {Set.<Part>=} ignore An optional set of Links to ignore.
      */
     invalidateConnectedLinks(ignore?: Set<Part>): void;
@@ -19686,14 +21069,16 @@ export class Node extends Part {
      * The default value is Node.SpreadingEvenly.
      * @since 1.5
      */
-    portSpreading: EnumValue;
+    get portSpreading(): EnumValue;
+    set portSpreading(value: EnumValue);
     /**
      * Gets or sets whether this Node is to be avoided by Links
      * whose Link#routing is Link.AvoidsNodes.
      *
      * The default value is true.
      */
-    avoidable: boolean;
+    get avoidable(): boolean;
+    set avoidable(value: boolean);
     /**
      * Gets or sets the margin around this Node in which avoidable links will not be routed.
      *
@@ -19703,20 +21088,23 @@ export class Node extends Part {
      * Value must be of type Margin.
      * The default margin is Margin(2,2,2,2)
      */
-    avoidableMargin: MarginLike;
+    get avoidableMargin(): MarginLike;
+    set avoidableMargin(value: MarginLike);
     /**
-     * Undocumented
+     * Return the area to be avoided for this node -- the node's GraphObject#actualBounds
+     * plus the Node#avoidableMargin.
      * @expose
      * @param {Rect} result  a Rect to be modified and returned.
      * @return {Rect} the area in document coordinates.
+     * @since 2.2
      */
     getAvoidableRect(result: Rect): Rect;
     /**
-     * Undocumented
      * Starting with this node, walk up the chain of containingGroups to find a node that is visible.
      * This can be overridden to find a tree-parent/ancestor if the reason that this node
      * is not visible is because of a collapsed tree rather than a collapsed group.
      * @expose
+     * @since 2.2
      * @return {Node}
      */
     findVisibleNode(): Node | null;
@@ -19731,9 +21119,8 @@ export class Node extends Part {
      *
      * A template should not have any links connected with it.
      */
-    readonly linksConnected: Iterator<Link>;
+    get linksConnected(): Iterator<Link>;
     /**
-     * Undocumented.
      * Return a collection of Links that connect with this Node or any in its subtree, excluding any isTreeLink Links.
      * For trees this is the analog of Group#findExternalLinksConnected for Groups.
      * @return {Iterator.<Link>}
@@ -19823,7 +21210,8 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    linkConnected: ((thisNode: Node, newLink: Link, thisPort: GraphObject) => void) | null;
+    get linkConnected(): ((thisNode: Node, newLink: Link, thisPort: GraphObject) => void) | null;
+    set linkConnected(value: ((thisNode: Node, newLink: Link, thisPort: GraphObject) => void) | null);
     /**
      * Gets or sets the function that is called after a Link has been disconnected from this Node.
      * It is typically used to modify the appearance of the node.
@@ -19838,7 +21226,8 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    linkDisconnected: ((thisNode: Node, oldLink: Link, thisPort: GraphObject) => void) | null;
+    get linkDisconnected(): ((thisNode: Node, oldLink: Link, thisPort: GraphObject) => void) | null;
+    set linkDisconnected(value: ((thisNode: Node, oldLink: Link, thisPort: GraphObject) => void) | null);
     /**
      * Gets or sets a predicate that determines whether or not a Link may be connected with this node.
      * If this is non-null, the predicate is called in addition to the predicate that is LinkingBaseTool#linkValidation
@@ -19856,14 +21245,15 @@ export class Node extends Part {
      * The function, if supplied, must not have any side-effects.
      * @since 1.3
      */
-    linkValidation: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
+    get linkValidation(): ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
+    set linkValidation(value: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null);
     /**
      * This read-only property is true when this Node is a label node for a Link.
      *
      * If this is true, then `n.labeledLink` will be a Link and `n.labeledLink.isLabeledLink` will be true.
      * @see #labeledLink
      */
-    readonly isLinkLabel: boolean;
+    get isLinkLabel(): boolean;
     /**
      * Gets or sets the Link for which this Node is acting as a smart label.
      * Most nodes do not act as link labels, so this property will be null.
@@ -19871,7 +21261,8 @@ export class Node extends Part {
      * A template should not be a label node for a link.
      * @see #isLinkLabel
      */
-    labeledLink: Link | null;
+    get labeledLink(): Link | null;
+    set labeledLink(value: Link | null);
     /**
      * Find a GraphObject with a given GraphObject#portId.
      * If no such GraphObject is found, search for one with the empty string as its port identifier.
@@ -19886,11 +21277,11 @@ export class Node extends Part {
      * If there is a GraphObject whose GraphObject#portId is the empty string, return it.
      * If there is no such element, just return this whole Node.
      */
-    readonly port: GraphObject;
+    get port(): GraphObject;
     /**
      * This read-only property returns an iterator over all of the GraphObjects in this node that act as ports.
      */
-    readonly ports: Iterator<GraphObject>;
+    get ports(): Iterator<GraphObject>;
     /**
      * This predicate is true if this node is a child of the given Node, perhaps indirectly as a descendant.
      *
@@ -20112,14 +21503,16 @@ export class Node extends Part {
      *
      * There is an analogous property for expanded/collapsed Groups: Group#isSubGraphExpanded.
      */
-    isTreeExpanded: boolean;
+    get isTreeExpanded(): boolean;
+    set isTreeExpanded(value: boolean);
     /**
      * Gets or sets whether the subtree graph starting at this node
      * had been collapsed by a call to #expandTree on the parent node.
      * The initial value is false.
      * @see #isTreeExpanded
      */
-    wasTreeExpanded: boolean;
+    get wasTreeExpanded(): boolean;
+    set wasTreeExpanded(value: boolean);
     /**
      * Gets or sets the function that is called when #isTreeExpanded has changed value.
      * The argument to that function will be this Node.
@@ -20129,7 +21522,8 @@ export class Node extends Part {
      *
      * The default value is null -- no function is called.
      */
-    treeExpandedChanged: ((thisNode: Node) => void) | null;
+    get treeExpandedChanged(): ((thisNode: Node) => void) | null;
+    set treeExpandedChanged(value: ((thisNode: Node) => void) | null);
     /**
      * Gets whether this node has no tree children.
      *
@@ -20138,7 +21532,8 @@ export class Node extends Part {
      * This value changes automatically as link connections are added to or removed from this node.
      * Links for which Link#isTreeLink is false are ignored.
      */
-    isTreeLeaf: boolean;
+    get isTreeLeaf(): boolean;
+    set isTreeLeaf(value: boolean);
 }
 /**
  * A Group is a Node that can contain a subgraph of Nodes and Links,
@@ -20174,7 +21569,7 @@ export class Node extends Part {
  * Thus you should do something like:
  * ```js
  *   myDiagram.startTransaction("add new member");
- *   myDiagram.model.addNodeData({ group: someexistinggroup.data.key, ... });
+ *   myDiagram.model.addNodeData({ group: someExistingGroupKey, ... });
  *   myDiagram.commitTransaction("add new member");
  * ```
  *
@@ -20254,14 +21649,40 @@ export class Node extends Part {
 export class Group extends Node {
     /**
      * Constructs an empty Group with no visual elements and no member parts;
-     * normally a Group will have some visual elements surrounding a Placeholder.
-     * @param {PanelLayout=} type if not supplied, the default Panel type is Panel.Position.
+     * typically a Group will have some visual elements surrounding a Placeholder.
+     *
+     * The panel type must be one of the enumerated values defined on the Panel class, including:
+     * Panel.Position, Panel.Vertical, Panel.Horizontal, Panel.Table,
+     * Panel.Auto, Panel.Spot, or Panel.Viewbox. The string value such as "Auto" may also be used.
+     *
+     * Usage example:
+     *
+     *```js
+     * // Constructs a Group, sets properties on it,
+     * // adds a data binding to it,
+     * // and adds two GraphObjects to the Group:
+     * const g = new go.Group("Auto", {
+     *   margin: 5,
+     *   background: "red"
+     * })
+     * .add(new go.Shape("RoundedRectangle"))
+     * .add(new go.TextBlock("Some Text"))
+     * ```
+     *
+     * @param {string=} type Panel Type as either a string or PanelLayout. such as "Vertical", "Auto", or Panel.Vertical, Panel.Auto, are accepted.
+     * If not supplied, the default Panel type is "Position".
+     * @param {Partial<Group>=} init Optional initialization properties.
      */
-    constructor(type?: PanelLayout);
+    constructor(type?: PanelLayout | string, init?: Partial<Group>);
+    /**
+     * Constructs an empty Panel. Default type is Panel.Position.
+     * @param {Partial<Group>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Group>);
     /**
      * This read-only property returns a Placeholder that this group may contain in its visual tree.
      */
-    readonly placeholder: Placeholder | null;
+    get placeholder(): Placeholder | null;
     /**
      * Gets or sets whether the size of the area of the Group's #placeholder
      * should remain the same during a DraggingTool move until a drop occurs.
@@ -20272,18 +21693,21 @@ export class Group extends Node {
      * perhaps not including some members that had been dragged out and reparented.
      * The initial value is false.
      */
-    computesBoundsAfterDrag: boolean;
+    get computesBoundsAfterDrag(): boolean;
+    set computesBoundsAfterDrag(value: boolean);
     /**
      * Gets or sets whether a #placeholder's bounds includes the bounds of member Links.
      * The default value is true.
      * If this is false, only non-Link member Parts are used to compute the Placeholder's bounds in document coordinates.
      */
-    computesBoundsIncludingLinks: boolean;
+    get computesBoundsIncludingLinks(): boolean;
+    set computesBoundsIncludingLinks(value: boolean);
     /**
      * Gets or sets whether a #placeholder's bounds includes the previous Group.location.
      * The default value is false.
      */
-    computesBoundsIncludingLocation: boolean;
+    get computesBoundsIncludingLocation(): boolean;
+    set computesBoundsIncludingLocation(value: boolean);
     /**
      * Gets or sets whether drag-and-drop events may be bubbled up to this Group if not handled by member Parts.
      * The default value is false -- each Node or Link that is a member of the Group needs to define
@@ -20294,7 +21718,8 @@ export class Group extends Node {
      * defined on the whole Group, not on any element inside the Group's visual tree.
      * @since 1.5
      */
-    handlesDragDropForMembers: boolean;
+    get handlesDragDropForMembers(): boolean;
+    set handlesDragDropForMembers(value: boolean);
     /**
      * This read-only property returns an iterator over the member Parts of this Group.
      * Setting Part#containingGroup to refer to this Group
@@ -20303,13 +21728,14 @@ export class Group extends Node {
      *
      * A template should not have any member parts.
      */
-    readonly memberParts: Iterator<Part>;
+    get memberParts(): Iterator<Part>;
     /**
      * Gets or sets the Layout used to position all of the immediate member nodes and links in this group.
      * By default this property is an instance of Layout -- no special layout is used, which just makes
      * sure each member node has a valid location.
      */
-    layout: Layout | null;
+    get layout(): Layout | null;
+    set layout(value: Layout | null);
     /**
      * Gets or sets the function that is called after a member Part has been added to this Group.
      * It is typically used to modify the appearance of the group.
@@ -20321,7 +21747,8 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    memberAdded: ((thisGroup: Group, newPart: Part) => void) | null;
+    get memberAdded(): ((thisGroup: Group, newPart: Part) => void) | null;
+    set memberAdded(value: ((thisGroup: Group, newPart: Part) => void) | null);
     /**
      * Gets or sets the function that is called after a member Part has been removed from this Group.
      * It is typically used to modify the appearance of the group.
@@ -20333,7 +21760,8 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    memberRemoved: ((thisGroup: Group, oldPart: Part) => void) | null;
+    get memberRemoved(): ((thisGroup: Group, oldPart: Part) => void) | null;
+    set memberRemoved(value: ((thisGroup: Group, oldPart: Part) => void) | null);
     /**
      * Gets or sets the predicate that determines whether or not a Part may become a member of this group.
      * If this is non-null, the predicate is called in addition to any CommandHandler#memberValidation predicate.
@@ -20344,7 +21772,8 @@ export class Group extends Node {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    memberValidation: ((thisGroup: Group, part: Part) => boolean) | null;
+    get memberValidation(): ((thisGroup: Group, part: Part) => boolean) | null;
+    set memberValidation(value: ((thisGroup: Group, part: Part) => boolean) | null);
     /**
      * See if the given collection of Parts contains non-Links all for which
      * CommandHandler#isValidMember returns true.
@@ -20382,7 +21811,8 @@ export class Group extends Node {
      * The initial value is false.
      * @see #canUngroup
      */
-    ungroupable: boolean;
+    get ungroupable(): boolean;
+    set ungroupable(value: boolean);
     /**
      * This predicate returns true if #ungroupable is true,
      * if the layer's Layer#allowUngroup is true, and
@@ -20468,14 +21898,16 @@ export class Group extends Node {
      *
      * There is an analogous property for expanded/collapsed trees of Nodes and Links: Node#isTreeExpanded.
      */
-    isSubGraphExpanded: boolean;
+    get isSubGraphExpanded(): boolean;
+    set isSubGraphExpanded(value: boolean);
     /**
      * Gets or sets whether the subgraph starting at this group
      * had been collapsed by a call to #expandSubGraph on the containing Group.
      * The initial value is false.
      * @see #isSubGraphExpanded
      */
-    wasSubGraphExpanded: boolean;
+    get wasSubGraphExpanded(): boolean;
+    set wasSubGraphExpanded(value: boolean);
     /**
      * Gets or sets the function that is called when #isSubGraphExpanded has changed value.
      * The argument to that function will be this Group.
@@ -20485,7 +21917,8 @@ export class Group extends Node {
      *
      * The default value is null -- no function is called.
      */
-    subGraphExpandedChanged: ((thisGroup: Group) => void) | null;
+    get subGraphExpandedChanged(): ((thisGroup: Group) => void) | null;
+    set subGraphExpandedChanged(value: ((thisGroup: Group) => void) | null);
     /**
      * Move this Group and all of its member parts, recursively.
      *
@@ -20512,10 +21945,11 @@ export class Placeholder extends GraphObject {
     /**
      * This normally does not need any initialization,
      * except for maybe setting #padding.
+     * @param {Partial<Link>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<Placeholder>);
     /**
-     * Undocumented.
+     * (undocumented)
      * This is only called when the Placeholder is inside a Group.
      * Normally this just returns the result of #computeMemberBounds expanded by the #padding.
      * However, if Group#computesBoundsAfterDrag is true,
@@ -20528,7 +21962,7 @@ export class Placeholder extends GraphObject {
      */
     protected computeBorder(result: Rect): Rect;
     /**
-     * Undocumented.
+     * (undocumented)
      * Compute the union of the Bounds of this Placeholder's parent's Group.memberParts.
      * If there are no members, this returns a Rect with Width and Height of zero
      * and an X and Y that are this panel's original location in document coordinates.
@@ -20542,7 +21976,8 @@ export class Placeholder extends GraphObject {
      * Gets or sets the padding around the members of the Group or around the Adornment#adornedObject GraphObject.
      * The initial value is a Margin of zero on all sides.
      */
-    padding: MarginLike;
+    get padding(): MarginLike;
+    set padding(value: MarginLike);
 }
 /**
  * A Link is a Part that connects Nodes.
@@ -20684,8 +22119,23 @@ export class Link extends Part {
      * Constructs an empty link that does not connect any nodes.
      * If you want the link to be seen, you must provide a Shape as an element
      * to be used as the visual path for the link.
+     *
+     * Usage example:
+     *
+     *```js
+     * // Constructs a Link, sets properties on it,
+     * // adds a data binding to it,
+     * // and adds two Shapes to the Link:
+     * const l = new go.Link({
+     *   routing: go.Link.Orthogonal
+     * })
+     * .add(new go.Shape({ strokeWidth: 2 }))
+     * .add(new go.Shape({ toArrow: "Standard" }))
+     * ```
+     *
+     * @param {Partial<Link>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<Link>);
     /**
      * Used as the default value for Link#routing:
      * the route goes fairly straight between ports.
@@ -20834,12 +22284,14 @@ export class Link extends Part {
      *
      * A template should not be connected with any node.
      */
-    fromNode: Node | null;
+    get fromNode(): Node | null;
+    set fromNode(value: Node | null);
     /**
      * Gets or sets the identifier of the port that this link comes from.
      * The default value is the empty string.
      */
-    fromPortId: string;
+    get fromPortId(): string;
+    set fromPortId(value: string);
     /**
      * This read-only property returns a GraphObject that is the "from" port that this link is connected from.
      * The #fromNode provides the node that the link is coming from.
@@ -20847,7 +22299,7 @@ export class Link extends Part {
      * you can set that property in order to change the value of this property.
      * This method may return null.
      */
-    readonly fromPort: GraphObject | null;
+    get fromPort(): GraphObject | null;
     /**
      * Gets or sets the function that is called after this Link changes which Node or port it connects from.
      * The first argument will be this Link.
@@ -20859,7 +22311,8 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    fromPortChanged: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
+    get fromPortChanged(): ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
+    set fromPortChanged(value: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null);
     /**
      * Gets or sets the Node that this link goes to.
      * The #toPortId specifies which port the link goes to.
@@ -20867,12 +22320,14 @@ export class Link extends Part {
      *
      * A template should not be connected with any node.
      */
-    toNode: Node | null;
+    get toNode(): Node | null;
+    set toNode(value: Node | null);
     /**
      * Gets or sets the identifier of the port that this link goes to.
      * The default value is the empty string.
      */
-    toPortId: string;
+    get toPortId(): string;
+    set toPortId(value: string);
     /**
      * This read-only property returns a GraphObject that is the "to" port that this link is connected to.
      * The #toNode provides the node that the link is going to.
@@ -20880,7 +22335,7 @@ export class Link extends Part {
      * you can set that property in order to change the value of this property.
      * This method may return null.
      */
-    readonly toPort: GraphObject | null;
+    get toPort(): GraphObject | null;
     /**
      * Gets or sets the function that is called after this Link changes which Node or port it connects to.
      * The first argument will be this Link.
@@ -20892,7 +22347,8 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    toPortChanged: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
+    get toPortChanged(): ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
+    set toPortChanged(value: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null);
     /**
      * Gets or sets where this link should connect at the #fromPort.
      * The default value is Spot.Default, meaning that the value
@@ -20907,7 +22363,8 @@ export class Link extends Part {
      * @see GraphObject#fromSpot
      * @see #computeSpot
      */
-    fromSpot: Spot;
+    get fromSpot(): Spot;
+    set fromSpot(value: Spot);
     /**
      * Gets or sets the length of the first segment, when the computed "from spot" at the #fromPort is not Spot.None.
      * The default value is NaN, meaning that the value
@@ -20920,7 +22377,8 @@ export class Link extends Part {
      * @see GraphObject#fromEndSegmentLength
      * @see #fromShortLength
      */
-    fromEndSegmentLength: number;
+    get fromEndSegmentLength(): number;
+    set fromEndSegmentLength(value: number);
     /**
      * Gets or sets how far the end segment stops short of the actual port.
      * Positive values are limited by the #fromEndSegmentLength or GraphObject#fromEndSegmentLength.
@@ -20935,7 +22393,8 @@ export class Link extends Part {
      * @see GraphObject#fromShortLength
      * @see #fromEndSegmentLength
      */
-    fromShortLength: number;
+    get fromShortLength(): number;
+    set fromShortLength(value: number);
     /**
      * Gets or sets where this link should connect at the #toPort.
      * The default value is Spot.Default, meaning that the value
@@ -20950,7 +22409,8 @@ export class Link extends Part {
      * @see GraphObject#toSpot
      * @see #computeSpot
      */
-    toSpot: Spot;
+    get toSpot(): Spot;
+    set toSpot(value: Spot);
     /**
      * Gets or sets the length of the last segment.
      * The default value is NaN, meaning that the value
@@ -20963,7 +22423,8 @@ export class Link extends Part {
      * @see GraphObject#toEndSegmentLength
      * @see #toShortLength
      */
-    toEndSegmentLength: number;
+    get toEndSegmentLength(): number;
+    set toEndSegmentLength(value: number);
     /**
      * Gets or sets how far the end segment stops short of the actual port.
      * Positive values are limited by the #toEndSegmentLength or GraphObject#toEndSegmentLength.
@@ -20978,7 +22439,8 @@ export class Link extends Part {
      * @see GraphObject#toShortLength
      * @see #toEndSegmentLength
      */
-    toShortLength: number;
+    get toShortLength(): number;
+    set toShortLength(value: number);
     /**
      * Given a Node, return the node at the other end of this link.
      * @param {Node} node
@@ -20997,7 +22459,7 @@ export class Link extends Part {
      * @see #labelNodes
      * @since 1.1
      */
-    readonly isLabeledLink: boolean;
+    get isLabeledLink(): boolean;
     /**
      * This read-only property returns an iterator over the Nodes that act as labels on this Link.
      * Setting Node#labeledLink to refer to this Link
@@ -21012,7 +22474,7 @@ export class Link extends Part {
      * A template should not have any label nodes.
      * @see #isLabeledLink
      */
-    readonly labelNodes: Iterator<Node>;
+    get labelNodes(): Iterator<Node>;
     /**
      * Move this link to a new position.
      * This also shifts all of the Points in the route accordingly.
@@ -21027,14 +22489,16 @@ export class Link extends Part {
      *
      * The initial value is false.
      */
-    relinkableFrom: boolean;
+    get relinkableFrom(): boolean;
+    set relinkableFrom(value: boolean);
     /**
      * Gets or sets whether the user may reconnect an existing link at the "to" end.
      * This affects the behavior of the RelinkingTool.
      *
      * The initial value is false.
      */
-    relinkableTo: boolean;
+    get relinkableTo(): boolean;
+    set relinkableTo(value: boolean);
     /**
      * This predicate returns true if #relinkableFrom is true,
      * if the layer's Layer#allowRelink is true, and
@@ -21065,7 +22529,8 @@ export class Link extends Part {
      * The initial value is false.
      * @since 1.2
      */
-    resegmentable: boolean;
+    get resegmentable(): boolean;
+    set resegmentable(value: boolean);
     /**
      * Gets or sets whether this Link is part of the tree for tree operations
      * such as Node#findTreeChildrenNodes or Node#collapseTree.
@@ -21073,7 +22538,8 @@ export class Link extends Part {
      * The initial value is true.
      * @since 1.2
      */
-    isTreeLink: boolean;
+    get isTreeLink(): boolean;
+    set isTreeLink(value: boolean);
     /**
      * This read-only property returns the main Shape representing the path of this Link.
      *
@@ -21090,19 +22556,20 @@ export class Link extends Part {
      * If there is no Shape with GraphObject#isPanelMain set to true,
      * the Link will use the first Shape for its path.
      */
-    readonly path: Shape | null;
+    get path(): Shape | null;
     /**
-     * Undocumented
+     * This read-only property returns the bounds of the link geometry in document coordinates.
+     * @since 2.2
      */
-    readonly routeBounds: Rect;
+    get routeBounds(): Rect;
     /**
      * This read-only property returns the point at the middle of the path, in document coordinates.
      */
-    readonly midPoint: Point;
+    get midPoint(): Point;
     /**
      * This read-only property returns the angle of the path at the #midPoint.
      */
-    readonly midAngle: number;
+    get midAngle(): number;
     /**
      * Gets or sets the List of Points in the route.
      * All of the Points must be Point#isReal -- no NaN or infinite values --
@@ -21117,11 +22584,12 @@ export class Link extends Part {
      * Ownership of the List and all of its Points that is provided to the setter
      * is transferred to this Link.
      */
-    points: List<Point>;
+    get points(): List<Point>;
+    set points(value: List<Point>);
     /**
      * This read-only property returns the number of points in the route.
      */
-    readonly pointsCount: number;
+    get pointsCount(): number;
     /**
      * Gets a particular point of the route.
      * @param {number} i int  The zero-based index of the desired point.
@@ -21140,7 +22608,8 @@ export class Link extends Part {
      */
     setPoint(i: number, p: Point): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Sets a particular point of the route; this may only be called within an override of #computePoints.
      * @param {number} i int  The zero-based index of the desired point.
      * @param {number} x  The new X, which should not be infinite or NaN, in document coordinates.
      * @param {number} y  The new Y, which should not be infinite or NaN, in document coordinates.
@@ -21158,7 +22627,8 @@ export class Link extends Part {
      */
     insertPoint(i: number, p: Point): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Insert a point at a particular position in the route, without replacing an existing point; this may only be called within an override of #computePoints.
      * @param {number} i int  The zero-based index of the new point.
      * @param {number} x  The new X, which should not be infinite or NaN, in document coordinates.
      * @param {number} y  The new Y, which should not be infinite or NaN, in document coordinates.
@@ -21175,7 +22645,8 @@ export class Link extends Part {
      */
     addPoint(p: Point): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * Add a point at the end of the route; this may only be called within an override of #computePoints.
      * @param {number} x  The new X, which should not be infinite or NaN, in document coordinates.
      * @param {number} y  The new Y, which should not be infinite or NaN, in document coordinates.
      */
@@ -21202,19 +22673,19 @@ export class Link extends Part {
      */
     clearPoints(): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Allow calls to #setPoint, #addPoint, #insertPoint,
      * #removePoint, and #clearPoints.
      * You must call #commitRoute when you are done modifying the route.
      */
     startRoute(): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Call this method after a call to #startRoute and calls to methods that modify the route.
      */
     commitRoute(): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Call this method instead of #commitRoute if you need to cancel changes to the route.
      */
     rollbackRoute(): void;
@@ -21225,14 +22696,17 @@ export class Link extends Part {
      * @since 1.6
      */
     invalidateRoute(): void;
+    set suspendsRouting(value: boolean);
     /**
-     * Undocumented.
+     * (undocumented)
      */
-    defaultFromPoint: Point;
+    get defaultFromPoint(): Point;
+    set defaultFromPoint(value: Point);
     /**
-     * Undocumented.
+     * (undocumented)
      */
-    defaultToPoint: Point;
+    get defaultToPoint(): Point;
+    set defaultToPoint(value: Point);
     /**
      * This method recomputes the route if the route is invalid,
      * to make sure the #points are up-to-date.
@@ -21362,7 +22836,7 @@ export class Link extends Part {
      */
     computeOtherPoint(othernode: Node, otherport: GraphObject): Point;
     /**
-     * Undocumented
+     * (undocumented)
      * @expose
      * @param {boolean} from
      * @return {number} must be a real number, not NaN or infinity.
@@ -21379,12 +22853,12 @@ export class Link extends Part {
      * the intent is to maintain orthogonality.
      * @since 1.2
      */
-    readonly isOrthogonal: boolean;
+    get isOrthogonal(): boolean;
     /**
-     * Undocumented.
+     * (undocumented)
      * This read-only property is true when the routing tries to be smart about not overlapping other parts.
      */
-    readonly isAvoiding: boolean;
+    get isAvoiding(): boolean;
     /**
      * Returns the #curve, unless this link is supposed to pretend to be curved, as with reflexive links.
      *
@@ -21396,13 +22870,20 @@ export class Link extends Part {
      */
     computeCurve(): EnumValue;
     /**
-     * Undocumented
+     * (undocumented)
+     * Returns the #corner, if it's a non-negative number, or else 10.
      * @expose
      * @return {number} must be a real number, not NaN or infinity
      */
     protected computeCorner(): number;
     /**
-     * Undocumented
+     * (undocumented)
+     * Returns the first label that should be at the "middle" of the link, if there is any such label.
+     * Elements that have .isPanelMain === true are ignored, including the #path.
+     * Elements that have a GraphObject#segmentIndex set are ignored, such as arrowheads.
+     * If there are no label objects within the Link Panel, consider any #labelNodes
+     * whose segmentIndex has not been set.
+     * This could be overridden to return a different label than the first one, or to always return null.
      * @expose
      * @return {GraphObject}
      */
@@ -21420,7 +22901,12 @@ export class Link extends Part {
      */
     computeSpacing(): number;
     /**
-     * Undocumented
+     * (undocumented)
+     * Sort the Links between two ports and invalidate their routes.
+     * Only one of the Links in the bundle will get this method called -- it is undetermined which Link is chosen.
+     *
+     * By default does not change the order of the links, but does invalidate all routes if REROUTE is true.
+     * This method must not add Links to or remove Links from the argument Array, but may re-order the Links in the Array.
      * @expose
      * @param {Array.<Link>} links
      * @param {boolean} reroute
@@ -21462,7 +22948,7 @@ export class Link extends Part {
      */
     hasCurviness(): boolean;
     /**
-     * Undocumented.
+     * (undocumented)
      * This method is called by #computePoints when the link is orthogonal
      * and at least one port has a link spot that is not Spot#isNoSpot.
      *
@@ -21485,7 +22971,9 @@ export class Link extends Part {
      */
     addOrthoPoints(startFrom: Point, fromDir: number, endTo: Point, toDir: number, fromnode: Node, tonode: Node): void;
     /**
-     * Undocumented
+     * (undocumented)
+     * This method is called by #addOrthoPoints to determine the distance
+     * of the middle segment between the two ports.
      * @expose
      * @param {number} fromX The first point's X coordinate.
      * @param {number} fromY The first point's Y coordinate.
@@ -21513,7 +23001,7 @@ export class Link extends Part {
      * More than one Shape may share this geometry as its Shape#geometry,
      * if there is more than one shape element in the Link with GraphObject#isPanelMain set to true.
      */
-    readonly geometry: Geometry;
+    get geometry(): Geometry;
     /**
      * Produce a Geometry given the points of this route,
      * depending on the value of #curve and #corner and perhaps other properties.
@@ -21527,15 +23015,16 @@ export class Link extends Part {
      */
     makeGeometry(): Geometry;
     /**
-     * Undocumented
+     * (undocumented)
      */
-    readonly firstPickIndex: number;
+    get firstPickIndex(): number;
     /**
-     * Undocumented
+     * (undocumented)
      */
-    readonly lastPickIndex: number;
+    get lastPickIndex(): number;
     /**
-     * Undocumented
+     * (undocumented)
+     * Maybe invalidate the geometries of other links that jump or gap over this link
      * @param {Rect} prevbounds
      */
     invalidateOtherJumpOvers(prevbounds: Rect): void;
@@ -21546,7 +23035,8 @@ export class Link extends Part {
      * The default value is Link.None|None -- the route is completely recalculated each time.
      * @see #computeAdjusting
      */
-    adjusting: EnumValue;
+    get adjusting(): EnumValue;
+    set adjusting(value: EnumValue);
     /**
      * Returns the #adjusting value, unless this Link's Diagram is animating and the routing is AvoidsNodes --
      * then it will return Link.End|End
@@ -21567,7 +23057,8 @@ export class Link extends Part {
      *
      * The default value is zero -- there is no curve at a corner.
      */
-    corner: number;
+    get corner(): number;
+    set corner(value: number);
     /**
      * Gets or sets the way the path is generated from the route's points.
      * The value must be one of Link.None|None, Link.Bezier|Bezier, Link.JumpGap|JumpGap, or Link.JumpOver|JumpOver.
@@ -21580,7 +23071,8 @@ export class Link extends Part {
      * The default value is Link.None|None -- each link segment is a straight line.
      * @see #computeCurve
      */
-    curve: EnumValue;
+    get curve(): EnumValue;
+    set curve(value: EnumValue);
     /**
      * Gets or sets how far the control points are offset when the #curve is Link.Bezier|Bezier
      * or when there are multiple links between the same two ports.
@@ -21588,7 +23080,8 @@ export class Link extends Part {
      * The default value is NaN -- the actual curviness is computed based on how many links connect the same pair of ports.
      * @see #computeCurviness
      */
-    curviness: number;
+    get curviness(): number;
+    set curviness(value: number);
     /**
      * Gets or sets whether the link's path tries to avoid other nodes.
      * The value must be one of Link.Normal|Normal, Link.Orthogonal|Orthogonal, or Link.AvoidsNodes|AvoidsNodes.
@@ -21603,7 +23096,8 @@ export class Link extends Part {
      * with possible short end segments when connecting with ports that have a "spot" value
      * as the #fromSpot or GraphObject#fromSpot or #toSpot or GraphObject#toSpot.
      */
-    routing: EnumValue;
+    get routing(): EnumValue;
+    set routing(value: EnumValue);
     /**
      * Gets or sets how far the control points are from the points of the route
      * when #routing is Link.Orthogonal|Orthogonal and #curve is Link.Bezier|Bezier.
@@ -21618,7 +23112,8 @@ export class Link extends Part {
      * The distance scales linearly with the value of this property,
      * even with negative values and values greater than 1.0.
      */
-    smoothness: number;
+    get smoothness(): number;
+    set smoothness(value: number);
     /**
      * This read-only property returns the Links's Model data key if it is in a Diagram and is backed by Model data.
      * Otherwise this returns undefined.
@@ -21627,7 +23122,7 @@ export class Link extends Part {
      * @since 1.8
      * @see GraphLinksModel#getKeyForLinkData
      */
-    readonly key: Key;
+    get key(): Key;
 }
 /**
  * This is the base class for all of the predefined diagram layout implementations.
@@ -21722,8 +23217,9 @@ export class Link extends Part {
 export class Layout {
     /**
      * Create a minimal layout that only positions Nodes that do not have a location.
+     * @param {Partial<Layout>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<Layout>);
     /**
      * Copies properties from this object to the given object, which is of the same class.
      * This is called by #copy and should be overridden for each class that adds properties.
@@ -21748,14 +23244,16 @@ export class Layout {
      * If this property and #group are non-null, the Group should be in this Diagram.
      * @see #group
      */
-    diagram: Diagram | null;
+    get diagram(): Diagram | null;
+    set diagram(value: Diagram | null);
     /**
      * Gets the Group that uses this layout, if it is the value of a group's Group#layout.
      *
      * If this property is set to a Group, the #diagram is automatically set to be the Group's Diagram.
      * @see #diagram
      */
-    group: Group | null;
+    get group(): Group | null;
+    set group(value: Group | null);
     /**
      * Gets or sets whether this layout can be invalidated by #invalidateLayout.
      * Set this to false to prevent actions such as adding or removing Parts from invalidating this layout.
@@ -21771,7 +23269,8 @@ export class Layout {
      * Another way of controlling when layouts are invalidated is by setting
      * Part#isLayoutPositioned or Part#layoutConditions.
      */
-    isOngoing: boolean;
+    get isOngoing(): boolean;
+    set isOngoing(value: boolean);
     /**
      * Gets or sets whether this layout is performed on an initial layout.
      * The default value is true.
@@ -21787,7 +23286,8 @@ export class Layout {
      * Another way of controlling when layouts are invalidated is by setting
      * Part#isLayoutPositioned or Part#layoutConditions.
      */
-    isInitial: boolean;
+    get isInitial(): boolean;
+    set isInitial(value: boolean);
     /**
      * Gets or sets whether this layout depends on the Diagram#viewportBounds's size.
      * If set to true, the layout will invalidate when the Diagram's viewport changes size.
@@ -21796,7 +23296,8 @@ export class Layout {
      * The default value is false.
      * Setting this property to true will invalidate this layout.
      */
-    isViewportSized: boolean;
+    get isViewportSized(): boolean;
+    set isViewportSized(value: boolean);
     /**
      * Gets or sets whether this layout routes Links.
      * The default value is true.
@@ -21807,7 +23308,8 @@ export class Layout {
      * Some layouts ignore links, in which case this property is ignored.
      * @since 1.1
      */
-    isRouting: boolean;
+    get isRouting(): boolean;
+    set isRouting(value: boolean);
     /**
      * Gets or sets whether this layout be performed in real-time, before the end of a transaction.
      * All layouts that are invalidated will be performed at the end of a transaction.
@@ -21816,13 +23318,15 @@ export class Layout {
      * Setting this property does not invalidate this layout.
      * @since 1.2
      */
-    isRealtime: boolean | null;
+    get isRealtime(): boolean | null;
+    set isRealtime(value: boolean | null);
     /**
      * Gets or sets whether this layout needs to be performed again (if false).
      * Instead of setting this property directly, it is normal to set it to false by calling #invalidateLayout,
      * since that also requests performing a layout in the near future.
      */
-    isValidLayout: boolean;
+    get isValidLayout(): boolean;
+    set isValidLayout(value: boolean);
     /**
      * If #isOngoing is true and if an initial layout has not yet been performed,
      * set the #isValidLayout property to false, and ask to perform another layout in the near future.
@@ -21846,7 +23350,8 @@ export class Layout {
      * Not all kinds of layout make use of a LayoutNetwork.
      * Call #createNetwork or #makeNetwork to create a network.
      */
-    network: LayoutNetwork | null;
+    get network(): LayoutNetwork | null;
+    set network(value: LayoutNetwork | null);
     /**
      * Create a new LayoutNetwork of LayoutVertexes and LayoutEdges.
      * This may be overridden in Layout subclasses to create instances of subclasses of
@@ -21973,7 +23478,8 @@ export class Layout {
      * to get the bounds in document coordinates of an object within the node.
      * @since 2.0
      */
-    boundsComputation: ((part: Part, lay: Layout, rect: Rect) => Rect) | null;
+    get boundsComputation(): ((part: Part, lay: Layout, rect: Rect) => Rect) | null;
+    set boundsComputation(value: ((part: Part, lay: Layout, rect: Rect) => Rect) | null);
     /**
      * A convenient way of converting the Diagram|Group|Iterable argument to doLayout to an actual collection of eligible Parts.
      * The resulting Set will not include any Nodes or Links for which Part#canLayout is false.
@@ -22006,7 +23512,8 @@ export class Layout {
      * Setting this property to a new value invalidates this layout.
      * This property is likely to be set by many Layouts that belong to a Group when the layout is performed.
      */
-    arrangementOrigin: Point;
+    get arrangementOrigin(): Point;
+    set arrangementOrigin(value: Point);
     /**
      * Compute the desired value of #arrangementOrigin if this Layout is being performed for a Group.
      * This is typically called near the beginning of the implementation of #doLayout:
@@ -22017,6 +23524,9 @@ export class Layout {
      * @return {Point}
      */
     protected initialOrigin(origin: Point): Point;
+    set id(value: number);
+    set mayUseWorkerFunction(value: ((lay: Layout) => boolean) | null);
+    set workerStateChanged(value: ((state: any, layout: Layout) => void) | null);
 }
 /**
  * This provides an abstract view of a diagram as a
@@ -22052,19 +23562,20 @@ export class LayoutNetwork {
      * The default value is null.
      * It is set automatically for you when this setting Layout#network.
      */
-    layout: Layout;
+    get layout(): Layout;
+    set layout(value: Layout);
     /**
      * Gets a collection of all of the LayoutVertexes in this network.
      * Do not modify this collection directly.
      * Instead, call #addVertex, #deleteVertex, #addNode, or #deleteNode.
      */
-    readonly vertexes: Set<LayoutVertex>;
+    get vertexes(): Set<LayoutVertex>;
     /**
      * Gets a collection of all of the LayoutEdges in this network.
      * Do not modify this collection directly.
      * Instead, call #addEdge, #deleteEdge, #addLink, or #deleteLink.
      */
-    readonly edges: Set<LayoutEdge>;
+    get edges(): Set<LayoutEdge>;
     /**
      * Allocate a new instance of LayoutVertex.
      * This is overridden in LayoutNetwork subclasses to create instances of subclasses of LayoutVertex.
@@ -22228,13 +23739,13 @@ export class LayoutVertex {
      */
     constructor(network: LayoutNetwork);
     /**
-     * Undocumented
+     * (undocumented)
      */
-    readonly sourceEdgesArrayAccess: Array<LayoutEdge>;
+    get sourceEdgesArrayAccess(): Array<LayoutEdge>;
     /**
-     * Undocumented
+     * (undocumented)
      */
-    readonly destinationEdgesArrayAccess: Array<LayoutEdge>;
+    get destinationEdgesArrayAccess(): Array<LayoutEdge>;
     /**
      * Gets or sets the data object in the model that should be associated with this vertex, if any.
      * The value will be non-null if this vertex is virtualized,
@@ -22245,7 +23756,8 @@ export class LayoutVertex {
      * Setting this data property will also set the #bounds and #focus properties.
      * @since 1.6
      */
-    data: ObjectData | null;
+    get data(): ObjectData | null;
+    set data(value: ObjectData | null);
     /**
      * Gets or sets the Node associated with this vertex, if any.
      * The value may be null if this vertex is a "dummy" vertex,
@@ -22254,14 +23766,16 @@ export class LayoutVertex {
      * This property setter also sets the #bounds and #focus properties
      * according to the value of the Node's actualBounds and its Part#locationObject's center point.
      */
-    node: Node | null;
+    get node(): Node | null;
+    set node(value: Node | null);
     /**
      * Gets or sets the bounds of this vertex, in document coordinates.
      * Setting this property does not directly modify the position of any Node,
      * but it will modify the value of #centerX and #centerY,
      * as well as the subsidiary convenience properties #x, #y, #width, and #height.
      */
-    bounds: Rect;
+    get bounds(): Rect;
+    set bounds(value: Rect);
     /**
      * Gets or sets the offset of the #focusX and #focusY
      * from the #bounds position.
@@ -22270,47 +23784,56 @@ export class LayoutVertex {
      *
      * The "focus" is normally the center of the Node's Part#locationObject.
      */
-    focus: Point;
+    get focus(): Point;
+    set focus(value: Point);
     /**
      * Gets or sets the center Point#x of this vertex, in document coordinates.
      * This property depends on both #bounds and #focus.
      * Setting this property does not modify the position of any Node,
      * but it will modify the value of #bounds.
      */
-    centerX: number;
+    get centerX(): number;
+    set centerX(value: number);
     /**
      * Gets or sets the center Point#y of this vertex, in document coordinates.
      * This property depends on both #bounds and #focus.
      * Setting this property does not modify the position of any Node,
      * but it will modify the value of #bounds.
      */
-    centerY: number;
+    get centerY(): number;
+    set centerY(value: number);
     /**
      * Gets or sets the relative X position of the "center" point, the focus.
      */
-    focusX: number;
+    get focusX(): number;
+    set focusX(value: number);
     /**
      * Gets or sets the relative Y position of the "center" point, the focus.
      */
-    focusY: number;
+    get focusY(): number;
+    set focusY(value: number);
     /**
      * Gets or sets the left point of this vertex.
      */
-    x: number;
+    get x(): number;
+    set x(value: number);
     /**
      * Gets or sets the top point of this vertex.
      */
-    y: number;
+    get y(): number;
+    set y(value: number);
     /**
      * Gets or sets the width of this vertex.
      * This is always the horizontal distance reserved for the node.
      */
-    width: number;
+    get width(): number;
+    set width(value: number);
     /**
      * Gets or sets the height of this vertex.
      * This is always the vertical distance reserved for the node.
      */
-    height: number;
+    get height(): number;
+    set height(value: number);
     /**
      * Moves the Node corresponding to this vertex
      * so that its position is at the current #bounds point.
@@ -22355,46 +23878,47 @@ export class LayoutVertex {
      * The default value is null.
      * It is set automatically for you in LayoutNetwork#createVertex.
      */
-    network: LayoutNetwork;
+    get network(): LayoutNetwork;
+    set network(value: LayoutNetwork);
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected with edges coming into this vertex.
      *
      * Note that this is inefficient compared to iterating over the edges (#sourceEdges) due to the need
      * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
-    readonly sourceVertexes: Iterator<LayoutVertex>;
+    get sourceVertexes(): Iterator<LayoutVertex>;
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected with edges going out of this vertex.
      *
      * Note that this is inefficient compared to iterating over the edges (#destinationEdges) due to the need
      * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
-    readonly destinationVertexes: Iterator<LayoutVertex>;
+    get destinationVertexes(): Iterator<LayoutVertex>;
     /**
      * This read-only property returns an iterator for all of the vertexes that are connected in either direction with this vertex.
      *
      * Note that this is inefficient compared to iterating over the edges (#sourceEdges and #destinationEdges) due to the need
      * to avoid duplicate vertexes if there happen to be multiple edges connecting with the same vertex.
      */
-    readonly vertexes: Iterator<LayoutVertex>;
+    get vertexes(): Iterator<LayoutVertex>;
     /**
      * This read-only property returns an iterator for all of the edges that come into this vertex.
      */
-    readonly sourceEdges: Iterator<LayoutEdge>;
+    get sourceEdges(): Iterator<LayoutEdge>;
     /**
      * This read-only property returns an iterator for all of the edges that go out of this vertex.
      */
-    readonly destinationEdges: Iterator<LayoutEdge>;
+    get destinationEdges(): Iterator<LayoutEdge>;
     /**
      * This read-only property returns an iterator for all of the edges that are connected with this vertex in either direction.
      *
      * Note that this is inefficient compared to iterating over the edges: #sourceEdges and #destinationEdges.
      */
-    readonly edges: Iterator<LayoutEdge>;
+    get edges(): Iterator<LayoutEdge>;
     /**
      * This read-only property returns the total number of edges that are connected with this vertex in either direction.
      */
-    readonly edgesCount: number;
+    get edgesCount(): number;
     /**
      * This static function is used to compare the Part#text values of the #nodes of
      * the argument LayoutVertexes.
@@ -22456,28 +23980,33 @@ export class LayoutEdge {
      * The default value is null.
      * It is set automatically for you in LayoutNetwork#createEdge.
      */
-    network: LayoutNetwork;
+    get network(): LayoutNetwork;
+    set network(value: LayoutNetwork);
     /**
      * For virtualized layouts working on model data instead of a Link.
      * @since 1.6
      */
-    data: ObjectData | null;
+    get data(): ObjectData | null;
+    set data(value: ObjectData | null);
     /**
      * Gets or sets the Link associated with this edge, if any.
      * The value may be null if this edge is a "dummy" edge,
      * not represented by a real Link in the Diagram.
      */
-    link: Link | null;
+    get link(): Link | null;
+    set link(value: Link | null);
     /**
      * Gets or sets the LayoutVertex that this edge comes from.
      * Setting this property does not change any LayoutVertex#destinationEdges collection.
      */
-    fromVertex: LayoutVertex | null;
+    get fromVertex(): LayoutVertex | null;
+    set fromVertex(value: LayoutVertex | null);
     /**
      * Gets or sets the LayoutVertex that this edge goes to.
      * Setting this property does not change any LayoutVertex#sourceEdges collection.
      */
-    toVertex: LayoutVertex | null;
+    get toVertex(): LayoutVertex | null;
+    set toVertex(value: LayoutVertex | null);
 }
 /**
  * This simple layout places all of the Parts in a grid-like arrangement, ordered, spaced apart,
@@ -22514,7 +24043,12 @@ export class LayoutEdge {
  * @category Layout
  */
 export class GridLayout extends Layout {
-    constructor();
+    /**
+     * Constructs a GridLayout with no Layout#network
+     * and with no owning Layout#diagram.
+     * @param {Partial<GridLayout>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<GridLayout>);
     /**
      * Assign the positions of the parts, ignoring any links.
      * @param {Diagram|Group|Iterable.<Part>} coll A Diagram or a Group or a collection of Parts.
@@ -22526,14 +24060,16 @@ export class GridLayout extends Layout {
      * The default is NaN, meaning to use the width of the diagram's panel's viewport.
      * Must be a value greater than 0.
      */
-    wrappingWidth: number;
+    get wrappingWidth(): number;
+    set wrappingWidth(value: number);
     /**
      * Gets or sets the maximum number of columns.
      *
      * The default is NaN, meaning not to limit the number of columns.
      * 1 is a common value to produce a single column of parts.
      */
-    wrappingColumn: number;
+    get wrappingColumn(): number;
+    set wrappingColumn(value: number);
     /**
      * Gets or sets the minimum part size by which each part is positioned in the grid.
      *
@@ -22544,14 +24080,16 @@ export class GridLayout extends Layout {
      * This allows parts to be positioned closer to each other, but then variations in part
      * sizes may cause them not to be aligned in perfect rows or columns.
      */
-    cellSize: Size;
+    get cellSize(): Size;
+    set cellSize(value: Size);
     /**
      * Gets or sets the minimum horizontal and vertical space between parts.
      *
      * The default value is 10 x 10.
      * The units are in document coordinates.
      */
-    spacing: Size;
+    get spacing(): Size;
+    set spacing(value: Size);
     /**
      * Gets or sets whether the Part#location or the position should be used
      * to arrange each part.
@@ -22559,14 +24097,16 @@ export class GridLayout extends Layout {
      * The default value is GridLayout.Location -- the Part#locations will
      * be aligned in a grid.
      */
-    alignment: EnumValue;
+    get alignment(): EnumValue;
+    set alignment(value: EnumValue);
     /**
      * Gets or sets how to arrange the parts.
      * Must be GridLayout.LeftToRight or GridLayout.RightToLeft.
      *
      * The default value is GridLayout.LeftToRight.
      */
-    arrangement: EnumValue;
+    get arrangement(): EnumValue;
+    set arrangement(value: EnumValue);
     /**
      * Gets or sets what order to place the parts.
      * Must be GridLayout.Forward, GridLayout.Reverse,
@@ -22574,7 +24114,8 @@ export class GridLayout extends Layout {
      *
      * The default value is GridLayout.Ascending.
      */
-    sorting: EnumValue;
+    get sorting(): EnumValue;
+    set sorting(value: EnumValue);
     /**
      * Gets or sets the comparison function used to sort the parts.
      *
@@ -22595,7 +24136,8 @@ export class GridLayout extends Layout {
      *   )
      * ```
      */
-    comparer: ((a: Part, b: Part) => number);
+    get comparer(): ((a: Part, b: Part) => number);
+    set comparer(value: ((a: Part, b: Part) => number));
     /**
      * Position the top-left corner of each part at a grid point;
      * This value is used for GridLayout#alignment.
@@ -22650,6 +24192,20 @@ export class GridLayout extends Layout {
  * @category Type
  */
 export type Key = string | number | undefined;
+/**
+ * For bindings: A side-effect-free function converting the data property value to the value to set the target property.
+ * If the function is null or not supplied, no conversion takes place.
+ * @category Type
+ */
+export type TargetConversion = ((val: any, targetObj: any) => any) | null;
+/**
+ * For bindings: The optional conversion function to convert property values back to data values.
+ * Specifying this function modifies a binding to set its Binding#mode to be Binding.TwoWay.
+ * If you want a two-way binding without a back-conversion function, specify `null` for a `BackConversion`.
+ * If you do not want a two-way binding, omit any `BackConversion`.
+ * @category Type
+ */
+export type BackConversion = ((val: any, sourceData: any, model: Model) => any) | null;
 /**
  * Interface for the output object of Model#toIncrementalData.
  *
@@ -22812,8 +24368,16 @@ export class Model {
      * does not support links (relationships between nodes) or groups (nodes and links and subgraphs as nodes):
      * instead, create instances of a subclass such as GraphLinksModel or TreeModel.
      * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Parts.
+     * @param {Partial<Panel>=} init Optional initialization properties.
      */
-    constructor(nodedataarray?: Array<ObjectData>);
+    constructor(nodedataarray?: Array<ObjectData>, init?: Partial<Model>);
+    /**
+     * You probably don't want to call this constructor, because this class
+     * does not support links (relationships between nodes) or groups (nodes and links and subgraphs as nodes):
+     * instead, create instances of a subclass such as GraphLinksModel or TreeModel.
+     * @param {Partial<Panel>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<Model>);
     /**
      * Copies properties from this model to the given model, which must be of the same class.
      * This is called by #copy.
@@ -22872,7 +24436,7 @@ export class Model {
      * JavaScript classes that are referenced by the object's properties.
      * Instead call #toIncrementalJson, which will produce a more compact textual serialization.
      * @param {ChangedEvent} e a Transaction ChangedEvent for which ChangedEvent#isTransactionFinished is true
-     * @return {IncrementalData} returns either null if no changes occured, or an object containing incremental model changes for the given Transaction
+     * @return {IncrementalData} returns either null if no changes occurred, or an object containing incremental model changes for the given Transaction
      * @see #toIncrementalJson
      * @since 2.1
      */
@@ -23037,14 +24601,16 @@ export class Model {
      * The initial name is an empty string.
      * The value must not be null.
      */
-    name: string;
+    get name(): string;
+    set name(value: string);
     /**
      * Gets or sets the name of the format of the diagram data.
      * The default value is the empty string.
      * The value must not be null.
      * Use different values to prevent parts from one model to be copy/pasted or drag-and-dropped into another diagram/model.
      */
-    dataFormat: string;
+    get dataFormat(): string;
+    set dataFormat(value: string);
     /**
      * Gets or sets whether this model may be modified, such as adding nodes.
      * By default this value is false.
@@ -23055,7 +24621,8 @@ export class Model {
      * It is up to code that uses a model to check this property when it might want to
      * prevent changes to the model.
      */
-    isReadOnly: boolean;
+    get isReadOnly(): boolean;
+    set isReadOnly(value: boolean);
     /**
      * Gets a JavaScript Object that can hold programmer-defined property values for the model as a whole,
      * rather than just for one node or one link.
@@ -23079,7 +24646,8 @@ export class Model {
      * that you explicitly set properties on this object just before calling #toJson.
      * When loading a model, call Model.fromJson and explicitly get the properties that you want to set on a Diagram.
      */
-    modelData: ObjectData;
+    get modelData(): ObjectData;
+    set modelData(value: ObjectData);
     /**
      * Register an event handler that is called when there is a ChangedEvent.
      *
@@ -23092,8 +24660,9 @@ export class Model {
      * @param {function(ChangedEvent)} listener a function that takes a ChangedEvent as its argument.
      * @see #removeChangedListener
      * @see Diagram#addModelChangedListener
+     * @return {Model} this Model
      */
-    addChangedListener(listener: ((e: ChangedEvent) => void)): void;
+    addChangedListener(listener: ((e: ChangedEvent) => void)): this;
     /**
      * Unregister an event handler listener.
      *
@@ -23138,7 +24707,8 @@ export class Model {
      *
      * This property setter does not raise a ChangedEvent.
      */
-    undoManager: UndoManager;
+    get undoManager(): UndoManager;
+    set undoManager(value: UndoManager);
     /**
      * Gets or sets whether ChangedEvents are not recorded by the UndoManager.
      * The initial and normal value is false.
@@ -23159,9 +24729,10 @@ export class Model {
      * This property is also set when setting Diagram#skipsUndoManager.
      * Setting this property does not raise a ChangedEvent.
      */
-    skipsUndoManager: boolean;
+    get skipsUndoManager(): boolean;
+    set skipsUndoManager(value: boolean);
     /**
-     * Undocumented.
+     * (undocumented)
      * This is called during an undo or redo to modify the model or its objects.
      *
      * This does not raise a ChangedEvent.
@@ -23236,7 +24807,8 @@ export class Model {
      * immediately after creating the model, including when it is created by Model.fromJson.
      * @see #getKeyForNodeData
      */
-    nodeKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get nodeKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set nodeKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * Given a node data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -23290,7 +24862,8 @@ export class Model {
      * If a node data object is already in the model and you want to change its key value,
      * call #setKeyForNodeData with a new and unique key.
      */
-    makeUniqueKeyFunction: ((model: Model, data: ObjectData) => Key) | null;
+    get makeUniqueKeyFunction(): ((model: Model, data: ObjectData) => Key) | null;
+    set makeUniqueKeyFunction(value: ((model: Model, data: ObjectData) => Key) | null);
     /**
      * Decide if a given node data object is in this model, using reference equality.
      *
@@ -23332,7 +24905,8 @@ export class Model {
      * that there are any new nodes or that any nodes have been deleted.
      * Instead you should call #addNodeData or #removeNodeData.
      */
-    nodeDataArray: Array<ObjectData>;
+    get nodeDataArray(): Array<ObjectData>;
+    set nodeDataArray(value: Array<ObjectData>);
     /**
      * This method is called when a node data object is added to the model to make sure that
      * #getKeyForNodeData returns a unique key value.
@@ -23417,7 +24991,7 @@ export class Model {
      */
     mergeNodeDataArray(arr: Array<ObjectData>): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * @param {string|number=} key
      */
     clearUnresolvedReferences(key?: Key): void;
@@ -23436,7 +25010,8 @@ export class Model {
      * and that Array needs to be copied rather than shared.
      * Often the objects that are in the Array also need to be copied.
      */
-    copyNodeDataFunction: ((data: ObjectData, model: Model) => ObjectData) | null;
+    get copyNodeDataFunction(): ((data: ObjectData, model: Model) => ObjectData) | null;
+    set copyNodeDataFunction(value: ((data: ObjectData, model: Model) => ObjectData) | null);
     /**
      * Gets or sets whether the default behavior for #copyNodeData or GraphLinksModel#copyLinkData
      * makes copies of property values that are Arrays.
@@ -23457,7 +25032,8 @@ export class Model {
      * @see #copyNodeDataFunction
      * @since 1.5
      */
-    copiesArrays: boolean;
+    get copiesArrays(): boolean;
+    set copiesArrays(value: boolean);
     /**
      * Gets or sets whether the default behavior for #copyNodeData or GraphLinksModel#copyLinkData
      * when copying Arrays also copies array items that are Objects.
@@ -23479,7 +25055,8 @@ export class Model {
      * @see #copyNodeDataFunction
      * @since 1.5
      */
-    copiesArrayObjects: boolean;
+    get copiesArrayObjects(): boolean;
+    set copiesArrayObjects(value: boolean);
     /**
      * Gets or sets whether the default behavior for #copyNodeData or GraphLinksModel#copyLinkData
      * when copying properties of a data object also copies the key property value.
@@ -23492,7 +25069,8 @@ export class Model {
      * @see #copyNodeDataFunction
      * @since 2.0
      */
-    copiesKey: boolean;
+    get copiesKey(): boolean;
+    set copiesKey(value: boolean);
     /**
      * Make a copy of a node data object.
      * This uses the value of #copyNodeDataFunction to actually perform the copy, unless that property is null.
@@ -23525,7 +25103,7 @@ export class Model {
      */
     copyNodeData(nodedata: ObjectData): ObjectData | null;
     /**
-     * (Undocumented)
+     * (undocumented)
      * This function (if not null) is called towards the end of Diagram#copyParts
      * in order to support custom data copying operations that depend on references between the parts.
      *
@@ -23533,7 +25111,8 @@ export class Model {
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
-    afterCopyFunction: ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null;
+    get afterCopyFunction(): ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null;
+    set afterCopyFunction(value: ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null);
     /**
      * Change the value of some property of a node data, a link data, an item data, or the Model#modelData,
      * given a string naming the property and the new value,
@@ -23641,7 +25220,8 @@ export class Model {
      * @see #getCategoryForNodeData
      * @see #setCategoryForNodeData
      */
-    nodeCategoryProperty: string | ((a: ObjectData, b?: string) => string);
+    get nodeCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
+    set nodeCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * Find the category of a given node data, a string naming the node template
      * or group template or part template
@@ -23914,10 +25494,13 @@ export class Binding {
      * @param {string=} sourceprop A string naming the source property on the bound data object.
      *   If this is the empty string, the whole Panel#data object is used.
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
-     * @param {function(*,*)|null=} conv A side-effect-free function converting the data property value to the value to set the target property.
+     * @param {TargetConversion=} conv A side-effect-free function converting the data property value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
+     * @param {BackConversion=} backconv An optional conversion function to convert property values back to data values.
+     * Specifying this function **or specifying null** modifies this binding to set its #mode to be Binding.TwoWay.
+     * If you do not want a two-way binding, leave this argument unspecified (`undefined`).
      */
-    constructor(targetprop?: string, sourceprop?: string, conv?: ((val: any, targetObj: any) => any) | null);
+    constructor(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion);
     /**
      * Create a copy of this Binding, with the same property values.
      * @expose
@@ -23968,7 +25551,8 @@ export class Binding {
      * Gets or sets the name of the property to be set on the target GraphObject.
      * The default value is the empty string; you should set this to be the name of a property.
      */
-    targetProperty: string;
+    get targetProperty(): string;
+    set targetProperty(value: string);
     /**
      * Gets or sets the name of the GraphObject that should act as a source object
      * whose property should be gotten by this data binding.
@@ -23984,14 +25568,16 @@ export class Binding {
      * The documentation for the GraphObject (or subclass of GraphObject) property will indicate if the property is settable
      * and if it does not notify.
      */
-    sourceName: string | null;
+    get sourceName(): string | null;
+    set sourceName(value: string | null);
     /**
      * Gets or sets whether the source data is Model#modelData rather than a node data or link data object in the model.
      * The default value is false -- the source data object will not be the shared Model.modelData object.
      * @see #ofModel
      * @since 1.7
      */
-    isToModel: boolean;
+    get isToModel(): boolean;
+    set isToModel(value: boolean);
     /**
      * Gets or sets the name of the property to get from the bound data object,
      * the value of Panel#data.
@@ -24001,7 +25587,8 @@ export class Binding {
      * property on the GraphObject or RowColumnDefinition
      * that acts as the source.
      */
-    sourceProperty: string;
+    get sourceProperty(): string;
+    set sourceProperty(value: string);
     /**
      * Gets or sets a converter function to apply to the data property value
      * in order to produce the value to set to the target property.
@@ -24024,7 +25611,8 @@ export class Binding {
      * If the #targetProperty is the empty string, the function should
      * set a property on the second argument, which will be the target GraphObject.
      */
-    converter: ((val: any, targetObj: any) => any) | null;
+    get converter(): TargetConversion;
+    set converter(value: TargetConversion);
     /**
      * Gets or sets a converter function to apply to the GraphObject property value
      * in order to produce the value to set to a data property.
@@ -24047,7 +25635,8 @@ export class Binding {
      * If the #sourceProperty is the empty string, the function should
      * modify the second argument, which will be the source data object.
      */
-    backConverter: ((val: any, srcData: any, model: any) => any) | null;
+    get backConverter(): BackConversion;
+    set backConverter(value: BackConversion);
     /**
      * Gets or sets the directions and frequency in which the binding may be evaluated.
      * The default value is Binding.OneWay.
@@ -24060,7 +25649,8 @@ export class Binding {
      *
      * You should not have a TwoWay binding on a node data object's key property.
      */
-    mode: EnumValue;
+    get mode(): EnumValue;
+    set mode(value: EnumValue);
     /**
      * Modify this Binding to set its #mode to be Binding.TwoWay, and
      * provide an optional conversion function to convert GraphObject property
@@ -24073,10 +25663,10 @@ export class Binding {
      * TextBlock#text by TextEditingTool (only if TextBlock#editable is true).
      *
      * You should not have a TwoWay binding on a node data object's key property.
-     * @param {function(*,*,*) | null=} backconv
+     * @param {BackConversion=} backconv
      * @return {Binding} this two-way Binding.
      */
-    makeTwoWay(backconv?: ((val: any, srcData: any, model: any) => any) | null): Binding;
+    makeTwoWay(backconv?: BackConversion): Binding;
     /**
      * Modify this Binding to set its #sourceName property so as to identify
      * a GraphObject in the visual tree of the bound Panel as the data source,
@@ -24215,7 +25805,20 @@ export class GraphLinksModel extends Model {
      * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
      * @param {Array.<Object>=} linkdataarray an optional Array containing JavaScript objects to be represented by Links.
      */
-    constructor(nodedataarray?: Array<ObjectData>, linkdataarray?: Array<ObjectData>);
+    /**
+     * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values
+     * for the Model#nodeDataArray and GraphLinksModel#linkDataArray properties.
+     * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
+     * @param {Array.<Object>=} linkdataarray an optional Array containing JavaScript objects to be represented by Links.
+     * @param {Partial<Panel>=} init optional initialization properties.
+     */
+    constructor(nodedataarray?: Array<ObjectData>, linkdataarray?: Array<ObjectData>, init?: Partial<GraphLinksModel>);
+    /**
+     * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values
+     * for the Model#nodeDataArray and GraphLinksModel#linkDataArray properties.
+     * @param {Partial<Panel>=} init optional initialization properties.
+     */
+    constructor(init?: Partial<GraphLinksModel>);
     /**
      * Gets or sets a data object that will be copied and added to the model as a new node data each time there
      * is a link reference (either the "to" or the "from" of a link data) to a node key that does not yet exist in the model.
@@ -24226,7 +25829,8 @@ export class GraphLinksModel extends Model {
      * it will call Model#copyNodeData on this property value and Model#addNodeData on the result.
      * @since 1.1
      */
-    archetypeNodeData: ObjectData | null;
+    get archetypeNodeData(): ObjectData | null;
+    set archetypeNodeData(value: ObjectData | null);
     /**
      * Gets or sets the name of the data property that returns
      * the key of the node data that the link data is coming from.
@@ -24246,7 +25850,8 @@ export class GraphLinksModel extends Model {
      * @see #getFromKeyForLinkData
      * @see #setFromKeyForLinkData
      */
-    linkFromKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get linkFromKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set linkFromKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * from which this link is connected.
@@ -24286,7 +25891,8 @@ export class GraphLinksModel extends Model {
      * @see #getToKeyForLinkData
      * @see #setToKeyForLinkData
      */
-    linkToKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get linkToKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set linkToKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * to which this link is connected.
@@ -24326,7 +25932,8 @@ export class GraphLinksModel extends Model {
      * @see #getFromPortIdForLinkData
      * @see #setFromPortIdForLinkData
      */
-    linkFromPortIdProperty: string | ((a: ObjectData, b?: string) => string);
+    get linkFromPortIdProperty(): string | ((a: ObjectData, b?: string) => string);
+    set linkFromPortIdProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
      * from which this link is connected.
@@ -24366,7 +25973,8 @@ export class GraphLinksModel extends Model {
      * @see #getToPortIdForLinkData
      * @see #setToPortIdForLinkData
      */
-    linkToPortIdProperty: string | ((a: ObjectData, b?: string) => string);
+    get linkToPortIdProperty(): string | ((a: ObjectData, b?: string) => string);
+    set linkToPortIdProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
      * to which this link is connected.
@@ -24407,7 +26015,8 @@ export class GraphLinksModel extends Model {
      * @see #getLabelKeysForLinkData
      * @see #setLabelKeysForLinkData
      */
-    linkLabelKeysProperty: string | ((a: ObjectData, b?: Array<Key>) => Array<Key>);
+    get linkLabelKeysProperty(): string | ((a: ObjectData, b?: Array<Key>) => Array<Key>);
+    set linkLabelKeysProperty(value: string | ((a: ObjectData, b?: Array<Key>) => Array<Key>));
     /**
      * Gets an Array of node key values that identify node data acting as labels on the given link data.
      *
@@ -24459,7 +26068,8 @@ export class GraphLinksModel extends Model {
      * Gets or sets the array of link data objects that correspond to Links in the Diagram.
      * The initial value is an empty Array.
      */
-    linkDataArray: Array<ObjectData>;
+    get linkDataArray(): Array<ObjectData>;
+    set linkDataArray(value: Array<ObjectData>);
     /**
      * Gets or sets the name of the data property that returns a unique id number or string for each link data object.
      * The value may also be a function taking two arguments, where the first argument will be a link data object.
@@ -24478,7 +26088,8 @@ export class GraphLinksModel extends Model {
      * @see #getKeyForLinkData
      * @since 1.6
      */
-    linkKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get linkKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set linkKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * Given a link data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -24529,7 +26140,8 @@ export class GraphLinksModel extends Model {
      * call #setKeyForLinkData with a new and unique key.
      * @since 1.6
      */
-    makeUniqueLinkKeyFunction: ((a: GraphLinksModel, b: ObjectData) => Key) | null;
+    get makeUniqueLinkKeyFunction(): ((a: GraphLinksModel, b: ObjectData) => Key) | null;
+    set makeUniqueLinkKeyFunction(value: ((a: GraphLinksModel, b: ObjectData) => Key) | null);
     /**
      * Given a number or string, find the link data object in this model
      * that uses the given value as its unique key.
@@ -24652,7 +26264,8 @@ export class GraphLinksModel extends Model {
      * This property value may be null in order to cause #copyLinkData to make a shallow copy of a JavaScript Object.
      * The default value is null.
      */
-    copyLinkDataFunction: ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null;
+    get copyLinkDataFunction(): ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null;
+    set copyLinkDataFunction(value: ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null);
     /**
      * Make a copy of a link data object.
      * This uses the value of #copyLinkDataFunction to actually perform the copy,
@@ -24683,7 +26296,8 @@ export class GraphLinksModel extends Model {
      * and if you want this property to be a function, you will need to assign this property to your desired function
      * immediately after creating the model, including when it is created by Model.fromJson.
      */
-    nodeIsGroupProperty: string | ((a: ObjectData, b?: boolean) => boolean);
+    get nodeIsGroupProperty(): string | ((a: ObjectData, b?: boolean) => boolean);
+    set nodeIsGroupProperty(value: string | ((a: ObjectData, b?: boolean) => boolean));
     /**
      * See if the given node data should be represented as a group or as a simple node.
      *
@@ -24714,7 +26328,8 @@ export class GraphLinksModel extends Model {
      * @see #getGroupKeyForNodeData
      * @see #setGroupKeyForNodeData
      */
-    nodeGroupKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get nodeGroupKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set nodeGroupKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * If there is a container group for the given node data, return the group's key.
      * @param {ObjectData} nodedata a JavaScript object represented by a node, group, or non-link.
@@ -24778,7 +26393,8 @@ export class GraphLinksModel extends Model {
      * @see #getCategoryForLinkData
      * @see #setCategoryForLinkData
      */
-    linkCategoryProperty: string | ((a: ObjectData, b?: string) => string);
+    get linkCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
+    set linkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * Find the category of a given link data, a string naming the link template
      * that the Diagram should use to represent the link data.
@@ -24840,10 +26456,15 @@ export class GraphLinksModel extends Model {
 export class TreeModel extends Model {
     /**
      * This constructs an empty TreeModel unless one provides arguments as the initial data array values
-     * for the Model#nodeDataArray property.
-     * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Nodes.
+     * @param {Array.<Object>=} nodedataarray an optional Array containing JavaScript objects to be represented by Parts.
+     * @param {Partial<Panel>=} init Optional initialization properties.
      */
-    constructor(nodedataarray?: Array<ObjectData>);
+    constructor(nodedataarray?: Array<ObjectData>, init?: Partial<TreeModel>);
+    /**
+     * for the Model#nodeDataArray property.
+     * @param {Partial<Panel>=} init Optional initialization properties.
+     */
+    constructor(init?: Partial<TreeModel>);
     /**
      * Gets or sets the name of the property on node data that specifies
      * the string or number key of the node data that acts as the "parent" for this "child" node data.
@@ -24861,7 +26482,8 @@ export class TreeModel extends Model {
      * @see #getParentKeyForNodeData
      * @see #setParentKeyForNodeData
      */
-    nodeParentKeyProperty: string | ((a: ObjectData, b?: Key) => Key);
+    get nodeParentKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
+    set nodeParentKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
     /**
      * If there is a parent node for the given node data, return the parent's key.
      * @param {Object} nodedata a JavaScript object represented by a node.
@@ -24896,7 +26518,9 @@ export class TreeModel extends Model {
      * @see #getParentLinkCategoryForNodeData
      * @see #setParentLinkCategoryForNodeData
      */
-    parentLinkCategoryProperty: string | ((a: ObjectData, b?: string) => string);
+    get parentLinkCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
+    set parentLinkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
+    set linkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * Find the category for the parent link of a given child node data, a string naming the link template
      * that the Diagram should use to represent the link.
@@ -24963,8 +26587,9 @@ export class CircularLayout extends Layout {
     /**
      * Constructs a CircularLayout with no Layout#network
      * and with no owning Layout#diagram.
+     * @param {Partial<CircularLayout>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<CircularLayout>);
     /**
      * Create a new LayoutNetwork of CircularVertexes and CircularEdges.
      * @return {CircularNetwork} a new LayoutNetwork.
@@ -25006,7 +26631,8 @@ export class CircularLayout extends Layout {
      * The specified value for #radius will be ignored if #arrangement === CircularLayout.Packed.
      * This property must always be positive or NaN.
      */
-    radius: number;
+    get radius(): number;
+    set radius(value: number);
     /**
      * Gets or sets the ratio of the arrangement's height to its width
      * (1 for a circle, &gt;1 for a vertically elongated ellipse).
@@ -25016,13 +26642,15 @@ export class CircularLayout extends Layout {
      *
      * Modifying this value changes the height, but keeps the width and the #radius constant.
      */
-    aspectRatio: number;
+    get aspectRatio(): number;
+    set aspectRatio(value: number);
     /**
      * Gets or sets the angle (in degrees, clockwise from the positive side of the X axis) of the first element.
      *
      * The default value is 0.
      */
-    startAngle: number;
+    get startAngle(): number;
+    set startAngle(value: number);
     /**
      * Gets or sets the absolute angle (in degrees) between the first and last node.
      *
@@ -25036,7 +26664,8 @@ export class CircularLayout extends Layout {
      * elements from overlapping, and the spacing between the first and last nodes will be determined
      * the same way as for all other adjacent nodes.
      */
-    sweepAngle: number;
+    get sweepAngle(): number;
+    set sweepAngle(value: number);
     /**
      * Gets or sets how the nodes are spaced.
      * If #arrangement === CircularLayout.Packed,
@@ -25044,13 +26673,15 @@ export class CircularLayout extends Layout {
      *
      * The default value is CircularLayout.ConstantSpacing.
      */
-    arrangement: EnumValue;
+    get arrangement(): EnumValue;
+    set arrangement(value: EnumValue);
     /**
      * Gets or sets whether the nodes are arranged clockwise or counterclockwise.
      *
      * The default value is CircularLayout.Clockwise.
      */
-    direction: EnumValue;
+    get direction(): EnumValue;
+    set direction(value: EnumValue);
     /**
      * Gets or sets if and how the nodes are sorted.
      *
@@ -25062,14 +26693,16 @@ export class CircularLayout extends Layout {
      *
      * The default value is CircularLayout.Optimized.
      */
-    sorting: EnumValue;
+    get sorting(): EnumValue;
+    set sorting(value: EnumValue);
     /**
      * Gets or sets the comparer which sorts the data when #sorting is
      * set to CircularLayout.Ascending or CircularLayout.Descending.
      *
      * The default function compares the Part#text values of the vertexes' LayoutVertex#nodes.
      */
-    comparer: ((a: CircularVertex, b: CircularVertex) => number);
+    get comparer(): ((a: CircularVertex, b: CircularVertex) => number);
+    set comparer(value: ((a: CircularVertex, b: CircularVertex) => number));
     /**
      * Gets or sets the distance between nodes (if #radius is NaN)
      * or the minimum distance between nodes (if #radius is a number).
@@ -25086,30 +26719,32 @@ export class CircularLayout extends Layout {
      * the effective radius will be at least #radius,
      * but may be larger so that the minimum spacing between nodes is #spacing.
      */
-    spacing: number;
+    get spacing(): number;
+    set spacing(value: number);
     /**
      * Specifies how the diameter of nodes will be calculated.
      * When a node is not circular, it is not clear what its diameter is.
      *
      * The default is CircularLayout.Pythagorean.
      */
-    nodeDiameterFormula: EnumValue;
+    get nodeDiameterFormula(): EnumValue;
+    set nodeDiameterFormula(value: EnumValue);
     /**
      * This read-only property is the effective X radius that may have been calculated by the layout.
      */
-    readonly actualXRadius: number;
+    get actualXRadius(): number;
     /**
      * This read-only property is the effective Y radius that may have been calculated by the layout.
      */
-    readonly actualYRadius: number;
+    get actualYRadius(): number;
     /**
      * This read-only property is the effective spacing that may have been calculated by the layout.
      */
-    readonly actualSpacing: number;
+    get actualSpacing(): number;
     /**
      * This read-only property is the coordinates of the center of the laid-out ellipse immediately after the layout.
      */
-    readonly actualCenter: Point;
+    get actualCenter(): Point;
     /**
      * The spacing between the idealized boundaries of the nodes is constant;
      * This value is used for CircularLayout#arrangement.
@@ -25237,11 +26872,13 @@ export class CircularVertex extends LayoutVertex {
      * By default the value depends on the CircularLayout#arrangement property.
      * Any computed value is cached, to avoid unnecessary expensive computations.
      */
-    diameter: number;
+    get diameter(): number;
+    set diameter(value: number);
     /**
      * Gets or sets the value used as the vertex's angle.
      */
-    actualAngle: number;
+    get actualAngle(): number;
+    set actualAngle(value: number);
 }
 /**
  * This holds CircularLayout-specific information about Links.
@@ -25307,8 +26944,9 @@ export class ForceDirectedLayout extends Layout {
     /**
      * Constructs a ForceDirectedLayout with no Layout#network
      * and with no owning Layout#diagram.
+     * @param {Partial<ForceDirectedLayout>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<ForceDirectedLayout>);
     /**
      * Create a new LayoutNetwork of ForceDirectedVertexes and ForceDirectedEdges.
      * @return {ForceDirectedNetwork} a new LayoutNetwork.
@@ -25356,7 +26994,7 @@ export class ForceDirectedLayout extends Layout {
      */
     addComments(v: ForceDirectedVertex): void;
     /**
-     * Undocumented.
+     * (undocumented)
      * Move the vertex by its ForceDirectedVertex.forceX and ForceDirectedVertex.forceY.
      * Return the square of the distance moved.
      * This can be overridden in order to constrain the vertex's actual movement.
@@ -25526,7 +27164,7 @@ export class ForceDirectedLayout extends Layout {
     /**
      * This read-only property returns the current iteration count, valid during a call to #doLayout.
      */
-    readonly currentIteration: number;
+    get currentIteration(): number;
     /**
      * Gets or sets the space between which the layout
      * will position the connected graphs that together compose the network.
@@ -25536,7 +27174,8 @@ export class ForceDirectedLayout extends Layout {
      * will likely cause the size of any space between connected graphs to change,
      * perhaps considerably.
      */
-    arrangementSpacing: Size;
+    get arrangementSpacing(): Size;
+    set arrangementSpacing(value: Size);
     /**
      * Gets or sets whether #commitNodes should move all of the
      * nodes so that the nodes all fit with the top-left corner at the
@@ -25544,13 +27183,15 @@ export class ForceDirectedLayout extends Layout {
      * By default this is false -- the Layout#arrangementOrigin is ignored.
      * When this is true, nodes are moved even though #isFixed was true.
      */
-    arrangesToOrigin: boolean;
+    get arrangesToOrigin(): boolean;
+    set arrangesToOrigin(value: boolean);
     /**
      * Gets or sets whether the fromSpot and the toSpot of every Link
      * should be set to Spot.Default.
      * The default value is true.
      */
-    setsPortSpots: boolean;
+    get setsPortSpots(): boolean;
+    set setsPortSpots(value: boolean);
     /**
      * Gets or sets whether this layout should find all Nodes
      * whose category is "Comment" and
@@ -25559,33 +27200,38 @@ export class ForceDirectedLayout extends Layout {
      * as nodes in the network.
      * The default value is false.
      */
-    comments: boolean;
+    get comments(): boolean;
+    set comments(value: boolean);
     /**
      * Gets or sets the maximum number of iterations to perform when doing the
      * force-directed auto layout.
      * The value must be non-negative.
      * The default value is 100.
      */
-    maxIterations: number;
+    get maxIterations(): number;
+    set maxIterations(value: number);
     /**
      * Gets or sets approximately how far a node must move in order for the iterations to continue.
      * The default value is 1.
      * The value must be larger than zero.
      */
-    epsilonDistance: number;
+    get epsilonDistance(): number;
+    set epsilonDistance(value: number);
     /**
      * Gets or sets a threshold for the distance beyond which the electrical charge forces may be ignored.
      * The default value is 1000.
      * The value must be larger than 1.
      */
-    infinityDistance: number;
+    get infinityDistance(): number;
+    set infinityDistance(value: number);
     /**
      * Gets or sets how far a vertex may be moved in an iteration.
      * The default value is 10.
      * The value must be larger than 1.
      * @since 1.8
      */
-    moveLimit: number;
+    get moveLimit(): number;
+    set moveLimit(value: number);
     /**
      * Gets or sets a random number generator.
      * The default value is Math, which results in calling Math.random().
@@ -25596,39 +27242,48 @@ export class ForceDirectedLayout extends Layout {
      * and returning a random number between zero (inclusive) and one (exclusive).
      * @since 1.5
      */
-    randomNumberGenerator: ({
+    get randomNumberGenerator(): ({
         random: () => number;
     } | null);
+    set randomNumberGenerator(value: ({
+        random: () => number;
+    } | null));
     /**
      * Gets or sets the default value computed by #springStiffness.
      * The initial value is 0.05.
      */
-    defaultSpringStiffness: number;
+    get defaultSpringStiffness(): number;
+    set defaultSpringStiffness(value: number);
     /**
      * Gets or sets the default value computed by #springLength.
      * The initial value is 50.
      */
-    defaultSpringLength: number;
+    get defaultSpringLength(): number;
+    set defaultSpringLength(value: number);
     /**
      * Gets or sets the default value computed by #electricalCharge.
      * The initial value is 150.
      */
-    defaultElectricalCharge: number;
+    get defaultElectricalCharge(): number;
+    set defaultElectricalCharge(value: number);
     /**
      * Gets or sets the default value computed by #gravitationalMass.
      * The initial value is zero.
      */
-    defaultGravitationalMass: number;
+    get defaultGravitationalMass(): number;
+    set defaultGravitationalMass(value: number);
     /**
      * Gets or sets the default value computed by #springLength.
      * The initial value is 10.
      */
-    defaultCommentSpringLength: number;
+    get defaultCommentSpringLength(): number;
+    set defaultCommentSpringLength(value: number);
     /**
      * Gets or sets the default value computed by #electricalCharge.
      * The initial value is 5.
      */
-    defaultCommentElectricalCharge: number;
+    get defaultCommentElectricalCharge(): number;
+    set defaultCommentElectricalCharge(value: number);
 }
 /**
  * This class represents an abstract graph of ForceDirectedVertexes and ForceDirectedEdges
@@ -25660,27 +27315,32 @@ export class ForceDirectedVertex extends LayoutVertex {
      * Gets or sets whether the vertex may be moved by any forces.
      * The default value is false.
      */
-    isFixed: boolean;
+    get isFixed(): boolean;
+    set isFixed(value: boolean);
     /**
      * Gets or sets the electrical charge for this vertex.
      * The default value is NaN.
      */
-    charge: number;
+    get charge(): number;
+    set charge(value: number);
     /**
      * Gets or sets the gravitational mass for this vertex.
      * The default value is NaN.
      */
-    mass: number;
+    get mass(): number;
+    set mass(value: number);
     /**
      * Gets or sets the cumulative force on the vertex in the X direction.
      * The default value is zero.
      */
-    forceX: number;
+    get forceX(): number;
+    set forceX(value: number);
     /**
      * Gets or sets the cumulative force on the vertex in the Y direction.
      * The default value is zero.
      */
-    forceY: number;
+    get forceY(): number;
+    set forceY(value: number);
 }
 /**
  * This holds ForceDirectedLayout-specific information about Links.
@@ -25697,12 +27357,14 @@ export class ForceDirectedEdge extends LayoutEdge {
      * Gets or sets this edge's stiffness or resistance to compression or stretching.
      * The default value is NaN.
      */
-    stiffness: number;
+    get stiffness(): number;
+    set stiffness(value: number);
     /**
      * Gets or sets the length of this edge.
      * The default value is NaN.
      */
-    length: number;
+    get length(): number;
+    set length(value: number);
 }
 /**
  * This arranges nodes of directed graphs into layers (rows or columns).
@@ -25757,8 +27419,9 @@ export class LayeredDigraphLayout extends Layout {
     /**
      * Constructs a LayeredDigraphLayout with no Layout#network
      * and with no owning Layout#diagram.
+     * @param {Partial<LayeredDigraphLayout>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<LayeredDigraphLayout>);
     /**
      * Create a new LayoutNetwork of LayeredDigraphVertexes and LayeredDigraphEdges.
      * @return {LayeredDigraphNetwork} a new LayoutNetwork.
@@ -25778,7 +27441,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     doLayout(coll: Diagram | Group | Iterable<Part>): void;
     /**
-     * (Undocumented)
+     * (undocumented)
      * The function LinkMinLength returns the minimum length of the
      * link represented by the LayeredDigraphEdge link.
      * The default implementation gives links a minimum length of 1.
@@ -25789,7 +27452,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected linkMinLength(edge: LayeredDigraphEdge): number;
     /**
-     * (Undocumented)
+     * (undocumented)
      * This function returns the minimum space reserved for this node from the center point
      * for the "depth" of the layer that it is in.
      *
@@ -25806,7 +27469,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected nodeMinLayerSpace(v: LayeredDigraphVertex, topleft: boolean): number;
     /**
-     * (Undocumented)
+     * (undocumented)
      * The function nodeMinColumnSpace returns the minimum space
      * reserved to either side of this node.
      *
@@ -25825,7 +27488,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected nodeMinColumnSpace(v: LayeredDigraphVertex, topleft: boolean): number;
     /**
-     * (Undocumented)
+     * (undocumented)
      * Removes cycles from the input network by reversing some number of links.
      * By default, this just calls #greedyCycleRemoval or #depthFirstCycleRemoval,
      * as appropriate, give the value of #cycleRemoveOption.
@@ -25848,7 +27511,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected assignLayers(): void;
     /**
-     * (Undocumented)
+     * (undocumented)
      * Assigns every node in the input network an index number,
      * such that nodes in the same layer will be labeled with
      * consecutive indices in left to right order.
@@ -25869,7 +27532,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected initializeIndices(): void;
     /**
-     * (Undocumented)
+     * (undocumented)
      * Reorders nodes within layers to reduce the total number of link
      * crossings in the network.
      *
@@ -25883,7 +27546,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     protected reduceCrossings(): void;
     /**
-     * (Undocumented)
+     * (undocumented)
      * Adjusts the columns of nodes in the network to produce a layout which reduces
      * the number of bends and is tightly packed.
      * @expose
@@ -25933,48 +27596,57 @@ export class LayeredDigraphLayout extends Layout {
      * Gets or sets the space between each layer.
      * This value must be positive and it defaults to 25.
      */
-    layerSpacing: number;
+    get layerSpacing(): number;
+    set layerSpacing(value: number);
     /**
      * Gets or sets the size of each column.
      * This value must be positive and it defaults to 25.
      */
-    columnSpacing: number;
+    get columnSpacing(): number;
+    set columnSpacing(value: number);
     /**
      * Gets or sets the direction the graph grows towards.
      * 0 is towards the right, 90 is downwards, 180 is towards the left, and 270 is upwards.
      * The default value is 0.
      */
-    direction: number;
+    get direction(): number;
+    set direction(value: number);
     /**
      * Gets or set which cycle removal option is used.
      * The default value is LayeredDigraphLayout.CycleDepthFirst.
      */
-    cycleRemoveOption: EnumValue;
+    get cycleRemoveOption(): EnumValue;
+    set cycleRemoveOption(value: EnumValue);
     /**
      * Gets or sets which layering option is being used.
      * The default value is LayeredDigraphLayout.LayerOptimalLinkLength.
      */
-    layeringOption: EnumValue;
+    get layeringOption(): EnumValue;
+    set layeringOption(value: EnumValue);
     /**
      * Gets or sets which indices initialization option is being used.
      * The default value is LayeredDigraphLayout.InitDepthFirstOut.
      */
-    initializeOption: EnumValue;
+    get initializeOption(): EnumValue;
+    set initializeOption(value: EnumValue);
     /**
      * Gets or sets the number of iterations to be done.
      * The value must be non-negative.  The default value is 4.
      */
-    iterations: number;
+    get iterations(): number;
+    set iterations(value: number);
     /**
      * Gets or sets which aggressive option is being used to look for link crossings.
      * The default value is LayeredDigraphLayout.AggressiveLess.
      */
-    aggressiveOption: EnumValue;
+    get aggressiveOption(): EnumValue;
+    set aggressiveOption(value: EnumValue);
     /**
      * Gets or sets the options used by the straighten and pack function.
      * The default value is LayeredDigraphLayout.PackAll.
      */
-    packOption: number;
+    get packOption(): number;
+    set packOption(value: number);
     /**
      * Gets or sets whether the FromSpot and ToSpot of each link should be set
      * to values appropriate for the given value of LayeredDigraphLayout#direction.
@@ -25984,31 +27656,39 @@ export class LayeredDigraphLayout extends Layout {
      * If you do not set the spot values to sensible values matching the #direction,
      * the routing results may be poor and they may cross over nodes.
      */
-    setsPortSpots: boolean;
+    get setsPortSpots(): boolean;
+    set setsPortSpots(value: boolean);
     /**
-     * Undocumented
+     * (undocumented)
+     * Gets or sets the distance between link segments for unrelated links that would otherwise be overlapping.
+     * The default value is 4.  The value must be non-negative.
+     *
+     * If there are a lot of possibly overlapping links and the #layerSpacing is not large enough,
+     * some links may cross over nodes.
+     * You will either need to increase the layerSpacing or decrease this linkSpacing property.
      */
-    linkSpacing: number;
+    get linkSpacing(): number;
+    set linkSpacing(value: number);
     /**
      * This read-only property returns the largest layer value.
      */
-    readonly maxLayer: number;
+    get maxLayer(): number;
     /**
      * This read-only property returns the largest index value.
      */
-    readonly maxIndex: number;
+    get maxIndex(): number;
     /**
      * This read-only property returns the largest column value.
      */
-    readonly maxColumn: number;
+    get maxColumn(): number;
     /**
      * This read-only property returns the smallest index layer.
      */
-    readonly minIndexLayer: number;
+    get minIndexLayer(): number;
     /**
      * This read-only property returns the larges index layer.
      */
-    readonly maxIndexLayer: number;
+    get maxIndexLayer(): number;
     /**
      * Remove cycles using depth first cycle removal;
      * a valid value of LayeredDigraphLayout#cycleRemoveOption.
@@ -26145,27 +27825,32 @@ export class LayeredDigraphVertex extends LayoutVertex {
      * Gets or sets the layer to which the node is assigned.
      * The default value is -1.
      */
-    layer: number;
+    get layer(): number;
+    set layer(value: number);
     /**
      * Gets or sets the column to which the node is assigned.
      * The default value is -1.
      */
-    column: number;
+    get column(): number;
+    set column(value: number);
     /**
      * Gets or sets the index to which the node is assigned.
      * The default value is -1.
      */
-    index: number;
+    get index(): number;
+    set index(value: number);
     /**
      * Gets or sets the connected component to which the node is assigned.
      * The default value is NaN.
      */
-    component: number;
+    get component(): number;
+    set component(value: number);
     /**
      * Gets or sets another LayeredDigraphVertex in the same layer that this node should be near.
      * The default value is null.
      */
-    near: LayeredDigraphVertex;
+    get near(): LayeredDigraphVertex;
+    set near(value: LayeredDigraphVertex);
 }
 /**
  * This holds LayeredDigraphLayout-specific information about Links.
@@ -26182,49 +27867,58 @@ export class LayeredDigraphEdge extends LayoutEdge {
      * Gets or sets the LayoutVertex that this edge comes from.
      * Setting this property does not change any LayoutVertex#destinationEdges collection.
      */
-    fromVertex: LayeredDigraphVertex | null;
+    get fromVertex(): LayeredDigraphVertex | null;
+    set fromVertex(value: LayeredDigraphVertex | null);
     /**
      * Gets or sets the LayoutVertex that this edge goes to.
      * Setting this property does not change any LayoutVertex#sourceEdges collection.
      */
-    toVertex: LayeredDigraphVertex | null;
+    get toVertex(): LayeredDigraphVertex | null;
+    set toVertex(value: LayeredDigraphVertex | null);
     /**
      * True if the link is part of the proper digraph.
      * The default value is false.
      */
-    valid: boolean;
+    get valid(): boolean;
+    set valid(value: boolean);
     /**
      * True if the link was reversed during cycle removal.
      * The default value is false.
      */
-    rev: boolean;
+    get rev(): boolean;
+    set rev(value: boolean);
     /**
      * True if the link is part of the depth first forest.
      * The default value is false.
      */
-    forest: boolean;
+    get forest(): boolean;
+    set forest(value: boolean);
     /**
      * Location of the port at the from node of the link.
      * Allows the crossing matrix to correctly calculate the crossings for nodes with multiple ports.
      * The default value is NaN.
      */
-    portFromPos: number;
+    get portFromPos(): number;
+    set portFromPos(value: number);
     /**
      * Location of the port at the to node of the link.
      * Allows the crossing matrix to correctly calculate the crossings for nodes with multiple ports.
      * The default value is NaN.
      */
-    portToPos: number;
+    get portToPos(): number;
+    set portToPos(value: number);
     /**
      * Approximate column offset of the from port of the link from the from node column used in straightening.
      * The default value is 0.
      */
-    portFromColOffset: number;
+    get portFromColOffset(): number;
+    set portFromColOffset(value: number);
     /**
      * Approximate column offset of the to port of the link from the to node column used in straightening.
      * The default value is 0.
      */
-    portToColOffset: number;
+    get portToColOffset(): number;
+    set portToColOffset(value: number);
 }
 /**
  * This layout positions nodes of a tree-structured graph in layers (rows or columns).
@@ -26287,8 +27981,9 @@ export class TreeLayout extends Layout {
     /**
      * Constructs a TreeLayout with no Layout#network
      * and with no owning Layout#diagram.
+     * @param {Partial<TreeLayout>=} init Optional initialization properties.
      */
-    constructor();
+    constructor(init?: Partial<TreeLayout>);
     /**
      * Create a new LayoutNetwork of TreeVertexes and TreeEdges.
      * @return {TreeNetwork} a new LayoutNetwork.
@@ -26491,7 +28186,8 @@ export class TreeLayout extends Layout {
      * Otherwise, you should explicitly initialize this collection
      * with one or more TreeVertexes.
      */
-    roots: Set<(TreeVertex | Node)>;
+    get roots(): Set<(TreeVertex | Node)>;
+    set roots(value: Set<(TreeVertex | Node)>);
     /**
      * Gets or sets how the tree should be constructed from the
      * TreeEdges connecting TreeVertexes.
@@ -26500,7 +28196,8 @@ export class TreeLayout extends Layout {
      * The default value is TreeLayout.PathDefault,
      * where the value of Diagram#isTreePathToChildren determines the effective value of this property.
      */
-    path: EnumValue;
+    get path(): EnumValue;
+    set path(value: EnumValue);
     /**
      * Gets or sets the Style for the resulting trees.
      * Must be TreeLayout.StyleLayered, TreeLayout.StyleAlternating,
@@ -26508,7 +28205,8 @@ export class TreeLayout extends Layout {
      *
      * The default value is TreeLayout.StyleLayered.
      */
-    treeStyle: EnumValue;
+    get treeStyle(): EnumValue;
+    set treeStyle(value: EnumValue);
     /**
      * Gets or sets the manner in which the nodes are aligned in layers.
      * Must be TreeLayout.LayerIndividual, TreeLayout.LayerSiblings,
@@ -26517,7 +28215,8 @@ export class TreeLayout extends Layout {
      * The default value is TreeLayout.LayerIndividual.
      * @since 1.4
      */
-    layerStyle: EnumValue;
+    get layerStyle(): EnumValue;
+    set layerStyle(value: EnumValue);
     /**
      * Gets or sets whether this layout should find all Nodes
      * whose category is "Comment" and
@@ -26526,7 +28225,8 @@ export class TreeLayout extends Layout {
      * The default value is true.
      * @since 1.3
      */
-    comments: boolean;
+    get comments(): boolean;
+    set comments(value: boolean);
     /**
      * Gets or sets how #arrangeTrees should lay out the separate trees.
      * Must be TreeLayout.ArrangementVertical, TreeLayout.ArrangementHorizontal,
@@ -26534,7 +28234,8 @@ export class TreeLayout extends Layout {
      *
      * The default value is TreeLayout.ArrangementVertical
      */
-    arrangement: EnumValue;
+    get arrangement(): EnumValue;
+    set arrangement(value: EnumValue);
     /**
      * Gets or sets the space between which #arrangeTrees will position the trees.
      *
@@ -26542,7 +28243,8 @@ export class TreeLayout extends Layout {
      *
      * This property is ignored if #arrangement is TreeLayout.ArrangementFixedRoots.
      */
-    arrangementSpacing: Size;
+    get arrangementSpacing(): Size;
+    set arrangementSpacing(value: Size);
     /**
      * Gets or sets the object holding the default values for root TreeVertexes.
      *
@@ -26555,7 +28257,8 @@ export class TreeLayout extends Layout {
      * #setsPortSpot, #portSpot, #setsChildPortSpot, #childPortSpot.
      * The other properties of this TreeVertex are ignored.
      */
-    rootDefaults: TreeVertex;
+    get rootDefaults(): TreeVertex;
+    set rootDefaults(value: TreeVertex);
     /**
      * Gets or sets the object holding the default values for alternate layer TreeVertexes,
      * used when the #treeStyle is TreeLayout.StyleAlternating|StyleAlternating or TreeLayout.StyleLastParents|StyleLastParents.
@@ -26563,7 +28266,8 @@ export class TreeLayout extends Layout {
      * See the list of inheritable properties in the documentation for #rootDefaults.
      * The other properties of this TreeVertex are ignored.
      */
-    alternateDefaults: TreeVertex;
+    get alternateDefaults(): TreeVertex;
+    set alternateDefaults(value: TreeVertex);
     /**
      * Gets or sets the default sorting policy for ordering the immediate children of a vertex.
      * Must be TreeLayout.SortingForwards, TreeLayout.SortingReverse,
@@ -26574,7 +28278,8 @@ export class TreeLayout extends Layout {
      * This sets the #rootDefaults' property of the same name.
      * The sort order is determined by #comparer.
      */
-    sorting: EnumValue;
+    get sorting(): EnumValue;
+    set sorting(value: EnumValue);
     /**
      * Gets or sets the default comparison function used for sorting the immediate children of a vertex.
      *
@@ -26597,7 +28302,8 @@ export class TreeLayout extends Layout {
      *   )
      * ```
      */
-    comparer: ((a: TreeVertex, b: TreeVertex) => number);
+    get comparer(): ((a: TreeVertex, b: TreeVertex) => number);
+    set comparer(value: ((a: TreeVertex, b: TreeVertex) => number));
     /**
      * Gets or sets the default direction for tree growth.
      *
@@ -26607,7 +28313,8 @@ export class TreeLayout extends Layout {
      * and where 90 is along the positive Y axis.
      * This sets the #rootDefaults' property of the same name.
      */
-    angle: number;
+    get angle(): number;
+    set angle(value: number);
     /**
      * Gets or sets the default alignment of parents relative to their children.
      * Must be a static constant of TreeLayout whose name starts with "Alignment".
@@ -26616,7 +28323,8 @@ export class TreeLayout extends Layout {
      *
      * This sets the #rootDefaults' property of the same name.
      */
-    alignment: EnumValue;
+    get alignment(): EnumValue;
+    set alignment(value: EnumValue);
     /**
      * Gets or sets the default indentation of the first child.
      *
@@ -26630,7 +28338,8 @@ export class TreeLayout extends Layout {
      * you can set this to be the breadth of the parent node.
      * This sets the #rootDefaults' property of the same name.
      */
-    nodeIndent: number;
+    get nodeIndent(): number;
+    set nodeIndent(value: number);
     /**
      * Gets or sets the fraction of this node's breadth is added to #nodeIndent
      * to determine any spacing at the start of the children.
@@ -26642,7 +28351,8 @@ export class TreeLayout extends Layout {
      * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      * This sets the #rootDefaults' property of the same name.
      */
-    nodeIndentPastParent: number;
+    get nodeIndentPastParent(): number;
+    set nodeIndentPastParent(value: number);
     /**
      * Gets or sets the distance between child nodes.
      *
@@ -26651,7 +28361,8 @@ export class TreeLayout extends Layout {
      * A negative value causes sibling nodes to overlap.
      * This sets the #rootDefaults' property of the same name.
      */
-    nodeSpacing: number;
+    get nodeSpacing(): number;
+    set nodeSpacing(value: number);
     /**
      * Gets or sets the distance between a parent node and its children.
      *
@@ -26664,7 +28375,8 @@ export class TreeLayout extends Layout {
      * Negative values may cause children to overlap with the parent.
      * This sets the #rootDefaults' property of the same name.
      */
-    layerSpacing: number;
+    get layerSpacing(): number;
+    set layerSpacing(value: number);
     /**
      * Gets or sets the fraction of the node's depth for which the children's layer starts overlapped with the parent's layer.
      *
@@ -26677,7 +28389,8 @@ export class TreeLayout extends Layout {
      * if #layerSpacing is negative.
      * This sets the #rootDefaults' property of the same name.
      */
-    layerSpacingParentOverlap: number;
+    get layerSpacingParentOverlap(): number;
+    set layerSpacingParentOverlap(value: number);
     /**
      * Gets or sets how closely to pack the child nodes of a subtree.
      * Must be either TreeLayout.CompactionBlock or TreeLayout.CompactionNone.
@@ -26686,7 +28399,8 @@ export class TreeLayout extends Layout {
      *
      * This sets the #rootDefaults' property of the same name.
      */
-    compaction: EnumValue;
+    get compaction(): EnumValue;
+    set compaction(value: EnumValue);
     /**
      * Gets or sets a limit on how broad a tree should be.
      *
@@ -26710,7 +28424,8 @@ export class TreeLayout extends Layout {
      * start of each row.
      * This sets the #rootDefaults' property of the same name.
      */
-    breadthLimit: number;
+    get breadthLimit(): number;
+    set breadthLimit(value: number);
     /**
      * Gets or sets the distance between rows of children.
      *
@@ -26722,7 +28437,8 @@ export class TreeLayout extends Layout {
      * the parent node and its first row of child nodes.
      * This sets the #rootDefaults' property of the same name.
      */
-    rowSpacing: number;
+    get rowSpacing(): number;
+    set rowSpacing(value: number);
     /**
      * Gets or sets the default indentation of the first child of each row,
      * if the #alignment is not a "Center" alignment.
@@ -26733,7 +28449,8 @@ export class TreeLayout extends Layout {
      * with the child nodes that are in additional rows.
      * This sets the #rootDefaults' property of the same name.
      */
-    rowIndent: number;
+    get rowIndent(): number;
+    set rowIndent(value: number);
     /**
      * Gets or sets the distance between comments.
      *
@@ -26742,7 +28459,8 @@ export class TreeLayout extends Layout {
      * This is used by #addComments and #layoutComments.
      * This sets the #rootDefaults' property of the same name.
      */
-    commentSpacing: number;
+    get commentSpacing(): number;
+    set commentSpacing(value: number);
     /**
      * Gets or sets the distance between a node and its comments.
      *
@@ -26751,7 +28469,8 @@ export class TreeLayout extends Layout {
      * This is used by #addComments and #layoutComments.
      * This sets the #rootDefaults' property of the same name.
      */
-    commentMargin: number;
+    get commentMargin(): number;
+    set commentMargin(value: number);
     /**
      * Gets or sets whether the TreeLayout should set the
      * FromSpot for this parent node port.
@@ -26762,7 +28481,8 @@ export class TreeLayout extends Layout {
      * The spot used depends on the value of #portSpot.
      * This sets the #rootDefaults' property of the same name.
      */
-    setsPortSpot: boolean;
+    get setsPortSpot(): boolean;
+    set setsPortSpot(value: boolean);
     /**
      * Gets or sets the spot that this node's port gets as its FromSpot.
      *
@@ -26775,7 +28495,8 @@ export class TreeLayout extends Layout {
      * the port's ToSpot is set instead of the FromSpot.
      * This sets the #rootDefaults' property of the same name.
      */
-    portSpot: Spot;
+    get portSpot(): Spot;
+    set portSpot(value: Spot);
     /**
      * Gets or sets whether the TreeLayout should set the
      * ToSpot for each child node port.
@@ -26786,7 +28507,8 @@ export class TreeLayout extends Layout {
      * The spot used depends on the value of #childPortSpot.
      * This sets the #rootDefaults' property of the same name.
      */
-    setsChildPortSpot: boolean;
+    get setsChildPortSpot(): boolean;
+    set setsChildPortSpot(value: boolean);
     /**
      * Gets or sets the spot that children nodes' ports get as their ToSpot.
      *
@@ -26799,7 +28521,8 @@ export class TreeLayout extends Layout {
      * the port's FromSpot is set instead of the ToSpot.
      * This sets the #rootDefaults' property of the same name.
      */
-    childPortSpot: Spot;
+    get childPortSpot(): Spot;
+    set childPortSpot(value: Spot);
     /**
      * Gets or sets the alternate sorting policy for ordering the immediate children of a vertex.
      * Must be TreeLayout.SortingForwards, TreeLayout.SortingReverse,
@@ -26810,7 +28533,8 @@ export class TreeLayout extends Layout {
      * This sets the #alternateDefaults' property of the same name.
      * The sort order is determined by #alternateComparer.
      */
-    alternateSorting: EnumValue;
+    get alternateSorting(): EnumValue;
+    set alternateSorting(value: EnumValue);
     /**
      * Gets or sets the alternate comparison function used for sorting the immediate children of a vertex.
      *
@@ -26819,7 +28543,8 @@ export class TreeLayout extends Layout {
      * This sets the #alternateDefaults' property of the same name.
      * Whether this comparison function is used is determined by the value of #alternateSorting.
      */
-    alternateComparer: ((a: TreeVertex, b: TreeVertex) => number);
+    get alternateComparer(): ((a: TreeVertex, b: TreeVertex) => number);
+    set alternateComparer(value: ((a: TreeVertex, b: TreeVertex) => number));
     /**
      * Gets or sets the alternate direction for tree growth.
      *
@@ -26829,7 +28554,8 @@ export class TreeLayout extends Layout {
      * and where 90 is along the positive Y axis.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateAngle: number;
+    get alternateAngle(): number;
+    set alternateAngle(value: number);
     /**
      * Gets or sets the alternate alignment of parents relative to their children.
      * Must be a static constant of TreeLayout whose name starts with "Alignment".
@@ -26838,7 +28564,8 @@ export class TreeLayout extends Layout {
      *
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateAlignment: EnumValue;
+    get alternateAlignment(): EnumValue;
+    set alternateAlignment(value: EnumValue);
     /**
      * Gets or sets the alternate indentation of the first child.
      *
@@ -26852,7 +28579,8 @@ export class TreeLayout extends Layout {
      * you can set this to be the breadth of the parent node.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateNodeIndent: number;
+    get alternateNodeIndent(): number;
+    set alternateNodeIndent(value: number);
     /**
      * Gets or sets the fraction of this node's breadth is added to #nodeIndent
      * to determine any spacing at the start of the children.
@@ -26863,7 +28591,8 @@ export class TreeLayout extends Layout {
      * This property is only sensible when the #alignment
      * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
      */
-    alternateNodeIndentPastParent: number;
+    get alternateNodeIndentPastParent(): number;
+    set alternateNodeIndentPastParent(value: number);
     /**
      * Gets or sets the alternate distance between child nodes.
      *
@@ -26872,7 +28601,8 @@ export class TreeLayout extends Layout {
      * A negative value causes sibling nodes to overlap.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateNodeSpacing: number;
+    get alternateNodeSpacing(): number;
+    set alternateNodeSpacing(value: number);
     /**
      * Gets or sets the alternate distance between a parent node and its children.
      *
@@ -26885,7 +28615,8 @@ export class TreeLayout extends Layout {
      * Negative values may cause children to overlap with the parent.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateLayerSpacing: number;
+    get alternateLayerSpacing(): number;
+    set alternateLayerSpacing(value: number);
     /**
      * Gets or sets the alternate fraction of the node's depth for which the children's layer starts overlapped with the parent's layer.
      *
@@ -26898,7 +28629,8 @@ export class TreeLayout extends Layout {
      * if #layerSpacing is negative.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateLayerSpacingParentOverlap: number;
+    get alternateLayerSpacingParentOverlap(): number;
+    set alternateLayerSpacingParentOverlap(value: number);
     /**
      * Gets or sets how closely to pack the child nodes of a subtree.
      * Must be either TreeLayout.CompactionBlock or TreeLayout.CompactionNone.
@@ -26907,7 +28639,8 @@ export class TreeLayout extends Layout {
      *
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateCompaction: EnumValue;
+    get alternateCompaction(): EnumValue;
+    set alternateCompaction(value: EnumValue);
     /**
      * Gets or sets an alternate limit on how broad a tree should be.
      *
@@ -26931,7 +28664,8 @@ export class TreeLayout extends Layout {
      * start of each row.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateBreadthLimit: number;
+    get alternateBreadthLimit(): number;
+    set alternateBreadthLimit(value: number);
     /**
      * Gets or sets the alternate distance between rows of children.
      *
@@ -26943,7 +28677,8 @@ export class TreeLayout extends Layout {
      * the parent node and its first row of child nodes.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateRowSpacing: number;
+    get alternateRowSpacing(): number;
+    set alternateRowSpacing(value: number);
     /**
      * Gets or sets the alternate indentation of the first child of each row,
      * if the #alignment is not a "Center" alignment.
@@ -26954,7 +28689,8 @@ export class TreeLayout extends Layout {
      * with the child nodes that are in additional rows.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateRowIndent: number;
+    get alternateRowIndent(): number;
+    set alternateRowIndent(value: number);
     /**
      * Gets or sets the alternate distance between comments.
      *
@@ -26963,7 +28699,8 @@ export class TreeLayout extends Layout {
      * This is used by #addComments and #layoutComments.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateCommentSpacing: number;
+    get alternateCommentSpacing(): number;
+    set alternateCommentSpacing(value: number);
     /**
      * Gets or sets the alternate distance between a node and its comments.
      *
@@ -26972,7 +28709,8 @@ export class TreeLayout extends Layout {
      * This is used by #addComments and #layoutComments.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateCommentMargin: number;
+    get alternateCommentMargin(): number;
+    set alternateCommentMargin(value: number);
     /**
      * Gets or sets whether the TreeLayout should set the
      * FromSpot for this parent node port.
@@ -26983,7 +28721,8 @@ export class TreeLayout extends Layout {
      * The spot used depends on the value of #portSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateSetsPortSpot: boolean;
+    get alternateSetsPortSpot(): boolean;
+    set alternateSetsPortSpot(value: boolean);
     /**
      * Gets or sets the alternate spot that this node's port gets as its FromSpot.
      *
@@ -26996,7 +28735,8 @@ export class TreeLayout extends Layout {
      * the port's ToSpot is set instead of the FromSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternatePortSpot: Spot;
+    get alternatePortSpot(): Spot;
+    set alternatePortSpot(value: Spot);
     /**
      * Gets or sets whether the TreeLayout should set the
      * ToSpot for each child node port.
@@ -27007,7 +28747,8 @@ export class TreeLayout extends Layout {
      * The spot used depends on the value of #childPortSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateSetsChildPortSpot: boolean;
+    get alternateSetsChildPortSpot(): boolean;
+    set alternateSetsChildPortSpot(value: boolean);
     /**
      * Gets or sets the alternate spot that children nodes' ports get as their ToSpot
      * The default value is Spot.Default.
@@ -27020,7 +28761,8 @@ export class TreeLayout extends Layout {
      * the port's FromSpot is set instead of the ToSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
-    alternateChildPortSpot: Spot;
+    get alternateChildPortSpot(): Spot;
+    set alternateChildPortSpot(value: Spot);
     /**
      * This value for TreeLayout#path causes the value of Diagram#isTreePathToChildren
      * to effectively choose either TreeLayout.PathDestination (if true) or TreeLayout.PathSource (if false).
@@ -27295,7 +29037,8 @@ export class TreeVertex extends LayoutVertex {
      *
      * The default value is false.
      */
-    initialized: boolean;
+    get initialized(): boolean;
+    set initialized(value: boolean);
     /**
      * Gets or sets the logical parent for this node.
      *
@@ -27304,7 +29047,8 @@ export class TreeVertex extends LayoutVertex {
      * This structural property is computed in TreeLayout#doLayout when building the tree structures.
      * You should probably not be setting this property.
      */
-    parent: TreeVertex;
+    get parent(): TreeVertex;
+    set parent(value: TreeVertex);
     /**
      * Gets or sets the logical children for this node.
      *
@@ -27313,7 +29057,8 @@ export class TreeVertex extends LayoutVertex {
      * This structural property is computed in TreeLayout#doLayout when building the tree structures.
      * You should probably not be setting this property.
      */
-    children: Array<TreeVertex>;
+    get children(): Array<TreeVertex>;
+    set children(value: Array<TreeVertex>);
     /**
      * Gets or sets the number of single-parent ancestors this node has.
      *
@@ -27323,7 +29068,8 @@ export class TreeVertex extends LayoutVertex {
      * This informational property is computed in TreeLayout#doLayout when building the tree structures.
      * You should probably not be setting this property.
      */
-    level: number;
+    get level(): number;
+    set level(value: number);
     /**
      * Gets or sets the number of descendants this node has.
      *
@@ -27332,7 +29078,8 @@ export class TreeVertex extends LayoutVertex {
      * This informational property is computed as part of the TreeLayout#initializeTreeVertexValues pass.
      * You should probably not be setting this property.
      */
-    descendantCount: number;
+    get descendantCount(): number;
+    set descendantCount(value: number);
     /**
      * Gets or sets the maximum number of children of any descendant of this node.
      *
@@ -27341,7 +29088,8 @@ export class TreeVertex extends LayoutVertex {
      * This informational property is computed as part of the TreeLayout#initializeTreeVertexValues pass.
      * You should probably not be setting this property.
      */
-    maxChildrenCount: number;
+    get maxChildrenCount(): number;
+    set maxChildrenCount(value: number);
     /**
      * Gets or sets the maximum depth of the subtrees below this node.
      *
@@ -27350,7 +29098,8 @@ export class TreeVertex extends LayoutVertex {
      * This informational property is computed as part of the TreeLayout#initializeTreeVertexValues pass.
      * You should probably not be setting this value.
      */
-    maxGenerationCount: number;
+    get maxGenerationCount(): number;
+    set maxGenerationCount(value: number);
     /**
      * Gets or sets an array of Nodes that will be positioned near this node.
      *
@@ -27360,7 +29109,8 @@ export class TreeVertex extends LayoutVertex {
      * Typically these will be Nodes whose Category is "Comment".
      * This array should be allocated and initialized in TreeLayout#addComments.
      */
-    comments: Array<Node>;
+    get comments(): Array<Node>;
+    set comments(value: Array<Node>);
     /**
      * Gets or sets whether and in what order the children should be sorted.
      *
@@ -27368,13 +29118,15 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    sorting: EnumValue;
+    get sorting(): EnumValue;
+    set sorting(value: EnumValue);
     /**
      * Gets or sets how the children should be sorted.
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    comparer: ((a: TreeVertex, b: TreeVertex) => number);
+    get comparer(): ((a: TreeVertex, b: TreeVertex) => number);
+    set comparer(value: ((a: TreeVertex, b: TreeVertex) => number));
     /**
      * Gets or sets the absolute angle at which this subtree should grow from this vertex.
      *
@@ -27386,7 +29138,8 @@ export class TreeVertex extends LayoutVertex {
      * an override of TreeLayout#assignTreeVertexValues,
      * you could just set this property to specify the angle at which this node grows its subtrees.
      */
-    angle: number;
+    get angle(): number;
+    set angle(value: number);
     /**
      * Gets or sets how this parent node should be aligned relative to its children.
      *
@@ -27394,7 +29147,8 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    alignment: EnumValue;
+    get alignment(): EnumValue;
+    set alignment(value: EnumValue);
     /**
      * Gets or sets the distance the first child should be indented.
      *
@@ -27404,7 +29158,8 @@ export class TreeVertex extends LayoutVertex {
      * This property is only sensible when the #alignment is
      * TreeLayout.AlignmentStart or TreeLayout.AlignmentEnd.
      */
-    nodeIndent: number;
+    get nodeIndent(): number;
+    set nodeIndent(value: number);
     /**
      * Gets or sets whether the first child should be indented past the parent node's breadth.
      *
@@ -27415,7 +29170,8 @@ export class TreeVertex extends LayoutVertex {
      * This property is only sensible when the #alignment is
      * TreeLayout.AlignmentStart or TreeLayout.AlignmentEnd.
      */
-    nodeIndentPastParent: number;
+    get nodeIndentPastParent(): number;
+    set nodeIndentPastParent(value: number);
     /**
      * Gets or sets the distance between child nodes.
      *
@@ -27424,7 +29180,8 @@ export class TreeVertex extends LayoutVertex {
      * A negative value will cause sibling nodes to overlap.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    nodeSpacing: number;
+    get nodeSpacing(): number;
+    set nodeSpacing(value: number);
     /**
      * Gets or sets the distance between this node and its children.
      *
@@ -27433,7 +29190,8 @@ export class TreeVertex extends LayoutVertex {
      * Negative values may cause children to overlap with the parent.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    layerSpacing: number;
+    get layerSpacing(): number;
+    set layerSpacing(value: number);
     /**
      * Gets or sets the fraction of this node's depth that may overlap with the children's layer.
      *
@@ -27445,7 +29203,8 @@ export class TreeVertex extends LayoutVertex {
      * Even when this value is 0.0, there may be overlap when #layerSpacing is negative.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    layerSpacingParentOverlap: number;
+    get layerSpacingParentOverlap(): number;
+    set layerSpacingParentOverlap(value: number);
     /**
      * Gets or sets how the children of this node should be packed together.
      *
@@ -27453,7 +29212,8 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    compaction: EnumValue;
+    get compaction(): EnumValue;
+    set compaction(value: EnumValue);
     /**
      * Gets or sets how broad a node and its descendants should be.
      *
@@ -27462,7 +29222,8 @@ export class TreeVertex extends LayoutVertex {
      *
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    breadthLimit: number;
+    get breadthLimit(): number;
+    set breadthLimit(value: number);
     /**
      * Gets or sets the distance between rows within one layer, all sharing the same parent.
      *
@@ -27471,7 +29232,8 @@ export class TreeVertex extends LayoutVertex {
      * Negative values may cause nodes to overlap.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    rowSpacing: number;
+    get rowSpacing(): number;
+    set rowSpacing(value: number);
     /**
      * Gets or sets the distance the first child of each row should be indented.
      *
@@ -27482,7 +29244,8 @@ export class TreeVertex extends LayoutVertex {
      * and some initial space needs to be reserved in each row of nodes for the links
      * that are routed around those rows.
      */
-    rowIndent: number;
+    get rowIndent(): number;
+    set rowIndent(value: number);
     /**
      * Gets or sets the space to leave between consecutive comments.
      *
@@ -27491,7 +29254,8 @@ export class TreeVertex extends LayoutVertex {
      * Negative values may cause comments to overlap.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    commentSpacing: number;
+    get commentSpacing(): number;
+    set commentSpacing(value: number);
     /**
      * Gets or sets the space to leave between the node and the comments.
      *
@@ -27500,7 +29264,8 @@ export class TreeVertex extends LayoutVertex {
      * Negative values may cause comments to overlap with the node.
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      */
-    commentMargin: number;
+    get commentMargin(): number;
+    set commentMargin(value: number);
     /**
      * Gets or sets whether the TreeLayout should set the FromSpot for this parent node port.
      *
@@ -27510,7 +29275,8 @@ export class TreeVertex extends LayoutVertex {
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      * The spot used depends on the value of #portSpot.
      */
-    setsPortSpot: boolean;
+    get setsPortSpot(): boolean;
+    set setsPortSpot(value: boolean);
     /**
      * Gets or sets the spot that this node's port gets as its FromSpot,
      * if #setsPortSpot is true and the node has only a single port.
@@ -27523,7 +29289,8 @@ export class TreeVertex extends LayoutVertex {
      * If the value is other than NoSpot, it is just assigned.
      * When TreeLayout#path is TreeLayout.PathSource, the port's ToSpot is set instead of the FromSpot.
      */
-    portSpot: Spot;
+    get portSpot(): Spot;
+    set portSpot(value: Spot);
     /**
      * Gets or sets whether the TreeLayout should set the ToSpot for each child node port.
      *
@@ -27533,7 +29300,8 @@ export class TreeVertex extends LayoutVertex {
      * This inherited property is initialized in the TreeLayout#initializeTreeVertexValues pass.
      * The spot used depends on the value of #childPortSpot.
      */
-    setsChildPortSpot: boolean;
+    get setsChildPortSpot(): boolean;
+    set setsChildPortSpot(value: boolean);
     /**
      * Gets or sets the spot that children nodes' ports get as their ToSpot,
      * if #setsChildPortSpot is true and the node has only a single port.
@@ -27546,20 +29314,22 @@ export class TreeVertex extends LayoutVertex {
      * If the value is other than NoSpot, it is just assigned.
      * When TreeLayout#path is TreeLayout.PathSource, the port's FromSpot is set instead of the ToSpot.
      */
-    childPortSpot: Spot;
+    get childPortSpot(): Spot;
+    set childPortSpot(value: Spot);
     /**
      * This read-only property returns the number of immediate children this node has.
      *
      * The default value is zero.
      */
-    readonly childrenCount: number;
+    get childrenCount(): number;
     /**
      * Gets or sets the position of this node relative to its parent node.
      *
      * This informational property is computed during TreeLayout#doLayout.
      * You should probably not be setting this property.
      */
-    relativePosition: Point;
+    get relativePosition(): Point;
+    set relativePosition(value: Point);
     /**
      * Gets or sets the size of the subtree (including all descendants) parented by this node.
      *
@@ -27567,7 +29337,8 @@ export class TreeVertex extends LayoutVertex {
      * Of course if there are no children, this is just the same as Size.
      * You should probably not be setting this property.
      */
-    subtreeSize: Size;
+    get subtreeSize(): Size;
+    set subtreeSize(value: Size);
     /**
      * Gets or sets the offset of this parent node relative to its whole subtree.
      *
@@ -27575,7 +29346,8 @@ export class TreeVertex extends LayoutVertex {
      * Of course if there are no children, this is just (0, 0).
      * You should probably not be setting this property.
      */
-    subtreeOffset: Point;
+    get subtreeOffset(): Point;
+    set subtreeOffset(value: Point);
 }
 /**
  * This holds TreeLayout-specific information about Links.
@@ -27596,17 +29368,21 @@ export class TreeEdge extends LayoutEdge {
      * Gets or sets the LayoutVertex that this edge comes from.
      * Setting this property does not change any LayoutVertex#destinationEdges collection.
      */
-    fromVertex: TreeVertex;
+    get fromVertex(): TreeVertex;
+    set fromVertex(value: TreeVertex);
     /**
      * Gets or sets the LayoutVertex that this edge goes to.
      * Setting this property does not change any LayoutVertex#sourceEdges collection.
      */
-    toVertex: TreeVertex | null;
+    get toVertex(): TreeVertex | null;
+    set toVertex(value: TreeVertex | null);
     /**
      * Gets or sets a Point, relative to the parent node,
      * that may be useful in routing this link.
      */
-    relativePoint: Point;
+    get relativePoint(): Point;
+    set relativePoint(value: Point);
 }
+
 
 

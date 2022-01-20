@@ -1,11 +1,11 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -134,9 +134,9 @@ var __extends = (this && this.__extends) || (function () {
             return node.category === "Switch";
         };
         /**
-         * Return an Array holding the Split node and the Merge node for this layout.
-         * This signals an error if there is not exactly one Node that {@link #isSplit}
-         * and exactly one Node that {@link #isMerge}.
+         * Find a Split vertex and a Merge vertex for this layout.
+         * This signals an error if there is not exactly one vertex/Node that {@link #isSplit}
+         * and exactly one vertex/Node that {@link #isMerge}.
          * This can be overridden; any override must set {@link #splitNode} and {@link #mergeNode}.
          * @param {Iterable<TreeVertex>} vertexes
          */

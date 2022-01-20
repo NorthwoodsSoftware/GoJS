@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -350,7 +350,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
 /**
 * Gets or sets the margin of error for which guidelines show up.
 * The default value is 6.
-* Guidelines will show up when the aligned nods are ± 6px away from perfect alignment.
+* Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.
 * @name GuidedDraggingTool#guidelineSnapDistance
 
 * @return {number}
@@ -366,7 +366,7 @@ Object.defineProperty(GuidedDraggingTool.prototype, "guidelineSnapDistance", {
 });
 
 /**
-* Gets or sets whether the guidelines are enabled or disable.
+* Gets or sets whether the guidelines are enabled or disabled.
 * The default value is true.
 * @name GuidedDraggingTool#isGuidelineEnabled
 

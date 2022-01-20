@@ -1,6 +1,6 @@
 'use strict';
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /**
@@ -81,7 +81,7 @@ function ZoomSlider(diagram, options) {
 /**
  * This read-only property returns the diagram for which the slider is handling zoom.
  * @name ZoomSlider#diagram
- 
+
  * @return {Diagram}
  */
 Object.defineProperty(ZoomSlider.prototype, 'diagram', {
@@ -92,7 +92,7 @@ Object.defineProperty(ZoomSlider.prototype, 'diagram', {
  * Gets or sets the overall length, in pixels, that the slider will occupy.
  * The default value is 125.
  * @name ZoomSlider#size
- 
+
  * @return {number}
  */
 Object.defineProperty(ZoomSlider.prototype, 'size', {
@@ -110,7 +110,7 @@ Object.defineProperty(ZoomSlider.prototype, 'size', {
  * Gets or sets the height/width of the buttons at each end of the slider.
  * The default value is 25.
  * @name ZoomSlider#buttonSize
- 
+
  * @return {number}
  */
 Object.defineProperty(ZoomSlider.prototype, 'buttonSize', {
@@ -128,7 +128,7 @@ Object.defineProperty(ZoomSlider.prototype, 'buttonSize', {
  * Gets or sets the alignment Spot of this slider to determine where it should be placed relative to the diagram.
  * The default value is Spot.BottomRight.
  * @name ZoomSlider#alignment
- 
+
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'alignment', {
@@ -146,7 +146,7 @@ Object.defineProperty(ZoomSlider.prototype, 'alignment', {
  * Gets or sets the Spot on this slider to be used as the alignment point when placing it relative to the diagram.
  * The default value is Spot.BottomRight.
  * @name ZoomSlider#alignmentFocus
- 
+
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'alignmentFocus', {
@@ -165,7 +165,7 @@ Object.defineProperty(ZoomSlider.prototype, 'alignmentFocus', {
  * Must be either 'horizontal' or 'vertical' and is case-sensitive.
  * The default value is `'vertical'`.
  * @name ZoomSlider#orientation
- 
+
  * @return {string}
  */
 Object.defineProperty(ZoomSlider.prototype, 'orientation', {
@@ -186,7 +186,7 @@ Object.defineProperty(ZoomSlider.prototype, 'orientation', {
  * Gets or sets the opacity of the slider.
  * The default value is 0.75.
  * @name ZoomSlider#opacity
- 
+
  * @return {Spot}
  */
 Object.defineProperty(ZoomSlider.prototype, 'opacity', {
@@ -225,18 +225,18 @@ ZoomSlider.prototype.sliderDivSetup = function() {
 
   // Initialize buttons and range input
   var zoomOutBtn = document.createElement('button');
-  zoomOutBtn.id = 'zoomSliderOut';
+  this.zoomSliderOut = zoomOutBtn;
   zoomOutBtn.className = 'zoomButton';
   zoomOutBtn.innerHTML = '-';
   this._sliderDiv.appendChild(zoomOutBtn);
 
   var zoomRangeContainer = document.createElement('div');
-  zoomRangeContainer.id = 'zoomSliderRangeCtn';
+  this.zoomSliderRangeCtn = zoomRangeContainer;
   zoomRangeContainer.className = 'zoomRangeContainer';
   this._sliderDiv.appendChild(zoomRangeContainer);
 
   var zoomRangeInput = document.createElement('input');
-  zoomRangeInput.id = 'zoomSliderRange';
+  this.zoomSliderRange = zoomRangeInput;
   zoomRangeInput.className = 'zoomRangeInput';
   zoomRangeInput.type = 'range';
   zoomRangeInput.min = -50;
@@ -244,7 +244,7 @@ ZoomSlider.prototype.sliderDivSetup = function() {
   zoomRangeContainer.appendChild(zoomRangeInput);
 
   var zoomInBtn = document.createElement('button');
-  zoomInBtn.id = 'zoomSliderIn';
+  this.zoomSliderIn = zoomInBtn;
   zoomInBtn.className = 'zoomButton';
   zoomInBtn.innerHTML = '+';
   this._sliderDiv.appendChild(zoomInBtn);
@@ -266,9 +266,9 @@ ZoomSlider.prototype.sliderDivSetup = function() {
  * @this {ZoomSlider}
  */
 ZoomSlider.prototype.sliderListenerSetup = function() {
-  var zoomOutBtn = document.getElementById('zoomSliderOut');
-  var zoomInBtn = document.getElementById('zoomSliderIn');
-  var zoomRangeInput = document.getElementById('zoomSliderRange');
+  var zoomOutBtn = this.zoomSliderOut;
+  var zoomInBtn = this.zoomSliderIn;
+  var zoomRangeInput = this.zoomSliderRange;
 
   if (zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
 
@@ -304,10 +304,10 @@ ZoomSlider.prototype.resize = function(reorient) {
   var sliderWidth = 0;
   var sliderHeight = 0;
 
-  var zoomOutBtn = document.getElementById('zoomSliderOut');
-  var zoomInBtn = document.getElementById('zoomSliderIn');
-  var zoomRangeContainer = document.getElementById('zoomSliderRangeCtn');
-  var zoomRangeInput = document.getElementById('zoomSliderRange');
+  var zoomOutBtn = this.zoomSliderOut;
+  var zoomInBtn = this.zoomSliderIn;
+  var zoomRangeContainer = this.zoomSliderRangeCtn;
+  var zoomRangeInput = this.zoomSliderRange;
 
   if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null ||
     zoomRangeContainer === null || zoomRangeInput === null) return;
@@ -365,9 +365,9 @@ ZoomSlider.prototype.resize = function(reorient) {
  * @this {ZoomSlider}
  */
 ZoomSlider.prototype.reorient = function() {
-  var zoomOutBtn = document.getElementById('zoomSliderOut');
-  var zoomInBtn = document.getElementById('zoomSliderIn');
-  var zoomRangeInput = document.getElementById('zoomSliderRange');
+  var zoomOutBtn = this.zoomSliderOut;
+  var zoomInBtn = this.zoomSliderIn;
+  var zoomRangeInput = this.zoomSliderRange;
 
   if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
 
@@ -426,7 +426,7 @@ ZoomSlider.prototype.realign = function() {
  * @this {ZoomSlider}
  */
 ZoomSlider.prototype.scaleToValue = function() {
-  var slider = document.getElementById('zoomSliderRange');
+  var slider = this.zoomSliderRange;
   var diagram = this.diagram;
   var A = this._initialScale;
   var B = diagram.commandHandler.zoomFactor;
@@ -440,7 +440,7 @@ ZoomSlider.prototype.scaleToValue = function() {
  * @this {ZoomSlider}
  */
 ZoomSlider.prototype.valueToScale = function() {
-  var slider = document.getElementById('zoomSliderRange');
+  var slider = this.zoomSliderRange;
   var diagram = this.diagram;
   var x = parseFloat(slider.value);
   var A = this._initialScale;

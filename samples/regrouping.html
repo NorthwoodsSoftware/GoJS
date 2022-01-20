@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Create new collapsible groups, ungroup existing groups, and use drag-and-drop to change grouping memberships."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Regrouping Demo</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,13 +52,16 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
             // when a drag-drop occurs in the Diagram's background, make it a top-level node
-            mouseDrop: function(e) { finishDrop(e, null); },
+            mouseDrop: e => finishDrop(e, null),
             layout:  // Diagram has simple horizontal layout
               $(go.GridLayout,
                 { wrappingWidth: Infinity, alignment: go.GridLayout.Position, cellSize: new go.Size(1, 1) }),
@@ -127,8 +130,8 @@
             background: "transparent",
             ungroupable: true,
             // highlight when dragging into the Group
-            mouseDragEnter: function(e, grp, prev) { highlightGroup(e, grp, true); },
-            mouseDragLeave: function(e, grp, next) { highlightGroup(e, grp, false); },
+            mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+            mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
             computesBoundsAfterDrag: true,
             // when the selection is dropped into a Group, add the selected Parts into that Group;
             // if it fails, cancel the tool, rolling back any changes
@@ -138,9 +141,7 @@
             layout: makeLayout(false)
           },
           new go.Binding("layout", "horiz", makeLayout),
-          new go.Binding("background", "isHighlighted", function(h) {
-            return h ? "rgba(255,0,0,0.2)" : "transparent";
-          }).ofObject(),
+          new go.Binding("background", "isHighlighted", h => h ? "rgba(255,0,0,0.2)" : "transparent").ofObject(),
           $(go.Shape, "Rectangle",
             { fill: null, stroke: defaultColor(false), strokeWidth: 2 },
             new go.Binding("stroke", "horiz", defaultColor),
@@ -172,7 +173,7 @@
       myDiagram.nodeTemplate =
         $(go.Node, "Auto",
           { // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-            mouseDrop: function(e, node) { finishDrop(e, node.containingGroup); }
+            mouseDrop: (e, node) => finishDrop(e, node.containingGroup)
           },
           $(go.Shape, "Rectangle",
             { fill: "#ACE600", stroke: null },
@@ -212,17 +213,15 @@
     }
 
     function reexpand(e) {
-      myDiagram.commit(function(diag) {
+      myDiagram.commit(diag => {
         var level = parseInt(document.getElementById("levelSlider").value);
-        diag.findTopLevelGroups().each(function(g) { expandGroups(g, 0, level); })
+        diag.findTopLevelGroups().each(g => expandGroups(g, 0, level))
       } ,"reexpand");
     }
     function expandGroups(g, i, level) {
       if (!(g instanceof go.Group)) return;
       g.isSubGraphExpanded = i < level;
-      g.memberParts.each(function(m) {
-        expandGroups(m, i + 1, level);
-      })
+      g.memberParts.each(m => expandGroups(m, i + 1, level))
     }
 
     // save a model to and load a model from JSON text, displayed below the Diagram

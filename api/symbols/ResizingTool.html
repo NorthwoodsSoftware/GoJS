@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.56<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class ResizingTool</h1>
@@ -185,6 +185,7 @@
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ResizingTool.html#isGridSnapEnabled" class="tsd-kind-icon">is<wbr>Grid<wbr>Snap<wbr>Enabled</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ResizingTool.html#maxSize" class="tsd-kind-icon">max<wbr>Size</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ResizingTool.html#minSize" class="tsd-kind-icon">min<wbr>Size</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="ResizingTool.html#oppositePoint" class="tsd-kind-icon">opposite<wbr>Point</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="ResizingTool.html#originalDesiredSize" class="tsd-kind-icon">original<wbr>Desired<wbr>Size</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="ResizingTool.html#originalLocation" class="tsd-kind-icon">original<wbr>Location</a></li>
 							</ul>
@@ -382,6 +383,25 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+					<a name="oppositePoint" class="tsd-anchor"></a>
+					<h3>
+						opposite<wbr>Point
+					<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a>        </h3>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Gets the Point opposite to the chosen, dragged handle of the &quot;Resizing&quot; Adornment.
+								This property has no meaning until after <a href="ResizingTool.html#doActivate">doActivate</a> has been called.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+								</dl>
+							</div>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
 					<a name="originalDesiredSize" class="tsd-anchor"></a>
 					<h3>
@@ -535,11 +555,12 @@
 								<p>This method may be overridden.
 								Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.</p>
 								<p>For example, to always keep the object&#39;s original aspect ratio, override this method to return false.
-								When calling <a href="GraphObject.html#static-make">GraphObject.make</a> to initialize a <a href="Diagram.html">Diagram</a>:</p>
-								<pre><code class="language-js"><span style="color: #DCDCAA">$</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Diagram</span><span style="color: #D4D4D4">, . . .,</span>
-<span style="color: #D4D4D4">  {</span>
-<span style="color: #D4D4D4">    </span><span style="color: #CE9178">&quot;resizingTool.computeReshape&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">function</span><span style="color: #D4D4D4">() { </span><span style="color: #C586C0">return</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">; },</span>
-<span style="color: #D4D4D4">    . . . })</span>
+								When initializing a <a href="Diagram.html">Diagram</a>:</p>
+								<pre><code class="language-js"><span style="color: #569CD6">const</span><span style="color: #D4D4D4"> </span><span style="color: #4FC1FF">diagram</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Diagram</span><span style="color: #D4D4D4">, &quot;</span><span style="color: #4FC1FF">myDiagramDiv</span><span style="color: #CE9178">&quot;</span>
+<span style="color: #CE9178">  </span><span style="color: #F44747">{</span>
+<span style="color: #D4D4D4">    </span><span style="color: #CE9178">&quot;resizingTool.computeReshape&quot;</span><span style="color: #D4D4D4">: </span><span style="color: #569CD6">function</span><span style="color: #D4D4D4">() { </span><span style="color: #C586C0">return</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">; },</span>
+<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// ... rest of Diagram init</span>
+<span style="color: #D4D4D4">  })</span>
 </code></pre>
 								<p>Or when overriding the method dynamically:</p>
 								<pre><code class="language-js"><span style="color: #D4D4D4">  </span><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">toolManager</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">resizingTool</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">computeReshape</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">function</span><span style="color: #D4D4D4">() { </span><span style="color: #C586C0">return</span><span style="color: #D4D4D4"> </span><span style="color: #569CD6">false</span><span style="color: #D4D4D4">; }</span>
@@ -832,6 +853,9 @@
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="ResizingTool.html#minSize" class="tsd-kind-icon">min<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class">
+								<a href="ResizingTool.html#oppositePoint" class="tsd-kind-icon">opposite<wbr>Point</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="ResizingTool.html#originalDesiredSize" class="tsd-kind-icon">original<wbr>Desired<wbr>Size</a>

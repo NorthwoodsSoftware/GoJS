@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // This is the definitions of the predefined text editor used by TextEditingTool
@@ -107,7 +107,13 @@
     var textwidth = (textBlock.naturalBounds.width * textscale) + 6;
     var textheight = (textBlock.naturalBounds.height * textscale) + 2;
     var left = (loc.x - pos.x) * sc;
-    var top = (loc.y - pos.y) * sc;
+    const yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
+    const valign = textBlock.verticalAlignment;
+    const oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
+    const allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
+    const center = (0.5 * textheight) - (0.5 * allLinesHeight);
+    // add offset to yCenter to get the appropriate position:
+    const yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
 
     textarea.value = textBlock.text;
     // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides
@@ -122,7 +128,7 @@
     textarea.style['lineHeight'] = 'normal';
     textarea.style['width'] = (textwidth) + 'px';
     textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
-    textarea.style['top'] = ((top - (textheight / 2) | 0) - paddingsize) + 'px';
+    textarea.style['top'] = (((yCenter + yOffset) | 0) - paddingsize) + 'px';
     textarea.style['textAlign'] = textBlock.textAlign;
     textarea.style['margin'] = '0';
     textarea.style['padding'] = paddingsize + 'px';

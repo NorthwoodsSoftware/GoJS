@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Incrementally grow a tree as each node is expanded for the first time."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Incremental Tree</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       var blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
 
@@ -83,7 +86,7 @@
             { name: "PANEL" },
             $(go.Shape, "Circle",
               { fill: "whitesmoke", stroke: "black" },
-              new go.Binding("fill", "rootdistance", function(dist) {
+              new go.Binding("fill", "rootdistance", dist => {
                 dist = Math.min(blues.length - 1, dist);
                 return blues[dist];
               })),
@@ -100,7 +103,7 @@
               alignmentFocus: go.Spot.Center,
               // customize the expander behavior to
               // create children if the node has never been expanded
-              click: function(e, obj) {  // OBJ is the Button
+              click: (e, obj) => {  // OBJ is the Button
                 var node = obj.part;  // get the Node containing this Button
                 if (node === null) return;
                 e.handled = true;
@@ -116,13 +119,9 @@
       ]);
 
 
-      document.getElementById('zoomToFit').addEventListener('click', function() {
-        myDiagram.zoomToFit();
-      });
+      document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.zoomToFit());
 
-      document.getElementById('expandAtRandom').addEventListener('click', function() {
-        expandAtRandom();
-      });
+      document.getElementById('expandAtRandom').addEventListener('click', () => expandAtRandom());
     }
 
     function expandNode(node) {
@@ -185,9 +184,9 @@
 
     function expandAtRandom() {
       var eligibleNodes = [];
-      myDiagram.nodes.each(function(n) {
+      myDiagram.nodes.each(n => {
         if (!n.isTreeExpanded) eligibleNodes.push(n);
-      })
+      });
       var node = eligibleNodes[Math.floor(Math.random() * (eligibleNodes.length))];
       expandNode(node);
     }

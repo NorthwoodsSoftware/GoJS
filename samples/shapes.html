@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="All predefined GoJS Shape figures, displayed as Nodes with a name underneath."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>GoJS Shapes</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
   <script src="../extensions/Figures.js"></script>
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create the Diagram for the HTML DIV element
@@ -72,8 +75,8 @@
       myDiagram.nodeTemplate =
         $(go.Node, "Vertical",
           {
-            mouseEnter: function(e, node) { node.isHighlighted = true; },
-            mouseLeave: function(e, node) { node.isHighlighted = false; },
+            mouseEnter: (e, node) => node.isHighlighted = true,
+            mouseLeave: (e, node) => node.isHighlighted = false,
             locationSpot: go.Spot.Center,  // the location is the center of the Shape
             locationObjectName: "SHAPE",
             selectionAdorned: false,  // no selection handle when selected
@@ -82,7 +85,7 @@
             // don't re-layout when node changes size
             layoutConditions: go.Part.LayoutStandard & ~go.Part.LayoutNodeSized
           },
-          new go.Binding("layerName", "isHighlighted", function(h) { return h ? "Foreground" : ""; }).ofObject(),
+          new go.Binding("layerName", "isHighlighted", h => h ? "Foreground" : "").ofObject(),
           $(go.Shape,
             {
               name: "SHAPE",  // named so that the above properties can refer to this GraphObject
@@ -90,12 +93,8 @@
               strokeWidth: 3
             },
             // Color the built in shapes green, and the figures.js shapes Pink
-            new go.Binding("fill", "key", function(k) {
-              return isBuiltIn(k) ? "palegreen" : "lightpink";
-            }),
-            new go.Binding("stroke", "key", function(k) {
-              return isBuiltIn(k) ? "darkgreen" : "#C2185B";
-            }),
+            new go.Binding("fill", "key", k => isBuiltIn(k) ? "palegreen" : "lightpink"),
+            new go.Binding("stroke", "key", k => isBuiltIn(k) ? "darkgreen" : "#C2185B"),
             // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
             new go.Binding("figure", "key")),
           $(go.TextBlock,  // the label

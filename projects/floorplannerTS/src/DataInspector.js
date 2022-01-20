@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -12,6 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Inspector = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -133,7 +134,7 @@
              * This read-only property returns the HTMLElement containing the Inspector.
              */
             get: function () { return this._div; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "diagram", {
@@ -158,7 +159,7 @@
                     }
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "inspectedObject", {
@@ -168,7 +169,7 @@
              * To set the inspected object, call {@link #inspectObject}.
              */
             get: function () { return this._inspectedObject; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "inspectSelection", {
@@ -192,7 +193,7 @@
                     }
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "includesOwnProperties", {
@@ -208,7 +209,7 @@
                     this.inspectObject();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "properties", {
@@ -226,7 +227,7 @@
                     this.inspectObject();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "propertyModified", {
@@ -242,7 +243,7 @@
                     this._propertyModified = val;
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "multipleSelection", {
@@ -258,7 +259,7 @@
                     this.inspectObject();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "showUnionProperties", {
@@ -274,7 +275,7 @@
                     this.inspectObject();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Inspector.prototype, "showLimit", {
@@ -290,7 +291,7 @@
                     this.inspectObject();
                 }
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -689,7 +690,7 @@
             if (propertyValue === 'null')
                 return null;
             var split = propertyValue.split(' ');
-            var arr = [];
+            var arr = new Array();
             for (var i = 0; i < split.length; i++) {
                 var str = split[i];
                 if (!str)

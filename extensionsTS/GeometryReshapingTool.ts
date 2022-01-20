@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -189,7 +189,7 @@ export class GeometryReshapingTool extends go.Tool {
           if (unneeded !== null) {
             unneeded.forEach(function(h) { if (adornment) adornment.remove(h); });
           }
-  
+
           part.addAdornment(this.name, adornment);
           adornment.location = selelt.getDocumentPoint(go.Spot.TopLeft);
           adornment.angle = selelt.getDocumentAngle();
@@ -265,7 +265,7 @@ export class GeometryReshapingTool extends go.Tool {
           }
         }
       }
-    
+
       // requires Path Geometry, checked above in updateAdornments
       for (let f = 0; f < geo.figures.count; f++) {
         const fig = geo.figures.elt(f);
@@ -330,7 +330,7 @@ export class GeometryReshapingTool extends go.Tool {
     if (h === null) return null;
     return h.copy();
   }
-  
+
 
   /**
    * This tool may run when there is a mouse-down event on a reshape handle.
@@ -410,7 +410,7 @@ export class GeometryReshapingTool extends go.Tool {
         return;
       }
     }
-  
+
     this._originalGeometry = shape.geometry;
     this.isActive = true;
   }

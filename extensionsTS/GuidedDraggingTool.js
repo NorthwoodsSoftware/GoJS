@@ -1,11 +1,11 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -81,12 +81,12 @@ var __extends = (this && this.__extends) || (function () {
              * Gets or sets the margin of error for which guidelines show up.
              *
              * The default value is 6.
-             * Guidelines will show up when the aligned nods are ± 6px away from perfect alignment.
+             * Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.
              */
             get: function () { return this._guidelineSnapDistance; },
             set: function (val) {
                 if (typeof val !== 'number' || isNaN(val) || val < 0)
-                    throw new Error('new value for GuideddraggingTool.guidelineSnapDistance must be a non-negative number');
+                    throw new Error('new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number');
                 if (this._guidelineSnapDistance !== val) {
                     this._guidelineSnapDistance = val;
                 }
@@ -96,7 +96,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
             /**
-             * Gets or sets whether the guidelines are enabled or disable.
+             * Gets or sets whether the guidelines are enabled or disabled.
              *
              * The default value is true.
              */

@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Layout that provides one way to have a layout of layouts.
@@ -156,7 +156,7 @@ ArrangingLayout.prototype.doLayout = function(coll) {
 
 /**
  * @hidden @internal
- * @param {*} subcoll 
+ * @param {*} subcoll
  */
 ArrangingLayout.prototype._makeMainNode = function(subcoll) {
   var grp = new go.Node();
@@ -180,9 +180,9 @@ ArrangingLayout.prototype._makeMainNode = function(subcoll) {
  * A null filter assigns all Nodes that have connected Links to the main graph, and
  * all Links will be assigned to the main graph, and the side graph will only contain
  * Parts with no connected Links.
- * @param {Set} coll 
- * @param {Set} maincoll 
- * @param {Set} sidecoll 
+ * @param {Set} coll
+ * @param {Set} maincoll
+ * @param {Set} sidecoll
  */
 ArrangingLayout.prototype.splitParts = function(coll, maincoll, sidecoll) {
   // first consider all Nodes

@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -106,9 +106,9 @@ export class ParallelLayout extends go.TreeLayout {
   }
 
   /**
-   * Return an Array holding the Split node and the Merge node for this layout.
-   * This signals an error if there is not exactly one Node that {@link #isSplit}
-   * and exactly one Node that {@link #isMerge}.
+   * Find a Split vertex and a Merge vertex for this layout.
+   * This signals an error if there is not exactly one vertex/Node that {@link #isSplit}
+   * and exactly one vertex/Node that {@link #isMerge}.
    * This can be overridden; any override must set {@link #splitNode} and {@link #mergeNode}.
    * @param {Iterable<TreeVertex>} vertexes
    */

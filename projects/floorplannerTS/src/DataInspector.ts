@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -629,7 +629,7 @@ export class Inspector {
   public convertToArrayOfNumber(propertyValue: string): Array<number> | null {
     if (propertyValue === 'null') return null;
     const split = propertyValue.split(' ');
-    const arr = [];
+    const arr = new Array<number>();
     for (let i = 0; i < split.length; i++) {
       const str = split[i];
       if (!str) continue;

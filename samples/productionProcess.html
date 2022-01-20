@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Oil and gas production diagram viewer, for end-users."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Production Process Viewer</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -153,7 +153,10 @@
       }
 
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
           initialAutoScale: go.Diagram.Uniform,  // scale to show all of the contents
@@ -172,7 +175,7 @@
             toolTip:
               $("ToolTip",
                 $(go.TextBlock, { margin: 4, width: 140 },
-                  new go.Binding("text", "", function(data) { return data.text + ":\n\n" + data.description; }))
+                  new go.Binding("text", "", data => data.text + ":\n\n" + data.description))
               )
           },
           new go.Binding("location", "pos", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -184,7 +187,7 @@
                 width: 40, height: 0,
                 stroke: null, strokeWidth: 0, fill: "gray"
               },
-              new go.Binding("height", "icon", function() { return 40; }),
+              new go.Binding("height", "icon", () => 40),
               new go.Binding("fill", "color", colorFunc),
               new go.Binding("geometry", "icon", geoFunc)),
             $(go.Shape,
@@ -212,7 +215,7 @@
       function updatePortHeight(node, link, port) {
         var sideinputs = 0;
         var sideoutputs = 0;
-        node.findLinksConnected().each(function(l) {
+        node.findLinksConnected().each(l => {
           if (l.toNode === node && l.toSpot === go.Spot.LeftSide) sideinputs++;
           if (l.fromNode === node && l.fromSpot === go.Spot.RightSide) sideoutputs++;
         });
@@ -239,7 +242,7 @@
           // mark each Shape to get the link geometry with isPanelMain: true
           $(go.Shape, { isPanelMain: true, stroke: "gray", strokeWidth: 10 },
             // get the default stroke color from the fromNode
-            new go.Binding("stroke", "fromNode", function(n) { return go.Brush.lighten((n && Colors[n.data.color]) || "gray"); }).ofObject(),
+            new go.Binding("stroke", "fromNode", n => go.Brush.lighten((n && Colors[n.data.color]) || "gray")).ofObject(),
             // but use the link's data.color if it is set
             new go.Binding("stroke", "color", colorFunc)),
           $(go.Shape, { isPanelMain: true, stroke: "white", strokeWidth: 3, name: "PIPE", strokeDashArray: [20, 40] })
@@ -256,10 +259,10 @@
     var down = true;
     function loop() {
       var diagram = myDiagram;
-      setTimeout(function() {
+      setTimeout(() => {
         var oldskips = diagram.skipsUndoManager;
         diagram.skipsUndoManager = true;
-        diagram.links.each(function(link) {
+        diagram.links.each(link => {
           var shape = link.findObject("PIPE");
           var off = shape.strokeDashOffset - 3;
           // animate (move) the stroke dash

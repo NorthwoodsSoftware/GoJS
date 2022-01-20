@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A sequence diagram editor."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Sequence Diagram</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv", // must be the ID or reference to an HTML DIV
@@ -71,10 +74,10 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
+      myDiagram.addDiagramListener("Modified", e => {
+        const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        const idx = document.title.indexOf("*");
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
@@ -183,17 +186,17 @@
 
     function ensureLifelineHeights(e) {
       // iterate over all Activities (ignore Groups)
-      var arr = myDiagram.model.nodeDataArray;
-      var max = -1;
-      for (var i = 0; i < arr.length; i++) {
-        var act = arr[i];
+      const arr = myDiagram.model.nodeDataArray;
+      let max = -1;
+      for (let i = 0; i < arr.length; i++) {
+        const act = arr[i];
         if (act.isGroup) continue;
         max = Math.max(max, act.start + act.duration);
       }
       if (max > 0) {
         // now iterate over only Groups
-        for (var i = 0; i < arr.length; i++) {
-          var gr = arr[i];
+        for (let i = 0; i < arr.length; i++) {
+          const gr = arr[i];
           if (!gr.isGroup) continue;
           if (max > gr.duration) {  // this only extends, never shrinks
             myDiagram.model.setDataProperty(gr, "duration", max);
@@ -203,22 +206,22 @@
     }
 
     // some parameters
-    var LinePrefix = 20;  // vertical starting point in document for all Messages and Activations
-    var LineSuffix = 30;  // vertical length beyond the last message time
-    var MessageSpacing = 20;  // vertical distance between Messages at different steps
-    var ActivityWidth = 10;  // width of each vertical activity bar
-    var ActivityStart = 5;  // height before start message time
-    var ActivityEnd = 5;  // height beyond end message time
+    const LinePrefix = 20;  // vertical starting point in document for all Messages and Activations
+    const LineSuffix = 30;  // vertical length beyond the last message time
+    const MessageSpacing = 20;  // vertical distance between Messages at different steps
+    const ActivityWidth = 10;  // width of each vertical activity bar
+    const ActivityStart = 5;  // height before start message time
+    const ActivityEnd = 5;  // height beyond end message time
 
     function computeLifelineHeight(duration) {
       return LinePrefix + duration * MessageSpacing + LineSuffix;
     }
 
     function computeActivityLocation(act) {
-      var groupdata = myDiagram.model.findNodeDataForKey(act.group);
+      const groupdata = myDiagram.model.findNodeDataForKey(act.group);
       if (groupdata === null) return new go.Point();
       // get location of Lifeline's starting point
-      var grouploc = go.Point.parse(groupdata.loc);
+      const grouploc = go.Point.parse(groupdata.loc);
       return new go.Point(grouploc.x, convertTimeToY(act.start) - ActivityStart);
     }
     function backComputeActivityLocation(loc, act) {
@@ -242,57 +245,57 @@
     }
 
 
-    // a custom routed Link
-    function MessageLink() {
-      go.Link.call(this);
+  // a custom routed Link
+  class MessageLink extends go.Link {
+    constructor() {
+      super();
       this.time = 0;  // use this "time" value when this is the temporaryLink
     }
-    go.Diagram.inherit(MessageLink, go.Link);
 
-    MessageLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      var p = port.getDocumentPoint(go.Spot.Center);
-      var r = port.getDocumentBounds();
-      var op = otherport.getDocumentPoint(go.Spot.Center);
+    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
+      const p = port.getDocumentPoint(go.Spot.Center);
+      const r = port.getDocumentBounds();
+      const op = otherport.getDocumentPoint(go.Spot.Center);
 
-      var data = this.data;
-      var time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
+      const data = this.data;
+      const time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
 
-      var aw = this.findActivityWidth(node, time);
-      var x = (op.x > p.x ? p.x + aw / 2 : p.x - aw / 2);
-      var y = convertTimeToY(time);
+      const aw = this.findActivityWidth(node, time);
+      const x = (op.x > p.x ? p.x + aw / 2 : p.x - aw / 2);
+      const y = convertTimeToY(time);
       return new go.Point(x, y);
-    };
+    }
 
-    MessageLink.prototype.findActivityWidth = function(node, time) {
-      var aw = ActivityWidth;
+    findActivityWidth(node, time) {
+      let aw = ActivityWidth;
       if (node instanceof go.Group) {
         // see if there is an Activity Node at this point -- if not, connect the link directly with the Group's lifeline
-        if (!node.memberParts.any(function(mem) {
-          var act = mem.data;
+        if (!node.memberParts.any(mem => {
+          const act = mem.data;
           return (act !== null && act.start <= time && time <= act.start + act.duration);
         })) {
           aw = 0;
         }
       }
       return aw;
-    };
+    }
 
-    MessageLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
-      var p = port.getDocumentPoint(go.Spot.Center);
-      var op = otherport.getDocumentPoint(go.Spot.Center);
-      var right = op.x > p.x;
+    getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+      const p = port.getDocumentPoint(go.Spot.Center);
+      const op = otherport.getDocumentPoint(go.Spot.Center);
+      const right = op.x > p.x;
       return right ? 0 : 180;
-    };
+    }
 
-    MessageLink.prototype.computePoints = function() {
+    computePoints() {
       if (this.fromNode === this.toNode) {  // also handle a reflexive link as a simple orthogonal loop
-        var data = this.data;
-        var time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
-        var p = this.fromNode.port.getDocumentPoint(go.Spot.Center);
-        var aw = this.findActivityWidth(this.fromNode, time);
+        const data = this.data;
+        const time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
+        const p = this.fromNode.port.getDocumentPoint(go.Spot.Center);
+        const aw = this.findActivityWidth(this.fromNode, time);
 
-        var x = p.x + aw / 2;
-        var y = convertTimeToY(time);
+        const x = p.x + aw / 2;
+        const y = convertTimeToY(time);
         this.clearPoints();
         this.addPoint(new go.Point(x, y));
         this.addPoint(new go.Point(x + 50, y));
@@ -300,43 +303,47 @@
         this.addPoint(new go.Point(x, y + 5));
         return true;
       } else {
-        return go.Link.prototype.computePoints.call(this);
+        return super.computePoints();
       }
     }
-    // end MessageLink
+  }
+  // end MessageLink
 
 
-    // A custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
-    // for both the temporaryLink and the actual newly created Link
-    function MessagingTool() {
-      go.LinkingTool.call(this);
-      var $ = go.GraphObject.make;
+  // A custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
+  // for both the temporaryLink and the actual newly created Link
+  class MessagingTool extends go.LinkingTool {
+    constructor() {
+      super();
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
       this.temporaryLink =
         $(MessageLink,
           $(go.Shape, "Rectangle",
             { stroke: "magenta", strokeWidth: 2 }),
           $(go.Shape,
             { toArrow: "OpenTriangle", stroke: "magenta" }));
-    };
-    go.Diagram.inherit(MessagingTool, go.LinkingTool);
+    }
 
-    MessagingTool.prototype.doActivate = function() {
-      go.LinkingTool.prototype.doActivate.call(this);
-      var time = convertYToTime(this.diagram.firstInput.documentPoint.y);
+    doActivate() {
+      super.doActivate();
+      const time = convertYToTime(this.diagram.firstInput.documentPoint.y);
       this.temporaryLink.time = Math.ceil(time);  // round up to an integer value
-    };
+    }
 
-    MessagingTool.prototype.insertLink = function(fromnode, fromport, tonode, toport) {
-      var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+    insertLink(fromnode, fromport, tonode, toport) {
+      const newlink = super.insertLink(fromnode, fromport, tonode, toport);
       if (newlink !== null) {
-        var model = this.diagram.model;
+        const model = this.diagram.model;
         // specify the time of the message
-        var start = this.temporaryLink.time;
-        var duration = 1;
+        const start = this.temporaryLink.time;
+        const duration = 1;
         newlink.data.time = start;
         model.setDataProperty(newlink.data, "text", "msg");
         // and create a new Activity node data in the "to" group data
-        var newact = {
+        const newact = {
           group: newlink.data.to,
           start: start,
           duration: duration
@@ -346,26 +353,23 @@
         ensureLifelineHeights();
       }
       return newlink;
-    };
-    // end MessagingTool
-
-
-    // A custom DraggingTool that supports dragging any number of MessageLinks up and down --
-    // changing their data.time value.
-    function MessageDraggingTool() {
-      go.DraggingTool.call(this);
     }
-    go.Diagram.inherit(MessageDraggingTool, go.DraggingTool);
+  }
+  // end MessagingTool
 
+
+  // A custom DraggingTool that supports dragging any number of MessageLinks up and down --
+  // changing their data.time value.
+  class MessageDraggingTool extends go.DraggingTool {
     // override the standard behavior to include all selected Links,
     // even if not connected with any selected Nodes
-    MessageDraggingTool.prototype.computeEffectiveCollection = function(parts, options) {
-      var result = go.DraggingTool.prototype.computeEffectiveCollection.call(this, parts, options);
+    computeEffectiveCollection(parts, options) {
+      const result = super.computeEffectiveCollection(parts, options);
       // add a dummy Node so that the user can select only Links and move them all
       result.add(new go.Node(), new go.DraggingInfo(new go.Point()));
       // normally this method removes any links not connected to selected nodes;
       // we have to add them back so that they are included in the "parts" argument to moveParts
-      parts.each(function(part) {
+      parts.each(part => {
         if (part instanceof go.Link) {
           result.add(part, new go.DraggingInfo(part.getPoint(0).copy()));
         }
@@ -374,30 +378,31 @@
     }
 
     // override to allow dragging when the selection only includes Links
-    MessageDraggingTool.prototype.mayMove = function() {
+    mayMove() {
       return !this.diagram.isReadOnly && this.diagram.allowMove;
     }
 
     // override to move Links (which are all assumed to be MessageLinks) by
     // updating their Link.data.time property so that their link routes will
     // have the correct vertical position
-    MessageDraggingTool.prototype.moveParts = function(parts, offset, check) {
-      go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
-      var it = parts.iterator;
+    moveParts(parts, offset, check) {
+      super.moveParts(parts, offset, check);
+      const it = parts.iterator;
       while (it.next()) {
         if (it.key instanceof go.Link) {
-          var link = it.key;
-          var startY = it.value.point.y;  // DraggingInfo.point.y
-          var y = startY + offset.y;  // determine new Y coordinate value for this link
-          var cellY = this.gridSnapCellSize.height;
+          const link = it.key;
+          const startY = it.value.point.y;  // DraggingInfo.point.y
+          let y = startY + offset.y;  // determine new Y coordinate value for this link
+          const cellY = this.gridSnapCellSize.height;
           y = Math.round(y / cellY) * cellY;  // snap to multiple of gridSnapCellSize.height
-          var t = Math.max(0, convertYToTime(y));
+          const t = Math.max(0, convertYToTime(y));
           link.diagram.model.set(link.data, "time", t);
           link.invalidateRoute();
         }
       }
     }
-    // end MessageDraggingTool
+  }
+  // end MessageDraggingTool
 
 
     // Show the diagram's model in JSON format

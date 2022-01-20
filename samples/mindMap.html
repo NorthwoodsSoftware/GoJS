@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A mind map editor, showing how subtrees can be moved, copied, deleted, and laid out."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Mind Map</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -66,7 +69,7 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
+      myDiagram.addDiagramListener("Modified", e => {
         var button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
         var idx = document.title.indexOf("*");
@@ -100,12 +103,12 @@
             },
             new go.Binding("stroke", "brush"),
             // make sure links come in from the proper direction and go out appropriately
-            new go.Binding("fromSpot", "dir", function(d) { return spotConverter(d, true); }),
-            new go.Binding("toSpot", "dir", function(d) { return spotConverter(d, false); })),
+            new go.Binding("fromSpot", "dir", d => spotConverter(d, true)),
+            new go.Binding("toSpot", "dir", d => spotConverter(d, false))),
           // remember the locations of each node in the node data
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           // make sure text "grows" in the desired direction
-          new go.Binding("locationSpot", "dir", function(d) { return spotConverter(d, false); })
+          new go.Binding("locationSpot", "dir", d => spotConverter(d, false))
         );
 
       // selected nodes show a button for adding children
@@ -134,29 +137,29 @@
         $("ContextMenu",
           $("ContextMenuButton",
             $(go.TextBlock, "Bigger"),
-            { click: function(e, obj) { changeTextSize(obj, 1.1); } }),
+            { click: (e, obj) => changeTextSize(obj, 1.1) }),
           $("ContextMenuButton",
             $(go.TextBlock, "Smaller"),
-            { click: function(e, obj) { changeTextSize(obj, 1 / 1.1); } }),
+            { click: (e, obj) => changeTextSize(obj, 1 / 1.1) }),
           $("ContextMenuButton",
             $(go.TextBlock, "Bold/Normal"),
-            { click: function(e, obj) { toggleTextWeight(obj); } }),
+            { click: (e, obj) => toggleTextWeight(obj) }),
           $("ContextMenuButton",
             $(go.TextBlock, "Copy"),
-            { click: function(e, obj) { e.diagram.commandHandler.copySelection(); } }),
+            { click: (e, obj) => e.diagram.commandHandler.copySelection() }),
           $("ContextMenuButton",
             $(go.TextBlock, "Delete"),
-            { click: function(e, obj) { e.diagram.commandHandler.deleteSelection(); } }),
+            { click: (e, obj) => e.diagram.commandHandler.deleteSelection() }),
           $("ContextMenuButton",
             $(go.TextBlock, "Undo"),
-            { click: function(e, obj) { e.diagram.commandHandler.undo(); } }),
+            { click: (e, obj) => e.diagram.commandHandler.undo() }),
           $("ContextMenuButton",
             $(go.TextBlock, "Redo"),
-            { click: function(e, obj) { e.diagram.commandHandler.redo(); } }),
+            { click: (e, obj) => e.diagram.commandHandler.redo() }),
           $("ContextMenuButton",
             $(go.TextBlock, "Layout"),
             {
-              click: function(e, obj) {
+              click: (e, obj) => {
                 var adorn = obj.part;
                 adorn.diagram.startTransaction("Subtree Layout");
                 layoutTree(adorn.adornedPart);
@@ -177,7 +180,7 @@
           },
           $(go.Shape,
             { strokeWidth: 3 },
-            new go.Binding("stroke", "toNode", function(n) {
+            new go.Binding("stroke", "toNode", n => {
               if (n.data.brush) return n.data.brush;
               return "black";
             }).ofObject())
@@ -188,27 +191,27 @@
         $("ContextMenu",
           $("ContextMenuButton",
             $(go.TextBlock, "Paste"),
-            { click: function (e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); } },
-            new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }).ofObject()),
+            { click: (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint) },
+            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)).ofObject()),
           $("ContextMenuButton",
             $(go.TextBlock, "Undo"),
-            { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-            new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canUndo(); }).ofObject()),
+            { click: (e, obj) => e.diagram.commandHandler.undo() },
+            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canUndo()).ofObject()),
           $("ContextMenuButton",
             $(go.TextBlock, "Redo"),
-            { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-            new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canRedo(); }).ofObject()),
+            { click: (e, obj) => e.diagram.commandHandler.redo() },
+            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canRedo()).ofObject()),
           $("ContextMenuButton",
             $(go.TextBlock, "Save"),
-            { click: function(e, obj) { save(); } }),
+            { click: (e, obj) => save() }),
           $("ContextMenuButton",
             $(go.TextBlock, "Load"),
-            { click: function(e, obj) { load(); } })
+            { click: (e, obj) => load() })
         );
 
-      myDiagram.addDiagramListener("SelectionMoved", function(e) {
+      myDiagram.addDiagramListener("SelectionMoved", e => {
         var rootX = myDiagram.findNodeForKey(0).location.x;
-        myDiagram.selection.each(function(node) {
+        myDiagram.selection.each(node => {
           if (node.data.parent !== 0) return; // Only consider nodes connected to the root
           var nodeX = node.location.x;
           if (rootX < nodeX && node.data.dir !== "right") {
@@ -311,7 +314,7 @@
       // split the nodes and links into two collections
       var rightward = new go.Set(/*go.Part*/);
       var leftward = new go.Set(/*go.Part*/);
-      root.findLinksConnected().each(function(link) {
+      root.findLinksConnected().each(link => {
         var child = link.toNode;
         if (child.data.dir === "left") {
           leftward.add(root);  // the root node is in both collections

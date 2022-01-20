@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -38,7 +38,7 @@ export function init() {
       $(go.Shape),
       $(go.Shape, { toArrow: 'Standard' }));
 
-  myDiagram.model = $(go.TreeModel,
+  myDiagram.model = new go.TreeModel(
     {
       nodeParentKeyProperty: 'next',
       nodeDataArray: [

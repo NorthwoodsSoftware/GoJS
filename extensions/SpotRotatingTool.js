@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -40,7 +40,7 @@ go.Diagram.inherit(SpotRotatingTool, go.RotatingTool);
  * In addition to updating the standard "Rotating" Adornment, this updates a "MovingSpot"
  * Adornment that the user may drag in order to move the {@link RotatingTool#rotationPoint}.
  * @this {SpotRotatingTool}
- * @param {*} part 
+ * @param {*} part
  */
 SpotRotatingTool.prototype.updateAdornments = function(part) {
   go.RotatingTool.prototype.updateAdornments.call(this, part);
@@ -67,7 +67,7 @@ SpotRotatingTool.prototype.updateAdornments = function(part) {
 /**
  * Change the positioning of the "Rotating" Adornment to adapt to the rotation point
  * potentially being well outside of the object being rotated.
- * 
+ *
  * This assumes that {@link RotatingTool@handleAngle} is zero.
  * @this {SpotRotatingTool}
  * @param {*} obj the object being rotated
@@ -115,7 +115,7 @@ SpotRotatingTool.prototype.doActivate = function() {
   // doActivate uses this.handle if it is set beforehand, rather than searching for a rotate handle
   go.RotatingTool.prototype.doActivate.call(this);
 }
-  
+
 /**
  * @hidden @internal
  */
@@ -161,7 +161,7 @@ SpotRotatingTool.prototype.doActivate = function() {
 /**
  * This is called by mouse moves and mouse up events when the handle being dragged is "MovingSpot".
  * This needs to update the {@link Part#rotationSpot} and {@link RotatingTool.rotationPoint} properties.
- * 
+ *
  * For each of the X and Y directions, when the handle is within the bounds of the rotated object,
  * the new rotation Spot will be purely fractional; when it is outside the Spot will be limited to
  * a fraction of zero or one (whichever is closer) and an absolute offset that places the rotation point

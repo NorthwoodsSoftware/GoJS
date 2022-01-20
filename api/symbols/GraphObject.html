@@ -81,7 +81,7 @@
 		<div class="tsd tsd-page-title">
 			<div class="w-full max-w-screen-xl mx-auto px-2">
 				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.1.56<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
+					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.0<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
 				</div>
 				<div>
 					<h1>Class GraphObject</h1>
@@ -381,10 +381,14 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#apply" class="tsd-kind-icon">apply</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#attach" class="tsd-kind-icon">attach</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#bind" class="tsd-kind-icon">bind</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="GraphObject.html#static-build" class="tsd-kind-icon">build</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="GraphObject.html#cloneProtected" class="tsd-kind-icon">clone<wbr>Protected</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#copy" class="tsd-kind-icon">copy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="GraphObject.html#static-defineBuilder" class="tsd-kind-icon">define<wbr>Builder</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#findBindingPanel" class="tsd-kind-icon">find<wbr>Binding<wbr>Panel</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#getDocumentAngle" class="tsd-kind-icon">get<wbr>Document<wbr>Angle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#getDocumentBounds" class="tsd-kind-icon">get<wbr>Document<wbr>Bounds</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#getDocumentPoint" class="tsd-kind-icon">get<wbr>Document<wbr>Point</a></li>
@@ -394,8 +398,10 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#isEnabledObject" class="tsd-kind-icon">is<wbr>Enabled<wbr>Object</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#isVisibleObject" class="tsd-kind-icon">is<wbr>Visible<wbr>Object</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static"><a href="GraphObject.html#static-make" class="tsd-kind-icon">make</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#set" class="tsd-kind-icon">set</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="GraphObject.html#static-takeBuilderArgument" class="tsd-kind-icon">take<wbr>Builder<wbr>Argument</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GraphObject.html#trigger" class="tsd-kind-icon">trigger</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -1580,8 +1586,7 @@
 								<p>You can control how long the user must wait during a drag with a motionless mouse before
 									a &quot;mouse hold&quot; event occurs, by setting <a href="ToolManager.html#holdDelay">ToolManager.holdDelay</a>.
 								For example:</p>
-								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> =</span>
-<span style="color: #D4D4D4">  </span><span style="color: #DCDCAA">$</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Diagram</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
+								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Diagram</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
 <span style="color: #D4D4D4">    { </span><span style="color: #CE9178">&quot;toolManager.holdDelay&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #B5CEA8">500</span><span style="color: #D4D4D4"> });  </span><span style="color: #6A9955">// 500 milliseconds</span>
 </code></pre>
 								<p>or:</p>
@@ -1615,8 +1620,7 @@
 								<p>You can control how long the user must wait with a motionless mouse before
 									a &quot;mouse hover&quot; event occurs, by setting <a href="ToolManager.html#hoverDelay">ToolManager.hoverDelay</a>.
 								For example:</p>
-								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> =</span>
-<span style="color: #D4D4D4">  </span><span style="color: #DCDCAA">$</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Diagram</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
+								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Diagram</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
 <span style="color: #D4D4D4">    { </span><span style="color: #CE9178">&quot;toolManager.hoverDelay&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #B5CEA8">500</span><span style="color: #D4D4D4"> });  </span><span style="color: #6A9955">// 500 milliseconds</span>
 </code></pre>
 								<p>or:</p>
@@ -1897,7 +1901,7 @@
 									Value must be of type Point.
 									You cannot modify the x or y of the value of this property --
 									if you want to change the position you must set this property to a different Point.
-								Default is Point(NaN, NaN).</p>
+								Default is <code>Point(NaN, NaN)</code>.</p>
 								<p>For <a href="Part.html">Part</a>s, see also <a href="Part.html#location">Part.location</a>.</p>
 							</div>
 						</li>
@@ -2341,8 +2345,7 @@
 								<p>Tooltips are not copied by <a href="GraphObject.html#copy">copy</a>, so that tooltips may be shared by all instances of a template.</p>
 								<p>Tooltips are shown after a timed delay given by the <a href="ToolManager.html#hoverDelay">ToolManager.hoverDelay</a>.
 								You can change the delay time by:</p>
-								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> =</span>
-<span style="color: #D4D4D4">  </span><span style="color: #DCDCAA">$</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Diagram</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
+								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4"> = </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Diagram</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;myDiagramDiv&quot;</span><span style="color: #D4D4D4">,</span>
 <span style="color: #D4D4D4">    { </span><span style="color: #CE9178">&quot;toolManager.hoverDelay&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #B5CEA8">500</span><span style="color: #D4D4D4"> });  </span><span style="color: #6A9955">// 500 milliseconds</span>
 </code></pre>
 								<p>or:</p>
@@ -2416,31 +2419,267 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="apply" class="tsd-anchor"></a>
+					<h3>
+						apply
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">apply<span class="tsd-signature-symbol">(</span>func<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>thisObject<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This method takes a function that can be used to apply multiple settings, bindings,
+									or {@Panel#add} calls, to different GraphObjects. This is common in initialization.
+									If you are just adding settings, bindings, or GraphObjects to a single GraphObject,
+									you do not need to use this, you can just chain calls to <a href="GraphObject.html#set">set</a>, <a href="GraphObject.html#bind">bind</a>,
+									and <a href="Panel.html#add">Panel.add</a> instead. This method is mostly useful when setting the same values
+								across multiple GraphObjects.</p>
+								<p>For example:</p>
+								<pre><code><span style="color: #6A9955">// This can be used by several node templates</span>
+<span style="color: #6A9955">// to set multiple properties and bindings on each</span>
+<span style="color: #569CD6">function</span><span style="color: #D4D4D4"> </span><span style="color: #DCDCAA">nodeStyle</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">node</span><span style="color: #D4D4D4">) {</span>
+<span style="color: #D4D4D4">  </span><span style="color: #9CDCFE">node</span>
+<span style="color: #D4D4D4">    .</span><span style="color: #DCDCAA">set</span><span style="color: #D4D4D4">({ </span><span style="color: #9CDCFE">background:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;red&#039;</span><span style="color: #D4D4D4"> })</span>
+<span style="color: #D4D4D4">    .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;location&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">    .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;desiredSize&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;size&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Size</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Parse</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">}</span>
+
+<span style="color: #6A9955">// ... in a Node template:</span>
+<span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Node</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;Auto&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">apply</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">nodeStyle</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Shape</span><span style="color: #D4D4D4">( ... ))</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">add</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Panel</span><span style="color: #D4D4D4">( ... ))</span>
+<span style="color: #D4D4D4"> </span><span style="color: #6A9955">// ...rest of Node template</span>
+
+<span style="color: #6A9955">// ... in another Node template:</span>
+<span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Node</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;Vertical&quot;</span><span style="color: #D4D4D4">, { </span><span style="color: #9CDCFE">padding:</span><span style="color: #D4D4D4"> </span><span style="color: #B5CEA8">5</span><span style="color: #D4D4D4"> })</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">apply</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">nodeStyle</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> </span><span style="color: #6A9955">// ...rest of Node template</span>
+</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#set">set</a> a type-safe method to set a collection of properties</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>func: <span class="tsd-signature-symbol">(</span>thisObject<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a function that takes this GraphObject</p>
+									</div>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="attach" class="tsd-anchor"></a>
+					<h3>
+						attach
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">attach<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This method sets a collection of properties according to the property/value pairs on the given Object, or array of Objects,
+								in the same manner as <a href="GraphObject.html#static-make">GraphObject.make</a> does when constructing a GraphObject.</p>
+								<p>This method is used in initialization, but typically you should use <a href="GraphObject.html#set">set</a> instead,
+									unless you need to attach new properties that do not exist on the GraphObject, or to set sub-properties.
+								Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.</p>
+								<pre><code><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Shape</span><span style="color: #D4D4D4">()</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;fill&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;color&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;strokeWidth&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;width&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">attach</span><span style="color: #D4D4D4">({ </span><span style="color: #6A9955">// use .attach for untyped property attachments</span>
+<span style="color: #D4D4D4">   </span><span style="color: #CE9178">&quot;_color&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;Red&quot;</span>
+<span style="color: #D4D4D4"> })</span>
+</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#setProperties">setProperties</a> a synonym of this method, <a href="GraphObject.html#set">set</a> a type-safe method to set a collection of properties</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>config: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a JavaScript object containing properties to attach, or an array of such objects.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="bind" class="tsd-anchor"></a>
 					<h3>
 						bind
 					</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>binding<span class="tsd-signature-symbol">: </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>targetprop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, sourceprop<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, conv<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, targetObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span>, backconv<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, sourceData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
+						<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>binding<span class="tsd-signature-symbol">: </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>Add a data-binding of a property on this GraphObject to a property on a data object.
-									It is unusual to call this method -- <a href="GraphObject.html#static-make">GraphObject.make</a> will call this method for you
-								when you pass it an instance of <a href="Binding.html">Binding</a>.</p>
+								<p>Add a data-binding to this GraphObject for the given property names and optional conversion function.</p>
 								<p>Do not add, modify, or remove any Bindings after this object has been copied.</p>
+								<p>An example using <code>.bind</code> with the shorthand arguments:</p>
+								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">nodeTemplate</span><span style="color: #D4D4D4"> =</span>
+<span style="color: #D4D4D4">  </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Node</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;Horizontal&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">   .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;location&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;loc&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">   </span><span style="color: #6A9955">// ... rest of Node template</span>
+</code></pre>
+								<p>An example using both shorthand and a new go.Binding with <code>.bind</code>:</p>
+								<pre><code class="language-js"><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Shape</span><span style="color: #D4D4D4">({</span>
+<span style="color: #D4D4D4">    </span><span style="color: #6A9955">// ... shape properties</span>
+<span style="color: #D4D4D4">  })</span>
+<span style="color: #D4D4D4">  </span><span style="color: #6A9955">// Shape.fill is bound to Node.data.color</span>
+<span style="color: #D4D4D4">  .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;fill&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;color&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">  </span><span style="color: #6A9955">// Shape.stroke is red when Node.isHighlighted is true, black otherwise</span>
+<span style="color: #D4D4D4">  .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Binding</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;stroke&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;isHighlighted&quot;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">                </span><span style="color: #569CD6">function</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">h</span><span style="color: #D4D4D4">) { </span><span style="color: #C586C0">return</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">h</span><span style="color: #D4D4D4"> ? </span><span style="color: #CE9178">&quot;red&quot;</span><span style="color: #D4D4D4"> : </span><span style="color: #CE9178">&quot;black&quot;</span><span style="color: #D4D4D4">; }).</span><span style="color: #DCDCAA">ofObject</span><span style="color: #D4D4D4">())</span>
+</code></pre>
+								<p>If you need to call <a href="Binding.html#makeTwoWay">Binding.makeTwoWay</a> or <a href="Binding.html#ofObject">Binding.ofObject</a>, you will have to use a <code>new go.Binding()</code> as
+								the argument to this method.</p>
+								<p>Read more about <a href="Binding.html">Binding</a>s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> targetprop: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A string naming the target property on the target object.
+										This should not be the empty string.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sourceprop: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A string naming the source property on the bound data object.
+											If this is the empty string, the whole <a href="Panel.html#data">Panel.data</a> object is used.
+										If this argument is not supplied, the source property is assumed to be the same as the target property.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conv: <span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, targetObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional side-effect-free function converting the data property value to the value to set the target property.
+										If the function is null or not supplied, no conversion takes place.</p>
+									</div>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> backconv: <span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, sourceData<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional conversion function to convert property values back to data values.
+											Specifying this modifies the binding to set its <a href="Binding.html#mode">Binding.mode</a> to be <a href="Binding.html#static-TwoWay">Binding.TwoWay</a>.
+											If you want a two-way binding without a back-conversion function, call this method with the new <a href="Binding.html">Binding</a>
+										argument instead, and call <a href="Binding.html#makeTwoWay">Binding.makeTwoWay</a> on it: <code>.bind(new go.Binding(...).makeTwoWay())</code></p>
+									</div>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
+						</li>
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Add a data-binding of a property on this GraphObject to a property on a data object.</p>
+								<p>Do not add, modify, or remove any Bindings after this object has been copied.</p>
+								<p>An example using <code>.bind</code> with the Binding argument:</p>
+								<pre><code class="language-js"><span style="color: #9CDCFE">myDiagram</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">nodeTemplate</span><span style="color: #D4D4D4"> =</span>
+<span style="color: #D4D4D4">  </span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Part</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;Horizontal&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4">   .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Binding</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;location&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;loc&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Point</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">parse</span><span style="color: #D4D4D4">).</span><span style="color: #DCDCAA">makeTwoWay</span><span style="color: #D4D4D4">(</span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">Point</span><span style="color: #D4D4D4">.</span><span style="color: #9CDCFE">stringify</span><span style="color: #D4D4D4">))</span>
+<span style="color: #D4D4D4">   </span><span style="color: #6A9955">// ...</span>
+</code></pre>
 								<p>Read more about <a href="Binding.html">Binding</a>s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>binding: <a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+					<a name="static-build" class="tsd-anchor"></a>
+					<h3>
+						<span class="tsd-flag ts-flagStatic">Static</span>
+						build
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">build&lt;T&gt;<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>This static function creates an instance that was defined with <a href="GraphObject.html#static-defineBuilder">GraphObject.defineBuilder</a>.
+									Once this is called one can use the name as the first argument for <a href="GraphObject.html#static-make">GraphObject.make</a>.
+								Names are case sensitive.</p>
+								<p>The second is an optional settings configuration object, equivalent to calling <a href="GraphObject.html#set">GraphObject.set</a>
+								on the new object.</p>
+								<p>Predefined builder names include: <code>&quot;Button&quot;</code>, <code>&quot;TreeExpanderButton&quot;</code>, <code>&quot;SubGraphExpanderButton&quot;</code>,
+									<code>&quot;PanelExpanderButton&quot;</code>, and <code>&quot;ContextMenuButton&quot;</code>.
+									The implementation of these builders is provided by <a href="../../extensions/Buttons.js">Buttons.js</a>
+								in the Extensions directory.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
+										<p>a capitalized name; must not be <code>&quot;&quot;</code> or <code>&quot;None&quot;</code></p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a plain JavaScript object with various property values to be set on this GraphObject.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2533,8 +2772,8 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This static function defines a named function that <a href="GraphObject.html#static-make">GraphObject.make</a> can use to build objects.
-									Once this is called one can use the name as the first argument for <a href="GraphObject.html#static-make">GraphObject.make</a>.
+								<p>This static function defines a named function that <a href="GraphObject.html#static-make">GraphObject.make</a> or <a href="GraphObject.html#static-build">GraphObject.build</a> can use to build objects.
+									Once this is called one can use the name as the first argument for <a href="GraphObject.html#static-make">GraphObject.make</a> or <a href="GraphObject.html#static-build">GraphObject.build</a>.
 								Names are case sensitive.</p>
 								<p>The second argument must be a function that returns a newly created object, typically a <a href="GraphObject.html">GraphObject</a>.
 									It is commonplace for that object to be a <a href="Panel.html">Panel</a> holding a newly created visual tree of GraphObjects.
@@ -2568,6 +2807,29 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="findBindingPanel" class="tsd-anchor"></a>
+					<h3>
+						find<wbr>Binding<wbr>Panel
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Binding<wbr>Panel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Walks up the visual tree and returns the first Panel whose Panel.data is bound to data.
+								This can be useful when you need to inspect <a href="Panel.html#data">Panel.data</a> objects.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -2830,7 +3092,7 @@
 						<li class="tsd-signature tsd-kind-icon">make&lt;T&gt;<span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;ToolTip&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ContextMenu&quot;</span>, <span class="tsd-signature-symbol">...</span>initializers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 						<li class="tsd-signature tsd-kind-icon">make&lt;T&gt;<span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;Button&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;TreeExpanderButton&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;SubGraphExpanderButton&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ContextMenuButton&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;PanelExpanderButton&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;CheckBoxButton&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;CheckBox&quot;</span>, <span class="tsd-signature-symbol">...</span>initializers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 						<li class="tsd-signature tsd-kind-icon">make&lt;T&gt;<span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>initializers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol"> | </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol"> | </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol"> | </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
-						<li class="tsd-signature tsd-kind-icon">make&lt;CT&gt;<span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CT</span>, <span class="tsd-signature-symbol">...</span>initializers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">make&lt;CT&gt;<span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CT</span>, <span class="tsd-signature-symbol">...</span>initializers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -3026,10 +3288,59 @@
 									<h5>cls: <span class="tsd-signature-type">CT</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>initializers: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>initializers: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">EnumValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">, </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Panel.html" class="tsd-signature-type" data-tsd-kind="Class">Panel</a><span class="tsd-signature-symbol">, </span><a href="PanelLayout.html" class="tsd-signature-type" data-tsd-kind="Class">PanelLayout</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="RowColumnDefinition.html" class="tsd-signature-type" data-tsd-kind="Class">RowColumnDefinition</a><span class="tsd-signature-symbol">, </span><a href="Binding.html" class="tsd-signature-type" data-tsd-kind="Class">Binding</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="Geometry.html" class="tsd-signature-type" data-tsd-kind="Class">Geometry</a><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MakeAllow</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">, </span><a href="PathFigure.html" class="tsd-signature-type" data-tsd-kind="Class">PathFigure</a><span class="tsd-signature-symbol">, </span><a href="PathSegment.html" class="tsd-signature-type" data-tsd-kind="Class">PathSegment</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> extends </span><a href="Diagram.html" class="tsd-signature-type" data-tsd-kind="Class">Diagram</a><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">DiagramEventsInterface</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>Changed<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol">; </span>ModelChanged<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ChangedEventHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">InstanceType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CT</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="set" class="tsd-anchor"></a>
+					<h3>
+						set
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Set any number of properties on this GraphObject. This is common in initialization.
+									This method can only be used to set existing properties on this object. To attach new properties,
+								or to set properties of elements, use <a href="GraphObject.html#setProperties">GraphObject.setProperties</a>.</p>
+								<p>This method uses TypeScript compile-time type checking, but does no runtime type checking.
+								If you need to set properties without type checking, or attach new properties, use <a href="GraphObject.html#attach">GraphObject.attach</a>.</p>
+								<pre><code><span style="color: #6A9955">// Common init for use in many different shapes:</span>
+<span style="color: #569CD6">var</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">shapeStyle</span><span style="color: #D4D4D4"> = (() </span><span style="color: #569CD6">=&gt;</span><span style="color: #D4D4D4"> { </span><span style="color: #C586C0">return</span><span style="color: #D4D4D4"> { </span><span style="color: #9CDCFE">background:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&#039;red&#039;</span><span style="color: #D4D4D4">, </span><span style="color: #9CDCFE">strokeWidth:</span><span style="color: #D4D4D4"> </span><span style="color: #B5CEA8">0</span><span style="color: #D4D4D4"> }; })</span>
+
+<span style="color: #6A9955">// Constructor init is equivalent to &quot;set&quot;</span>
+<span style="color: #6A9955">// But if you use common init (eg, shapeStyle())</span>
+<span style="color: #6A9955">// You may wish to set additional properties via &quot;set&quot;</span>
+<span style="color: #569CD6">new</span><span style="color: #D4D4D4"> </span><span style="color: #9CDCFE">go</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">Shape</span><span style="color: #D4D4D4">(</span><span style="color: #DCDCAA">shapeStyle</span><span style="color: #D4D4D4">())</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;fill&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;color&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">bind</span><span style="color: #D4D4D4">(</span><span style="color: #CE9178">&quot;strokeWidth&quot;</span><span style="color: #D4D4D4">, </span><span style="color: #CE9178">&quot;width&quot;</span><span style="color: #D4D4D4">)</span>
+<span style="color: #D4D4D4"> .</span><span style="color: #DCDCAA">set</span><span style="color: #D4D4D4">({ </span><span style="color: #6A9955">// more init via set</span>
+<span style="color: #D4D4D4">   </span><span style="color: #9CDCFE">figure:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;RoundedRectangle&quot;</span>
+<span style="color: #D4D4D4"> })</span>
+</code></pre>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#setProperties">setProperties</a></p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>config: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
 						</li>
 					</ul>
 				</section>
@@ -3039,28 +3350,33 @@
 						set<wbr>Properties
 					</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Properties<span class="tsd-signature-symbol">(</span>props<span class="tsd-signature-symbol">: </span><a href="ObjectData.html" class="tsd-signature-type" data-tsd-kind="Interface">ObjectData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Properties<span class="tsd-signature-symbol">(</span>props<span class="tsd-signature-symbol">: </span><a href="ObjectData.html" class="tsd-signature-type" data-tsd-kind="Interface">ObjectData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<div class="tsd-comment tsd-typography">
-								<p>This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
+								<p>This method sets a collection of properties according to the property/value pairs on the given Object,
 								in the same manner as <a href="GraphObject.html#static-make">GraphObject.make</a> does when constructing a GraphObject with an argument that is a simple JavaScript Object.</p>
+								<p>This method is common in initialization, but typically you should use <a href="GraphObject.html#set">set</a> instead,
+									unless you need to attach new properties, or set sub-properties.
+								Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.</p>
 								<p>If this is a <a href="Panel.html">Panel</a>, you can set properties on named elements within the panel by using a <em>name.property</em> syntax for the property name.
 									For example, if a <a href="Node.html">Node</a> has a <a href="Picture.html">Picture</a> that is named &quot;ICON&quot; (because its <a href="GraphObject.html#name">name</a> property has been set to &quot;ICON&quot;)
 								and a <a href="TextBlock.html">TextBlock</a> whose name is &quot;TB&quot;, one could set properties on the Node and on each of those named elements by:</p>
 								<pre><code class="language-js"><span style="color: #9CDCFE">aNode</span><span style="color: #D4D4D4">.</span><span style="color: #DCDCAA">setProperties</span><span style="color: #D4D4D4">({</span>
-<span style="color: #D4D4D4">    </span><span style="color: #9CDCFE">background:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;red&quot;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #CE9178">&quot;ICON.source&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;https://www.example.com/images/alert.jpg&quot;</span><span style="color: #D4D4D4">,</span>
-<span style="color: #D4D4D4">    </span><span style="color: #CE9178">&quot;TB.font&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;bold 12pt sans-serif&quot;</span>
+<span style="color: #D4D4D4">  </span><span style="color: #9CDCFE">background:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;red&quot;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">  </span><span style="color: #CE9178">&quot;ICON.source&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;https://www.example.com/images/alert.jpg&quot;</span><span style="color: #D4D4D4">,</span>
+<span style="color: #D4D4D4">  </span><span style="color: #CE9178">&quot;TB.font&quot;</span><span style="color: #9CDCFE">:</span><span style="color: #D4D4D4"> </span><span style="color: #CE9178">&quot;bold 12pt sans-serif&quot;</span>
 <span style="color: #D4D4D4">});</span>
 </code></pre>
 								<p>At the current time only a single dot is permitted in the property &quot;name&quot;.
 								Note that the use of all-upper-case object names is simply a convention.</p>
-								<p>Calling this method is much less efficient than setting properties directly.</p>
 								<dl class="tsd-comment-tags">
 									<dt>since</dt>
 									<dd><p>1.5</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="GraphObject.html#attach">attach</a> a synonym of this method, <a href="GraphObject.html#set">set</a> a type-safe method to set a collection of properties</p>
 									</dd>
 								</dl>
 							</div>
@@ -3073,7 +3389,8 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
+							<p>this GraphObject</p>
 						</li>
 					</ul>
 				</section>
@@ -3126,6 +3443,37 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="trigger" class="tsd-anchor"></a>
+					<h3>
+						trigger
+					</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">trigger<span class="tsd-signature-symbol">(</span>trigger<span class="tsd-signature-symbol">: </span><a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<div class="tsd-comment tsd-typography">
+								<p>Adds an <a href="AnimationTrigger.html">AnimationTrigger</a> to this GraphObject.</p>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>2.2</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>trigger: <a href="AnimationTrigger.html" class="tsd-signature-type" data-tsd-kind="Class">AnimationTrigger</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an AnimationTrigger</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -3498,7 +3846,16 @@
 								<a href="GraphObject.html#width" class="tsd-kind-icon">width</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="GraphObject.html#apply" class="tsd-kind-icon">apply</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="GraphObject.html#attach" class="tsd-kind-icon">attach</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="GraphObject.html#bind" class="tsd-kind-icon">bind</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static">
+								<a href="GraphObject.html#static-build" class="tsd-kind-icon">build</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 								<a href="GraphObject.html#cloneProtected" class="tsd-kind-icon">clone<wbr>Protected</a>
@@ -3508,6 +3865,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="GraphObject.html#static-defineBuilder" class="tsd-kind-icon">define<wbr>Builder</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="GraphObject.html#findBindingPanel" class="tsd-kind-icon">find<wbr>Binding<wbr>Panel</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="GraphObject.html#getDocumentAngle" class="tsd-kind-icon">get<wbr>Document<wbr>Angle</a>
@@ -3537,10 +3897,16 @@
 								<a href="GraphObject.html#static-make" class="tsd-kind-icon">make</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="GraphObject.html#set" class="tsd-kind-icon">set</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="GraphObject.html#setProperties" class="tsd-kind-icon">set<wbr>Properties</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="GraphObject.html#static-takeBuilderArgument" class="tsd-kind-icon">take<wbr>Builder<wbr>Argument</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="GraphObject.html#trigger" class="tsd-kind-icon">trigger</a>
 							</li>
 							<li class=" tsd-kind-constant tsd-parent-kind-class tsd-is-static">
 								<a href="GraphObject.html#static-Default" class="tsd-kind-icon">Default</a>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 1998-2021 by Northwoods Software Corporation
+ * Copyright (C) 1998-2022 by Northwoods Software Corporation
  * All Rights Reserved.
  *
  * Go Cloud Storage Manager
@@ -15,6 +15,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GoCloudStorageManager = void 0;
     var go = require("../../release/go");
     var gcs = require("./GoCloudStorage.js");
     /**
@@ -82,7 +83,7 @@
              * @return {go.Set<gcs.GoCloudStorage>}
              */
             get: function () { return this._storages; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorageManager.prototype, "iconsRelativeDirectory", {
@@ -94,7 +95,7 @@
              */
             get: function () { return this._iconsRelativeDirectory; },
             set: function (value) { this._iconsRelativeDirectory = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorageManager.prototype, "menu", {
@@ -105,7 +106,7 @@
              * @return {HTMLElement}
              */
             get: function () { return this._menu; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorageManager.prototype, "currentStorage", {
@@ -116,7 +117,7 @@
              */
             get: function () { return this._currentStorage; },
             set: function (value) { this._currentStorage = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

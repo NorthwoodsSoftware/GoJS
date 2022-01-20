@@ -1,11 +1,11 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -43,7 +43,7 @@ var __extends = (this && this.__extends) || (function () {
         myDiagram =
             $(go.Diagram, 'myDiagramDiv', {
                 // Define the template for Nodes, just some text inside a colored rectangle
-                nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify), 
+                nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
                 // temporarily put selected nodes in ForegFround layer
                 new go.Binding('layerName', 'isSelected', function (s) { return s ? 'Foreground' : ''; }).ofObject(), $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color'))),
                 'undoManager.isEnabled': true

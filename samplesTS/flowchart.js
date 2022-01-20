@@ -11,7 +11,7 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.init = void 0;
     /*
-    *  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+    *  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
     */
     var go = require("../release/go.js");
     var myDiagram;
@@ -97,30 +97,30 @@
         }
         // define the Node templates for regular nodes
         myDiagram.nodeTemplateMap.add("", // the default category
-        $(go.Node, "Table", nodeStyle(), 
+        $(go.Node, "Table", nodeStyle(),
         // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
         $(go.Panel, "Auto", $(go.Shape, "Rectangle", { fill: "#00A9C9", strokeWidth: 0 }, new go.Binding("figure", "figure")), $(go.TextBlock, textStyle(), {
             margin: 8,
             maxSize: new go.Size(160, NaN),
             wrap: go.TextBlock.WrapFit,
             editable: true
-        }, new go.Binding("text").makeTwoWay())), 
+        }, new go.Binding("text").makeTwoWay())),
         // four named ports, one on each side:
         makePort("T", go.Spot.Top, go.Spot.TopSide, false, true), makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true), makePort("R", go.Spot.Right, go.Spot.RightSide, true, true), makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)));
-        myDiagram.nodeTemplateMap.add("Conditional", $(go.Node, "Table", nodeStyle(), 
+        myDiagram.nodeTemplateMap.add("Conditional", $(go.Node, "Table", nodeStyle(),
         // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
         $(go.Panel, "Auto", $(go.Shape, "Diamond", { fill: "#00A9C9", strokeWidth: 0 }, new go.Binding("figure", "figure")), $(go.TextBlock, textStyle(), {
             margin: 8,
             maxSize: new go.Size(160, NaN),
             wrap: go.TextBlock.WrapFit,
             editable: true
-        }, new go.Binding("text").makeTwoWay())), 
+        }, new go.Binding("text").makeTwoWay())),
         // four named ports, one on each side:
         makePort("T", go.Spot.Top, go.Spot.Top, false, true), makePort("L", go.Spot.Left, go.Spot.Left, true, true), makePort("R", go.Spot.Right, go.Spot.Right, true, true), makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)));
-        myDiagram.nodeTemplateMap.add("Start", $(go.Node, "Table", nodeStyle(), $(go.Panel, "Auto", $(go.Shape, "Circle", { minSize: new go.Size(40, 40), fill: "#79C900", strokeWidth: 0 }), $(go.TextBlock, "Start", textStyle(), new go.Binding("text"))), 
+        myDiagram.nodeTemplateMap.add("Start", $(go.Node, "Table", nodeStyle(), $(go.Panel, "Auto", $(go.Shape, "Circle", { minSize: new go.Size(40, 40), fill: "#79C900", strokeWidth: 0 }), $(go.TextBlock, "Start", textStyle(), new go.Binding("text"))),
         // three named ports, one on each side except the top, all output only:
         makePort("L", go.Spot.Left, go.Spot.Left, true, false), makePort("R", go.Spot.Right, go.Spot.Right, true, false), makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)));
-        myDiagram.nodeTemplateMap.add("End", $(go.Node, "Table", nodeStyle(), $(go.Panel, "Auto", $(go.Shape, "Circle", { minSize: new go.Size(40, 40), fill: "#DC3C00", strokeWidth: 0 }), $(go.TextBlock, "End", textStyle(), new go.Binding("text"))), 
+        myDiagram.nodeTemplateMap.add("End", $(go.Node, "Table", nodeStyle(), $(go.Panel, "Auto", $(go.Shape, "Circle", { minSize: new go.Size(40, 40), fill: "#DC3C00", strokeWidth: 0 }), $(go.TextBlock, "End", textStyle(), new go.Binding("text"))),
         // three named ports, one on each side except the bottom, all input only:
         makePort("T", go.Spot.Top, go.Spot.Top, false, true), makePort("L", go.Spot.Left, go.Spot.Left, false, true), makePort("R", go.Spot.Right, go.Spot.Right, false, true)));
         // taken from ../extensions/Figures.ts:

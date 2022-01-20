@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A Grafcet diagram editor, showing buttons for creating new nodes and links related to the selected node."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Grafcet Diagrams</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -66,10 +69,10 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("saveModel");
+      myDiagram.addDiagramListener("Modified", e => {
+        const button = document.getElementById("saveModel");
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        const idx = document.title.indexOf("*");
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
@@ -82,7 +85,7 @@
       // Each button has a click function to execute the command, a tooltip for a textual description,
       // and a Binding of "visible" to hide the button if it cannot be executed for that particular node.
 
-      var commandsAdornment =
+      const commandsAdornment =
         $("ContextMenu",
           $(go.Panel, "Auto",
             $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 2, shadowVisible: false }),
@@ -149,23 +152,23 @@
       // Commands for adding new Nodes
 
       function addStep(e, obj) {
-        var node = obj.part.adornedPart;
-        var model = myDiagram.model;
+        const node = obj.part.adornedPart;
+        const model = myDiagram.model;
         model.startTransaction("add Step");
-        var loc = node.location.copy();
+        const loc = node.location.copy();
         loc.y += 50;
-        var nodedata = { location: go.Point.stringify(loc) };
+        const nodedata = { location: go.Point.stringify(loc) };
         model.addNodeData(nodedata);
-        var nodekey = model.getKeyForNodeData(nodedata);
-        var linkdata = { from: model.getKeyForNodeData(node.data), to: nodekey, text: "c" };
+        const nodekey = model.getKeyForNodeData(nodedata);
+        const linkdata = { from: model.getKeyForNodeData(node.data), to: nodekey, text: "c" };
         model.addLinkData(linkdata);
-        var newnode = myDiagram.findNodeForData(nodedata);
+        const newnode = myDiagram.findNodeForData(nodedata);
         myDiagram.select(newnode);
         model.commitTransaction("add Step");
       }
 
       function canAddStep(adorn) {
-        var node = adorn.adornedPart;
+        const node = adorn.adornedPart;
         if (node.category === "" || node.category === "Start") {
           return node.findLinksOutOf().count === 0;
         } else if (node.category === "Parallel" || node.category === "Exclusive") {
@@ -178,22 +181,22 @@
       function addExclusive(e, obj) { addSplit(obj.part.adornedPart, "Exclusive"); }
 
       function addSplit(node, type) {
-        var model = myDiagram.model;
+        const model = myDiagram.model;
         model.startTransaction("add " + type);
-        var loc = node.location.copy();
+        const loc = node.location.copy();
         loc.y += 50;
-        var nodedata = { category: type, location: go.Point.stringify(loc) };
+        const nodedata = { category: type, location: go.Point.stringify(loc) };
         model.addNodeData(nodedata);
-        var nodekey = model.getKeyForNodeData(nodedata);
-        var linkdata = { from: model.getKeyForNodeData(node.data), to: nodekey };
+        const nodekey = model.getKeyForNodeData(nodedata);
+        const linkdata = { from: model.getKeyForNodeData(node.data), to: nodekey };
         model.addLinkData(linkdata);
-        var newnode = myDiagram.findNodeForData(nodedata);
+        const newnode = myDiagram.findNodeForData(nodedata);
         myDiagram.select(newnode);
         model.commitTransaction("add " + type);
       }
 
       function canAddSplit(adorn) {
-        var node = adorn.adornedPart;
+        const node = adorn.adornedPart;
         if (node.category === "" || node.category === "Start") {
           return node.findLinksOutOf().count === 0;
         } else if (node.category === "Parallel" || node.category === "Exclusive") {
@@ -209,7 +212,7 @@
       function startLinkUp(e, obj) { startLink(obj.part.adornedPart, "Repeat", "r"); }
 
       function startLink(node, category, condition) {
-        var tool = myDiagram.toolManager.linkingTool;
+        const tool = myDiagram.toolManager.linkingTool;
         // to control what kind of Link is created,
         // change the LinkingTool.archetypeLinkData's category
         myDiagram.model.setCategoryForLinkData(tool.archetypeLinkData, category);
@@ -221,7 +224,7 @@
       }
 
       function canStartLink(adorn) {
-        var node = adorn.adornedPart;
+        const node = adorn.adornedPart;
         return true;  // this could be smarter
       }
 
@@ -290,7 +293,7 @@
           )
         ));
 
-      var resizeAdornment =
+      const resizeAdornment =
         $(go.Adornment, go.Panel.Spot,
           $(go.Placeholder),
           $(go.Shape,  // left resize handle
@@ -342,11 +345,11 @@
             { strokeWidth: 1.5 }),
           $(go.Shape, "LineH",  // only visible when there is text
             { width: 20, height: 1, visible: false },
-            new go.Binding("visible", "text", function(t) { return t !== ""; })),
+            new go.Binding("visible", "text", t => t !== "")),
           $(go.TextBlock,  // only visible when there is text
             { alignmentFocus: new go.Spot(0, 0.5, -12, 0), editable: true },
             new go.Binding("text", "text").makeTwoWay(),
-            new go.Binding("visible", "text", function(t) { return t !== ""; }))
+            new go.Binding("visible", "text", t => t !== ""))
         ));
 
       myDiagram.linkTemplateMap.add("Skip",
@@ -360,11 +363,11 @@
             { strokeWidth: 1.5 }),
           $(go.Shape, "LineH",  // only visible when there is text
             { width: 20, height: 1, visible: false },
-            new go.Binding("visible", "text", function(t) { return t !== ""; })),
+            new go.Binding("visible", "text", t => t !== "")),
           $(go.TextBlock,  // only visible when there is text
             { alignmentFocus: new go.Spot(1, 0.5, 12, 0), editable: true },
             new go.Binding("text", "text").makeTwoWay(),
-            new go.Binding("visible", "text", function(t) { return t !== ""; }))
+            new go.Binding("visible", "text", t => t !== ""))
         ));
 
       myDiagram.linkTemplateMap.add("Repeat",
@@ -382,11 +385,11 @@
             { toArrow: "OpenTriangle", segmentIndex: 3, segmentFraction: 0.25 }),
           $(go.Shape, "LineH",  // only visible when there is text
             { width: 20, height: 1, visible: false },
-            new go.Binding("visible", "text", function(t) { return t !== ""; })),
+            new go.Binding("visible", "text", t => t !== "")),
           $(go.TextBlock,  // only visible when there is text
             { alignmentFocus: new go.Spot(1, 0.5, 12, 0), editable: true },
             new go.Binding("text", "text").makeTwoWay(),
-            new go.Binding("visible", "text", function(t) { return t !== ""; }))
+            new go.Binding("visible", "text", t => t !== ""))
         ));
 
       // start off with a simple diagram
@@ -394,40 +397,33 @@
     }
 
 
-    // This custom LinkingTool just turns on Diagram.allowLink when it starts,
-    // and turns it off again when it stops so that users cannot draw new links modelessly.
-    function CustomLinkingTool() {
-      go.LinkingTool.call(this);
-    }
-    go.Diagram.inherit(CustomLinkingTool, go.LinkingTool);
-
+  // This custom LinkingTool just turns on Diagram.allowLink when it starts,
+  // and turns it off again when it stops so that users cannot draw new links modelessly.
+  class CustomLinkingTool extends go.LinkingTool {
     // user-drawn linking is normally disabled,
     // but needs to be turned on when using this tool
-    CustomLinkingTool.prototype.doStart = function() {
+    doStart() {
       this.diagram.allowLink = true;
-      go.LinkingTool.prototype.doStart.call(this);
-    };
-
-    CustomLinkingTool.prototype.doStop = function() {
-      go.LinkingTool.prototype.doStop.call(this);
-      this.diagram.allowLink = false;
-    };
-    // end CustomLinkingTool
-
-
-    // This custom Link class is smart about computing the link point and direction
-    // at "Parallel" and "Exclusive" nodes.
-    function BarLink() {
-      go.Link.call(this);
+      super.doStart();
     }
-    go.Diagram.inherit(BarLink, go.Link);
 
-    BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
-      var r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
+    doStop() {
+      super.doStop();
+      this.diagram.allowLink = false;
+    }
+  }
+  // end CustomLinkingTool
+
+
+  // This custom Link class is smart about computing the link point and direction
+  // at "Parallel" and "Exclusive" nodes.
+  class BarLink extends go.Link {
+    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
+      const r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
         port.getDocumentPoint(go.Spot.BottomRight));
-      var op = otherport.getDocumentPoint(go.Spot.Center);
-      var below = op.y > r.centerY;
-      var y = below ? r.bottom : r.top;
+      const op = otherport.getDocumentPoint(go.Spot.Center);
+      const below = op.y > r.centerY;
+      const y = below ? r.bottom : r.top;
       if (node.category === "Parallel" || node.category === "Exclusive") {
         if (op.x < r.left) return new go.Point(r.left, y);
         if (op.x > r.right) return new go.Point(r.right, y);
@@ -435,15 +431,16 @@
       } else {
         return new go.Point(r.centerX, y);
       }
-    };
+    }
 
-    BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
-      var p = port.getDocumentPoint(go.Spot.Center);
-      var op = otherport.getDocumentPoint(go.Spot.Center);
-      var below = op.y > p.y;
+    getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+      const p = port.getDocumentPoint(go.Spot.Center);
+      const op = otherport.getDocumentPoint(go.Spot.Center);
+      const below = op.y > p.y;
       return below ? 90 : 270;
-    };
-    // end BarLink class
+    }
+  }
+  // end BarLink class
 
     // save a model to and load a model from JSON text, displayed below the Diagram
     function save() {

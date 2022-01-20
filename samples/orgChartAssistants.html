@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An organization chart editor with assistants shown on the side -- edit details and change relationships."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Org Chart Editor with Assistants</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -56,7 +56,10 @@
 
   <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
@@ -69,8 +72,8 @@
               title: "",
               comments: ""
             },
-            "clickCreatingTool.insertPart": function(loc) {  // scroll to the new node
-              var node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+            "clickCreatingTool.insertPart": function(loc) {  // override to scroll to the new node
+              const node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
               if (node !== null) {
                 this.diagram.select(node);
                 this.diagram.commandHandler.scrollToPart(node);
@@ -96,10 +99,10 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
+      myDiagram.addDiagramListener("Modified", e => {
+        const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        const idx = document.title.indexOf("*");
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
@@ -108,40 +111,40 @@
       });
 
       // manage boss info manually when a node or link is deleted from the diagram
-      myDiagram.addDiagramListener("SelectionDeleting", function(e) {
-        var part = e.subject.first(); // e.subject is the myDiagram.selection collection,
+      myDiagram.addDiagramListener("SelectionDeleting", e => {
+        const part = e.subject.first(); // e.subject is the myDiagram.selection collection,
         // so we'll get the first since we know we only have one selection
         myDiagram.startTransaction("clear boss");
         if (part instanceof go.Node) {
-          var it = part.findTreeChildrenNodes(); // find all child nodes
+          const it = part.findTreeChildrenNodes(); // find all child nodes
           while (it.next()) { // now iterate through them and clear out the boss information
-            var child = it.value;
-            var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
+            const child = it.value;
+            const bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
             if (bossText === null) return;
             bossText.text = "";
           }
         } else if (part instanceof go.Link) {
-          var child = part.toNode;
-          var bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
+          const child = part.toNode;
+          const bossText = child.findObject("boss"); // since the boss TextBlock is named, we can access it by name
           if (bossText === null) return;
           bossText.text = "";
         }
         myDiagram.commitTransaction("clear boss");
       });
 
-      var levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
+      const levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
         "#008299", "#D24726", "#008A00", "#094AB2"];
 
       // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
       myDiagram.layout.commitNodes = function() {
-        go.TreeLayout.prototype.commitNodes.call(myDiagram.layout);  // do the standard behavior
+        go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
         // then go through all of the vertexes and set their corresponding node's Shape.fill
         // to a brush dependent on the TreeVertex.level value
-        myDiagram.layout.network.vertexes.each(function(v) {
+        myDiagram.layout.network.vertexes.each(v => {
           if (v.node) {
-            var level = v.level % (levelColors.length);
-            var color = levelColors[level];
-            var shape = v.node.findObject("SHAPE");
+            const level = v.level % (levelColors.length);
+            const color = levelColors[level];
+            const shape = v.node.findObject("SHAPE");
             if (shape) shape.fill = $(go.Brush, "Linear", { 0: color, 1: go.Brush.lightenBy(color, 0.05), start: go.Spot.Left, end: go.Spot.Right });
           }
         });
@@ -149,11 +152,11 @@
 
       // when a node is double-clicked, add a child to it
       function nodeDoubleClick(e, obj) {
-        var clicked = obj.part;
+        const clicked = obj.part;
         if (clicked !== null) {
-          var thisemp = clicked.data;
+          const thisemp = clicked.data;
           myDiagram.startTransaction("add employee");
-          var newemp = {
+          const newemp = {
             name: "(new person)",
             title: "",
             comments: "",
@@ -189,28 +192,28 @@
         $(go.Node, "Auto",
           { doubleClick: nodeDoubleClick },
           { // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-            mouseDragEnter: function(e, node, prev) {
-              var diagram = node.diagram;
-              var selnode = diagram.selection.first();
+            mouseDragEnter: (e, node, prev) => {
+              const diagram = node.diagram;
+              const selnode = diagram.selection.first();
               if (!mayWorkFor(selnode, node)) return;
-              var shape = node.findObject("SHAPE");
+              const shape = node.findObject("SHAPE");
               if (shape) {
                 shape._prevFill = shape.fill;  // remember the original brush
                 shape.fill = "darkred";
               }
             },
-            mouseDragLeave: function(e, node, next) {
-              var shape = node.findObject("SHAPE");
+            mouseDragLeave: (e, node, next) => {
+              const shape = node.findObject("SHAPE");
               if (shape && shape._prevFill) {
                 shape.fill = shape._prevFill;  // restore the original brush
               }
             },
-            mouseDrop: function(e, node) {
-              var diagram = node.diagram;
-              var selnode = diagram.selection.first();  // assume just one Node in selection
+            mouseDrop: (e, node) => {
+              const diagram = node.diagram;
+              const selnode = diagram.selection.first();  // assume just one Node in selection
               if (mayWorkFor(selnode, node)) {
                 // find any existing link into the selected node
-                var link = selnode.findTreeParentLink();
+                const link = selnode.findTreeParentLink();
                 if (link !== null) {  // reconnect any existing link
                   link.fromNode = node;
                 } else {  // else create a new link
@@ -222,7 +225,7 @@
           // for sorting, have the Node.text be the data.name
           new go.Binding("text", "name"),
           // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-          new go.Binding("layerName", "isSelected", function(sel) { return sel ? "Foreground" : ""; }).ofObject(),
+          new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
           // define the node's outer shape
           $(go.Shape, "Rectangle",
             {
@@ -267,10 +270,10 @@
                 new go.Binding("text", "title").makeTwoWay()),
               $(go.TextBlock, textStyle(),
                 { row: 2, column: 0 },
-                new go.Binding("text", "key", function(v) { return "ID: " + v; })),
+                new go.Binding("text", "key", v => "ID: " + v)),
               $(go.TextBlock, textStyle(),
                 { name: "boss", row: 2, column: 3, }, // we include a name so we can access this TextBlock when deleting Nodes/Links
-                new go.Binding("text", "parent", function(v) { return "Boss: " + v; })),
+                new go.Binding("text", "parent", v => "Boss: " + v)),
               $(go.TextBlock, textStyle(),  // the comments
                 {
                   row: 3, column: 0, columnSpan: 5,
@@ -291,10 +294,10 @@
           $("ContextMenuButton",
             $(go.TextBlock, "Vacate Position"),
             {
-              click: function(e, obj) {
-                var node = obj.part.adornedPart;
+              click: (e, obj) => {
+                const node = obj.part.adornedPart;
                 if (node !== null) {
-                  var thisemp = node.data;
+                  const thisemp = node.data;
                   myDiagram.startTransaction("vacate");
                   // update the key, name, and comments
                   myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
@@ -307,15 +310,15 @@
           $("ContextMenuButton",
             $(go.TextBlock, "Remove Role"),
             {
-              click: function(e, obj) {
+              click: (e, obj) => {
                 // reparent the subtree to this node's boss, then remove the node
-                var node = obj.part.adornedPart;
+                const node = obj.part.adornedPart;
                 if (node !== null) {
                   myDiagram.startTransaction("reparent remove");
-                  var chl = node.findTreeChildrenNodes();
+                  const chl = node.findTreeChildrenNodes();
                   // iterate through the children and set their parent key to our selected node's parent key
                   while (chl.next()) {
-                    var emp = chl.value;
+                    const emp = chl.value;
                     myDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
                   }
                   // and now remove the selected node itself
@@ -328,9 +331,9 @@
           $("ContextMenuButton",
             $(go.TextBlock, "Remove Department"),
             {
-              click: function(e, obj) {
+              click: (e, obj) => {
                 // remove the whole subtree, including the node itself
-                var node = obj.part.adornedPart;
+                const node = obj.part.adornedPart;
                 if (node !== null) {
                   myDiagram.startTransaction("remove dept");
                   myDiagram.removeParts(node.findTreeParts());
@@ -342,9 +345,9 @@
           $("ContextMenuButton",
             $(go.TextBlock, "Toggle Assistant"),
             {
-              click: function(e, obj) {
+              click: (e, obj) => {
                 // remove the whole subtree, including the node itself
-                var node = obj.part.adornedPart;
+                const node = obj.part.adornedPart;
                 if (node !== null) {
                   myDiagram.startTransaction("toggle assistant");
                   myDiagram.model.setDataProperty(node.data, "isAssistant", !node.data.isAssistant);
@@ -374,7 +377,7 @@
             "comments": {},
             "isAssistant": { type: "boolean" }
           },
-          propertyModified: function(name, val) {
+          propertyModified: (name, val) => {
             if (name === "isAssistant") myDiagram.layout.invalidateLayout();
           }
         });
@@ -389,37 +392,33 @@
     }
 
 
-    // This is a custom TreeLayout that knows about "assistants".
-    // A Node for which isAssistant(n) is true will be placed at the side below the parent node
-    // but above all of the other child nodes.
-    // An assistant node may be the root of its own subtree.
-    // An assistant node may have its own assistant nodes.
-    function SideTreeLayout() {
-      go.TreeLayout.call(this);
-    }
-    go.Diagram.inherit(SideTreeLayout, go.TreeLayout);
-
-    SideTreeLayout.prototype.makeNetwork = function(coll) {
-      var net = go.TreeLayout.prototype.makeNetwork.call(this, coll);
+  // This is a custom TreeLayout that knows about "assistants".
+  // A Node for which isAssistant(n) is true will be placed at the side below the parent node
+  // but above all of the other child nodes.
+  // An assistant node may be the root of its own subtree.
+  // An assistant node may have its own assistant nodes.
+  class SideTreeLayout extends go.TreeLayout {
+    makeNetwork(coll) {
+      const net = super.makeNetwork(coll);
       // copy the collection of TreeVertexes, because we will modify the network
-      var vertexcoll = new go.Set(/*go.TreeVertex*/);
+      const vertexcoll = new go.Set(/*go.TreeVertex*/);
       vertexcoll.addAll(net.vertexes);
-      for (var it = vertexcoll.iterator; it.next();) {
-        var parent = it.value;
+      for (const it = vertexcoll.iterator; it.next();) {
+        const parent = it.value;
         // count the number of assistants
-        var acount = 0;
-        var ait = parent.destinationVertexes;
+        let acount = 0;
+        const ait = parent.destinationVertexes;
         while (ait.next()) {
           if (isAssistant(ait.value.node)) acount++;
         }
         // if a vertex has some number of children that should be assistants
         if (acount > 0) {
           // remember the assistant edges and the regular child edges
-          var asstedges = new go.Set(/*go.TreeEdge*/);
-          var childedges = new go.Set(/*go.TreeEdge*/);
-          var eit = parent.destinationEdges;
+          const asstedges = new go.Set(/*go.TreeEdge*/);
+          const childedges = new go.Set(/*go.TreeEdge*/);
+          let eit = parent.destinationEdges;
           while (eit.next()) {
-            var e = eit.value;
+            const e = eit.value;
             if (isAssistant(e.toVertex.node)) {
               asstedges.add(e);
             } else {
@@ -433,7 +432,7 @@
           while (eit.next()) { parent.deleteDestinationEdge(eit.value); }
           // if the number of assistants is odd, add a dummy assistant, to make the count even
           if (acount % 2 == 1) {
-            var dummy = net.createVertex();
+            const dummy = net.createVertex();
             net.addVertex(dummy);
             net.linkVertexes(parent, dummy, asstedges.first().link);
           }
@@ -443,29 +442,29 @@
             parent.addDestinationEdge(eit.value);
           }
           // create substitute vertex to be new parent of all regular children
-          var subst = net.createVertex();
+          const subst = net.createVertex();
           net.addVertex(subst);
           // reparent regular children to the new substitute vertex
           eit = childedges.iterator;
           while (eit.next()) {
-            var ce = eit.value;
+            const ce = eit.value;
             ce.fromVertex = subst;
             subst.addDestinationEdge(ce);
           }
           // finally can add substitute vertex as the final odd child,
           // to be positioned at the end of the PARENT's immediate subtree.
-          var newedge = net.linkVertexes(parent, subst, null);
+          const newedge = net.linkVertexes(parent, subst, null);
         }
       }
       return net;
     };
 
-    SideTreeLayout.prototype.assignTreeVertexValues = function(v) {
+    assignTreeVertexValues(v) {
       // if a vertex has any assistants, use Bus alignment
-      var any = false;
-      var children = v.children;
-      for (var i = 0; i < children.length; i++) {
-        var c = children[i];
+      let any = false;
+      const children = v.children;
+      for (let i = 0; i < children.length; i++) {
+        const c = children[i];
         if (isAssistant(c.node)) {
           any = true;
           break;
@@ -483,25 +482,25 @@
       }
     };
 
-    SideTreeLayout.prototype.commitLinks = function() {
-      go.TreeLayout.prototype.commitLinks.call(this);
+    commitLinks() {
+      super.commitLinks();
       // make sure the middle segment of an orthogonal link does not cross over the assistant subtree
-      var eit = this.network.edges.iterator;
+      const eit = this.network.edges.iterator;
       while (eit.next()) {
-        var e = eit.value;
+        const e = eit.value;
         if (e.link == null) continue;
-        var r = e.link;
+        const r = e.link;
         // does this edge come from a substitute parent vertex?
-        var subst = e.fromVertex;
+        const subst = e.fromVertex;
         if (subst.node == null && r.routing == go.Link.Orthogonal) {
           r.updateRoute();
           r.startRoute();
           // middle segment goes from point 2 to point 3
-          var p1 = subst.center;  // assume artificial vertex has zero size
-          var p2 = r.getPoint(2).copy();
-          var p3 = r.getPoint(3).copy();
-          var p5 = r.getPoint(r.pointsCount - 1);
-          var dist = 10;
+          const p1 = subst.center;  // assume artificial vertex has zero size
+          const p2 = r.getPoint(2).copy();
+          const p3 = r.getPoint(3).copy();
+          const p5 = r.getPoint(r.pointsCount - 1);
+          let dist = 10;
           if (subst.angle == 270 || subst.angle == 180) dist = -20;
           if (subst.angle == 90 || subst.angle == 270) {
             p2.y = p5.y - dist; // (p1.y+p5.y)/2;
@@ -515,7 +514,9 @@
           r.commitRoute();
         }
       }
-    };  // end of SideTreeLayout
+    }
+  }
+  // end of SideTreeLayout
 
 
     // Show the diagram's model in JSON format
@@ -526,14 +527,15 @@
     function load() {
       myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
       // make sure new data keys are unique positive integers
-      var lastkey = 1;
-      myDiagram.model.makeUniqueKeyFunction = function(model, data) {
-        var k = data.key || lastkey;
+      let lastkey = 1;
+      myDiagram.model.makeUniqueKeyFunction = (model, data) => {
+        let k = data.key || lastkey;
         while (model.findNodeDataForKey(k)) k++;
         data.key = lastkey = k;
         return k;
       };
     }
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 

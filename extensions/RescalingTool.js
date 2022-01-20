@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Tool to change the scale of an object in a Part.
@@ -96,7 +96,7 @@ Object.defineProperty(RescalingTool.prototype, "handle", {
 
 /**
  * This property returns the name of the GraphObject that identifies the object to be rescaled by this tool.
- * 
+ *
  * The default value is the empty string, resulting in the whole Node being rescaled.
  * This property is used by findRescaleObject when calling {@link Panel#findObject}.
  */

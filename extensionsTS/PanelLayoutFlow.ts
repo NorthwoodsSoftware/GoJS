@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -67,10 +67,10 @@ export class PanelLayoutFlow extends go.PanelLayout {
   /**
    * Gets or sets the initial direction in which elements are laid out.
    * The value must be 0 or 180, which results in rows, or 90 or 270, which results in columns.
-   * 
+   *
    * The default value is 0, resulting in rows that go rightward.
    * A value of 90 results in columns that go downward.
-   * 
+   *
    * Setting this property does not notify about any changed event,
    * nor does a change in value automatically cause the panel layout to be performed again.
    */
@@ -82,15 +82,15 @@ export class PanelLayoutFlow extends go.PanelLayout {
 
   /**
    * Gets or sets the space between adjacent elements in the panel and the space between adjacent rows or columns.
-   * 
+   *
    * The default value is (0, 0).  The size is in the panel's coordinate system.
-   * 
+   *
    * Setting this property does not notify about any changed event,
    * nor does a change in value automatically cause the panel layout to be performed again.
    */
    get spacing() { return this._spacing; }
    set spacing(s: go.Size) { this._spacing = s; }
- 
+
   public measure(panel: go.Panel, width: number, height: number, elements: Array<go.GraphObject>, union: go.Rect, minw: number, minh: number): void {
     this._lineBreadths = [];
     this._lineLengths = [];
@@ -177,14 +177,14 @@ export class PanelLayoutFlow extends go.PanelLayout {
     if (s === go.GraphObject.Fill) return true;
     return s === (horiz ? go.GraphObject.Vertical : go.GraphObject.Horizontal);
   }
-  
+
   private align(elt: go.GraphObject, panel: go.Panel): go.Spot {
     let a = elt.alignment;
     if (a.isDefault()) a = panel.defaultAlignment;
     if (!a.isSpot()) a = go.Spot.Center;
     return a;
   }
-  
+
   public arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
     const pad = <go.Margin>panel.padding;
     let x = (this.direction === 180) ? union.width - pad.right : pad.left;

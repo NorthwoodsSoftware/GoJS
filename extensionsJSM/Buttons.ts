@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -468,7 +468,7 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args: any): go.Panel => {
     const diagram = btn.diagram;
     if (diagram === null) return;
     if (diagram.isReadOnly) return;
-    let elt = btn.findTemplateBinder();
+    let elt = btn.findBindingPanel();
     if (elt === null) elt = btn.part;
     if (elt !== null) {
       const pan = elt.findObject(eltname);

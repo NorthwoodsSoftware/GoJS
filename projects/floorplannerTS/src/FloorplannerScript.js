@@ -9,6 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.init = void 0;
     var go = require("../../../release/go");
     var DataInspectorOverrides_1 = require("./DataInspectorOverrides");
     var EditorHelper_1 = require("./EditorHelper");
@@ -21,6 +22,7 @@
      */
     function init(JQUERY) {
         var editorHelper = new EditorHelper_1.EditorHelper(1, 2, '../../projects/storage', Floorplan_1.Floorplan, JQUERY);
+        window.editorHelper = editorHelper;
         // replace generic palettes with FloorplanPalettes
         var myFloorplan = editorHelper.diagrams[0];
         editorHelper.palettes[0].div = null;
@@ -138,7 +140,8 @@
                 var hid = id + '-handle';
                 // When a window is dragged, its height is set. this is bad. unset height / maybe width after dragging
                 JQUERY(id).draggable({
-                    handle: hid, stack: '.ge-draggable', containment: 'parent', scroll: false, stop: function (event) {
+                    handle: hid, stack: '.ge-draggable', containment: 'parent', scroll: false,
+                    stop: function (event) {
                         this.style.height = 'unset';
                         var did = event.target.id;
                         // only unset width for inspector and options menu, whose widths are dependent on contents
@@ -171,6 +174,9 @@
         window.handlePromise = function (action) {
             EditorHelper_1.EditorHelper.prototype.handlePromise.call(editorHelper, action);
         };
+        window.myFloorplan = myFloorplan;
+        window.furniturePalette = furniturePalette;
+        window.wallPartsPalette = wallPartsPalette;
     }
     exports.init = init;
 });

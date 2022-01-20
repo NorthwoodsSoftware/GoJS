@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1998-2021 by Northwoods Software Corporation
+ * Copyright (C) 1998-2022 by Northwoods Software Corporation
  * All Rights Reserved.
  *
  * GoCloudStorage.js
@@ -15,6 +15,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GoCloudStorage = void 0;
     var go = require("../../release/go");
     /**
      * An abstract class for storing GoJS {@link Model}s in various cloud storage services.
@@ -105,7 +106,7 @@
              */
             get: function () { return this._managedDiagrams; },
             set: function (value) { this._managedDiagrams = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "defaultModel", {
@@ -117,7 +118,7 @@
              */
             get: function () { return this._defaultModel; },
             set: function (value) { this._defaultModel = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "iconsRelativeDirectory", {
@@ -129,7 +130,7 @@
              */
             get: function () { return this._iconsRelativeDirectory; },
             set: function (value) { this._iconsRelativeDirectory = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "clientId", {
@@ -140,7 +141,7 @@
              * @return {string}
              */
             get: function () { return this._clientId; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "currentDiagramFile", {
@@ -154,7 +155,7 @@
              */
             get: function () { return this._currentDiagramFile; },
             set: function (value) { this._currentDiagramFile = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "isAutoSaving", {
@@ -169,7 +170,7 @@
              */
             get: function () { return this._isAutoSaving; },
             set: function (value) { this._isAutoSaving = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "serviceName", {
@@ -179,7 +180,7 @@
              * @return {string}
              */
             get: function () { return this._serviceName; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "className", {
@@ -189,7 +190,7 @@
              * @return {string}
              */
             get: function () { return this._className; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoCloudStorage.prototype, "ui", {
@@ -201,7 +202,7 @@
              * @return {HTMLElement}
              */
             get: function () { return this._ui; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

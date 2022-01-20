@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An example of virtualization where a very simple tree layout sets the bounds for each node data."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Virtualized Tree with custom layout</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -55,7 +55,10 @@
     var HORIZONTAL = true;
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // The Diagram just shows what should be visible in the viewport.
       // Its model does NOT include node data for the whole graph, but only that
@@ -77,8 +80,8 @@
             nodeTemplate:
               $(go.Node, "Auto",
                 { isLayoutPositioned: false },  // optimization
-                new go.Binding("position", "bounds", function(b) { return b.position; })
-                  .makeTwoWay(function(p, d) { return new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height); }),
+                new go.Binding("position", "bounds", b => b.position)
+                  .makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
                 { width: 70, height: 20 },  // in cooperation with the load function, below
                 $(go.Shape, "Rectangle",
                   new go.Binding("fill", "color")),
@@ -90,7 +93,7 @@
                     $("ToolTip",
                       $(go.TextBlock, { margin: 3 },
                         new go.Binding("text", "",
-                          function(d) { return "key: " + d.key + "\nbounds: " + d.bounds.toString(); }))
+                          d => "key: " + d.key + "\nbounds: " + d.bounds.toString()))
                     )
                 }
               ),
@@ -111,14 +114,14 @@
 
       // This model includes all of the data
       myWholeModel =
-        $(go.TreeModel);  // must match the TreeModel used by the Diagram, below
+        new go.TreeModel();  // must match the TreeModel used by the Diagram, below
 
       // Do not set myDiagram.model = myWholeModel -- that would create a zillion Nodes and Links!
       // In the future Diagram may have built-in support for virtualization.
       // For now, we have to implement virtualization ourselves by having the Diagram's model
       // be different than the "real" model.
       myDiagram.model =  // this only holds nodes that should be in the viewport
-        $(go.TreeModel); // must match the model, above
+        new go.TreeModel(); // must match the model, above
 
       // for now, we have to implement virtualization ourselves
       myDiagram.isVirtualized = true;
@@ -140,7 +143,7 @@
       myDiagram.delayInitialization(load);
     }
 
-    function load() {
+    function load(diagram) {
       // create a lot of data for the myWholeModel
       var total = 123456;
       var treedata = [];
@@ -164,7 +167,7 @@
       layoutTree(myWholeModel);
 
       // remove the status indicator
-      myDiagram.remove(myLoading);
+      diagram.remove(myLoading);
     }
 
     // this adds ._parent and ._children properties on each node data
@@ -249,7 +252,7 @@
 
       if (myRemoveTimer === null) {
         // only remove offscreen nodes after a delay
-        myRemoveTimer = setTimeout(function() { removeOffscreen(diagram); }, 3000);
+        myRemoveTimer = setTimeout(() => removeOffscreen(diagram), 3000);
       }
 
       updateCounts();  // only for this sample
@@ -272,7 +275,7 @@
         if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
-          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
+          if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
             remove.push(d);
           }
         }

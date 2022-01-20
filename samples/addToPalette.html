@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An example of having the user customize a Palette by adding copies of Diagram nodes to the Palette&#39;s Model."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Adding a Custom Node to a Palette</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -56,7 +56,10 @@
     <script id="code">
     function init() {
 
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       // initialize main Diagram
       myDiagram =
@@ -96,7 +99,7 @@
             layout:
               $(go.GridLayout,
                 { wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
-            "ModelChanged": function(e) {     // just for demonstration purposes,
+            "ModelChanged": e => {     // just for demonstration purposes,
               if (e.isTransactionFinished) {  // show the model data in the page's TextArea
                 document.getElementById("mySavedPaletteModel").textContent = e.model.toJson();
               }
@@ -148,7 +151,7 @@
     }
 
     function addToPalette() {
-      var node = myDiagram.selection.filter(function(p) { return p instanceof go.Node; }).first();
+      var node = myDiagram.selection.filter(p => p instanceof go.Node).first();
       if (node !== null) {
         myPalette.startTransaction();
         var item = myPalette.model.copyNodeData(node.data);

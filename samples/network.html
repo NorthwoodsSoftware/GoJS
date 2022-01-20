@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A simple network configuration editor."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Network Configuration</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
   <script src="../extensions/Figures.js"></script>
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -63,7 +66,7 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
+      myDiagram.addDiagramListener("Modified", e => {
         var button = document.getElementById("saveModel");
         if (button) button.disabled = !myDiagram.isModified;
         var idx = document.title.indexOf("*");
@@ -163,7 +166,7 @@
           {
             routing: go.Link.Orthogonal,
             relinkableFrom: true, relinkableTo: true,
-            toPortChanged: function(link, oldport, newport) {
+            toPortChanged: (link, oldport, newport) => {
               if (newport instanceof go.Shape) link.path.stroke = newport.fill;
             }
           },
@@ -197,11 +200,9 @@
 
       // remove cursors on all ports in the Palette
       // make TextBlocks invisible, to reduce size of Nodes
-      myPalette.nodes.each(function(node) {
-        node.ports.each(function(port) {
-          port.cursor = "";
-        });
-        node.elements.each(function(tb) {
+      myPalette.nodes.each(node => {
+        node.ports.each(port => port.cursor = "");
+        node.elements.each(tb => {
           if (tb instanceof go.TextBlock) tb.visible = false;
         });
       });
@@ -216,44 +217,41 @@
     }
 
 
-    // A custom Link class that routes directly to the closest horizontal point of an "HBar" node.
-    // If the regular node is too far to the left or right of the "HBar" node, the link connects
-    // with the closest end of the "HBar" node.
-    function BarLink() {
-      go.Link.call(this);
-    }
-    go.Diagram.inherit(BarLink, go.Link);
-
-    BarLink.prototype.computeSpot = function(from, port) {
+  // A custom Link class that routes directly to the closest horizontal point of an "HBar" node.
+  // If the regular node is too far to the left or right of the "HBar" node, the link connects
+  // with the closest end of the "HBar" node.
+  class BarLink extends go.Link {
+    computeSpot(from, port) {
       if (from && this.toNode && this.toNode.category === "HBar") return go.Spot.TopBottomSides;
       if (!from && this.fromNode && this.fromNode.category === "HBar") return go.Spot.TopBottomSides;
-      return go.Link.prototype.computeSpot.call(this, from, port);
+      return super.computeSpot(from, port);
     }
 
-    BarLink.prototype.getLinkPoint = function(node, port, spot, from, ortho, othernode, otherport) {
+    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
       if (!from && node.category === "HBar") {
-        var op = go.Link.prototype.getLinkPoint.call(this, othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);
+        var op = super.getLinkPoint(othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);
         var r = port.getDocumentBounds();
         var y = (op.y > r.centerY) ? r.bottom : r.top;
         if (op.x < r.left) return new go.Point(r.left, y);
         if (op.x > r.right) return new go.Point(r.right, y);
         return new go.Point(op.x, y);
       } else {
-        return go.Link.prototype.getLinkPoint.call(this, node, port, spot, from, ortho, othernode, otherport);
+        return super.getLinkPoint(node, port, spot, from, ortho, othernode, otherport);
       }
     };
 
-    BarLink.prototype.getLinkDirection = function(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+    getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
       if (node.category === "HBar" || othernode.category === "HBar") {
         var p = port.getDocumentPoint(go.Spot.Center);
         var op = otherport.getDocumentPoint(go.Spot.Center);
         var below = op.y > p.y;
         return below ? 90 : 270;
       } else {
-        return go.Link.prototype.getLinkDirection.call(this, node, port, linkpoint, spot, from, ortho, othernode, otherport);
+        return super.getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport);
       }
-    };
-    // end BarLink class
+    }
+  }
+  // end BarLink class
 
 
     // save a model to and load a model from JSON text, displayed below the Diagram

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Performance Considerations -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Performance Considerations -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -195,6 +195,21 @@
   the <a>Panel</a>s that form your Nodes or Links.
 </p>
 
+<h2 id="Shapes">Shapes</h2>
+<p>
+  Shapes can decrease memory usage by sharing Geometries. Shapes that are given a set size with either <code>desiredSize</code> or <code>width</code> and <code>height</code>, and that are also
+  using a <a>Shape.figure</a> of "Rectangle", "Circle", or "RoundedRectangle", will have their geometries potentially shared automatically.
+</p>
+<p>
+  In other words, a single shape in a Node template defined like this:
+</p>
+<code>
+  new go.Shape("RoundedRectangle", { width: 50, height: 50 })
+</code>
+<p>
+  Will create a single geometry that is shared among all copies of the Node.
+</p>
+
 <h2 id="Links">Links</h2>
 <p>
   The <a>Link.routing</a> property value <a>Link,AvoidsNodes</a> can be slow in very large graphs.
@@ -210,6 +225,13 @@
 <h2 id="Layouts">Layouts</h2>
 <p>
   <a>GridLayout</a> and <a>TreeLayout</a> are fast. <a>LayeredDigraphLayout</a> is slow.
+</p>
+
+<h2 id="Overviews">Overviews</h2>
+<p>
+  Overviews generally require drawing a Diagram a second time, so there may be some performance impact
+  on large graphs. Consider setting <a>Overview.drawsGrid</a> to <code>false</code> or
+   and <a>Overview.updateDelay</a> to a non-negative number.
 </p>
 
 <h2 id="Virtualization">Virtualization</h2>
@@ -334,7 +356,7 @@
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

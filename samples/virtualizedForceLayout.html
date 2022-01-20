@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An example of virtualization where a virtualized ForceDirectedLayout sets the bounds for each node data."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Virtualized Graph with ForceDirectedLayout</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // The Diagram just shows what should be visible in the viewport.
       // Its model does NOT include node data for the whole graph, but only that
@@ -69,8 +72,8 @@
             nodeTemplate:
               $(go.Node, "Auto",
                 { isLayoutPositioned: false },  // optimization
-                new go.Binding("position", "bounds", function(b) { return b.position; })
-                  .makeTwoWay(function(p, d) { return new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height); }),
+                new go.Binding("position", "bounds", b => b.position)
+                  .makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
                 { width: 70, height: 20 },  // in cooperation with the load function, below
                 $(go.Shape, "Rectangle",
                   new go.Binding("fill", "color")),
@@ -81,8 +84,7 @@
                   toolTip:
                     $("ToolTip",
                       $(go.TextBlock, { margin: 3 },
-                        new go.Binding("text", "",
-                          function(d) { return "key: " + d.key + "\nbounds: " + d.bounds.toString(); }))
+                        new go.Binding("text", "", d => "key: " + d.key + "\nbounds: " + d.bounds.toString()))
                     )
                 }
               ),
@@ -98,8 +100,7 @@
           });
 
       // This model includes all of the data
-      myWholeModel =
-        $(go.GraphLinksModel);  // must match the model used by the Diagram, below
+      myWholeModel = new go.GraphLinksModel();  // must match the model used by the Diagram, below
 
       // The virtualized layout works on the full model, not on the Diagram Nodes and Links
       myDiagram.layout.model = myWholeModel;
@@ -109,36 +110,36 @@
       // For now, we have to implement virtualization ourselves by having the Diagram's model
       // be different than the "real" model.
       myDiagram.model =   // this only holds nodes that should be in the viewport
-        $(go.GraphLinksModel);  // must match the model, above
+        new go.GraphLinksModel();  // must match the model, above
 
       // for now, we have to implement virtualization ourselves
       myDiagram.isVirtualized = true;
       myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
 
       // once the layout has finished we can decide where to position the viewport
-      myDiagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+      myDiagram.addDiagramListener("InitialLayoutCompleted", e => {
         var firstdata = myWholeModel.findNodeDataForKey(0);
         if (firstdata !== null) {
           myDiagram.centerRect(firstdata.bounds);
         }
       });
 
-      myDiagram.delayInitialization(function() { spinDuring("mySpinner", load); });
+      myDiagram.delayInitialization(diagram => spinDuring(diagram, "mySpinner", load));
     }
 
     // implement a wait spinner in HTML with CSS animation
-    function spinDuring(spinner, compute) {  // where compute is a function of zero args
+    function spinDuring(diagram, spinner, compute) {  // where compute is a function of zero args
       // show the animated spinner
       if (typeof spinner === "string") spinner = document.getElementById(spinner);
       if (spinner) {
         // position it in the middle of the viewport DIV
-        var x = Math.floor(myDiagram.div.offsetWidth/2 - spinner.naturalWidth/2);
-        var y = Math.floor(myDiagram.div.offsetHeight/2 - spinner.naturalHeight/2);
+        var x = Math.floor(diagram.div.offsetWidth/2 - spinner.naturalWidth/2);
+        var y = Math.floor(diagram.div.offsetHeight/2 - spinner.naturalHeight/2);
         spinner.style.left = x + "px";
         spinner.style.top = y + "px";
         spinner.style.display = "inline";
       }
-      setTimeout(function() {
+      setTimeout(() => {
         try {
           compute();  // do the computation
         } finally {
@@ -316,7 +317,7 @@
 
       if (myRemoveTimer === null) {
         // only remove offscreen nodes after a delay
-        myRemoveTimer = setTimeout(function() { removeOffscreen(diagram); }, 3000);
+        myRemoveTimer = setTimeout(() => removeOffscreen(diagram), 3000);
       }
 
       updateCounts();  // only for this sample
@@ -348,7 +349,7 @@
         if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
-          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
+          if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
             remove.push(d);
             if (model instanceof go.GraphLinksModel) {
               removeLinks.addAll(n.linksConnected);
@@ -362,7 +363,9 @@
         diagram.skipsUndoManager = true;
         model.removeNodeDataCollection(remove);
         if (model instanceof go.GraphLinksModel) {
-          removeLinks.each(function(l) { if (!l.isSelected) model.removeLinkData(l.data); });
+          removeLinks.each(l => {
+            if (!l.isSelected) model.removeLinkData(l.data);
+          });
         }
         diagram.skipsUndoManager = oldskips;
       }
@@ -372,46 +375,45 @@
     // end of virtualized Diagram
 
 
-    // start of VirtualizedForceDirected[Layout/Network] classes
+  // start of VirtualizedForceDirected[Layout/Network] classes
 
-    // Here we try to replace the dependence of ForceDirectedLayout on Nodes
-    // with depending only on the data in the GraphLinksModel.
-    function VirtualizedForceDirectedLayout() {
-      go.ForceDirectedLayout.call(this);
+  // Here we try to replace the dependence of ForceDirectedLayout on Nodes
+  // with depending only on the data in the GraphLinksModel.
+  class VirtualizedForceDirectedLayout extends go.ForceDirectedLayout {
+    constructor() {
+      super();
       this.isOngoing = false;
       this.model = null;  // add this property for holding the whole GraphLinksModel
     }
-    go.Diagram.inherit(VirtualizedForceDirectedLayout, go.ForceDirectedLayout);
 
-    VirtualizedForceDirectedLayout.prototype.createNetwork = function() {
+    createNetwork() {
       return new VirtualizedForceDirectedNetwork(this);  // defined below
-    };
+    }
 
     // ignore the argument, an (implicit) collection of Parts
-    VirtualizedForceDirectedLayout.prototype.makeNetwork = function(coll) {
+    makeNetwork(coll) {
       var net = this.createNetwork();
       net.addData(this.model);  // use the model data, not any actual Nodes and Links
       return net;
-    };
+    }
 
-    VirtualizedForceDirectedLayout.prototype.commitLayout = function() {
-      go.ForceDirectedLayout.prototype.commitLayout.call(this);
+    commitLayout() {
+      super.commitLayout();
       // can't depend on regular bounds computation that depends on all Nodes existing
       this.diagram.fixedBounds = computeDocumentBounds();
       // update the positions of any existing Nodes
-      this.diagram.nodes.each(function(node) {
-        node.updateTargetBindings();
-      });
-    };
-    // end VirtualizedForceDirectedLayout class
-
-
-    function VirtualizedForceDirectedNetwork(layout) {
-      go.ForceDirectedNetwork.call(this, layout);
+      this.diagram.nodes.each(node => node.updateTargetBindings());
     }
-    go.Diagram.inherit(VirtualizedForceDirectedNetwork, go.ForceDirectedNetwork);
+  }
+  // end VirtualizedForceDirectedLayout class
 
-    VirtualizedForceDirectedNetwork.prototype.addData = function(model) {
+
+  class VirtualizedForceDirectedNetwork extends go.ForceDirectedNetwork {
+    constructor(layout) {
+      super(layout);
+    }
+
+    addData(model) {
       if (model instanceof go.GraphLinksModel) {
         var dataVertexMap = new go.Map();
         // create a vertex for each node data
@@ -441,12 +443,13 @@
       } else {
         throw new Error("can only handle GraphLinksModel data");
       }
-    };
+    }
 
-    VirtualizedForceDirectedNetwork.prototype.deleteArtificialVertexes = function() { };
-    // end VirtualizedForceDirectedNetwork class
+    deleteArtificialVertexes() { }
+  }
+  // end VirtualizedForceDirectedNetwork class
 
-    // end of VirtualizedForceDirected[Layout/Network] classes
+  // end of VirtualizedForceDirected[Layout/Network] classes
 
     // This function is only used in this sample to demonstrate the effects of the virtualization.
     // In a real application you would delete this function and all calls to it.

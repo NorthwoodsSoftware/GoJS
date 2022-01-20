@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -56,7 +56,7 @@
                 'TABLE.defaultRowSeparatorStrokeWidth': 0.5,
                 'TABLE.defaultSeparatorPadding': new go.Margin(1, 3, 0, 3)
             })));
-        myDiagram.model = $(go.GraphLinksModel, {
+        myDiagram.model = new go.GraphLinksModel({
             linkFromPortIdProperty: 'fromPort',
             linkToPortIdProperty: 'toPort',
             nodeDataArray: [

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -193,6 +193,7 @@ export class DimensioningLink extends go.Link {
       }
     }
 
+    this.updateTargetBindings();
     return true;
   }
 }

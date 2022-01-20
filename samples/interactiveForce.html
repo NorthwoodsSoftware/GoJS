@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A continuously operating ForceDirectedLayout lets the user push and pull nodes around."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Interactive Force Directed Layout</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -51,32 +51,26 @@
     <script src="../release/go.js"></script>
     <div class="p-4 w-full">
     <script id="code">
-    // This variation on ForceDirectedLayout does not move any selected Nodes
-    // but does move all other nodes (vertexes).
-    function ContinuousForceDirectedLayout() {
-      go.ForceDirectedLayout.call(this);
-      this._isObserving = false;
-    }
-    go.Diagram.inherit(ContinuousForceDirectedLayout, go.ForceDirectedLayout);
-
-    ContinuousForceDirectedLayout.prototype.isFixed = function(v) {
+  // This variation on ForceDirectedLayout does not move any selected Nodes
+  // but does move all other nodes (vertexes).
+  class ContinuousForceDirectedLayout extends go.ForceDirectedLayout {
+    isFixed(v) {
       return v.node.isSelected;
     }
 
     // optimization: reuse the ForceDirectedNetwork rather than re-create it each time
-    ContinuousForceDirectedLayout.prototype.doLayout = function(coll) {
+    doLayout(coll) {
       if (!this._isObserving) {
         this._isObserving = true;
         // cacheing the network means we need to recreate it if nodes or links have been added or removed or relinked,
         // so we need to track structural model changes to discard the saved network.
-        var lay = this;
-        this.diagram.addModelChangedListener(function(e) {
+        this.diagram.addModelChangedListener(e => {
           // modelChanges include a few cases that we don't actually care about, such as
           // "nodeCategory" or "linkToPortId", but we'll go ahead and recreate the network anyway.
           // Also clear the network when replacing the model.
           if (e.modelChange !== "" ||
             (e.change === go.ChangedEvent.Transaction && e.propertyName === "StartingFirstTransaction")) {
-            lay.network = null;
+            this.network = null;
           }
         });
       }
@@ -84,22 +78,26 @@
       if (net === null) {  // the first time, just create the network as normal
         this.network = net = this.makeNetwork(coll);
       } else {  // but on reuse we need to update the LayoutVertex.bounds for selected nodes
-        this.diagram.nodes.each(function(n) {
+        this.diagram.nodes.each(n => {
           var v = net.findVertex(n);
           if (v !== null) v.bounds = n.actualBounds;
         });
       }
       // now perform the normal layout
-      go.ForceDirectedLayout.prototype.doLayout.call(this, coll);
+      super.doLayout(coll);
       // doLayout normally discards the LayoutNetwork by setting Layout.network to null;
       // here we remember it for next time
       this.network = net;
     }
-    // end ContinuousForceDirectedLayout
+  }
+  // end ContinuousForceDirectedLayout
 
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
@@ -110,7 +108,7 @@
               $(ContinuousForceDirectedLayout,  // automatically spread nodes apart while dragging
                 { defaultSpringLength: 30, defaultElectricalCharge: 100 }),
             // do an extra layout at the end of a move
-            "SelectionMoved": function(e) { e.diagram.layout.invalidateLayout(); }
+            "SelectionMoved": e => e.diagram.layout.invalidateLayout()
           });
 
       // dragging a node invalidates the Diagram.layout, causing a layout during the drag

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -170,7 +170,7 @@ export class ArrangingLayout extends go.Layout {
 
   /**
    * @hidden @internal
-   * @param {*} subcoll 
+   * @param {*} subcoll
    */
   _addMainNode(groups: go.Map<go.Part, { parts: go.Set<go.Part>, bounds: go.Rect }>, subcoll: go.Set<go.Part>, diagram: go.Diagram) {
     const grp = new go.Node();
@@ -192,9 +192,9 @@ export class ArrangingLayout extends go.Layout {
    * A null filter assigns all Nodes that have connected Links to the main graph, and
    * all Links will be assigned to the main graph, and the side graph will only contain
    * Parts with no connected Links.
-   * @param {Set} coll 
-   * @param {Set} maincoll 
-   * @param {Set} sidecoll 
+   * @param {Set} coll
+   * @param {Set} maincoll
+   * @param {Set} sidecoll
    */
   splitParts(coll: go.Set<go.Part>, maincoll: go.Set<go.Part>, sidecoll: go.Set<go.Part>) {
     // first consider all Nodes
@@ -307,7 +307,7 @@ export class ArrangingLayout extends go.Layout {
   * The default value is Spot.BottomSide.
   * Currently only handles a single side.
   * @name ArrangingLayout#side
-  
+
   * @return {Spot}
   */
   get side(): go.Spot { return this._side; }
@@ -325,7 +325,7 @@ export class ArrangingLayout extends go.Layout {
   * Gets or sets the space between the main layout and the side layout.
   * The default value is Size(20, 20).
   * @name ArrangingLayout#spacing
-  
+
   * @return {Size}
   */
   get spacing(): go.Size { return this._spacing; }

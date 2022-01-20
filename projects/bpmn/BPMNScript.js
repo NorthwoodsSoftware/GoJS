@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -219,7 +219,7 @@ var __extends = (this && this.__extends) || (function () {
         }
         // ------------------------------------------  Activity Node Boundary Events   ----------------------------------------------
         var boundaryEventMenu = // context menu for each boundaryEvent on Activity node
-         $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Remove event'), 
+         $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Remove event'),
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
         { click: function (e, obj) { removeActivityNodeBoundaryEvent(obj.part.adornedObject); } }));
         // removing a boundary event doesn't not reposition other BE circles on the node
@@ -288,7 +288,7 @@ var __extends = (this && this.__extends) || (function () {
             parameter1: 10,
             portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer',
             fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
-        }, new go.Binding('fill', 'color'), new go.Binding('strokeWidth', 'isCall', function (s) { return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth; })), 
+        }, new go.Binding('fill', 'color'), new go.Binding('strokeWidth', 'isCall', function (s) { return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth; })),
         //        $(go.Shape, "RoundedRectangle",  // the inner "Transaction" rounded rectangle
         //          { margin: 3,
         //            stretch: go.GraphObject.Fill,
@@ -331,7 +331,7 @@ var __extends = (this && this.__extends) || (function () {
             stretch: go.GraphObject.Fill,
             stroke: ActivityNodeStroke,
             parameter1: 8 / palscale, fill: null, visible: false
-        }, new go.Binding('visible', 'isTransaction')), 
+        }, new go.Binding('visible', 'isTransaction')),
         // task icon
         $(go.Shape, 'BpmnTaskScript', // will be None, Script, Manual, Service, etc via converter
         {
@@ -369,7 +369,7 @@ var __extends = (this && this.__extends) || (function () {
             locationObjectName: 'SHAPE',
             locationSpot: go.Spot.Center,
             toolTip: tooltiptemplate
-        }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+        }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         // can be resided according to the user's desires
         { resizable: false, resizeObjectName: 'SHAPE' }, $(go.Panel, 'Spot', $(go.Shape, 'Circle', // Outer circle
         {
@@ -378,7 +378,7 @@ var __extends = (this && this.__extends) || (function () {
             desiredSize: new go.Size(EventNodeSize, EventNodeSize),
             portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer',
             fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
-        }, 
+        },
         // allows the color to be determined by the node data
         new go.Binding('fill', 'eventDimension', function (s) { return (s === 8) ? EventEndOuterFillColor : EventBackgroundColor; }), new go.Binding('strokeWidth', 'eventDimension', function (s) { return s === 8 ? EventNodeStrokeWidthIsEnd : 1; }), new go.Binding('stroke', 'eventDimension', nodeEventDimensionStrokeColorConverter), new go.Binding('strokeDashArray', 'eventDimension', function (s) { return (s === 3 || s === 6) ? [4, 2] : null; }), new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)), // end main shape
         $(go.Shape, 'Circle', // Inner circle
@@ -423,7 +423,7 @@ var __extends = (this && this.__extends) || (function () {
             locationObjectName: 'SHAPE',
             locationSpot: go.Spot.Center,
             toolTip: tooltiptemplate
-        }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+        }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         // can be resided according to the user's desires
         { resizable: false, resizeObjectName: 'SHAPE' }, $(go.Panel, 'Spot', $(go.Shape, 'Diamond', {
             strokeWidth: 1, fill: GatewayNodeFill, stroke: GatewayNodeStroke,
@@ -432,9 +432,9 @@ var __extends = (this && this.__extends) || (function () {
             portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer',
             fromSpot: go.Spot.NotLeftSide, toSpot: go.Spot.NotRightSide
         }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)), // end main shape
-        $(go.Shape, 'NotAllowed', { alignment: go.Spot.Center, stroke: GatewayNodeSymbolStroke, fill: GatewayNodeSymbolFill }, new go.Binding('figure', 'gatewayType', nodeGatewaySymbolTypeConverter), 
+        $(go.Shape, 'NotAllowed', { alignment: go.Spot.Center, stroke: GatewayNodeSymbolStroke, fill: GatewayNodeSymbolFill }, new go.Binding('figure', 'gatewayType', nodeGatewaySymbolTypeConverter),
         // new go.Binding("visible", "gatewayType", function(s) { return s !== 4; }),   // comment out if you want exclusive gateway to be X instead of blank.
-        new go.Binding('strokeWidth', 'gatewayType', function (s) { return (s <= 4) ? GatewayNodeSymbolStrokeWidth : 1; }), new go.Binding('desiredSize', 'gatewayType', nodeGatewaySymbolSizeConverter)), 
+        new go.Binding('strokeWidth', 'gatewayType', function (s) { return (s <= 4) ? GatewayNodeSymbolStrokeWidth : 1; }), new go.Binding('desiredSize', 'gatewayType', nodeGatewaySymbolSizeConverter)),
         // the next 2 circles only show up for event gateway
         $(go.Shape, 'Circle', // Outer circle
         {
@@ -458,14 +458,14 @@ var __extends = (this && this.__extends) || (function () {
         }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), $(go.Panel, 'Spot', $(go.Shape, 'Diamond', {
             strokeWidth: 1, fill: GatewayNodeFill, stroke: GatewayNodeStroke, name: 'SHAPE',
             desiredSize: new go.Size(GatewayNodeSize / 2, GatewayNodeSize / 2)
-        }), $(go.Shape, 'NotAllowed', { alignment: go.Spot.Center, stroke: GatewayNodeSymbolStroke, strokeWidth: GatewayNodeSymbolStrokeWidth, fill: GatewayNodeSymbolFill }, new go.Binding('figure', 'gatewayType', nodeGatewaySymbolTypeConverter), 
+        }), $(go.Shape, 'NotAllowed', { alignment: go.Spot.Center, stroke: GatewayNodeSymbolStroke, strokeWidth: GatewayNodeSymbolStrokeWidth, fill: GatewayNodeSymbolFill }, new go.Binding('figure', 'gatewayType', nodeGatewaySymbolTypeConverter),
         // new go.Binding("visible", "gatewayType", function(s) { return s !== 4; }),   // comment out if you want exclusive gateway to be X instead of blank.
-        new go.Binding('strokeWidth', 'gatewayType', function (s) { return (s <= 4) ? GatewayNodeSymbolStrokeWidth : 1; }), new go.Binding('desiredSize', 'gatewayType', nodePalGatewaySymbolSizeConverter)), 
+        new go.Binding('strokeWidth', 'gatewayType', function (s) { return (s <= 4) ? GatewayNodeSymbolStrokeWidth : 1; }), new go.Binding('desiredSize', 'gatewayType', nodePalGatewaySymbolSizeConverter)),
         // the next 2 circles only show up for event gateway
         $(go.Shape, 'Circle', // Outer circle
         {
             strokeWidth: 1, stroke: GatewayNodeSymbolStroke, fill: null, desiredSize: new go.Size(EventNodeSize / 2, EventNodeSize / 2)
-        }, 
+        },
         // new go.Binding("desiredSize", "gatewayType", new go.Size(EventNodeSize/2, EventNodeSize/2)),
         new go.Binding('visible', 'gatewayType', function (s) { return s >= 5; }) // only visible for > 5
         ), // end main shape
@@ -557,7 +557,7 @@ var __extends = (this && this.__extends) || (function () {
             portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer',
             fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide
         }, new go.Binding('strokeWidth', 'isCall', function (s) { return s ? ActivityNodeStrokeWidthIsCall : ActivityNodeStrokeWidth; })), $(go.Panel, 'Vertical', { defaultAlignment: go.Spot.Left }, $(go.TextBlock, // label
-        { margin: 3, editable: true }, new go.Binding('text', 'text').makeTwoWay(), new go.Binding('alignment', 'isSubGraphExpanded', function (s) { return s ? go.Spot.TopLeft : go.Spot.Center; })), 
+        { margin: 3, editable: true }, new go.Binding('text', 'text').makeTwoWay(), new go.Binding('alignment', 'isSubGraphExpanded', function (s) { return s ? go.Spot.TopLeft : go.Spot.Center; })),
         // create a placeholder to represent the area where the contents of the group are
         $(go.Panel, "Auto", $(go.Shape, { opacity: 0.0 }), $(go.Placeholder, { padding: new go.Margin(5, 5) })), // end nested Auto Panel
         makeMarkerPanel(true, 1) // sub-process,  loop, parallel, sequential, ad doc and compensation markers
@@ -584,7 +584,7 @@ var __extends = (this && this.__extends) || (function () {
             });
         }
         var laneEventMenu = // context menu for each lane
-         $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Add Lane'), 
+         $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Add Lane'),
         // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
         { click: function (e, obj) { addLaneEvent(obj.part.adornedObject); } }));
         // Add a lane to pool (lane parameter is lane above new lane)
@@ -658,11 +658,11 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 updateCrossLaneLinks(grp);
             }
-        }, 
+        },
         // new go.Binding("isSubGraphExpanded", "expanded").makeTwoWay(),
         $(go.Shape, 'Rectangle', // this is the resized object
         { name: 'SHAPE', fill: 'white', stroke: null }, // need stroke null here or you gray out some of pool border.
-        new go.Binding('fill', 'color'), new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)), 
+        new go.Binding('fill', 'color'), new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)),
         // the lane header consisting of a Shape and a TextBlock
         $(go.Panel, 'Horizontal', {
             name: 'HEADER',
@@ -739,9 +739,9 @@ var __extends = (this && this.__extends) || (function () {
         palGroupTemplateMap.add('Lane', swimLanesGroupTemplateForPalette);
         // ------------------------------------------  Link Templates   ----------------------------------------------
         var sequenceLinkTemplate = $(go.Link, {
-            contextMenu: $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Default Flow'), 
+            contextMenu: $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Default Flow'),
             // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
-            { click: function (e, obj) { setSequenceLinkDefaultFlow(obj.part.adornedObject); } }), $('ContextMenuButton', $(go.TextBlock, 'Conditional Flow'), 
+            { click: function (e, obj) { setSequenceLinkDefaultFlow(obj.part.adornedObject); } }), $('ContextMenuButton', $(go.TextBlock, 'Conditional Flow'),
             // in the click event handler, the obj.part is the Adornment; its adornedObject is the port
             { click: function (e, obj) { setSequenceLinkConditionalFlow(obj.part.adornedObject); } })),
             routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap, corner: 10,

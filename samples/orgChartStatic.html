@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A larger org chart with an Overview and searching capability."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Org Chart Static</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -66,7 +66,10 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" type="text/css">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // some constants that will be reused within templates
       var mt8 = new go.Margin(8, 0, 0, 0);
@@ -84,7 +87,7 @@
             initialDocumentSpot: go.Spot.Top,
             initialViewportSpot: go.Spot.Top,
             // OR: Scroll to show a particular node, once the layout has determined where that node is
-            // "InitialLayoutCompleted": function(e) {
+            // "InitialLayoutCompleted": e => {
             //  var node = e.diagram.findNodeForKey(28);
             //  if (node !== null) e.diagram.commandHandler.scrollToPart(node);
             // },
@@ -117,7 +120,7 @@
             font: "12px Roboto, sans-serif", stroke: "rgba(0, 0, 0, .60)",
             visible: false  // only show textblocks when there is corresponding data for them
           },
-          new go.Binding("visible", field, function(val) { return val !== undefined; })
+          new go.Binding("visible", field, val => val !== undefined)
         ];
       }
 
@@ -145,7 +148,7 @@
           $(go.Shape, "RoundedRectangle", roundedRectangleParams,
             { name: "SHAPE", fill: "#ffffff", strokeWidth: 0 },
             // gold if highlighted, white otherwise
-            new go.Binding("fill", "isHighlighted", function(h) { return h ? "gold" : "#ffffff"; }).ofObject()
+            new go.Binding("fill", "isHighlighted", h => h ? "gold" : "#ffffff").ofObject()
           ),
           $(go.Panel, "Vertical",
             $(go.Panel, "Horizontal",
@@ -153,7 +156,7 @@
               $(go.Picture,  // flag image, only visible if a nation is specified
                 { margin: mr8, visible: false, desiredSize: new go.Size(50, 50) },
                 new go.Binding("source", "nation", theNationFlagConverter),
-                new go.Binding("visible", "nation", function(nat) { return nat !== undefined; })
+                new go.Binding("visible", "nation", nat => nat !== undefined)
               ),
               $(go.Panel, "Table",
                 $(go.TextBlock,
@@ -192,11 +195,11 @@
                 defaultAlignment: go.Spot.Left,  // thus no need to specify alignment on each element
               },
               $(go.TextBlock, textStyle("headOf"),
-                new go.Binding("text", "headOf", function(head) { return "Head of: " + head; })
+                new go.Binding("text", "headOf", head => "Head of: " + head)
               ),
               $(go.TextBlock, textStyle("boss"),
-                new go.Binding("margin", "headOf", function(head) { return mt8; }), // some space above if there is also a headOf value
-                new go.Binding("text", "boss", function(boss) {
+                new go.Binding("margin", "headOf", head => mt8), // some space above if there is also a headOf value
+                new go.Binding("text", "boss", boss => {
                   var boss = myDiagram.model.findNodeDataForKey(boss);
                   if (boss !== null) {
                     return "Reporting to: " + boss.name;
@@ -260,7 +263,7 @@
 
       // create the Model with data for the tree, and assign to the Diagram
       myDiagram.model =
-        $(go.TreeModel,
+        new go.TreeModel(
           {
             nodeParentKeyProperty: "boss",  // this property refers to the parent node data
             nodeDataArray: nodeDataArray

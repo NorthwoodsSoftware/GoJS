@@ -9,6 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.init = void 0;
     var go = require("../../release/go");
     var GoCloudStorageManager_1 = require("./GoCloudStorageManager");
     var GoDropBox_1 = require("./GoDropBox");

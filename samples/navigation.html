@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Show the relationships of nodes and links and groups."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Navigation of Graphs</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // Diagram refers to its DIV HTML element by id
@@ -186,8 +189,7 @@
         ]);
 
       // whenever selection changes, run updateHighlights
-      myDiagram.addDiagramListener("ChangedSelection",
-        function() { updateHighlights(getRadioButton()); });
+      myDiagram.addDiagramListener("ChangedSelection", () => updateHighlights(getRadioButton()));
 
       myDiagram.select(myDiagram.findNodeForKey('A'));
     }
@@ -197,8 +199,8 @@
     // Parameter e is the checked radio button.
     function updateHighlights(e) {
       // Set highlight to 0 for everything before updating
-      myDiagram.nodes.each(function(node) { node.highlight = 0; });
-      myDiagram.links.each(function(link) { link.highlight = 0; });
+      myDiagram.nodes.each(node => node.highlight = 0);
+      myDiagram.links.each(link => link.highlight = 0);
 
       // Get the selected GraphObject and run the appropriate method
       var sel = myDiagram.selection.first();
@@ -222,14 +224,14 @@
 
       // Give everything the appropriate highlighting ( color and width of stroke )
       // nodes, including groups
-      myDiagram.nodes.each(function(node) {
+      myDiagram.nodes.each(node => {
         var shp = node.findObject("OBJSHAPE");
         var grp = node.findObject("GROUPTEXT");
         var hl = node.highlight;
         highlight(shp, grp, hl);
       });
       // links
-      myDiagram.links.each(function(link) {
+      myDiagram.links.each(link => {
         var hl = link.highlight;
         var shp = link.findObject("OBJSHAPE");
         var arw = link.findObject("ARWSHAPE");
@@ -244,21 +246,21 @@
     // if the link connects to this node, highlight it
     function linksTo(x, i) {
       if (x instanceof go.Node) {
-        x.findLinksInto().each(function(link) { link.highlight = i; });
+        x.findLinksInto().each(link => link.highlight = i);
       }
     }
 
     // if the link comes from this node, highlight it
     function linksFrom(x, i) {
       if (x instanceof go.Node) {
-        x.findLinksOutOf().each(function(link) { link.highlight = i; });
+        x.findLinksOutOf().each(link => link.highlight = i);
       }
     }
 
     // highlight all links connected to this node
     function linksAll(x, i) {
       if (x instanceof go.Node) {
-        x.linksConnected.each(function(link) { link.highlight = i; });
+        x.linksConnected.each(link => link.highlight = i);
       }
     }
 
@@ -271,7 +273,7 @@
         x.fromNode.highlight = i;
         nodesToList.add(x.data.from);
       } else {
-        x.findNodesInto().each(function(node) {
+        x.findNodesInto().each(node => {
           node.highlight = i;
           nodesToList.add(node.data.key);
         });
@@ -286,7 +288,7 @@
         x.toNode.highlight = i;
         nodesFromList.add(x.data.to);
       } else {
-        x.findNodesOutOf().each(function(node) {
+        x.findNodesOutOf().each(node => {
           node.highlight = i;
           nodesFromList.add(node.data.key);
         });
@@ -303,7 +305,7 @@
         x.toNode.highlight = i;
         nodesReach(x.toNode, i + 1);
       } else {
-        x.findNodesOutOf().each(function(node) {
+        x.findNodesOutOf().each(node => {
           if (node.highlight === 0 || node.highlight > i) {
             node.highlight = i;
             nodesReach(node, i + 1);
@@ -318,7 +320,7 @@
         x.toNode.highlight = i;
         x.fromNode.highlight = i;
       } else {
-        x.findNodesConnected().each(function(node) { node.highlight = i; });
+        x.findNodesConnected().each(node => node.highlight = i);
       }
     }
 
@@ -343,7 +345,7 @@
     function childNodes(x, i) {
       var childLst = new go.List(/*"string"*/);
       if (x instanceof go.Group) {
-        myDiagram.nodes.each(function(node) {
+        myDiagram.nodes.each(node => {
           if (node.containingGroup === x) {
             node.highlight = i;
             childLst.add(node.data.key);
@@ -356,7 +358,7 @@
     // same as childNodes, then run allMemberNodes for each child Group with the next color
     function allMemberNodes(x, i) {
       if (x instanceof go.Group) {
-        myDiagram.nodes.each(function(node) {
+        myDiagram.nodes.each(node => {
           if (node.containingGroup === x) {
             node.highlight = i;
             allMemberNodes(node, i + 1);
@@ -368,7 +370,7 @@
     // if the link"s containing Group is x, highlight it
     function childLinks(x, i) {
       var childLst = new go.List(/*go.Link*/);
-      myDiagram.links.each(function(link) {
+      myDiagram.links.each(link => {
         if (link.containingGroup === x) {
           link.highlight = i;
           childLst.add(link);
@@ -380,7 +382,7 @@
     // same as childLinks, then run allMemberLinks for each child Group with the next color
     function allMemberLinks(x, i) {
       childLinks(x, i);
-      myDiagram.nodes.each(function(node) {
+      myDiagram.nodes.each(node => {
         if (node instanceof go.Group && node.containingGroup === x) {
           allMemberLinks(node, i + 1);
         }
@@ -421,9 +423,9 @@
         text += x.data.key;
         var toLst = nodesTo(x, 0); // display names of nodes going into this node
         if (toLst.count > 0) {
-          toLst.sort(function(a, b) { return a < b ? -1 : 1 });
+          toLst.sort((a, b) => a < b ? -1 : 1);
           text += "\nNodes into: ";
-          toLst.each(function(key) {
+          toLst.each(key => {
             if (key !== text.substring(text.length - 3, text.length - 2)) {
               text += key + ", ";
             }
@@ -432,9 +434,9 @@
         }
         var frLst = nodesFrom(x, 0); // display names of nodes coming out of this node
         if (frLst.count > 0) {
-          frLst.sort(function(a, b) { return a < b ? -1 : 1 });
+          frLst.sort((a, b) => a < b ? -1 : 1);
           text += "\nNodes out of: ";
-          frLst.each(function(key) {
+          frLst.each(key => {
             if (key !== text.substring(text.length - 3, text.length - 2)) {
               text += key + ", ";
             }
@@ -447,8 +449,8 @@
           // if it"s a group, also display nodes and links contained in it
           text += "\nMember nodes: ";
           var children = childNodes(x, 0);
-          children.sort(function(a, b) { return a < b ? -1 : 1 });
-          children.each(function(key) {
+          children.sort((a, b) => a < b ? -1 : 1);
+          children.each(key => {
             if (key !== text.substring(text.length - 3, text.length - 2)) {
               text += key + ", ";
             }
@@ -459,11 +461,11 @@
           if (linkChildren.count > 0) {
             text += "\nMember links: ";
             var linkStrings = new go.List(/*"string"*/);
-            linkChildren.each(function(link) {
+            linkChildren.each(link => {
               linkStrings.add(link.data.from + " --> " + link.data.to);
             });
-            linkStrings.sort(function(a, b) { return a < b ? -1 : 1 });
-            linkStrings.each(function(str) {
+            linkStrings.sort((a, b) => a < b ? -1 : 1);
+            linkStrings.each(str => {
               text += str + ", ";
             });
             text = text.substring(0, text.length - 2);

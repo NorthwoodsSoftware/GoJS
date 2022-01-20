@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Nodes with varying lists of ports on each of four sides."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Dynamic Ports</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,17 +52,20 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  //for conciseness in defining node templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  //for conciseness in defining node templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  //Diagram refers to its DIV HTML element by id
           { "undoManager.isEnabled": true });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
+      myDiagram.addDiagramListener("Modified", e => {
+        const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        const idx = document.title.indexOf("*");
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
@@ -76,40 +79,40 @@
           $(go.TextBlock, text),
           { click: action },
           // don't bother with binding GraphObject.visible if there's no predicate
-          visiblePredicate ? new go.Binding("visible", "", function(o, e) { return o.diagram ? visiblePredicate(o, e) : false; }).ofObject() : {});
+          visiblePredicate ? new go.Binding("visible", "", (o, e) => o.diagram ? visiblePredicate(o, e) : false).ofObject() : {});
       }
 
-      var nodeMenu =  // context menu for each Node
+      const nodeMenu =  // context menu for each Node
         $("ContextMenu",
           makeButton("Copy",
-            function(e, obj) { e.diagram.commandHandler.copySelection(); }),
+            (e, obj) => e.diagram.commandHandler.copySelection()),
           makeButton("Delete",
-            function(e, obj) { e.diagram.commandHandler.deleteSelection(); }),
+            (e, obj) => e.diagram.commandHandler.deleteSelection()),
           $(go.Shape, "LineH", { strokeWidth: 2, height: 1, stretch: go.GraphObject.Horizontal }),
           makeButton("Add top port",
-            function(e, obj) { addPort("top"); }),
+            (e, obj) => addPort("top")),
           makeButton("Add left port",
-            function(e, obj) { addPort("left"); }),
+            (e, obj) => addPort("left")),
           makeButton("Add right port",
-            function(e, obj) { addPort("right"); }),
+            (e, obj) => addPort("right")),
           makeButton("Add bottom port",
-            function(e, obj) { addPort("bottom"); })
+            (e, obj) => addPort("bottom"))
         );
 
-      var portSize = new go.Size(8, 8);
+        const portSize = new go.Size(8, 8);
 
-      var portMenu =  // context menu for each port
+        const portMenu =  // context menu for each port
         $("ContextMenu",
           makeButton("Swap order",
-            function(e, obj) { swapOrder(obj.part.adornedObject); }),
+            (e, obj) => swapOrder(obj.part.adornedObject)),
           makeButton("Remove port",
             // in the click event handler, the obj.part is the Adornment;
             // its adornedObject is the port
-            function(e, obj) { removePort(obj.part.adornedObject); }),
+            (e, obj) => removePort(obj.part.adornedObject)),
           makeButton("Change color",
-            function(e, obj) { changeColor(obj.part.adornedObject); }),
+            (e, obj) => changeColor(obj.part.adornedObject)),
           makeButton("Remove side ports",
-            function(e, obj) { removeAll(obj.part.adornedObject); })
+            (e, obj) => removeAll(obj.part.adornedObject))
         );
 
       // the node template
@@ -273,14 +276,14 @@
       myDiagram.contextMenu =
         $("ContextMenu",
           makeButton("Paste",
-            function(e, obj) { e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint); },
-            function(o) { return o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint); }),
+            (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+            o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
           makeButton("Undo",
-            function(e, obj) { e.diagram.commandHandler.undo(); },
-            function(o) { return o.diagram.commandHandler.canUndo(); }),
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()),
           makeButton("Redo",
-            function(e, obj) { e.diagram.commandHandler.redo(); },
-            function(o) { return o.diagram.commandHandler.canRedo(); })
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo())
         );
 
       // load the diagram from JSON data
@@ -288,37 +291,33 @@
     }
 
 
-    // This custom-routing Link class tries to separate parallel links from each other.
-    // This assumes that ports are lined up in a row/column on a side of the node.
-    function CustomLink() {
-      go.Link.call(this);
-    };
-    go.Diagram.inherit(CustomLink, go.Link);
-
-    CustomLink.prototype.findSidePortIndexAndCount = function(node, port) {
-      var nodedata = node.data;
+  // This custom-routing Link class tries to separate parallel links from each other.
+  // This assumes that ports are lined up in a row/column on a side of the node.
+  class CustomLink extends go.Link {
+    findSidePortIndexAndCount(node, port) {
+      const nodedata = node.data;
       if (nodedata !== null) {
-        var portdata = port.data;
-        var side = port._side;
-        var arr = nodedata[side + "Array"];
-        var len = arr.length;
-        for (var i = 0; i < len; i++) {
+        const portdata = port.data;
+        const side = port._side;
+        const arr = nodedata[side + "Array"];
+        const len = arr.length;
+        for (let i = 0; i < len; i++) {
           if (arr[i] === portdata) return [i, len];
         }
       }
       return [-1, len];
-    };
+    }
 
-    CustomLink.prototype.computeEndSegmentLength = function(node, port, spot, from) {
-      var esl = go.Link.prototype.computeEndSegmentLength.call(this, node, port, spot, from);
-      var other = this.getOtherPort(port);
+    computeEndSegmentLength(node, port, spot, from) {
+      const esl = super.computeEndSegmentLength(node, port, spot, from);
+      const other = this.getOtherPort(port);
       if (port !== null && other !== null) {
-        var thispt = port.getDocumentPoint(this.computeSpot(from));
-        var otherpt = other.getDocumentPoint(this.computeSpot(!from));
+        const thispt = port.getDocumentPoint(this.computeSpot(from));
+        const otherpt = other.getDocumentPoint(this.computeSpot(!from));
         if (Math.abs(thispt.x - otherpt.x) > 20 || Math.abs(thispt.y - otherpt.y) > 20) {
-          var info = this.findSidePortIndexAndCount(node, port);
-          var idx = info[0];
-          var count = info[1];
+          const info = this.findSidePortIndexAndCount(node, port);
+          const idx = info[0];
+          const count = info[1];
           if (port._side == "top" || port._side == "bottom") {
             if (otherpt.x < thispt.x) {
               return esl + 4 + idx * 8;
@@ -335,38 +334,38 @@
         }
       }
       return esl;
-    };
+    }
 
-    CustomLink.prototype.hasCurviness = function() {
+    hasCurviness() {
       if (isNaN(this.curviness)) return true;
-      return go.Link.prototype.hasCurviness.call(this);
-    };
+      return super.hasCurviness();
+    }
 
-    CustomLink.prototype.computeCurviness = function() {
+    computeCurviness() {
       if (isNaN(this.curviness)) {
-        var fromnode = this.fromNode;
-        var fromport = this.fromPort;
-        var fromspot = this.computeSpot(true);
-        var frompt = fromport.getDocumentPoint(fromspot);
-        var tonode = this.toNode;
-        var toport = this.toPort;
-        var tospot = this.computeSpot(false);
-        var topt = toport.getDocumentPoint(tospot);
+        const fromnode = this.fromNode;
+        const fromport = this.fromPort;
+        const fromspot = this.computeSpot(true);
+        const frompt = fromport.getDocumentPoint(fromspot);
+        const tonode = this.toNode;
+        const toport = this.toPort;
+        const tospot = this.computeSpot(false);
+        const topt = toport.getDocumentPoint(tospot);
         if (Math.abs(frompt.x - topt.x) > 20 || Math.abs(frompt.y - topt.y) > 20) {
           if ((fromspot.equals(go.Spot.Left) || fromspot.equals(go.Spot.Right)) &&
             (tospot.equals(go.Spot.Left) || tospot.equals(go.Spot.Right))) {
-            var fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
-            var toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
-            var c = (fromseglen - toseglen) / 2;
+            const fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+            const toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+            const c = (fromseglen - toseglen) / 2;
             if (frompt.x + fromseglen >= topt.x - toseglen) {
               if (frompt.y < topt.y) return c;
               if (frompt.y > topt.y) return -c;
             }
           } else if ((fromspot.equals(go.Spot.Top) || fromspot.equals(go.Spot.Bottom)) &&
             (tospot.equals(go.Spot.Top) || tospot.equals(go.Spot.Bottom))) {
-            var fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
-            var toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
-            var c = (fromseglen - toseglen) / 2;
+            const fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+            const toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+            const c = (fromseglen - toseglen) / 2;
             if (frompt.x + fromseglen >= topt.x - toseglen) {
               if (frompt.y < topt.y) return c;
               if (frompt.y > topt.y) return -c;
@@ -374,27 +373,28 @@
           }
         }
       }
-      return go.Link.prototype.computeCurviness.call(this);
-    };
-    // end CustomLink class
+      return super.computeCurviness();
+    }
+  }
+  // end CustomLink class
 
 
     // Add a port to the specified side of the selected nodes.
     function addPort(side) {
       myDiagram.startTransaction("addPort");
-      myDiagram.selection.each(function(node) {
+      myDiagram.selection.each(node => {
         // skip any selected Links
         if (!(node instanceof go.Node)) return;
         // compute the next available index number for the side
-        var i = 0;
+        let i = 0;
         while (node.findPort(side + i.toString()) !== node) i++;
         // now this new port name is unique within the whole Node because of the side prefix
-        var name = side + i.toString();
+        const name = side + i.toString();
         // get the Array of port data to be modified
-        var arr = node.data[side + "Array"];
+        const arr = node.data[side + "Array"];
         if (arr) {
           // create a new port data object
-          var newportdata = {
+          const newportdata = {
             portId: name,
             portColor: getPortColor()
           };
@@ -408,13 +408,13 @@
     // Exchange the position/order of the given port with the next one.
     // If it's the last one, swap with the previous one.
     function swapOrder(port) {
-      var arr = port.panel.itemArray;
+      const arr = port.panel.itemArray;
       if (arr.length >= 2) {  // only if there are at least two ports!
-        for (var i = 0; i < arr.length; i++) {
+        for (let i = 0; i < arr.length; i++) {
           if (arr[i].portId === port.portId) {
             myDiagram.startTransaction("swap ports");
             if (i >= arr.length - 1) i--;  // now can swap I and I+1, even if it's the last port
-            var newarr = arr.slice(0);  // copy Array
+            const newarr = arr.slice(0);  // copy Array
             newarr[i] = arr[i + 1];  // swap items
             newarr[i + 1] = arr[i];
             // remember the new Array in the model
@@ -430,9 +430,9 @@
     // Links to the port will be redrawn to the node's shape.
     function removePort(port) {
       myDiagram.startTransaction("removePort");
-      var pid = port.portId;
-      var arr = port.panel.itemArray;
-      for (var i = 0; i < arr.length; i++) {
+      const pid = port.portId;
+      const arr = port.panel.itemArray;
+      for (let i = 0; i < arr.length; i++) {
         if (arr[i].portId === pid) {
           myDiagram.model.removeArrayItem(arr, i);
           break;
@@ -444,8 +444,8 @@
     // Remove all ports from the same side of the node as the clicked port.
     function removeAll(port) {
       myDiagram.startTransaction("removePorts");
-      var nodedata = port.part.data;
-      var side = port._side;  // there are four property names, all ending in "Array"
+      const nodedata = port.part.data;
+      const side = port._side;  // there are four property names, all ending in "Array"
       myDiagram.model.setDataProperty(nodedata, side + "Array", []);  // an empty Array
       myDiagram.commitTransaction("removePorts");
     }
@@ -453,14 +453,14 @@
     // Change the color of the clicked port.
     function changeColor(port) {
       myDiagram.startTransaction("colorPort");
-      var data = port.data;
+      const data = port.data;
       myDiagram.model.setDataProperty(data, "portColor", getPortColor());
       myDiagram.commitTransaction("colorPort");
     }
 
     // Use some pastel colors for ports
     function getPortColor() {
-      var portColors = ["#fae3d7", "#d6effc", "#ebe3fc", "#eaeef8", "#fadfe5", "#6cafdb", "#66d6d1"]
+      const portColors = ["#fae3d7", "#d6effc", "#ebe3fc", "#eaeef8", "#fadfe5", "#6cafdb", "#66d6d1"]
       return portColors[Math.floor(Math.random() * portColors.length)];
     }
 

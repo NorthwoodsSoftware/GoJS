@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom LayeredDigraphLayout that knows about "lanes"
@@ -107,7 +107,7 @@ Object.defineProperty(SwimLaneLayout.prototype, "reducer", {
         val.setBary = function(v, val) { v.bary = val; }
         val.getConnectedNodesIterator = function(v) { return v.vertexes; }
       }
-    
+
       this.invalidateLayout();
     }
   }
@@ -123,7 +123,6 @@ SwimLaneLayout.prototype.doLayout = function(coll) {
   this.laneBreadths.clear();
   this._layers = null;
   this._neededSpaces = null;
-  this.laneNames = [];  // clear out for next layout
 }
 
 SwimLaneLayout.prototype.nodeMinLayerSpace = function(v, topleft) {
@@ -395,7 +394,7 @@ SwimLaneLayout.prototype.renormalizeColumns = function() {
 
 /**
  * Return the minimum lane width, in columns
- * @param lane 
+ * @param lane
  */
 SwimLaneLayout.prototype.computeMinLaneWidth = function(lane) { return 0; }
 

@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -229,14 +229,14 @@
             stroke: '#424242',
             strokeWidth: 2,
             desiredSize: new go.Size(8, 8)
-        }, 
+        },
         // bind the Shape.figure to the Node.isTreeExpanded value using this converter:
         new go.Binding('figure', 'isTreeExpanded', function (exp, shape) {
             var but = shape.panel;
             return exp ? but['_treeExpandedFigure'] : but['_treeCollapsedFigure'];
-        }).ofObject()), 
+        }).ofObject()),
         // assume initially not visible because there are no links coming out
-        { visible: false }, 
+        { visible: false },
         // bind the button visibility to whether it's not a leaf node
         new go.Binding('visible', 'isTreeLeaf', function (leaf) { return !leaf; }).ofObject()));
         // tree expand/collapse behavior
@@ -283,7 +283,7 @@
             stroke: '#424242',
             strokeWidth: 2,
             desiredSize: new go.Size(8, 8)
-        }, 
+        },
         // bind the Shape.figure to the Group.isSubGraphExpanded value using this converter:
         new go.Binding('figure', 'isSubGraphExpanded', function (exp, shape) {
             var but = shape.panel;
@@ -359,7 +359,7 @@
             shadowColor: 'rgba(0, 0, 0, .4)',
             shadowOffset: new go.Point(0, 3),
             shadowBlur: 5
-        }, 
+        },
         // don't set the background if the ContextMenu is adorning something and there's a Placeholder
         new go.Binding('background', '', function (obj) {
             var part = obj.adornedPart;
@@ -429,7 +429,7 @@
                 return;
             if (diagram.isReadOnly)
                 return;
-            var elt = btn.findTemplateBinder();
+            var elt = btn.findBindingPanel();
             if (elt === null)
                 elt = btn.part;
             if (elt !== null) {
@@ -462,7 +462,7 @@
             stretch: go.GraphObject.Fill,
             geometryStretch: go.GraphObject.Uniform,
             visible: false // visible set to false: not checked, unless data.PROPNAME is true
-        }, 
+        },
         // create a data Binding only if PROPNAME is supplied and not the empty string
         (propname !== '' ? new go.Binding('visible', propname).makeTwoWay() : []))));
         button.click = function (e, btn) {

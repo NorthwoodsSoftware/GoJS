@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Floorplanner app-specific tweaks to the basic Data Inspector class
@@ -15,6 +15,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.tweakInspectorForFloorplanner = void 0;
     var go = require("../../../release/go");
     var DataInspector_1 = require("./DataInspector");
     function tweakInspectorForFloorplanner(inspector, myFloorplan, editorHelper) {
@@ -46,7 +47,8 @@
                 show: function (part) {
                     return DataInspector_1.Inspector.showIfPresent && !part.data.usesTexture &&
                         (part.category === '' || part.category === 'MultiPurposeNode');
-                }, type: 'color'
+                },
+                type: 'color'
             },
             'stroke': { show: false, type: 'color' },
             'text': { show: DataInspector_1.Inspector.showIfPresent },

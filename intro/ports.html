@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Ports in Nodes-- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Ports in Nodes-- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -135,7 +135,7 @@
 
 <h1>Ports in Nodes</h1>
 <p>
-Although you have some control over where links will connect at a node (at a particular spot, along one or
+Although you have some control over where links will connect to a node (at a particular spot, along one or
 more sides, or at the intersection with the edge), there are times when you want to have different logical
 and graphical places at which links should connect.  The elements at which a link may connect are called
 <i>ports</i>.  There may be any number of ports in a node.  By default there is just one port, the whole node,
@@ -303,7 +303,7 @@ in order for the user to be able to link with those ports.
   diagram.layout = $(go.LayeredDigraphLayout, { columnSpacing: 10 });
 
   diagram.model =
-    $(go.GraphLinksModel,
+    new go.GraphLinksModel(
       { linkFromPortIdProperty: "fromPort",  // required information:
         linkToPortIdProperty: "toPort",      // identifies data property names
         nodeDataArray: [
@@ -344,14 +344,14 @@ and then mouse-up to complete the link.
           { column: 0, row: 1 },
           $(go.Shape,  // the "A" port
             { width: 6, height: 6, portId: "A", toSpot: go.Spot.Left,
-              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links from here
+              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
           $(go.TextBlock, "A")  // "A" port label
         ),
         $(go.Panel, "Horizontal",
           { column: 0, row: 2 },
           $(go.Shape,  // the "B" port
             { width: 6, height: 6, portId: "B", toSpot: go.Spot.Left,
-              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links from here
+              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
           $(go.TextBlock, "B")  // "B" port label
         ),
         $(go.Panel, "Horizontal",
@@ -359,7 +359,7 @@ and then mouse-up to complete the link.
           $(go.TextBlock, "Out"),  // "Out" port label
           $(go.Shape,  // the "Out" port
             { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.Right,
-              fromLinkable: true })  // allow user-drawn links to here
+              fromLinkable: true })  // allow user-drawn links from here
         )
       )
     );
@@ -376,7 +376,7 @@ and then mouse-up to complete the link.
   diagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
 
   diagram.model =
-    $(go.GraphLinksModel,
+    new go.GraphLinksModel(
       { linkFromPortIdProperty: "fromPort",  // required information:
         linkToPortIdProperty: "toPort",      // identifies data property names
         nodeDataArray: [
@@ -484,7 +484,7 @@ And because <a>GraphObject.fromLinkable</a> is false for that port element, the 
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="UML Class-like nodes showing two collapsible lists of items."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>UML Class Nodes</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
   <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -91,17 +94,17 @@
           $(go.TextBlock,
             { isMultiline: false, editable: true },
             new go.Binding("text", "name").makeTwoWay(),
-            new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
+            new go.Binding("isUnderline", "scope", s => s[0] === 'c')),
           // property type, if known
           $(go.TextBlock, "",
-            new go.Binding("text", "type", function (t) { return (t ? ": " : ""); })),
+            new go.Binding("text", "type", t => t ? ": " : "")),
           $(go.TextBlock,
             { isMultiline: false, editable: true },
             new go.Binding("text", "type").makeTwoWay()),
           // property default value, if any
           $(go.TextBlock,
             { isMultiline: false, editable: false },
-            new go.Binding("text", "default", function (s) { return s ? " = " + s : ""; }))
+            new go.Binding("text", "default", s => s ? " = " + s : ""))
         );
 
       // the item template for methods
@@ -115,7 +118,7 @@
           $(go.TextBlock,
             { isMultiline: false, editable: true },
             new go.Binding("text", "name").makeTwoWay(),
-            new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
+            new go.Binding("isUnderline", "scope", s => s[0] === 'c')),
           // method parameters
           $(go.TextBlock, "()",
             // this does not permit adding/editing/removing of parameters via inplace edits
@@ -130,7 +133,7 @@
             })),
           // method return type, if any
           $(go.TextBlock, "",
-            new go.Binding("text", "type", function (t) { return (t ? ": " : ""); })),
+            new go.Binding("text", "type", t => t ? ": " : "")),
           $(go.TextBlock,
             { isMultiline: false, editable: true },
             new go.Binding("text", "type").makeTwoWay())
@@ -159,7 +162,7 @@
             // properties
             $(go.TextBlock, "Properties",
               { row: 1, font: "italic 10pt sans-serif" },
-              new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("PROPERTIES")),
+              new go.Binding("visible", "visible", v => !v).ofObject("PROPERTIES")),
             $(go.Panel, "Vertical", { name: "PROPERTIES" },
               new go.Binding("itemArray", "properties"),
               {
@@ -170,11 +173,11 @@
             ),
             $("PanelExpanderButton", "PROPERTIES",
               { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
-              new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
+              new go.Binding("visible", "properties", arr => arr.length > 0)),
             // methods
             $(go.TextBlock, "Methods",
               { row: 2, font: "italic 10pt sans-serif" },
-              new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("METHODS")),
+              new go.Binding("visible", "visible", v => !v).ofObject("METHODS")),
             $(go.Panel, "Vertical", { name: "METHODS" },
               new go.Binding("itemArray", "methods"),
               {
@@ -185,7 +188,7 @@
             ),
             $("PanelExpanderButton", "METHODS",
               { row: 2, column: 1, alignment: go.Spot.TopRight, visible: false },
-              new go.Binding("visible", "methods", function (arr) { return arr.length > 0; }))
+              new go.Binding("visible", "methods", arr => arr.length > 0))
           )
         );
 
@@ -284,7 +287,7 @@
         { from: 13, to: 11, relationship: "generalization" },
         { from: 14, to: 13, relationship: "aggregation" }
       ];
-      myDiagram.model = $(go.GraphLinksModel,
+      myDiagram.model = new go.GraphLinksModel(
         {
           copiesArrays: true,
           copiesArrayObjects: true,

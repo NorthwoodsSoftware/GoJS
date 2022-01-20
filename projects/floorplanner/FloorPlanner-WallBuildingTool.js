@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * FLOOR PLANNER - WALL BUILDING TOOL
@@ -49,7 +49,7 @@ WallBuildingTool.prototype.doActivate = function () {
     var diagram = this.diagram;
     var tool = this;
 
-    // update wallThickness, based on the current value of the HTML input element 
+    // update wallThickness, based on the current value of the HTML input element
     // pre-condition: diagram.floorplanUI exists
     if (diagram.floorplanUI) {
         var el = document.getElementById(diagram.floorplanUI.state.wallThicknessInputId);
@@ -129,6 +129,6 @@ WallBuildingTool.prototype.doDeactivate = function () {
     diagram.updateWallDimensions();
 
     this.stopTransaction(this.name);
-    
+
     this.isActive = false; // Default functionality
 }

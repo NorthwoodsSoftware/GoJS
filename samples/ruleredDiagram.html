@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A diagram with Graduated panels at the edges acting as rulers"/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Diagram with Rulers</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
     <script id="code">
     function init() {
 
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
@@ -143,9 +146,9 @@
 
       // Add listeners to keep the scales/indicators in sync with the viewport
       myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
-      myDiagram.mouseEnter = function() { showIndicators(true); };
-      myDiagram.mouseLeave = function() { showIndicators(false); };
-      myDiagram.addDiagramListener("ViewportBoundsChanged", function(e) { updateScales(); updateIndicators(); });
+      myDiagram.mouseEnter = () => showIndicators(true);
+      myDiagram.mouseLeave = () => showIndicators(false);
+      myDiagram.addDiagramListener("ViewportBoundsChanged", e => { updateScales(); updateIndicators(); });
 
       // Override mousemove Tools such that doMouseMove will keep indicators in sync
       myDiagram.toolManager.doMouseMove = function() {
@@ -167,7 +170,7 @@
       // No need to override PanningTool since the ViewportBoundsChanged listener will fire
 
       function setupScalesAndIndicators() {
-        myDiagram.commit(function(d) {
+        myDiagram.commit(d => {
           // Add each node to the diagram
           d.add(gradScaleHoriz);
           d.add(gradScaleVert);
@@ -181,7 +184,7 @@
       function updateScales(vb) {
         if (!vb) vb = myDiagram.viewportBounds;
         if (!vb.isReal()) return;
-        myDiagram.commit(function(diag) {
+        myDiagram.commit(diag => {
           // Update properties of horizontal scale to reflect viewport
           gradScaleHoriz.elt(0).width = vb.width * diag.scale;
           gradScaleHoriz.location = new go.Point(vb.x, vb.y);
@@ -200,7 +203,7 @@
       function updateIndicators() {
         var vb = myDiagram.viewportBounds;
         if (!vb.isReal()) return;
-        myDiagram.commit(function(diag) {
+        myDiagram.commit(diag => {
           var mouseCoords = diag.lastInput.documentPoint;
           // Keep the indicators in line with the mouse as viewport changes or mouse moves
           gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
@@ -212,7 +215,7 @@
 
       // Show indicators on mouseEnter of the diagram div; hide on mouseLeave
       function showIndicators(show) {
-        myDiagram.commit(function(diag) {
+        myDiagram.commit(diag => {
           gradIndicatorHoriz.visible = show;
           gradIndicatorVert.visible = show;
         }, null);
@@ -244,7 +247,7 @@
           y += printSize.height;
         }
         // invoke the browser's print command
-        setTimeout(function() { svgWindow.print(); updateScales(); }, 1);
+        setTimeout(() => { svgWindow.print(); updateScales(); }, 1);
       }
 
       document.getElementById("myPrintButton").addEventListener("click", printDiagram);

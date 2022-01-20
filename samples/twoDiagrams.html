@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Moving (not copying) nodes between two Diagrams and two different Models sharing an UndoManager."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Two Diagrams</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
   <script src="../extensions/Robot.js"></script>
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       // ****** First Diagram ******
 
@@ -62,7 +65,7 @@
           allowDragOut: true,
           "commandHandler.archetypeGroupData": { isGroup: true },
           // handle undo or redo maybe changing Diagram properties controlled by check boxes
-          "ModelChanged": function(e) {
+          "ModelChanged": e => {
             if (e.isTransactionFinished) allChecks(true);
           },
           // A Diagram listener must be placed on both Diagrams.
@@ -70,7 +73,7 @@
           // to copy the data and create new Parts in the destination diagram.
           // To simulate a "move", the source Node must be deleted.
           // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
-          "ExternalObjectsDropped": function(e) {
+          "ExternalObjectsDropped": e => {
             if (myDiagram2.commandHandler.canDeleteSelection() &&
               !(myDiagram2.lastInput.control || myDiagram2.lastInput.meta)) {
               myDiagram2.commandHandler.deleteSelection();
@@ -112,7 +115,7 @@
           allowDragOut: true,
           "commandHandler.archetypeGroupData": { isGroup: true },
           // handle undo or redo maybe changing Diagram properties controlled by check boxes
-          "ModelChanged": function(e) {
+          "ModelChanged": e => {
             if (e.isTransactionFinished) allChecks(true);
           },
           // A Diagram listener must be placed on both Diagrams.
@@ -120,7 +123,7 @@
           // to copy the data and create new Parts in the destination diagram.
           // To simulate a "move", the source Node must be deleted.
           // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
-          "ExternalObjectsDropped": function(e) {
+          "ExternalObjectsDropped": e => {
             if (myDiagram.commandHandler.canDeleteSelection() &&
               !(myDiagram.lastInput.control || myDiagram.lastInput.meta)) {
               myDiagram.commandHandler.deleteSelection();

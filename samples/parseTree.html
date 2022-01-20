@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A collapsible tree layout with all of the leaf nodes at the same layer."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Parse Tree</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,11 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
+
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
@@ -132,26 +136,20 @@
 
       // create the Model with data for the tree, and assign to the Diagram
       myDiagram.model =
-        $(go.TreeModel,
+        new go.TreeModel(
           { nodeDataArray: nodeDataArray });
     }
 
-    // Customize the TreeLayout to position all of the leaf nodes at the same vertical Y position.
-    function FlatTreeLayout() {
-      go.TreeLayout.call(this);  // call base constructor
-    }
-    go.Diagram.inherit(FlatTreeLayout, go.TreeLayout);
-
+  // Customize the TreeLayout to position all of the leaf nodes at the same vertical Y position.
+  class FlatTreeLayout extends go.TreeLayout {
     // This assumes the TreeLayout.angle is 90 -- growing downward
-    FlatTreeLayout.prototype.commitLayout = function() {
-      go.TreeLayout.prototype.commitLayout.call(this);  // call base method first
+    commitLayout() {
+      super.commitLayout();  // call base method first
       // find maximum Y position of all Nodes
       var y = -Infinity;
-      this.network.vertexes.each(function(v) {
-        y = Math.max(y, v.node.position.y);
-      });
+      this.network.vertexes.each(v => y = Math.max(y, v.node.position.y));
       // move down all leaf nodes to that Y position, but keeping their X position
-      this.network.vertexes.each(function(v) {
+      this.network.vertexes.each(v => {
         if (v.destinationEdges.count === 0) {
           // shift the node down to Y
           v.node.position = new go.Point(v.node.position.x, y);
@@ -161,8 +159,10 @@
           v.node.toEndSegmentLength = 10;
         }
       });
-    };
-    // end FlatTreeLayout
+    }
+  }
+  // end FlatTreeLayout
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 

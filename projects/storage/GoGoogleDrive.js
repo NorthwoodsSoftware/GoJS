@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Go Google Drive
@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -28,6 +28,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GoGoogleDrive = void 0;
     var gcs = require("./GoCloudStorage.js");
     /**
      * Class for saving / loading GoJS {@link Model}s to / from Google Drive.
@@ -74,7 +75,7 @@ var __extends = (this && this.__extends) || (function () {
              * @return {string}
              */
             get: function () { return this._pickerApiKey; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoGoogleDrive.prototype, "scope", {
@@ -87,7 +88,7 @@ var __extends = (this && this.__extends) || (function () {
              * @return {string}
              */
             get: function () { return this._scope; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoGoogleDrive.prototype, "gapiClient", {
@@ -103,7 +104,7 @@ var __extends = (this && this.__extends) || (function () {
              * @return {any}
              */
             get: function () { return this._gapiClient; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoGoogleDrive.prototype, "gapiPicker", {
@@ -117,7 +118,7 @@ var __extends = (this && this.__extends) || (function () {
              * @return {any}
              */
             get: function () { return this._gapiPicker; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

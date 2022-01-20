@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Panels -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Panels -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -423,7 +423,7 @@ This is a convenience so that you do not need to set the <a>GraphObject.alignmen
 </p>
 <p>
 Here is a Horizontal Panel with a default <a>GraphObject.alignment</a> of <a>Spot,Bottom</a>.
-All of the <a>Shape</a>s are aligned at the bottom, even though the default alignment would normally be <a>Spot.Center</a>.
+All of the <a>Shape</a>s are aligned at the bottom, even though the default alignment would normally be <a>Spot,Center</a>.
 However, the last Shape has its height stretched to the full height of the panel, 90.
 In this case the <a>GraphObject.margin</a> provides a little extra space around the object.
 </p>
@@ -460,7 +460,7 @@ as constant values of the <a>Spot</a> class:
     <td><a>Spot,TopLeft</a></td> <td><a>Spot,Top</a></td> <td><a>Spot,TopRight</a></td>
   </tr>
   <tr>
-    <td><a>Spot,Left</a></td> <td><a>Spot.Center</a></td> <td><a>Spot,Right</a></td>
+    <td><a>Spot,Left</a></td> <td><a>Spot,Center</a></td> <td><a>Spot,Right</a></td>
   </tr>
   <tr>
     <td><a>Spot,BottomLeft</a></td> <td><a>Spot,Bottom</a></td> <td><a>Spot,BottomRight</a></td>
@@ -712,7 +712,7 @@ Spot Panels should have two or more elements in them.
 
 <p>
 A Spot Panel aligns its content elements in the general location given by its <a>GraphObject.alignment</a>.
-The precise point in the content element that is positioned defaults to <a>Spot.Center</a>, as seen above.
+The precise point in the content element that is positioned defaults to <a>Spot,Center</a>, as seen above.
 But you can set the element's <a>GraphObject.alignmentFocus</a> to use a different spot.
 For example, if you use the same alignmentFocus as the alignment, the elements will be just inside the main element's bounds:
 </p>
@@ -818,8 +818,9 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
 </p>
 <p>
   To do this, you can use <a>Panel.alignmentFocusName</a>.
-  In the example below, a Spot panel contains a main element and another Panel. We want to align the corners of the main element
-  the shape within this panel, so we give it a name and set alignmentFocusName on the panel.
+  In the example below, a Spot panel contains a main element and another Panel.
+  We want to align the corners of the main element the shape within this panel,
+  so we give it a name and set alignmentFocusName on the panel.
 </p>
 
 <pre class="lang-js" id="alignmentFocusName"><code>
@@ -829,9 +830,14 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
       $(go.Shape, { strokeWidth: 4, fill: 'lime' }),
       // Instead of aligning this Panel, we want to align the shape inside of it, to the corner of the main shape
       $(go.Panel, "Horizontal",
-          { background: 'rgba(255,0,0,0.1)', alignmentFocusName: 'shape', alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomLeft },
+          {
+            background: 'rgba(255,0,0,0.1)',
+            alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.BottomLeft,
+            alignmentFocusName: 'SHAPE'
+          },
           $(go.TextBlock, "some\nlong label", { margin: 8 }),
-          $(go.Shape, "RoundedRectangle", { width: 20, height: 20, name: 'shape', strokeWidth: 0, fill: 'red' },
+          $(go.Shape, { name: 'SHAPE', width: 20, height: 20, strokeWidth: 0, fill: 'red' },
           new go.Binding("fill", "color"))
       )
     )
@@ -852,21 +858,18 @@ If you use the opposite alignmentFocus as the alignment, the elements will be ju
 <pre class="lang-js" id="StretchSpotPanels"><code>
   diagram.add(
     $(go.Part, "Spot",
-      {
-        resizable: true,
-        resizeObjectName: 'MAIN'
-      },
-      $(go.Shape, "Rectangle", { name: 'MAIN', strokeWidth: 0, width: 80, height: 60, fill: 'rgba(255,0,0, .8)' }), // red
+      { resizable: true, resizeObjectName: 'MAIN' },
+      $(go.Shape, { name: 'MAIN', strokeWidth: 0, width: 80, height: 60, fill: 'rgba(255,0,0,.8)' }), // red
 
-      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,255,0, .3)', // green
+      $(go.Shape, { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,255,0,.3)', // green
         alignment: go.Spot.Left,
         alignmentFocus: go.Spot.Right
       }),
-      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,0,255, .3)' , // blue
+      $(go.Shape, { stretch: go.GraphObject.Vertical, strokeWidth: 0, width: 20, fill: 'rgba(0,0,255,.3)' , // blue
         alignment: go.Spot.Right,
         alignmentFocus: go.Spot.Left
       }),
-      $(go.Shape, "Rectangle", { stretch: go.GraphObject.Horizontal, strokeWidth: 0, height: 20, fill: 'rgba(255,0,255, .3)' , // pink
+      $(go.Shape, { stretch: go.GraphObject.Horizontal, strokeWidth: 0, height: 20, fill: 'rgba(255,0,255,.3)' , // pink
         alignment: go.Spot.Bottom,
         alignmentFocus: go.Spot.Top
       })
@@ -1115,7 +1118,7 @@ But because the nested panel is taller than it is wider, there is empty space on
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

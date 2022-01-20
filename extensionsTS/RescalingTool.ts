@@ -1,5 +1,5 @@
 ﻿/*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 import * as go from '../release/go.js';
@@ -93,7 +93,7 @@ export class RescalingTool extends go.Tool {
 
   /**
    * This property returns the name of the GraphObject that identifies the object to be rescaled by this tool.
-   * 
+   *
    * The default value is the empty string, resulting in the whole Node being rescaled.
    * This property is used by findRescaleObject when calling {@link Panel#findObject}.
    */

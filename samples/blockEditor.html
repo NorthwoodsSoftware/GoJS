@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A simple block diagram editor that includes context menus for changing shapes and colors."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Simple Block Editor</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -54,7 +54,10 @@
   <script src="../extensions/DrawCommandHandler.js"></script>
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -66,7 +69,7 @@
             ),
             "draggingTool.isGridSnapEnabled": true,
             handlesDragDropForTopLevelParts: true,
-            mouseDrop: function(e) {
+            mouseDrop: e => {
               // when the selection is dropped in the diagram's background,
               // make sure the selected Parts no longer belong to any Group
               var ok = e.diagram.commandHandler.addTopLevelParts(e.diagram.selection, true);
@@ -74,21 +77,21 @@
             },
             commandHandler: $(DrawCommandHandler),  // support offset copy-and-paste
             "clickCreatingTool.archetypeNodeData": { text: "NEW NODE" },  // create a new node by double-clicking in background
-            "PartCreated": function(e) {
+            "PartCreated": e => {
               var node = e.subject;  // the newly inserted Node -- now need to snap its location to the grid
               node.location = node.location.copy().snapToGridPoint(e.diagram.grid.gridOrigin, e.diagram.grid.gridCellSize);
-              setTimeout(function() {  // and have the user start editing its text
+              setTimeout(() => {  // and have the user start editing its text
                 e.diagram.commandHandler.editTextBlock();
               }, 20);
             },
             "commandHandler.archetypeGroupData": { isGroup: true, text: "NEW GROUP" },
-            "SelectionGrouped": function(e) {
+            "SelectionGrouped": e => {
               var group = e.subject;
-              setTimeout(function() {  // and have the user start editing its text
+              setTimeout(() => {  // and have the user start editing its text
                 e.diagram.commandHandler.editTextBlock();
               })
             },
-            "LinkRelinked": function(e) {
+            "LinkRelinked": e => {
               // re-spread the connections of other links connected with both old and new nodes
               var oldnode = e.parameter.part;
               oldnode.invalidateConnectedLinks();
@@ -156,9 +159,9 @@
       // and add a link to the new node.
 
       function makeArrowButton(spot, fig) {
-        var maker = function(e, shape) {
+        var maker = (e, shape) => {
             e.handled = true;
-            e.diagram.model.commit(function(m) {
+            e.diagram.model.commit(m => {
               var selnode = shape.part.adornedPart;
               // create a new node in the direction of the spot
               var p = new go.Point().setRectSpot(selnode.actualBounds, spot);
@@ -180,7 +183,7 @@
               var newnode = e.diagram.findNodeForData(nodedata);
               newnode.location = p;
               e.diagram.select(newnode);
-              setTimeout(function() {
+              setTimeout(() => {
                 e.diagram.commandHandler.editTextBlock();
               }, 20);
             });
@@ -204,7 +207,7 @@
             fill: "orange", stroke: "gray", background: "transparent",
             geometryString: "F1 M0 0 M0 4h4v4h-4z M6 4h4v4h-4z M12 4h4v4h-4z M0 12",
             isActionable: true, cursor: "context-menu",
-            click: function(e, shape) {
+            click: (e, shape) => {
               e.diagram.commandHandler.showContextMenu(shape.part.adornedPart);
             }
           },
@@ -230,9 +233,9 @@
       // A button-defining helper function that returns a click event handler.
       // PROPNAME is the name of the data property that should be set to the given VALUE.
       function ClickFunction(propname, value) {
-        return function(e, obj) {
+        return (e, obj) => {
             e.handled = true;  // don't let the click bubble up
-            e.diagram.model.commit(function(m) {
+            e.diagram.model.commit(m => {
               m.set(obj.part.adornedPart.data, propname, value);
             });
           };
@@ -245,8 +248,8 @@
           {
             width: 16, height: 16, stroke: "lightgray", fill: color,
             margin: 1, background: "transparent",
-            mouseEnter: function(e, shape) { shape.stroke = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.stroke = "lightgray"; },
+            mouseEnter: (e, shape) => shape.stroke = "dodgerblue",
+            mouseLeave: (e, shape) => shape.stroke = "lightgray",
             click: ClickFunction(propname, color), contextClick: ClickFunction(propname, color)
           });
       }
@@ -288,8 +291,8 @@
           {
             width: 16, height: 16, strokeWidth: sw,
             margin: 1, background: "transparent",
-            mouseEnter: function(e, shape) { shape.background = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.background = "transparent"; },
+            mouseEnter: (e, shape) => shape.background = "dodgerblue",
+            mouseLeave: (e, shape) => shape.background = "transparent",
             click: ClickFunction(propname, sw), contextClick: ClickFunction(propname, sw)
           });
       }
@@ -302,8 +305,8 @@
             width: 24, height: 16, strokeWidth: 2,
             strokeDashArray: dash,
             margin: 1, background: "transparent",
-            mouseEnter: function(e, shape) { shape.background = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.background = "transparent"; },
+            mouseEnter: (e, shape) => shape.background = "dodgerblue",
+            mouseLeave: (e, shape) => shape.background = "transparent",
             click: ClickFunction(propname, dash), contextClick: ClickFunction(propname, dash)
           });
       }
@@ -331,8 +334,8 @@
           {
             width: 32, height: 32, scale: 0.5, fill: "lightgray", figure: fig,
             margin: 1, background: "transparent",
-            mouseEnter: function(e, shape) { shape.fill = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.fill = "lightgray"; },
+            mouseEnter: (e, shape) => shape.fill = "dodgerblue",
+            mouseLeave: (e, shape) => shape.fill = "lightgray",
             click: ClickFunction(propname, fig), contextClick: ClickFunction(propname, fig)
           });
       }
@@ -371,7 +374,7 @@
             selectionObjectName: "BODY",
             computesBoundsAfterDrag: true,  // allow dragging out of a Group that uses a Placeholder
             handlesDragDropForMembers: true,  // don't need to define handlers on Nodes and Links
-            mouseDrop: function(e, grp) {  // add dropped nodes as members of the group
+            mouseDrop: (e, grp) => {  // add dropped nodes as members of the group
               var ok = grp.addMembers(grp.diagram.selection, true);
               if (!ok) grp.diagram.currentTool.doCancel();
             },
@@ -435,21 +438,21 @@
           },
           new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
           new go.Binding("toSpot", "toSpot", go.Spot.parse),
-          new go.Binding("fromShortLength", "dir", function(dir) { return dir === 2 ? 4 : 0; }),
-          new go.Binding("toShortLength", "dir", function(dir) { return dir >= 1 ? 4 : 0; }),
+          new go.Binding("fromShortLength", "dir", dir => dir === 2 ? 4 : 0),
+          new go.Binding("toShortLength", "dir", dir => dir >= 1 ? 4 : 0),
           new go.Binding("points").makeTwoWay(),  // TwoWay due to user reshaping with LinkReshapingTool
           $(go.Shape, { strokeWidth: 2 },
             new go.Binding("stroke", "color"),
             new go.Binding("strokeWidth", "thickness"),
             new go.Binding("strokeDashArray", "dash")),
           $(go.Shape, { fromArrow: "Backward", strokeWidth: 0, scale: 4/3, visible: false },
-            new go.Binding("visible", "dir", function(dir) { return dir === 2; }),
+            new go.Binding("visible", "dir", dir => dir === 2),
             new go.Binding("fill", "color"),
-            new go.Binding("scale", "thickness", function(t) { return (2+t)/3; })),
+            new go.Binding("scale", "thickness", t => (2+t)/3)),
           $(go.Shape, { toArrow: "Standard", strokeWidth: 0, scale: 4/3 },
-            new go.Binding("visible", "dir", function(dir) { return dir >= 1; }),
+            new go.Binding("visible", "dir", dir => dir >= 1),
             new go.Binding("fill", "color"),
-            new go.Binding("scale", "thickness", function(t) { return (2+t)/3; })),
+            new go.Binding("scale", "thickness", t => (2+t)/3)),
           $(go.TextBlock,
             { alignmentFocus: new go.Spot(0, 1, -4, 0), editable: true },
             new go.Binding("text").makeTwoWay(),  // TwoWay due to user editing with TextEditingTool
@@ -492,16 +495,16 @@
           {
             geometryString: geo,
             margin: 2, background: "transparent",
-            mouseEnter: function(e, shape) { shape.background = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.background = "transparent"; },
+            mouseEnter: (e, shape) => shape.background = "dodgerblue",
+            mouseLeave: (e, shape) => shape.background = "transparent",
             click: ClickFunction("dir", num), contextClick: ClickFunction("dir", num)
           });
       }
 
       function AllSidesButton(to) {
-        var setter = function(e, shape) {
+        var setter = (e, shape) => {
             e.handled = true;
-            e.diagram.model.commit(function(m) {
+            e.diagram.model.commit(m => {
               var link = shape.part.adornedPart;
               m.set(link.data, (to ? "toSpot" : "fromSpot"), go.Spot.stringify(go.Spot.AllSides));
               // re-spread the connections of other links connected with the node
@@ -511,8 +514,8 @@
         return $(go.Shape,
           {
             width: 12, height: 12, fill: "transparent",
-            mouseEnter: function(e, shape) { shape.background = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.background = "transparent"; },
+            mouseEnter: (e, shape) => shape.background = "dodgerblue",
+            mouseLeave: (e, shape) => shape.background = "transparent",
             click: setter, contextClick: setter
           });
       }
@@ -524,9 +527,9 @@
         else if (spot.equals(go.Spot.Left)) { ang = 180; side = go.Spot.LeftSide; }
         else if (spot.equals(go.Spot.Bottom)) { ang = 90; side = go.Spot.BottomSide; }
         if (!to) ang -= 180;
-        var setter = function(e, shape) {
+        var setter = (e, shape) => {
             e.handled = true;
-            e.diagram.model.commit(function(m) {
+            e.diagram.model.commit(m => {
               var link = shape.part.adornedPart;
               m.set(link.data, (to ? "toSpot" : "fromSpot"), go.Spot.stringify(side));
               // re-spread the connections of other links connected with the node
@@ -539,8 +542,8 @@
             geometryString: "M0 0 M12 12 M12 6 L1 6 L4 4 M1 6 L4 8",
             angle: ang,
             background: "transparent",
-            mouseEnter: function(e, shape) { shape.background = "dodgerblue"; },
-            mouseLeave: function(e, shape) { shape.background = "transparent"; },
+            mouseEnter: (e, shape) => shape.background = "dodgerblue",
+            mouseLeave: (e, shape) => shape.background = "transparent",
             click: setter, contextClick: setter
           });
       }

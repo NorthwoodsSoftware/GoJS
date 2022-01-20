@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Introduction -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Introduction -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -150,20 +150,15 @@
   </p>
 
   <pre class="lang-js" id="minimal"><code>
-      // For conciseness. See the "Building Parts" intro page for more
-      var $ = go.GraphObject.make;
-
       // the node template describes how each Node should be constructed
       diagram.nodeTemplate =
-        $(go.Node, "Auto",  // the Shape automatically fits around the TextBlock
-          $(go.Shape, "RoundedRectangle",  // use this kind of figure for the Shape
-            // bind Shape.fill to Node.data.color
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 3 },  // some room around the text
-            // bind TextBlock.text to Node.data.key
-            new go.Binding("text", "key"))
-        );
+        new go.Node("Auto")  // the Shape will go around the TextBlock
+          .add(new go.Shape("RoundedRectangle")
+            // Shape.fill is bound to Node.data.color
+            .bind("fill", "color"))
+          .add(new go.TextBlock({ margin: 8}) // Specify a margin to add some room around the text
+            // TextBlock.text is bound to Node.data.key
+            .bind("text", "key"));
 
       // the Model holds only the essential information describing the diagram
       diagram.model = new go.GraphLinksModel(
@@ -510,7 +505,7 @@ import { DoubleTreeLayout } from "./path/to/gojs/extensionsJSM/DoubleTreeLayout.
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

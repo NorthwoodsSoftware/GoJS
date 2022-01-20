@@ -1,6 +1,6 @@
 'use strict';
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // These are the definitions for all of the predefined buttons.
@@ -165,7 +165,7 @@ go.GraphObject.defineBuilder('Button', function (args) {
       if (shape instanceof go.Shape) {
         var oldskip = diagram.skipsUndoManager;
         diagram.skipsUndoManager = true;
-        let brush = btn['_buttonFillPressed'];
+        var brush = btn['_buttonFillPressed'];
         if (shape.fill !== brush) shape.fill = brush;
         brush = btn['_buttonStrokePressed'];
         if (shape.stroke !== brush) shape.stroke = brush;
@@ -451,7 +451,7 @@ go.GraphObject.defineBuilder('PanelExpanderButton', function (args) {
     var diagram = btn.diagram;
     if (diagram === null) return;
     if (diagram.isReadOnly) return;
-    var elt = btn.findTemplateBinder();
+    var elt = btn.findBindingPanel();
     if (elt === null) elt = btn.part;
     if (elt !== null) {
       var pan = elt.findObject(eltname);

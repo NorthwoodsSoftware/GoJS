@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="A Sankey diagram with the thickness of links indicating the flow quantity."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Sankey Diagram</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -51,19 +51,15 @@
     <script src="../release/go.js"></script>
     <div class="p-4 w-full">
     <script id="code">
-    function SankeyLayout() {
-      go.LayeredDigraphLayout.call(this);
-    }
-    go.Diagram.inherit(SankeyLayout, go.LayeredDigraphLayout);
-
+  class SankeyLayout extends go.LayeredDigraphLayout {
     // determine the desired height of each node/vertex,
     // based on the thicknesses of the connected links;
     // actually modify the height of each node's SHAPE
-    SankeyLayout.prototype.makeNetwork = function(coll) {
-      var net = go.LayeredDigraphLayout.prototype.makeNetwork.call(this, coll);
-      this.diagram.nodes.each(function(node) {
+    makeNetwork(coll) {
+      var net = super.makeNetwork(coll);
+      this.diagram.nodes.each(node => {
         // figure out how tall the node's bar should be
-        var height = getAutoHeightForNode(node);
+        var height = this.getAutoHeightForNode(node);
         var shape = node.findObject("SHAPE");
         if (shape) shape.height = height;
         var text = node.findObject("TEXT");
@@ -82,9 +78,9 @@
         }
       });
       return net;
-    };
+    }
 
-    function getAutoHeightForNode(node) {
+    getAutoHeightForNode(node) {
       var heightIn = 0;
       var it = node.findLinksInto()
       while (it.next()) {
@@ -100,10 +96,10 @@
       var h = Math.max(heightIn, heightOut);
       if (h < 10) h = 10;
       return h;
-    };
+    }
 
     // treat dummy vertexes as having the thickness of the link that they are in
-    SankeyLayout.prototype.nodeMinColumnSpace = function(v, topleft) {
+    nodeMinColumnSpace(v, topleft) {
       if (v.node === null) {
         if (v.edgesCount >= 1) {
           var max = 1;
@@ -120,17 +116,17 @@
         }
         return 2;
       }
-      return go.LayeredDigraphLayout.prototype.nodeMinColumnSpace.call(this, v, topleft);
+      return super.nodeMinColumnSpace(v, topleft);
     }
 
     // treat dummy vertexes as being thicker, so that the Bezier curves are gentler
-    SankeyLayout.prototype.nodeMinLayerSpace = function(v, topleft) {
+    nodeMinLayerSpace(v, topleft) {
       if (v.node === null) return 100;
-      return go.LayeredDigraphLayout.prototype.nodeMinLayerSpace.call(this, v, topleft);
+      return super.nodeMinLayerSpace(v, topleft);
     }
 
-    SankeyLayout.prototype.assignLayers = function() {
-      go.LayeredDigraphLayout.prototype.assignLayers.call(this);
+    assignLayers() {
+      super.assignLayers();
       var maxlayer = this.maxLayer;
       // now make sure every vertex with no outputs is maxlayer
       for (var it = this.network.vertexes.iterator; it.next();) {
@@ -145,10 +141,10 @@
       }
       // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
       // (other than the ones that are the widest or tallest in their respective layer).
-    };
+    }
 
-    SankeyLayout.prototype.commitLayout = function() {
-      go.LayeredDigraphLayout.prototype.commitLayout.call(this);
+    commitLayout() {
+      super.commitLayout();
       for (var it = this.network.edges.iterator; it.next();) {
         var link = it.value.link;
         if (link && link.curve === go.Link.Bezier) {
@@ -157,11 +153,15 @@
           link.invalidateRoute();
         }
       }
-    };
-    // end of SankeyLayout
+    }
+  }
+  // end of SankeyLayout
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv", // the ID of the DIV HTML element

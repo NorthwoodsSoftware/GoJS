@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -152,7 +152,6 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         this.laneBreadths.clear();
         this._layers = [[]];
         this._neededSpaces = [];
-        this.laneNames = []; // clear out for next layout
     }
     /**
      * @hidden

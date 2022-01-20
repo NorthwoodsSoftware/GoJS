@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->    <title> GoJS Deployment -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Deployment -- Northwoods Software </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -30,7 +30,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -145,28 +145,30 @@
 </p>
 <p>
   When you want to deploy to your own web site your app that uses <b>GoJS</b>, you will need to make a request at:
-  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank">https://www.nwoods.com/app/activate.aspx?sku=gojs</a>.
+  <a href="https://nwoods.com/activate.html?sku=gojs" target="_blank">https://nwoods.com/activate.html?sku=gojs</a>.
 </p>
 <p>
   Enter your e-mail address and the e-mail address of the person who purchased a license for <b>GoJS</b>,
-  the order number for that purchase, and your web site's domain name.
+  the order number for that purchase, and your web site's domain name or your Electron app's <code>package.json</code> "name" attribute.
   Please make sure that e-mail from "nwoods.com" is not caught in your corporate or personal spam filter.
   If you <a href="https://www.nwoods.com/contact.html">contact us</a> for further help either via our web site
   or by sending us email, please include the e-mail that our web server sent to you.
 </p>
 <p>
-  Regarding domain names, for example, if your app will be at:
+  Regarding domain names, if your app will be at:
   <code>https://www.example.com/app/ProcessEditor.html</code>,
   enter <code>example.com</code> as the domain name.
   This procedure works for internal corporate web sites as well as for public web sites, with hostnames and with IP addresses.
-  The protocol and port number do not matter.
-  It will work when the HTML page is served from a subdomain of the licensed domain,
+  The protocol (such as <code>https://</code>) and port number (such as <code>:8080</code>) do not matter, so do not include them.
+</p>
+<p>
+  The license key will also work when the HTML page is served from a subdomain of the licensed domain,
   such as from <code>editors.example.com</code>.
-  With any valid license key it will also work at the "localhost" domain, which is useful when debugging and testing.
+  With any valid license key it will also work at the <code>localhost</code> domain, which is useful when debugging and testing.
 </p>
 <p>
   The GoJS library never "phones home" -- it will never initiate any network traffic other than when explicitly directed to do so,
-  such as for downloading image files.
+  such as for downloading image files to show in <a>Picture</a> objects.
 </p>
 
 <p>
@@ -174,22 +176,22 @@
   It must execute after the GoJS library file has been loaded, but before you create your first <a>Diagram</a>.
 </p>
 <pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
-go.Diagram.licenseKey = "YourKeyHere";
+go.Diagram.licenseKey = "...YourKeyHere...";
 </code></pre>
-Before version 2.0, you need to write:
+Before version 2.0, you needed to write:
 <pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
-go.licenseKey = "YourKeyHere";
+go.licenseKey = "...YourKeyHere...";
 </code></pre>
 <p>
   This mechanism works when using either the release library, <code>go.js</code>, or the debug library,
-  <code>go-debug.js</code>, but only with GoJS version 1.8 or later.
+  <code>go-debug.js</code>, or the ES module versions of the library, but only with GoJS version 1.8 or later.
   Note that this assignment is of a static property of the Diagram class: <a>Diagram,licenseKey</a>.
-  Of course you will need to substitute your generated license key string for <code>"YourKeyHere"</code> in the <code>go.Diagram.licenseKey</code> assignment statement.
+  Of course you will need to substitute your generated license key string for <code>"...YourKeyHere..."</code> in the <code>go.Diagram.licenseKey</code> assignment statement.
   License keys are long strings without any embedded whitespace or punctuation.
   You can request license keys for as many domains as you have licensed.
 </p>
 <p>
-  Once your key is in place, you can continue to use the same key while updating the patch version of GoJS.
+  Once your key is in place, you can continue to use the same key while updating the patch/baselevel version of GoJS.
   For example, a license key for version 1.8.3 will work for all versions 1.8.*.
   Remember to get a new license key when upgrading to a new major or minor version of GoJS.
   For example, when upgrading from version 5.3.1 to version 5.4.6, you will need a new license key.
@@ -199,23 +201,23 @@ go.licenseKey = "YourKeyHere";
   License keys are valid forever, as long as the major and minor version number of the library do not change and
   as long as the HTML page is served from the same domain.
 </p>
+
+<h2 id="ForElectron">For Electron</h2>
 <p>
-  You can download the <code>go.js</code> or <code>go-debug.js</code> library 
-  from the <a href="../download.html" target="_blank">GoJS Downloads page</a>,
-  or you can install it using <a href="https://www.npmjs.com/package/gojs" target="_blank">Node package manager (npm)</a>,
-  or you can link to a CDN such as <a href="https://unpkg.com/browse/gojs/" target="_blank">UNPKG</a>
-  or <a href="https://www.jsdelivr.com/package/npm/gojs">JSDELIVR</a>.
+  When building a desktop application using Electron, your HTML page is not being served from a web server at a domain.
+  You will need to activate with the <code>"name"</code> you have specified in your project's <code>package.json</code>
+  to make sure your Diagram does not display a watermark.
 </p>
 
-<h2 id="ForUnlimitedDomainsOEMCustomers">For Unlimited Domains OEM Customers</h2>
+<h2 id="ForUnlimitedDomainsCustomers">For Unlimited Domains Customers</h2>
 <p>
   If you are an ISV and intend to distribute your app to run on many customers' web sites,
+  or if your app is hosted in a WebView as part of a desktop application,
   <a href="https://www.nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and instructions.
 </p>
 <p>
-  When building a desktop application using Electron or when hosted in a WebView as part of a desktop application,
-  your HTML page is not being served from a web server at a domain.
-  In such circumstances you will need to use the Unlimited Domains option to make sure your Diagram does not display a watermark.
+  When requesting a license key at <a href="https://nwoods.com/activate.html?sku=gojs" target="_blank">Activate</a>,
+  you do not need to specify a domain name.
 </p>
 
 <h2 id="InternationalizationAndLocalization">Internationalization and Localization</h2>
@@ -226,7 +228,7 @@ go.licenseKey = "YourKeyHere";
 <p>
   The <b>GoJS</b> library does not manipulate currency values or date/time values or addresses,
   so there are no localization issues with those data types and values.
-  <b>GoJS</b> does not contain any of its own icons (images) or cursors.
+  The library does not contain any of its own icons (images) or cursors.
 </p>
 <p>
   Nor does <b>GoJS</b> display any built-in text strings, so no translation is needed.
@@ -322,7 +324,7 @@ go.licenseKey = "YourKeyHere";
 
 
       <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2021 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
+        Copyright 1998-2022 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
       </p>
     </div>
   </div>

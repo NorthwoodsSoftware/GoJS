@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -95,11 +95,11 @@
         }
         // This template represents a whole "record".
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
             // this rectangular shape surrounds the content of the node
-            $(go.Shape, { fill: '#EEEEEE' }), 
+            $(go.Shape, { fill: '#EEEEEE' }),
             // the content consists of a header and a list of items
-            $(go.Panel, 'Vertical', { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft }, 
+            $(go.Panel, 'Vertical', { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft },
             // this is the header for the whole node
             $(go.Panel, 'Auto', { stretch: go.GraphObject.Horizontal }, // as wide as the whole node
             $(go.Shape, { fill: '#1570A6', stroke: null }), $(go.TextBlock, {
@@ -108,7 +108,7 @@
                 stroke: 'white',
                 textAlign: 'center',
                 font: 'bold 12pt sans-serif'
-            }, new go.Binding('text', 'key'))), 
+            }, new go.Binding('text', 'key'))),
             // this Panel holds a Panel for each item object in the itemArray;
             // each item Panel is defined by the itemTemplate to be a TableRow in this Table
             $(go.Panel, 'Table', {
@@ -126,14 +126,9 @@
             $(go.Link, { relinkableFrom: true, relinkableTo: true, toShortLength: 4 }, // let user reconnect links
             $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: 'Standard', stroke: null }));
         myDiagram.model =
-            $(go.GraphLinksModel, {
+            new go.GraphLinksModel({
                 linkFromPortIdProperty: 'fromPort',
                 linkToPortIdProperty: 'toPort',
-                // automatically update the model that is shown on this page
-                'Changed': function (e) {
-                    if (e.isTransactionFinished)
-                        showModel();
-                },
                 nodeDataArray: [
                     {
                         key: 'Record1',
@@ -162,6 +157,9 @@
                     { from: 'Record1', fromPort: 'field2', to: 'Record2', toPort: 'fieldD' },
                     { from: 'Record1', fromPort: 'fieldThree', to: 'Record2', toPort: 'fieldB' }
                 ]
+            }).addChangedListener(function (e) {
+                if (e.isTransactionFinished)
+                    showModel();
             });
         showModel(); // show the diagram's initial model
         function showModel() {

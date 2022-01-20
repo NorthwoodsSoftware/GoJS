@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Gauges and Meters that allow the user to control the values that those instruments show"/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Control Instruments: Gauges and Meters</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
     <script id="code">
     function init() {
       if (window.goSamples) goSamples();  // init for these samples -- you don"t need to call this
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram = $(go.Diagram, "myDiagramDiv",
                     { "undoManager.isEnabled": true });
@@ -68,45 +71,45 @@
         return [
           {
             isActionable: true,
-            actionDown: function(e, obj) {
+            actionDown: (e, obj) => {
               obj._dragging = true;
               obj._original = obj.part.data.value;
             },
-            actionMove: function(e, obj) {
+            actionMove: (e, obj) => {
               if (!obj._dragging) return;
               var scale = obj.part.findObject("SCALE");
               var pt = e.diagram.lastInput.documentPoint;
               var loc = scale.getLocalPoint(pt);
               var val = Math.round(scale.graduatedValueForPoint(loc));
               // just set the data.value temporarily, not recorded in UndoManager
-              e.diagram.model.commit(function(m) {
+              e.diagram.model.commit(m => {
                 m.set(obj.part.data, "value", val);
               }, null);  // null means skipsUndoManager
             },
-            actionUp: function(e, obj) {
+            actionUp: (e, obj) => {
               if (!obj._dragging) return;
               obj._dragging = false;
               var scale = obj.part.findObject("SCALE");
               var pt = e.diagram.lastInput.documentPoint;
               var loc = scale.getLocalPoint(pt);
               var val = Math.round(scale.graduatedValueForPoint(loc));
-              e.diagram.model.commit(function(m) {
+              e.diagram.model.commit(m => {
                 m.set(obj.part.data, "value", obj._original);
               }, null);  // null means skipsUndoManager
               // now set the data.value for real
-              e.diagram.model.commit(function(m) {
+              e.diagram.model.commit(m => {
                 m.set(obj.part.data, "value", val);
               }, "dragged slider");
             },
-            actionCancel: function(e, obj) {
+            actionCancel: (e, obj) => {
               obj._dragging = false;
-              e.diagram.model.commit(function(m) {
+              e.diagram.model.commit(m => {
                 m.set(obj.part.data, "value", obj._original);
               }, null);  // null means skipsUndoManager
             }
           },
           (alwaysVisible ? {} : new go.Binding("visible", "isEnabled").ofObject("SCALE")),
-          new go.Binding("cursor", "isEnabled", function(e) { return e ? "pointer" : ""; }).ofObject("SCALE")
+          new go.Binding("cursor", "isEnabled", e => e ? "pointer" : "").ofObject("SCALE")
         ];
       }
 
@@ -175,7 +178,7 @@
                 $(go.Shape,
                   { name: "BAR", fill: "red", strokeWidth: 0, height: 8 },
                   new go.Binding("fill", "color"),
-                  new go.Binding("desiredSize", "value", function(v, shp) {
+                  new go.Binding("desiredSize", "value", (v, shp) => {
                     var scale = shp.part.findObject("SCALE");
                     var path = scale.findMainElement();
                     var len = (v-scale.graduatedMin) / (scale.graduatedMax-scale.graduatedMin) * path.geometry.bounds.width;
@@ -193,7 +196,7 @@
               new go.Binding("text", "max")),
             $(go.TextBlock,
               { row: 2, background: "white", font: "bold 10pt sans-serif", isMultiline: false, editable: true },
-              new go.Binding("text", "value", function(v) { return v.toString(); }).makeTwoWay(function(s) { return parseFloat(s); }))
+              new go.Binding("text", "value", v => v.toString()).makeTwoWay(s => parseFloat(s)))
           )
         ));
 
@@ -231,7 +234,7 @@
                 $(go.Shape,
                   { name: "BAR", fill: "red", strokeWidth: 0, height: 8 },
                   new go.Binding("fill", "color"),
-                  new go.Binding("desiredSize", "value", function(v, shp) {
+                  new go.Binding("desiredSize", "value", (v, shp) => {
                     var scale = shp.part.findObject("SCALE");
                     var path = scale.findMainElement();
                     var len = (v-scale.graduatedMin) / (scale.graduatedMax-scale.graduatedMin) * path.geometry.bounds.height;
@@ -249,7 +252,7 @@
               new go.Binding("text", "max")),
             $(go.TextBlock,
               { row: 2, background: "white", font: "bold 10pt sans-serif", isMultiline: false, editable: true },
-              new go.Binding("text", "value", function(v) { return v.toString(); }).makeTwoWay(function(s) { return parseFloat(s); }))
+              new go.Binding("text", "value", v => v.toString()).makeTwoWay(s => parseFloat(s)))
           )
         ));
 
@@ -268,7 +271,7 @@
               ),
               $(go.Shape,
                 { stroke: "red", strokeWidth: 4, isGeometryPositioned: true },
-                new go.Binding("geometry", "value", function(v, shp) {
+                new go.Binding("geometry", "value", (v, shp) => {
                   var scale = shp.part.findObject("SCALE");
                   var pt = scale.graduatedPointForValue(v);
                   var geo = new go.Geometry(go.Geometry.Line);
@@ -287,7 +290,7 @@
             $(go.TextBlock,
               { alignment: go.Spot.Top, margin: new go.Margin(4, 0, 0, 0) },
               { stroke: "white", font: "bold italic 13pt sans-serif", isMultiline: false, editable: true },
-              new go.Binding("text", "value", function(v) { return v.toString(); }).makeTwoWay(function(s) { return parseFloat(s); }),
+              new go.Binding("text", "value", v => v.toString()).makeTwoWay(s => parseFloat(s)),
               new go.Binding("stroke", "color"))
           )
         ));
@@ -323,10 +326,10 @@
               ),
               $(go.TextBlock,
                 { alignment: new go.Spot(0.5, 0.9), stroke: "white", font: "bold italic 14pt sans-serif", editable: true },
-                new go.Binding("text", "value", function(v) { return v.toString(); }).makeTwoWay(function(s) { return parseFloat(s); }),
+                new go.Binding("text", "value", v => v.toString()).makeTwoWay(s => parseFloat(s)),
                 new go.Binding("stroke", "color")),
               $(go.Shape, { fill: "red", strokeWidth: 0, geometryString: "F1 M-6 0 L0 -6 100 0 0 6z x M-100 0" },
-                new go.Binding("angle", "value", function(v, shp) {
+                new go.Binding("angle", "value", (v, shp) => {
                   // this determines the angle of the needle, based on the data.value argument
                   var scale = shp.part.findObject("SCALE");
                   var p = scale.graduatedPointForValue(v);
@@ -375,10 +378,10 @@
               ),
               $(go.TextBlock,
                 { alignment: go.Spot.Center, stroke: "white", font: "bold italic 14pt sans-serif", editable: true },
-                new go.Binding("text", "value", function(v) { return v.toString(); }).makeTwoWay(function(s) { return parseFloat(s); }),
+                new go.Binding("text", "value", v => v.toString()).makeTwoWay(s => parseFloat(s)),
                 new go.Binding("stroke", "color")),
               $(go.Shape, { fill: "red", strokeWidth: 0 },
-                new go.Binding("geometry", "value", function(v, shp) {
+                new go.Binding("geometry", "value", (v, shp) => {
                   var scale = shp.part.findObject("SCALE");
                   var p0 = scale.graduatedPointForValue(scale.graduatedMin);
                   var pv = scale.graduatedPointForValue(v);
@@ -436,15 +439,15 @@
     }
 
     function loop() {
-      setTimeout(function() {
-        myDiagram.commit(function() {
-          myDiagram.links.each(function(l) {
+      setTimeout(() => {
+        myDiagram.commit(diag => {
+          diag.links.each(l => {
             if (Math.random() < 0.2) return;
             var prev = l.fromNode.data.value;
             var now = l.toNode.data.value;
             if (prev > (l.fromNode.data.min || 0) && now < (l.toNode.data.max || 100)) {
-              myDiagram.model.set(l.fromNode.data, "value", prev-1);
-              myDiagram.model.set(l.toNode.data, "value", now+1);
+              diag.model.set(l.fromNode.data, "value", prev-1);
+              diag.model.set(l.toNode.data, "value", now+1);
             }
           });
         })

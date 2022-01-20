@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 /*
 * This is an extension and not part of the main GoJS library.
@@ -191,6 +191,7 @@ export class DimensioningLink extends go.Link {
                 this.addPointAt(t1, topoint.y);
             }
         }
+        this.updateTargetBindings();
         return true;
     }
 }

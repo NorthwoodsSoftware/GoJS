@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 1998-2021 by Northwoods Software Corporation
+ * Copyright (C) 1998-2022 by Northwoods Software Corporation
  * All Rights Reserved.
  *
  * FLOOR PLANNER - WALL BUILDING TOOL
@@ -9,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -29,6 +29,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.WallBuildingTool = void 0;
     var go = require("../../../release/go");
     var WallBuildingTool = /** @class */ (function (_super) {
         __extends(WallBuildingTool, _super);
@@ -48,35 +49,35 @@ var __extends = (this && this.__extends) || (function () {
             // Get / set the current startPoint
             get: function () { return this._startPoint; },
             set: function (value) { this._startPoint = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallBuildingTool.prototype, "endPoint", {
             // Get / set the current endPoint
             get: function () { return this._endPoint; },
             set: function (value) { this._endPoint = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallBuildingTool.prototype, "wallReshapingTool", {
             // Get / set the floorplan's WallReshapingTool
             get: function () { return this._wallReshapingTool; },
             set: function (value) { this._wallReshapingTool = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallBuildingTool.prototype, "buildingWall", {
             // Get / set the wall being built
             get: function () { return this._buildingWall; },
             set: function (value) { this._buildingWall = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(WallBuildingTool.prototype, "isBuildingDivider", {
             // Get / set whether or not we're actually building a room / floor divider, not a wall
             get: function () { return this._isBuildingDivider; },
             set: function (value) { this._isBuildingDivider = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**

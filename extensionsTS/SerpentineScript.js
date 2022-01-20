@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -35,7 +35,7 @@
             $(go.Node, go.Panel.Auto, $(go.Shape, { figure: 'RoundedRectangle', fill: 'white' }, new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key')));
         myDiagram.linkTemplate =
             $(go.Link, go.Link.Orthogonal, { corner: 5 }, $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
-        myDiagram.model = $(go.TreeModel, {
+        myDiagram.model = new go.TreeModel({
             nodeParentKeyProperty: 'next',
             nodeDataArray: [
                 { key: 'Alpha', next: 'Beta', color: 'coral' },

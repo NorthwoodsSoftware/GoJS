@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -104,16 +104,10 @@ export function init() {
 
   // create the model data that will be represented by Nodes and Links
   myDiagram.model =
-    $(go.GraphLinksModel,
+    new go.GraphLinksModel(
       {
         copiesArrays: true,
         copiesArrayObjects: true,
-        'Changed': function (e: go.ChangedEvent) {
-          if (e.isTransactionFinished) {
-            const elt = document.getElementById('mySavedModel');
-            if (elt !== null) elt.textContent = myDiagram.model.toJson();
-          }
-        },
         nodeDataArray:
           [
             {
@@ -145,7 +139,14 @@ export function init() {
             { from: 'Gamma', to: 'Delta' },
             { from: 'Delta', to: 'Alpha' }
           ]
-      });
+      }).addChangedListener(
+        function (e: go.ChangedEvent) {
+          if (e.isTransactionFinished) {
+            const elt = document.getElementById('mySavedModel');
+            if (elt !== null) elt.textContent = myDiagram.model.toJson();
+          }
+        }
+      );
 
   // Attach to the window for console manipulation
   (window as any).myDiagram = myDiagram;

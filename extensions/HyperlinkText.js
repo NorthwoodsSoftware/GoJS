@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A "HyperlinkText" is either a TextBlock or a Panel containing a TextBlock that when clicked
@@ -54,7 +54,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
   var click =
     function(e, obj) {
       var u = obj._url;
-      if (typeof u === "function") u = u(obj.findTemplateBinder());
+      if (typeof u === "function") u = u(obj.findBindingPanel());
       if (u) window.open(u, "_blank");
     };
 
@@ -67,7 +67,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
           // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
           obj = obj.part.adornedObject;
           var u = obj._url;
-          if (typeof u === "function") u = u(obj.findTemplateBinder());
+          if (typeof u === "function") u = u(obj.findBindingPanel());
           return u;
         }).ofObject()
       ),
@@ -83,7 +83,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
                   cursor: "pointer",
                   mouseEnter: function(e, obj) {
                     var u = obj._url;
-                    if (typeof u === "function") u = u(obj.findTemplateBinder());
+                    if (typeof u === "function") u = u(obj.findBindingPanel());
                     if (u) obj.isUnderline = true;
                   },
                   mouseLeave: function(e, obj) { obj.isUnderline = false; },
@@ -118,7 +118,7 @@ go.GraphObject.defineBuilder("HyperlinkText", function(args) {
         mouseEnter: function(e, panel) {
           var tb = findTextBlock(panel);
           var u = panel._url;
-          if (typeof u === "function") u = u(panel.findTemplateBinder());
+          if (typeof u === "function") u = u(panel.findBindingPanel());
           if (tb !== null && u) tb.isUnderline = true;
         },
         mouseLeave: function(e, panel) {

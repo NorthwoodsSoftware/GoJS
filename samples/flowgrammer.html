@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An editor for a flowchart-like diagram with a restricted syntax -- add nodes by dropping them onto existing nodes or links."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Flowgrammer</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -107,9 +107,9 @@
   }
 </style>
   <script src="../extensions/ParallelLayout.js"></script>
-    <script>
+    <script id="code">
     // two custom figures, for "For Each" loops
-    go.Shape.defineFigureGenerator("ForEach", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("ForEach", (shape, w, h) => {
       var param1 = shape ? shape.parameter1 : NaN; // length of triangular area in direction that it is pointing
       if (isNaN(param1)) param1 = 10;
       var d = Math.min(h/2, param1);
@@ -125,7 +125,7 @@
       return geo;
     });
 
-    go.Shape.defineFigureGenerator("EndForEach", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("EndForEach", (shape, w, h) => {
       var param1 = shape ? shape.parameter1 : NaN; // length of triangular area in direction that it is pointing
       if (isNaN(param1)) param1 = 10;
       var d = Math.min(h/2, param1);
@@ -142,7 +142,10 @@
     });
 
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       // initialize main Diagram
       myDiagram =
@@ -150,12 +153,12 @@
           {
             allowMove: false,
             allowCopy: false,
-            "SelectionDeleting": function(e) {  // before a delete happens
+            "SelectionDeleting": e => {  // before a delete happens
               // handle deletions by excising the node and reconnecting the link where the node had been
-              new go.List(e.diagram.selection).each(function(part) { deletingNode(part); });
+              new go.List(e.diagram.selection).each(part => deletingNode(part));
             },
             layout: $(ParallelLayout, { angle: 90, layerSpacing: 21, nodeSpacing: 30 }),
-            "ExternalObjectsDropped": function(e) {  // handle drops from the Palette
+            "ExternalObjectsDropped": e => {  // handle drops from the Palette
               var newnode = e.diagram.selection.first();
               if (!newnode) return;
               if (!(newnode instanceof go.Group) && newnode.linksConnected.count === 0) {
@@ -176,11 +179,11 @@
         return {
           deletable: false,
           locationSpot: go.Spot.Center,
-          mouseDragEnter: function(e, node) {
+          mouseDragEnter: (e, node) => {
             var sh = node.findObject("SHAPE");
             if (sh) sh.fill = "lime";
           },
-          mouseDragLeave: function(e, node) {
+          mouseDragLeave: (e, node) => {
             var sh = node.findObject("SHAPE");
             if (sh) sh.fill = "white";
           },
@@ -294,11 +297,11 @@
             locationSpot: go.Spot.Center,
             avoidableMargin: 10,  // extra space on the sides
             layout: $(ParallelLayout, { angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
-            mouseDragEnter: function(e, group) {
+            mouseDragEnter: (e, group) => {
               var sh = group.findObject("SHAPE");
               if (sh) sh.stroke = "lime";
             },
-            mouseDragLeave: function(e, group) {
+            mouseDragLeave: (e, group) => {
               var sh = group.findObject("SHAPE");
               if (sh) sh.stroke = null;
             },
@@ -329,18 +332,18 @@
             toShortLength: 2,
             // links cannot be deleted
             // If a node from the Palette is dragged over this node, its outline will turn green
-            mouseDragEnter: function(e, link) { if (!isLoopBack(link)) link.isHighlighted = true; },
-            mouseDragLeave: function(e, link) { link.isHighlighted = false; },
+            mouseDragEnter: (e, link) => { if (!isLoopBack(link)) link.isHighlighted = true; },
+            mouseDragLeave: (e, link) => { link.isHighlighted = false; },
             // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
             mouseDrop: dropOntoLink
           },
           $(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 8 },
-            new go.Binding("stroke", "isHighlighted", function(h) { return h ? "lime" : "transparent"; }).ofObject()),
+            new go.Binding("stroke", "isHighlighted", h => h ? "lime" : "transparent").ofObject()),
           $(go.Shape, { isPanelMain: true, stroke: "black", strokeWidth: 1.5 }),
           $(go.Shape, { toArrow: "Standard", strokeWidth: 0 })
           // $(go.TextBlock, { segmentIndex: -2, segmentFraction: 0.75, editable: true },
           //   new go.Binding("text").makeTwoWay(),
-          //   new go.Binding("background", "text", function(t) { return t ? "white" : null; }))
+          //   new go.Binding("background", "text", t => t ? "white" : null))
         );
 
       function isLoopBack(link) {
@@ -508,18 +511,18 @@
         if (node instanceof go.Group) {
           var externals = node.findExternalLinksConnected();
           var next = null;
-          externals.each(function(link) {
+          externals.each(link => {
             if (link.fromNode.isMemberOf(node)) next = link.toNode;
           });
           if (next) {
-            externals.each(function(link) {
+            externals.each(link => {
               if (link.toNode.isMemberOf(node)) link.toNode = next;
             });
           }
         } else if (node.category === "") {
           var next = node.findNodesOutOf().first();
           if (next) {
-            new go.List(node.findLinksInto()).each(function(link) { link.toNode = next; });
+            new go.List(node.findLinksInto()).each(link => link.toNode = next);
           }
         }
       }
@@ -560,7 +563,7 @@
     }
 
     function newDiagram() {
-      myDiagram.model = go.GraphObject.make(go.GraphLinksModel,
+      myDiagram.model = new go.GraphLinksModel(
         {
           nodeDataArray:
           [

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Drag an item from a node out of the diagram and onto another HTML element."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Dragging a Field from a Record onto an HTML Element</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -50,25 +50,25 @@
     
     <script src="../release/go.js"></script>
     <div class="p-4 w-full">
-    <script id="code">
-    // Custom DraggingTool for dragging fields instead of whole Parts.
-    // FieldDraggingTool.fieldTemplate needs to be set to a template of the field that you want shown while dragging.
-    function FieldDraggingTool() {
-      go.DraggingTool.call(this);
+  <script id="code">
+  // Custom DraggingTool for dragging fields instead of whole Parts.
+  // FieldDraggingTool.fieldTemplate needs to be set to a template of the field that you want shown while dragging.
+  class FieldDraggingTool extends go.DraggingTool {
+    constructor() {
+      super();
       this.fieldTemplate = null;  // THIS NEEDS TO BE SET before a drag starts
       this.temporaryPart = null;
       this.temporaryImage = null;
     }
-    go.Diagram.inherit(FieldDraggingTool, go.DraggingTool);
 
     // override this method
-    FieldDraggingTool.prototype.findDraggablePart = function() {
-      var diagram = this.diagram;
-      var obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
+    findDraggablePart() {
+      const diagram = this.diagram;
+      let obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
       while (obj !== null && obj.type !== go.Panel.TableRow) obj = obj.panel;
       if (obj !== null && obj.type === go.Panel.TableRow &&
         this.fieldTemplate !== null && this.temporaryPart === null) {
-        var tempPart =
+        const tempPart =
           go.GraphObject.make(go.Node, "Table",
             { layerName: "Tool", locationSpot: go.Spot.Bottom },
             this.fieldTemplate.copy());  // copy the template!
@@ -80,25 +80,25 @@
         tempPart.data = obj.data;  // bind to the same field data as being dragged
         return tempPart;
       }
-      return go.DraggingTool.prototype.findDraggablePart.call(this);
-    };
+      return super.findDraggablePart();
+    }
 
-    FieldDraggingTool.prototype.doActivate = function() {
-      if (this.temporaryPart === null) return go.DraggingTool.prototype.doActivate.call(this);
-      var diagram = this.diagram;
+    doActivate() {
+      if (this.temporaryPart === null) return super.doActivate();
+      const diagram = this.diagram;
       this.standardMouseSelect();
       this.isActive = true;
       // instead of the usual result of computeEffectiveCollection, just use the temporaryPart alone
-      var map = new go.Map(/*go.Part, go.DraggingInfo*/);
+      const map = new go.Map(/*go.Part, go.DraggingInfo*/);
       map.set(this.temporaryPart, new go.DraggingInfo(diagram.lastInput.documentPoint.copy()));
       this.draggedParts = map;
       this.startTransaction("Drag Field");
       diagram.isMouseCaptured = true;
-    };
+    }
 
-    FieldDraggingTool.prototype.doDeactivate = function() {
-      if (this.temporaryPart === null) return go.DraggingTool.prototype.doDeactivate.call(this);
-      var diagram = this.diagram;
+    doDeactivate() {
+      if (this.temporaryPart === null) return super.doDeactivate();
+      const diagram = this.diagram;
       // make sure the temporary Part is no longer in the Diagram
       diagram.remove(this.temporaryPart);
       this.temporaryPart = null;
@@ -109,12 +109,12 @@
       // now do all the standard deactivation cleanup,
       // including setting isActive = false, clearing out draggedParts, calling stopTransaction(),
       // and setting diagram.isMouseCaptured = false
-      go.DraggingTool.prototype.doDeactivate.call(this);
-    };
+      super.doDeactivate();
+    }
 
-    FieldDraggingTool.prototype.makeImage = function() {
+    makeImage() {
       if (this.temporaryPart === null) return null;
-      var parts = new go.List();
+      const parts = new go.List();
       parts.add(this.temporaryPart);
       return this.diagram.makeImage({
           parts: parts,
@@ -130,12 +130,12 @@
         });
     }
 
-    FieldDraggingTool.prototype.doMouseMove = function() {
+    doMouseMove() {
       if (!this.isActive) return;
-      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseMove.call(this);
-      var diagram = this.diagram;
+      if (this.temporaryPart === null) return super.doMouseMove();
+      const diagram = this.diagram;
       // just move the temporaryPart (in draggedParts), without regard to moving or copying permissions of the Node
-      var offset = diagram.lastInput.documentPoint.copy().subtract(diagram.firstInput.documentPoint);
+      const offset = diagram.lastInput.documentPoint.copy().subtract(diagram.firstInput.documentPoint);
       this.moveParts(this.draggedParts, offset, false);
       if (diagram.viewportBounds.containsPoint(diagram.lastInput.documentPoint)) {
         if (this.temporaryPart.opacity != 1) {
@@ -150,27 +150,27 @@
           this.makeImage();  // also sets temporaryPart.opacity = 0
         }
         // move a temporary Image element instead
-        var img = this.temporaryImage;
+        const img = this.temporaryImage;
         if (img !== null) {
-          var e = diagram.lastInput.event;
+          const e = diagram.lastInput.event;
           img.style.left = (window.scrollX + e.clientX - img.width/2) + "px";
           img.style.top = (window.scrollY + e.clientY - img.height/2) + "px";
           // position the Image to be just above the mouse pointer
         }
       }
-    };
+    }
 
-    FieldDraggingTool.prototype.doMouseUp = function() {
+    doMouseUp() {
       if (!this.isActive) return;
-      if (this.temporaryPart === null) return go.DraggingTool.prototype.doMouseUp.call(this);
-      var diagram = this.diagram;
-      var data = this.temporaryPart.data;
-      var input = diagram.lastInput;
-      var id = input.event.target.id;
+      if (this.temporaryPart === null) return super.doMouseUp();
+      const diagram = this.diagram;
+      const data = this.temporaryPart.data;
+      const input = diagram.lastInput;
+      const id = input.event.target.id;
       if (input.isTouchEvent) {
         // Touch events always target the first object touched, we want the last.
         // Determine if you are using Touch or Pointer:
-        var evt = input.event.changedTouches ? input.event.changedTouches[0] : input.event;
+        const evt = input.event.changedTouches ? input.event.changedTouches[0] : input.event;
         id = document.elementFromPoint(evt.clientX, evt.clientY).id;
       }
       if (input.event && id === "myDroppedFields") {
@@ -178,12 +178,16 @@
       }
       this.transactionResult = "Dragged Field";
       this.stopTool();
-    };
-    // end of FieldDraggingTool
+    }
+  }
+  // end of FieldDraggingTool
 
 
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
@@ -195,7 +199,7 @@
 
       // This template is a Panel that is used to represent each item in a Panel.itemArray.
       // The Panel is data bound to the item object.
-      var fieldTemplate =
+      const fieldTemplate =
         $(go.Panel, "TableRow",  // this Panel is a row in the containing Table
           new go.Binding("portId", "name"),  // this Panel is a "port"
           {
@@ -257,7 +261,7 @@
         );  // end Node
 
       myDiagram.model =
-        $(go.GraphLinksModel,
+        new go.GraphLinksModel(
           {
             linkFromPortIdProperty: "fromPort",
             linkToPortIdProperty: "toPort",

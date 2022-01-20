@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2021 by Northwoods Software Corporation
+* Copyright (C) 1998-2022 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Go DropBox
@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -28,6 +28,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.GoDropBox = void 0;
     var gcs = require("./GoCloudStorage.js");
     /**
      * Class for saving / loading GoJS {@link Model}s to / from Dropbox.
@@ -94,7 +95,7 @@ var __extends = (this && this.__extends) || (function () {
              * @return {any}
              */
             get: function () { return this._dropbox; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(GoDropBox.prototype, "menuPath", {
@@ -107,7 +108,7 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._menuPath; },
             set: function (value) { this._menuPath = value; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         /**
@@ -198,7 +199,7 @@ var __extends = (this && this.__extends) || (function () {
                 // the access token for `dbx` has been revoked
                 console.log("got authTokenRevoke response:");
                 console.log(response);
-    
+
                 // this should fail now:
                 dbx.usersGetCurrentAccount()
                   .then(function(response) {
@@ -209,7 +210,7 @@ var __extends = (this && this.__extends) || (function () {
                     console.log("got usersGetCurrentAccount error:");
                     console.log(error);
                   });
-    
+
             })
             .catch(function(error) {
               console.log("got authTokenRevoke error:");
@@ -450,9 +451,9 @@ var __extends = (this && this.__extends) || (function () {
                             var possibleFiles = [];
                             /*for (let i in files) {
                                 var file = files[i];
-    
+
                                 //var fname = filename.replace(/.diagram([^_]*)$/,'$1');
-    
+
                                 //console.log(fname);
                                 if (file.filename.indexOf(fname) != -1 && file.filename.indexOf(".diagram") != -1) {
                                     possibleFiles.push(file);

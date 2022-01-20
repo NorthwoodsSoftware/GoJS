@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Support selecting ports within nodes."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Selectable Ports</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,13 +52,16 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;
 
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
             // For this sample, automatically show the state of the diagram's model on the page
-            "ModelChanged": function(e) {
+            "ModelChanged": e => {
               if (e.isTransactionFinished) showModel();
             },
             "undoManager.isEnabled": true
@@ -90,7 +93,7 @@
             { // allow the user to select items -- the background color indicates whether "selected"
               isActionable: true,
               //?? maybe this should be more sophisticated than simple toggling of selection
-              click: function(e, tb) {
+              click: (e, tb) => {
                 var shape = tb.panel.findObject("SHAPE");
                 if (shape !== null) {
                   // don't record item selection changes
@@ -118,7 +121,7 @@
             { name: "BODY" },
             $(go.Shape, "RoundedRectangle",
               { stroke: "gray", strokeWidth: 2, fill: "transparent" },
-              new go.Binding("stroke", "isSelected", function(b) { return b ? SelectedBrush : UnselectedBrush; }).ofObject()),
+              new go.Binding("stroke", "isSelected", b => b ? SelectedBrush : UnselectedBrush).ofObject()),
             $(go.Panel, "Vertical",
               { margin: 6 },
               $(go.TextBlock,
@@ -209,7 +212,7 @@
       };
 
       myDiagram.model =
-        $(go.GraphLinksModel,
+        new go.GraphLinksModel(
           {
             copiesArrays: true,
             copiesArrayObjects: true,

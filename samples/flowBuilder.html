@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Flow Builder</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -52,7 +52,10 @@
     <div class="p-4 w-full">
     <script id="code">
     function init() {
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
@@ -70,10 +73,10 @@
           });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
+      myDiagram.addDiagramListener("Modified", e => {
+        const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        const idx = document.title.indexOf("*");
         if (myDiagram.isModified) {
           if (idx < 0) document.title += "*";
         } else {
@@ -81,7 +84,7 @@
         }
       });
 
-      var graygrad = $(go.Brush, "Linear",
+      const graygrad = $(go.Brush, "Linear",
         { 0: "white", 0.1: "whitesmoke", 0.9: "whitesmoke", 1: "lightgray" });
 
       myDiagram.nodeTemplate =  // the default node template
@@ -93,7 +96,7 @@
             { name: "BODY" },
             $(go.Shape, "Rectangle",
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
+              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
             $(go.TextBlock,
               {
                 stroke: "black", font: "12px sans-serif", editable: true,
@@ -123,13 +126,13 @@
         $("ContextMenu",
           $("ContextMenuButton",
             $(go.TextBlock, "Rename"),
-            { click: function(e, obj) { e.diagram.commandHandler.editTextBlock(); } },
-            new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canEditTextBlock(); }).ofObject()),
+            { click: (e, obj) => e.diagram.commandHandler.editTextBlock() },
+            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canEditTextBlock()).ofObject()),
           // add one for Editing...
           $("ContextMenuButton",
             $(go.TextBlock, "Delete"),
-            { click: function(e, obj) { e.diagram.commandHandler.deleteSelection(); } },
-            new go.Binding("visible", "", function(o) { return o.diagram && o.diagram.commandHandler.canDeleteSelection(); }).ofObject())
+            { click: (e, obj) => e.diagram.commandHandler.deleteSelection() },
+            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canDeleteSelection()).ofObject())
         );
 
       myDiagram.nodeTemplateMap.add("Loading",
@@ -141,7 +144,7 @@
             { name: "BODY" },
             $(go.Shape, "Rectangle",
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
+              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
             $(go.TextBlock,
               {
                 stroke: "black", font: "12px sans-serif", editable: true,
@@ -168,7 +171,7 @@
             { name: "BODY" },
             $(go.Shape, "Rectangle",
               { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", function(s) { return s ? "dodgerblue" : graygrad; }).ofObject()),
+              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
             $(go.TextBlock,
               {
                 stroke: "black", font: "12px sans-serif", editable: true,
@@ -196,8 +199,10 @@
             layerName: "Background", locationSpot: go.Spot.Center
           },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          { dragComputation: function(node, pt, gridpt) { return pt; } },
-          { mouseDrop: function(e, obj) { myDiagram.commandHandler.deleteSelection(); } },
+          {
+            dragComputation: (node, pt, gridpt) => pt,
+            mouseDrop: (e, obj) => myDiagram.commandHandler.deleteSelection()
+          },
           $(go.Shape,
             { fill: "lightgray", stroke: "gray" }),
           $(go.TextBlock, "Drop Here\nTo Delete",
@@ -207,30 +212,30 @@
       // this is a click event handler that adds a node and a link to the diagram,
       // connecting with the node on which the click occurred
       function addNodeAndLink(e, obj) {
-        var fromNode = obj.part;
-        var diagram = fromNode.diagram;
+        const fromNode = obj.part;
+        const diagram = fromNode.diagram;
         diagram.startTransaction("Add State");
         // get the node data for which the user clicked the button
-        var fromData = fromNode.data;
+        const fromData = fromNode.data;
         // create a new "State" data object, positioned off to the right of the fromNode
-        var p = fromNode.location.copy();
+        const p = fromNode.location.copy();
         p.x += diagram.toolManager.draggingTool.gridSnapCellSize.width;
-        var toData = {
+        const toData = {
           text: "new",
           loc: go.Point.stringify(p)
         };
         // add the new node data to the model
-        var model = diagram.model;
+        const model = diagram.model;
         model.addNodeData(toData);
         // create a link data from the old node data to the new node data
-        var linkdata = {
+        const linkdata = {
           from: model.getKeyForNodeData(fromData),
           to: model.getKeyForNodeData(toData)
         };
         // and add the link data to the model
         model.addLinkData(linkdata);
         // select the new Node
-        var newnode = diagram.findNodeForData(toData);
+        const newnode = diagram.findNodeForData(toData);
         diagram.select(newnode);
         // snap the new node to a valid location
         newnode.location = diagram.toolManager.draggingTool.computeMove(newnode, p);
@@ -240,7 +245,7 @@
       }
 
       // Highlight ports when they are targets for linking or relinking.
-      var OldTarget = null;  // remember the last highlit port
+      let OldTarget = null;  // remember the last highlit port
       function highlight(port) {
         if (OldTarget !== port) {
           lowlight();  // remove highlight from any old port
@@ -256,13 +261,13 @@
       }
 
       // Connecting a link with the Recycle node removes the link
-      myDiagram.addDiagramListener("LinkDrawn", function(e) {
-        var link = e.subject;
+      myDiagram.addDiagramListener("LinkDrawn", e => {
+        const link = e.subject;
         if (link.toNode.category === "Recycle") myDiagram.remove(link);
         lowlight();
       });
-      myDiagram.addDiagramListener("LinkRelinked", function(e) {
-        var link = e.subject;
+      myDiagram.addDiagramListener("LinkRelinked", e => {
+        const link = e.subject;
         if (link.toNode.category === "Recycle") myDiagram.remove(link);
         lowlight();
       });
@@ -273,8 +278,8 @@
           $(go.Shape,
             { stroke: "gray", strokeWidth: 2 },
             {
-              mouseEnter: function(e, obj) { obj.strokeWidth = 5; obj.stroke = "dodgerblue"; },
-              mouseLeave: function(e, obj) { obj.strokeWidth = 2; obj.stroke = "gray"; }
+              mouseEnter: (e, obj) => { obj.strokeWidth = 5; obj.stroke = "dodgerblue"; },
+              mouseLeave: (e, obj) => { obj.strokeWidth = 2; obj.stroke = "gray"; }
             })
         );
 
@@ -293,7 +298,7 @@
         tool.temporaryToPort.strokeWidth = 0;
 
         // provide customized visual feedback as ports are targeted or not
-        tool.portTargeted = function(realnode, realport, tempnode, tempport, toend) {
+        tool.portTargeted = (realnode, realport, tempnode, tempport, toend) => {
           if (realport === null) {  // no valid port nearby
             lowlight();
           } else if (toend) {
@@ -302,12 +307,12 @@
         };
       }
 
-      var ltool = myDiagram.toolManager.linkingTool;
+      const ltool = myDiagram.toolManager.linkingTool;
       commonLinkingToolInit(ltool);
       // do not allow links to be drawn starting at the "to" port
       ltool.direction = go.LinkingTool.ForwardsOnly;
 
-      var rtool = myDiagram.toolManager.relinkingTool;
+      const rtool = myDiagram.toolManager.relinkingTool;
       commonLinkingToolInit(rtool);
       // change the standard relink handle to be a shape that takes the shape of the link
       rtool.toHandleArchetype =
@@ -321,15 +326,15 @@
       myDiagram.addDiagramListener("SelectionMoved", shiftNodesToEmptySpaces);
 
       function shiftNodesToEmptySpaces() {
-        myDiagram.selection.each(function(node) {
+        myDiagram.selection.each(node => {
           if (!(node instanceof go.Node)) return;
           // look for Parts overlapping the node
           while (true) {
-            var exist = myDiagram.findObjectsIn(node.actualBounds,
+            const exist = myDiagram.findObjectsIn(node.actualBounds,
               // only consider Parts
-              function(obj) { return obj.part; },
+              obj => obj.part,
               // ignore Links and the dropped node itself
-              function(part) { return part instanceof go.Node && part !== node; },
+              part => part instanceof go.Node && part !== node,
               // check for any overlap, not complete containment
               true).first();
             if (exist === null) break;
@@ -340,8 +345,8 @@
       }
 
       // prevent nodes from being dragged to the left of where the layout placed them
-      myDiagram.addDiagramListener("LayoutCompleted", function(e) {
-        myDiagram.nodes.each(function(node) {
+      myDiagram.addDiagramListener("LayoutCompleted", e => {
+        myDiagram.nodes.each(node => {
           if (node.category === "Recycle") return;
           node.minLocation = new go.Point(node.location.x, -Infinity);
         });
@@ -357,7 +362,7 @@
     function load() {
       myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
       // if any nodes don't have a real location, explicitly do a layout
-      if (myDiagram.nodes.any(function(n) { return !n.location.isReal(); })) layout();
+      if (myDiagram.nodes.any(n => !n.location.isReal())) layout();
     }
 
     function layout() {
@@ -365,25 +370,25 @@
     }
 
 
-    // Define a custom tool that changes a drag operation on a Link to a relinking operation,
-    // but that operates like a normal DraggingTool otherwise.
-    function DragLinkingTool() {
-      go.DraggingTool.call(this);
+  // Define a custom tool that changes a drag operation on a Link to a relinking operation,
+  // but that operates like a normal DraggingTool otherwise.
+  class DragLinkingTool extends go.DraggingTool {
+    constructor() {
+      super();
       this.isGridSnapEnabled = true;
       this.isGridSnapRealtime = false;
       this.gridSnapCellSize = new go.Size(182, 1);
       this.gridSnapOrigin = new go.Point(5.5, 0);
     }
-    go.Diagram.inherit(DragLinkingTool, go.DraggingTool);
 
     // Handle dragging a link specially -- by starting the RelinkingTool on that Link
-    DragLinkingTool.prototype.doActivate = function() {
-      var diagram = this.diagram;
+    doActivate() {
+      const diagram = this.diagram;
       if (diagram === null) return;
       this.standardMouseSelect();
-      var main = this.currentPart;  // this is set by the standardMouseSelect
+      const main = this.currentPart;  // this is set by the standardMouseSelect
       if (main instanceof go.Link) { // maybe start relinking instead of dragging
-        var relinkingtool = diagram.toolManager.relinkingTool;
+        const relinkingtool = diagram.toolManager.relinkingTool;
         // tell the RelinkingTool to work on this Link, not what is under the mouse
         relinkingtool.originalLink = main;
         // start the RelinkingTool
@@ -392,10 +397,12 @@
         relinkingtool.doActivate();
         relinkingtool.doMouseMove();
       } else {
-        go.DraggingTool.prototype.doActivate.call(this);
+        super.doActivate();
       }
-    };
-    // end DragLinkingTool
+    }
+  }
+  // end DragLinkingTool
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 

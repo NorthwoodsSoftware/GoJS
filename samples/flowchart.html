@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="Interactive flowchart diagram implemented by GoJS in JavaScript for HTML."/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Flowchart</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -53,7 +53,10 @@
 <script id="code">
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
@@ -64,7 +67,7 @@
         });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", function(e) {
+    myDiagram.addDiagramListener("Modified", e => {
       var button = document.getElementById("SaveButton");
       if (button) button.disabled = !myDiagram.isModified;
       var idx = document.title.indexOf("*");
@@ -115,12 +118,10 @@
           toSpot: spot,  // declare where links may connect at this port
           toLinkable: input,  // declare whether the user may draw links to here
           cursor: "pointer",  // show a different cursor to indicate potential link point
-          mouseEnter: function(e, port) {  // the PORT argument will be this Shape
+          mouseEnter: (e, port) => {  // the PORT argument will be this Shape
             if (!e.diagram.isReadOnly) port.fill = "rgba(255,0,255,0.5)";
           },
-          mouseLeave: function(e, port) {
-            port.fill = "transparent";
-          }
+          mouseLeave: (e, port) => port.fill = "transparent"
         });
     }
 
@@ -208,7 +209,7 @@
       ));
 
     // taken from ../extensions/Figures.js:
-    go.Shape.defineFigureGenerator("File", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("File", (shape, w, h) => {
       var geo = new go.Geometry();
       var fig = new go.PathFigure(0, 0, true); // starting point
       geo.add(fig);
@@ -255,8 +256,8 @@
           reshapable: true,
           resegmentable: true,
           // mouse-overs subtly highlight links:
-          mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-          mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+          mouseEnter: (e, link) => link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)",
+          mouseLeave: (e, link) => link.findObject("HIGHLIGHT").stroke = "transparent",
           selectionAdorned: false
         },
         new go.Binding("points").makeTwoWay(),
@@ -264,7 +265,7 @@
           { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
         $(go.Shape,  // the link path shape
           { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-          new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+          new go.Binding("stroke", "isSelected", sel => sel ? "dodgerblue" : "gray").ofObject()),
         $(go.Shape,  // the arrowhead
           { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
         $(go.Panel, "Auto",  // the link label, normally not visible
@@ -356,7 +357,7 @@
       x = bnds.x;
       y += printSize.height;
     }
-    setTimeout(function() { svgWindow.print(); }, 1);
+    setTimeout(() => svgWindow.print(), 1);
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>

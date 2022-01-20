@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
   if (window.go) version = 'GoJS version ' + go.version + '. '
   var p2 = document.createElement("p");
   p2.classList = "text-xs";
-  p2.innerHTML = version + 'Copyright 1998-2021 by Northwoods Software.';
+  p2.innerHTML = version + 'Copyright 1998-2022 by Northwoods Software.';
   document.getElementById("sample").appendChild(p2);
 
   document.getElementById("navSide").innerHTML = (dirName[0] === 'samples') ? (navContent + navContent2) : (navContent + navContentExtensions);

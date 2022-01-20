@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2021 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /*
@@ -30,7 +30,7 @@ import { GraphObject } from '../../srcTS/graphObject';
 import { Panel } from '../../srcTS/panel';
 import { RowColumnDefinition } from '../../srcTS/rowColumnDefinition';
 import { Shape } from '../../srcTS/shape';
-import { TextBlock, TextBlockMetrics } from '../../srcTS/textBlock';
+import { TextBlock } from '../../srcTS/textBlock';
 import { Picture } from '../../srcTS/picture';
 import { Adornment, Part } from '../../srcTS/parts';
 import { Node } from '../../srcTS/parts';
@@ -163,7 +163,6 @@ export const go = {
   'RowColumnDefinition': RowColumnDefinition,
   'Shape': Shape,
   'TextBlock': TextBlock,
-  'TextBlockMetrics': TextBlockMetrics,
   'Picture': Picture,
   'Part': Part,
   'Adornment': Adornment,

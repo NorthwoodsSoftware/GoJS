@@ -32,35 +32,30 @@ You can use the GitHub repository to quickly [search through all of the sources]
 Graphs are constructed by creating one or more templates, with desired properties data-bound, and adding model data.
 
 ```html
-<script src="go.js"></script>
+<script src="https://unpkg.com/gojs"></script>
 
-<script id="code">
-  function init() {
-    var $ = go.GraphObject.make;  // for conciseness in defining templates
+<script>
+function init() {
+  const myDiagram =
+    new go.Diagram("myDiagramDiv",  // create a Diagram for a HTML Div element
+      { "undoManager.isEnabled": true });  // enable undo & redo
 
-    var myDiagram =
-      $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-        { // enable undo & redo
-          "undoManager.isEnabled": true
-        });
-
-    // define a simple Node template
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",  // the Shape will go around the TextBlock
-        $(go.Shape, "RoundedRectangle",
-          { strokeWidth: 0, fill: "white" },  // default fill is white
+  // define a simple Node template
+  myDiagram.nodeTemplate =
+    new go.Node("Auto")  // the Shape will automatically surround the TextBlock
+      .add(  // add a Shape and a TextBlock to this "Auto" Panel
+        new go.Shape("RoundedRectangle",
+                     { strokeWidth: 0, fill: "white" })  // no border; default fill is white
           // Shape.fill is bound to Node.data.color
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { margin: 8 },  // some room around the text
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 8, stroke: "#333" })  // some room around the text
           // TextBlock.text is bound to Node.data.key
-          new go.Binding("text", "key"))
-      );
+          .bind("text", "key"));
 
-    // but use the default Link template, by not setting Diagram.linkTemplate
+  // but use the default Link template, by not setting Diagram.linkTemplate
 
-    // create the model data that will be represented by Nodes and Links
-    myDiagram.model = new go.GraphLinksModel(
+  // create the model data that will be represented by Nodes and Links
+  myDiagram.model = new go.GraphLinksModel(
     [
       { key: "Alpha", color: "lightblue" },
       { key: "Beta", color: "orange" },
@@ -74,7 +69,7 @@ Graphs are constructed by creating one or more templates, with desired propertie
       { from: "Gamma", to: "Delta" },
       { from: "Delta", to: "Alpha" }
     ]);
-  }
+}
 </script>
 ```
 
@@ -93,7 +88,7 @@ Northwoods Software offers a month of free developer-to-developer support for Go
 Read and search the official <a href="https://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.
 
 Posting in the forum is the fastest and most effective way of obtaining support for any GoJS related inquiries.
-Please register for support at Northwoods Software's <a href="https://www.nwoods.com/products/register.html">registration form</a> before posting in the forum.
+Please register for support at Northwoods Software's <a href="https://www.nwoods.com/register.html">registration form</a> before posting in the forum.
 
 For any nontechnical questions about GoJS, such as about sales or licensing,
 please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html">contact form</a>.

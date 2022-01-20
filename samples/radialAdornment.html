@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
 <meta name="description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool"/> 
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
 <title>Buttons in a Circular Adornment</title>
 </head>
 
@@ -25,7 +25,7 @@
           <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
       </button>
-      <div id="topnavList" class="hidden lg:text-base sm:block items-center w-auto mt-0 text-white p-0 z-20">
+      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
         <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
           <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
@@ -56,9 +56,9 @@
   // The first argument is the angle at which the button will be placed relative to the center.
   // The second argument is the sweep angle over which the button will extend;
   // by default this is 90 degrees, as if there are exactly four buttons around the whole circle.
-  go.GraphObject.defineBuilder("SectorButton", function(args) {
-    var angle = go.GraphObject.takeBuilderArgument(args, 0.0, function(a) { return typeof a === "number"; });
-    var sweep = go.GraphObject.takeBuilderArgument(args, 90.0, function(a) { return typeof a === "number"; });
+  go.GraphObject.defineBuilder("SectorButton", args => {
+    var angle = go.GraphObject.takeBuilderArgument(args, 0.0, a => typeof a === "number");
+    var sweep = go.GraphObject.takeBuilderArgument(args, 90.0, a => typeof a === "number");
 
     // default brushes for "Button" shape
     var buttonFillNormal = "whitesmoke";
@@ -87,14 +87,14 @@
 
     var pt = new go.Point(60, 0).rotate(angle);
     var align = new go.Spot(0.5, 0.5, pt.x, pt.y);
-    args.forEach(function(obj) { if (obj instanceof go.GraphObject) obj.alignment = align; });
+    args.forEach(obj => { if (obj instanceof go.GraphObject) obj.alignment = align; });
 
     var button =
       go.GraphObject.make(go.Panel, "Spot",
         {
           isActionable: true,  // needed so that the ActionTool intercepts mouse events
-          enabledChanged: function(button, enabled) {
-            var shape = button.findObject("ButtonBorder");
+          enabledChanged: (button, enabled) => {
+            const shape = button.findObject("ButtonBorder");
             if (shape !== null) {
               shape.fill = enabled ? button["_buttonFillNormal"] : button["_buttonFillDisabled"];
             }
@@ -119,7 +119,7 @@
     // This way the object could be a TextBlock or a Shape or a Picture or arbitrarily complex Panel.
 
     // mouse-over behavior
-    button.mouseEnter = function(e, button, prev) {
+    button.mouseEnter = (e, button, prev) => {
       var shape = button.findObject("ButtonBorder");  // the border Shape
       if (shape instanceof go.Shape) {
         var brush = button["_buttonFillOver"];
@@ -131,7 +131,7 @@
       }
     };
 
-    button.mouseLeave = function(e, button, prev) {
+    button.mouseLeave = (e, button, prev) => {
       var shape = button.findObject("ButtonBorder");  // the border Shape
       if (shape instanceof go.Shape) {
         shape.fill = button["_buttonFillNormal"];
@@ -145,12 +145,15 @@
 
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         { // show the selection Adornment only on the first selection if it is a Node
-          "ChangedSelection": function(e) {
+          "ChangedSelection": e => {
             var node = e.diagram.selection.first();
             if (node === null) {
               var oldnode = selectionAdornment.adornedPart;
@@ -161,7 +164,7 @@
               node.addAdornment("Radial", selectionAdornment);
             }
           },
-          "InitialLayoutCompleted": function(e) {
+          "InitialLayoutCompleted": e => {
             // show the adornment on the "Beta" node
             e.diagram.select(e.diagram.findNodeForKey(2));
           },
@@ -195,7 +198,7 @@
           $("SectorButton", 0, 90,  // start angle, sweep angle,
             $(go.TextBlock, "New\nLink"),
             { // start drawing a new link from this node
-              click: function(e, button) {
+              click: (e, button) => {
                 var node = button.part.adornedPart;  // this Node
                 e.diagram.clearSelection();  // hide all Adornments for clarity
                 var tool = e.diagram.toolManager.linkingTool;  // the LinkingTool
@@ -207,7 +210,7 @@
           $("SectorButton", 90, 90,
             $(go.Shape, { geometryString: "F1 M29.181 19.070c-1.679-2.908-0.669-6.634 2.255-8.328l-3.145-5.447c-0.898 0.527-1.943 0.829-3.058 0.829-3.361 0-6.085-2.742-6.085-6.125h-6.289c0.008 1.044-0.252 2.103-0.811 3.070-1.679 2.908-5.411 3.897-8.339 2.211l-3.144 5.447c0.905 0.515 1.689 1.268 2.246 2.234 1.676 2.903 0.672 6.623-2.241 8.319l3.145 5.447c0.895-0.522 1.935-0.82 3.044-0.82 3.35 0 6.067 2.725 6.084 6.092h6.289c-0.003-1.034 0.259-2.080 0.811-3.038 1.676-2.903 5.399-3.894 8.325-2.219l3.145-5.447c-0.899-0.515-1.678-1.266-2.232-2.226zM16 22.479c-3.578 0-6.479-2.901-6.479-6.479s2.901-6.479 6.479-6.479c3.578 0 6.479 2.901 6.479 6.479s-2.901 6.479-6.479 6.479z" }),
             {
-              click: function(e, button) {
+              click: (e, button) => {
                 // maybe use a DataInspector?
                 alert("Show Settings for " + button.part.adornedPart.data.text);
               }
@@ -215,7 +218,7 @@
           $("SectorButton", 180, 90,
             $(go.TextBlock, "?", { font: "bold 14pt sans-serif" }),
             {
-              click: function(e, button) {
+              click: (e, button) => {
                 // maybe show some info in HTML?
                 alert("Show Information about " + button.part.adornedPart.data.text);
               }
@@ -223,12 +226,10 @@
           $("SectorButton", 270, 90,
             $(go.Shape, "XLine", { stroke: "red", strokeWidth: 4, width: 16, height: 16 }),
             {
-              click: function(e, button) {
+              click: (e, button) => {
                 // this is different from CommandHandler.deleteSelection because this
                 // only deletes the one node, not all selected parts
-                e.diagram.commit(function(d) {
-                  d.remove(button.part.adornedPart);
-                }, "deleted node");
+                e.diagram.commit(d => d.remove(button.part.adornedPart), "deleted node");
               }
             })
         )
