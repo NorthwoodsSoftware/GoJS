@@ -56,7 +56,7 @@
         });
         // define the Node template
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
             // define the node's outer shape, which will surround the TextBlock
             $(go.Shape, 'RoundedRectangle', {
                 parameter1: 20,
@@ -77,7 +77,7 @@
         // unlike the normal selection Adornment, this one includes a Button
         myDiagram.nodeTemplate.selectionAdornmentTemplate =
             $(go.Adornment, 'Spot', $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'blue', strokeWidth: 2 }), $(go.Placeholder) // this represents the selected Node
-            ),
+            ), 
             // the button to create a "next" node, at the top-right corner
             $('Button', {
                 alignment: go.Spot.TopRight,
@@ -137,7 +137,7 @@
                 stroke: 'black',
                 margin: 4,
                 editable: true // editing the text automatically updates the model data
-            }, new go.Binding('text', 'text').makeTwoWay()),
+            }, new go.Binding('text', 'text').makeTwoWay()), 
             // The GraphObject.segmentOffset property is what the LinkLabelDraggingTool modifies.
             // This TwoWay binding saves any changes to the same named property on the link data.
             new go.Binding('segmentOffset', 'segmentOffset', go.Point.parse).makeTwoWay(go.Point.stringify)));

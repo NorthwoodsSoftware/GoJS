@@ -26,6 +26,7 @@ export function init() {
   // define a simple Node template
   myDiagram.nodeTemplate =
     $(go.Node, 'Auto',  // the Shape will go around the TextBlock
+      { margin: 2 },
       $(go.Shape, 'Rectangle', { strokeWidth: 0 },
         // Shape.fill is bound to Node.data.color
         new go.Binding('fill', 'color')),

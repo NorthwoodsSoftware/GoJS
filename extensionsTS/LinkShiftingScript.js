@@ -41,9 +41,9 @@
                 reshapable: true, resegmentable: true,
                 relinkableFrom: true, relinkableTo: true,
                 adjusting: go.Link.Stretch
-            },
+            }, 
             // remember the (potentially) user-modified route
-            new go.Binding('points').makeTwoWay(),
+            new go.Binding('points').makeTwoWay(), 
             // remember any spots modified by LinkShiftingTool
             new go.Binding('fromSpot', 'fromSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify), new go.Binding('toSpot', 'toSpot', go.Spot.parse).makeTwoWay(go.Spot.stringify), $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
         myDiagram.model = new go.GraphLinksModel([

@@ -9,6 +9,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -58,9 +60,11 @@ var __extends = (this && this.__extends) || (function () {
                 var adornment = new go.Adornment();
                 adornment.type = go.Panel.Link;
                 var h = this.makeHandle(pathshape, 0);
-                this.setReshapingBehavior(h, go.LinkReshapingTool.All);
-                h.cursor = 'move';
-                adornment.add(h);
+                if (h !== null) {
+                    this.setReshapingBehavior(h, go.LinkReshapingTool.All);
+                    h.cursor = 'move';
+                    adornment.add(h);
+                }
                 adornment.category = this.name;
                 adornment.adornedObject = pathshape;
                 return adornment;

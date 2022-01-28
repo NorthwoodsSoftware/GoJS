@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
  
 <link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Groups -- Northwoods Software </title>
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->    <title> GoJS Typings in JavaScript or TypeScript </title>
     <link rel="stylesheet" href="../assets/css/prism.css"  />
   </head>
   <script>
@@ -131,178 +131,88 @@
     </div>      
       <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
+<h1>GoJS typings for TypeScript and JavaScript</h1>
 
-
-
-<h1>Groups</h1>
 <p>
-Use the <a>Group</a> class to treat a collection of <a>Node</a>s and <a>Link</a>s as if they were a single <a>Node</a>.
-Those nodes and links are members of the group; together they constitute a subgraph.
+  This page assumes you will be using NPM to get the TypeScript typings for use in either JavaScript or TypeScript.
+  This page also assumes you have a npm project already, if you do not, you may need to run <code>npm init</code>.
 </p>
 
 <p>
-A subgraph is <em>not</em> another <a>Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
-All of the <a>Part</a>s that are members of a <a>Group</a> belong to the same Diagram as the Group.
-There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
-There can even be links between member nodes and the containing group itself.
+  In a TypeScript environment, GoJS typings will appear automatically if you have the <code>gojs</code> npm package installed.
+  These typings will offer auto-completion, inline documentation, and value error checking.
+  For example when defining a shape, it will auto-complete <code>strokeWidth</code> and display documentation:
 </p>
 
-<p>
-Groups can also be collapsed and expanded, to hide or show the member parts.
-</p>
+<img class="w-full my-1 md:p-8 max-w-5xl" src="images/types01.png"></img>
 
 <p>
-The member parts of a group are available via the <a>Group.memberParts</a> property.
-Conversely, the <a>Part.containingGroup</a> property refers to the group, if the part belongs to one.
-A part can be member of at most one group at a time.
-You can set that property in order to add that part to a group.
-However you must make sure that no group contains itself, either directly or indirectly through other groups.
+  And since <code>strokeWidth</code> does not exist on <a>Node</a>, it will point out an error:
 </p>
 
+<img class="w-full my-1 md:p-8 max-w-5xl" src="images/types02.png"></img>
+
+<h1>Typings in JavaScript files</h1>
+
 <p>
-Because every <a>Group</a> is a <a>Node</a>, you can have nested groups.
-Although member <a>Node</a>s and <a>Link</a>s belong to the <a>Group</a> that contains them,
-they are not in the visual tree of the group -- their <a>GraphObject.panel</a> is null and no member part
-is in the group's <a>Panel.elements</a> collection.
-No <a>Part</a> can be in the visual tree of another <a>Part</a>.
-Parts normally do belong directly to one <a>Layer</a>.
+  If you have a compatible editor, such as VS Code, you can use TypeScript typings in plain JavaScript,
+  provided you have TypeScript installed.
+  The easiest way to use typings is to install the GoJS npm package,
+  even if you are referencing the <code>go.js</code> library from somewhere else, such as a CDN.
+  And of course you must also install TypeScript in your project, or globally.
 </p>
-<p>
-See samples that make use of Groups in the <a href="../samples/index.html#groups">samples index</a>.
-</p>
-<h2 id="SimpleGroups">Simple Groups</h2>
-<p>
-In a <a>GraphLinksModel</a> the <a>Model.nodeDataArray</a> holds node data, each of which might be
-represented by a <a>Group</a> rather than by a regular <a>Node</a>.
-You can declare that it should be a group by setting the isGroup data property to true.
-You can declare that a node data be a member of a group by referring to the group's key as
-the group data property value.
-</p>
-<p>
-Here is a group containing two nested groups as well as two regular nodes.
-If you move a group, its member parts move along.
-If you copy a group, its member parts are copied too.
-If you delete a group, its member parts are deleted too.
-If you move a member node, its containing group inflates or shrinks to cover the area occupied by all of the members.
-</p>
-<pre class="lang-js" id="simple"><code>
-  diagram.model.nodeDataArray = [
-    { key: "Alpha", isGroup: true },
-    { key: "Beta", group: "Alpha" },
-    { key: "Gamma", group: "Alpha", isGroup: true },
-    { key: "Delta", group: "Gamma" },
-    { key: "Epsilon", group: "Gamma" },
-    { key: "Zeta", group: "Alpha" },
-    { key: "Eta", group: "Alpha", isGroup: true},
-    { key: "Theta", group: "Eta" }
-  ];
+<pre class="lang-bash"><code>  npm i typescript --save-dev
+  npm i gojs --save-dev
 </code></pre>
-<script>goCode("simple", 600, 200)</script>
 
-<h3 id="GroupsLinks">Groups and Links</h2>
 <p>
-Because <a>Group</a>s are <a>Node</a>s, a <a>Link</a> may connect with a group as well as with a plain node.
+  And you must create a TypeScript configuration file:
 </p>
-<p>
-Here is a simple example of four regular nodes and one group node.
-In this example the link from "Alpha" goes directly to the "Beta" node,
-but the link to "Delta" actually comes from the "Omega" group rather than from any particular member of the group.
-</p>
-<pre class="lang-js" id="links"><code>
-  var nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta", group: "Omega" },
-    { key: "Gamma", group: "Omega" },
-    { key: "Omega", isGroup: true },
-    { key: "Delta" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
-    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
-    { from: "Omega", to: "Delta" }  // from the Group to a Node
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+<pre class="lang-bash"><code>  npx tsc --init
 </code></pre>
-<script>goCode("links", 600, 150)</script>
-<p>
-If you drag the "Delta" node around you can see how the link from the "Omega" group appears to come from the center
-of the group and start at the group's edge rather than at any member node.
-This is different than for the link from "Alpha" to "Beta".
-</p>
-<p>
-Note also how the link from "Beta" to "Gamma" is effectively owned by the "Omega" group because
-both of the nodes are owned by that group.  Copying the group automatically copies the link too.
-</p>
-<p>
-This example did not set any of the following properties:
-<a>Diagram.nodeTemplate</a>, <a>Diagram.groupTemplate</a>, and <a>Diagram.linkTemplate</a>,
-in order to demonstrate the default templates for all kinds of node data and link data.
-</p>
 
-<h2 id="GroupTemplates">Group Templates</h2>
-<p>
-Here is an example of how one might define templates for nodes and for groups.
-The node template is very simple: some text inside an ellipse.
-The group template is different from a node template in several aspects.
-</p>
-<p>
-First, the group template builds a go.Group, not a go.Node or go.Part.
-The group can use a number of the panel types, just as a node may use various panel types.
-</p>
-<p>
-Second, the group template includes a <a>Placeholder</a> object.
-This object, of which you may have at most one within the visual tree of a group,
-gets the size and position of the union of the bounds of the member parts, plus some padding.
-The use of a Placeholder results in the Group surrounding the collection of group members,
-no matter where the member nodes are placed.
-</p>
-<pre class="lang-js" id="groupTemplates"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key"))
-    );
+In your <code>tsconfig.json</code> file, you will have to enable the <code>allowJs</code> and <code>checkJs</code> options:
+<pre class="lang-js"><code>  {
+    "compilerOptions": {
+      "allowJs": true, /* Allow javascript files to be compiled. */
+      "checkJs": true, /* Report errors in .js files. */
 
-  diagram.groupTemplate =
-    $(go.Group, "Vertical",
-      $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle",  // surrounds the Placeholder
-          { parameter1: 14,
-            fill: "rgba(128,128,128,0.33)" }),
-        $(go.Placeholder,    // represents the area of all member parts,
-          { padding: 5})  // with some extra padding around them
-      ),
-      $(go.TextBlock,         // group title
-        { alignment: go.Spot.Right, font: "Bold 12pt Sans-Serif" },
-        new go.Binding("text", "key"))
-    );
-
-  var nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta", group: "Omega" },
-    { key: "Gamma", group: "Omega" },
-    { key: "Omega", isGroup: true },
-    { key: "Delta" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
-    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
-    { from: "Omega", to: "Delta" }  // from the Group to a Node
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+      // ... rest of tsconfig.json options
+    }
+  }
 </code></pre>
-<script>goCode("groupTemplates", 600, 200)</script>
-<p>
-Note how when you move the "Beta" or "Gamma" nodes the "Omega" group automatically resizes so that the
-TextBlock on the group stays below and on the right side of the "RoundedRectangle" shape.
-</p>
 
 <p>
-Just as a <a>Diagram</a> can have its own <a>Layout</a>, a <a>Group</a> can have its own <a>Group.layout</a>.
-This is discussed in the page about <a href="subgraphs.html">SubGraphs</a>.
+  Typescript will then note that "go" is not defined.
+  The best course of action depends on whether the JavaScript file is a module.
 </p>
 
+<h3>Plain JavaScript files</h3>
+<p>
+  To make sure the symbol is accessible, you must add this triple-slash directive to the top of your <code>.js</code> files:
+  This allows type checking in JS files without defining "go".
+</p>
+<pre class="lang-js"><code>/// &lt;reference path="./node_modules/gojs/release/go.d.ts" /&gt;
+</code></pre>
+
+<p>
+  TypeScript will identify this as a valid export of the "go" global object.
+</p>
+
+<h3>JavaScript Modules</h3>
+<p>
+  If you are using JavaScript modules, a triple-slash directive is not necessary --
+  you can access the <code>go</code> object through import and TypeScript typings will work:
+</p>
+<pre class="lang-js"><code>import * as go from 'gojs';</code></pre>
+
+<h1 class="mt-6">Typings without npm</h1>
+
+<p>
+  Every release of GoJS contains the <a href="../release/go.d.ts" target="_blank">go.d.ts</a> file, in the <code>release/</code> folder.
+  You can view and copy these files and others from <a href="https://github.com/NorthwoodsSoftware/gojs" target="_blank">GitHub</a>.
+  See the <a href="../download.html">download page</a> for other options.
+</p>
       </div>
     </div>
   

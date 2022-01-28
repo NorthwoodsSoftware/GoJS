@@ -26,15 +26,17 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
   /**
    * @hidden @internal
    */
-  public makeAdornment(pathshape: go.GraphObject): go.Adornment {
+  public makeAdornment(pathshape: go.GraphObject): go.Adornment | null {
     const link = pathshape.part as go.Link;
     if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
       const adornment = new go.Adornment();
       adornment.type = go.Panel.Link;
       const h = this.makeHandle(pathshape, 0);
-      this.setReshapingBehavior(h, go.LinkReshapingTool.All);
-      h.cursor = 'move';
-      adornment.add(h);
+      if (h !== null) {
+        this.setReshapingBehavior(h, go.LinkReshapingTool.All);
+        h.cursor = 'move';
+        adornment.add(h);
+      }
       adornment.category = this.name;
       adornment.adornedObject = pathshape;
       return adornment;

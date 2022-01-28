@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.0
+ * Type definitions for GoJS v2.2.1
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9117,8 +9117,9 @@ export class Animation {
      * The constructor creates an Animation.
      * A single Animation can animate multiple objects via multiple calls to #add.
      * When you are ready to begin the animation, call #start.
+     * @param {Partial<Animation>=} init Optional properties to initialize.
      */
-    constructor();
+    constructor(init?: Partial<Animation>);
     /**
      * @expose
      * (undocumented) Debug only.
@@ -9136,8 +9137,9 @@ export class Animation {
      * The AnimationManager is inferred from the list of objects to be animated, by inspecting their Diagram.
      *
      * This does nothing if there are no objects to animate.
+     * @return {Animation} this Animation
      */
-    start(): void;
+    start(): this;
     /**
    * Add a temporary Part to this animation.
    * This part will be added to the Diagram when the animation is started,
@@ -9197,8 +9199,9 @@ export class Animation {
      * Stops a running Animation and updates the animating objects to their final state.
      *
      * If an animation was about to begin, it is cancelled.
+     * @return {Animation} this Animation
      */
-    stop(): void;
+    stop(): this;
     /**
      * Gets or sets the duration for animations, in milliseconds.
      *
@@ -9541,8 +9544,9 @@ export class AnimationTrigger {
 export class Layer {
     /**
      * This constructs an empty Layer; you should set the #name before adding the Layer to a Diagram.
+     * @param {Partial<Layer>=} init Optional properties to initialize.
      */
-    constructor();
+    constructor(init?: Partial<Layer>);
     /**
      * Find the front-most GraphObject in this layer
      * at the given point in document coordinates.

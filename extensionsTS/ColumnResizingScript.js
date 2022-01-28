@@ -95,11 +95,11 @@
         }
         // This template represents a whole "record".
         myDiagram.nodeTemplate =
-            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Node, 'Auto', new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), 
             // this rectangular shape surrounds the content of the node
-            $(go.Shape, { fill: '#EEEEEE' }),
+            $(go.Shape, { fill: '#EEEEEE' }), 
             // the content consists of a header and a list of items
-            $(go.Panel, 'Vertical', { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft },
+            $(go.Panel, 'Vertical', { stretch: go.GraphObject.Horizontal, alignment: go.Spot.TopLeft }, 
             // this is the header for the whole node
             $(go.Panel, 'Auto', { stretch: go.GraphObject.Horizontal }, // as wide as the whole node
             $(go.Shape, { fill: '#1570A6', stroke: null }), $(go.TextBlock, {
@@ -108,7 +108,7 @@
                 stroke: 'white',
                 textAlign: 'center',
                 font: 'bold 12pt sans-serif'
-            }, new go.Binding('text', 'key'))),
+            }, new go.Binding('text', 'key'))), 
             // this Panel holds a Panel for each item object in the itemArray;
             // each item Panel is defined by the itemTemplate to be a TableRow in this Table
             $(go.Panel, 'Table', {

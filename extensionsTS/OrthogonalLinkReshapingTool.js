@@ -9,6 +9,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -60,7 +62,7 @@ var __extends = (this && this.__extends) || (function () {
             // add all normal handles first
             var adornment = _super.prototype.makeAdornment.call(this, pathshape);
             // add long reshaping handles for orthogonal, straight links
-            if (link !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
+            if (link !== null && adornment !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
                 var firstindex = link.firstPickIndex + (link.resegmentable ? 0 : 1);
                 var lastindex = link.lastPickIndex - (link.resegmentable ? 0 : 1);
                 for (var i = firstindex; i < lastindex; i++) {
@@ -134,6 +136,8 @@ var __extends = (this && this.__extends) || (function () {
          * These are inserted at the front of the adornment such that the normal handles have priority.
          */
         OrthogonalLinkReshapingTool.prototype.makeSegmentDragHandle = function (link, adornment, index) {
+            if (adornment === null)
+                return;
             var a = link.getPoint(index);
             var b = link.getPoint(index + 1);
             var seglength = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));

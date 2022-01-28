@@ -33,7 +33,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
         // add all normal handles first
         const adornment = super.makeAdornment(pathshape);
         // add long reshaping handles for orthogonal, straight links
-        if (link !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
+        if (link !== null && adornment !== null && link.isOrthogonal && link.curve !== go.Link.Bezier) {
             const firstindex = link.firstPickIndex + (link.resegmentable ? 0 : 1);
             const lastindex = link.lastPickIndex - (link.resegmentable ? 0 : 1);
             for (let i = firstindex; i < lastindex; i++) {
@@ -107,6 +107,8 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
      * These are inserted at the front of the adornment such that the normal handles have priority.
      */
     makeSegmentDragHandle(link, adornment, index) {
+        if (adornment === null)
+            return;
         const a = link.getPoint(index);
         let b = link.getPoint(index + 1);
         const seglength = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
