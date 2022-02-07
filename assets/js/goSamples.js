@@ -1,25 +1,34 @@
+window.byId = (id) => { return document.getElementById(id); }
 document.addEventListener("DOMContentLoaded", function() {
   var p1 = document.createElement("p");
-  var dirName = location.pathname.split('/').slice(-2);
-  var path = dirName.join('/'); // dir/name.html
+  window.dirName = location.pathname.split('/').slice(-2);
+  window.samplePath = dirName.join('/'); // dir/name.html
   p1.innerHTML = "<a href='https://github.com/NorthwoodsSoftware/GoJS/blob/master/" +
-                path + "' target='_blank'>View this sample page's source on GitHub</a>";
-  document.getElementById("sample").appendChild(p1);
-  var version = '';
-  if (window.go) version = 'GoJS version ' + go.version + '. '
+                samplePath + "' target='_blank'>View this sample page's source on GitHub</a>";
+  byId("sample").parentElement.appendChild(p1);
+  window.b1 = document.createElement("button");
+  window.b2 = document.createElement("button");
+  b1.onclick = goViewSource;
+  b2.onclick = goDownload;
+  b1.innerText = "View the code for this sample in-page";
+  b2.innerText = "Download the HTML and JS to use as a starting point";
+  byId("sample").parentElement.appendChild(b1);
+  byId("sample").parentElement.appendChild(b2);
+
+  var copyright = 'Copyright 1998-2022 by Northwoods Software.';
   var p2 = document.createElement("p");
   p2.classList = "text-xs";
-  p2.innerHTML = version + 'Copyright 1998-2022 by Northwoods Software.';
-  document.getElementById("sample").appendChild(p2);
+  p2.innerHTML = (window.go) ? 'GoJS version ' + go.version + '. ' + copyright : copyright;
+  byId("sample").appendChild(p2);
 
-  document.getElementById("navSide").innerHTML = (dirName[0] === 'samples') ? (navContent + navContent2) : (navContent + navContentExtensions);
-  var sidebutton = document.getElementById("navButton");
-  var navList = document.getElementById("navList");
+  byId("navSide").innerHTML = (dirName[0] === 'samples') ? (navContent + navContent2) : (navContent + navContentExtensions);
+  var sidebutton = byId("navButton");
+  var navList = byId("navList");
   sidebutton.addEventListener("click", function() {
     this.classList.toggle("active");
     navList.classList.toggle("hidden");
-    document.getElementById("navOpen").classList.toggle("hidden");
-    document.getElementById("navClosed").classList.toggle("hidden");
+    byId("navOpen").classList.toggle("hidden");
+    byId("navClosed").classList.toggle("hidden");
   });
 
   var url = window.location.href;
@@ -52,13 +61,13 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
+  var topButton = byId("topnavButton");
+  var topnavList = byId("topnavList");
   topButton.addEventListener("click", function() {
     this.classList.toggle("active");
     topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
+    byId("topnavOpen").classList.toggle("hidden");
+    byId("topnavClosed").classList.toggle("hidden");
   });
   _traverseDOM(document);
 });
@@ -96,6 +105,66 @@ function _traverseDOM(node) {
     _traverseDOM(node.childNodes[i]);
   }
 }
+
+function goViewSource() {
+  // load prism for code highlighting
+  var elem = document.createElement('link');
+  elem.rel = 'stylesheet'
+  elem.href= "../assets/css/prism.css";
+  document.head.appendChild(elem);
+  var prism = document.createElement('script');
+  prism.onload = function () {
+    var script = byId("code");
+    if (!script) return;
+    var sp1 = document.createElement("pre");
+    sp1.classList.add("lang-js");
+    sp1.innerHTML = script.innerHTML;
+    var samplediv = byId("sample") || document.body;
+    samplediv.parentElement.appendChild(sp1);
+    Prism.highlightElement(sp1);
+    window.scrollBy(0,100);
+  };
+  prism.src = "../assets/js/prism.js";
+  document.head.appendChild(prism);
+}
+
+function goDownload() {
+  var sampleHTML = byId("allSampleContent"); // or "sample" + "code", but this contains both and more
+  var title = location.href.substring(location.href.lastIndexOf('/')+1);
+  var sampleParent = byId("sample").parentElement;
+  sampleParent.removeChild(b1);
+  sampleParent.removeChild(b2);
+  var text = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <body>
+  <script src="https://unpkg.com/gojs@${go.version}/release/go.js"><\/script>
+  <p>
+    This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
+    <a href="https://gojs.net/latest/${samplePath}">${title}<\/a>. It was automatically generated from a button on the sample page,
+    and does not contain the full HTML. It is intended as a starting point to adapt for your own usage.
+    For many samples, you may need to inspect the
+    <a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/${samplePath}">full source on Github<\/a>
+    and copy other files or scripts.
+  <\/p>
+  ${sampleHTML.outerHTML}
+  </body>
+  </html>`;
+  // replace all uses of '../extensions' with unpkg equivalent
+  text = text.replace(/\.\.\/extensions/g, `https://unpkg.com/gojs@${go.version}/extensions`);
+  // any src that does not begin with 'http' should get `https://unpkg.com/gojs@${go.version}/CURRENTFOLDER/`
+  text = text.replace(/<script src="(?:(?!http))+/g, `https://unpkg.com/gojs@${go.version}/${dirName}`);
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', title);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+  sampleParent.appendChild(b1);
+  sampleParent.appendChild(b2);
+}
+
 
 var navContent = `
 <div class="flex-shrink-0 px-8 py-4">

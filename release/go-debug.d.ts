@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.1
+ * Type definitions for GoJS v2.2.2
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16470,8 +16470,9 @@ export class Brush {
      * @param {EnumValue|string=} type Optional, one of the values Brush.Solid, Brush.Linear, Brush.Radial, Brush.Pattern,
      * or a well-formed CSS string describing a solid color brush. No parameter
      * defaults to a Brush.Solid with a color description of 'black'.
+     * @param {Partial<Brush>=} init Optional initialization properties.
      */
-    constructor(type?: EnumValue | string);
+    constructor(type?: EnumValue | string, init?: Partial<Brush>);
     /**
      * Create a copy of this Brush with the same values.
      * @return {Brush}

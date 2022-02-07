@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generating PDF with multiple Diagrams</title>
+<meta name="description" content="A demonstration of generating a PDF file showing multiple diagrams that are not visible on the page." />
+<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
+<meta charset="UTF-8">
+<script src="https://unpkg.com/gojs"></script>
+<script src="../../samples/assets/require.js"></script>
+<script id="code">
+  // This just creates and initializes a Diagram.
+  // The details do not really matter for this demo.
+  function init() {
+    var $ = go.GraphObject.make;
+
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        { "grid.visible": true });
+
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        $(go.Shape, "RoundedRectangle",
+          { strokeWidth: 0, fill: "white" },
+          new go.Binding("fill", "color")),
+        $(go.TextBlock,
+          { margin: 8 },
+          new go.Binding("text"))
+      );
+
+    fetchModel("one");
+  }
+
+  // Load a model for a given NAME; can be used without CALLBACK,
+  // which would initialize myDiagram rather than using the hidden diagram/div
+  function fetchModel(name, callback) {
+    if (!callback) callback = m => myDiagram.model = m;
+
+    // this ought to load a particular model for NAME, but
+    // for demonstration purposes this just creates a trivial model using NAME
+    const m = new go.GraphLinksModel();
+    m.nodeDataArray = [
+      { key: 1, text: "Root", color: "lightgreen" },
+      { key: 2, text: name, color: "yellow" },
+      { key: 3, text: name + "2", color: "orange" }
+    ];
+    m.linkDataArray = [
+      { from: 1, to: 2 },
+      { from: 1, to: 3 }
+    ];
+    callback(m);
+  }
+
+  // Use a hidden diagram/div to render a diagram
+  function useModel(model, callback) {
+    // this initializes the model for an existing visible Diagram on the page,
+    // or this will create and initialize a new Diagram
+    const div = document.getElementById("myHiddenDiagramDiv");
+    const olddiag = go.Diagram.fromDiv(div);
+    if (olddiag) olddiag.div = null;
+    const diagram = new go.Diagram(div);
+    diagram.nodeTemplate = myDiagram.nodeTemplate;
+    diagram.addDiagramListener("InitialLayoutCompleted", callback);
+    diagram.model = model;
+  }
+
+
+  // This common function is called both when showing the PDF in an iframe and when downloading a PDF file.
+  // The options include:
+  //   "pageSize", either "A4" or "LETTER" (the default)
+  //   "layout", either "portrait" (the default) or "landscape"
+  //   "margin" for the uniform page margin on each page (default is 36 pt)
+  //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
+  //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
+  //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
+  //   "imgResolutionFactor" for how large the image should be scaled when rendered for each page;
+  //     larger is better but significantly increases memory usage (default is 3)
+  //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeImageData
+  function generatePdf(action, namelist, options) {
+    if (!options) options = {};
+
+    var pageSize = options.pageSize || "LETTER";
+    pageSize = pageSize.toUpperCase();
+    if (pageSize !== "LETTER" && pageSize !== "A4") throw new Error("unknown page size: " + pageSize);
+    // LETTER: 612x792 pt == 816x1056 CSS units
+    // A4: 595.28x841.89 pt == 793.71x1122.52 CSS units
+    var pageWidth = (pageSize === "LETTER" ? 612 : 595.28) * 96 / 72;  // convert from pt to CSS units
+    var pageHeight = (pageSize === "LETTER" ? 792 : 841.89) * 96 / 72;
+
+    var layout = options.layout || "portrait";
+    layout = layout.toLowerCase();
+    if (layout !== "portrait" && layout !== "landscape") throw new Error("unknown layout: " + layout);
+    if (layout === "landscape") {
+      var temp = pageWidth;
+      pageWidth = pageHeight;
+      pageHeight = temp;
+    }
+
+    var margin = options.margin !== undefined ? options.margin : 36;  // pt: 0.5 inch margin on each side
+    var padding = options.padding !== undefined ? options.padding : new go.Margin(0);  // CSS units
+
+    var imgWidth = options.imgWidth !== undefined ? options.imgWidth : (pageWidth-margin/72*96*2);  // CSS units
+    var imgHeight = options.imgHeight !== undefined ? options.imgHeight : (pageHeight-margin/72*96*2);  // CSS units
+    var imgResolutionFactor = options.imgResolutionFactor !== undefined ? options.imgResolutionFactor : 3;
+
+    var pageOptions = {
+      size: pageSize,
+      margin: margin,  // pt
+      layout: layout
+    };
+
+    function generateDiagram(namelist, doc, stream, callback) {
+      if (namelist.length > 0) {
+        const name = namelist.shift();
+        fetchModel(name, m =>
+          useModel(m, e => {
+            const diagram = e.diagram;
+            var bnds = diagram.documentBounds;
+
+            // add some descriptive text
+            doc.text("Diagram: " + name);
+
+            var db = diagram.documentBounds.copy().subtractMargin(diagram.padding).addMargin(padding);
+            var p = db.position;
+            // iterate over page areas of document bounds
+            for (var j = 0; j < db.height; j += imgHeight) {
+              for (var i = 0; i < db.width; i += imgWidth) {
+
+                // if any page has no Parts partially or fully in it, skip rendering that page
+                var r = new go.Rect(p.x + i, p.y + j, imgWidth, imgHeight);
+                if (diagram.findPartsIn(r, true, false).count === 0) continue;
+
+                if (i > 0 || j > 0) doc.addPage(pageOptions);
+
+                var makeOptions = {};
+                if (options.parts !== undefined) makeOptions.parts = options.parts;
+                if (options.background !== undefined) makeOptions.background = options.background;
+                if (options.showTemporary !== undefined) makeOptions.showTemporary = options.showTemporary;
+                if (options.showGrid !== undefined) makeOptions.showGrid = options.showGrid;
+                makeOptions.scale = imgResolutionFactor;
+                makeOptions.position = new go.Point(p.x + i, p.y + j);
+                makeOptions.size = new go.Size(imgWidth*imgResolutionFactor, imgHeight*imgResolutionFactor);
+                makeOptions.maxSize = new go.Size(Infinity, Infinity);
+              }
+
+              var imgdata = diagram.makeImageData(makeOptions);
+              doc.image(imgdata, { scale: 1/(imgResolutionFactor*96/72) });
+            }
+            // then do rest of list
+            generateDiagram(namelist, doc, stream, callback);
+          })
+        );
+      } else {  // no more diagrams to generate, so just finish up the PDF
+        callback();
+      }
+    }  // end generateDiagram
+
+    require(["blob-stream", "pdfkit"], (blobStream, PDFDocument) => {
+      // start the PDF
+      var doc = new PDFDocument(pageOptions);
+      var stream = doc.pipe(blobStream());
+      generateDiagram(namelist, doc, stream,
+        () => {  // finish up the PDF
+          doc.end();
+          stream.on('finish', () => action(stream.toBlob('application/pdf')));
+        });
+    });
+  }  // end generatePdf
+
+  const namelist = ["one", "two", "three"];  // this could be used to generate the <ul> myList
+  const pdfOptions =
+    {
+      showTemporary: true,     // default is false
+      // layout: "landscape",  // instead of "portrait"
+      // pageSize: "A4"        // instead of "LETTER"
+    };
+
+  function downloadPdf() {  // called by HTML button
+    generatePdf(blob => {
+      var datauri = window.URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.style = "display: none";
+      a.href = datauri;
+      a.download = "myDiagram.pdf";
+
+      document.body.appendChild(a);
+      requestAnimationFrame(() => {
+        a.click();
+        window.URL.revokeObjectURL(datauri);
+        document.body.removeChild(a);
+      });
+    }, namelist, pdfOptions);
+  }
+</script>
+</head>
+<body onload="init()">
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <ul id="myList">
+    <li><button onclick="fetchModel(event.target.textContent)">one</button></li>
+    <li><button onclick="fetchModel(event.target.textContent)">two</button></li>
+    <li><button onclick="fetchModel(event.target.textContent)">three</button></li>
+  </ul>
+  <button onclick="downloadPdf()">Download PDF of all three diagrams</button>
+  <div id="myHiddenDiagramDiv" style="display:none"></div>
+</div>
+</body>
+</html>
