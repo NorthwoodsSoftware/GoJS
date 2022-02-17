@@ -334,37 +334,34 @@ For example, you can set the <a>GraphObject.angle</a> and <a>GraphObject.scale</
 
 <p>
 The <a>Shape.fill</a> and <a>GraphObject.background</a> brushes scale and rotate along with the shape.
-The <a>GraphObject.areaBackground</a> is drawn in the containing panel's coordinates,
-so it is not affected by the object's scale or angle.
 </p>
 <p>
-The following two shapes each use three separate linear gradient brushes, one for each of the three properties.
-Note the unrotated shape on the left.  Because its <a>GraphObject.background</a> brush is opaque,
-you cannot see the <a>GraphObject.areaBackground</a> brush that fills the same area behind it.
+The following shapes show how three separate linear gradient brushes are drawn for the
+<a>Shape.fill</a>, <a>Shape.stroke</a>, and <a>GraphObject.background</a> of a Shape whose angle isn't zero.
 </p>
 <pre class="lang-js" id="backgrounds"><code>
   var bluered = $(go.Brush, "Linear", { 0.0: "blue", 1.0: "red" });
   var yellowgreen = $(go.Brush, "Linear", { 0.0: "yellow", 1.0: "green" });
-  var grays = $(go.Brush, "Linear", { 0.0: "black", 1.0: "lightgray" });
-
-  diagram.add(
+  var grays = $(go.Brush, "Linear", { 1.0: "black", 0.0: "red" });
+  
+  myDiagram.add(
     $(go.Part, "Table",
       $(go.Shape, { row: 0, column: 0,
-                    figure: "Club", width: 40, height: 40, angle: 0, scale: 1.5,
+                    figure: "Club", width: 40, height: 40, angle: 0, scale: 2,
                     fill: bluered,
-                    background: yellowgreen,
-                    areaBackground: grays
+                    stroke: grays, strokeWidth: 2,
+                    background: yellowgreen
                   }),
       $(go.Shape, { row: 0, column: 1, width: 10, fill: null, stroke: null }),
       $(go.Shape, { row: 0, column: 2,
-                    figure: "Club", width: 40, height: 40, angle: 45, scale: 1.5,
+                    figure: "Club", width: 40, height: 40, angle: 45, scale: 2,
                     fill: bluered,
-                    background: yellowgreen,
-                    areaBackground: grays
+                    stroke: grays, strokeWidth: 2,
+                    background: yellowgreen
                   })
     ));
 </code></pre>
-<script>goCode("backgrounds", 600, 120)</script>
+<script>goCode("backgrounds", 600, 150)</script>
 
 <h2 id="CustomFigures">Custom Figures</h2>
 <p>
@@ -542,16 +539,19 @@ The "RoundedTopRectangle" and "RoundedBottomRectangle" figures shown above are a
               <h2 class="text-base font-semibold tracking-wide">Company</h2>
               <ul class="list-none space-y-4 md:space-y-1 px-0">
                 <li>
-                  <a href="https://www.nwoods.com">Northwoods</a>
+                  <a target="_blank" href="https://www.nwoods.com">Northwoods</a>
                 </li>
                 <li>
-                  <a href="https://www.nwoods.com/about.html">About Us</a>
+                  <a target="_blank" href="https://www.nwoods.com/about.html">About Us</a>
                 </li>
                 <li>
-                  <a href="https://www.nwoods.com/contact.html">Contact Us</a>
+                  <a target="_blank" href="https://www.nwoods.com/contact.html">Contact Us</a>
                 </li>
                 <li>
-                  <a href="https://twitter.com/northwoodsgo">Twitter</a>
+                  <a target="_blank" href="https://www.nwoods.com/consulting.html">Consulting</a>
+                </li>
+                <li>
+                  <a target="_blank" href="https://twitter.com/northwoodsgo">Twitter</a>
                 </li>
 
               </ul>

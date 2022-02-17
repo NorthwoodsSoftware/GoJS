@@ -107,13 +107,13 @@
     var textwidth = (textBlock.naturalBounds.width * textscale) + 6;
     var textheight = (textBlock.naturalBounds.height * textscale) + 2;
     var left = (loc.x - pos.x) * sc;
-    const yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
-    const valign = textBlock.verticalAlignment;
-    const oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
-    const allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
-    const center = (0.5 * textheight) - (0.5 * allLinesHeight);
+    var yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
+    var valign = textBlock.verticalAlignment;
+    var oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
+    var allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
+    var center = (0.5 * textheight) - (0.5 * allLinesHeight);
     // add offset to yCenter to get the appropriate position:
-    const yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
+    var yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
 
     textarea.value = textBlock.text;
     // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides

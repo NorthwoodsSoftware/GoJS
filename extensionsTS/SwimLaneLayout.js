@@ -592,6 +592,10 @@ var __extends = (this && this.__extends) || (function () {
                 return -1;
             if (laneV > laneW)
                 return 1;
+            if (v.column < w.column)
+                return -1;
+            if (v.column > w.column)
+                return 1;
             return 0;
         };
         ;

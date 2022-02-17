@@ -18,9 +18,9 @@ export function init() {
 
   const $ = go.GraphObject.make;
 
-  const myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  const myDiagram = new go.Diagram('myDiagramDiv', // create a Diagram for the DIV HTML element
     {
-      'undoManager.isEnabled': true  // enable undo & redo
+      'undoManager.isEnabled': true // enable undo & redo
     });
 
   myDiagram.toolManager.mouseDownTools.insertAt(3,
@@ -28,14 +28,20 @@ export function init() {
 
   myDiagram.nodeTemplate =
     $(go.Node,
-      { reshapable: true },  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+      {
+        resizable: true, resizeObjectName: "SHAPE",
+        reshapable: true,  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+        rotatable: true, rotationSpot: go.Spot.Center
+      },
       $(go.Shape,
         { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 },
-        new go.Binding('geometryString', 'geo').makeTwoWay()
-      )
+        new go.Binding('geometryString', 'geo').makeTwoWay())
     );
 
-    myDiagram.model = new go.GraphLinksModel([{ geo: "F M0 145 L75 8 C100 20 120 40 131 87 C160 70 180 50 195 0 L249 133z", key: -1 }], []);
+  myDiagram.model = new go.GraphLinksModel([
+      { geo: "F M20 0 40 20 20 40 0 20z" },
+      { geo: "F M0 145 L75 8 C100 20 120 40 131 87 C160 70 180 50 195 0 L249 133z" }
+    ]);
 
   // Attach to the window for console manipulation
   (window as any).myDiagram = myDiagram;

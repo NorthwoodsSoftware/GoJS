@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.2
+ * Type definitions for GoJS v2.2.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9173,7 +9173,6 @@ export class Animation {
      * * `"width"`
      * * `"height"`
      * * `"background"`
-     * * `"areaBackground"`
      * * `"fill"` (on Shapes)
      * * `"strokeWidth"` (on Shapes)
      * * `"strokeDashOffset"` (on Shapes)
@@ -9364,7 +9363,6 @@ export class Animation {
  * * `"width"`
  * * `"height"`
  * * `"background"`
- * * `"areaBackground"`
  * * `"fill"` (on Shapes)
  * * `"strokeWidth"` (on Shapes)
  * * `"strokeDashOffset"` (on Shapes)
@@ -9426,7 +9424,6 @@ export class AnimationTrigger {
      * * `"width"`
      * * `"height"`
      * * `"background"`
-     * * `"areaBackground"`
      * * `"fill"` (on Shapes)
      * * `"strokeWidth"` (on Shapes)
      * * `"strokeDashOffset"` (on Shapes)
@@ -14113,7 +14110,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  * Since GraphObject is an abstract class, programmers do not create GraphObjects themselves,
  * but this class defines many properties used by all kinds of GraphObjects.
  *
- * The only visual properties on GraphObject are #background and #areaBackground.
+ * The only visual properties on GraphObject is #background.
  * However one can control whether the GraphObject is drawn at all by setting #visible,
  * or by setting #opacity to zero if you still want the GraphObject to occupy space.
  * Also, if you want to control whether any mouse or touch events "see" the GraphObject,
@@ -14850,7 +14847,6 @@ export abstract class GraphObject {
      * The default value is null -- no background is drawn.
      * More information about the syntax of CSS color strings is available at:
      * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
-     * @see #areaBackground
      * @see Shape#fill
      */
     get background(): BrushLike;
@@ -16975,7 +16971,7 @@ export abstract class PanelLayout {
  * Setting an explicit size on a Panel may cause nested elements of that panel to size themselves differently,
  * especially in the cases of nested elements having a GraphObject#stretch value or TextBlock's having word wrap.
  *
- * Panels have no visual components of their own unless a GraphObject#background or GraphObject#areaBackground is specified
+ * Panels have no visual components of their own unless a GraphObject#background is specified
  * or separators are specified either as defaults for the whole Table Panel or on individual RowColumnDefinitions.
  * Panels can specify #padding, to make the Panel larger including its background. Setting a padding
  * when the Panel is constrained in size will reduce the total area that it has to arrange its elements. Setting a #margin
@@ -17098,8 +17094,7 @@ export class Panel extends GraphObject {
      * If this Panel's size is constrained, this will decrease the total area
      * for the Panel elements to arrange themselves.
      *
-     * Unlike margin, increases in size due to padding are visually covered by the
-     * GraphObject#background and GraphObject#areaBackground.
+     * Unlike margin, increases in size due to padding are visually covered by the GraphObject#background.
      *
      * Padding cannot contain negative numbers.
      * The default value is a Margin of zero.

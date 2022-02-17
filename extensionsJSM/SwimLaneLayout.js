@@ -527,6 +527,10 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             return -1;
         if (laneV > laneW)
             return 1;
+        if (v.column < w.column)
+            return -1;
+        if (v.column > w.column)
+            return 1;
         return 0;
     }
     ;
