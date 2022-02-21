@@ -50,169 +50,442 @@
     
     <script src="../release/go.js"></script>
     <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        $(go.Diagram, "myDiagramDiv",  // Diagram refers to its DIV HTML element by id
-          {
-            _widthFactor: 1,        // a scale for the nodes' positions and widths
-            isReadOnly: true,       // deny the user permission to alter the diagram or zoom in or out
-            allowZoom: false,
-            "grid.visible": true,  // display a grid in the background of the diagram
-            "grid.gridCellSize": new go.Size(30, 150)
-          });
-
-      // create the template for the standard nodes
-      myDiagram.nodeTemplateMap.add("",
-        $(go.Node, "Auto",
-          // links come from the right and go to the left side of the top of the node
-          { fromSpot: go.Spot.Right, toSpot: new go.Spot(0.001, 0, 11, 0) },
-          $(go.Shape, "Rectangle",
-            { height: 15 },
-            new go.Binding("fill", "color"),
-            new go.Binding("width", "width", w => scaleWidth(w))),
-          $(go.TextBlock,
-            { margin: 2, alignment: go.Spot.Left },
-            new go.Binding("text", "key")),
-          // using a function in the Binding allows the value to
-          // change when Diagram.updateAllTargetBindings is called
-          new go.Binding("location", "loc",
-            l => new go.Point(scaleWidth(l.x), l.y))
-        ));
-
-      // create the template for the start node
-      myDiagram.nodeTemplateMap.add("start",
-        $(go.Node,
-          { fromSpot: go.Spot.Right, toSpot: go.Spot.Top, selectable: false },
-          $(go.Shape, "Diamond",
-            { height: 15, width: 15 }),
-          // make the location of the start node is not scalable
-          new go.Binding("location", "loc")
-        ));
-
-      // create the template for the end node
-      myDiagram.nodeTemplateMap.add("end",
-        $(go.Node,
-          { fromSpot: go.Spot.Right, toSpot: go.Spot.Top, selectable: false },
-          $(go.Shape, "Diamond",
-            { height: 15, width: 15 }),
-          // make the location of the end node (with location.x < 0) scalable
-          new go.Binding("location", "loc", l => (l.x >= 0) ? new go.Point(scaleWidth(l.x), l.y) : l)
-        ));
-
-      // create the link template
-      myDiagram.linkTemplate =
-        $(go.Link,
-          {
-            routing: go.Link.Orthogonal,
-            corner: 3, toShortLength: 2,
-            selectable: false
-          },
-          $(go.Shape,
-            { strokeWidth: 2 }),
-          $(go.Shape,
-            { toArrow: "OpenTriangle" })
-        );
-
-      // add the nodes and links to the model
-      myDiagram.model = new go.GraphLinksModel(
-        [ // node data
-          { key: "a", color: "coral", width: 120, loc: new go.Point(scaleWidth(0), 40) },
-          { key: "b", color: "turquoise", width: 160, loc: new go.Point(scaleWidth(0), 60) },
-          { key: "c", color: "coral", width: 150, loc: new go.Point(scaleWidth(120), 80) },
-          { key: "d", color: "turquoise", width: 190, loc: new go.Point(scaleWidth(120), 100) },
-          { key: "e", color: "coral", width: 150, loc: new go.Point(scaleWidth(270), 120) },
-          { key: "f", color: "turquoise", width: 130, loc: new go.Point(scaleWidth(310), 140) },
-          { key: "g", color: "coral", width: 155, loc: new go.Point(scaleWidth(420), 160) },
-          { key: "begin", category: "start", loc: new go.Point(-15, 20) },
-          { key: "end", category: "end", loc: new go.Point(scaleWidth(575), 180) }
-        ],
-        [ // link data
-          { from: "begin", to: "a" },
-          { from: "begin", to: "b" },
-          { from: "a", to: "c" },
-          { from: "a", to: "d" },
-          { from: "b", to: "e" },
-          { from: "c", to: "e" },
-          { from: "d", to: "f" },
-          { from: "e", to: "g" },
-          { from: "f", to: "end" },
-          { from: "g", to: "end" }
-        ]);
-
-      // add a Graduated panel to show the dates, globally scoped
-      dateScale =
-        $(go.Part, "Graduated",
-          {
-            graduatedTickUnit: 1, graduatedMin: 0, graduatedMax: 3,
-            pickable: false, location: new go.Point(0, 0)
-          },
-          $(go.Shape,
-            { name: "line", strokeWidth: 0, geometryString: "M0 0 H" + scaleWidth(450) }
-          ),
-          $(go.TextBlock,
-            {
-              name: "labels",
-              font: "10pt sans-serif",
-              alignmentFocus: new go.Spot(0, 0, -3, -3),
-              graduatedFunction: v => {
-                var d = new Date(2017, 6, 23);
-                d.setDate(d.getDate() + v * 7);
-                // format date output to string
-                var options = { month: "short", day: "2-digit" };
-                return d.toLocaleDateString("en-US", options);
-              }
-            }
-          )
-        );
-      myDiagram.add(dateScale);
-    }
-
-    // scale the number according to the current widthFactor
-    function scaleWidth(num) {
-      return num * myDiagram._widthFactor;
-    }
-
-    // change the grid's cell size and the widthFactor,
-    // then update Bindings to scale the widths and positions of nodes,
-    // as well as the width of the date scale
-    function rescale() {
-      var val = parseFloat(document.getElementById("widthSlider").value);
-      myDiagram.startTransaction("rescale");
-      myDiagram.grid.gridCellSize = new go.Size(val, 150);
-      myDiagram._widthFactor = val / 30;
-      myDiagram.updateAllTargetBindings();
-      // update width of date scale and maybe change interval of labels if too small
-      var width = scaleWidth(450);
-      dateScale.findObject("line").geometryString = "M0 0 H" + width;
-      if (width >= 140) dateScale.findObject("labels").interval = 1;
-      if (width < 140) dateScale.findObject("labels").interval = 2;
-      if (width < 70) dateScale.findObject("labels").interval = 4;
-      myDiagram.commitTransaction("rescale");
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-
 <div id="sample">
-  <div id="myDiagramDiv" style="height:600px;width:100%;border:1px solid black"></div>
+  <div style="width: 100%; display: flex; justify-content: space-between; border: solid 1px black">
+    <div id="myTasksDiv" style="width: 150px; margin-right: 2px; border-right: solid 1px black"></div>
+    <div id="myGanttDiv" style="flex-grow: 1; height: 400px"></div>
+  </div>
   <div id="slider">
     <label>Spacing:</label>
-    <input id="widthSlider" type="range" min="2" max="90" value="30" onchange="rescale()"/>
+    <input id="widthSlider" type="range" min="8" max="24" value="12" oninput="rescale()"/>
   </div>
   <p>
-    This sample demonstrates a simple Gantt chart. Gantt charts are used to illustrate project schedules, denoting the start and end dates for terminal and summary elements of the project.
+    This sample demonstrates a simple Gantt chart.
+    Gantt charts are used to illustrate project schedules, denoting the start and end dates for terminal and summary elements of the project.
   </p>
   <p>
     You can zoom in on the diagram by changing the "Spacing" value,
     which scales the diagram using a data binding function for nodes' widths and locations.
     This is in place of changing the <a>Diagram.scale</a>.
   </p>
+  <p>
+    The current model in JSON format:
+  </p>
+  <textarea id="mySavedModel" style="width:100%;height:250px"></textarea>
 </div>
+<script id="code">
+
+  // Custom Layout for myGantt Diagram
+  class GanttLayout extends go.Layout {
+    constructor() {
+      super();
+      this.cellHeight = GridCellHeight;
+    }
+  
+    doLayout(coll) {
+      coll = this.collectParts(coll);
+  
+      var diagram = this.diagram;
+      diagram.startTransaction("Gantt Layout");
+      this.assignTimes(diagram);
+      this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
+      var y = this.arrangementOrigin.y;
+      var it = coll.iterator;
+      while (it.next()) {
+        var node = it.value;
+        if (!(node instanceof go.Node)) continue;  // skip Links
+        var tasknode = myTasks.findNodeForData(node.data);
+        node.visible = tasknode.isVisible();
+        if (node.visible) {
+          node.position = new go.Point(convertStartToX(node.data.start || 0), y);
+          y += this.cellHeight;
+        }
+      }
+      diagram.commitTransaction("Gantt Layout");
+    }
+  
+    // Update node data, to make sure each node has a start and a duration
+    assignTimes(diagram) {
+      var roots = diagram.findTreeRoots();
+      roots.each(root => this.walkTree(root, 0));
+    }
+  
+    walkTree(node, start) {
+      var model = node.diagram.model;
+      if (node.isTreeLeaf) {
+        var dur = node.data.duration;
+        if (dur === undefined || isNaN(dur)) {
+          dur = 100;  // default task length?
+          model.set(node.data, "duration", dur);
+        }
+        var st = node.data.start;
+        if (st === undefined || isNaN(st)) {
+          st = start;  // use given START
+          model.set(node.data, "start", st);
+        }
+        return st + dur;
+      } else {
+        // first recurse to fill in any missing data
+        node.findTreeChildrenNodes().each(n => {
+          start = this.walkTree(n, start);
+        });
+        // now can calculate this non-leaf node's data
+        var min = Infinity;
+        var max = -Infinity;
+        var colors = new go.Set();
+        node.findTreeChildrenNodes().each(n => {
+          min = Math.min(min, n.data.start);
+          max = Math.max(max, n.data.start + n.data.duration);
+          if (n.data.color) colors.add(n.data.color);
+        });
+        model.set(node.data, "start", min);
+        model.set(node.data, "duration", max - min);
+        return max;
+      }
+    }
+  }
+  // end of GanttLayout
+  
+  
+  var GridCellHeight = 20;
+  var GridCellWidth = 12;  // document units per day
+  var TimelineHeight = 24;
+  
+  function convertStartToX(start) {
+    return start * GridCellWidth;
+  }
+  
+  function convertXToStart(x, node) {
+    return x / GridCellWidth;
+  }
+  
+  function convertDurationToW(duration) {
+    return duration * GridCellWidth;
+  }
+  
+  function convertWToDuration(w) {
+    return w / GridCellWidth;
+  }
+  
+  function convertStartToPosition(start, node) {
+    return new go.Point(convertStartToX(start), node.position.y || 0);
+  }
+  
+  function convertPositionToStart(pos) {
+    return convertXToStart(pos.x);
+  }
+  
+  var StartDate = new Date(2018, 6, 14);
+  var MsPerDay = 24 * 60 * 60 * 1000;
+  
+  function valueToDate(n) {  // N is in days
+    var startDate = StartDate;
+    var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    var date = new Date(startDateMs + (n * MsPerDay) / GridCellWidth);
+    return date.toLocaleDateString();
+  }
+  
+  function dateToValue(d) {
+    var startDate = StartDate;
+    var startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    var dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
+    var msSinceStart = dateInMs - startDateMs;
+    return msSinceStart * GridCellWidth / MsPerDay;
+  }
+  
+  
+  // the custom figure used for task bars that have downward points at their ends
+  go.Shape.defineFigureGenerator("RangeBar", (shape, w, h) => {
+    var b = Math.min(5, w);
+    var d = Math.min(5, h);
+    return new go.Geometry()
+      .add(new go.PathFigure(0, 0, true)
+        .add(new go.PathSegment(go.PathSegment.Line, w, 0))
+        .add(new go.PathSegment(go.PathSegment.Line, w, h))
+        .add(new go.PathSegment(go.PathSegment.Line, w-b, h-d))
+        .add(new go.PathSegment(go.PathSegment.Line, b, h-d))
+        .add(new go.PathSegment(go.PathSegment.Line, 0, h).close()));
+  });
+  
+  const $ = go.GraphObject.make;
+  
+  // the left side of the whole diagram
+  myTasks =
+    new go.Diagram("myTasksDiv",
+      {
+        initialContentAlignment: go.Spot.Right,
+        padding: new go.Margin(TimelineHeight, 0, 0, 0),
+        hasVerticalScrollbar: false,
+        allowMove: false,
+        allowCopy: false,
+        allowDelete: false,
+        layout:
+          $(go.TreeLayout,
+            {
+              alignment: go.TreeLayout.AlignmentStart,
+              compaction: go.TreeLayout.CompactionNone,
+              layerSpacing: 16,
+              layerSpacingParentOverlap: 1,
+              nodeIndentPastParent: 1,
+              nodeSpacing: 0,
+              portSpot: go.Spot.Bottom,
+              childPortSpot: go.Spot.Left
+            }),
+        "animationManager.isInitial": false,
+        "TreeCollapsed": e => myGantt.layoutDiagram(true),
+        "TreeExpanded": e => myGantt.layoutDiagram(true),
+        // Showing a grid in the tasks tree diagram
+        //"DocumentBoundsChanged": e => {
+        //  var b = e.diagram.documentBounds;
+        //  var gridpart = e.diagram.parts.first();
+        //  if (gridpart !== null && gridpart.type === go.Panel.Grid) {
+        //    gridpart.desiredSize = new go.Size(b.right, b.bottom);
+        //  }
+        //}
+      });
+  
+  // Showing a grid in the tasks tree diagram
+  //myTasks.add($(go.Part, "Grid",
+  //  { layerName: "Grid", position: new go.Point(0, 0), gridCellSize: new go.Size(3000, GridCellHeight) },
+  //  $(go.Shape, "LineH", { strokeWidth: 0.5 })
+  //));
+  
+  myTasks.nodeTemplate =
+    $(go.Node, "Horizontal",
+      { height: 20 },
+      new go.Binding("isTreeExpanded").makeTwoWay(),
+      $("TreeExpanderButton", { portId: "", scale: 0.85 }),
+      $(go.TextBlock,
+        { editable: true },
+        new go.Binding("text").makeTwoWay())
+    );
+  
+  myTasks.linkTemplate =
+    $(go.Link,
+      {
+        routing: go.Link.Orthogonal,
+        fromEndSegmentLength: 1,
+        toEndSegmentLength: 1
+      },
+      $(go.Shape)
+    );
+  
+  
+  // the right side of the whole diagram
+  myGantt =
+    new go.Diagram("myGanttDiv",
+      {
+        initialPosition: new go.Point(-7, -100),  // show labels
+        padding: new go.Margin(TimelineHeight, 0, 0, 0),
+        scrollMargin: new go.Margin(0, GridCellWidth*7, 0, 0),  // show a week beyond
+        allowCopy: false,
+        allowDelete: false,
+        "draggingTool.isGridSnapEnabled": true,
+        "draggingTool.gridSnapCellSize": new go.Size(GridCellWidth, GridCellHeight),
+        "draggingTool.dragsTree": true,
+        "resizingTool.isGridSnapEnabled": true,
+        "resizingTool.cellSize": new go.Size(GridCellWidth, GridCellHeight),
+        "resizingTool.minSize": new go.Size(GridCellWidth, GridCellHeight),
+        layout: $(GanttLayout),
+        "animationManager.isInitial": false,
+        "SelectionMoved": e => e.diagram.layoutDiagram(true),
+        "DocumentBoundsChanged": e => {
+          // the grid extends to only the area needed
+          var b = e.diagram.documentBounds;
+          var gridpart = e.diagram.parts.first();
+          if (gridpart !== null && gridpart.type === go.Panel.Grid) {
+            gridpart.desiredSize = new go.Size(b.right - gridpart.position.x, b.bottom);
+          }
+          // the timeline only covers the needed area
+          myTimeline.findObject("MAIN").width = b.right;
+          myTimeline.findObject("TICKS").height = e.diagram.viewportBounds.height;
+          myTimeline.graduatedMax = b.right;
+        }
+      });
+  
+  myGantt.add($(go.Part, "Grid",
+    { layerName: "Grid", position: new go.Point(-10, 0), gridCellSize: new go.Size(3000, GridCellHeight) },
+    $(go.Shape, "LineH", { strokeWidth: 0.5 })
+  ));
+  
+  myGantt.nodeTemplate =
+    $(go.Node, "Spot",
+      {
+        selectionAdorned: false,
+        selectionChanged: node => {
+          node.diagram.commit(diag => {
+            node.findObject("SHAPE").fill = node.isSelected ? "dodgerblue" : node.data.color || "gray";
+          }, null);
+        },
+        minLocation: new go.Point(0, NaN),
+        maxLocation: new go.Point(Infinity, NaN),
+        toolTip:
+          $("ToolTip",
+            $(go.Panel, "Table",
+              { defaultAlignment: go.Spot.Left },
+              $(go.RowColumnDefinition, { column: 1, separatorPadding: 3 }),
+              $(go.TextBlock, { row: 0, column: 0, columnSpan: 9, font: "bold 12pt sans-serif" }, new go.Binding("text")),
+              $(go.TextBlock, { row: 1, column: 0 }, "start:"),
+              $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "start", d => "day " + d)),
+              $(go.TextBlock, { row: 2, column: 0 }, "length:"),
+              $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "duration", d => d + " days")),
+            )
+          ),
+        resizable: true,
+        resizeObjectName: "SHAPE",
+        resizeAdornmentTemplate: $(go.Adornment, "Spot",
+          $(go.Placeholder),
+          $(go.Shape, "Diamond",
+            {
+              alignment: go.Spot.Right,
+              width: 8, height: 8,
+              strokeWidth: 0,
+              fill: "fuchsia",
+              cursor: 'e-resize'
+            }
+          )
+        )
+      },
+      new go.Binding("position", "start", convertStartToPosition).makeTwoWay(convertPositionToStart),
+      new go.Binding("resizable", "isTreeLeaf").ofObject(),
+      new go.Binding("isTreeExpanded").makeTwoWay(),
+      $(go.Shape,
+        { name: "SHAPE", height: 18, margin: new go.Margin(1, 0), strokeWidth: 0, fill: "gray" },
+        new go.Binding("fill", "color"),
+        new go.Binding("width", "duration", convertDurationToW).makeTwoWay(convertWToDuration),
+        new go.Binding("figure", "isTreeLeaf", leaf => leaf ? "Rectangle" : "RangeBar").ofObject()),
+        // "RangeBar" is defined above as a custom figure
+      $(go.TextBlock,
+        { font: "8pt sans-serif", alignment: go.Spot.TopLeft, alignmentFocus: new go.Spot(0, 0, 0, -2) },
+        new go.Binding("text"),
+        new go.Binding("stroke", "color", c => go.Brush.isDark(c) ? "white" : "black"))
+    );
+  
+  myGantt.linkTemplate =
+    $(go.Link, { visible: false });
+  
+  
+  // the timeline
+  var myTimeline =
+    $(go.Part, "Graduated",
+      {
+        layerName: "Adornment",
+        location: new go.Point(0, 0),
+        locationSpot: go.Spot.Left,
+        locationObjectName: "MAIN",
+        graduatedTickUnit: GridCellWidth
+      },
+      $(go.Shape, "LineH", { name: "MAIN", strokeWidth: 0, height: TimelineHeight, background: "lightgray" }),
+      $(go.Shape, { name: "TICKS", geometryString: "M0 0 V1000", interval: 7, stroke: "lightgray", strokeWidth: 0.5 }),
+      $(go.TextBlock,
+        {
+          alignmentFocus: go.Spot.Left,
+          interval: 7,  // once per week
+          graduatedFunction: valueToDate
+        }
+      )
+    );
+  myGantt.add(myTimeline);
+  
+  
+  // The Model that is shared by both Diagrams
+  var model = new go.GraphLinksModel(
+  [
+    { key: 0, text: "Project X" },
+      { key: 1, text: "Task 1", color: "darkgreen" },
+        { key: 11, text: "Task 1.1", color: "green", duration: 10 },
+        { key: 12, text: "Task 1.2", color: "green" },
+          { key: 121, text: "Task 1.2.1", color: "lightgreen", duration: 3 },
+          { key: 122, text: "Task 1.2.2", color: "lightgreen", duration: 5 },
+          { key: 123, text: "Task 1.2.3", color: "lightgreen", duration: 4 },
+      { key: 2, text: "Task 2", color: "darkblue" },
+        { key: 21, text: "Task 2.1", color: "blue", duration: 15, start: 10 },
+        { key: 22, text: "Task 2.2", color: "goldenrod" },
+          { key: 221, text: "Task 2.2.1", color: "yellow", duration: 8 },
+          { key: 222, text: "Task 2.2.2", color: "yellow", duration: 6 },
+        { key: 23, text: "Task 2.3", color: "darkorange" },
+          { key: 231, text: "Task 2.3.1", color: "orange", duration: 11 },
+      { key: 3, text: "Task 3", color: "maroon" },
+        { key: 31, text: "Task 3.1", color: "brown", duration: 10 },
+        { key: 32, text: "Task 3.2", color: "brown" },
+          { key: 321, text: "Task 3.2.1", color: "lightsalmon", duration: 8 },
+          { key: 322, text: "Task 3.2.2", color: "lightsalmon", duration: 3 },
+          { key: 323, text: "Task 3.2.3", color: "lightsalmon", duration: 7 },
+          { key: 324, text: "Task 3.2.4", color: "lightsalmon", duration: 5, start: 71 },
+          { key: 325, text: "Task 3.2.5", color: "lightsalmon", duration: 4 },
+          { key: 326, text: "Task 3.2.6", color: "lightsalmon", duration: 5 },
+  ],
+  [
+    { from: 0, to: 1 },
+    { from: 1, to: 11 },
+    { from: 1, to: 12 },
+    { from: 12, to: 121 },
+    { from: 12, to: 122 },
+    { from: 12, to: 123 },
+    { from: 0, to: 2 },
+    { from: 2, to: 21 },
+    { from: 2, to: 22 },
+    { from: 22, to: 221 },
+    { from: 22, to: 222 },
+    { from: 2, to: 23 },
+    { from: 23, to: 231 },
+    { from: 0, to: 3 },
+    { from: 3, to: 31 },
+    { from: 3, to: 32 },
+    { from: 32, to: 321 },
+    { from: 32, to: 322 },
+    { from: 32, to: 323 },
+    { from: 32, to: 324 },
+    { from: 32, to: 325 },
+    { from: 32, to: 326 },
+  ]);
+  
+  // share model
+  myTasks.model = model;
+  myGantt.model = model;
+  model.addChangedListener(e => {
+    if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+      document.getElementById("mySavedModel").textContent = e.model.toJson();
+    }
+  })
+  model.undoManager.isEnabled = true;
+  
+  
+  // sync viewports
+  var changingView = false;
+  myTasks.addDiagramListener("ViewportBoundsChanged", e => {
+    if (changingView) return;
+    changingView = true;
+    myGantt.scale = myTasks.scale;
+    myGantt.position = new go.Point(myGantt.position.x, myTasks.position.y);
+    myTimeline.position = new go.Point(myTimeline.position.x, myTasks.viewportBounds.position.y);
+    changingView = false;
+  });
+  myGantt.addDiagramListener("ViewportBoundsChanged", e => {
+    if (changingView) return;
+    changingView = true;
+    myTasks.scale = myGantt.scale;
+    myTasks.position = new go.Point(myTasks.position.x, myGantt.position.y);
+    myTimeline.position = new go.Point(myTimeline.position.x, myGantt.viewportBounds.position.y);
+    changingView = false;
+  });
+
+  // change horizontal scale
+  function rescale() {
+    var val = parseFloat(document.getElementById("widthSlider").value);
+    console.log(val);
+    myGantt.commit(diag => {
+      GridCellWidth = val;
+      diag.scrollMargin = new go.Margin(0, GridCellWidth*7, 0, 0);
+      diag.toolManager.draggingTool.gridSnapCellSize = new go.Size(GridCellWidth, GridCellHeight);
+      diag.toolManager.resizingTool.cellSize = new go.Size(GridCellWidth, GridCellHeight);
+      diag.toolManager.resizingTool.minSize = new go.Size(GridCellWidth, GridCellHeight);
+      diag.updateAllTargetBindings();
+      diag.layoutDiagram(true);
+      myTimeline.graduatedTickUnit = GridCellWidth;
+    }, null);  // skipsUndoManager
+  }
+    </script>
     </div>
     <!-- * * * * * * * * * * * * * -->
     <!--  End of GoJS sample code  -->
