@@ -24,36 +24,35 @@ export function init() {
   myDiagram =
     $(go.Diagram, 'myDiagramDiv');
 
-  myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
+  myDiagram.toolManager.mouseDownTools.insertAt(3, $(GeometryReshapingTool, { isResegmenting: true }));
 
-  myDiagram.nodeTemplateMap.add('PolygonDrawing',
+  myDiagram.nodeTemplate =
     $(go.Node,
-      { locationSpot: go.Spot.Center },  // to support rotation about the center
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       {
-        selectionAdorned: true, selectionObjectName: 'SHAPE',
+        selectionObjectName: "SHAPE",
         selectionAdornmentTemplate:  // custom selection adornment: a blue rectangle
-          $(go.Adornment, 'Auto',
-            $(go.Shape, { stroke: 'dodgerblue', fill: null }),
-            $(go.Placeholder, { margin: -1 }))
+          $(go.Adornment, "Auto",
+            $(go.Shape, { stroke: "dodgerblue", fill: null }),
+            $(go.Placeholder, { margin: -1 })),
+        resizable: true, resizeObjectName: "SHAPE",
+        rotatable: true, rotationSpot: go.Spot.Center,
+        reshapable: true
       },
-      { resizable: true, resizeObjectName: 'SHAPE' },
-      { rotatable: true, rotateObjectName: 'SHAPE' },
-      { reshapable: true },  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+      new go.Binding("angle").makeTwoWay(),
       $(go.Shape,
-        { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 },
-        new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-        new go.Binding('angle').makeTwoWay(),
-        new go.Binding('geometryString', 'geo').makeTwoWay(),
-        new go.Binding('fill'),
-        new go.Binding('stroke'),
-        new go.Binding('strokeWidth'))
-    ));
+        { name: "SHAPE", fill: "lightgray", strokeWidth: 1.5 },
+        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+        new go.Binding("geometryString", "geo").makeTwoWay(),
+        new go.Binding("fill"),
+        new go.Binding("stroke"),
+        new go.Binding("strokeWidth"))
+    );
 
   // create polygon drawing tool for myDiagram, defined in PolygonDrawingTool.js
   const tool = new PolygonDrawingTool();
   // provide the default JavaScript object for a new polygon in the model
-  tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3, category: 'PolygonDrawing' };
+  tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3 };
   tool.isPolygon = true;  // for a polyline drawing tool set this property to false
   tool.isEnabled = false;
   // install as first mouse-down-tool
@@ -96,6 +95,12 @@ export function undo() {
 
 export function updateAllAdornments() {  // called after checkboxes change Diagram.allow...
   myDiagram.selection.each((p) => { p.updateAdornments(); });
+}
+
+export function toggleResegmenting() {
+  var tool = myDiagram.toolManager.findTool("GeometryReshaping") as GeometryReshapingTool;
+  tool.isResegmenting = !tool.isResegmenting;
+  updateAllAdornments();
 }
 
 // save a model to and load a model from Json text, displayed below the Diagram

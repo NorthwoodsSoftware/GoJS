@@ -12,7 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.allowRotating = exports.allowReshaping = exports.allowResizing = exports.cancelDrawing = exports.finishDrawing = exports.drawPolyline = exports.drawPolygon = exports.select = exports.load = exports.save = exports.updateAllAdornments = exports.undo = exports.finish = exports.mode = exports.init = void 0;
+    exports.allowRotating = exports.allowReshaping = exports.allowResizing = exports.cancelDrawing = exports.finishDrawing = exports.drawPolyline = exports.drawPolygon = exports.select = exports.load = exports.save = exports.toggleResegmenting = exports.updateAllAdornments = exports.undo = exports.finish = exports.mode = exports.init = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -30,18 +30,20 @@
         var $ = go.GraphObject.make;
         myDiagram =
             $(go.Diagram, 'myDiagramDiv');
-        myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool_js_1.GeometryReshapingTool());
-        myDiagram.nodeTemplateMap.add('PolygonDrawing', $(go.Node, { locationSpot: go.Spot.Center }, // to support rotation about the center
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), {
-            selectionAdorned: true, selectionObjectName: 'SHAPE',
-            selectionAdornmentTemplate: // custom selection adornment: a blue rectangle
-            $(go.Adornment, 'Auto', $(go.Shape, { stroke: 'dodgerblue', fill: null }), $(go.Placeholder, { margin: -1 }))
-        }, { resizable: true, resizeObjectName: 'SHAPE' }, { rotatable: true, rotateObjectName: 'SHAPE' }, { reshapable: true }, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
-        $(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('angle').makeTwoWay(), new go.Binding('geometryString', 'geo').makeTwoWay(), new go.Binding('fill'), new go.Binding('stroke'), new go.Binding('strokeWidth'))));
+        myDiagram.toolManager.mouseDownTools.insertAt(3, $(GeometryReshapingTool_js_1.GeometryReshapingTool, { isResegmenting: true }));
+        myDiagram.nodeTemplate =
+            $(go.Node, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {
+                selectionObjectName: "SHAPE",
+                selectionAdornmentTemplate: // custom selection adornment: a blue rectangle
+                $(go.Adornment, "Auto", $(go.Shape, { stroke: "dodgerblue", fill: null }), $(go.Placeholder, { margin: -1 })),
+                resizable: true, resizeObjectName: "SHAPE",
+                rotatable: true, rotationSpot: go.Spot.Center,
+                reshapable: true
+            }, new go.Binding("angle").makeTwoWay(), $(go.Shape, { name: "SHAPE", fill: "lightgray", strokeWidth: 1.5 }, new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding("geometryString", "geo").makeTwoWay(), new go.Binding("fill"), new go.Binding("stroke"), new go.Binding("strokeWidth")));
         // create polygon drawing tool for myDiagram, defined in PolygonDrawingTool.js
         var tool = new PolygonDrawingTool_js_1.PolygonDrawingTool();
         // provide the default JavaScript object for a new polygon in the model
-        tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3, category: 'PolygonDrawing' };
+        tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3 };
         tool.isPolygon = true; // for a polyline drawing tool set this property to false
         tool.isEnabled = false;
         // install as first mouse-down-tool
@@ -89,6 +91,12 @@
         myDiagram.selection.each(function (p) { p.updateAdornments(); });
     }
     exports.updateAllAdornments = updateAllAdornments;
+    function toggleResegmenting() {
+        var tool = myDiagram.toolManager.findTool("GeometryReshaping");
+        tool.isResegmenting = !tool.isResegmenting;
+        updateAllAdornments();
+    }
+    exports.toggleResegmenting = toggleResegmenting;
     // save a model to and load a model from Json text, displayed below the Diagram
     function save() {
         var str = '{ "position": "' + go.Point.stringify(myDiagram.position) + '",\n  "model": ' + myDiagram.model.toJson() + ' }';

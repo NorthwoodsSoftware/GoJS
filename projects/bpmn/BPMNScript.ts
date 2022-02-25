@@ -210,7 +210,7 @@ export function init() {
       'BpmnActivityCompensation',
       'Triangle',
       'Pentagon',
-      'ThickCross',
+      'ThinCross',
       'Circle'];
     if (s < tasks.length) return tasks[s];
     return 'NotAllowed'; // error
@@ -548,7 +548,7 @@ export function init() {
       'ThinX',          // 4 - Exclusive  (exclusive can also be no symbol, just bind to visible=false for no symbol)
       'Pentagon',       // 5 - double cicle event based gateway
       'Pentagon',       // 6 - exclusive event gateway to start a process (single circle)
-      'ThickCross'] ;   // 7 - parallel event gateway to start a process (single circle)
+      'ThinCross'] ;   // 7 - parallel event gateway to start a process (single circle)
     if (s < tasks.length) return tasks[s];
     return 'NotAllowed'; // error
   }

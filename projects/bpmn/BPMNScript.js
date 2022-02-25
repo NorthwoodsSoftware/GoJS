@@ -201,7 +201,7 @@ var __extends = (this && this.__extends) || (function () {
                 'BpmnActivityCompensation',
                 'Triangle',
                 'Pentagon',
-                'ThickCross',
+                'ThinCross',
                 'Circle'];
             if (s < tasks.length)
                 return tasks[s];
@@ -395,7 +395,7 @@ var __extends = (this && this.__extends) || (function () {
                 'ThinX',
                 'Pentagon',
                 'Pentagon',
-                'ThickCross']; // 7 - parallel event gateway to start a process (single circle)
+                'ThinCross']; // 7 - parallel event gateway to start a process (single circle)
             if (s < tasks.length)
                 return tasks[s];
             return 'NotAllowed'; // error

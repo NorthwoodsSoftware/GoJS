@@ -21,13 +21,13 @@ import * as go from '../release/go.js';
  */
 export class GuidedDraggingTool extends go.DraggingTool {
   // horizontal guidelines
-  private guidelineHtop: go.Part;
-  private guidelineHbottom: go.Part;
-  private guidelineHcenter: go.Part;
+  public guidelineHtop: go.Part;
+  public guidelineHbottom: go.Part;
+  public guidelineHcenter: go.Part;
   // vertical guidelines
-  private guidelineVleft: go.Part;
-  private guidelineVright: go.Part;
-  private guidelineVcenter: go.Part;
+  public guidelineVleft: go.Part;
+  public guidelineVright: go.Part;
+  public guidelineVcenter: go.Part;
 
   // properties that the programmer can modify
   private _guidelineSnapDistance: number = 6;
@@ -86,7 +86,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
   }
 
   /**
-   * Gets or sets whether the guidelines are enabled or disabled.
+   * Gets or sets whether the guidelines are enabled or disables.
    *
    * The default value is true.
    */
@@ -107,8 +107,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
   set horizontalGuidelineColor(val: string) {
     if (this._horizontalGuidelineColor !== val) {
       this._horizontalGuidelineColor = val;
-      (this.guidelineHbottom.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
-      (this.guidelineHtop.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
+      if (this.guidelineHbottom) (this.guidelineHbottom.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
+      if (this.guidelineHtop) (this.guidelineHtop.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
     }
   }
 
@@ -121,8 +121,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
   set verticalGuidelineColor(val: string) {
     if (this._verticalGuidelineColor !== val) {
       this._verticalGuidelineColor = val;
-      (this.guidelineVleft.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
-      (this.guidelineVright.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
+      if (this.guidelineVleft) (this.guidelineVleft.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
+      if (this.guidelineVright) (this.guidelineVright.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
     }
   }
 
@@ -135,8 +135,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
   set centerGuidelineColor(val: string) {
     if (this._centerGuidelineColor !== val) {
       this._centerGuidelineColor = val;
-      (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
-      (this.guidelineHcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      if (this.guidelineVcenter) (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      if (this.guidelineHcenter) (this.guidelineHcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
     }
   }
 
@@ -150,12 +150,12 @@ export class GuidedDraggingTool extends go.DraggingTool {
     if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('New value for GuidedDraggingTool.guidelineWidth must be a non-negative number.');
     if (this._guidelineWidth !== val) {
       this._guidelineWidth = val;
-      (this.guidelineVcenter.elements.first() as go.Shape).strokeWidth = val;
-      (this.guidelineHcenter.elements.first() as go.Shape).strokeWidth = val;
-      (this.guidelineVleft.elements.first() as go.Shape).strokeWidth = val;
-      (this.guidelineVright.elements.first() as go.Shape).strokeWidth = val;
-      (this.guidelineHbottom.elements.first() as go.Shape).strokeWidth = val;
-      (this.guidelineHtop.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineVcenter) (this.guidelineVcenter.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineHcenter) (this.guidelineHcenter.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineVleft) (this.guidelineVleft.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineVright) (this.guidelineVright.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineHbottom) (this.guidelineHbottom.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineHtop) (this.guidelineHtop.elements.first() as go.Shape).strokeWidth = val;
     }
   }
 
@@ -190,12 +190,12 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * Removes all of the guidelines from the grid.
    */
   public clearGuidelines(): void {
-    this.diagram.remove(this.guidelineHbottom);
-    this.diagram.remove(this.guidelineHcenter);
-    this.diagram.remove(this.guidelineHtop);
-    this.diagram.remove(this.guidelineVleft);
-    this.diagram.remove(this.guidelineVright);
-    this.diagram.remove(this.guidelineVcenter);
+    if (this.guidelineHbottom) this.diagram.remove(this.guidelineHbottom);
+    if (this.guidelineHcenter) this.diagram.remove(this.guidelineHcenter);
+    if (this.guidelineHtop) this.diagram.remove(this.guidelineHtop);
+    if (this.guidelineVleft) this.diagram.remove(this.guidelineVleft);
+    if (this.guidelineVright) this.diagram.remove(this.guidelineVright);
+    if (this.guidelineVcenter) this.diagram.remove(this.guidelineVcenter);
   }
 
   /**
@@ -310,31 +310,31 @@ export class GuidedDraggingTool extends go.DraggingTool {
       const q2 = otherBounds.y + otherBounds.height;
 
       // compare center with center of OTHER part
-      if (Math.abs(p1 - q1) < bestDiff) {
+      if (this.guidelineHcenter && Math.abs(p1 - q1) < bestDiff) {
         bestDiff = Math.abs(p1 - q1);
         bestObj = other;
         bestSpot = go.Spot.Center;
         bestOtherSpot = go.Spot.Center;
       }
       // compare top side with top and bottom sides of OTHER part
-      if (Math.abs(p0 - q0) < bestDiff) {
+      if (this.guidelineHtop && Math.abs(p0 - q0) < bestDiff) {
         bestDiff = Math.abs(p0 - q0);
         bestObj = other;
         bestSpot = go.Spot.Top;
         bestOtherSpot = go.Spot.Top;
-      } else if (Math.abs(p0 - q2) < bestDiff) {
+      } else if (this.guidelineHtop && Math.abs(p0 - q2) < bestDiff) {
         bestDiff = Math.abs(p0 - q2);
         bestObj = other;
         bestSpot = go.Spot.Top;
         bestOtherSpot = go.Spot.Bottom;
       }
       // compare bottom side with top and bottom sides of OTHER part
-      if (Math.abs(p2 - q0) < bestDiff) {
+      if (this.guidelineHbottom && Math.abs(p2 - q0) < bestDiff) {
         bestDiff = Math.abs(p2 - q0);
         bestObj = other;
         bestSpot = go.Spot.Bottom;
         bestOtherSpot = go.Spot.Top;
-      } else if (Math.abs(p2 - q2) < bestDiff) {
+      } else if (this.guidelineHbottom && Math.abs(p2 - q2) < bestDiff) {
         bestDiff = Math.abs(p2 - q2);
         bestObj = other;
         bestSpot = go.Spot.Bottom;
@@ -424,31 +424,31 @@ export class GuidedDraggingTool extends go.DraggingTool {
       const q2 = otherBounds.x + otherBounds.width;
 
       // compare center with center of OTHER part
-      if (Math.abs(p1 - q1) < bestDiff) {
+      if (this.guidelineVcenter && Math.abs(p1 - q1) < bestDiff) {
         bestDiff = Math.abs(p1 - q1);
         bestObj = other;
         bestSpot = go.Spot.Center;
         bestOtherSpot = go.Spot.Center;
       }
       // compare left side with left and right sides of OTHER part
-      if (Math.abs(p0 - q0) < bestDiff) {
+      if (this.guidelineVleft && Math.abs(p0 - q0) < bestDiff) {
         bestDiff = Math.abs(p0 - q0);
         bestObj = other;
         bestSpot = go.Spot.Left;
         bestOtherSpot = go.Spot.Left;
-      } else if (Math.abs(p0 - q2) < bestDiff) {
+      } else if (this.guidelineVleft && Math.abs(p0 - q2) < bestDiff) {
         bestDiff = Math.abs(p0 - q2);
         bestObj = other;
         bestSpot = go.Spot.Left;
         bestOtherSpot = go.Spot.Right;
       }
       // compare right side with left and right sides of OTHER part
-      if (Math.abs(p2 - q0) < bestDiff) {
+      if (this.guidelineVright && Math.abs(p2 - q0) < bestDiff) {
         bestDiff = Math.abs(p2 - q0);
         bestObj = other;
         bestSpot = go.Spot.Right;
         bestOtherSpot = go.Spot.Left;
-      } else if (Math.abs(p2 - q2) < bestDiff) {
+      } else if (this.guidelineVright && Math.abs(p2 - q2) < bestDiff) {
         bestDiff = Math.abs(p2 - q2);
         bestObj = other;
         bestSpot = go.Spot.Right;

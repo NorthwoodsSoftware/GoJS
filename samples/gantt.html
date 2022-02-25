@@ -270,6 +270,11 @@
       $(go.Shape)
     );
   
+  myTasks.linkTemplateMap.add("Dep",
+    $(go.Link,  // ignore these links in the Tasks diagram
+      { visible: false, isTreeLink: false }
+    ));
+
   
   // the right side of the whole diagram
   myGantt =
@@ -326,9 +331,9 @@
               $(go.RowColumnDefinition, { column: 1, separatorPadding: 3 }),
               $(go.TextBlock, { row: 0, column: 0, columnSpan: 9, font: "bold 12pt sans-serif" }, new go.Binding("text")),
               $(go.TextBlock, { row: 1, column: 0 }, "start:"),
-              $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "start", d => "day " + d)),
+              $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "start", d => "day " + d.toFixed(0))),
               $(go.TextBlock, { row: 2, column: 0 }, "length:"),
-              $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "duration", d => d + " days")),
+              $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "duration", d => d.toFixed(0) + " days")),
             )
           ),
         resizable: true,
@@ -363,6 +368,17 @@
   
   myGantt.linkTemplate =
     $(go.Link, { visible: false });
+
+  myGantt.linkTemplateMap.add("Dep",
+    $(go.Link,
+      {
+        routing: go.Link.Orthogonal,
+        isTreeLink: false, isLayoutPositioned: false,
+        fromSpot: new go.Spot(0.999999, 1), toSpot: new go.Spot(0.000001, 0)
+      },
+      $(go.Shape, { stroke: "brown" }),
+      $(go.Shape, { toArrow: "Standard", fill: "brown", strokeWidth: 0, scale: 0.75 })
+    ));
   
   
   // the timeline
@@ -438,6 +454,7 @@
     { from: 32, to: 324 },
     { from: 32, to: 325 },
     { from: 32, to: 326 },
+    { from: 11, to: 2, category: "Dep" },
   ]);
   
   // share model
