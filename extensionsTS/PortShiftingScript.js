@@ -50,7 +50,7 @@
             }
             else {
                 if (idx >= 0)
-                    document.title = document.title.substr(0, idx);
+                    document.title = document.title.slice(0, idx);
             }
         });
         var palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"

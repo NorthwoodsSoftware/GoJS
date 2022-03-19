@@ -56,7 +56,7 @@
                         }
                         else {
                             if (idx >= 0)
-                                currentFile.textContent = currentFile.textContent.substr(0, idx);
+                                currentFile.textContent = currentFile.textContent.slice(0, idx);
                         }
                     }
                 });
@@ -105,7 +105,7 @@
                 var currentFile = document.getElementById('ge-filename');
                 var currentFileTitle = currentFile.innerText;
                 if (currentFileTitle[currentFileTitle.length - 1] === '*' && editorHelper.storageManager.currentStorage.currentDiagramFile.name != null) {
-                    currentFile.innerText = currentFileTitle.substr(0, currentFileTitle.length - 1);
+                    currentFile.innerText = currentFileTitle.slice(0, -1);
                     editorHelper.storageManager.currentStorage.save();
                 }
             });
@@ -310,7 +310,7 @@
                     var currentFile = document.getElementById('ge-filename');
                     // only prompt to save current changes iff there is some modified state
                     var currentFileTitle = currentFile.innerText;
-                    if (currentFileTitle.substr(currentFileTitle.length - 1, 1) === '*') {
+                    if (currentFileTitle.slice(-1) === '*') {
                         saveBefore = true;
                     }
                     editorHelper.storageManager.create(saveBefore).then(function (fileData) {

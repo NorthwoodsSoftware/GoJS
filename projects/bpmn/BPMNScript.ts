@@ -1228,7 +1228,7 @@ export function init() {
     if (myDiagram.isModified) {
       if (idx < 0) currentFile.textContent = currentFile.textContent + '*';
     } else {
-      if (idx >= 0) currentFile.textContent = currentFile.textContent!.substr(0, idx);
+      if (idx >= 0) currentFile.textContent = currentFile.textContent!.slice(0, idx);
     }
   });
 
@@ -1654,7 +1654,7 @@ const UnsavedFileName = '(Unsaved File)';
 export function getCurrentFileName(): string {
   const currentFile = document.getElementById('currentFile') as HTMLDivElement;
   const name = currentFile.textContent || '';
-  if (name && name[name.length - 1] === '*') return name.substr(0, name.length - 1);
+  if (name && name[name.length - 1] === '*') return name.slice(0, -1);
   return name;
 }
 

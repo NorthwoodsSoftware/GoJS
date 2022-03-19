@@ -39,7 +39,7 @@
             }
             else {
                 if (idx >= 0)
-                    document.title = document.title.substr(0, idx);
+                    document.title = document.title.slice(0, idx);
             }
         });
         // helper definitions for node templates

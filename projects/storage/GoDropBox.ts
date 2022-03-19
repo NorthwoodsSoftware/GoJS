@@ -198,7 +198,7 @@ export class GoDropBox extends gcs.GoCloudStorage {
           console.log("got authTokenRevoke error:");
           console.log(error);
         });*/
-        // window.location.href = window.location.href.substr(0, window.location.href.indexOf('#'));
+        // window.location.href = window.location.href.substring(0, window.location.href.indexOf('#'));
     }
 
     /*

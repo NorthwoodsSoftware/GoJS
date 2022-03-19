@@ -857,7 +857,7 @@ var __extends = (this && this.__extends) || (function () {
             }
             else {
                 if (idx >= 0)
-                    currentFile.textContent = currentFile.textContent.substr(0, idx);
+                    currentFile.textContent = currentFile.textContent.slice(0, idx);
             }
         });
         // ------------------------------------------  Palette   ----------------------------------------------
@@ -1266,7 +1266,7 @@ var __extends = (this && this.__extends) || (function () {
         var currentFile = document.getElementById('currentFile');
         var name = currentFile.textContent || '';
         if (name && name[name.length - 1] === '*')
-            return name.substr(0, name.length - 1);
+            return name.slice(0, -1);
         return name;
     }
     exports.getCurrentFileName = getCurrentFileName;
