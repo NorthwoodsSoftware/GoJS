@@ -67,7 +67,7 @@ export class EditorHelper {
           if (e.diagram.isModified) {
             if (idx < 0) currentFile.textContent = currentFile.textContent + '*';
           } else {
-            if (idx >= 0) currentFile.textContent = (currentFile.textContent as string).substr(0, idx);
+            if (idx >= 0) currentFile.textContent = (currentFile.textContent as string).slice(0, idx);
           }
         }
       });
@@ -126,7 +126,7 @@ export class EditorHelper {
       const currentFile = document.getElementById('ge-filename') as HTMLElement;
       const currentFileTitle = currentFile.innerText;
       if (currentFileTitle[currentFileTitle.length - 1] === '*' && editorHelper.storageManager.currentStorage.currentDiagramFile.name != null) {
-        currentFile.innerText = currentFileTitle.substr(0, currentFileTitle.length - 1);
+        currentFile.innerText = currentFileTitle.slice(0, -1);
         editorHelper.storageManager.currentStorage.save();
       }
     });
@@ -318,7 +318,7 @@ export class EditorHelper {
         const currentFile = document.getElementById('ge-filename');
         // only prompt to save current changes iff there is some modified state
         const currentFileTitle = (currentFile as HTMLElement).innerText;
-        if (currentFileTitle.substr(currentFileTitle.length - 1, 1) === '*') {
+        if (currentFileTitle.slice(-1) === '*') {
           saveBefore = true;
         }
         editorHelper.storageManager.create(saveBefore).then(function(fileData: any) {

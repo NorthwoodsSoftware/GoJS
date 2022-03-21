@@ -90,7 +90,7 @@ function Floorplan(div) {
                     if (idx < 0) currentFile.textContent = currentFile.textContent + "*";
                 }
                 else {
-                    if (idx >= 0) currentFile.textContent = currentFile.textContent.substr(0, idx);
+                    if (idx >= 0) currentFile.textContent = currentFile.textContent.slice(0, idx);
                 }
             }
         }

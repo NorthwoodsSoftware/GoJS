@@ -40,7 +40,7 @@ export function init() {
     if (myDiagram.isModified) {
       if (idx < 0) document.title += '*';
     } else {
-      if (idx >= 0) document.title = document.title.substr(0, idx);
+      if (idx >= 0) document.title = document.title.slice(0, idx);
     }
   });
 
