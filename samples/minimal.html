@@ -50,46 +50,6 @@
     
     <script src="../release/go.js"></script>
     <div id="allSampleContent" class="p-4 w-full">
-<script id="code">
-function init() {
-
-  myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-    {
-      "undoManager.isEnabled": true  // enable undo & redo
-    });
-
-  // define a simple Node template
-  myDiagram.nodeTemplate =
-    new go.Node("Auto")  // the Shape will go around the TextBlock
-      .add(new go.Shape("RoundedRectangle", { strokeWidth: 0, fill: "white" })
-        // Shape.fill is bound to Node.data.color
-        .bind("fill", "color"))
-      .add(new go.TextBlock(
-        { margin: 8, font: "bold 14px sans-serif", stroke: '#333' }) // Specify a margin to add some room around the text
-        // TextBlock.text is bound to Node.data.key
-        .bind("text", "key"));
-
-  // but use the default Link template, by not setting Diagram.linkTemplate
-
-  // create the model data that will be represented by Nodes and Links
-  myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: "Alpha", color: "lightblue" },
-      { key: "Beta", color: "orange" },
-      { key: "Gamma", color: "lightgreen" },
-      { key: "Delta", color: "pink" }
-    ],
-    [
-      { from: "Alpha", to: "Beta" },
-      { from: "Alpha", to: "Gamma" },
-      { from: "Beta", to: "Beta" },
-      { from: "Gamma", to: "Delta" },
-      { from: "Delta", to: "Alpha" }
-    ]);
-}
-// Call init on page load
-window.addEventListener('DOMContentLoaded', init);
-</script>
 
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
@@ -97,7 +57,7 @@ window.addEventListener('DOMContentLoaded', init);
   <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
   <p>
     This isn't a truly <i>minimal</i> demonstration of <b>GoJS</b>,
-    because we do specify a custom Node template, but it's pretty simple.
+    because we do specify a custom Node template and turn on undo/redo support, but it's pretty simple.
     The whole source for the sample is shown below if you click on the link.
   </p>
   <p>
@@ -105,15 +65,49 @@ window.addEventListener('DOMContentLoaded', init);
     For an overview of building your own templates and model data, see the <a href="../learn/index.html">Getting Started tutorial.</a>
   </p>
   <p>
-    Using the mouse and common keyboard commands, you can pan, select, move, copy, delete, and undo/redo.
-    On touch devices, use your finger to act as the mouse, and hold your finger stationary to bring up a context menu.
-    The default context menu supports most of the standard commands that
-    are enabled at that time for the selected object.
+    Using the mouse and common keyboard commands, you can pan, select, move, copy, delete, undo, and redo.
+    On touch devices, use your finger to act as the mouse, and press and hold your finger stationary to bring up a context menu.
+    The default context menu supports most of the standard commands that are enabled at that time for the selected object.
   </p>
   <p>
-    For a more elaborate and capable sample, see the <a href="basic.html">Basic</a> sample.
+    For a more elaborate sample, supporting grouping and tooltips and custom context menus,
+    see the <a href="basic.html">Basic</a> sample.
   </p>
 </div>
+
+<script id="code">
+const myDiagram =
+  new go.Diagram("myDiagramDiv",  // create a Diagram for the HTML Div element
+    { "undoManager.isEnabled": true });  // enable undo & redo
+
+// define a simple Node template
+myDiagram.nodeTemplate =
+  new go.Node("Auto")  // the Shape will go around the TextBlock
+    .add(new go.Shape("RoundedRectangle",
+      { strokeWidth: 0, fill: "white" })  // no border; default fill is white
+      .bind("fill", "color"))  // Shape.fill is bound to Node.data.color
+    .add(new go.TextBlock(
+      { margin: 8, font: "bold 14px sans-serif", stroke: '#333' })  // some room around the text
+      .bind("text", "key"));  // TextBlock.text is bound to Node.data.key
+
+// but use the default Link template, by not setting Diagram.linkTemplate
+
+// create the model data that will be represented by Nodes and Links
+myDiagram.model = new go.GraphLinksModel(
+  [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+  ],
+  [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+  ]);
+</script>
 
     </div>
     <!-- * * * * * * * * * * * * * -->

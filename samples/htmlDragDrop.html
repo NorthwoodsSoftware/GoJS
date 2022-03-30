@@ -70,259 +70,323 @@
       float: left;
     }
   </style>
-
-  <script id="code">
-    function init() {
-
-      // *********************************************************
-      // First, set up the infrastructure to do HTML drag-and-drop
-      // *********************************************************
-
-      var dragged = null; // A reference to the element currently being dragged
-
-      // highlight stationary nodes during an external drag-and-drop into a Diagram
-      function highlight(node) {  // may be null
-        var oldskips = myDiagram.skipsUndoManager;
-        myDiagram.skipsUndoManager = true;
-        myDiagram.startTransaction("highlight");
-        if (node !== null) {
-          myDiagram.highlight(node);
-        } else {
-          myDiagram.clearHighlighteds();
-        }
-        myDiagram.commitTransaction("highlight");
-        myDiagram.skipsUndoManager = oldskips;
-      }
-
-      // This event should only fire on the drag targets.
-      // Instead of finding every drag target,
-      // we can add the event to the document and disregard
-      // all elements that are not of class "draggable"
-      document.addEventListener("dragstart", event => {
-        if (event.target.className !== "draggable") return;
-        // Some data must be set to allow drag
-        event.dataTransfer.setData("text", event.target.textContent);
-
-        // store a reference to the dragged element and the offset of the mouse from the center of the element
-        dragged = event.target;
-        dragged.offsetX = event.offsetX - dragged.clientWidth / 2;
-        dragged.offsetY = event.offsetY - dragged.clientHeight / 2;
-        // Objects during drag will have a red border
-        event.target.style.border = "2px solid red";
-      }, false);
-
-      // This event resets styles after a drag has completed (successfully or not)
-      document.addEventListener("dragend", event => {
-        // reset the border of the dragged element
-        dragged.style.border = "";
-        highlight(null);
-      }, false);
-
-      // Next, events intended for the drop target - the Diagram div
-
-      var div = document.getElementById("myDiagramDiv");
-      div.addEventListener("dragenter", event => {
-        // Here you could also set effects on the Diagram,
-        // such as changing the background color to indicate an acceptable drop zone
-
-        // Requirement in some browsers, such as Internet Explorer
-        event.preventDefault();
-      }, false);
-
-      div.addEventListener("dragover", event => {
-        // We call preventDefault to allow a drop
-        // But on divs that already contain an element,
-        // we want to disallow dropping
-
-        if (this === myDiagram.div) {
-          var can = event.target;
-          var pixelratio = myDiagram.computePixelRatio();
-
-          // if the target is not the canvas, we may have trouble, so just quit:
-          if (!(can instanceof HTMLCanvasElement)) return;
-
-          var bbox = can.getBoundingClientRect();
-          var bbw = bbox.width;
-          if (bbw === 0) bbw = 0.001;
-          var bbh = bbox.height;
-          if (bbh === 0) bbh = 0.001;
-          var mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
-          var my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
-          var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
-          var curnode = myDiagram.findPartAt(point, true);
-          if (curnode instanceof go.Node) {
-            highlight(curnode);
-          } else {
-            highlight(null);
-          }
-        }
-
-        if (event.target.className === "dropzone") {
-          // Disallow a drop by returning before a call to preventDefault:
-          return;
-        }
-
-        // Allow a drop on everything else
-        event.preventDefault();
-      }, false);
-
-      div.addEventListener("dragleave", event => {
-        // reset background of potential drop target
-        if (event.target.className == "dropzone") {
-          event.target.style.background = "";
-        }
-        highlight(null);
-      }, false);
-
-      // handle the user option for removing dragged items from the Palette
-      var remove = document.getElementById('remove');
-
-      div.addEventListener("drop", event => {
-        // prevent default action
-        // (open as link for some elements in some browsers)
-        event.preventDefault();
-
-        // Dragging onto a Diagram
-        if (div === myDiagram.div) {
-          var can = event.target;
-          var pixelratio = myDiagram.computePixelRatio();
-
-          // if the target is not the canvas, we may have trouble, so just quit:
-          if (!(can instanceof HTMLCanvasElement)) return;
-
-          var bbox = can.getBoundingClientRect();
-          var bbw = bbox.width;
-          if (bbw === 0) bbw = 0.001;
-          var bbh = bbox.height;
-          if (bbh === 0) bbh = 0.001;
-          var mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw) - dragged.offsetX;
-          var my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh) - dragged.offsetY;
-          var point = myDiagram.transformViewToDoc(new go.Point(mx, my));
-          myDiagram.startTransaction('new node');
-          myDiagram.model.addNodeData({
-            location: point,
-            text: event.dataTransfer.getData('text'),
-            color: "lightyellow"
-          });
-          myDiagram.commitTransaction('new node');
-
-          // remove dragged element from its old location
-          if (remove.checked) dragged.parentNode.removeChild(dragged);
-        }
-
-        // If we were using drag data, we could get it here, ie:
-        // var data = event.dataTransfer.getData('text');
-      }, false);
-
-      // *********************************************************
-      // Second, set up a GoJS Diagram
-      // *********************************************************
-
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          "undoManager.isEnabled": true
-        });
-
-      // define a simple Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          { locationSpot: go.Spot.Center },
-          new go.Binding('location'),
-          $(go.Shape, "Rectangle",
-            { fill: 'white' },
-            // Shape.fill is bound to Node.data.color
-            new go.Binding("fill", "color"),
-            // this binding changes the Shape.fill when Node.isHighlighted changes value
-            new go.Binding("fill", "isHighlighted", (h, shape) => {
-              if (h) return "red";
-              var c = shape.part.data.color;
-              return c ? c : "white";
-            }).ofObject()),  // binding source is Node.isHighlighted
-          $(go.TextBlock,
-            { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },
-            // TextBlock.text is bound to Node.data.key
-            new go.Binding("text"))
-        );
-
-      // Modify the CommandHandler's doKeyDown to do nothing except bubble the event
-      // on a potential Paste command:
-      myDiagram.commandHandler.doKeyDown = function() {
-        const diagram = this.diagram;
-        const e = diagram.lastInput;
-        // The meta (Command) key substitutes for "control" for Mac commands
-        const control = e.meta || e.control;
-        const shift = e.shift;
-        const key = e.key;
-        if ((control && key === 'V') || (shift && key === 'Insert')) {
-          // Instead of the usual behavior:
-          // if (this.canPasteSelection()) this.pasteSelection();
-          // let the event bubble up the DOM:
-          e.bubbles = true;
-        } else {
-          go.CommandHandler.prototype.doKeyDown.call(this, e);
-        }
-      };
-
-      // handle inserting a new node using text that is in the system clipboard
-      document.addEventListener('paste', function (e) {
-        const paste = e.clipboardData.getData("text");
-        // Decide if the clipboard should be pasted, or if we should let GoJS paste
-        // This sample pastes from the clipboard if it contains any text at all,
-        // Otherwise, it pastes from GoJS
-        if (paste.length > 0) {
-          // Create a new node out of the text and paste it at the mouse location
-          const loc = myDiagram.lastInput.documentPoint;
-          myDiagram.model.addNodeData({ text: paste, location: loc });
-        } else {
-          // If the clipbooard does not contain anything, paste from GoJS instead
-          const commandHandler = myDiagram.commandHandler;
-          if (commandHandler.canPasteSelection()) commandHandler.pasteSelection();
-        }
-      });
-
-      myDiagram.model = new go.GraphLinksModel(
-        [
-          { text: "Alpha", color: "lightblue" },
-          { text: "Beta", color: "orange" },
-          { text: "Gamma", color: "lightgreen" },
-          { text: "Delta", color: "pink" }
-        ]);
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-
-<div id="sample">
-  <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="paletteZone" style="width: 160px; height: 400px; margin-right: 2px; background-color: lightblue; padding: 10px;">
-      <div class="draggable" draggable="true">Water</div>
-      <div class="draggable" draggable="true">Coffee</div>
-      <div class="draggable" draggable="true">Tea</div>
+  <div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+      <div id="paletteZone" style="width: 160px; height: 400px; margin-right: 2px; background-color: lightblue; padding: 10px;">
+        <div class="draggable" draggable="true">Water</div>
+        <div class="draggable" draggable="true">Coffee</div>
+        <div class="draggable" draggable="true">Tea</div>
+      </div>
+      <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
     </div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
+    <input id="removeCheckBox" type="checkbox" /><label for="removeCheckBox">Remove HTML item after drag</label>
+    <p>
+      The "Palette" in this sample is not a <a>Palette</a> (or GoJS component) at all.
+      It is a collection of HTML elements with draggable attributes using the
+      <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
+    </p>
+    <p>
+      This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes.
+      As the mouse passes over stationary nodes or links in the Diagram, they are highlighted.
+    </p>
+    <p>
+      If a drop happens (based on the mouse point) on an existing node,
+      a new link is also drawn from that existing node to the newly dropped node.
+      If a drop happens on an existing link, the link is reconnected to go to the
+      newly dropped node, and a new link is added to go from that newly dropped node
+      to whatever node the link had been connected to before.
+    </p>
+    <p>
+      This sample also demonstrates allowing external clipboard pasting,
+      by modifying <code>myDiagram.commandHandler.doKeyDown</code> to do nothing but allow
+      the event to bubble, and then defining a <code>"paste"</code> event on the <code>document</code>.
+      So the user can select some text, either on the page or in some other app,
+      and then a paste in the diagram will create a new node using that text.
+    </p>
   </div>
-  <input id="remove" type="checkbox" /><label for="remove">Remove HTML item after drag</label>
-  <p>
-    The "Palette" in this sample is not a Palette (or GoJS control) at all.
-    It is a collection of HTML elements with draggable attributes using the
-    <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
-  </p>
-  <p>
-    This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes.
-    As the mouse passes over stationary nodes in the Diagram, they are highlighted.
-  </p>
-  <p>
-    This sample also demonstrates allowing external clipboard pasting,
-    by modifying <code>myDiagram.commandHandler.doKeyDown</code> to do nothing but allow
-    the event to bubble, and then defining a <code>"paste"</code> event on the <code>document</code>.
-    So the user can select some text, either on the page or in some other app,
-    and then a paste in the diagram will create a new node using that text.
-  </p>
-</div>
+  <script id="code">
+// *********************************************************
+// First, set up the infrastructure to do HTML drag-and-drop
+// *********************************************************
+
+function init() {
+  let dragged = null; // A reference to the element currently being dragged
+
+  // This event should only fire on the drag targets.
+  // Instead of finding every drag target,
+  // we can add the event to the document and disregard
+  // all elements that are not of class "draggable"
+  document.addEventListener("dragstart", event => {
+    if (event.target.className !== "draggable") return;
+    // Some data must be set to allow drag
+    event.dataTransfer.setData("text", event.target.textContent);
+
+    // store a reference to the dragged element and the offset of the mouse from the center of the element
+    dragged = event.target;
+    dragged.offsetX = event.offsetX - dragged.clientWidth / 2;
+    dragged.offsetY = event.offsetY - dragged.clientHeight / 2;
+    // Objects during drag will have a red border
+    event.target.style.border = "2px solid red";
+  }, false);
+
+  // This event resets styles after a drag has completed (successfully or not)
+  document.addEventListener("dragend", event => {
+    // reset the border of the dragged element
+    dragged.style.border = "";
+    onHighlight(null);
+  }, false);
+
+  // Next, events intended for the drop target - the Diagram div
+
+  const div = document.getElementById("myDiagramDiv");
+  div.addEventListener("dragenter", event => {
+    // Here you could also set effects on the Diagram,
+    // such as changing the background color to indicate an acceptable drop zone
+
+    // Requirement in some browsers, such as Internet Explorer
+    event.preventDefault();
+  }, false);
+
+  div.addEventListener("dragover", event => {
+    // We call preventDefault to allow a drop
+    // But on divs that already contain an element,
+    // we want to disallow dropping
+
+    if (div === myDiagram.div) {
+      const can = event.target;
+      const pixelratio = myDiagram.computePixelRatio();
+
+      // if the target is not the canvas, we may have trouble, so just quit:
+      if (!(can instanceof HTMLCanvasElement)) return;
+
+      const bbox = can.getBoundingClientRect();
+      let bbw = bbox.width;
+      if (bbw === 0) bbw = 0.001;
+      let bbh = bbox.height;
+      if (bbh === 0) bbh = 0.001;
+      const mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
+      const my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
+      const point = myDiagram.transformViewToDoc(new go.Point(mx, my));
+      const part = myDiagram.findPartAt(point, true);
+      onHighlight(part);
+    }
+
+    if (event.target.className === "dropzone") {
+      // Disallow a drop by returning before a call to preventDefault:
+      return;
+    }
+
+    // Allow a drop on everything else
+    event.preventDefault();
+  }, false);
+
+  div.addEventListener("dragleave", event => {
+    // reset background of potential drop target
+    if (event.target.className == "dropzone") {
+      event.target.style.background = "";
+    }
+    onHighlight(null);
+  }, false);
+
+  div.addEventListener("drop", event => {
+    // prevent default action
+    // (open as link for some elements in some browsers)
+    event.preventDefault();
+
+    // Dragging onto a Diagram
+    if (div === myDiagram.div) {
+      const can = event.target;
+      const pixelratio = myDiagram.computePixelRatio();
+
+      // if the target is not the canvas, we may have trouble, so just quit:
+      if (!(can instanceof HTMLCanvasElement)) return;
+
+      const bbox = can.getBoundingClientRect();
+      let bbw = bbox.width;
+      if (bbw === 0) bbw = 0.001;
+      let bbh = bbox.height;
+      if (bbh === 0) bbh = 0.001;
+      const mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
+      const my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
+      const point = myDiagram.transformViewToDoc(new go.Point(mx, my));
+      myDiagram.startTransaction('new node');
+      const newdata = {
+        // assuming the locationSpot is Spot.Center:
+        location: myDiagram.transformViewToDoc(new go.Point(mx - dragged.offsetX, my - dragged.offsetY)),
+        text: event.dataTransfer.getData('text'),
+        color: "lightyellow"
+      };
+      myDiagram.model.addNodeData(newdata);
+      const newnode = myDiagram.findNodeForData(newdata);
+      if (newnode) {
+        myDiagram.select(newnode);
+        onDrop(newnode, point);
+      }
+      myDiagram.commitTransaction('new node');
+
+      // remove dragged element from its old location, if checkbox is checked
+      if (document.getElementById('removeCheckBox').checked) dragged.parentNode.removeChild(dragged);
+    }
+
+    // If we were using drag data, we could get it here, ie:
+    // const data = event.dataTransfer.getData('text');
+  }, false);
+
+
+  // this is called on a stationary node or links during an external drag-and-drop into a Diagram
+  function onHighlight(part) {  // may be null
+    const oldskips = myDiagram.skipsUndoManager;
+    myDiagram.skipsUndoManager = true;
+    myDiagram.startTransaction("highlight");
+    if (part !== null) {
+      myDiagram.highlight(part);
+    } else {
+      myDiagram.clearHighlighteds();
+    }
+    myDiagram.commitTransaction("highlight");
+    myDiagram.skipsUndoManager = oldskips;
+  }
+
+  // this is called upon an external drop in this diagram
+  function onDrop(newNode, point) {
+    const it = myDiagram.findPartsAt(point).iterator;
+    while (it.next()) {
+      const part = it.value;
+      if (part === newNode) continue;
+      // the drop happened on some Part -- call its mouseDrop handler
+      if (part && part.mouseDrop) {
+        const e = new go.InputEvent();
+        e.diagram = myDiagram;
+        e.documentPoint = point;
+        e.viewPoint = myDiagram.transformDocToView(point);
+        e.up = true;
+        myDiagram.lastInput = e;
+        // should be running in a transaction already
+        part.mouseDrop(e, part);
+        break;
+      }
+    }
+  }
+
+
+  // *****************************
+  // Second, set up a GoJS Diagram
+  // *****************************
+
+  // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+  // For details, see https://gojs.net/latest/intro/buildingObjects.html
+  const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+  const myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
+    {
+      layout: $(go.TreeLayout),
+      "undoManager.isEnabled": true
+    });
+
+  // define a Node template
+  myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      { locationSpot: go.Spot.Center },
+      new go.Binding('location'),
+      $(go.Shape, "Rectangle",
+        { fill: 'white' },
+        // Shape.fill is bound to Node.data.color
+        new go.Binding("fill", "color"),
+        // this binding changes the Shape.fill when Node.isHighlighted changes value
+        new go.Binding("fill", "isHighlighted", (h, shape) => {
+          if (h) return "red";
+          const c = shape.part.data.color;
+          return c ? c : "white";
+        }).ofObject()),  // binding source is Node.isHighlighted
+      $(go.TextBlock,
+        { margin: 3, font: "bold 16px sans-serif", width: 140, textAlign: 'center' },
+        // TextBlock.text is bound to Node.data.key
+        new go.Binding("text")),
+      { // on mouse-over, highlight the node
+        mouseDragEnter: (e, node) => node.isHighlighted = true,
+        mouseDragLeave: (e, node) => node.isHighlighted = false,
+        // on a mouse-drop add a link from the dropped-upon node to the new node
+        mouseDrop: (e, node) => {
+          const newnode = e.diagram.selection.first();
+          const incoming = newnode.findLinksInto().first();
+          if (incoming) e.diagram.remove(incoming);
+          e.diagram.model.addLinkData( { from: node.key, to: newnode.key });
+        }
+      }
+    );
+
+  // define a Link template
+  myDiagram.linkTemplate =
+    $(go.Link,
+      // two path Shapes: the transparent one becomes visible during mouse-over
+      $(go.Shape, { isPanelMain: true, strokeWidth: 6, stroke: "transparent" },
+        new go.Binding("stroke", "isHighlighted", h => h ? "red" : "transparent").ofObject()),
+      $(go.Shape, { isPanelMain: true, strokeWidth: 1 }),
+      $(go.Shape, { toArrow: "Standard" }),
+      { // on mouse-over, highlight the link
+        mouseDragEnter: (e, link) => link.isHighlighted = true,
+        mouseDragLeave: (e, link) => link.isHighlighted = false,
+        // on a mouse-drop splice the new node in between the dropped-upon link's fromNode and toNode
+        mouseDrop: (e, link) => {
+          const oldto = link.toNode;
+          const newnode = e.diagram.selection.first();
+          if (oldto === newnode || link.fromNode === newnode) return;
+          link.toNode = newnode;
+          e.diagram.model.addLinkData({ from: newnode.key, to: oldto.key });
+        }
+      }
+    );
+
+  // Modify the CommandHandler's doKeyDown to do nothing except bubble the event
+  // on a potential Paste command:
+  myDiagram.commandHandler.doKeyDown = function() {
+    const diagram = this.diagram;
+    const e = diagram.lastInput;
+    // The meta (Command) key substitutes for "control" for Mac commands
+    const control = e.meta || e.control;
+    const shift = e.shift;
+    const key = e.key;
+    if ((control && key === 'V') || (shift && key === 'Insert')) {
+      // Instead of the usual behavior:
+      // if (this.canPasteSelection()) this.pasteSelection();
+      // let the event bubble up the DOM:
+      e.bubbles = true;
+    } else {
+      go.CommandHandler.prototype.doKeyDown.call(this, e);
+    }
+  };
+
+  // handle inserting a new node using text that is in the system clipboard
+  document.addEventListener('paste', function (e) {
+    const paste = e.clipboardData.getData("text");
+    // Decide if the clipboard should be pasted, or if we should let GoJS paste
+    // This sample pastes from the clipboard if it contains any text at all,
+    // Otherwise, it pastes from GoJS
+    if (paste.length > 0) {
+      // Create a new node out of the text and paste it at the mouse location
+      const loc = myDiagram.lastInput.documentPoint;
+      myDiagram.model.addNodeData({ text: paste, location: loc });
+    } else {
+      // If the clipbooard does not contain anything, paste from GoJS instead
+      const commandHandler = myDiagram.commandHandler;
+      if (commandHandler.canPasteSelection()) commandHandler.pasteSelection();
+    }
+  });
+
+  myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange" },
+      { key: 3, text: "Gamma", color: "lightgreen" },
+      { key: 4, text: "Delta", color: "pink" }
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 1, to: 3 }
+    ]);
+}
+init();
+  </script>
     </div>
     <!-- * * * * * * * * * * * * * -->
     <!--  End of GoJS sample code  -->

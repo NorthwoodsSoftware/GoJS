@@ -61,43 +61,108 @@
     myDiagram =
       $(go.Diagram, "myDiagramDiv");
 
+    const Inner = 40;  // inner radius
+    const Thickness = 30;  // Inner + Thickness is outer radius
+
     myDiagram.nodeTemplate =
       $(go.Node, "Spot",
         $(go.Panel,
-          $(go.Shape, "Circle",  // provide a whole-circle background for the chart
-            { width: 100, height: 100, strokeWidth: 0, fill: "transparent" }),
-          $(go.Shape, { fill: "transparent", stroke: "cyan", strokeWidth: 8 },
-            new go.Binding("geometry", "value", makeArc),
-            new go.Binding("stroke", "color1")),
-          $(go.Shape, { fill: "transparent", stroke: "gray", strokeWidth: 8 },
-            new go.Binding("geometry", "value", makeArcRest),
-            new go.Binding("stroke", "color2"))
+          new go.Binding("itemArray", "values", normalizeData),
+          {
+            itemTemplate:
+              $(go.Panel, "Spot",
+                $(go.Shape, // this always occupies the full circle
+                  { fill: "#00000020", stroke: "white" },
+                  new go.Binding("geometry", "", makeAnnularWedge),
+                  new go.Binding("fill", "color")),
+                $(go.TextBlock,
+                  { width: Thickness, textAlign: "center", font: "8pt sans-serif" },
+                  new go.Binding("alignment", "", computeTextAlignment),
+                  //new go.Binding("angle", "", ensureUpright),  // does the text need to be rotated?
+                  new go.Binding("text", "", d => d.value + "\n" + Math.round(d.sweep/3.60) + "%")),
+                {
+                  toolTip: $("ToolTip",
+                    $(go.TextBlock,
+                      new go.Binding("text", "", d => `${d.text}\n#: ${d.value}\n${(d.sweep/3.60).toFixed(1)}%`)))
+                }
+              )
+          }
         ),
         $(go.TextBlock,
+          { maxSize: new go.Size(2*Inner, 2*Inner), font: "bold 10pt sans-serif" },
           new go.Binding("text"))
       );
 
-    // These arcs assume the angle starts at 270 degrees, at the top of the circle.
-    // They all assume the circle is 100x100 in size.
-    function makeArc(sweep) {
-      return new go.Geometry()
-          .add(new go.PathFigure(50, 0)
-              .add(new go.PathSegment(go.PathSegment.Arc, -90, sweep, 50, 50, 50, 50)));
+    function normalizeData(arr) {
+      const details = [];
+      let total = 0;
+      arr.forEach(item => {
+        if (typeof item === "object") {
+          details.push(Object.assign({}, item));
+          total += Math.max(item.value, 0.001);
+        } else {
+          details.push({ value: item });
+          total += Math.max(Number(item), 0.001);
+        }
+      });
+      let angle = 0;
+      details.forEach(item => {
+        item.angle = angle;
+        const sw = (item.value/total) * 360;
+        item.sweep = sw;
+        angle += sw;
+        item.radius = Inner;
+        item.thick = Thickness;
+      });
+      return details;
     }
 
-    function makeArcRest(sweep) {
-      var p = new go.Point(50, 0).rotate(-90+sweep).offset(50, 50);
-      return new go.Geometry()
-          .add(new go.PathFigure(p.x, p.y)
-              .add(new go.PathSegment(go.PathSegment.Arc, sweep-90, 360-sweep, 50, 50, 50, 50)));
+    function makeAnnularWedge(data) {
+      const angle = (typeof data.angle === "number") ? data.angle : 0;  // start angle
+      const sweep = (typeof data.sweep === "number") ? data.sweep : 90;
+      const radius = (typeof data.radius === "number") ? data.radius : Inner;  // inner radius
+      const thick = (typeof data.thick === "number") ? data.thick : Thickness;
+
+      // the Geometry will be centered about (0,0)
+      const outer = radius + thick;  // the outer radius
+      const inner = radius;
+      const p = new go.Point(outer, 0).rotate(angle);
+      const q = new go.Point(inner, 0).rotate(angle + sweep);
+      const rad = Inner + Thickness;
+      const geo = new go.Geometry()
+        .add(new go.PathFigure(-rad, -rad))  // always make sure the Geometry includes the top left corner
+        .add(new go.PathFigure(rad, rad))    // and the bottom right corner of the whole circular area
+        .add(new go.PathFigure(p.x, p.y)  // start at outer corner, go clockwise
+          .add(new go.PathSegment(go.PathSegment.Arc, angle, sweep, 0, 0, outer, outer))
+          .add(new go.PathSegment(go.PathSegment.Line, q.x, q.y))  // to opposite inner corner, then anticlockwise
+          .add(new go.PathSegment(go.PathSegment.Arc, angle + sweep, -sweep, 0, 0, inner, inner).close()));
+      return geo;
+    }
+
+    function computeTextAlignment(data) {
+      const angle = (typeof data.angle === "number") ? data.angle : 0;  // start angle
+      const sweep = (typeof data.sweep === "number") ? data.sweep : 90;
+      const radius = (typeof data.radius === "number") ? data.radius : Inner;  // inner radius
+      const thick = (typeof data.thick === "number") ? data.thick : Thickness;
+      const p = new go.Point(radius + thick / 2, 0).rotate(angle + sweep / 2);
+      return new go.Spot(0.5, 0.5, p.x, p.y);
+    }
+
+    // only used if rotating the text labels
+    function ensureUpright(data) {
+      const angle = (typeof data.angle === "number") ? data.angle : 0;
+      const sweep = (typeof data.sweep === "number") ? data.sweep : 90;
+      const a = angle + sweep/2;
+      if (a > 90 && a < 270) return a + 180;
+      return a;
     }
 
     myDiagram.model = new go.GraphLinksModel(
     [
-      { key: 1, text: "Alpha", value: 0 },
-      { key: 2, text: "Beta", value: 90 },
-      { key: 3, text: "Gamma", value: 135 },
-      { key: 4, text: "Delta", value: 330, color1: "red", color2: "green" }
+      { key: 1, text: "Alpha", values: [ 10, 20, 30 ] },
+      { key: 2, text: "Beta", values: [ { value: 1, color: "goldenrod" } ] },
+      { key: 3, text: "Gamma", values: [ { value: 3, color: "#EFFFFD" }, { value: 9, color: "#B8FFF9" }, { value: 12, color: "#85F4FF" }, { value: 7, color: "#42C2FF" } ] },
+      { key: 4, text: "Delta", values: [ { value: 30, color: "pink" }, { value: 90, color: "lightgreen" } ] }
     ],
     [
       { from: 1, to: 2 },
@@ -106,29 +171,16 @@
       { from: 4, to: 1 }
     ]);
   }
-
-  function changeValue() {
-    var node = myDiagram.selection.first();
-    if (node instanceof go.Node) {
-      myDiagram.model.commit(m => {
-        var val = node.data.value;
-        val += Math.random() * 40 - 20;
-        if (val < 0) val = 20;
-        else if (val >= 360) val = 340;
-        m.set(node.data, "value", val);
-      }, "changed data value");
-    }
-  }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
   <div id="sample">
     <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
-    <button onclick="changeValue()">Change Selected Value</button>
     <p>
-      Each node contains a Position Panel containing two Shape elements that get Geometry values
-      that show a data value as an annular bar in a circle.  One can also specify the colors of
-      the two bars -- the bar showing the value and the rest of the circle.
+      Each node contains a Position Panel containing a variable number of elements that get Geometry values
+      such that each shows a data value as an annular bar in a circle.  One can also specify the colors of the bars.
+      The <a>Panel.itemTemplate</a> also includes a <a>TextBlock</a> that shows its actual value as well as the percentage
+      that it represents of the whole Array of data values.
     </p>
     <p>
       For more sophisticated charts within nodes, see the <a href="canvases.html">Canvas Charts</a> sample.

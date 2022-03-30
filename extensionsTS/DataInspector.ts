@@ -308,6 +308,7 @@ export class Inspector {
       if (this._inspectSelection) {
         if (this._multipleSelection) { // gets the selection if multiple selection is true
           inspectedObjects = this._diagram.selection;
+          this._inspectedObject = inspectedObjects.first();
         } else { // otherwise grab the first object
           inspectedObject = this._diagram.selection.first();
         }

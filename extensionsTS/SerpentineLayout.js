@@ -43,6 +43,7 @@ var __extends = (this && this.__extends) || (function () {
      * positioning nodes in horizontal rows back and forth, alternating between left-to-right
      * and right-to-left within the {@link #wrap} limit.
      * {@link #spacing} controls the distance between nodes.
+     * {@link #leftSpot} and {@link #rightSpot} determine the Spots to use for the {@link Link#fromSpot} and {@link Link#toSpot}.
      *
      * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
      *
@@ -58,6 +59,9 @@ var __extends = (this && this.__extends) || (function () {
             var _this = _super.call(this) || this;
             _this._spacing = new go.Size(30, 30);
             _this._wrap = NaN;
+            _this._root = null;
+            _this._leftSpot = go.Spot.Left;
+            _this._rightSpot = go.Spot.Right;
             _this.isViewportSized = true;
             return _this;
         }
@@ -97,6 +101,54 @@ var __extends = (this && this.__extends) || (function () {
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(SerpentineLayout.prototype, "root", {
+            /**
+             * Gets or sets the starting node of the sequence.
+             *
+             * The default value is null, which causes the layout to look for a node without any incoming links.
+             */
+            get: function () { return this._root; },
+            set: function (val) {
+                if (this._root !== val) {
+                    this._root = val;
+                    this.invalidateLayout();
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SerpentineLayout.prototype, "leftSpot", {
+            /**
+             * Gets or sets the Spot to use on the left side of a Node.
+             *
+             * The default value is {@link Spot.Left}.
+             */
+            get: function () { return this._leftSpot; },
+            set: function (val) {
+                if (this._leftSpot !== val) {
+                    this._leftSpot = val;
+                    this.invalidateLayout();
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SerpentineLayout.prototype, "rightSpot", {
+            /**
+             * Gets or sets the Spot to use on the right side of a Node.
+             *
+             * The default value is {@link Spot.Right}.
+             */
+            get: function () { return this._rightSpot; },
+            set: function (val) {
+                if (this._rightSpot !== val) {
+                    this._rightSpot = val;
+                    this.invalidateLayout();
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
         /**
          * Copies properties to a cloned Layout.
          */
@@ -104,6 +156,9 @@ var __extends = (this && this.__extends) || (function () {
             _super.prototype.cloneProtected.call(this, copy);
             copy._spacing = this._spacing;
             copy._wrap = this._wrap;
+            // don't copy _root
+            copy._leftSpot = this._leftSpot;
+            copy._rightSpot = this._rightSpot;
         };
         /**
          * This method actually positions all of the Nodes, assuming that the ordering of the nodes
@@ -111,21 +166,23 @@ var __extends = (this && this.__extends) || (function () {
          * This respects the {@link #spacing} and {@link #wrap} properties to affect the layout.
          * @param {Iterable.<Part>} coll A collection of {@link Part}s.
          */
-        SerpentineLayout.prototype.doLayout = function (coll) {
+        SerpentineLayout.prototype.doLayout = function (collection) {
             var diagram = this.diagram;
-            coll = this.collectParts(coll);
-            var root = null;
-            // find a root node -- one without any incoming links
-            var it = coll.iterator;
-            while (it.next()) {
-                var n = it.value;
-                if (!(n instanceof go.Node))
-                    continue;
-                if (root === null)
-                    root = n;
-                if (n.findLinksInto().count === 0) {
-                    root = n;
-                    break;
+            var coll = this.collectParts(collection);
+            var root = this.root;
+            if (root === null) {
+                // find a root node -- one without any incoming links
+                var it = coll.iterator;
+                while (it.next()) {
+                    var n = it.value;
+                    if (!(n instanceof go.Node))
+                        continue;
+                    if (root === null)
+                        root = n;
+                    if (n.findLinksInto().count === 0) {
+                        root = n;
+                        break;
+                    }
                 }
             }
             // couldn't find a root node
@@ -155,10 +212,22 @@ var __extends = (this && this.__extends) || (function () {
             var increasing = true;
             var node = root;
             while (node !== null) {
+                var orignode = node;
+                if (node.containingGroup !== null)
+                    node = node.containingGroup;
                 var b = this.getLayoutBounds(node);
                 // get the next node, if any
-                var nextlink = node.findLinksOutOf().first();
+                var nextlink = null;
+                for (var it = orignode.findLinksOutOf().iterator; it.next();) {
+                    if (coll.has(it.value)) {
+                        nextlink = it.value;
+                        break;
+                    }
+                }
                 var nextnode = (nextlink !== null ? nextlink.toNode : null);
+                var orignextnode = nextnode;
+                if (nextnode !== null && nextnode.containingGroup !== null)
+                    nextnode = nextnode.containingGroup;
                 var nb = (nextnode !== null ? this.getLayoutBounds(nextnode) : new go.Rect());
                 if (increasing) {
                     node.move(new go.Point(x, y));
@@ -204,7 +273,7 @@ var __extends = (this && this.__extends) || (function () {
                         }
                     }
                 }
-                node = nextnode;
+                node = orignextnode;
             }
             if (diagram !== null)
                 diagram.commitTransaction('Serpentine Layout');

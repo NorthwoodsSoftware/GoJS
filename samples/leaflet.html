@@ -84,14 +84,16 @@
       accessToken: "pk.eyJ1IjoiZ29qcyIsImEiOiJjaXppcnNkbDgwMzQ3MnFsNDFnY2phb2QwIn0.7AuVKrWdxQnJxa_W7qC3-w"
     }).addTo(myLeafletMap);
 
-    myLeafletMap.on("moveend", function(e) {
-      myUpdatingGoJS = true;
-      myDiagram.updateAllTargetBindings("latlong"); // Without virtualization this can be slow if there are many nodes
-      myDiagram.redraw(); // At the expense of performance, this will make sure GoJS positions are updated immediately
-      myUpdatingGoJS = false;
-    });
+    myLeafletMap.on("moveend", updateNodes);
 
     var myUpdatingGoJS = false;  // prevent modifying data.latlong properties upon Leaflet "move" events
+    function updateNodes() {
+      myUpdatingGoJS = true;
+      myDiagram.commit(diag => {
+        diag.nodes.each(n => n.updateTargetBindings("latlong")); // Without virtualization this can be slow if there are many nodes
+      }, null);
+      myUpdatingGoJS = false;
+    }
 
     /*
       GoJS init
@@ -112,7 +114,14 @@
         hasVerticalScrollbar: false,
         initialPosition: new go.Point(0, 0),
         padding: 0,
-        "toolManager.hoverDelay": 100  // how quickly tooltips are shown
+        "toolManager.hoverDelay": 100,  // how quickly tooltips are shown
+        "undoManager.isEnabled": true,
+        "ModelChanged": e => {
+          if (e.change === go.ChangedEvent.Transaction &&
+              (e.propertyName === "FinishedUndo" || e.propertyName === "FinishedRedo")) {
+            setTimeout(() => updateNodes());
+          }
+        },
       });
 
     var toolTipTemplate =

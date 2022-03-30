@@ -79,9 +79,9 @@
 </p>
 
 <pre class="lang-js"><code>
-var $ = go.GraphObject.make;
+const $ = go.GraphObject.make;
 
-myDiagram =
+const myDiagram =
   $(go.Diagram, "myDiagramDiv",
     { "undoManager.isEnabled": true });
 
@@ -112,29 +112,29 @@ myDiagram.model = new go.GraphLinksModel(
 <!-- LIVE -->
 <div id="myDiagramDiv" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
-  var $ = go.GraphObject.make;
+var $ = go.GraphObject.make;
 
-  var myDiagram =
-    $(go.Diagram, "myDiagramDiv",
-      { "undoManager.isEnabled": true });
+var myDiagram =
+  $(go.Diagram, "myDiagramDiv",
+    { "undoManager.isEnabled": true });
 
-  myDiagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        { stroke: null },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 6, font: "18px sans-serif" },
-        new go.Binding("text"))
-    );
+myDiagram.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "Rectangle",
+      { stroke: null },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 6, font: "18px sans-serif" },
+      new go.Binding("text"))
+  );
 
-  myDiagram.model = new go.GraphLinksModel(
-    [ // there will be a Node for each data object in this nodeDataArray
-      { key: 1, text: "Alpha", color: "lightblue" },
-      { key: 2, text: "Beta", color: "orange" },
-      { key: 3, text: "Gamma", color: "lightgreen" },
-      { key: 4, text: "Delta", color: "pink" }
-    ]);
+myDiagram.model = new go.GraphLinksModel(
+  [ // there will be a Node for each data object in this nodeDataArray
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta", color: "orange" },
+    { key: 3, text: "Gamma", color: "lightgreen" },
+    { key: 4, text: "Delta", color: "pink" }
+  ]);
 </script>
 
 <p>
@@ -147,31 +147,33 @@ myDiagram.model = new go.GraphLinksModel(
     Or press and drag in the diagram background to pan the entire Diagram.
   </li>
   <li>
-    Common keyboard shortcuts such as <code>CTRL-C</code>, <code>CTRL-V</code>, <code>CTRL-X</code>
+    Common keyboard shortcuts such as <code>Ctrl-C</code>, <code>Ctrl-V</code>, <code>Ctrl-X</code>
     will copy, paste, and cut diagram parts, respectively.
+    Note that copies will copy the location of the Node as well, unless a layout or the paste command moves the new node.
   </li>
   <li>
-    Drag-and-hold allows you to create a selection box for selecting multiple nodes.
-    CTRL-clicking on nodes allows you to toggle their selection.
+    Drag-and-hold in the background of the diagram allows you to create a selection box for selecting multiple nodes.
+    Ctrl-clicking on nodes allows you to toggle their selection.
+    Shift-clicking on nodes makes sure they are selected.
   </li>
   <li>
-    Since the Diagram's undoManager was enabled, <code>CTRL-Z</code> and <code>CTRL-Y</code> will undo and redo operations.
+    Since the Diagram's undoManager was enabled, <code>Ctrl-Z</code> and <code>Ctrl-Y</code> will undo and redo operations.
     Panning (scrolling) and selection are not considered undoable operations.
   </li>
 </ul>
 
 <p>
-  By setting a few properties you can expose more interaction to a user:
+  By setting a few properties you can expose more interaction to a user, including manipulating groups:
 </p>
 
 <pre class="lang-js"><code>
-var $ = go.GraphObject.make;
+const $ = go.GraphObject.make;
 
-var myDiagram =
+const myDiagram =
   $(go.Diagram, "myDiagramDiv",
     {
       // allow double-click in background to create a new node
-      "clickCreatingTool.archetypeNodeData": { key: "Node", color: "white" },
+      "clickCreatingTool.archetypeNodeData": { text: "Node", color: "lightgray" },
       // allow Ctrl-G to group selected nodes
       "commandHandler.archetypeGroupData": { text: "Group", isGroup: true },
       // have mouse wheel events zoom in and out instead of scroll up and down
@@ -214,50 +216,50 @@ myDiagram.model = new go.GraphLinksModel(
 <!-- LIVE -->
 <div id="myDiagramDiv2" class="diagramStyling" style="width:700px; height:250px"></div>
 <script>
-  var $ = go.GraphObject.make;
+var $ = go.GraphObject.make;
 
-  var myDiagram =
-    $(go.Diagram, "myDiagramDiv2",
-      {
-        // allow double-click in background to create a new node
-        "clickCreatingTool.archetypeNodeData": { key: "Node", color: "white" },
-        // allow Ctrl-G to group selected nodes
-        "commandHandler.archetypeGroupData": { text: "Group", isGroup: true },
-        // have mouse wheel events zoom in and out instead of scroll up and down
-        "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
-        "undoManager.isEnabled": true // enable undo & redo
-      });
+var myDiagram2 =
+  $(go.Diagram, "myDiagramDiv2",
+    {
+      // allow double-click in background to create a new node
+      "clickCreatingTool.archetypeNodeData": { text: "Node", color: "lightgray" },
+      // allow Ctrl-G to group selected nodes
+      "commandHandler.archetypeGroupData": { text: "Group", isGroup: true },
+      // have mouse wheel events zoom in and out instead of scroll up and down
+      "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+      "undoManager.isEnabled": true // enable undo & redo
+    });
 
-  myDiagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        { stroke: null },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 6, font: "18px sans-serif", editable: true },
-        new go.Binding("text").makeTwoWay())
-    );
+myDiagram2.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "Rectangle",
+      { stroke: null },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 6, font: "18px sans-serif", editable: true },
+      new go.Binding("text").makeTwoWay())
+  );
 
-  myDiagram.groupTemplate =
-    $(go.Group, "Vertical",
-      { ungroupable: true }, // allow Ctrl-Shift-G to ungroup a selected Group.
-      $(go.TextBlock,
-        { font: "bold 12pt sans-serif" },
-        new go.Binding("text")),
-      $(go.Panel, "Auto",
-        $(go.Shape, { fill: "transparent" }),
-        $(go.Placeholder, { padding: 10 })
-      )
-    );
+myDiagram2.groupTemplate =
+  $(go.Group, "Vertical",
+    { ungroupable: true }, // allow Ctrl-Shift-G to ungroup a selected Group.
+    $(go.TextBlock,
+      { font: "bold 12pt sans-serif" },
+      new go.Binding("text")),
+    $(go.Panel, "Auto",
+      $(go.Shape, { fill: "transparent" }),
+      $(go.Placeholder, { padding: 10 })
+    )
+  );
 
-  myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: 1, text: "Alpha", color: "lightblue" },
-      { key: 2, text: "Beta", color: "orange" },
-      { key: 3, text: "Gamma", color: "lightgreen", group: 5 },
-      { key: 4, text: "Delta", color: "pink", group: 5 },
-      { key: 5, text: "Group1", isGroup: true }
-    ]);
+myDiagram2.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta", color: "orange" },
+    { key: 3, text: "Gamma", color: "lightgreen", group: 5 },
+    { key: 4, text: "Delta", color: "pink", group: 5 },
+    { key: 5, text: "Group1", isGroup: true }
+  ]);
 </script>
 
 <p>
@@ -267,10 +269,10 @@ myDiagram.model = new go.GraphLinksModel(
       a new node with the specified data.
     </li>
     <li>
-      <code>CommandHandler.archetypeGroupData</code> allows <code>CTRL-G</code> to group a selection of nodes.
+      <code>CommandHandler.archetypeGroupData</code> allows <code>Ctrl-G</code> to group a selection of nodes.
     </li>
     <li>
-      <code>Group.ungroupable</code> allows <code>CTRL-SHIFT-G</code> to ungroup a selected group.
+      <code>Group.ungroupable</code> allows <code>Ctrl-Shift-G</code> to ungroup a selected group.
     </li>
     <li>
       <code>ToolManager.mouseWheelBehavior</code> allows the mouse wheel to zoom instead of scroll by default.
@@ -293,7 +295,7 @@ myDiagram.model = new go.GraphLinksModel(
 <p>
   You can disable portions of Diagram interactivity with several properties,
   depending on what you want to allow users to do.
-  See the <a href="../intro/permissions.html">Intro page on GoJS permissions</a> for more.
+  See the <a href="../intro/permissions.html">Intro page on GoJS permissions</a> for more explanation.
 </p>
 
 <h2 id="ContextMenus">Context Menus</h2>
@@ -305,15 +307,15 @@ myDiagram.model = new go.GraphLinksModel(
 </p>
 
 <pre class="lang-js"><code>
-var $ = go.GraphObject.make;
+const $ = go.GraphObject.make;
 
-var myDiagram =
+const myDiagram =
   $(go.Diagram, "myDiagramDiv",
     { "undoManager.isEnabled": true });
 
 // this function is called when the context menu button is clicked
 function nodeClicked(e, obj) {
-  alert('node ' + obj.part.data.key + ' was clicked');
+  alert('node ' + obj.part.data.key + ', "' + obj.part.data.text + '" was clicked');
 }
 
 // defines a context menu to be referenced in the node template
@@ -371,67 +373,67 @@ myDiagram.model = new go.GraphLinksModel(
 <!-- LIVE -->
 <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
-  var $ = go.GraphObject.make;
+var $ = go.GraphObject.make;
 
-  var myDiagram =
-    $(go.Diagram, "myDiagramDiv3",
-      { "undoManager.isEnabled": true });
+var myDiagram3 =
+  $(go.Diagram, "myDiagramDiv3",
+    { "undoManager.isEnabled": true });
 
-  // this function is called when the context menu button is clicked
-  function nodeClicked(e, obj) {
-    alert('node ' + obj.part.data.key + ' was clicked');
-  }
+// this function is called when the context menu button is clicked
+function nodeClicked(e, obj) {
+  alert('node ' + obj.part.data.key + ', "' + obj.part.data.text + '" was clicked');
+}
 
-  // defines a context menu to be referenced in the node template
-  var contextMenuTemplate =
-    $(go.Adornment, "Vertical",
-      $("ContextMenuButton",
-        $(go.TextBlock, "Click me!"),
-        { click: nodeClicked })
-      // more ContextMenuButtons would go here
-    );
+// defines a context menu to be referenced in the node template
+var contextMenuTemplate =
+  $(go.Adornment, "Vertical",
+    $("ContextMenuButton",
+      $(go.TextBlock, "Click me!"),
+      { click: nodeClicked })
+    // more ContextMenuButtons would go here
+  );
 
-  myDiagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { contextMenu: contextMenuTemplate }, // set the context menu
-      $(go.Shape, "Rectangle",
-        { stroke: null },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 6, font: "18px sans-serif" },
-        new go.Binding("text"))
-    );
+myDiagram3.nodeTemplate =
+  $(go.Node, "Auto",
+    { contextMenu: contextMenuTemplate }, // set the context menu
+    $(go.Shape, "Rectangle",
+      { stroke: null },
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 6, font: "18px sans-serif" },
+      new go.Binding("text"))
+  );
 
-  // this function alerts the current number of nodes in the Diagram
-  function countNodes(e, obj) {
-    alert('there are ' + e.diagram.nodes.count + ' nodes');
-  }
+// this function alerts the current number of nodes in the Diagram
+function countNodes(e, obj) {
+  alert('there are ' + e.diagram.nodes.count + ' nodes');
+}
 
-  // this function creates a new node and inserts it at the last event's point
-  function addNode(e, obj) {
-    var data = { text: "Node", color: "white" };
-    // do not need to set "key" property -- addNodeData will assign it automatically
-    e.diagram.model.addNodeData(data);
-    var node = e.diagram.findPartForData(data);
-    node.location = e.diagram.lastInput.documentPoint;
-  }
+// this function creates a new node and inserts it at the last event's point
+function addNode(e, obj) {
+  var data = { text: "Node", color: "white" };
+  // do not need to set "key" property -- addNodeData will assign it automatically
+  e.diagram.model.addNodeData(data);
+  var node = e.diagram.findPartForData(data);
+  node.location = e.diagram.lastInput.documentPoint;
+}
 
-  myDiagram.contextMenu =
-    $(go.Adornment, "Vertical",
-      $("ContextMenuButton",
-        $(go.TextBlock, "Count Nodes"),
-        { click: countNodes }),
-      $("ContextMenuButton",
-        $(go.TextBlock, "Add Node"),
-        { click: addNode })
-      // more ContextMenuButtons would go here
-    );
+myDiagram3.contextMenu =
+  $(go.Adornment, "Vertical",
+    $("ContextMenuButton",
+      $(go.TextBlock, "Count Nodes"),
+      { click: countNodes }),
+    $("ContextMenuButton",
+      $(go.TextBlock, "Add Node"),
+      { click: addNode })
+    // more ContextMenuButtons would go here
+  );
 
-  myDiagram.model = new go.GraphLinksModel(
-    [
-      { key: 1, text: "Alpha", color: "lightblue" },
-      { key: 2, text: "Beta", color: "orange" }
-    ]);
+myDiagram3.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta", color: "orange" }
+  ]);
 </script>
 
 <p>
@@ -453,6 +455,12 @@ myDiagram.model = new go.GraphLinksModel(
 </p>
 
 <pre class="lang-js"><code>
+const $ = go.GraphObject.make;
+
+const myDiagram =
+  $(go.Diagram, "myDiagramDiv",
+    { "undoManager.isEnabled": true });
+
 myDiagram.nodeTemplate =
   $(go.Node, "Auto",
     $(go.Shape, "Rectangle",
@@ -500,54 +508,54 @@ myDiagram.model = new go.GraphLinksModel(
 <!-- LIVE -->
 <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
-  var $ = go.GraphObject.make;
+var $ = go.GraphObject.make;
 
-  var myDiagram =
-    $(go.Diagram, "myDiagramDiv4",
-      { "undoManager.isEnabled": true });
+var myDiagram4 =
+  $(go.Diagram, "myDiagramDiv4",
+    { "undoManager.isEnabled": true });
 
-  myDiagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        {
-          stroke: null,
-          portId: "",
-          cursor: "pointer",
-          fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
-          toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true
-        },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 10, font: "18px sans-serif" },
-        new go.Binding("text"))
-    );
-
-  myDiagram.linkTemplate =
-    $(go.Link,
+myDiagram4.nodeTemplate =
+  $(go.Node, "Auto",
+    $(go.Shape, "Rectangle",
       {
-        // allow the user to relink existing links:
-        relinkableFrom: true, relinkableTo: true,
-        // draw the link path shorter than normal,
-        // so that it does not interfere with the appearance of the arrowhead
-        toShortLength: 2
+        stroke: null,
+        portId: "",
+        cursor: "pointer",
+        fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
+        toLinkable: true, toLinkableSelfNode: true, toLinkableDuplicates: true
       },
-      $(go.Shape,
-        { strokeWidth: 2 }),
-      $(go.Shape,
-        { toArrow: "Standard", stroke: null })
-    );
+      new go.Binding("fill", "color")),
+    $(go.TextBlock,
+      { margin: 10, font: "18px sans-serif" },
+      new go.Binding("text"))
+  );
 
-  myDiagram.model = new go.GraphLinksModel(
-  [
-    { key: 1, text: "Alpha", color: "lightblue" },
-    { key: 2, text: "Beta", color: "orange" },
-    { key: 3, text: "Gamma", color: "lightgreen" },
-    { key: 4, text: "Delta", color: "pink" }
-  ],
-  [
-    { from: 1, to: 2 },
-    { from: 1, to: 4 }
-  ]);
+myDiagram4.linkTemplate =
+  $(go.Link,
+    {
+      // allow the user to relink existing links:
+      relinkableFrom: true, relinkableTo: true,
+      // draw the link path shorter than normal,
+      // so that it does not interfere with the appearance of the arrowhead
+      toShortLength: 2
+    },
+    $(go.Shape,
+      { strokeWidth: 2 }),
+    $(go.Shape,
+      { toArrow: "Standard", stroke: null })
+  );
+
+myDiagram4.model = new go.GraphLinksModel(
+[
+  { key: 1, text: "Alpha", color: "lightblue" },
+  { key: 2, text: "Beta", color: "orange" },
+  { key: 3, text: "Gamma", color: "lightgreen" },
+  { key: 4, text: "Delta", color: "pink" }
+],
+[
+  { from: 1, to: 2 },
+  { from: 1, to: 4 }
+]);
 </script>
 
 <p>
@@ -555,8 +563,8 @@ myDiagram.model = new go.GraphLinksModel(
 </p>
 <ul>
   <li>
-    The <code>Shape</code> has its <code>portId</code> set to make it the port instead of the entire node.
-    Then several <code>...linkable</code> properties are set, allowing each node to link to itself and to others.
+    The Node's <code>Shape</code> has its <code>portId</code> set to make it the port instead of the entire Node.
+    Then several <code>...Linkable</code> properties are set, allowing each node to link to itself and to others.
     You may not need to set all of those properties on your ports in your node templates.
   </li>
   <li>

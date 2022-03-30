@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.5
+ * Type definitions for GoJS v2.2.6
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10743,7 +10743,7 @@ export class Diagram {
      * @since 2.0
      */
     computeMove(n: Part, newloc: Point, dragOptions: DraggingOptions, result?: Point): Point;
-    set draggedLink(value: Link);
+    set draggedLink(value: Link | null);
     /**
      * Adds a new Layer to the list of layers.
      * If Layer#isTemporary is false, the layer is added after all existing non-temporary layers.
@@ -12698,7 +12698,7 @@ export class Diagram {
      * @return {SVGElement}
      * @see #makeImage
      */
-    makeSvg(options?: SvgRendererOptions): SVGElement;
+    makeSvg(options?: SvgRendererOptions): SVGElement | null;
     /**
      * (undocumented)
      * Add a renderer to the Diagram. This property is only used when building GoJS from source.
@@ -18986,7 +18986,7 @@ export class TextBlock extends GraphObject {
      * from embedded newlines (`\n`), #wrapping, and #maxLines.
      *
      * This value may be meaningless before the TextBlock is measured.
-     * @see {#lineHeight}
+     * @see #lineHeight
      */
     get lineCount(): number;
     /**
@@ -18994,7 +18994,7 @@ export class TextBlock extends GraphObject {
      *
      * This value may be meaningless before the TextBlock is measured.
      * @since 2.2
-     * @see {#lineCount}
+     * @see #lineCount
      */
     get lineHeight(): number;
     /**
@@ -20301,7 +20301,7 @@ export class Part extends Panel {
      *
      * The color of the shadow is determined by #shadowColor.
      * The opacity of the shadow color is multiplied by the opacity of the shadowed object's brush.
-     * So, for example, if you have a <a>Panel</a> with a <a>GraphObject.background</a>
+     * So, for example, if you have a Panel with a GraphObject#background
      * that is "transparent", the shadow that is drawn for the panel will also be transparent.
      *
      * The direction of the shadow that is cast is controlled by #shadowOffset,
@@ -20690,7 +20690,7 @@ export class Part extends Panel {
      * Brushes cannot be used for this property -- only strings.
      *
      * The opacity of the shadow color is multiplied by the opacity of the shadowed object's brush.
-     * So, for example, if you have a <a>Panel</a> with a <a>GraphObject.background</a>
+     * So, for example, if you have a Panel with a GraphObject#background
      * that is "transparent", the shadow that is drawn for the panel will also be transparent.
      * @see #isShadowed
      * @see #shadowOffset
@@ -22772,7 +22772,7 @@ export class Link extends Part {
      * @return {Point} in document coordinates.
      * @since 1.2
      */
-    getLinkPoint(node: Node | null, port: GraphObject | null, spot: Spot, from: boolean, ortho: boolean, othernode: Node | null, otherport: GraphObject | null, result?: Point): Point;
+    getLinkPoint(node: Node | null, port: GraphObject, spot: Spot, from: boolean, ortho: boolean, othernode: Node | null, otherport: GraphObject, result?: Point): Point;
     /**
      * Compute the direction in which a link should go from a given connection point.
      * @expose
