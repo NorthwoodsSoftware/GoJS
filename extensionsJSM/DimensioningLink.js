@@ -115,11 +115,15 @@ export class DimensioningLink extends go.Link {
         if (!fromnode)
             return false;
         const fromport = this.fromPort;
+        if (!fromport)
+            return false;
         const fromspot = this.computeSpot(true);
         const tonode = this.toNode;
         if (!tonode)
             return false;
         const toport = this.toPort;
+        if (!toport)
+            return false;
         const tospot = this.computeSpot(false);
         const frompoint = this.getLinkPoint(fromnode, fromport, fromspot, true, true, tonode, toport);
         if (!frompoint.isReal())

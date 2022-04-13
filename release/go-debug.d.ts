@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.6
+ * Type definitions for GoJS v2.2.7
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -3689,7 +3689,9 @@ export class InputEvent {
  *   - **"ViewportBoundsChanged"**, the visible area of the Diagram, Diagram#viewportBounds, has changed;<br/>
  *     the DiagramEvent#subject is an object whose "scale" property is the old Diagram#scale value,
  *     whose "position" property is the old Diagram#position value,
- *     and whose "bounds" property is the old Diagram#viewportBounds value;
+ *     whose "bounds" property is the old Diagram#viewportBounds value,
+ *     whose "canvasSize" property is the old size of the Diagram#div, and
+ *     whose "newCanvasSize" property is the new size of the Diagram#div,
  *     the DiagramEvent#parameter is also the old viewportBounds Rect.
  * @unrestricted
  */
@@ -5739,13 +5741,13 @@ export class DraggingTool extends Tool {
      * Gets or sets the DraggingTool's DraggingOptions instance, which controls several dragging properties.
      *
      * Several DraggingTool properties are just convenience properties:
-     *   - isGridSnapEnabled
-     *   - isGridSnapRealtime
-     *   - gridSnapCellSize
-     *   - gridSnapCellSpot
-     *   - gridSnapOrigin
-     *   - dragsLink
-     *   - dragsTree
+     *   - #isGridSnapEnabled
+     *   - #isGridSnapRealtime
+     *   - #gridSnapCellSize
+     *   - #gridSnapCellSpot
+     *   - #gridSnapOrigin
+     *   - #dragsLink
+     *   - #dragsTree
      *
      * Setting any of these properties really sets the corresponding dragOptions property.
      *
@@ -5765,7 +5767,7 @@ export class DraggingTool extends Tool {
      * By default this property is false.
      * Setting this property does not raise any events.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      */
     get isGridSnapEnabled(): boolean;
     set isGridSnapEnabled(value: boolean);
@@ -5783,7 +5785,7 @@ export class DraggingTool extends Tool {
      * By default this property is true; when false parts are only snapped to grid locations upon the drop (i.e. mouse-up).
      * Setting this property does not raise any events.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      * @since 1.1
      */
     get isGridSnapRealtime(): boolean;
@@ -5794,7 +5796,7 @@ export class DraggingTool extends Tool {
      * By default this property is the Size(NaN, NaN), which causes this tool to use the Panel#gridCellSize value of the Diagram#grid.
      * Setting this property does not raise any events.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      */
     get gridSnapCellSize(): Size;
     set gridSnapCellSize(value: Size);
@@ -5805,7 +5807,7 @@ export class DraggingTool extends Tool {
      * node locations will snap exactly to the grid point.
      * Setting this property does not raise any events.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      */
     get gridSnapCellSpot(): Spot;
     set gridSnapCellSpot(value: Spot);
@@ -5816,7 +5818,7 @@ export class DraggingTool extends Tool {
      * which causes this tool to use the Panel#gridOrigin value from the Diagram#grid.
      * Setting this property does not raise any events.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      */
     get gridSnapOrigin(): Point;
     set gridSnapOrigin(value: Point);
@@ -5830,7 +5832,7 @@ export class DraggingTool extends Tool {
      * In order to avoid too many cases of having both ends of a dragged Link connect to the same node (if allowed),
      * it is commonplace to decrease the LinkingBaseTool#portGravity to a smaller value such as 10 or 20.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      * @since 1.3
      */
     get dragsLink(): boolean;
@@ -5844,7 +5846,7 @@ export class DraggingTool extends Tool {
      * The CommandHandler#copiesTree property serves a similar role for the CommandHandler#copySelection command,
      * when the user types control-C to copy the currently selected parts.
      *
-     * This property is a convenience getter/setter, and sets a value on dragOptions.
+     * This property is a convenience getter/setter, and sets a value on #dragOptions.
      */
     get dragsTree(): boolean;
     set dragsTree(value: boolean);
@@ -9704,7 +9706,7 @@ export class Layer {
     set pickable(value: boolean);
     /**
      * Gets or sets whether or not a layer is included in the documentBounds computation.
-     * Default value is `true`. However, setting isTemporary to `true` also sets this property to `false` before version 3.
+     * Default value is `true`. However, setting #isTemporary to `true` also sets this property to `false` before version 3.
      * @since 2.2
      * @see #isTemporary
      */
@@ -14954,11 +14956,11 @@ export abstract class GraphObject {
      * Zero is along the positive X-axis (rightwards); 90 is along the positive Y-axis (downwards).
      * Default is 0.
      *
-     * When set on a Graduated Panel's TextBlock label, this value will be be ignored if segmentOrientation is not
+     * When set on a Graduated Panel's TextBlock label, this value will be be ignored if #segmentOrientation is not
      * Link.None, Link.OrientAlong, or Link.OrientUpright. OrientAlong and OrientUpright will use this angle
      * relative to the slope of the main path.
      *
-     * When set on a Link label, this value will be be ignored if segmentOrientation is not Link.None.
+     * When set on a Link label, this value will be be ignored if #segmentOrientation is not Link.None.
      * @see #scale
      * @see #stretch
      */
@@ -16128,7 +16130,7 @@ export abstract class GraphObject {
     attach(config: any): this;
     /**
      * This method takes a function that can be used to apply multiple settings, bindings,
-     * or {@Panel#add} calls, to different GraphObjects. This is common in initialization.
+     * or Panel#add calls, to different GraphObjects. This is common in initialization.
      * If you are just adding settings, bindings, or GraphObjects to a single GraphObject,
      * you do not need to use this, you can just chain calls to #set, #bind,
      * and Panel#add instead. This method is mostly useful when setting the same values

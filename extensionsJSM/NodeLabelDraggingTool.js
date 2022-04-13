@@ -72,7 +72,7 @@ export class NodeLabelDraggingTool extends go.Tool {
         return this.findLabel() !== null;
     }
     /**
-     * Start a transaction, call {@link findLabel} and remember it as the "label" property,
+     * Start a transaction, call {@link #findLabel} and remember it as the "label" property,
      * and remember the original value for the label's {@link GraphObject#alignment} property.
      */
     doActivate() {

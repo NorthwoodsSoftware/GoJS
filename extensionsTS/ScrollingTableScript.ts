@@ -27,6 +27,29 @@ export function init() {
         }
       });
 
+  // support mouse wheel scrolling of table when the mouse is in the table
+  myDiagram.toolManager.doMouseWheel = function() {  // method override
+    const e = this.diagram.lastInput;
+    let tab = this.diagram.findObjectAt(e.documentPoint);
+    while (tab !== null && !(tab as any)._updateScrollBar) tab = tab.panel;
+    if (tab instanceof go.Panel) {
+      const table = tab.findObject("TABLE");
+      if (table instanceof go.Panel) {
+        const delta = e.delta;
+        const incr = e.shift ? 5 : 1;
+        if (delta > 0) {
+          table.topIndex = Math.max(0, table.topIndex - incr);
+        } else if (delta < 0) {
+          table.topIndex = Math.min(table.topIndex + incr, table.rowCount-1);
+        }
+      }
+      (tab as any)._updateScrollBar(table);
+      e.handled = true;
+      return;
+    }
+    go.ToolManager.prototype.doMouseWheel.call(this);
+  }
+
   myDiagram.nodeTemplate =
     $(go.Node, 'Vertical',
       {
@@ -34,7 +57,7 @@ export function init() {
         resizable: true, resizeObjectName: 'SCROLLER',
         portSpreading: go.Node.SpreadingNone
       },
-      new go.Binding('location').makeTwoWay(),
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.TextBlock,
         { font: 'bold 14px sans-serif' },
         new go.Binding('text', 'key')),
@@ -43,14 +66,14 @@ export function init() {
         $('ScrollingTable',
           {
             name: 'SCROLLER',
-            desiredSize: new go.Size(NaN, 60),  // fixed width
-            stretch: go.GraphObject.Fill,       // but stretches vertically
+            desiredSize: new go.Size(NaN, 60),
+            stretch: go.GraphObject.Fill,
             defaultColumnSeparatorStroke: 'gray',
             defaultColumnSeparatorStrokeWidth: 0.5
           },
           new go.Binding('TABLE.itemArray', 'items'),
           new go.Binding('TABLE.column', 'left', function(left) { return left ? 2 : 0; }),
-          new go.Binding('desiredSize', 'size').makeTwoWay(),
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           {
             'TABLE.itemTemplate':
               $(go.Panel, 'TableRow',
@@ -79,7 +102,7 @@ export function init() {
       linkToPortIdProperty: 'toPort',
       nodeDataArray: [
         {
-          key: 'Alpha', left: true, location: new go.Point(0, 0), size: new go.Size(100, 50),
+          key: 'Alpha', left: true, loc: "0 0", size: "100 50",
           items:
             [
               { name: 'A', value: 1 },
@@ -92,7 +115,7 @@ export function init() {
             ]
         },
         {
-          key: 'Beta', location: new go.Point(150, 0),
+          key: 'Beta', loc: "150 0", size: "80 70",
           items:
             [
               { name: 'Aa', value: 1 },

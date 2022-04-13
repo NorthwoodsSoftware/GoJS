@@ -32,7 +32,7 @@
     // Example:
     //   $("AutoRepeatButton", 150,  // slower than the default 50 milliseconds between calls
     //     {
-    //       click: function(e, button) { doSomething(button.part); }
+    //       click: (e, button) => doSomething(button.part)
     //     },
     //     $(go.Shape, "Circle", { width: 8, height: 8 })
     //   )
@@ -44,8 +44,8 @@
         function delayClicking(e, obj) {
             endClicking(e, obj);
             if (obj.click) {
-                obj._timer =
-                    setTimeout(function () { repeatClicking(e, obj); }, delay); // wait milliseconds before starting clicks
+                // wait milliseconds before starting clicks
+                obj._timer = setTimeout(function () { return repeatClicking(e, obj); }, delay);
             }
         }
         function repeatClicking(e, obj) {
@@ -67,7 +67,16 @@
                 obj._timer = undefined;
             }
         }
-        return $('Button', { actionDown: delayClicking, actionUp: endClicking });
+        return $('Button', {
+            actionDown: delayClicking,
+            actionUp: endClicking,
+            "ButtonBorder.figure": "Rectangle",
+            "ButtonBorder.fill": "transparent",
+            "ButtonBorder.stroke": null,
+            "_buttonFillOver": "rgba(0, 0, 0, .25)",
+            "_buttonStrokeOver": null,
+            cursor: "auto"
+        });
     });
     // Create a scrolling Table Panel, whose name is given as the optional first argument.
     // If not given the name defaults to "TABLE".
@@ -77,15 +86,20 @@
     //     ...)
     // Note that if you have more than one of these in a Part,
     // you'll want to make sure each one has a unique name.
-    go.GraphObject.defineBuilder('ScrollingTable', function (args) {
+    go.GraphObject.defineBuilder("ScrollingTable", function (args) {
         var $ = go.GraphObject.make;
-        var tablename = go.GraphObject.takeBuilderArgument(args, 'TABLE');
+        var tablename = go.GraphObject.takeBuilderArgument(args, "TABLE");
         // an internal helper function for actually performing a scrolling operation
+        // the OBJ may be the "SCROLLBAR" panel or any element within it
         function incrTableIndex(obj, i) {
             var diagram = obj.diagram;
-            if (!obj.panel || !obj.panel.panel || !obj.panel.panel.panel)
+            var table = obj;
+            while (table && table.name !== "SCROLLBAR")
+                table = table.panel;
+            if (table)
+                table = table.panel.findObject(tablename);
+            if (!(table instanceof go.Panel))
                 return;
-            var table = obj.panel.panel.panel.findObject(tablename);
             if (i === +Infinity || i === -Infinity) { // page up or down
                 var tabh = table.actualBounds.height;
                 var rowh = table.elt(table.topIndex).actualBounds.height; // assume each row has same height?
@@ -97,75 +111,144 @@
                 }
             }
             var idx = table.topIndex + i;
+            if (idx >= table.rowCount - 1)
+                idx = table.rowCount - 1;
             if (idx < 0)
                 idx = 0;
-            else if (idx >= table.rowCount - 1)
-                idx = table.rowCount - 1;
             if (table.topIndex !== idx) {
                 if (diagram !== null)
-                    diagram.startTransaction('scroll');
+                    diagram.startTransaction("scroll");
                 table.topIndex = idx;
                 var node = table.part; // may need to reroute links if the table contains any ports
                 if (node instanceof go.Node)
                     node.invalidateConnectedLinks();
                 updateScrollBar(table);
                 if (diagram !== null)
-                    diagram.commitTransaction('scroll');
+                    diagram.commitTransaction("scroll");
             }
         }
+        // must be passed the "Table" Panel that holds the rows that are scrolled
         function updateScrollBar(table) {
-            if (table.panel === null)
-                return;
-            var bar = table.panel.elt(1); // the scrollbar is a sibling of the table
-            if (!bar)
+            if (table.part)
+                table.part.ensureBounds();
+            var bar = table.panel.findObject("SCROLLBAR"); // the scrollbar is a sibling of the table
+            if (!(bar instanceof go.Panel))
                 return;
             var idx = table.topIndex;
-            var up = bar.findObject('UP');
-            if (up)
+            var up = bar.findObject("UP");
+            var uph = 0;
+            if (up) {
                 up.opacity = (idx > 0) ? 1.0 : 0.3;
-            var down = bar.findObject('DOWN');
-            if (down)
+                uph = up.actualBounds.height;
+            }
+            var down = bar.findObject("DOWN");
+            var downh = 0;
+            if (down) {
                 down.opacity = (idx < table.rowCount - 1) ? 1.0 : 0.3;
+                downh = down.actualBounds.height;
+            }
+            var thumb = bar.findObject("THUMB");
             var tabh = bar.actualBounds.height;
-            var rowh = table.elt(idx).actualBounds.height; // ?? assume each row has same height?
-            if (rowh === 0 && idx < table.rowCount - 2)
-                rowh = table.elt(idx + 1).actualBounds.height;
-            var numVisibleRows = Math.max(1, Math.ceil(tabh / rowh) - 1);
-            var needed = idx > 0 || idx + numVisibleRows <= table.rowCount;
+            var availh = Math.max(0, (tabh - uph - downh));
+            if (table.rowCount <= 0) {
+                if (thumb)
+                    thumb.height = Math.min(availh, 10);
+                return;
+            }
+            var rows = 0;
+            var rowh = 1;
+            var last = idx;
+            for (var i = idx; i < table.rowCount; i++) {
+                var h = table.elt(i).actualBounds.height;
+                if (h > 0) {
+                    rows++;
+                    rowh += h;
+                    last = i;
+                }
+            }
+            var numRows = rowh < tabh ? Math.round(tabh / (rowh / rows)) : rows;
+            var needed = idx > 0 || last < table.rowCount - 1;
             bar.opacity = needed ? 1.0 : 0.5;
+            if (thumb) {
+                thumb.height = Math.max(1, Math.min(1, numRows / table.rowCount) * availh);
+                thumb.alignment = new go.Spot(0.5, 0, 0, (table.topIndex / table.rowCount) * (availh - thumb.height));
+            }
         }
-        return $(go.Panel, 'Table', {
+        function showScrollButtons(bar, show) {
+            // may be called with the "SCROLLBAR" panel or any element within it
+            while (bar && bar.name !== "SCROLLBAR")
+                bar = bar.panel;
+            if (!(bar instanceof go.Panel))
+                return;
+            var table = bar.panel.findObject(tablename);
+            if (!(table instanceof go.Panel))
+                return;
+            var idx = table.topIndex;
+            var up = bar.findObject("UP");
+            if (up)
+                up.opacity = show ? ((idx > 0) ? 1.0 : 0.3) : 0.0;
+            var down = bar.findObject("DOWN");
+            if (down)
+                down.opacity = show ? ((idx < table.rowCount - 1) ? 1.0 : 0.3) : 0.0;
+            var thumb = bar.findObject("THUMB");
+            if (thumb)
+                thumb.opacity = table.rowCount > 0 ? 1 : 0;
+        }
+        function setScrollIndexLocal(bar, y) {
+            // may be called with the "SCROLLBAR" panel or any element within it
+            while (bar && bar.name !== "SCROLLBAR")
+                bar = bar.panel;
+            if (!(bar instanceof go.Panel))
+                return;
+            var table = bar.panel.findObject(tablename);
+            if (!(table instanceof go.Panel))
+                return;
+            var up = bar.findObject("UP");
+            var uph = up ? up.actualBounds.height : 0;
+            var down = bar.findObject("DOWN");
+            var downh = down ? down.actualBounds.height : 0;
+            var tabh = bar.actualBounds.height;
+            var idx = Math.round(Math.max(0, Math.min(1, (y - uph) / (tabh - uph - downh))) * table.rowCount);
+            incrTableIndex(bar, idx - table.topIndex);
+        }
+        return $(go.Panel, "Table", {
             _updateScrollBar: updateScrollBar
         }, 
         // this actually holds the item elements
-        $(go.Panel, 'Table', {
+        $(go.Panel, "Table", {
             name: tablename,
             column: 0,
             stretch: go.GraphObject.Fill,
-            background: 'whitesmoke',
+            background: "whitesmoke",
             rowSizing: go.RowColumnDefinition.None,
             defaultAlignment: go.Spot.Top
         }), 
         // this is the scrollbar
-        $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, 'Table', { column: 1, stretch: go.GraphObject.Vertical, background: '#DDDDDD' }, 
+        $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD", mouseEnter: function (e, bar) { return showScrollButtons(bar, true); },
+            mouseLeave: function (e, bar) { return showScrollButtons(bar, false); }
+        }, 
         // the scroll up button
-        $('AutoRepeatButton', {
-            name: 'UP',
-            row: 0,
-            alignment: go.Spot.Top,
-            'ButtonBorder.figure': 'Rectangle',
-            'ButtonBorder.fill': 'lightgray',
-            click: function (e, obj) { incrTableIndex(obj, -1); }
-        }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })), 
-        // (someday implement a thumb here and support dragging to scroll)
+        $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0, click: function (e, obj) { e.handled = true; incrTableIndex(obj, -1); }
+        }, $(go.Shape, "TriangleUp", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }), {
+            click: function (e, bar) {
+                e.handled = true;
+                var local = bar.getLocalPoint(e.documentPoint);
+                setScrollIndexLocal(bar, local.y);
+            }
+        }, 
+        // the scroll thumb, gets all available extra height
+        $(go.Shape, { name: "THUMB", row: 1,
+            stretch: go.GraphObject.Horizontal, height: 10,
+            margin: new go.Margin(0, 1),
+            fill: "gray", stroke: "transparent",
+            alignment: go.Spot.Top, mouseEnter: function (e, thumb) { return thumb.stroke = "gray"; },
+            mouseLeave: function (e, thumb) { return thumb.stroke = "transparent"; }, isActionable: true, actionMove: function (e, thumb) {
+                var local = thumb.panel.getLocalPoint(e.documentPoint);
+                setScrollIndexLocal(thumb, local.y);
+            },
+        }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }), 
         // the scroll down button
-        $('AutoRepeatButton', {
-            name: 'DOWN',
-            row: 2,
-            alignment: go.Spot.Bottom,
-            'ButtonBorder.figure': 'Rectangle',
-            'ButtonBorder.fill': 'lightgray',
-            click: function (e, obj) { incrTableIndex(obj, +1); }
-        }, $(go.Shape, 'TriangleDown', { stroke: null, desiredSize: new go.Size(6, 6) }))));
+        $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0, click: function (e, obj) { e.handled = true; incrTableIndex(obj, +1); }
+        }, $(go.Shape, "TriangleDown", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 2, sizing: go.RowColumnDefinition.None })));
     });
 });

@@ -33,18 +33,42 @@
                     scroller._updateScrollBar(scroller.findObject('TABLE'));
             }
         });
+        // support mouse wheel scrolling of table when the mouse is in the table
+        myDiagram.toolManager.doMouseWheel = function () {
+            var e = this.diagram.lastInput;
+            var tab = this.diagram.findObjectAt(e.documentPoint);
+            while (tab !== null && !tab._updateScrollBar)
+                tab = tab.panel;
+            if (tab instanceof go.Panel) {
+                var table = tab.findObject("TABLE");
+                if (table instanceof go.Panel) {
+                    var delta = e.delta;
+                    var incr = e.shift ? 5 : 1;
+                    if (delta > 0) {
+                        table.topIndex = Math.max(0, table.topIndex - incr);
+                    }
+                    else if (delta < 0) {
+                        table.topIndex = Math.min(table.topIndex + incr, table.rowCount - 1);
+                    }
+                }
+                tab._updateScrollBar(table);
+                e.handled = true;
+                return;
+            }
+            go.ToolManager.prototype.doMouseWheel.call(this);
+        };
         myDiagram.nodeTemplate =
             $(go.Node, 'Vertical', {
                 selectionObjectName: 'SCROLLER',
                 resizable: true, resizeObjectName: 'SCROLLER',
                 portSpreading: go.Node.SpreadingNone
-            }, new go.Binding('location').makeTwoWay(), $(go.TextBlock, { font: 'bold 14px sans-serif' }, new go.Binding('text', 'key')), $(go.Panel, 'Auto', $(go.Shape, { fill: 'white' }), $('ScrollingTable', {
+            }, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), $(go.TextBlock, { font: 'bold 14px sans-serif' }, new go.Binding('text', 'key')), $(go.Panel, 'Auto', $(go.Shape, { fill: 'white' }), $('ScrollingTable', {
                 name: 'SCROLLER',
                 desiredSize: new go.Size(NaN, 60),
                 stretch: go.GraphObject.Fill,
                 defaultColumnSeparatorStroke: 'gray',
                 defaultColumnSeparatorStrokeWidth: 0.5
-            }, new go.Binding('TABLE.itemArray', 'items'), new go.Binding('TABLE.column', 'left', function (left) { return left ? 2 : 0; }), new go.Binding('desiredSize', 'size').makeTwoWay(), {
+            }, new go.Binding('TABLE.itemArray', 'items'), new go.Binding('TABLE.column', 'left', function (left) { return left ? 2 : 0; }), new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify), {
                 'TABLE.itemTemplate': $(go.Panel, 'TableRow', {
                     defaultStretch: go.GraphObject.Horizontal,
                     fromSpot: go.Spot.LeftRightSides, toSpot: go.Spot.LeftRightSides,
@@ -61,7 +85,7 @@
             linkToPortIdProperty: 'toPort',
             nodeDataArray: [
                 {
-                    key: 'Alpha', left: true, location: new go.Point(0, 0), size: new go.Size(100, 50),
+                    key: 'Alpha', left: true, loc: "0 0", size: "100 50",
                     items: [
                         { name: 'A', value: 1 },
                         { name: 'B', value: 2 },
@@ -73,7 +97,7 @@
                     ]
                 },
                 {
-                    key: 'Beta', location: new go.Point(150, 0),
+                    key: 'Beta', loc: "150 0", size: "80 70",
                     items: [
                         { name: 'Aa', value: 1 },
                         { name: 'Bb', value: 2 },
