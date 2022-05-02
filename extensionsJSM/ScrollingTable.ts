@@ -63,10 +63,8 @@ go.GraphObject.defineBuilder('AutoRepeatButton', args => {
     }
   }
 
-  return $('Button',
+  const button = $("Button",
            {
-             actionDown: delayClicking,
-             actionUp: endClicking,
              "ButtonBorder.figure": "Rectangle",
              "ButtonBorder.fill": "transparent",
              "ButtonBorder.stroke": null,
@@ -74,6 +72,23 @@ go.GraphObject.defineBuilder('AutoRepeatButton', args => {
              "_buttonStrokeOver": null,
              cursor: "auto"
            });
+  // override the normal button actions
+  const btndown = button.actionDown;
+  const btnup = button.actionUp;
+  const btncancel = button.actionCancel;
+  button.actionDown = function(e, btn) {
+    delayClicking(e, btn);
+    if (btndown) btndown(e, btn);
+  };
+  button.actionUp = function(e, btn) {
+    endClicking(e, btn);
+    if (btnup) btnup(e, btn);
+  };
+  button.actionCancel = function(e, btn) {
+    endClicking(e, btn);
+    if (btncancel) btncancel(e, btn);
+  };
+  return button;
 });
 
 

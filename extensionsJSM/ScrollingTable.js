@@ -56,9 +56,7 @@ go.GraphObject.defineBuilder('AutoRepeatButton', args => {
             obj._timer = undefined;
         }
     }
-    return $('Button', {
-        actionDown: delayClicking,
-        actionUp: endClicking,
+    const button = $("Button", {
         "ButtonBorder.figure": "Rectangle",
         "ButtonBorder.fill": "transparent",
         "ButtonBorder.stroke": null,
@@ -66,6 +64,26 @@ go.GraphObject.defineBuilder('AutoRepeatButton', args => {
         "_buttonStrokeOver": null,
         cursor: "auto"
     });
+    // override the normal button actions
+    const btndown = button.actionDown;
+    const btnup = button.actionUp;
+    const btncancel = button.actionCancel;
+    button.actionDown = function (e, btn) {
+        delayClicking(e, btn);
+        if (btndown)
+            btndown(e, btn);
+    };
+    button.actionUp = function (e, btn) {
+        endClicking(e, btn);
+        if (btnup)
+            btnup(e, btn);
+    };
+    button.actionCancel = function (e, btn) {
+        endClicking(e, btn);
+        if (btncancel)
+            btncancel(e, btn);
+    };
+    return button;
 });
 // Create a scrolling Table Panel, whose name is given as the optional first argument.
 // If not given the name defaults to "TABLE".
@@ -213,7 +231,8 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         defaultAlignment: go.Spot.Top
     }), 
     // this is the scrollbar
-    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD", mouseEnter: (e, bar) => showScrollButtons(bar, true),
+    $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD",
+        mouseEnter: (e, bar) => showScrollButtons(bar, true),
         mouseLeave: (e, bar) => showScrollButtons(bar, false)
     }, 
     // the scroll up button
@@ -231,8 +250,11 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         stretch: go.GraphObject.Horizontal, height: 10,
         margin: new go.Margin(0, 1),
         fill: "gray", stroke: "transparent",
-        alignment: go.Spot.Top, mouseEnter: (e, thumb) => thumb.stroke = "gray",
-        mouseLeave: (e, thumb) => thumb.stroke = "transparent", isActionable: true, actionMove: (e, thumb) => {
+        alignment: go.Spot.Top,
+        mouseEnter: (e, thumb) => thumb.stroke = "gray",
+        mouseLeave: (e, thumb) => thumb.stroke = "transparent",
+        isActionable: true,
+        actionMove: (e, thumb) => {
             const local = thumb.panel.getLocalPoint(e.documentPoint);
             setScrollIndexLocal(thumb, local.y);
         },

@@ -5,10 +5,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -763,6 +765,22 @@ var __extends = (this && this.__extends) || (function () {
                     continue;
                 lcol = Math.max(lcol, rowcol[i].length); // column length in this row
             }
+            var firstRow = 0;
+            var firstColumn = 0;
+            var ll = this.columnCount;
+            for (var i = 0; i < ll; i++) {
+                if (this._colDefs[i] === undefined)
+                    continue;
+                firstColumn = i;
+                break;
+            }
+            ll = this.rowCount;
+            for (var i = 0; i < ll; i++) {
+                if (this._rowDefs[i] === undefined)
+                    continue;
+                firstRow = i;
+                break;
+            }
             var additionalSpan = new go.Size();
             // Find cell space and arrange objects:
             for (var i = 0; i < lrow; i++) {
@@ -770,13 +788,13 @@ var __extends = (this && this.__extends) || (function () {
                     continue;
                 lcol = rowcol[i].length; // column length in this row
                 var rowHerald = this.getRowDefinition(i);
-                y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop();
+                y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop(firstRow);
                 for (var j = 0; j < lcol; j++) {
                     // foreach column j in row i...
                     if (!rowcol[i][j])
                         continue;
                     var colHerald = this.getColumnDefinition(j);
-                    x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop();
+                    x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop(firstColumn);
                     var cell = rowcol[i][j];
                     var len = cell.length;
                     for (var k = 0; k < len; k++) {

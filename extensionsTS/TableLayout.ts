@@ -712,6 +712,18 @@ export class TableLayout extends go.Layout {
       if (!(rowcol as any)[i]) continue;
       lcol = Math.max(lcol, (rowcol as any)[i].length); // column length in this row
     }
+    let firstRow = 0;
+    let firstColumn = 0;
+    let ll = this.columnCount;
+    for (let i = 0; i < ll; i++) {
+      if (this._colDefs[i] === undefined) continue;
+      firstColumn = i; break;
+    }
+    ll = this.rowCount;
+    for (let i = 0; i < ll; i++) {
+      if (this._rowDefs[i] === undefined) continue;
+      firstRow = i; break;
+    }
 
     const additionalSpan = new go.Size();
     // Find cell space and arrange objects:
@@ -719,12 +731,12 @@ export class TableLayout extends go.Layout {
       if (!rowcol[i]) continue;
       lcol = rowcol[i].length; // column length in this row
       const rowHerald = this.getRowDefinition(i);
-      y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop();
+      y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop(firstRow);
       for (let j = 0; j < lcol; j++) {
         // foreach column j in row i...
         if (!rowcol[i][j]) continue;
         const colHerald = this.getColumnDefinition(j);
-        x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop();
+        x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop(firstColumn);
         const cell = rowcol[i][j];
         const len = cell.length;
 

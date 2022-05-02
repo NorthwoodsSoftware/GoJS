@@ -721,18 +721,31 @@ TableLayout.prototype.arrangeTable = function(children, union, rowcol) {
     lcol = Math.max(lcol, rowcol[i].length); // column length in this row
   }
 
+  var firstRow = 0;
+  var firstColumn = 0;
+  var ll = this.columnCount;
+  for (var i = 0; i < ll; i++) {
+    if (this._colDefs[i] === undefined) continue;
+    firstColumn = i; break;
+  }
+  ll = this.rowCount;
+  for (var i = 0; i < ll; i++) {
+    if (this._rowDefs[i] === undefined) continue;
+    firstRow = i; break;
+  }
+
   var additionalSpan = new go.Size();
   // Find cell space and arrange objects:
   for (var i = 0; i < lrow; i++) {
     if (!rowcol[i]) continue;
     lcol = rowcol[i].length; // column length in this row
     var rowHerald = this.getRowDefinition(i);
-    y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop();
+    y = originy + rowHerald.position + rowHerald.computeEffectiveSpacingTop(firstRow);
     for (var j = 0; j < lcol; j++) {
       //foreach column j in row i...
       if (!rowcol[i][j]) continue;
       var colHerald = this.getColumnDefinition(j);
-      x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop();
+      x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop(firstColumn);
       var cell = rowcol[i][j];
       var len = cell.length;
 

@@ -67,9 +67,7 @@
                 obj._timer = undefined;
             }
         }
-        return $('Button', {
-            actionDown: delayClicking,
-            actionUp: endClicking,
+        var button = $("Button", {
             "ButtonBorder.figure": "Rectangle",
             "ButtonBorder.fill": "transparent",
             "ButtonBorder.stroke": null,
@@ -77,6 +75,26 @@
             "_buttonStrokeOver": null,
             cursor: "auto"
         });
+        // override the normal button actions
+        var btndown = button.actionDown;
+        var btnup = button.actionUp;
+        var btncancel = button.actionCancel;
+        button.actionDown = function (e, btn) {
+            delayClicking(e, btn);
+            if (btndown)
+                btndown(e, btn);
+        };
+        button.actionUp = function (e, btn) {
+            endClicking(e, btn);
+            if (btnup)
+                btnup(e, btn);
+        };
+        button.actionCancel = function (e, btn) {
+            endClicking(e, btn);
+            if (btncancel)
+                btncancel(e, btn);
+        };
+        return button;
     });
     // Create a scrolling Table Panel, whose name is given as the optional first argument.
     // If not given the name defaults to "TABLE".
@@ -224,11 +242,13 @@
             defaultAlignment: go.Spot.Top
         }), 
         // this is the scrollbar
-        $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD", mouseEnter: function (e, bar) { return showScrollButtons(bar, true); },
+        $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD",
+            mouseEnter: function (e, bar) { return showScrollButtons(bar, true); },
             mouseLeave: function (e, bar) { return showScrollButtons(bar, false); }
         }, 
         // the scroll up button
-        $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0, click: function (e, obj) { e.handled = true; incrTableIndex(obj, -1); }
+        $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0,
+            click: function (e, obj) { e.handled = true; incrTableIndex(obj, -1); }
         }, $(go.Shape, "TriangleUp", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }), {
             click: function (e, bar) {
                 e.handled = true;
@@ -241,14 +261,18 @@
             stretch: go.GraphObject.Horizontal, height: 10,
             margin: new go.Margin(0, 1),
             fill: "gray", stroke: "transparent",
-            alignment: go.Spot.Top, mouseEnter: function (e, thumb) { return thumb.stroke = "gray"; },
-            mouseLeave: function (e, thumb) { return thumb.stroke = "transparent"; }, isActionable: true, actionMove: function (e, thumb) {
+            alignment: go.Spot.Top,
+            mouseEnter: function (e, thumb) { return thumb.stroke = "gray"; },
+            mouseLeave: function (e, thumb) { return thumb.stroke = "transparent"; },
+            isActionable: true,
+            actionMove: function (e, thumb) {
                 var local = thumb.panel.getLocalPoint(e.documentPoint);
                 setScrollIndexLocal(thumb, local.y);
             },
         }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }), 
         // the scroll down button
-        $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0, click: function (e, obj) { e.handled = true; incrTableIndex(obj, +1); }
+        $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0,
+            click: function (e, obj) { e.handled = true; incrTableIndex(obj, +1); }
         }, $(go.Shape, "TriangleDown", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 2, sizing: go.RowColumnDefinition.None })));
     });
 });

@@ -26,7 +26,7 @@
         // define a simple Node template (but use the default Link template)
         myDiagram.nodeTemplate =
             $(go.Node, 'Auto', { contextMenu: window.myHTMLLightBox }, // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
-            $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 },
+            $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, 
             // Shape.fill is bound to Node.data.color
             new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, // some room around the text
             // TextBlock.text is bound to Node.data.key

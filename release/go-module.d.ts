@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.7
+ * Type definitions for GoJS v2.2.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5902,7 +5902,7 @@ export class DraggingTool extends Tool {
      * @return {Set.<Part>} Returns the Map#toKeySet of either #copiedParts or #draggedParts, or else an empty Set.
      */
     get draggingParts(): Set<Part>;
-    set draggedLink(value: Link);
+    set draggedLink(value: Link | null);
     set isDragOutStarted(value: boolean);
     /**
      * Gets or sets the mouse point from which parts start to move.
@@ -10107,7 +10107,6 @@ export class Diagram {
      * ```
      */
     constructor(init?: DiagramInitOptions);
-    private reset2;
     /**
      * This static function returns `true` if GoJS detects a DOM.
      * In browser environments this is expected to be `true`, in Node-like environments, `false`.
@@ -12627,6 +12626,16 @@ export class Diagram {
      * @see #removeDiagramListener
      */
     raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData, param?: any): void;
+    /**
+     * (undocumented)
+     */
+    get avoidanceCellSize(): Size;
+    set avoidanceCellSize(value: Size);
+    /**
+     * (undocumented)
+     */
+    get avoidanceLimit(): number;
+    set avoidanceLimit(value: number);
     /**
      * Gets or sets number of milliseconds between autoscroll events.
      * The default value is 250.
@@ -17823,10 +17832,11 @@ export class RowColumnDefinition {
     /**
      * (undocumented)
      * Get the spacing at the top or left of the row or column.
+     * @param {number} first the first row or column with an element in it
      * @return {number}
      * @see #computeEffectiveSpacing
      */
-    computeEffectiveSpacingTop(): number;
+    computeEffectiveSpacingTop(first: number): number;
     /**
      * (undocumented)
      * Get the total spacing for a row or column.
@@ -18541,6 +18551,8 @@ export class Shape extends GraphObject {
      * the height of the GraphObject being drawn along the stroke.
      *
      * Examples of path patterns can be seen in the <a href="../../samples/relationships.html">Relationships sample</a>.
+     *
+     * This property is ignored by the Shapes in "Grid" or "Graduated" Panels.
      * @since 1.6
      */
     get pathPattern(): GraphObject | null;
@@ -22313,8 +22325,8 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    get fromPortChanged(): ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
-    set fromPortChanged(value: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null);
+    get fromPortChanged(): ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject | null) => void) | null;
+    set fromPortChanged(value: ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject | null) => void) | null);
     /**
      * Gets or sets the Node that this link goes to.
      * The #toPortId specifies which port the link goes to.
@@ -22349,8 +22361,8 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    get toPortChanged(): ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null;
-    set toPortChanged(value: ((thisLink: Link, oldPort: GraphObject, newPort: GraphObject) => void) | null);
+    get toPortChanged(): ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject) => void) | null;
+    set toPortChanged(value: ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject) => void) | null);
     /**
      * Gets or sets where this link should connect at the #fromPort.
      * The default value is Spot.Default, meaning that the value
