@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.8
+ * Type definitions for GoJS v2.2.9
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10813,7 +10813,7 @@ export class Diagram {
      * and then Model#addChangedListener again on the new Model.
      *
      * You can establish Model Changed listeners when you create a Diagram.
-     * The Diagram init options are passsed to GraphObject.make, which accepts "ModelChanged" as a shorthand.
+     * The Diagram init options are passed to GraphObject.make, which accepts "ModelChanged" as a shorthand.
      * For example:
      * ```js
      * new go.Diagram("myDiagramDiv",
@@ -23307,8 +23307,15 @@ export class Layout {
      * If set to true, the layout will invalidate when the Diagram's viewport changes size.
      * This only applies to diagram layouts, not to group layouts,
      * and only when Diagram#autoScale is set to Diagram.None.
+     *
      * The default value is false.
      * Setting this property to true will invalidate this layout.
+     *
+     * It is possible that a viewport-sized layout will trigger the Diagram to require scrollbars,
+     * which modifies the Diagram#viewportBounds, which will in turn trigger another layout.
+     * This is uncommon, but possible with GridLayout if the results require a vertical scrollbar,
+     * and that vertical scrollbar shrinks the viewport width enough that a grid column can no longer fit.
+     * When designing custom layouts, one should be careful that this behavior does not result in an infinite loop.
      */
     get isViewportSized(): boolean;
     set isViewportSized(value: boolean);
