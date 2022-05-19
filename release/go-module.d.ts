@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.9
+ * Type definitions for GoJS v2.2.10
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -13075,7 +13075,6 @@ export class Palette extends Diagram {
      */
     constructor(div?: Element | string, init?: Partial<Palette>);
     /**
-     *
      * @param {DiagramInitOptions=} init A JavaScript object specifying optional initialization properties object.
      * Can specify Palette properties, and Palette sub-properties such as `"undoManager.isEnabled": true`
      * Example:
@@ -16092,7 +16091,7 @@ export abstract class GraphObject {
      * If you need to set properties without type checking, or attach new properties, use GraphObject#attach.
      *
      *
-     * ```
+     * ```js
      * // Common init for use in many different shapes:
      * var shapeStyle = (() => { return { background: 'red', strokeWidth: 0 }; })
      *
@@ -16121,7 +16120,7 @@ export abstract class GraphObject {
      * unless you need to attach new properties that do not exist on the GraphObject, or to set sub-properties.
      * Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.
      *
-     * ```
+     * ```js
      * new go.Shape()
      *  .bind("fill", "color")
      *  .bind("strokeWidth", "width")
@@ -16147,7 +16146,7 @@ export abstract class GraphObject {
      *
      * For example:
      *
-     * ```
+     * ```js
      * // This can be used by several node templates
      * // to set multiple properties and bindings on each
      * function nodeStyle(node) {

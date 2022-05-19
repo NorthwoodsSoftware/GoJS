@@ -1,705 +1,97 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>GuidedDraggingTool | GoJS API</title>
-	<meta name="description" content="Documentation for GoJS API">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../../assets/css/style.css">
-	<link rel="stylesheet" href="../assets/css/main.css">
-	<script async src="../assets/js/search.js" id="search-script"></script>
-</head>
-<body>
-<header>
-	<nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-		<div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-			<div class="md:pl-4">
-				<a class="text-white hover:text-white no-underline hover:no-underline
-				font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary" href="../../index.html">
-				<h1 class="mb-0 p-1 leading-none">GoJS</h1>
-				</a>
-			</div>
-			<button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-				<svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-					<path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-					<path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-				</svg>
-			</button>
-			<div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-				<ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../learn/index.html">Learn</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../samples/index.html">Samples</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../intro/index.html">Intro</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../api/index.html">API</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../download.html">Download</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-					target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-					target="_blank"rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-				</ul>
-			</div>
-		</div>
-		<hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-	</nav>
-	<div class="tsd tsd-page-header">
-		<div class="tsd-page-toolbar">
-			<div class="w-full max-w-screen-xl mx-auto px-2">
-				<div class="table-wrap">
-					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-						<div class="field">
-							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-							<input id="tsd-search-field" type="text" />
-						</div>
-						<ul class="results">
-							<li class="state loading">Preparing search index...</li>
-							<li class="state failure">The search index is not available</li>
-						</ul>
-						<a href="../index.html" class="title">GoJS API</a>
-					</div>
-					<div class="table-cell" id="tsd-widgets">
-						<div id="tsd-filter">
-							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-							<div class="tsd-filter-group">
-								<div class="tsd-select" id="tsd-filter-visibility">
-									<span class="tsd-select-label">All</span>
-									<ul class="tsd-select-list">
-										<li data-value="public">Public</li>
-										<li data-value="protected">Public/Protected</li>
-										<li data-value="private" class="selected">All</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="tsd tsd-page-title">
-			<div class="w-full max-w-screen-xl mx-auto px-2">
-				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.9<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-				</div>
-				<div>
-					<h1>Class GuidedDraggingTool</h1>
-				</div>
-			</div>
-		</div>
-	</div>
-</header>
-<div class="tsd w-full max-w-screen-xl mx-auto pb-4">
-	<div class="row px-2 w-full">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-extension">
-				<p>
-					This is an extension and not part of the main GoJS library.
-					Note that the API for this class may change at any time.
-					If you intend to use an extension in production, you should copy the code to your own source directory.
-					Extensions can be found in the GoJS kit under the <code>extensions</code>,
-					<code>extensionsTS</code> (UMD modules), or <code>extensionsJSM</code> (ES6 modules) folders.
-					See the <a href="../../intro/extensions.html">Extensions intro page</a> for more information.
-				</p>
-			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<a href="Tool.html" class="tsd-signature-type" data-tsd-kind="Class">Tool</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="DraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">DraggingTool</a>
-								<ul class="tsd-hierarchy">
-									<li>
-										<span class="target">GuidedDraggingTool</span>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<p>The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
-					when the selected part is nearly aligned with another part.</p>
-					<p>If you want to experiment with this extension, try the <a href="../../extensionsJSM/GuidedDragging.html">Guided Dragging</a> sample.</p>
-				</div>
-			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#centerGuidelineColor" class="tsd-kind-icon">center<wbr>Guideline<wbr>Color</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineSnapDistance" class="tsd-kind-icon">guideline<wbr>Snap<wbr>Distance</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineWidth" class="tsd-kind-icon">guideline<wbr>Width</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#horizontalGuidelineColor" class="tsd-kind-icon">horizontal<wbr>Guideline<wbr>Color</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineEnabled" class="tsd-kind-icon">is<wbr>Guideline<wbr>Enabled</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineSnapEnabled" class="tsd-kind-icon">is<wbr>Guideline<wbr>Snap<wbr>Enabled</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#searchDistance" class="tsd-kind-icon">search<wbr>Distance</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#verticalGuidelineColor" class="tsd-kind-icon">vertical<wbr>Guideline<wbr>Color</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHbottom" class="tsd-kind-icon">guideline<wbr>Hbottom</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHcenter" class="tsd-kind-icon">guideline<wbr>Hcenter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHtop" class="tsd-kind-icon">guideline<wbr>Htop</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVcenter" class="tsd-kind-icon">guideline<wbr>Vcenter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVleft" class="tsd-kind-icon">guideline<wbr>Vleft</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVright" class="tsd-kind-icon">guideline<wbr>Vright</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#clearGuidelines" class="tsd-kind-icon">clear<wbr>Guidelines</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr>Deactivate</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDragOver" class="tsd-kind-icon">do<wbr>Drag<wbr>Over</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDropOnto" class="tsd-kind-icon">do<wbr>Drop<wbr>Onto</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#invalidateLinks" class="tsd-kind-icon">invalidate<wbr>Links</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="GuidedDraggingTool.html#isGuiding" class="tsd-kind-icon">is<wbr>Guiding</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showHorizontalMatches" class="tsd-kind-icon">show<wbr>Horizontal<wbr>Matches</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showVerticalMatches" class="tsd-kind-icon">show<wbr>Vertical<wbr>Matches</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>
-						constructor
-					</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Guided<wbr>Dragging<wbr>Tool<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GuidedDraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">GuidedDraggingTool</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Constructs a GuidedDraggingTool and sets up the temporary guideline parts.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="GuidedDraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">GuidedDraggingTool</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="centerGuidelineColor" class="tsd-anchor"></a>
-					<h3>
-						center<wbr>Guideline<wbr>Color
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the color of center guidelines.</p>
-								<p>The default value is &quot;gray&quot;.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="guidelineSnapDistance" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Snap<wbr>Distance
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the margin of error for which guidelines show up.</p>
-								<p>The default value is 6.
-								Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="guidelineWidth" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Width
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the width guidelines.</p>
-								<p>The default value is 1.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="horizontalGuidelineColor" class="tsd-anchor"></a>
-					<h3>
-						horizontal<wbr>Guideline<wbr>Color
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the color of horizontal guidelines.</p>
-								<p>The default value is &quot;gray&quot;.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="isGuidelineEnabled" class="tsd-anchor"></a>
-					<h3>
-						is<wbr>Guideline<wbr>Enabled
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets whether the guidelines are enabled or disables.</p>
-								<p>The default value is true.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="isGuidelineSnapEnabled" class="tsd-anchor"></a>
-					<h3>
-						is<wbr>Guideline<wbr>Snap<wbr>Enabled
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets whether snapping to guidelines is enabled.</p>
-								<p>The default value is true.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="searchDistance" class="tsd-anchor"></a>
-					<h3>
-						search<wbr>Distance
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the distance around the selected part to search for aligned parts.</p>
-								<p>The default value is 1000.
-								Set this to Infinity if you want to search the entire diagram no matter how far away.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="verticalGuidelineColor" class="tsd-anchor"></a>
-					<h3>
-						vertical<wbr>Guideline<wbr>Color
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the color of vertical guidelines.</p>
-								<p>The default value is &quot;gray&quot;.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineHbottom" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Hbottom
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineHcenter" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Hcenter
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineHtop" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Htop
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineVcenter" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Vcenter
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineVleft" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Vleft
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="guidelineVright" class="tsd-anchor"></a>
-					<h3>
-						guideline<wbr>Vright
-					<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>        </h3>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="clearGuidelines" class="tsd-anchor"></a>
-					<h3>
-						clear<wbr>Guidelines
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clear<wbr>Guidelines<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Removes all of the guidelines from the grid.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="doDeactivate" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagOverride">Override</span>
-						do<wbr>Deactivate
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">do<wbr>Deactivate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Calls the base method and removes the guidelines from the graph.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="doDragOver" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagOverride">Override</span>
-						do<wbr>Drag<wbr>Over
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">do<wbr>Drag<wbr>Over<span class="tsd-signature-symbol">(</span>pt<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a>, obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Shows vertical and horizontal guidelines for the dragged part.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>pt: <a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a></h5>
-								</li>
-								<li>
-									<h5>obj: <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<a name="doDropOnto" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagOverride">Override</span>
-						do<wbr>Drop<wbr>Onto
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">do<wbr>Drop<wbr>Onto<span class="tsd-signature-symbol">(</span>pt<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a>, obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>On a mouse-up, snaps the selected part to the nearest guideline.
-								If not snapping, the part remains at its position.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>pt: <a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a></h5>
-								</li>
-								<li>
-									<h5>obj: <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="invalidateLinks" class="tsd-anchor"></a>
-					<h3>
-						invalidate<wbr>Links
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">invalidate<wbr>Links<span class="tsd-signature-symbol">(</span>node<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>When nodes are shifted due to being guided upon a drop, make sure all connected link routes are invalidated,
-									since the node is likely to have moved a different amount than all its connected links in the regular
-								operation of the DraggingTool.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>node: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<a name="isGuiding" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagProtected">Protected</span>
-						is<wbr>Guiding
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Guiding<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guidedpart<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This predicate decides whether or not the given Part should guide the dragged part.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a stationary Part to which the dragged part might be aligned</p>
-									</div>
-								</li>
-								<li>
-									<h5>guidedpart: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the Part being dragged</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="showHorizontalMatches" class="tsd-anchor"></a>
-					<h3>
-						show<wbr>Horizontal<wbr>Matches
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">show<wbr>Horizontal<wbr>Matches<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guideline<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, snap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
-									part to all parts within a rectangle approximately twice the <a href="GuidedDraggingTool.html#searchDistance">searchDistance</a> wide.
-								The guidelines appear when a part is aligned within a margin-of-error equal to <a href="GuidedDraggingTool.html#guidelineSnapDistance">guidelineSnapDistance</a>.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5>
-								</li>
-								<li>
-									<h5>guideline: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>if true, show guideline</p>
-									</div>
-								</li>
-								<li>
-									<h5>snap: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>if true, snap the part to where the guideline would be</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="showVerticalMatches" class="tsd-anchor"></a>
-					<h3>
-						show<wbr>Vertical<wbr>Matches
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">show<wbr>Vertical<wbr>Matches<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guideline<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, snap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This finds parts that are aligned near the selected part along vertical lines. It compares the selected
-									part to all parts within a rectangle approximately twice the <a href="GuidedDraggingTool.html#searchDistance">searchDistance</a> tall.
-								The guidelines appear when a part is aligned within a margin-of-error equal to <a href="GuidedDraggingTool.html#guidelineSnapDistance">guidelineSnapDistance</a>.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5>
-								</li>
-								<li>
-									<h5>guideline: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>if true, show guideline</p>
-									</div>
-								</li>
-								<li>
-									<h5>snap: <span class="tsd-signature-type">boolean</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>if true, don&#39;t show guidelines but just snap the part to where the guideline would be</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class=" ">
-						<a href="../index.html">GoJS <wbr>Class <wbr>Index</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-class tsd-is-extension">
-						<a href="GuidedDraggingTool.html" class="tsd-kind-icon">Guided<wbr>Dragging<wbr>Tool</a>
-						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="GuidedDraggingTool.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#centerGuidelineColor" class="tsd-kind-icon">center<wbr>Guideline<wbr>Color</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineSnapDistance" class="tsd-kind-icon">guideline<wbr>Snap<wbr>Distance</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineWidth" class="tsd-kind-icon">guideline<wbr>Width</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#horizontalGuidelineColor" class="tsd-kind-icon">horizontal<wbr>Guideline<wbr>Color</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#isGuidelineEnabled" class="tsd-kind-icon">is<wbr>Guideline<wbr>Enabled</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#isGuidelineSnapEnabled" class="tsd-kind-icon">is<wbr>Guideline<wbr>Snap<wbr>Enabled</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#searchDistance" class="tsd-kind-icon">search<wbr>Distance</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#verticalGuidelineColor" class="tsd-kind-icon">vertical<wbr>Guideline<wbr>Color</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineHbottom" class="tsd-kind-icon">guideline<wbr>Hbottom</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineHcenter" class="tsd-kind-icon">guideline<wbr>Hcenter</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineHtop" class="tsd-kind-icon">guideline<wbr>Htop</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineVcenter" class="tsd-kind-icon">guideline<wbr>Vcenter</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineVleft" class="tsd-kind-icon">guideline<wbr>Vleft</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#guidelineVright" class="tsd-kind-icon">guideline<wbr>Vright</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#clearGuidelines" class="tsd-kind-icon">clear<wbr>Guidelines</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="GuidedDraggingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr>Deactivate</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="GuidedDraggingTool.html#doDragOver" class="tsd-kind-icon">do<wbr>Drag<wbr>Over</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="GuidedDraggingTool.html#doDropOnto" class="tsd-kind-icon">do<wbr>Drop<wbr>Onto</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#invalidateLinks" class="tsd-kind-icon">invalidate<wbr>Links</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="GuidedDraggingTool.html#isGuiding" class="tsd-kind-icon">is<wbr>Guiding</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#showHorizontalMatches" class="tsd-kind-icon">show<wbr>Horizontal<wbr>Matches</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="GuidedDraggingTool.html#showVerticalMatches" class="tsd-kind-icon">show<wbr>Vertical<wbr>Matches</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<div class="tsd w-full max-w-screen-xl mx-auto px-2">
-	<div class="bottom-copyright">Copyright &copy; 1998-2021 by Northwoods Software Corporation.</div>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
-  var getOutboundLink = function(url, label) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': label,
-      'transport_type': 'beacon'
-    });
-  }
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>GuidedDraggingTool | GoJS API</title><meta name="description" content="Documentation for GoJS API"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../../assets/css/style.css"/><link rel="stylesheet" href="../assets/style-tsd.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary"><div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2"><div class="md:pl-4"><a class="text-white hover:text-white no-underline hover:no-underline\n                            font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary" href="../../index.html"><h1 class="mb-0 p-1 leading-none">GoJS</h1></a></div><button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation"><svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6"><path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path><path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button><div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20"><ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0"><li class="p-1 sm:p-0"><a class="topnav-link" href="../../learn/index.html">Learn</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../samples/index.html">Samples</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../intro/index.html">Intro</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../api/index.html">API</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../download.html">Download</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener" id="contactBtn">Contact</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" target="_blank" rel="noopener" id="buyBtn">Buy</a></li></ul></div></div><hr class="border-b border-gray-600 opacity-50 my-0 py-0"/></nav><div class="tsd-page-header"><div class="tsd-page-toolbar"><div class="w-full max-w-screen-xl mx-auto px-2"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">GoJS API</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited"/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div></div><div class="tsd-page-title"><div class="w-full max-w-screen-xl mx-auto px-2"><div class="top-copyright"><b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.10<br/>by <a href="https://www.nwoods.com/">Northwoods Software®</a></div><div><h1>Class GuidedDraggingTool <span class="tsd-flag ts-flagExtension">Extension</span> </h1></div></div></div></header><div class="tsd w-full max-w-screen-xl mx-auto pb-4"><div class="row px-2 w-full"><div class="col-8 col-content"><section class="tsd-panel tsd-extension"><p>This is an extension and not part of the main GoJS library. Note that the API for this class may change at any time. If you intend to use an extension in production, you should copy the code to your own source directory. Extensions can be found in the GoJS kit under the <code>extensions</code>,<code>extensionsTS</code> (UMD modules), or <code>extensionsJSM</code> (ES6 modules) folders. See the <a href="../../intro/extensions.html">Extensions intro page</a> for more information.</p></section><section class="tsd-panel tsd-hierarchy"><h3>Hierarchy</h3><ul class="tsd-hierarchy"><li><a href="Tool.html" class="tsd-signature-type" data-tsd-kind="Class">Tool</a><ul class="tsd-hierarchy"><li><a href="DraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">DraggingTool</a><ul class="tsd-hierarchy"><li><span class="target">GuidedDraggingTool</span></li></ul></li></ul></li></ul></section><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography">
+<p>The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
+when the selected part is nearly aligned with another part.</p>
+<div><p>If you want to experiment with this extension, try the <a href="../../extensionsJSM/GuidedDragging.html">Guided Dragging</a> sample.</p>
+</div></div></section><section class="tsd-panel-group tsd-index-group"><h2>Index</h2><section class="tsd-panel tsd-index-panel"><div class="tsd-index-content"><section class="tsd-index-section "><h3>Constructors</h3><ul class="tsd-index-list"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#constructor" class="tsd-kind-icon">constructor</a></li></ul></section><section class="tsd-index-section "><h3>Properties</h3><ul class="tsd-index-list"><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#centerGuidelineColor" class="tsd-kind-icon">center<wbr/>Guideline<wbr/>Color</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineSnapDistance" class="tsd-kind-icon">guideline<wbr/>Snap<wbr/>Distance</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineWidth" class="tsd-kind-icon">guideline<wbr/>Width</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#horizontalGuidelineColor" class="tsd-kind-icon">horizontal<wbr/>Guideline<wbr/>Color</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineEnabled" class="tsd-kind-icon">is<wbr/>Guideline<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineSnapEnabled" class="tsd-kind-icon">is<wbr/>Guideline<wbr/>Snap<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#searchDistance" class="tsd-kind-icon">search<wbr/>Distance</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#verticalGuidelineColor" class="tsd-kind-icon">vertical<wbr/>Guideline<wbr/>Color</a></li></ul></section><section class="tsd-index-section "><h3>Properties</h3><ul class="tsd-index-list"><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHbottom" class="tsd-kind-icon">guideline<wbr/>Hbottom</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHcenter" class="tsd-kind-icon">guideline<wbr/>Hcenter</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHtop" class="tsd-kind-icon">guideline<wbr/>Htop</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVcenter" class="tsd-kind-icon">guideline<wbr/>Vcenter</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVleft" class="tsd-kind-icon">guideline<wbr/>Vleft</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVright" class="tsd-kind-icon">guideline<wbr/>Vright</a></li></ul></section><section class="tsd-index-section "><h3>Methods</h3><ul class="tsd-index-list"><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#clearGuidelines" class="tsd-kind-icon">clear<wbr/>Guidelines</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr/>Deactivate</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDragOver" class="tsd-kind-icon">do<wbr/>Drag<wbr/>Over</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDropOnto" class="tsd-kind-icon">do<wbr/>Drop<wbr/>Onto</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#invalidateLinks" class="tsd-kind-icon">invalidate<wbr/>Links</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="GuidedDraggingTool.html#isGuiding" class="tsd-kind-icon">is<wbr/>Guiding</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showHorizontalMatches" class="tsd-kind-icon">show<wbr/>Horizontal<wbr/>Matches</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showVerticalMatches" class="tsd-kind-icon">show<wbr/>Vertical<wbr/>Matches</a></li></ul></section></div></section></section><section class="tsd-panel-group tsd-index-group tsd-is-inherited"><h2>Inherited Members</h2><section class="tsd-panel tsd-index-panel"><div class="tsd-index-content"><section class="tsd-index-section undefined"><h3>Properties</h3><ul class="tsd-index-list"><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#copiedParts" class="tsd-kind-icon">Dragging<wbr/>Tool.copied<wbr/>Parts</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#copiesEffectiveCollection" class="tsd-kind-icon">Dragging<wbr/>Tool.copies<wbr/>Effective<wbr/>Collection</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#copyCursor" class="tsd-kind-icon">Dragging<wbr/>Tool.copy<wbr/>Cursor</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#currentPart" class="tsd-kind-icon">Dragging<wbr/>Tool.current<wbr/>Part</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#delay" class="tsd-kind-icon">Dragging<wbr/>Tool.delay</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#dragOptions" class="tsd-kind-icon">Dragging<wbr/>Tool.drag<wbr/>Options</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#draggedParts" class="tsd-kind-icon">Dragging<wbr/>Tool.dragged<wbr/>Parts</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#dragsLink" class="tsd-kind-icon">Dragging<wbr/>Tool.drags<wbr/>Link</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#dragsTree" class="tsd-kind-icon">Dragging<wbr/>Tool.drags<wbr/>Tree</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#gridSnapCellSize" class="tsd-kind-icon">Dragging<wbr/>Tool.grid<wbr/>Snap<wbr/>Cell<wbr/>Size</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#gridSnapCellSpot" class="tsd-kind-icon">Dragging<wbr/>Tool.grid<wbr/>Snap<wbr/>Cell<wbr/>Spot</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#gridSnapOrigin" class="tsd-kind-icon">Dragging<wbr/>Tool.grid<wbr/>Snap<wbr/>Origin</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#isComplexRoutingRealtime" class="tsd-kind-icon">Dragging<wbr/>Tool.is<wbr/>Complex<wbr/>Routing<wbr/>Realtime</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#isCopyEnabled" class="tsd-kind-icon">Dragging<wbr/>Tool.is<wbr/>Copy<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#isGridSnapEnabled" class="tsd-kind-icon">Dragging<wbr/>Tool.is<wbr/>Grid<wbr/>Snap<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#isGridSnapRealtime" class="tsd-kind-icon">Dragging<wbr/>Tool.is<wbr/>Grid<wbr/>Snap<wbr/>Realtime</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#moveCursor" class="tsd-kind-icon">Dragging<wbr/>Tool.move<wbr/>Cursor</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#nodropCursor" class="tsd-kind-icon">Dragging<wbr/>Tool.nodrop<wbr/>Cursor</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="DraggingTool.html#startPoint" class="tsd-kind-icon">Dragging<wbr/>Tool.start<wbr/>Point</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Tool.html#diagram" class="tsd-kind-icon">Tool.diagram</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Tool.html#isActive" class="tsd-kind-icon">Tool.is<wbr/>Active</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Tool.html#isEnabled" class="tsd-kind-icon">Tool.is<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Tool.html#name" class="tsd-kind-icon">Tool.name</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="Tool.html#transactionResult" class="tsd-kind-icon">Tool.transaction<wbr/>Result</a></li></ul></section><section class="tsd-index-section undefined"><h3>Methods</h3><ul class="tsd-index-list"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#canStart" class="tsd-kind-icon">Dragging<wbr/>Tool.can<wbr/>Start</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#computeEffectiveCollection" class="tsd-kind-icon">Dragging<wbr/>Tool.compute<wbr/>Effective<wbr/>Collection</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#computeMove" class="tsd-kind-icon">Dragging<wbr/>Tool.compute<wbr/>Move</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doActivate" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Activate</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doCancel" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Cancel</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doKeyDown" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Key<wbr/>Down</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doKeyUp" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Key<wbr/>Up</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doMouseMove" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Mouse<wbr/>Move</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#doMouseUp" class="tsd-kind-icon">Dragging<wbr/>Tool.do<wbr/>Mouse<wbr/>Up</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#findDraggablePart" class="tsd-kind-icon">Dragging<wbr/>Tool.find<wbr/>Draggable<wbr/>Part</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#mayCopy" class="tsd-kind-icon">Dragging<wbr/>Tool.may<wbr/>Copy</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#mayMove" class="tsd-kind-icon">Dragging<wbr/>Tool.may<wbr/>Move</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="DraggingTool.html#moveParts" class="tsd-kind-icon">Dragging<wbr/>Tool.move<wbr/>Parts</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#standardMouseSelect" class="tsd-kind-icon">Dragging<wbr/>Tool.standard<wbr/>Mouse<wbr/>Select</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="DraggingTool.html#stopTransaction" class="tsd-kind-icon">Dragging<wbr/>Tool.stop<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#canStartMultiTouch" class="tsd-kind-icon">Tool.can<wbr/>Start<wbr/>Multi<wbr/>Touch</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#cancelWaitAfter" class="tsd-kind-icon">Tool.cancel<wbr/>Wait<wbr/>After</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#doMouseDown" class="tsd-kind-icon">Tool.do<wbr/>Mouse<wbr/>Down</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#doMouseWheel" class="tsd-kind-icon">Tool.do<wbr/>Mouse<wbr/>Wheel</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#doStart" class="tsd-kind-icon">Tool.do<wbr/>Start</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#doStop" class="tsd-kind-icon">Tool.do<wbr/>Stop</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#doWaitAfter" class="tsd-kind-icon">Tool.do<wbr/>Wait<wbr/>After</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#findToolHandleAt" class="tsd-kind-icon">Tool.find<wbr/>Tool<wbr/>Handle<wbr/>At</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#isBeyondDragSize" class="tsd-kind-icon">Tool.is<wbr/>Beyond<wbr/>Drag<wbr/>Size</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Tool.html#standardMouseClick" class="tsd-kind-icon">Tool.standard<wbr/>Mouse<wbr/>Click</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#standardMouseOver" class="tsd-kind-icon">Tool.standard<wbr/>Mouse<wbr/>Over</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#standardMouseWheel" class="tsd-kind-icon">Tool.standard<wbr/>Mouse<wbr/>Wheel</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#standardPinchZoomMove" class="tsd-kind-icon">Tool.standard<wbr/>Pinch<wbr/>Zoom<wbr/>Move</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#standardPinchZoomStart" class="tsd-kind-icon">Tool.standard<wbr/>Pinch<wbr/>Zoom<wbr/>Start</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#standardWaitAfter" class="tsd-kind-icon">Tool.standard<wbr/>Wait<wbr/>After</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#startTransaction" class="tsd-kind-icon">Tool.start<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#stopTool" class="tsd-kind-icon">Tool.stop<wbr/>Tool</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="Tool.html#updateAdornments" class="tsd-kind-icon">Tool.update<wbr/>Adornments</a></li></ul></section></div></section></section><section class="tsd-panel-group tsd-member-group "><h2>Constructors</h2><section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a id="constructor" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> constructor<a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><li class="tsd-signature tsd-kind-icon">new <wbr/>Guided<wbr/>Dragging<wbr/>Tool<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GuidedDraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">GuidedDraggingTool</a></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Constructs a GuidedDraggingTool and sets up the temporary guideline parts.</p>
+</div><h4 class="tsd-returns-title">Returns <a href="GuidedDraggingTool.html" class="tsd-signature-type" data-tsd-kind="Class">GuidedDraggingTool</a></h4></li></ul></section></section><section class="tsd-panel-group tsd-member-group "><h2>Properties</h2><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="centerGuidelineColor" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> center<wbr/>Guideline<wbr/>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#centerGuidelineColor" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the color of center guidelines.</p>
+<div><p>The default value is &quot;gray&quot;.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="guidelineSnapDistance" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Snap<wbr/>Distance<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#guidelineSnapDistance" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the margin of error for which guidelines show up.</p>
+<div><p>The default value is 6.
+Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="guidelineWidth" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Width<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#guidelineWidth" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the width guidelines.</p>
+<div><p>The default value is 1.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="horizontalGuidelineColor" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> horizontal<wbr/>Guideline<wbr/>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#horizontalGuidelineColor" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the color of horizontal guidelines.</p>
+<div><p>The default value is &quot;gray&quot;.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="isGuidelineEnabled" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> is<wbr/>Guideline<wbr/>Enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isGuidelineEnabled" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets whether the guidelines are enabled or disables.</p>
+<div><p>The default value is true.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="isGuidelineSnapEnabled" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> is<wbr/>Guideline<wbr/>Snap<wbr/>Enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isGuidelineSnapEnabled" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets whether snapping to guidelines is enabled.</p>
+<div><p>The default value is true.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="searchDistance" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> search<wbr/>Distance<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#searchDistance" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the distance around the selected part to search for aligned parts.</p>
+<div><p>The default value is 1000.
+Set this to Infinity if you want to search the entire diagram no matter how far away.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="verticalGuidelineColor" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> vertical<wbr/>Guideline<wbr/>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#verticalGuidelineColor" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the color of vertical guidelines.</p>
+<div><p>The default value is &quot;gray&quot;.</p>
+</div></div></li></ul></section></section><section class="tsd-panel-group tsd-member-group "><h2>Properties</h2><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineHbottom" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Hbottom<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineHbottom" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineHcenter" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Hcenter<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineHcenter" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineHtop" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Htop<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineHtop" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineVcenter" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Vcenter<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineVcenter" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineVleft" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Vleft<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineVleft" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="guidelineVright" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> guideline<wbr/>Vright<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><a href="#guidelineVright" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3></section></section><section class="tsd-panel-group tsd-member-group "><h2>Methods</h2><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="clearGuidelines" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> clear<wbr/>Guidelines<a href="#clearGuidelines" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">clear<wbr/>Guidelines<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Removes all of the guidelines from the grid.</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a id="doDeactivate" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagOverride">Override</span>  do<wbr/>Deactivate<a href="#doDeactivate" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><li class="tsd-signature tsd-kind-icon">do<wbr/>Deactivate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Calls the base method and removes the guidelines from the graph.</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a id="doDragOver" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagOverride">Override</span>  do<wbr/>Drag<wbr/>Over<a href="#doDragOver" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><li class="tsd-signature tsd-kind-icon">do<wbr/>Drag<wbr/>Over<span class="tsd-signature-symbol">(</span>pt<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a>, obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Shows vertical and horizontal guidelines for the dragged part.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>pt: <a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a></h5></li><li><h5>obj: <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h5></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a id="doDropOnto" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagOverride">Override</span>  do<wbr/>Drop<wbr/>Onto<a href="#doDropOnto" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><li class="tsd-signature tsd-kind-icon">do<wbr/>Drop<wbr/>Onto<span class="tsd-signature-symbol">(</span>pt<span class="tsd-signature-symbol">: </span><a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a>, obj<span class="tsd-signature-symbol">: </span><a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>On a mouse-up, snaps the selected part to the nearest guideline.
+If not snapping, the part remains at its position.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>pt: <a href="Point.html" class="tsd-signature-type" data-tsd-kind="Class">Point</a></h5></li><li><h5>obj: <a href="GraphObject.html" class="tsd-signature-type" data-tsd-kind="Class">GraphObject</a></h5></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="invalidateLinks" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> invalidate<wbr/>Links<a href="#invalidateLinks" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">invalidate<wbr/>Links<span class="tsd-signature-symbol">(</span>node<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>When nodes are shifted due to being guided upon a drop, make sure all connected link routes are invalidated,
+since the node is likely to have moved a different amount than all its connected links in the regular
+operation of the DraggingTool.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>node: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="isGuiding" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagProtected">Protected</span>  is<wbr/>Guiding<a href="#isGuiding" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected"><li class="tsd-signature tsd-kind-icon">is<wbr/>Guiding<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guidedpart<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This predicate decides whether or not the given Part should guide the dragged part.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5><div class="tsd-comment tsd-typography">
+<p>a stationary Part to which the dragged part might be aligned</p>
+</div></li><li><h5>guidedpart: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5><div class="tsd-comment tsd-typography">
+<p>the Part being dragged</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="showHorizontalMatches" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> show<wbr/>Horizontal<wbr/>Matches<a href="#showHorizontalMatches" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">show<wbr/>Horizontal<wbr/>Matches<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guideline<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, snap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
+part to all parts within a rectangle approximately twice the <a href="GuidedDraggingTool.html#searchDistance">searchDistance</a> wide.
+The guidelines appear when a part is aligned within a margin-of-error equal to <a href="GuidedDraggingTool.html#guidelineSnapDistance">guidelineSnapDistance</a>.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5></li><li><h5>guideline: <span class="tsd-signature-type">boolean</span></h5><div class="tsd-comment tsd-typography">
+<p>if true, show guideline</p>
+</div></li><li><h5>snap: <span class="tsd-signature-type">boolean</span></h5><div class="tsd-comment tsd-typography">
+<p>if true, snap the part to where the guideline would be</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="showVerticalMatches" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> show<wbr/>Vertical<wbr/>Matches<a href="#showVerticalMatches" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">show<wbr/>Vertical<wbr/>Matches<span class="tsd-signature-symbol">(</span>part<span class="tsd-signature-symbol">: </span><a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a>, guideline<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, snap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This finds parts that are aligned near the selected part along vertical lines. It compares the selected
+part to all parts within a rectangle approximately twice the <a href="GuidedDraggingTool.html#searchDistance">searchDistance</a> tall.
+The guidelines appear when a part is aligned within a margin-of-error equal to <a href="GuidedDraggingTool.html#guidelineSnapDistance">guidelineSnapDistance</a>.</p>
+</div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>part: <a href="Part.html" class="tsd-signature-type" data-tsd-kind="Class">Part</a></h5></li><li><h5>guideline: <span class="tsd-signature-type">boolean</span></h5><div class="tsd-comment tsd-typography">
+<p>if true, show guideline</p>
+</div></li><li><h5>snap: <span class="tsd-signature-type">boolean</span></h5><div class="tsd-comment tsd-typography">
+<p>if true, don&#39;t show guidelines but just snap the part to where the guideline would be</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../index.html">GoJS Class Index</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="current tsd-kind-class tsd-is-extension"><a href="GuidedDraggingTool.html" class="tsd-kind-icon">Guided<wbr/>Dragging<wbr/>Tool</a><ul><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#constructor" class="tsd-kind-icon">constructor</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#centerGuidelineColor" class="tsd-kind-icon">center<wbr/>Guideline<wbr/>Color</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineSnapDistance" class="tsd-kind-icon">guideline<wbr/>Snap<wbr/>Distance</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineWidth" class="tsd-kind-icon">guideline<wbr/>Width</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#horizontalGuidelineColor" class="tsd-kind-icon">horizontal<wbr/>Guideline<wbr/>Color</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineEnabled" class="tsd-kind-icon">is<wbr/>Guideline<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#isGuidelineSnapEnabled" class="tsd-kind-icon">is<wbr/>Guideline<wbr/>Snap<wbr/>Enabled</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#searchDistance" class="tsd-kind-icon">search<wbr/>Distance</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GuidedDraggingTool.html#verticalGuidelineColor" class="tsd-kind-icon">vertical<wbr/>Guideline<wbr/>Color</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHbottom" class="tsd-kind-icon">guideline<wbr/>Hbottom</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHcenter" class="tsd-kind-icon">guideline<wbr/>Hcenter</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineHtop" class="tsd-kind-icon">guideline<wbr/>Htop</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVcenter" class="tsd-kind-icon">guideline<wbr/>Vcenter</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVleft" class="tsd-kind-icon">guideline<wbr/>Vleft</a></li><li class="tsd-kind-property tsd-parent-kind-class"><a href="GuidedDraggingTool.html#guidelineVright" class="tsd-kind-icon">guideline<wbr/>Vright</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#clearGuidelines" class="tsd-kind-icon">clear<wbr/>Guidelines</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDeactivate" class="tsd-kind-icon">do<wbr/>Deactivate</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDragOver" class="tsd-kind-icon">do<wbr/>Drag<wbr/>Over</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="GuidedDraggingTool.html#doDropOnto" class="tsd-kind-icon">do<wbr/>Drop<wbr/>Onto</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#invalidateLinks" class="tsd-kind-icon">invalidate<wbr/>Links</a></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="GuidedDraggingTool.html#isGuiding" class="tsd-kind-icon">is<wbr/>Guiding</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showHorizontalMatches" class="tsd-kind-icon">show<wbr/>Horizontal<wbr/>Matches</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="GuidedDraggingTool.html#showVerticalMatches" class="tsd-kind-icon">show<wbr/>Vertical<wbr/>Matches</a></li></ul></li></ul></nav></div></div></div><div class="tsd w-full max-w-screen-xl mx-auto px-2"><div class="bottom-copyright">Copyright © 1998-2022 by Northwoods Software Corporation.</div></div><footer class=""><div class="tsd w-full max-w-screen-xl mx-auto px-2"><h2>Settings</h2><p class="mb-4">Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="../assets/main.js"></script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+        var getOutboundLink = function(url, label) {
+            gtag('event', 'click', {
+            'event_category': 'outbound',
+            'event_label': label,
+            'transport_type': 'beacon'
+            });
+        }
+        // topnav
+        var topButton = document.getElementById("topnavButton");
+        var topnavList = document.getElementById("topnavList");
+        topButton.addEventListener("click", function() {
+            this.classList.toggle("active");
+            topnavList.classList.toggle("hidden");
+            document.getElementById("topnavOpen").classList.toggle("hidden");
+            document.getElementById("topnavClosed").classList.toggle("hidden");
+        });
 
-  // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
-  topButton.addEventListener("click", function() {
-    this.classList.toggle("active");
-    topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
-  });
-</script>
-</body>
-</html>
+        document.getElementById("contactBtn").addEventListener("click", function() {
+            getOutboundLink('https://www.nwoods.com/contact.html', 'contact');
+        });
+
+        document.getElementById("buyBtn").addEventListener("click", function() {
+            getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');
+        });
+      </script></body></html>

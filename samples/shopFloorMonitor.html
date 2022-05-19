@@ -50,7 +50,6 @@
     
     <script src="../release/go.js"></script>
     <div id="allSampleContent" class="p-4 w-full">
-  <script src="../assets/js/goSamples.js"></script>
   <script id="code">
     function init() {
 
@@ -108,7 +107,7 @@
 
       myDiagram.nodeTemplate =
         $(go.Node, "Vertical",
-          { locationObjectName: "ICON" },
+          { locationObjectName: "ICON", locationSpot: go.Spot.Center },
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           $(go.Panel, "Spot",
             $(go.Panel, "Auto",
@@ -159,26 +158,25 @@
 
       load();
 
-
       // simulate some real-time problem monitoring, once every two seconds:
       function randomProblems() {
         var model = myDiagram.model;
-        // update all nodes
-        var arr = model.nodeDataArray;
-        for (var i = 0; i < arr.length; i++) {
-          data = arr[i];
-          data.problem = (Math.random() < 0.8) ? "" : "Power loss due to ...";
-          data.status = Math.random() * 3;
-          data.operation = Math.random() * 3;
-          model.updateTargetBindings(data);
-        }
-        // and update all links
-        arr = model.linkDataArray;
-        for (i = 0; i < arr.length; i++) {
-          data = arr[i];
-          data.problem = (Math.random() < 0.7) ? "" : "No Power";
-          model.updateTargetBindings(data);
-        }
+        model.commit(m => {
+          // update all nodes
+          var arr = m.nodeDataArray;
+          for (var i = 0; i < arr.length; i++) {
+            data = arr[i];
+            m.set(data, "problem", (Math.random() < 0.8) ? "" : "Power loss due to ...");
+            m.set(data, "status", Math.random() * 3);
+            m.set(data, "operation", Math.random() * 3);
+          }
+          // and update all links
+          arr = m.linkDataArray;
+          for (i = 0; i < arr.length; i++) {
+            data = arr[i];
+            m.set(data, "problem", (Math.random() < 0.7) ? "" : "No Power");
+          }
+        }, null);  // null temporarily sets skipsUndoManager to true, to avoid recording these changes
       }
 
       function loop() {
@@ -205,12 +203,12 @@
   <textarea id="mySavedModel" style="width:100%;height:300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
-{"key":"1", "text":"Switch 23", "type":"S2", "loc":"195 225"},
-{"key":"2", "text":"Machine 17", "type":"M4", "loc":"183.5 94"},
-{"key":"3", "text":"Panel 7", "type":"P2", "loc":"75 211.5"},
-{"key":"4", "text":"Switch 24", "type":"S3", "loc":"306 225"},
-{"key":"5", "text":"Machine 18", "type":"M5", "loc":"288.5 95"},
-{"key":"6", "text":"Panel 9", "type":"P1", "loc":"426 211"},
+{"key":"1", "text":"Switch 23", "type":"S2", "loc":"195 218"},
+{"key":"2", "text":"Machine 17", "type":"M4", "loc":"195 94"},
+{"key":"3", "text":"Panel 7", "type":"P2", "loc":"75 218"},
+{"key":"4", "text":"Switch 24", "type":"S3", "loc":"306 218"},
+{"key":"5", "text":"Machine 18", "type":"M5", "loc":"306 95"},
+{"key":"6", "text":"Panel 9", "type":"P1", "loc":"426 218"},
 {"key":"7", "text":"Instr 3", "type":"I1", "loc":"-50 218"} ],
   "linkDataArray": [
 {"from":"1", "to":"2"},

@@ -65,7 +65,8 @@
               {
                 angle: 90,
                 setsPortSpot: false,
-                setsChildPortSpot: false
+                setsChildPortSpot: false,
+                arrangement: go.TreeLayout.ArrangementHorizontal
               }),
             "undoManager.isEnabled": true,
             // When a Node is deleted by the user, also delete all of its Comment Nodes.
@@ -102,7 +103,7 @@
             new go.Binding("fill", "color")),
           $("TextBlock",
             { margin: 6 },
-            new go.Binding("text", "key"))
+            new go.Binding("text"))
         );
 
       myDiagram.linkTemplate =
@@ -129,25 +130,24 @@
             { stroke: "brown", strokeWidth: 1, fill: "lightyellow" })
         ));
 
-      myDiagram.model =
-        new go.GraphLinksModel(
+        myDiagram.model = new go.GraphLinksModel(
           {
             nodeDataArray: [
-              { key: "Alpha", color: "orange" },
-              { key: "Beta", color: "lightgreen" },
-              { key: "Gamma", color: "lightgreen" },
-              { key: "Delta", color: "pink" },
-              { key: "A comment", text: "comment\nabout Alpha", category: "Comment" },
-              { key: "B comment", text: "comment\nabout Beta", category: "Comment" },
-              { key: "G comment", text: "comment about Gamma", category: "Comment" }
+              { key: 1, text: "Alpha", color: "orange" },
+              { key: 2, text: "Beta", color: "lightgreen" },
+              { key: 3, text: "Gamma", color: "lightgreen" },
+              { key: 4, text: "Delta", color: "pink" },
+              { key: -1, text: "comment\nabout Alpha", category: "Comment" },
+              { key: -2, text: "comment\nabout Beta", category: "Comment" },
+              { key: -3, text: "comment\nabout Gamma", category: "Comment" }
             ],
             linkDataArray: [
-              { from: "Alpha", to: "Beta" },
-              { from: "Alpha", to: "Gamma" },
-              { from: "Alpha", to: "Delta" },
-              { from: "A comment", to: "Alpha", category: "Comment" },
-              { from: "B comment", to: "Beta", category: "Comment" },
-              { from: "G comment", to: "Gamma", category: "Comment" }
+              { from: 1, to: 2 },
+              { from: 1, to: 3 },
+              { from: 1, to: 4 },
+              { from: -1, to: 1, category: "Comment" },
+              { from: -2, to: 2, category: "Comment" },
+              { from: -3, to: 3, category: "Comment" }
             ]
           });
 

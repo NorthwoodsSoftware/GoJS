@@ -1,946 +1,272 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>UndoManager | GoJS API</title>
-	<meta name="description" content="Documentation for GoJS API">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../../assets/css/style.css">
-	<link rel="stylesheet" href="../assets/css/main.css">
-	<script async src="../assets/js/search.js" id="search-script"></script>
-</head>
-<body>
-<header>
-	<nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-		<div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-			<div class="md:pl-4">
-				<a class="text-white hover:text-white no-underline hover:no-underline
-				font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary" href="../../index.html">
-				<h1 class="mb-0 p-1 leading-none">GoJS</h1>
-				</a>
-			</div>
-			<button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-				<svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-					<path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-					<path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-				</svg>
-			</button>
-			<div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-				<ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../learn/index.html">Learn</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../samples/index.html">Samples</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../intro/index.html">Intro</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../api/index.html">API</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="../../download.html">Download</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-					target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-					<li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-					target="_blank"rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-				</ul>
-			</div>
-		</div>
-		<hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-	</nav>
-	<div class="tsd tsd-page-header">
-		<div class="tsd-page-toolbar">
-			<div class="w-full max-w-screen-xl mx-auto px-2">
-				<div class="table-wrap">
-					<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
-						<div class="field">
-							<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-							<input id="tsd-search-field" type="text" />
-						</div>
-						<ul class="results">
-							<li class="state loading">Preparing search index...</li>
-							<li class="state failure">The search index is not available</li>
-						</ul>
-						<a href="../index.html" class="title">GoJS API</a>
-					</div>
-					<div class="table-cell" id="tsd-widgets">
-						<div id="tsd-filter">
-							<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-							<div class="tsd-filter-group">
-								<div class="tsd-select" id="tsd-filter-visibility">
-									<span class="tsd-select-label">All</span>
-									<ul class="tsd-select-list">
-										<li data-value="public">Public</li>
-										<li data-value="protected">Public/Protected</li>
-										<li data-value="private" class="selected">All</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-						<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="tsd tsd-page-title">
-			<div class="w-full max-w-screen-xl mx-auto px-2">
-				<div class="top-copyright">
-					<b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.9<br/>by <a href="https://www.nwoods.com/">Northwoods Software&reg;</a>
-				</div>
-				<div>
-					<h1>Class UndoManager</h1>
-				</div>
-			</div>
-		</div>
-	</div>
-</header>
-<div class="tsd w-full max-w-screen-xl mx-auto pb-4">
-	<div class="row px-2 w-full">
-		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">UndoManager</span>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<p>An UndoManager observes and records model and diagram changes in transactions and
-						supports undo/redo operations.
-						You will need to set the <a href="UndoManager.html#isEnabled">isEnabled</a> property to true in order for
-					the UndoManager to record changes and for users to perform an undo or a redo.</p>
-					<p>Typically an operation will call <a href="UndoManager.html#startTransaction">startTransaction</a>,
-						make some changes to the <a href="Model.html">Model</a> and/or <a href="Diagram.html">Diagram</a>,
-						and then call <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
-						Any <a href="ChangedEvent.html">ChangedEvent</a>s that occur will be recorded in a
-						<a href="Transaction.html">Transaction</a> object.
-						If for some reason you do not wish to complete the transaction
-						successfully, you can call <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> instead
-					of <a href="UndoManager.html#commitTransaction">commitTransaction</a>.</p>
-					<p>For convenience the <a href="Diagram.html#commit">Diagram.commit</a> and <a href="Model.html#commit">Model.commit</a> methods
-						execute a function within a transaction and then perform a commit,
-					or else a rollback upon an error.</p>
-					<p>The <a href="UndoManager.html#history">history</a> property is a list of <a href="Transaction.html">Transaction</a>s.
-						<a href="UndoManager.html#commitTransaction">commitTransaction</a> will add the <a href="UndoManager.html#currentTransaction">currentTransaction</a>
-						to the <a href="UndoManager.html#history">history</a> list.
-						<a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will undo the changes remembered in the
-						<a href="UndoManager.html#currentTransaction">currentTransaction</a> and then discard it, without changing the <a href="UndoManager.html#history">history</a>.
-						You can limit how many transactions are remembered in the history
-					by setting <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
-					<p>Transactions may be nested.
-						Be sure to call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>
-						for each call to <a href="UndoManager.html#startTransaction">startTransaction</a>.
-						Avoid repeated start-commit-start-commit calls as a result of a user&#39;s actions.
-					Instead, start, make all changes, and then commit.</p>
-					<p>If you want to restore the diagram to the state before the latest complete
-						transaction, call <a href="UndoManager.html#undo">undo</a>.
-						Call <a href="UndoManager.html#redo">redo</a> to change the diagram to a later state.
-						If after some number of undo&#39;s you start a transaction,
-						all of the history after the current state is discarded,
-						and a new transaction may be recorded.
-					You cannot undo or redo during a transaction.</p>
-					<p>Initially each <a href="Model.html">Model</a> has its own UndoManager.
-						UndoManagers may be shared by multiple Models by replacing
-					the standard <a href="Model.html#undoManager">Model.undoManager</a> created by the model constructor.</p>
-					<p>There are several informational properties:</p>
-					<ul>
-						<li><a href="UndoManager.html#isInTransaction">isInTransaction</a> is true when a top-level transaction has been started that has not yet been committed or rolled-back.</li>
-						<li><a href="UndoManager.html#currentTransaction">currentTransaction</a> holds the flattened list of all <a href="ChangedEvent.html">ChangedEvent</a>s
-						that have happened within the current transaction.</li>
-						<li><a href="UndoManager.html#transactionLevel">transactionLevel</a> indicates the current depth of nesting.</li>
-						<li><a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> holds the stack of transaction names supplied to
-						<a href="UndoManager.html#startTransaction">startTransaction</a> calls.</li>
-						<li><a href="UndoManager.html#history">history</a> holds only complete top-level transactions.</li>
-						<li><a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</li>
-						<li><a href="UndoManager.html#historyIndex">historyIndex</a> indicates which <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> is the next to be &quot;undone&quot;;
-						this is decremented by each undo and incremented by each redo.</li>
-						<li><a href="UndoManager.html#transactionToUndo">transactionToUndo</a> and <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> indicate which <a href="Transaction.html">Transaction</a> may be undone or redone next, if any.</li>
-						<li><a href="UndoManager.html#models">models</a> returns an iterator over all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</li>
-					</ul>
-					<p>A transaction may not be ongoing when replacing a <a href="Diagram.html#model">Diagram.model</a>,
-						because it would not make sense to be replacing the UndoManager (the <a href="Model.html#undoManager">Model.undoManager</a>)
-					while changes are being recorded.</p>
-					<p>Replacing a <a href="Diagram.html#model">Diagram.model</a> copies certain properties from the old UndoManager to the new one,
-					including <a href="UndoManager.html#isEnabled">isEnabled</a> and <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
-				</div>
-			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr>Transaction</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#history" class="tsd-kind-icon">history</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr>Index</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr>Enabled</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr>InTransaction</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr>Undoing<wbr>Redoing</a></li>
-								<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr>History<wbr>Length</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#models" class="tsd-kind-icon">models</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr>Transaction<wbr>Names</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr>Level</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr>ToRedo</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr>ToUndo</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr>Model</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr>Transaction</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr>Changed</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr>Model</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr>Transaction</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr>Transaction</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>
-						constructor
-					</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Undo<wbr>Manager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="UndoManager.html" class="tsd-signature-type" data-tsd-kind="Class">UndoManager</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>The constructor produces an empty UndoManager
-								with no transaction history.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="UndoManager.html" class="tsd-signature-type" data-tsd-kind="Class">UndoManager</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="currentTransaction" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						current<wbr>Transaction
-					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the current <a href="Transaction.html">Transaction</a> for recording additional model change events.
-									This is initialized and augmented by <a href="UndoManager.html#handleChanged">handleChanged</a>
-									before it is added to <a href="UndoManager.html#history">history</a> by a top-level call
-									to <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
-								The value will be null between transactions.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="history" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						history
-					<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type" data-tsd-kind="Class">List</a><span class="tsd-signature-symbol">&lt;</span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the whole history, a list of all of the <a href="Transaction.html">Transaction</a>s,
-								each representing a transaction with some number of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
-								<p>You should not modify this List.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="historyIndex" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						history<wbr>Index
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the index into <a href="UndoManager.html#history">history</a> for the current undoable <a href="Transaction.html">Transaction</a>.
-								The value is -1 if there is no undoable <a href="Transaction.html">Transaction</a> to be undone.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="isEnabled" class="tsd-anchor"></a>
-					<h3>
-						is<wbr>Enabled
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets whether this UndoManager records any changes.
-									The default value is false -- you need to set this to true if
-								you want the user to be able to undo or redo.</p>
-								<p>You can temporarily turn off recording by setting <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a>
-								and <a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> to true.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="isInTransaction" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						is<wbr>InTransaction
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property is true after the first call to <a href="UndoManager.html#startTransaction">startTransaction</a>
-								and before a corresponding call to <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>.</p>
-								<p>During a transaction <a href="UndoManager.html#canUndo">canUndo</a> and <a href="UndoManager.html#canRedo">canRedo</a> will be false.
-								<a href="UndoManager.html#currentTransaction">currentTransaction</a> may be non-null if any <a href="ChangedEvent.html">ChangedEvent</a>s were recorded.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="isUndoingRedoing" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						is<wbr>Undoing<wbr>Redoing
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-					<a name="maxHistoryLength" class="tsd-anchor"></a>
-					<h3>
-						max<wbr>History<wbr>Length
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Gets or sets the maximum number of transactions that this undo manager will remember.
-									When a transaction is committed and the number exceeds this value,
-									the UndoManager will discard the oldest transaction(s) in order to meet this limit.
-									The initial value is 999.
-									Any new value must be an integer.
-									A negative value is treated as if there were no limit.
-									A zero value will not remember any Transactions in the <a href="UndoManager.html#history">history</a>,
-									but will allow commits and rollbacks to occur normally,
-								including raising &quot;Transaction&quot; type <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
-								<p>This property is useful in helping limit the memory consumption of typical applications.
-									But this does not limit the number of <a href="ChangedEvent.html">ChangedEvent</a>s that are recorded,
-									because there may be an unlimited number of those within each <a href="Transaction.html">Transaction</a>.
-									Decreasing this value will not necessarily remove any existing <a href="Transaction.html">Transaction</a>s
-								if there currently exist more in <a href="UndoManager.html#history">history</a> than the new value permits.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="models" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						models
-					<span class="tsd-signature-symbol">: </span><a href="Iterator.html" class="tsd-signature-type" data-tsd-kind="Interface">Iterator</a><span class="tsd-signature-symbol">&lt;</span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">&gt;</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns an iterator for all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#addModel">addModel</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
-									</dd>
-								</dl>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="nestedTransactionNames" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						nested<wbr>Transaction<wbr>Names
-					<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type" data-tsd-kind="Class">List</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns a stack of ongoing transaction names.
-									The outermost transaction name will be the first item in the list.
-									The last one will be the name of the most recent (nested) call
-								to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
-								<p>You should not modify this List.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="transactionLevel" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						transaction<wbr>Level
-					<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the current transaction level.
-									The value is zero when there is no ongoing transaction.
-									The initial value is zero.
-									<a href="UndoManager.html#startTransaction">startTransaction</a> will increment this value;
-									<a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will decrement it.
-									When this value is greater than zero, <a href="UndoManager.html#canUndo">canUndo</a>
-									and <a href="UndoManager.html#canRedo">canRedo</a> will be false, because
-								additional logically related model change events may occur.</p>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="transactionToRedo" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						transaction<wbr>ToRedo
-					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be redone next.
-								The value may be null if the UndoManager is not ready to perform a redo.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#transactionToUndo">transactionToUndo</a></p>
-									</dd>
-								</dl>
-							</div>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="transactionToUndo" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagReadOnly">Read-only</span>
-						transaction<wbr>ToUndo
-					<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a>        </h3>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be undone next.
-								The value may be null if the UndoManager is not ready to perform an undo.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#transactionToRedo">transactionToRedo</a></p>
-									</dd>
-								</dl>
-							</div>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="addModel" class="tsd-anchor"></a>
-					<h3>
-						add<wbr>Model
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Make sure this UndoManager knows about a <a href="Model.html">Model</a> for which
-									it may receive <a href="ChangedEvent.html">ChangedEvent</a>s when the given <a href="Model.html">Model</a> is changed.
-								The model will also receive notifications about transactions and undo or redo operations.</p>
-								<p>You should not call this method during a transaction.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>model: <a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A <a href="Model.html">Model</a> that this UndoManager is managing.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="canRedo" class="tsd-anchor"></a>
-					<h3>
-						can<wbr>Redo
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This predicate returns true if you can call <a href="UndoManager.html#redo">redo</a>.
-									This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
-									if any transaction is ongoing, or
-								if there is no <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> that can be redone.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if ready for <a href="UndoManager.html#redo">redo</a> to be called.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="canUndo" class="tsd-anchor"></a>
-					<h3>
-						can<wbr>Undo
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This predicate returns true if you can call <a href="UndoManager.html#undo">undo</a>.
-									This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
-									if any transaction is ongoing, or
-								if there is no <a href="UndoManager.html#transactionToUndo">transactionToUndo</a> that can be undone.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if ready for <a href="UndoManager.html#undo">undo</a> to be called.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="clear" class="tsd-anchor"></a>
-					<h3>
-						clear
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Clear all of the <a href="Transaction.html">Transaction</a>s and clear all other state,
-									including any ongoing transaction without rolling back.
-								However, this maintains its references to its <a href="Model.html">Model</a>s.</p>
-								<p>You should not call this method during a transaction.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="commitTransaction" class="tsd-anchor"></a>
-					<h3>
-						commit<wbr>Transaction
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">commit<wbr>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Commit the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
-								<p>For convenience, this method is called by <a href="Model.html#commitTransaction">Model.commitTransaction</a> and <a href="Diagram.html#commitTransaction">Diagram.commitTransaction</a>.</p>
-								<p>If this call stops a top-level transaction,
-									we mark the <a href="UndoManager.html#currentTransaction">currentTransaction</a> as complete (<a href="Transaction.html#isComplete">Transaction.isComplete</a>),
-									we add the <a href="Transaction.html">Transaction</a> to the <a href="UndoManager.html#history">history</a> list,
-									and we return true.
-									Committing a transaction when there have been some undos without corresponding
-									redos will throw away the <a href="Transaction.html">Transaction</a>s holding changes that happened
-									after the current state, before adding the new <a href="Transaction.html">Transaction</a> to the
-								<a href="UndoManager.html#history">history</a> list.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a short string describing the transaction;
-											this is recorded as the <a href="Transaction.html#name">Transaction.name</a> and need not be the same as the string passed to <a href="UndoManager.html#startTransaction">startTransaction</a>.
-										If the value is an empty string or not supplied, this will use the name given to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if ending a top-level transaction.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="handleChanged" class="tsd-anchor"></a>
-					<h3>
-						handle<wbr>Changed
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Changed<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Maybe record a <a href="ChangedEvent.html">ChangedEvent</a> in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
-									This calls <a href="UndoManager.html#skipsEvent">skipsEvent</a> to see if this should ignore the change.
-									If <a href="UndoManager.html#skipsEvent">skipsEvent</a> returns false, this creates a copy of the <a href="ChangedEvent.html">ChangedEvent</a>
-									and adds it to the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
-								If there is no <a href="UndoManager.html#currentTransaction">currentTransaction</a>, this first creates and remembers it.</p>
-								<p>This method always ignores all changes while performing
-									an <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.
-								This method is also a no-op if <a href="UndoManager.html#isEnabled">isEnabled</a> is false.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>e: <a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a <a href="ChangedEvent.html">ChangedEvent</a>.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="redo" class="tsd-anchor"></a>
-					<h3>
-						redo
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>After an <a href="UndoManager.html#undo">undo</a>, re-perform the changes in <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>.
-								<a href="UndoManager.html#canRedo">canRedo</a> must be true for this method to have any effect.</p>
-								<p>This is called by <a href="CommandHandler.html#redo">CommandHandler.redo</a>.</p>
-								<p>This will raise a &quot;StartingRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
-									perform the <a href="Transaction.html#redo">Transaction.redo</a> on the <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>, and then
-									raise a &quot;FinishedRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
-									The two ChangedEvents are to let model listeners know that a redo is about to take place
-									and that it just finished.
-								<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="removeModel" class="tsd-anchor"></a>
-					<h3>
-						remove<wbr>Model
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Inform this UndoManager that it will no longer be receiving <a href="ChangedEvent.html">ChangedEvent</a>s
-									when the given <a href="Model.html">Model</a> is changed.
-								The model will no longer receive notifications about transactions and undo or redo operations.</p>
-								<p>You should not call this method during a transaction.
-									If you call this method between transactions when there is a transaction history,
-								you should be careful that there are no <a href="ChangedEvent.html">ChangedEvent</a>s referring to that model in any <a href="Transaction.html">Transaction</a>s.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#addModel">addModel</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>model: <a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A <a href="Model.html">Model</a> that this UndoManager should no longer manage.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="rollbackTransaction" class="tsd-anchor"></a>
-					<h3>
-						rollback<wbr>Transaction
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">rollback<wbr>Transaction<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Rollback the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>, undoing any changes.</p>
-								<p>For convenience, this method is called by <a href="Model.html#rollbackTransaction">Model.rollbackTransaction</a> and <a href="Diagram.html#rollbackTransaction">Diagram.rollbackTransaction</a>.</p>
-								<p>This undoes and then discards the changes in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
-								You must have started a transaction previously.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#commitTransaction">commitTransaction</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if ending a top-level transaction.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="skipsEvent" class="tsd-anchor"></a>
-					<h3>
-						<span class="tsd-flag ts-flagVirtual">Virtual</span>
-						skips<wbr>Event
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">skips<wbr>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>This predicate is called by <a href="UndoManager.html#handleChanged">handleChanged</a> to decide if a <a href="ChangedEvent.html">ChangedEvent</a>
-								is not interesting enough to be remembered.</p>
-								<p>Transactional events (of change type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>) are always skipped.
-								Changed events for <a href="GraphObject.html">GraphObject</a>s that are in <a href="Layer.html#isTemporary">Layer.isTemporary</a> layers are also skipped.</p>
-								<p>Sometimes changed events do not even get to <a href="UndoManager.html#handleChanged">handleChanged</a> because
-								<a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> or <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a> is true.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>e: <a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the <a href="ChangedEvent.html">ChangedEvent</a> received by <a href="UndoManager.html#handleChanged">handleChanged</a>.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true to not record the change.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="startTransaction" class="tsd-anchor"></a>
-					<h3>
-						start<wbr>Transaction
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">start<wbr>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Begin a transaction, where the changes are held by a <a href="Transaction.html">Transaction</a> object
-									as the value of <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
-								You must call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> afterwards.</p>
-								<p>For convenience, this method is called by <a href="Model.html#startTransaction">Model.startTransaction</a> and <a href="Diagram.html#startTransaction">Diagram.startTransaction</a>.</p>
-								<p>Transactions can be nested.
-									Starting or ending a nested transaction will return false.
-								Nested transactions will share the same <a href="Transaction.html">Transaction</a> list of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
-								<p>Starting a transaction will not necessarily cause <a href="UndoManager.html#currentTransaction">currentTransaction</a> to be non-null.
-								A <a href="Transaction.html">Transaction</a> object is usually only created by <a href="UndoManager.html#handleChanged">handleChanged</a> when a <a href="ChangedEvent.html">ChangedEvent</a> first occurs.</p>
-								<dl class="tsd-comment-tags">
-									<dt>see</dt>
-									<dd><p><a href="UndoManager.html#commitTransaction">commitTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a short string describing the transaction, pushed onto the <a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> stack.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if starting a top-level transaction.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="undo" class="tsd-anchor"></a>
-					<h3>
-						undo
-					</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<div class="tsd-comment tsd-typography">
-								<p>Reverse the effects of the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>.
-								<a href="UndoManager.html#canUndo">canUndo</a> must be true for this method to have any effect.</p>
-								<p>This is called by <a href="CommandHandler.html#undo">CommandHandler.undo</a>.</p>
-								<p>This will raise a &quot;StartingUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
-									perform the <a href="Transaction.html#undo">Transaction.undo</a> on the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>, and then
-									raise a &quot;FinishedUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
-									The two ChangedEvents are to let model listeners know that an undo is about to take place
-									and that it just finished.
-								<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class=" ">
-						<a href="../index.html">GoJS <wbr>Class <wbr>Index</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="UndoManager.html" class="tsd-kind-icon">Undo<wbr>Manager</a>
-						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr>Transaction</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#history" class="tsd-kind-icon">history</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr>Index</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr>Enabled</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr>InTransaction</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr>Undoing<wbr>Redoing</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class">
-								<a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr>History<wbr>Length</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#models" class="tsd-kind-icon">models</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr>Transaction<wbr>Names</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr>Level</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr>ToRedo</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr>ToUndo</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr>Model</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr>Redo</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr>Undo</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr>Transaction</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr>Changed</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr>Model</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr>Transaction</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr>Event</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr>Transaction</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<div class="tsd w-full max-w-screen-xl mx-auto px-2">
-	<div class="bottom-copyright">Copyright &copy; 1998-2021 by Northwoods Software Corporation.</div>
-</div>
-<div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
-  var getOutboundLink = function(url, label) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': label,
-      'transport_type': 'beacon'
-    });
-  }
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>UndoManager | GoJS API</title><meta name="description" content="Documentation for GoJS API"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../../assets/css/style.css"/><link rel="stylesheet" href="../assets/style-tsd.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary"><div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2"><div class="md:pl-4"><a class="text-white hover:text-white no-underline hover:no-underline\n                            font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary" href="../../index.html"><h1 class="mb-0 p-1 leading-none">GoJS</h1></a></div><button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation"><svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6"><path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path><path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button><div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20"><ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0"><li class="p-1 sm:p-0"><a class="topnav-link" href="../../learn/index.html">Learn</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../samples/index.html">Samples</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../intro/index.html">Intro</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../api/index.html">API</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="../../download.html">Download</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener" id="contactBtn">Contact</a></li><li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html" target="_blank" rel="noopener" id="buyBtn">Buy</a></li></ul></div></div><hr class="border-b border-gray-600 opacity-50 my-0 py-0"/></nav><div class="tsd-page-header"><div class="tsd-page-toolbar"><div class="w-full max-w-screen-xl mx-auto px-2"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">GoJS API</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited"/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div></div><div class="tsd-page-title"><div class="w-full max-w-screen-xl mx-auto px-2"><div class="top-copyright"><b>GoJS</b>&reg; Diagramming Components<br/>version 2.2.10<br/>by <a href="https://www.nwoods.com/">Northwoods Software®</a></div><div><h1>Class UndoManager </h1></div></div></div></header><div class="tsd w-full max-w-screen-xl mx-auto pb-4"><div class="row px-2 w-full"><div class="col-8 col-content"><section class="tsd-panel tsd-hierarchy"><h3>Hierarchy</h3><ul class="tsd-hierarchy"><li><span class="target">UndoManager</span></li></ul></section><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography">
+<p>An UndoManager observes and records model and diagram changes in transactions and
+supports undo/redo operations.
+You will need to set the <a href="UndoManager.html#isEnabled">isEnabled</a> property to true in order for
+the UndoManager to record changes and for users to perform an undo or a redo.</p>
+<div><p>Typically an operation will call <a href="UndoManager.html#startTransaction">startTransaction</a>,
+make some changes to the <a href="Model.html">Model</a> and/or <a href="Diagram.html">Diagram</a>,
+and then call <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
+Any <a href="ChangedEvent.html">ChangedEvent</a>s that occur will be recorded in a
+<a href="Transaction.html">Transaction</a> object.
+If for some reason you do not wish to complete the transaction
+successfully, you can call <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> instead
+of <a href="UndoManager.html#commitTransaction">commitTransaction</a>.</p>
+<p>For convenience the <a href="Diagram.html#commit">Diagram.commit</a> and <a href="Model.html#commit">Model.commit</a> methods
+execute a function within a transaction and then perform a commit,
+or else a rollback upon an error.</p>
+<p>The <a href="UndoManager.html#history">history</a> property is a list of <a href="Transaction.html">Transaction</a>s.
+<a href="UndoManager.html#commitTransaction">commitTransaction</a> will add the <a href="UndoManager.html#currentTransaction">currentTransaction</a>
+to the <a href="UndoManager.html#history">history</a> list.
+<a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will undo the changes remembered in the
+<a href="UndoManager.html#currentTransaction">currentTransaction</a> and then discard it, without changing the <a href="UndoManager.html#history">history</a>.
+You can limit how many transactions are remembered in the history
+by setting <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
+<p>Transactions may be nested.
+Be sure to call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>
+for each call to <a href="UndoManager.html#startTransaction">startTransaction</a>.
+Avoid repeated start-commit-start-commit calls as a result of a user&#39;s actions.
+Instead, start, make all changes, and then commit.</p>
+<p>If you want to restore the diagram to the state before the latest complete
+transaction, call <a href="UndoManager.html#undo">undo</a>.
+Call <a href="UndoManager.html#redo">redo</a> to change the diagram to a later state.
+If after some number of undo&#39;s you start a transaction,
+all of the history after the current state is discarded,
+and a new transaction may be recorded.
+You cannot undo or redo during a transaction.</p>
+<p>Initially each <a href="Model.html">Model</a> has its own UndoManager.
+UndoManagers may be shared by multiple Models by replacing
+the standard <a href="Model.html#undoManager">Model.undoManager</a> created by the model constructor.</p>
+<p>There are several informational properties:</p>
+<ul>
+<li><a href="UndoManager.html#isInTransaction">isInTransaction</a> is true when a top-level transaction has been started that has not yet been committed or rolled-back.</li>
+<li><a href="UndoManager.html#currentTransaction">currentTransaction</a> holds the flattened list of all <a href="ChangedEvent.html">ChangedEvent</a>s
+that have happened within the current transaction.</li>
+<li><a href="UndoManager.html#transactionLevel">transactionLevel</a> indicates the current depth of nesting.</li>
+<li><a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> holds the stack of transaction names supplied to
+<a href="UndoManager.html#startTransaction">startTransaction</a> calls.</li>
+<li><a href="UndoManager.html#history">history</a> holds only complete top-level transactions.</li>
+<li><a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</li>
+<li><a href="UndoManager.html#historyIndex">historyIndex</a> indicates which <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> is the next to be &quot;undone&quot;;
+this is decremented by each undo and incremented by each redo.</li>
+<li><a href="UndoManager.html#transactionToUndo">transactionToUndo</a> and <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> indicate which <a href="Transaction.html">Transaction</a> may be undone or redone next, if any.</li>
+<li><a href="UndoManager.html#models">models</a> returns an iterator over all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</li>
+</ul>
+<p>A transaction may not be ongoing when replacing a <a href="Diagram.html#model">Diagram.model</a>,
+because it would not make sense to be replacing the UndoManager (the <a href="Model.html#undoManager">Model.undoManager</a>)
+while changes are being recorded.</p>
+<p>Replacing a <a href="Diagram.html#model">Diagram.model</a> copies certain properties from the old UndoManager to the new one,
+including <a href="UndoManager.html#isEnabled">isEnabled</a> and <a href="UndoManager.html#maxHistoryLength">maxHistoryLength</a>.</p>
+</div></div></section><section class="tsd-panel-group tsd-index-group"><h2>Index</h2><section class="tsd-panel tsd-index-panel"><div class="tsd-index-content"><section class="tsd-index-section "><h3>Constructors</h3><ul class="tsd-index-list"><li class="tsd-kind-constructor tsd-parent-kind-class"><a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a></li></ul></section><section class="tsd-index-section "><h3>Properties</h3><ul class="tsd-index-list"><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr/>Transaction</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#history" class="tsd-kind-icon">history</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr/>Index</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr/>Enabled</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr/>In<wbr/>Transaction</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr/>Undoing<wbr/>Redoing</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr/>History<wbr/>Length</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#models" class="tsd-kind-icon">models</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr/>Transaction<wbr/>Names</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr/>Level</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr/>To<wbr/>Redo</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr/>To<wbr/>Undo</a></li></ul></section><section class="tsd-index-section "><h3>Methods</h3><ul class="tsd-index-list"><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr/>Model</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr/>Redo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr/>Undo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr/>Changed</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr/>Model</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr/>Event</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a></li></ul></section></div></section></section><section class="tsd-panel-group tsd-member-group "><h2>Constructors</h2><section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class"><a id="constructor" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> constructor<a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">new <wbr/>Undo<wbr/>Manager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="UndoManager.html" class="tsd-signature-type" data-tsd-kind="Class">UndoManager</a></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>The constructor produces an empty UndoManager
+with no transaction history.</p>
+</div><h4 class="tsd-returns-title">Returns <a href="UndoManager.html" class="tsd-signature-type" data-tsd-kind="Class">UndoManager</a></h4></li></ul></section></section><section class="tsd-panel-group tsd-member-group "><h2>Properties</h2><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="currentTransaction" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> current<wbr/>Transaction<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a><a href="#currentTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the current <a href="Transaction.html">Transaction</a> for recording additional model change events.
+This is initialized and augmented by <a href="UndoManager.html#handleChanged">handleChanged</a>
+before it is added to <a href="UndoManager.html#history">history</a> by a top-level call
+to <a href="UndoManager.html#commitTransaction">commitTransaction</a>.
+The value will be null between transactions.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="history" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> history<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type" data-tsd-kind="Class">List</a><span class="tsd-signature-symbol">&lt;</span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a><span class="tsd-signature-symbol">&gt;</span><a href="#history" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the whole history, a list of all of the <a href="Transaction.html">Transaction</a>s,
+each representing a transaction with some number of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
+<div><p>You should not modify this List.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="historyIndex" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> history<wbr/>Index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#historyIndex" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the index into <a href="UndoManager.html#history">history</a> for the current undoable <a href="Transaction.html">Transaction</a>.
+The value is -1 if there is no undoable <a href="Transaction.html">Transaction</a> to be undone.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="isEnabled" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> is<wbr/>Enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isEnabled" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets whether this UndoManager records any changes.
+The default value is false -- you need to set this to true if
+you want the user to be able to undo or redo.</p>
+<div><p>You can temporarily turn off recording by setting <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a>
+and <a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> to true.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="isInTransaction" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> is<wbr/>In<wbr/>Transaction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isInTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property is true after the first call to <a href="UndoManager.html#startTransaction">startTransaction</a>
+and before a corresponding call to <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a>.</p>
+<div><p>During a transaction <a href="UndoManager.html#canUndo">canUndo</a> and <a href="UndoManager.html#canRedo">canRedo</a> will be false.
+<a href="UndoManager.html#currentTransaction">currentTransaction</a> may be non-null if any <a href="ChangedEvent.html">ChangedEvent</a>s were recorded.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="isUndoingRedoing" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> is<wbr/>Undoing<wbr/>Redoing<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#isUndoingRedoing" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property is true during a call to <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="maxHistoryLength" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> max<wbr/>History<wbr/>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#maxHistoryLength" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Gets or sets the maximum number of transactions that this undo manager will remember.
+When a transaction is committed and the number exceeds this value,
+the UndoManager will discard the oldest transaction(s) in order to meet this limit.
+The initial value is 999.
+Any new value must be an integer.
+A negative value is treated as if there were no limit.
+A zero value will not remember any Transactions in the <a href="UndoManager.html#history">history</a>,
+but will allow commits and rollbacks to occur normally,
+including raising &quot;Transaction&quot; type <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
+<div><p>This property is useful in helping limit the memory consumption of typical applications.
+But this does not limit the number of <a href="ChangedEvent.html">ChangedEvent</a>s that are recorded,
+because there may be an unlimited number of those within each <a href="Transaction.html">Transaction</a>.
+Decreasing this value will not necessarily remove any existing <a href="Transaction.html">Transaction</a>s
+if there currently exist more in <a href="UndoManager.html#history">history</a> than the new value permits.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="models" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> models<span class="tsd-signature-symbol">: </span><a href="Iterator.html" class="tsd-signature-type" data-tsd-kind="Interface">Iterator</a><span class="tsd-signature-symbol">&lt;</span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">&gt;</span><a href="#models" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns an iterator for all of the <a href="Model.html">Model</a>s that this UndoManager is handling.</p>
+<dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#addModel">addModel</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
+</dd></dl></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="nestedTransactionNames" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> nested<wbr/>Transaction<wbr/>Names<span class="tsd-signature-symbol">: </span><a href="List.html" class="tsd-signature-type" data-tsd-kind="Class">List</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><a href="#nestedTransactionNames" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns a stack of ongoing transaction names.
+The outermost transaction name will be the first item in the list.
+The last one will be the name of the most recent (nested) call
+to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+<div><p>You should not modify this List.</p>
+</div></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="transactionLevel" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> transaction<wbr/>Level<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#transactionLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the current transaction level.
+The value is zero when there is no ongoing transaction.
+The initial value is zero.
+<a href="UndoManager.html#startTransaction">startTransaction</a> will increment this value;
+<a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> will decrement it.
+When this value is greater than zero, <a href="UndoManager.html#canUndo">canUndo</a>
+and <a href="UndoManager.html#canRedo">canRedo</a> will be false, because
+additional logically related model change events may occur.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="transactionToRedo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> transaction<wbr/>To<wbr/>Redo<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a><a href="#transactionToRedo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be redone next.
+The value may be null if the UndoManager is not ready to perform a redo.</p>
+<dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#transactionToUndo">transactionToUndo</a></p>
+</dd></dl></div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class"><a id="transactionToUndo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagReadOnly">Read-only</span> transaction<wbr/>To<wbr/>Undo<span class="tsd-signature-symbol">: </span><a href="Transaction.html" class="tsd-signature-type" data-tsd-kind="Class">Transaction</a><a href="#transactionToUndo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This read-only property returns the <a href="Transaction.html">Transaction</a> in the <a href="UndoManager.html#history">history</a> to be undone next.
+The value may be null if the UndoManager is not ready to perform an undo.</p>
+<dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#transactionToRedo">transactionToRedo</a></p>
+</dd></dl></div></li></ul></section></section><section class="tsd-panel-group tsd-member-group "><h2>Methods</h2><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="addModel" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> add<wbr/>Model<a href="#addModel" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">add<wbr/>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Make sure this UndoManager knows about a <a href="Model.html">Model</a> for which
+it may receive <a href="ChangedEvent.html">ChangedEvent</a>s when the given <a href="Model.html">Model</a> is changed.
+The model will also receive notifications about transactions and undo or redo operations.</p>
+<div><p>You should not call this method during a transaction.</p>
+</div><dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#removeModel">removeModel</a></p>
+</dd></dl></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>model: <a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a></h5><div class="tsd-comment tsd-typography">
+<p>A <a href="Model.html">Model</a> that this UndoManager is managing.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="canRedo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> can<wbr/>Redo<a href="#canRedo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">can<wbr/>Redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This predicate returns true if you can call <a href="UndoManager.html#redo">redo</a>.
+This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
+if any transaction is ongoing, or
+if there is no <a href="UndoManager.html#transactionToRedo">transactionToRedo</a> that can be redone.</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true if ready for <a href="UndoManager.html#redo">redo</a> to be called.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="canUndo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> can<wbr/>Undo<a href="#canUndo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">can<wbr/>Undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This predicate returns true if you can call <a href="UndoManager.html#undo">undo</a>.
+This will return false if <a href="UndoManager.html#isEnabled">isEnabled</a> is false (as it is by default),
+if any transaction is ongoing, or
+if there is no <a href="UndoManager.html#transactionToUndo">transactionToUndo</a> that can be undone.</p>
+</div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true if ready for <a href="UndoManager.html#undo">undo</a> to be called.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="clear" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> clear<a href="#clear" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Clear all of the <a href="Transaction.html">Transaction</a>s and clear all other state,
+including any ongoing transaction without rolling back.
+However, this maintains its references to its <a href="Model.html">Model</a>s.</p>
+<div><p>You should not call this method during a transaction.</p>
+</div></div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="commitTransaction" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> commit<wbr/>Transaction<a href="#commitTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">commit<wbr/>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Commit the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+<div><p>For convenience, this method is called by <a href="Model.html#commitTransaction">Model.commitTransaction</a> and <a href="Diagram.html#commitTransaction">Diagram.commitTransaction</a>.</p>
+<p>If this call stops a top-level transaction,
+we mark the <a href="UndoManager.html#currentTransaction">currentTransaction</a> as complete (<a href="Transaction.html#isComplete">Transaction.isComplete</a>),
+we add the <a href="Transaction.html">Transaction</a> to the <a href="UndoManager.html#history">history</a> list,
+and we return true.
+Committing a transaction when there have been some undos without corresponding
+redos will throw away the <a href="Transaction.html">Transaction</a>s holding changes that happened
+after the current state, before adding the new <a href="Transaction.html">Transaction</a> to the
+<a href="UndoManager.html#history">history</a> list.</p>
+</div><dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
+</dd></dl></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5><div class="tsd-comment tsd-typography">
+<p>a short string describing the transaction;
+       this is recorded as the <a href="Transaction.html#name">Transaction.name</a> and need not be the same as the string passed to <a href="UndoManager.html#startTransaction">startTransaction</a>.
+       If the value is an empty string or not supplied, this will use the name given to <a href="UndoManager.html#startTransaction">startTransaction</a>.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true if ending a top-level transaction.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="handleChanged" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> handle<wbr/>Changed<a href="#handleChanged" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">handle<wbr/>Changed<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Maybe record a <a href="ChangedEvent.html">ChangedEvent</a> in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+This calls <a href="UndoManager.html#skipsEvent">skipsEvent</a> to see if this should ignore the change.
+If <a href="UndoManager.html#skipsEvent">skipsEvent</a> returns false, this creates a copy of the <a href="ChangedEvent.html">ChangedEvent</a>
+and adds it to the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+If there is no <a href="UndoManager.html#currentTransaction">currentTransaction</a>, this first creates and remembers it.</p>
+<div><p>This method always ignores all changes while performing
+an <a href="UndoManager.html#undo">undo</a> or <a href="UndoManager.html#redo">redo</a>.
+This method is also a no-op if <a href="UndoManager.html#isEnabled">isEnabled</a> is false.</p>
+</div></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>e: <a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a></h5><div class="tsd-comment tsd-typography">
+<p>a <a href="ChangedEvent.html">ChangedEvent</a>.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="redo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> redo<a href="#redo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>After an <a href="UndoManager.html#undo">undo</a>, re-perform the changes in <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>.
+<a href="UndoManager.html#canRedo">canRedo</a> must be true for this method to have any effect.</p>
+<div><p>This is called by <a href="CommandHandler.html#redo">CommandHandler.redo</a>.</p>
+<p>This will raise a &quot;StartingRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
+perform the <a href="Transaction.html#redo">Transaction.redo</a> on the <a href="UndoManager.html#transactionToRedo">transactionToRedo</a>, and then
+raise a &quot;FinishedRedo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
+The two ChangedEvents are to let model listeners know that a redo is about to take place
+and that it just finished.
+<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
+</div></div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="removeModel" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> remove<wbr/>Model<a href="#removeModel" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">remove<wbr/>Model<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Inform this UndoManager that it will no longer be receiving <a href="ChangedEvent.html">ChangedEvent</a>s
+when the given <a href="Model.html">Model</a> is changed.
+The model will no longer receive notifications about transactions and undo or redo operations.</p>
+<div><p>You should not call this method during a transaction.
+If you call this method between transactions when there is a transaction history,
+you should be careful that there are no <a href="ChangedEvent.html">ChangedEvent</a>s referring to that model in any <a href="Transaction.html">Transaction</a>s.</p>
+</div><dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#models">models</a>, <a href="UndoManager.html#addModel">addModel</a></p>
+</dd></dl></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>model: <a href="Model.html" class="tsd-signature-type" data-tsd-kind="Class">Model</a></h5><div class="tsd-comment tsd-typography">
+<p>A <a href="Model.html">Model</a> that this UndoManager should no longer manage.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="rollbackTransaction" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> rollback<wbr/>Transaction<a href="#rollbackTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">rollback<wbr/>Transaction<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Rollback the current transaction started by a call to <a href="UndoManager.html#startTransaction">startTransaction</a>, undoing any changes.</p>
+<div><p>For convenience, this method is called by <a href="Model.html#rollbackTransaction">Model.rollbackTransaction</a> and <a href="Diagram.html#rollbackTransaction">Diagram.rollbackTransaction</a>.</p>
+<p>This undoes and then discards the changes in the <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+You must have started a transaction previously.</p>
+</div><dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#startTransaction">startTransaction</a>, <a href="UndoManager.html#commitTransaction">commitTransaction</a></p>
+</dd></dl></div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true if ending a top-level transaction.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="skipsEvent" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><span class="tsd-flag ts-flagVirtual">Virtual</span>  skips<wbr/>Event<a href="#skipsEvent" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">skips<wbr/>Event<span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>This predicate is called by <a href="UndoManager.html#handleChanged">handleChanged</a> to decide if a <a href="ChangedEvent.html">ChangedEvent</a>
+is not interesting enough to be remembered.</p>
+<div><p>Transactional events (of change type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>) are always skipped.
+Changed events for <a href="GraphObject.html">GraphObject</a>s that are in <a href="Layer.html#isTemporary">Layer.isTemporary</a> layers are also skipped.</p>
+<p>Sometimes changed events do not even get to <a href="UndoManager.html#handleChanged">handleChanged</a> because
+<a href="Model.html#skipsUndoManager">Model.skipsUndoManager</a> or <a href="Diagram.html#skipsUndoManager">Diagram.skipsUndoManager</a> is true.</p>
+</div></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5>e: <a href="ChangedEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ChangedEvent</a></h5><div class="tsd-comment tsd-typography">
+<p>the <a href="ChangedEvent.html">ChangedEvent</a> received by <a href="UndoManager.html#handleChanged">handleChanged</a>.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true to not record the change.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="startTransaction" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> start<wbr/>Transaction<a href="#startTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">start<wbr/>Transaction<span class="tsd-signature-symbol">(</span>tname<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Begin a transaction, where the changes are held by a <a href="Transaction.html">Transaction</a> object
+as the value of <a href="UndoManager.html#currentTransaction">currentTransaction</a>.
+You must call either <a href="UndoManager.html#commitTransaction">commitTransaction</a> or <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a> afterwards.</p>
+<div><p>For convenience, this method is called by <a href="Model.html#startTransaction">Model.startTransaction</a> and <a href="Diagram.html#startTransaction">Diagram.startTransaction</a>.</p>
+<p>Transactions can be nested.
+Starting or ending a nested transaction will return false.
+Nested transactions will share the same <a href="Transaction.html">Transaction</a> list of <a href="ChangedEvent.html">ChangedEvent</a>s.</p>
+<p>Starting a transaction will not necessarily cause <a href="UndoManager.html#currentTransaction">currentTransaction</a> to be non-null.
+A <a href="Transaction.html">Transaction</a> object is usually only created by <a href="UndoManager.html#handleChanged">handleChanged</a> when a <a href="ChangedEvent.html">ChangedEvent</a> first occurs.</p>
+</div><dl class="tsd-comment-tags"><dt class="">see</dt><dd><p><a href="UndoManager.html#commitTransaction">commitTransaction</a>, <a href="UndoManager.html#rollbackTransaction">rollbackTransaction</a></p>
+</dd></dl></div><h4 class="tsd-parameters-title">Parameters</h4><ul class="tsd-parameters"><li><h5><span class="tsd-flag ts-flagOptional">Optional</span> tname: <span class="tsd-signature-type">string</span></h5><div class="tsd-comment tsd-typography">
+<p>a short string describing the transaction, pushed onto the <a href="UndoManager.html#nestedTransactionNames">nestedTransactionNames</a> stack.</p>
+</div></li></ul><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><div><p>true if starting a top-level transaction.</p>
+</div></li></ul></section><section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="undo" class="tsd-anchor"></a><h3 class="tsd-anchor-link"> undo<a href="#undo" aria-label="Permalink" class="tsd-anchor-icon"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></svg></a></h3><ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class"><li class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li></ul><ul class="tsd-descriptions"><li class="tsd-description"><div class="tsd-comment tsd-typography">
+<p>Reverse the effects of the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>.
+<a href="UndoManager.html#canUndo">canUndo</a> must be true for this method to have any effect.</p>
+<div><p>This is called by <a href="CommandHandler.html#undo">CommandHandler.undo</a>.</p>
+<p>This will raise a &quot;StartingUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>,
+perform the <a href="Transaction.html#undo">Transaction.undo</a> on the <a href="UndoManager.html#transactionToUndo">transactionToUndo</a>, and then
+raise a &quot;FinishedUndo&quot; <a href="ChangedEvent.html">ChangedEvent</a> of type <a href="ChangedEvent.html#static-Transaction">ChangedEvent.Transaction</a>.
+The two ChangedEvents are to let model listeners know that an undo is about to take place
+and that it just finished.
+<a href="UndoManager.html#isUndoingRedoing">isUndoingRedoing</a> will temporarily be set to true during this operation.</p>
+</div></div><h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></section></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../index.html">GoJS Class Index</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="current tsd-kind-class"><a href="UndoManager.html" class="tsd-kind-icon">Undo<wbr/>Manager</a><ul><li class="tsd-kind-constructor tsd-parent-kind-class"><a href="UndoManager.html#constructor" class="tsd-kind-icon">constructor</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#currentTransaction" class="tsd-kind-icon">current<wbr/>Transaction</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#history" class="tsd-kind-icon">history</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#historyIndex" class="tsd-kind-icon">history<wbr/>Index</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#isEnabled" class="tsd-kind-icon">is<wbr/>Enabled</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isInTransaction" class="tsd-kind-icon">is<wbr/>In<wbr/>Transaction</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#isUndoingRedoing" class="tsd-kind-icon">is<wbr/>Undoing<wbr/>Redoing</a></li><li class="tsd-kind-accessor tsd-parent-kind-class"><a href="UndoManager.html#maxHistoryLength" class="tsd-kind-icon">max<wbr/>History<wbr/>Length</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#models" class="tsd-kind-icon">models</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#nestedTransactionNames" class="tsd-kind-icon">nested<wbr/>Transaction<wbr/>Names</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionLevel" class="tsd-kind-icon">transaction<wbr/>Level</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToRedo" class="tsd-kind-icon">transaction<wbr/>To<wbr/>Redo</a></li><li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="UndoManager.html#transactionToUndo" class="tsd-kind-icon">transaction<wbr/>To<wbr/>Undo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#addModel" class="tsd-kind-icon">add<wbr/>Model</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canRedo" class="tsd-kind-icon">can<wbr/>Redo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#canUndo" class="tsd-kind-icon">can<wbr/>Undo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#clear" class="tsd-kind-icon">clear</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#commitTransaction" class="tsd-kind-icon">commit<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#handleChanged" class="tsd-kind-icon">handle<wbr/>Changed</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#redo" class="tsd-kind-icon">redo</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#removeModel" class="tsd-kind-icon">remove<wbr/>Model</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#rollbackTransaction" class="tsd-kind-icon">rollback<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#skipsEvent" class="tsd-kind-icon">skips<wbr/>Event</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#startTransaction" class="tsd-kind-icon">start<wbr/>Transaction</a></li><li class="tsd-kind-method tsd-parent-kind-class"><a href="UndoManager.html#undo" class="tsd-kind-icon">undo</a></li></ul></li></ul></nav></div></div></div><div class="tsd w-full max-w-screen-xl mx-auto px-2"><div class="bottom-copyright">Copyright © 1998-2022 by Northwoods Software Corporation.</div></div><footer class=""><div class="tsd w-full max-w-screen-xl mx-auto px-2"><h2>Settings</h2><p class="mb-4">Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="../assets/main.js"></script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-1506307-5"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+        var getOutboundLink = function(url, label) {
+            gtag('event', 'click', {
+            'event_category': 'outbound',
+            'event_label': label,
+            'transport_type': 'beacon'
+            });
+        }
+        // topnav
+        var topButton = document.getElementById("topnavButton");
+        var topnavList = document.getElementById("topnavList");
+        topButton.addEventListener("click", function() {
+            this.classList.toggle("active");
+            topnavList.classList.toggle("hidden");
+            document.getElementById("topnavOpen").classList.toggle("hidden");
+            document.getElementById("topnavClosed").classList.toggle("hidden");
+        });
 
-  // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
-  topButton.addEventListener("click", function() {
-    this.classList.toggle("active");
-    topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
-  });
-</script>
-</body>
-</html>
+        document.getElementById("contactBtn").addEventListener("click", function() {
+            getOutboundLink('https://www.nwoods.com/contact.html', 'contact');
+        });
+
+        document.getElementById("buyBtn").addEventListener("click", function() {
+            getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');
+        });
+      </script></body></html>
