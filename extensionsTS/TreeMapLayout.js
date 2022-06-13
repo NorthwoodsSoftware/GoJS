@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
     * If you intend to use an extension in production, you should copy the code to your own source directory.
-    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
     var go = require("../release/go.js");
@@ -104,16 +104,16 @@ var __extends = (this && this.__extends) || (function () {
             var gx = x;
             var gy = y;
             var lay = this;
-            tops.each(function (n) {
-                var tot = n.data.total;
+            tops.each(function (part) {
+                var tot = part.data.total;
                 if (horiz) {
                     var pw = w * tot / total;
-                    lay.layoutNode(!horiz, n, gx, gy, pw, h);
+                    lay.layoutNode(!horiz, part, gx, gy, pw, h);
                     gx += pw;
                 }
                 else {
                     var ph = h * tot / total;
-                    lay.layoutNode(!horiz, n, gx, gy, w, ph);
+                    lay.layoutNode(!horiz, part, gx, gy, w, ph);
                     gy += ph;
                 }
             });
@@ -121,11 +121,11 @@ var __extends = (this && this.__extends) || (function () {
         /**
          * @hidden @internal
          */
-        TreeMapLayout.prototype.layoutNode = function (horiz, n, x, y, w, h) {
-            n.position = new go.Point(x, y);
-            n.desiredSize = new go.Size(w, h);
-            if (n instanceof go.Group) {
-                var g = n;
+        TreeMapLayout.prototype.layoutNode = function (horiz, part, x, y, w, h) {
+            part.moveTo(x, y);
+            part.desiredSize = new go.Size(w, h);
+            if (part instanceof go.Group) {
+                var g = part;
                 var total_1 = g.data.total;
                 var gx_1 = x;
                 var gy_1 = y;

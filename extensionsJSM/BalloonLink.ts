@@ -6,7 +6,7 @@
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
 * If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
@@ -52,7 +52,7 @@ export class BalloonLink extends go.Link {
    */
   get base(): number { return this._base; }
   set base(value: number) { this._base = value; }
- 
+
   /**
    * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link Link#fromNode}
    * and has a triangular shape with the base at the fromNode and the top at the toNode.
@@ -72,11 +72,11 @@ export class BalloonLink extends go.Link {
     const base = Math.max(0, this.base);
     const corner = Math.min(Math.max(0, this.corner), Math.min(bb.width/2, bb.height/2));
     const cornerext = Math.min(base, corner + base/2);
-  
+
     const fig = new go.PathFigure();
     let prevx = 0;
     let prevy = 0;
-  
+
     // helper functions
     function start(x: number, y: number) {
       fig.startX = prevx = x;
@@ -105,7 +105,7 @@ export class BalloonLink extends go.Link {
       prevx = x;
       prevy = y;
     }
-  
+
     if (pn.x < bb.left) {
       if (pn.y < bb.top) {
         start(bb.left, Math.min(bb.top + cornerext, bb.bottom - corner));
@@ -152,7 +152,7 @@ export class BalloonLink extends go.Link {
         turn(bb.left, bb.top); turn(bb.right, bb.top); turn(bb.right, bb.bottom); turn(bb.left, bb.bottom);
       }
     }
-  
+
     const geo = new go.Geometry();
     (<go.PathSegment>fig.segments.last()).close();
     geo.add(fig);

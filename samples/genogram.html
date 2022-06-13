@@ -557,7 +557,7 @@
       // position regular nodes
       this.network.vertexes.each(v => {
         if (v.node !== null && !v.node.isLinkLabel) {
-          v.node.position = new go.Point(v.x, v.y);
+          v.node.moveTo(v.x, v.y);
         }
       });
       // position the spouses of each marriage vertex
@@ -587,16 +587,16 @@
           spouseA = spouseB;
           spouseB = temp;
         }
-        spouseA.position = new go.Point(v.x, v.y);
-        spouseB.position = new go.Point(v.x + spouseA.actualBounds.width + this.spouseSpacing, v.y);
+        spouseA.moveTo(v.x, v.y);
+        spouseB.moveTo(v.x + spouseA.actualBounds.width + this.spouseSpacing, v.y);
         if (spouseA.opacity === 0) {
           const pos = new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
-          spouseA.position = pos;
-          spouseB.position = pos;
+          spouseA.move(pos);
+          spouseB.move(pos);
         } else if (spouseB.opacity === 0) {
           const pos = new go.Point(v.centerX - spouseB.actualBounds.width / 2, v.y);
-          spouseA.position = pos;
-          spouseB.position = pos;
+          spouseA.move(pos);
+          spouseB.move(pos);
         }
       });
       // position only-child nodes to be under the marriage label node

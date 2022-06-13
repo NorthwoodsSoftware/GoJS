@@ -32,7 +32,7 @@ var __extends = (this && this.__extends) || (function () {
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
     * If you intend to use an extension in production, you should copy the code to your own source directory.
-    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
     var go = require("../release/go.js");
@@ -78,7 +78,7 @@ var __extends = (this && this.__extends) || (function () {
                 pos.x += sc * ((newr.x + deltaWidth * angleLeft) * angleCos - (newr.y + deltaHeight * angleBottom) * angleSin);
                 pos.y += sc * ((newr.x + deltaWidth * angleTop) * angleSin + (newr.y + deltaHeight * angleLeft) * angleCos);
                 obj.desiredSize = newr.size;
-                part.position = pos;
+                part.move(pos);
             });
         };
         return ResizeMultipleTool;

@@ -5,7 +5,7 @@
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
 * If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 import * as go from '../release/go-module.js';
@@ -71,16 +71,16 @@ export class TreeMapLayout extends go.Layout {
         let gx = x;
         let gy = y;
         const lay = this;
-        tops.each((n) => {
-            const tot = n.data.total;
+        tops.each(part => {
+            const tot = part.data.total;
             if (horiz) {
                 const pw = w * tot / total;
-                lay.layoutNode(!horiz, n, gx, gy, pw, h);
+                lay.layoutNode(!horiz, part, gx, gy, pw, h);
                 gx += pw;
             }
             else {
                 const ph = h * tot / total;
-                lay.layoutNode(!horiz, n, gx, gy, w, ph);
+                lay.layoutNode(!horiz, part, gx, gy, w, ph);
                 gy += ph;
             }
         });
@@ -88,16 +88,16 @@ export class TreeMapLayout extends go.Layout {
     /**
      * @hidden @internal
      */
-    layoutNode(horiz, n, x, y, w, h) {
-        n.position = new go.Point(x, y);
-        n.desiredSize = new go.Size(w, h);
-        if (n instanceof go.Group) {
-            const g = n;
+    layoutNode(horiz, part, x, y, w, h) {
+        part.moveTo(x, y);
+        part.desiredSize = new go.Size(w, h);
+        if (part instanceof go.Group) {
+            const g = part;
             const total = g.data.total;
             let gx = x;
             let gy = y;
             const lay = this;
-            g.memberParts.each((p) => {
+            g.memberParts.each(p => {
                 if (p instanceof go.Link)
                     return;
                 const tot = p.data.total;

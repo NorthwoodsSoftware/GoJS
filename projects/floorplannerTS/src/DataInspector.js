@@ -17,7 +17,7 @@
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
     * If you intend to use an extension in production, you should copy the code to your own source directory.
-    * Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+    * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
     var go = require("../../../release/go");
@@ -70,7 +70,7 @@
      * </div>
      * ```
      *
-     * If you want to experiment with this extension, try the <a href="../../extensionsTS/DataInspector.html">Data Inspector</a> sample.
+     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DataInspector.html">Data Inspector</a> sample.
      * @category Extension
      */
     var Inspector = /** @class */ (function () {

@@ -6,7 +6,7 @@
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
 * If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
@@ -307,7 +307,6 @@ export class ArrangingLayout extends go.Layout {
   * The default value is Spot.BottomSide.
   * Currently only handles a single side.
   * @name ArrangingLayout#side
-
   * @return {Spot}
   */
   get side(): go.Spot { return this._side; }
@@ -325,7 +324,6 @@ export class ArrangingLayout extends go.Layout {
   * Gets or sets the space between the main layout and the side layout.
   * The default value is Size(20, 20).
   * @name ArrangingLayout#spacing
-
   * @return {Size}
   */
   get spacing(): go.Size { return this._spacing; }

@@ -6,7 +6,7 @@
 * This is an extension and not part of the main GoJS library.
 * Note that the API for this class may change with any version, even point releases.
 * If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
+* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
 * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
 */
 
@@ -72,7 +72,7 @@ export class SerpentineLayout extends go.Layout {
 
  /**
   * Gets or sets the starting node of the sequence.
-  * 
+  *
   * The default value is null, which causes the layout to look for a node without any incoming links.
   */
   get root() { return this._root; }
@@ -85,7 +85,7 @@ export class SerpentineLayout extends go.Layout {
 
  /**
   * Gets or sets the Spot to use on the left side of a Node.
-  * 
+  *
   * The default value is {@link Spot.Left}.
   */
   get leftSpot() { return this._leftSpot; }
@@ -98,7 +98,7 @@ export class SerpentineLayout extends go.Layout {
 
  /**
   * Gets or sets the Spot to use on the right side of a Node.
-  * 
+  *
   * The default value is {@link Spot.Right}.
   */
   get rightSpot() { return this._rightSpot; }

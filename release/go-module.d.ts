@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.10
+ * Type definitions for GoJS v2.2.11
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -7088,6 +7088,17 @@ export class LinkReshapingTool extends Tool {
      */
     doDeactivate(): void;
     /**
+     * This calls the super Tool#stopTransaction method, and if the result is `true`,
+     * attempts to optimize the transaction by removing all changes except the first and last
+     * by calling Transaction#optimize.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @expose
+     * @return {boolean} the result of the call to rollback or commit the transaction.
+     */
+    stopTransaction(): boolean;
+    /**
      * Restore the link route to be the original points and stop this tool.
      */
     doCancel(): void;
@@ -7324,6 +7335,17 @@ export class ResizingTool extends Tool {
      * Stop the current transaction, forget the #handle and #adornedObject, and release the mouse.
      */
     doDeactivate(): void;
+    /**
+     * This calls the super Tool#stopTransaction method, and if the result is `true`,
+     * attempts to optimize the transaction by removing all changes except the first and last
+     * by calling Transaction#optimize.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @expose
+     * @return {boolean} the result of the call to rollback or commit the transaction.
+     */
+    stopTransaction(): boolean;
     /**
      * Restore the original size of the GraphObject.
      */
@@ -7655,6 +7677,17 @@ export class RotatingTool extends Tool {
      * Stop the current transaction, forget the #handle and #adornedObject, and release the mouse.
      */
     doDeactivate(): void;
+    /**
+     * This calls the super Tool#stopTransaction method, and if the result is `true`,
+     * attempts to optimize the transaction by removing all changes except the first and last
+     * by calling Transaction#optimize.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @expose
+     * @return {boolean} the result of the call to rollback or commit the transaction.
+     */
+    stopTransaction(): boolean;
     /**
      * Restore the original GraphObject#angle of the adorned object.
      */
@@ -18589,12 +18622,16 @@ export class Shape extends GraphObject {
      * Gets or sets the function to determine which values along a "Graduated" Panel will be skipped.
      * The default is null and doesn't skip any ticks.
      *
-     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax.
+     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax,
+     * and this Shape.
      * The function will return a boolean, whether the tick will be skipped at the value of the argument.
+     *
+     * Note that the second argument is the Shape, *not* a particular tick that would be rendered at the given value.
+     * The function, if supplied, must not have any side-effects.
      * @since 2.0
      */
-    get graduatedSkip(): ((val: number) => boolean) | null;
-    set graduatedSkip(value: ((val: number) => boolean) | null);
+    get graduatedSkip(): ((val: number, shape: Shape) => boolean) | null;
+    set graduatedSkip(value: ((val: number, shape: Shape) => boolean) | null);
     /**
      * This static function returns a read-only Map of named geometry generators.
      * The keys are figure names.
@@ -19064,22 +19101,30 @@ export class TextBlock extends GraphObject {
      * Gets or sets the function to convert from a value along a "Graduated" Panel to a string.
      * The default returns a string representing the value rounded to at most 2 decimals.
      *
-     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax.
+     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax,
+     * and this TextBlock.
      * The function will return a string, the text that will appear at the value of the argument.
+     *
+     * Note that the second argument is the TextBlock, *not* a particular label that would be rendered at the given value.
+     * The function, if supplied, must not have any side-effects.
      * @since 1.7
      */
-    get graduatedFunction(): ((val: number) => string) | null;
-    set graduatedFunction(value: ((val: number) => string) | null);
+    get graduatedFunction(): ((val: number, tb: TextBlock) => string) | null;
+    set graduatedFunction(value: ((val: number, tb: TextBlock) => string) | null);
     /**
      * Gets or sets the function to determine which values along a "Graduated" Panel will be skipped.
      * The default is null and doesn't skip any text labels.
      *
-     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax.
+     * The function takes a number argument, a value between Panel#graduatedMin and Panel#graduatedMax,
+     * and this TextBlock.
      * The function will return a boolean, whether the text label will be skipped at the value of the argument.
+     *
+     * Note that the second argument is the TextBlock, *not* a particular label that would be rendered at the given value.
+     * The function, if supplied, must not have any side-effects.
      * @since 2.0
      */
-    get graduatedSkip(): ((val: number) => boolean) | null;
-    set graduatedSkip(value: ((val: number) => boolean) | null);
+    get graduatedSkip(): ((val: number, tb: TextBlock) => boolean) | null;
+    set graduatedSkip(value: ((val: number, tb: TextBlock) => boolean) | null);
     /**
      * Gets or sets the predicate that determines whether or not a user-edited string of text is valid.
      * If this is non-null, the predicate is called in addition to any TextEditingTool#textValidation predicate.

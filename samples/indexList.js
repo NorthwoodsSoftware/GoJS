@@ -398,14 +398,6 @@ arr.push([
 ]);
 
 arr.push([
-  "curviness",
-  "Link Curviness",
-  "An example customization of the Link.curviness property and having an arrowhead at the middle of the link route.",
-  "curviness",
-  ["links"]
-]);
-
-arr.push([
   "multiNodePathLinks",
   "Multi-Node Path Links",
   "Demonstrates custom routing for Links running through other Nodes.",
@@ -730,14 +722,6 @@ arr.push([
   ["itemarrays", "ports", "geometries"]
 ]);
 
-arr.push([
-  "draggablePorts",
-  "Draggable Ports",
-  "A Group with Nodes acting as ports that can be dragged within and between nodes.",
-  "draggablePorts",
-  ["ports", "customlayout", "groups", "geometries"]
-]);
-
 // Charts
 arr.push([
   "barCharts",
@@ -753,6 +737,14 @@ arr.push([
   "Simple pie charts within nodes.",
   "pieCharts",
   ["itemarrays", "tooltips", "geometries", "charts"]
+]);
+
+arr.push([
+  "dynamicPieChart",
+  "Dynamic Pie Chart",
+  "Dynamic pie chart with selectable slices that can change size.",
+  "dynamicPieChart",
+  ["tables", "itemarrays", "collections", "tooltips", "buttons", "geometries", "charts"]
 ]);
 
 arr.push([
@@ -777,14 +769,6 @@ arr.push([
   "Simple sparkline charts within nodes.",
   "sparklineGraphs",
   ["treelayout", "geometries", "charts"]
-]);
-
-arr.push([
-  "dynamicPieChart",
-  "Dynamic Pie Chart",
-  "Dynamic pie chart with selectable slices that can change size.",
-  "dynamicPieChart",
-  ["tables", "itemarrays", "collections", "tooltips", "buttons", "geometries", "charts"]
 ]);
 
 // Gauges
@@ -1039,7 +1023,7 @@ arr.push([
 ]);
 
 arr.push([
-  "../extensions/PackedHierarchy",
+  "../extensionsJSM/PackedHierarchy",
   "Packed Hierarchy",
   "A customized PackedLayout that arranges nested circular groups.",
   "PackedHierarchy",
@@ -1057,7 +1041,7 @@ arr.push([
 arr.push([
   "tiger",
   "SVG Tiger",
-  "Shows a tiger rendered in SVG.",
+  "Shows a tiger rendered in SVG without using a Picture",
   "tiger",
   ["geometries", "svg"]
 ]);
@@ -1134,14 +1118,6 @@ arr.push([
   "A custom Layout that positions nodes in a packed area.",
   "PackedLayout",
   ["customlayout", "extensions"]
-]);
-
-arr.push([
-  "../extensionsTS/VirtualizedPacked",
-  "Virtualized Packed Layout",
-  "A virtualized version of PackedLayout that positions nodes in a packed area.",
-  "VirtualizedPacked",
-  ["customlayout", "extensions", "performance"]
 ]);
 
 arr.push([
@@ -1541,14 +1517,6 @@ arr.push([
 ]);
 
 arr.push([
-  "require",
-  "Minimal RequireJS",
-  "Minimal, using RequireJS.",
-  "minimal",
-  ["frameworks"]
-]);
-
-arr.push([
   "vue",
   "Minimal Vue.js",
   "Minimal, using Vue.js.",
@@ -1645,6 +1613,14 @@ arr.push([
 ]);
 
 arr.push([
+  "../extensionsJSM/VirtualizedPacked",
+  "Virtualized Packed Layout",
+  "A virtualized version of PackedLayout that positions nodes in a packed area.",
+  "VirtualizedPacked",
+  ["customlayout", "extensions", "performance"]
+]);
+
+arr.push([
   "flowBuilder",
   "Flow Builder",
   "Demonstrates a flow builder where nodes/links can be created or dropped onto a recycling node.",
@@ -1717,14 +1693,6 @@ arr.push([
 ]);
 
 arr.push([
-  "jQueryDragDrop",
-  "jQuery Drag and Drop",
-  "Demonstrates dragging and dropping from HTML using jQuery.",
-  "jQueryDragDrop",
-  ["frameworks"]
-]);
-
-arr.push([
   "macros",
   "Macros",
   "Demonstrates an automatic ungrouping of nodes when dropping an element on the diagram.",
@@ -1754,14 +1722,6 @@ arr.push([
   "Shows a LightBox style HTML Context Menu.",
   "htmlLightBoxContextMenu",
   ["contextmenus", "html"]
-]);
-
-arr.push([
-  "tabs",
-  "jQuery Tabs",
-  "Shows how to create a Diagram within a jQuery UI Tab.",
-  "tabs",
-  ["frameworks"]
 ]);
 
 arr.push([

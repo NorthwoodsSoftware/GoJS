@@ -419,6 +419,8 @@
             newarr[i + 1] = arr[i];
             // remember the new Array in the model
             myDiagram.model.setDataProperty(port.part.data, port._side + "Array", newarr);
+            port.part.findLinksConnected(newarr[i].portId).each(l => l.invalidateRoute());
+            port.part.findLinksConnected(newarr[i+1].portId).each(l => l.invalidateRoute());
             myDiagram.commitTransaction("swap ports");
             break;
           }

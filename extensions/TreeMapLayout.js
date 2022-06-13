@@ -74,7 +74,7 @@ TreeMapLayout.prototype.doLayout = function(coll) {
 
 // Position and size the given node, and recurse if the node is a group
 TreeMapLayout.prototype.layoutNode = function(horiz, n, x, y, w, h) {
-  n.position = new go.Point(x, y);
+  n.moveTo(x, y);
   n.desiredSize = new go.Size(w, h);
   if (n instanceof go.Group) {
     var g = n;
