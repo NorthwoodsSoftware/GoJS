@@ -54,8 +54,9 @@ function PanelLayoutFlow() {
   this.name = "Flow";
   this._direction = 0;  // only 0 or 180 (rows) or 90 or 270 (columns)
   this._spacing = new go.Size(0, 0);
-  this._lineBreadths = []; // row height or column width, excluding spacing
-  this._lineLengths = [];  // line length, excluding padding and external spacing
+  // these need to go as the Panel.panelLayoutState, because they are computed by measure and later used by arrange
+  // lineBreadths = []; // row height or column width, excluding spacing
+  // lineLengths = [];  // line length, excluding padding and external spacing
 }
 go.Diagram.inherit(PanelLayoutFlow, go.PanelLayout);
 
@@ -91,8 +92,9 @@ Object.defineProperty(PanelLayoutFlow.prototype, "spacing", {
 });
 
 PanelLayoutFlow.prototype.measure = function(panel, width, height, elements, union, minw, minh) {
-  this._lineBreadths = [];
-  this._lineLengths = [];
+  var lineBreadths = [];  // attach properties on panel
+  var lineLengths = [];
+  panel.panelLayoutState = { lineBreadths: lineBreadths, lineLengths: lineLengths };
   var pad = panel.padding;
   var wrapx = width + pad.left;  // might be Infinity
   var wrapy = height + pad.top;
@@ -113,8 +115,8 @@ PanelLayoutFlow.prototype.measure = function(panel, width, height, elements, uni
       var gw = marg.left + mb.width + marg.right;  // gross size including margins
       var gh = marg.top + mb.height + marg.bottom;
       if (x + gw > wrapx && i > 0) {  // next row
-        this._lineBreadths.push(rowh);  // remember previous row info
-        this._lineLengths.push(x - pad.left);
+        lineBreadths.push(rowh);  // remember previous row info
+        lineLengths.push(x - pad.left);
         y += rowh + this.spacing.height;  // advance x and y
         if (y + gh <= wrapy) {  // next row fits???
           x = xstart + gw + this.spacing.width;
@@ -130,8 +132,8 @@ PanelLayoutFlow.prototype.measure = function(panel, width, height, elements, uni
       }
       maxx = Math.max(maxx, x);
     }
-    this._lineBreadths.push(rowh);
-    this._lineLengths.push(x - pad.left);
+    lineBreadths.push(rowh);
+    lineLengths.push(x - pad.left);
     union.width = Math.max(0, Math.min(maxx, wrapx) - pad.left);  // don't add padding to union
     union.height = Math.max(0, y + rowh - pad.top);
   } else if (this.direction === 90 || this.direction === 270) {
@@ -146,8 +148,8 @@ PanelLayoutFlow.prototype.measure = function(panel, width, height, elements, uni
       var gw = marg.left + mb.width + marg.right;
       var gh = marg.top + mb.height + marg.bottom;
       if (y + gh > wrapy && i > 0) {
-        this._lineBreadths.push(colw);
-        this._lineLengths.push(y - pad.top);
+        lineBreadths.push(colw);
+        lineLengths.push(y - pad.top);
         x += colw + this.spacing.width;
         if (x + gw <= wrapx) {
           y = ystart + gh + this.spacing.height;
@@ -163,8 +165,8 @@ PanelLayoutFlow.prototype.measure = function(panel, width, height, elements, uni
       }
       maxy = Math.max(maxy, y);
     }
-    this._lineBreadths.push(colw);
-    this._lineLengths.push(y - pad.top);
+    lineBreadths.push(colw);
+    lineLengths.push(y - pad.top);
     union.width = Math.max(0, x + colw - pad.left);
     union.height = Math.max(0, Math.min(maxy, wrapy) - pad.top);
   }
@@ -185,6 +187,8 @@ PanelLayoutFlow.prototype.align = function(elt, panel) {
 }
 
 PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
+  var lineBreadths = panel.panelLayoutState.lineBreadths;
+  var lineLengths = panel.panelLayoutState.lineLengths;
   var pad = panel.padding;
   var x = (this.direction === 180) ? union.width - pad.right : pad.left;
   var y = (this.direction === 270) ? union.height - pad.bottom : pad.top;
@@ -199,12 +203,12 @@ PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
       var marg = elem.margin;
       var gw = marg.left + mb.width + marg.right;
       // use computed row length to decide whether to wrap, account for error accumulation
-      if (x - pad.left > this._lineLengths[row] - 0.00000005 && i > 0) {
-        y += this._lineBreadths[row++] + this.spacing.height;
+      if (x - pad.left > lineLengths[row] - 0.00000005 && i > 0) {
+        y += lineBreadths[row++] + this.spacing.height;
         x = xstart;
-        if (row === this._lineLengths.length) row--;  // if on last row, stay there
+        if (row === lineLengths.length) row--;  // if on last row, stay there
       }
-      var lastbr = this._lineBreadths[row];  // if row was clipped,
+      var lastbr = lineBreadths[row];  // if row was clipped,
       var h = (lastbr > 0) ? lastbr - marg.top - marg.bottom : 0;  // use zero height
       var ya = (lastbr > 0) ? y + marg.top : y;  // and stay at same Y point
       if ((lastbr > 0) && !this.isStretched(true, elem, panel)) {  // if aligning...
@@ -225,11 +229,11 @@ PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
       var marg = elem.margin;
       var gw = marg.left + mb.width + marg.right;
       if (x - gw - pad.left < 0.00000005 && i > 0) {
-        y += this._lineBreadths[row++] + this.spacing.height;
+        y += lineBreadths[row++] + this.spacing.height;
         x = xstart;
-        if (row === this._lineLengths.length) row--;
+        if (row === lineLengths.length) row--;
       }
-      var lastbr = this._lineBreadths[row];
+      var lastbr = lineBreadths[row];
       var h = (lastbr > 0) ? lastbr - marg.top - marg.bottom : 0;
       var ya = (lastbr > 0) ? y + marg.top : y;
       if ((lastbr > 0) && !this.isStretched(true, elem, panel)) {
@@ -249,12 +253,12 @@ PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
       var mb = elem.measuredBounds;
       var marg = elem.margin;
       var gh = marg.top + mb.height + marg.bottom;
-      if (y - pad.top > this._lineLengths[col] - 0.00000005 && i > 0) {
-        x += this._lineBreadths[col++] + this.spacing.width;
+      if (y - pad.top > lineLengths[col] - 0.00000005 && i > 0) {
+        x += lineBreadths[col++] + this.spacing.width;
         y = ystart;
-        if (col === this._lineLengths.length) col--;
+        if (col === lineLengths.length) col--;
       }
-      var lastbr = this._lineBreadths[col];
+      var lastbr = lineBreadths[col];
       var w = (lastbr > 0) ? lastbr - marg.left - marg.right : 0;
       var xa = (lastbr > 0) ? x + marg.left : x;
       if ((lastbr > 0) && !this.isStretched(false, elem, panel)) {
@@ -275,13 +279,13 @@ PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
       var marg = elem.margin;
       var gh = marg.top + mb.height + marg.bottom;
       if (y - gh - pad.top < 0.00000005 && i > 0) {
-        x += this._lineBreadths[col++] + this.spacing.width;
+        x += lineBreadths[col++] + this.spacing.width;
         y = ystart - gh;
-        if (col === this._lineLengths.length) col--;
+        if (col === lineLengths.length) col--;
       } else {
         y -= gh;
       }
-      var lastbr = this._lineBreadths[col];
+      var lastbr = lineBreadths[col];
       var w = (lastbr > 0) ? lastbr - marg.left - marg.right : 0;
       var xa = (lastbr > 0) ? x + marg.left : x;
       if ((lastbr > 0) && !this.isStretched(false, elem, panel)) {
@@ -294,6 +298,7 @@ PanelLayoutFlow.prototype.arrange = function(panel, elements, union) {
       y -= this.spacing.height;
     }
   }
+  panel.panelLayoutState = null;  // free up the temporary Arrays
 }
 
 go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());

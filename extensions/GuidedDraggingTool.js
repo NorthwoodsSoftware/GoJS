@@ -167,6 +167,7 @@ GuidedDraggingTool.prototype.showHorizontalMatches = function(part, guideline, s
 
   var marginOfError = this.guidelineSnapDistance;
   var distance = this.searchDistance;
+  if (distance === Infinity) distance = this.diagram.documentBounds.width;
   // compares with parts (or location objects) within narrow vertical area
   var area = objBounds.copy();
   area.inflate(distance, marginOfError + 1);
@@ -271,6 +272,7 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
 
   var marginOfError = this.guidelineSnapDistance;
   var distance = this.searchDistance;
+  if (distance === Infinity) distance = this.diagram.documentBounds.height;
   // compares with parts within narrow vertical area
   var area = objBounds.copy();
   area.inflate(marginOfError + 1, distance);
@@ -362,16 +364,13 @@ GuidedDraggingTool.prototype.showVerticalMatches = function(part, guideline, sna
 * The default value is 6.
 * Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.
 * @name GuidedDraggingTool#guidelineSnapDistance
-
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "guidelineSnapDistance", {
     get: function() { return this._guidelineSnapDistance; },
     set: function(val) {
         if (typeof val !== "number" || isNaN(val) || val < 0) throw new Error("new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number.");
-        if (this._guidelineSnapDistance !== val) {
-          this._guidelineSnapDistance = val;
-        }
+        this._guidelineSnapDistance = val;
     }
 });
 
@@ -379,16 +378,13 @@ Object.defineProperty(GuidedDraggingTool.prototype, "guidelineSnapDistance", {
 * Gets or sets whether the guidelines are enabled or disabled.
 * The default value is true.
 * @name GuidedDraggingTool#isGuidelineEnabled
-
 * @return {boolean}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
     get: function() { return this._isGuidelineEnabled; },
     set: function(val) {
         if (typeof val !== "boolean") throw new Error("new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.");
-        if (this._isGuidelineEnabled !== val) {
-          this._isGuidelineEnabled = val;
-        }
+        this._isGuidelineEnabled = val;
     }
 });
 
@@ -396,7 +392,6 @@ Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineEnabled", {
 * Gets or sets the color of horizontal guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#horizontalGuidelineColor
-
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "horizontalGuidelineColor", {
@@ -414,7 +409,6 @@ Object.defineProperty(GuidedDraggingTool.prototype, "horizontalGuidelineColor", 
 * Gets or sets the color of vertical guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#verticalGuidelineColor
-
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "verticalGuidelineColor", {
@@ -432,7 +426,6 @@ Object.defineProperty(GuidedDraggingTool.prototype, "verticalGuidelineColor", {
 * Gets or sets the color of center guidelines.
 * The default value is "gray".
 * @name GuidedDraggingTool#centerGuidelineColor
-
 * @return {string}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "centerGuidelineColor", {
@@ -447,10 +440,9 @@ Object.defineProperty(GuidedDraggingTool.prototype, "centerGuidelineColor", {
 });
 
 /**
-* Gets or sets the width guidelines.
+* Gets or sets the strokeWidth of the guidelines.
 * The default value is 1.
 * @name GuidedDraggingTool#guidelineWidth
-
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
@@ -473,16 +465,13 @@ Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
 * The default value is 1000.
 * Set this to Infinity if you want to search the entire diagram no matter how far away.
 * @name GuidedDraggingTool#searchDistance
-
 * @return {number}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "searchDistance", {
     get: function() { return this._searchDistance; },
     set: function(val) {
         if (typeof val !== "number" || isNaN(val) || val <= 0) throw new Error("new value for GuidedDraggingTool.searchDistance must be a positive number.");
-        if (this._searchDistance !== val) {
-          this._searchDistance = val;
-        }
+        this._searchDistance = val;
     }
 });
 
@@ -490,15 +479,12 @@ Object.defineProperty(GuidedDraggingTool.prototype, "searchDistance", {
 * Gets or sets whether snapping to guidelines is enabled.
 * The default value is true.
 * @name GuidedDraggingTool#isGuidelineSnapEnabled
-
 * @return {Boolean}
 */
 Object.defineProperty(GuidedDraggingTool.prototype, "isGuidelineSnapEnabled", {
     get: function() { return this._isGuidelineSnapEnabled; },
     set: function(val) {
         if (typeof val !== "boolean") throw new Error("new value for GuidedDraggingTool.isGuidelineSnapEnabled must be a boolean.");
-        if (this._isGuidelineSnapEnabled !== val) {
-          this._isGuidelineSnapEnabled = val;
-        }
+        this._isGuidelineSnapEnabled = val;
     }
 });

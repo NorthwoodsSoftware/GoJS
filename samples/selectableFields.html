@@ -68,31 +68,58 @@
             "undoManager.isEnabled": true
           });
 
+      const UnselectedBrush = "transparent";  // item appearance, if not "selected"
+      const SelectedBrush = "dodgerblue";   // item appearance, if "selected"
+
+      function isFieldSelected(item) {
+        return item.background !== UnselectedBrush;
+      }
+
+      function setFieldSelected(item, sel) {
+        if (sel) {
+          item.background = SelectedBrush;
+        } else {
+          item.background = UnselectedBrush;
+        }
+      }
+
+      function onFieldClick(e, item) {
+        var oldskips = item.diagram.skipsUndoManager;
+        item.diagram.skipsUndoManager = true;
+        if (e.control || e.meta) {
+          setFieldSelected(item, !isFieldSelected(item));
+          item.part.isSelected = item.panel.elements.any(isFieldSelected);
+        } else if (e.shift) {
+          // alternative policy: select all fields between this item and some other one??
+          if (!isFieldSelected(item)) setFieldSelected(item, true);
+          item.part.isSelected = true;
+        } else {
+          if (!isFieldSelected(item)) {
+            // deselect all sibling items
+            item.panel.elements.each(it => {
+              if (it !== item) setFieldSelected(it, false);
+            });
+            setFieldSelected(item, true);
+          }
+          item.part.isSelected = true;
+        }
+        item.diagram.skipsUndoManager = oldskips;
+      }
+
       // This template is a Panel that is used to represent each item in a Panel.itemArray.
       // The Panel is data bound to the item object.
       var fieldTemplate =
         $(go.Panel, "TableRow",  // this Panel is a row in the containing Table
           new go.Binding("portId", "name"),  // this Panel is a "port"
           {
-            background: "transparent",  // so this port's background can be picked by the mouse
+            background: UnselectedBrush,  // so this port's background can be picked by the mouse
             fromSpot: go.Spot.LeftRightSides,  // links only go from the right side to the left side
             toSpot: go.Spot.LeftRightSides,
             // allow drawing links from or to this port:
             fromLinkable: true, toLinkable: true
           },
-          { // allow the user to select items -- the background color indicates whether "selected"
-            //?? maybe this should be more sophisticated than simple toggling of selection
-            click: (e, item) => {
-              // assume "transparent" means not "selected", for items
-              var oldskips = item.diagram.skipsUndoManager;
-              item.diagram.skipsUndoManager = true;
-              if (item.background === "transparent") {
-                item.background = "dodgerblue";
-              } else {
-                item.background = "transparent";
-              }
-              item.diagram.skipsUndoManager = oldskips;
-            }
+          { // select items -- the background indicates "selected" when not UnselectedBrush
+            click: onFieldClick
           },
           $(go.Shape,
             {
@@ -203,7 +230,7 @@
           if (table) {
             for (var iit = table.elements; iit.next();) {
               var itempanel = iit.value;
-              if (itempanel.background !== "transparent") items.push(itempanel);
+              if (isFieldSelected(itempanel)) items.push(itempanel);
             }
           }
         }

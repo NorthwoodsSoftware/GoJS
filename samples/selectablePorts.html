@@ -67,8 +67,47 @@
             "undoManager.isEnabled": true
           });
 
-      var UnselectedBrush = "lightgray";  // item appearance, if not "selected"
-      var SelectedBrush = "dodgerblue";   // item appearance, if "selected"
+      const UnselectedBrush = "lightgray";  // item appearance, if not "selected"
+      const SelectedBrush = "dodgerblue";   // item appearance, if "selected"
+
+      function isPortSelected(item) {
+        return item && item.fill !== UnselectedBrush;  // assume the port is a Shape
+      }
+
+      function setPortSelected(item, sel) {
+        if (!item) return;
+        if (sel) {
+          item.fill = SelectedBrush;
+        } else {
+          item.fill = UnselectedBrush;
+        }
+      }
+
+      function onPortClick(e, tb) {
+        var shape = tb.panel.findObject("SHAPE");
+        if (shape !== null) {
+          var oldskips = shape.diagram.skipsUndoManager;
+          shape.diagram.skipsUndoManager = true;
+          if (e.control || e.meta) {
+            setPortSelected(shape, !isPortSelected(shape));
+            shape.part.isSelected = shape.part.ports.any(isPortSelected);
+          } else if (e.shift) {
+            // alternative policy: select all Ports between this item and some other one??
+            if (!isPortSelected(shape)) setPortSelected(shape, true);
+            shape.part.isSelected = true;
+          } else {
+            if (!isPortSelected(shape)) {
+              // deselect all sibling items
+              shape.part.ports.each(it => {
+                if (it !== shape) setPortSelected(it, false);
+              });
+              setPortSelected(shape, true);
+            }
+            shape.part.isSelected = true;
+          }
+          shape.diagram.skipsUndoManager = oldskips;
+        }
+      }
 
       function makeItemTemplate(leftside) {
         return $(go.Panel, "Auto",
@@ -92,22 +131,7 @@
             new go.Binding("text", "name"),
             { // allow the user to select items -- the background color indicates whether "selected"
               isActionable: true,
-              //?? maybe this should be more sophisticated than simple toggling of selection
-              click: (e, tb) => {
-                var shape = tb.panel.findObject("SHAPE");
-                if (shape !== null) {
-                  // don't record item selection changes
-                  var oldskips = shape.diagram.skipsUndoManager;
-                  shape.diagram.skipsUndoManager = true;
-                  // toggle the Shape.fill
-                  if (shape.fill === UnselectedBrush) {
-                    shape.fill = SelectedBrush;
-                  } else {
-                    shape.fill = UnselectedBrush;
-                  }
-                  shape.diagram.skipsUndoManager = oldskips;
-                }
-              }
+              click: onPortClick
             })
         );
       }
@@ -156,22 +180,9 @@
           var node = nit.value;
           //?? Maybe this should only return selected items that are within selected Nodes
           //if (!node.isSelected) continue;
-          var table = node.findObject("LEFTPORTS");
-          if (table !== null) {
-            for (var iit = table.elements; iit.next();) {
-              var itempanel = iit.value;
-              var shape = itempanel.findObject("SHAPE");
-              if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
-            }
-          }
-          table = node.findObject("RIGHTPORTS");
-          if (table !== null) {
-            for (var iit = table.elements; iit.next();) {
-              var itempanel = iit.value;
-              var shape = itempanel.findObject("SHAPE");
-              if (shape !== null && shape.fill === SelectedBrush) items.push(itempanel);
-            }
-          }
+          node.ports.each(port => {
+            if (isPortSelected(shape)) items.push(itempanel);
+          });
         }
         return items;
       }

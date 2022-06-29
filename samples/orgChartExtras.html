@@ -87,6 +87,8 @@
             // support editing the properties of the selected person in HTML
             "ChangedSelection": onSelectionChanged,
             "TextEdited": onTextEdited,
+            // newly drawn links are of type "Support" -- not a regular boss-employee relationship
+            "linkingTool.archetypeLinkData": { category: "Support", text: "100%" },
             // enable undo & redo
             "undoManager.isEnabled": true
           });
@@ -232,7 +234,7 @@
       // define the Link template
       myDiagram.linkTemplate =
         $(go.Link, go.Link.Orthogonal,
-          { corner: 5, relinkableFrom: true, relinkableTo: true },
+          { corner: 5 },
           $(go.Shape, { strokeWidth: 2 }));  // the link shape
 
       myDiagram.linkTemplateMap.add("Support",
@@ -244,10 +246,10 @@
           $(go.Shape,
             { toArrow: "OpenTriangle", stroke: "green", strokeWidth: 2 }),
           $(go.TextBlock,
-            new go.Binding("text", "text"),
+            new go.Binding("text").makeTwoWay(),
             {
               stroke: "green", background: "rgba(255,255,255,0.75)",
-              maxSize: new go.Size(80, NaN)
+              maxSize: new go.Size(80, NaN), editable: true
             })));
 
       myDiagram.linkTemplateMap.add("Motion",
@@ -259,10 +261,10 @@
           $(go.Shape,
             { toArrow: "OpenTriangle", stroke: "orange", strokeWidth: 2 }),
           $(go.TextBlock,
-            new go.Binding("text", "text"),
+            new go.Binding("text").makeTwoWay(),
             {
               stroke: "orange", background: "rgba(255,255,255,0.75)",
-              maxSize: new go.Size(80, NaN)
+              maxSize: new go.Size(80, NaN), editable: true
             })));
 
       // read in the JSON-format data from the "mySavedModel" element
@@ -348,7 +350,6 @@
   <p>
     Double click on a node in order to add a person.
     Drag a node onto another in order to change relationships.
-    You can also draw a link from a node's background to other nodes that have no "boss".
   </p>
   <p>
     This is the <a href="orgChartEditor.html">Org Chart Editor</a> sample,

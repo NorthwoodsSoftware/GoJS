@@ -150,6 +150,8 @@
       myDiagram.nodeTemplateMap.add("M",  // male
         $(go.Node, "Vertical",
           { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON" },
+          new go.Binding("opacity", "hide", h => h ? 0 : 1),
+          new go.Binding("pickable", "hide", h => !h),
           $(go.Panel,
             { name: "ICON" },
             $(go.Shape, "Square",
@@ -169,13 +171,15 @@
             )
           ),
           $(go.TextBlock,
-            { textAlign: "center", maxSize: new go.Size(80, NaN) },
+            { textAlign: "center", maxSize: new go.Size(80, NaN), background: "rgba(255,255,255,0.5)" },
             new go.Binding("text", "n"))
         ));
 
       myDiagram.nodeTemplateMap.add("F",  // female
         $(go.Node, "Vertical",
           { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON" },
+          new go.Binding("opacity", "hide", h => h ? 0 : 1),
+          new go.Binding("pickable", "hide", h => !h),
           $(go.Panel,
             { name: "ICON" },
             $(go.Shape, "Circle",
@@ -195,7 +199,7 @@
             )
           ),
           $(go.TextBlock,
-            { textAlign: "center", maxSize: new go.Size(80, NaN) },
+            { textAlign: "center", maxSize: new go.Size(80, NaN), background: "rgba(255,255,255,0.5)" },
             new go.Binding("text", "n"))
         ));
 
@@ -209,14 +213,13 @@
           {
             routing: go.Link.Orthogonal, corner: 5,
             layerName: "Background", selectable: false,
-            fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top
           },
           $(go.Shape, { stroke: "#424242", strokeWidth: 2 })
         );
 
       myDiagram.linkTemplateMap.add("Marriage",  // for marriage relationships
         $(go.Link,
-          { selectable: false },
+          { selectable: false, layerName: "Background" },
           $(go.Shape, { strokeWidth: 2.5, stroke: "#5d8cc1" /* blue */ })
         ));
 
@@ -292,14 +295,6 @@
       const node = diagram.findNodeForKey(focusId);
       if (node !== null) {
         diagram.select(node);
-        // remove any spouse for the person under focus:
-        //node.linksConnected.each(l => {
-        //  if (!l.isLabeledLink) return;
-        //  l.opacity = 0;
-        //  const spouse = l.getOtherNode(node);
-        //  spouse.opacity = 0;
-        //  spouse.pickable = false;
-        //});
       }
     }
 
@@ -420,6 +415,7 @@
     // internal method for creating LayeredDigraphNetwork where husband/wife pairs are represented
     // by a single LayeredDigraphVertex corresponding to the label Node on the marriage Link
     add(net, coll, nonmemberonly) {
+      const horiz = this.direction == 0.0 || this.direction == 180.0;
       const multiSpousePeople = new go.Set();
       // consider all Nodes in the given collection
       const it = coll.iterator;
@@ -437,9 +433,15 @@
           // create vertex representing both husband and wife
           const vertex = net.addNode(node);
           // now define the vertex size to be big enough to hold both spouses
-          vertex.width = spouseA.actualBounds.width + this.spouseSpacing + spouseB.actualBounds.width;
-          vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
-          vertex.focus = new go.Point(spouseA.actualBounds.width + this.spouseSpacing / 2, vertex.height / 2);
+          if (horiz) {
+            vertex.height = spouseA.actualBounds.height + this.spouseSpacing + spouseB.actualBounds.height;
+            vertex.width = Math.max(spouseA.actualBounds.width, spouseB.actualBounds.width);
+            vertex.focus = new go.Point(vertex.width / 2, spouseA.actualBounds.height + this.spouseSpacing / 2);
+          } else {
+            vertex.width = spouseA.actualBounds.width + this.spouseSpacing + spouseB.actualBounds.width;
+            vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
+            vertex.focus = new go.Point(spouseA.actualBounds.width + this.spouseSpacing / 2, vertex.height / 2);
+          }
         } else {
           // don't add a vertex for any married person!
           // instead, code above adds label node for marriage link
@@ -554,6 +556,7 @@
 
     commitNodes() {
       super.commitNodes();
+      const horiz = this.direction == 0.0 || this.direction == 180.0;
       // position regular nodes
       this.network.vertexes.each(v => {
         if (v.node !== null && !v.node.isLinkLabel) {
@@ -572,30 +575,44 @@
         lablink.invalidateRoute();
         let spouseA = lablink.fromNode;
         let spouseB = lablink.toNode;
-        // prefer fathers on the left, mothers on the right
-        if (spouseA.data.s === "F") {  // sex is female
-          const temp = spouseA;
-          spouseA = spouseB;
-          spouseB = temp;
-        }
-        // see if the parents are on the desired sides, to avoid a link crossing
-        const aParentsNode = this.findParentsMarriageLabelNode(spouseA);
-        const bParentsNode = this.findParentsMarriageLabelNode(spouseB);
-        if (aParentsNode !== null && bParentsNode !== null && aParentsNode.position.x > bParentsNode.position.x) {
-          // swap the spouses
-          const temp = spouseA;
-          spouseA = spouseB;
-          spouseB = temp;
-        }
-        spouseA.moveTo(v.x, v.y);
-        spouseB.moveTo(v.x + spouseA.actualBounds.width + this.spouseSpacing, v.y);
-        if (spouseA.opacity === 0) {
-          const pos = new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
-          spouseA.move(pos);
+        if (spouseA.opacity > 0 && spouseB.opacity > 0) {
+          // prefer fathers on the left, mothers on the right
+          if (spouseA.data.s === "F") {  // sex is female
+            const temp = spouseA;
+            spouseA = spouseB;
+            spouseB = temp;
+          }
+          // see if the parents are on the desired sides, to avoid a link crossing
+          const aParentsNode = this.findParentsMarriageLabelNode(spouseA);
+          const bParentsNode = this.findParentsMarriageLabelNode(spouseB);
+          if (aParentsNode !== null && bParentsNode !== null &&
+              (horiz
+                ? aParentsNode.position.x > bParentsNode.position.x
+                : aParentsNode.position.y > bParentsNode.position.y)) {
+            // swap the spouses
+            const temp = spouseA;
+            spouseA = spouseB;
+            spouseB = temp;
+          }
+          spouseA.moveTo(v.x, v.y);
+          if (horiz) {
+            spouseB.moveTo(v.x, v.y + spouseA.actualBounds.height + this.spouseSpacing);
+          } else {
+            spouseB.moveTo(v.x + spouseA.actualBounds.width + this.spouseSpacing, v.y);
+          }
+        } else if (spouseA.opacity === 0) {
+          const pos = horiz
+            ? new go.Point(v.x, v.centerY - spouseB.actualBounds.height / 2)
+            : new go.Point(v.centerX - spouseB.actualBounds.width / 2, v.y);
           spouseB.move(pos);
-        } else if (spouseB.opacity === 0) {
-          const pos = new go.Point(v.centerX - spouseB.actualBounds.width / 2, v.y);
+          if (horiz) pos.y++; else pos.x++;
           spouseA.move(pos);
+        } else if (spouseB.opacity === 0) {
+          const pos = horiz
+            ? new go.Point(v.x, v.centerY - spouseA.actualBounds.height / 2)
+            : new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
+          spouseA.move(pos);
+          if (horiz) pos.y++; else pos.x++;
           spouseB.move(pos);
         }
       });
@@ -606,7 +623,11 @@
         if (mnode !== null && mnode.linksConnected.count === 1) {  // if only one child
           const mvert = this.network.findVertex(mnode);
           const newbnds = v.node.actualBounds.copy();
-          newbnds.x = mvert.centerX - v.node.actualBounds.width / 2;
+          if (horiz) {
+            newbnds.y = mvert.centerY - v.node.actualBounds.height / 2;
+          } else {
+            newbnds.x = mvert.centerX - v.node.actualBounds.width / 2;
+          }
           // see if there's any empty space at the horizontal mid-point in that layer
           const overlaps = this.diagram.findObjectsIn(newbnds, x => x.part, p => p !== v.node, true);
           if (overlaps.count === 0) {
@@ -633,6 +654,10 @@
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: #F8F8F8; border: solid 1px black; width:100%; height:600px;"></div>
   <p>A <em>genogram</em> or <em>pedigree chart</em> is an extended family tree diagram that displays information about each person or each relationship.</p>
+  <p>
+    Note that the term "marriage" here does not refer to a legal or cultural kind of relationship,
+    but simply one representing the female and male genetic sources for any children.
+  </p>
   <p>
     There are functions that convert an attribute value into a brush color or Shape geometry,
     to be added to the Node representing the person.

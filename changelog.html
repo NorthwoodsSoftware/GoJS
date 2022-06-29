@@ -212,14 +212,15 @@ myDiagram.nodeTemplate =
     This can be useful when text strings are preformatted.
   </li>
   <li>
-    The <a>TextBlock.lineHeight</a> property provides better information about how the text is being measured and rendered.
+    The <a>TextBlock.lineHeight</a> read-only property provides better information about how the text is being measured and rendered.
   </li>
   <li>
     The <a>TextBlock.spacingAbove</a> and <a>TextBlock.spacingBelow</a> properties
     better control the measuring and rendering in addition to the <a>TextBlock.lineHeight</a>.
   </li>
   <li>
-    The <a>Node.findExternalTreeLinksConnected</a> method returns a collection of Links that connect with this Node or any in its subtree, excluding any isTreeLink Links.
+    The <a>Node.findExternalTreeLinksConnected</a> method returns a collection of Links that connect with this Node
+    or any in its subtree, excluding any isTreeLink Links.
     This is the tree-equivalent of <a>Group.findExternalLinksConnected</a> for Groups/subgraphs.
   </li>
   <li>
@@ -289,8 +290,8 @@ myDiagram.nodeTemplate =
     Used in the <a href="extensions/BalloonLink.html" target="_blank">BalloonLink</a> sample.
   </li>
   <li>
-    The <a>Node.getAvoidableRect</a> method returns the area to be avoided for this node, equal to the node's <a>GraphObject.actualBounds</a>
-    plus the <a>Node.avoidableMargin</a>.
+    The <a>Node.getAvoidableRect</a> method returns the area to be avoided for this node,
+    by default equal to the node's <a>GraphObject.actualBounds</a> plus the <a>Node.avoidableMargin</a>.
     This method can be overridden to customize AvoidsNodes routing behavior near a node to account for the visual area occupied by the node
     being smaller than the full rectangular bounds of the node.
   </li>
@@ -319,22 +320,51 @@ myDiagram.nodeTemplate =
 
 <hr />
 
+<h4 id="2.2.12">Changes for 2.2.12</h4>
+<ul>
+  <li>
+    We have been optimizing the space used by GraphObjects.
+    The heap used by typical large diagrams now occupies about 10% less space.
+    Creating copies of a lot of nodes and links may be a bit faster now too.
+  </li>
+  <li>
+    Fixed the new <a>PanelLayoutFlow</a> extension so that multiple "Flow" panels can coexist in the same panel</a>.
+  </li>
+  <li>
+    Improved GenogramLayout in the <a href="samples/genogram.html" target="_blank">Genogram</a> sample
+    to support a horizontal direction as well as the standard vertical direction.
+  </li>
+  <li>
+    Improved the <a href="samples/selectableFields.html" target="_blank">Selectable Fields</a>
+    and <a href="samples/selectablePorts.html" target="_blank">Selectable Ports</a>
+    samples so that clicking on fields or ports within a node respects the Control and Shift modifiers
+    to toggle or add to the collection of selected fields or ports.
+  </li>
+  <li>
+    Fixed object picking (<a>Diagram.findObject</a>, <a>GraphObject.containsPoint</a>, etc) for Shapes with a <a>GraphObject.background</a>.
+  </li>
+  <li>
+    The <a>Group.layout</a> property setter now checks to make sure that the new layout is not also the value of <a>Diagram.layout</a>.
+  </li>
+</ul>
+
 <h4 id="2.2.11">Changes for 2.2.11</h4>
 <ul>
   <li>
     Like the <a>DraggingTool</a> in v2.2.0, <a>LinkReshapingTool</a>, <a>ResizingTool</a>, and <a>RotatingTool</a> now optimize transactions
     to reduce memory usage by only saving the first and last changes for each property of each object in the transaction.
-    This can be changed by overriding <a>stopTransaction</a> on the respective tool.
+    This can be changed by overriding <b>stopTransaction</b> on the respective tool.
   </li>
   <li>
     <a>Shape.graduatedSkip</a>, <a>TextBlock.graduatedSkip</a>, and <a>TextBlock.graduatedFunction</a>
-    now take a second argument, the Shape or TextBlock.
+    now take a second argument, the Shape or TextBlock that the function is being called for.
   </li>
   <li>
     Graduated Panels now correctly draw ticks/labels at very large <a>Panel.graduatedMax</a> values.
   </li>
   <li>
-    The AMD <code>define</code> statement has been removed from the module version of the library (<code>go.mjs</code>, <code>go-module.js</code>, <code>go-debug-module.js</code>)
+    The AMD <code>define</code> statement has been removed from the module version of the library
+    (<code>go-module.js</code>, <code>go.mjs</code>, <code>go-debug-module.js</code>)
   </li>
   <li>
     The <a>DraggingTool</a>, when dragging a Link (<a>DraggingTool.draggedLink</a>), now passes that link as the <a>RelinkingTool.originalLink</a>
@@ -352,7 +382,7 @@ myDiagram.nodeTemplate =
     even when they could be very close together.
   </li>
   <li>
-    Drawing fixes on very zoomed-out graphs.
+    Fixed drawing on very zoomed-out graphs.
   </li>
   <li>
     Multiple orthogonal links between identical nodes side-by-side are now drawn without crossings. This fixes a regression from 2.1.51.
@@ -402,7 +432,7 @@ myDiagram.nodeTemplate =
 <h4 id="2.2.6">Changes for 2.2.6</h4>
 <ul>
   <li>
-    Improvements in gesture handling for iPad + keyboard combinations.
+    Made improvements in gesture handling for iPad + keyboard combinations.
   </li>
   <li>
     Made improvements and added features to the <a href="samples/gantt.html" target="_blank">Gantt</a>
@@ -430,10 +460,13 @@ myDiagram.nodeTemplate =
 <h4 id="2.2.4">Changes for 2.2.4</h4>
 <ul>
   <li>
-    Allow <a>AnimationTrigger</a>s to run during Tool operation. Previously, Animation Triggers would not run if a Tool was active, which prevented some tools such as <a>LinkingTool</a> from starting animations during their events.
+    Allow <a>AnimationTrigger</a>s to run during Tool operation.
+    Previously, Animation Triggers would not run if a Tool was active,
+    which prevented some tools such as <a>LinkingTool</a> from starting animations during their events.
   </li>
   <li>
-    Fixed a regression since 2.2.0: Drag and drop in Shadow DOM environments such as Angular now correctly identify the target Diagram (for dropping from Palettes, for instance).
+    Fixed a regression since 2.2.0: Drag and drop in Shadow DOM environments such as Angular
+    now correctly identify the target Diagram (for dropping from Palettes, for instance).
   </li>
   <li>
     <a>Diagram,useDOM</a> and <a>Diagram,isUsingDOM</a> were incorrectly minified, and now have their names properly exposed.

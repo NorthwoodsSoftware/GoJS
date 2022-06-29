@@ -59,9 +59,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     set guidelineSnapDistance(val) {
         if (typeof val !== 'number' || isNaN(val) || val < 0)
             throw new Error('new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number');
-        if (this._guidelineSnapDistance !== val) {
-            this._guidelineSnapDistance = val;
-        }
+        this._guidelineSnapDistance = val;
     }
     /**
      * Gets or sets whether the guidelines are enabled or disables.
@@ -72,9 +70,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     set isGuidelineEnabled(val) {
         if (typeof val !== 'boolean')
             throw new Error('new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.');
-        if (this._isGuidelineEnabled !== val) {
-            this._isGuidelineEnabled = val;
-        }
+        this._isGuidelineEnabled = val;
     }
     /**
      * Gets or sets the color of horizontal guidelines.
@@ -122,7 +118,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         }
     }
     /**
-     * Gets or sets the width guidelines.
+     * Gets or sets the strokeWidth of the guidelines.
      *
      * The default value is 1.
      */
@@ -156,9 +152,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     set searchDistance(val) {
         if (typeof val !== 'number' || isNaN(val) || val <= 0)
             throw new Error('new value for GuidedDraggingTool.searchDistance must be a positive number.');
-        if (this._searchDistance !== val) {
-            this._searchDistance = val;
-        }
+        this._searchDistance = val;
     }
     /**
      * Gets or sets whether snapping to guidelines is enabled.
@@ -169,9 +163,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     set isGuidelineSnapEnabled(val) {
         if (typeof val !== 'boolean')
             throw new Error('new value for GuidedDraggingTool.isGuidelineSnapEnabled must be a boolean.');
-        if (this._isGuidelineSnapEnabled !== val) {
-            this._isGuidelineSnapEnabled = val;
-        }
+        this._isGuidelineSnapEnabled = val;
     }
     /**
      * Removes all of the guidelines from the grid.
@@ -271,7 +263,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
         const p1 = objBounds.y + objBounds.height / 2;
         const p2 = objBounds.y + objBounds.height;
         const marginOfError = this.guidelineSnapDistance;
-        const distance = this.searchDistance;
+        let distance = this.searchDistance;
+        if (distance === Infinity)
+            distance = this.diagram.documentBounds.width;
         // compares with parts within narrow vertical area
         const area = objBounds.copy();
         area.inflate(distance, marginOfError + 1);
@@ -381,7 +375,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
         const p1 = objBounds.x + objBounds.width / 2;
         const p2 = objBounds.x + objBounds.width;
         const marginOfError = this.guidelineSnapDistance;
-        const distance = this.searchDistance;
+        let distance = this.searchDistance;
+        if (distance === Infinity)
+            distance = this.diagram.documentBounds.height;
         // compares with parts within narrow vertical area
         const area = objBounds.copy();
         area.inflate(marginOfError + 1, distance);

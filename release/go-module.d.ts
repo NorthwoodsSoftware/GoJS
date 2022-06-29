@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.11
+ * Type definitions for GoJS v2.2.12
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -14153,9 +14153,11 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  * Since GraphObject is an abstract class, programmers do not create GraphObjects themselves,
  * but this class defines many properties used by all kinds of GraphObjects.
  *
- * The only visual properties on GraphObject is #background.
+ * The only visual property on GraphObject is #background.
  * However one can control whether the GraphObject is drawn at all by setting #visible,
  * or by setting #opacity to zero if you still want the GraphObject to occupy space.
+ * Call the #isVisibleObject predicate to determine whether the object is visible and
+ * all of its containing panels are visible.
  * Also, if you want to control whether any mouse or touch events "see" the GraphObject,
  * you can set #pickable to false.
  *
@@ -14549,7 +14551,7 @@ export abstract class GraphObject {
     isContainedBy(panel: GraphObject): boolean;
     /**
      * This predicate is true if this object is #visible
-     * and each of its visual containing panels are also visible.
+     * and each of its visual containing panels is also visible.
      * This ignores the actual location or appearance (except visibility)
      * of the panel that this object is part of, as well as ignoring all
      * properties of the Layer or Diagram.
@@ -16186,7 +16188,7 @@ export abstract class GraphObject {
      *   node
      *     .set({ background: 'red' })
      *     .bind("location")
-     *     .bind("desiredSize", "size", go.Size.Parse)
+     *     .bind("desiredSize", "size", go.Size.parse)
      * }
      *
      * // ... in a Node template:
@@ -17318,6 +17320,14 @@ export class Panel extends GraphObject {
      */
     findMainElement(): GraphObject | null;
     /**
+     * Undocumented state for PanelLayouts
+    */
+    get panelLayoutState(): any | null;
+    /**
+     * Undocumented state for PanelLayouts
+    */
+    set panelLayoutState(value: any | null);
+    /**
      * Search the visual tree starting at this Panel for a GraphObject
      * whose GraphObject#name is the given name.
      *
@@ -17440,7 +17450,8 @@ export class Panel extends GraphObject {
     get leftIndex(): number;
     set leftIndex(value: number);
     /**
-     * For Panel.Table|Table Panels: Returns the row at a given y-coordinate in local coordinates.
+     * For Panel.Table|Table Panels: Returns the row at a given y-coordinate in local coordinates,
+     * or -1 if there are no RowColumnDefinitions for this Table Panel or if the argument is negative.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
@@ -17451,7 +17462,8 @@ export class Panel extends GraphObject {
      */
     findRowForLocalY(y: number): number;
     /**
-     * For Panel.Table|Table Panels: Returns the cell at a given x-coordinate in local coordinates.
+     * For Panel.Table|Table Panels: Returns the cell at a given x-coordinate in local coordinates,
+     * or -1 if there are no RowColumnDefinitions for this Table Panel or if the argument is negative.
      * Call GraphObject#getLocalPoint to convert a Point in document coordinates into
      * a Point in local coordinates.
      *
@@ -21791,6 +21803,8 @@ export class Group extends Node {
      * Gets or sets the Layout used to position all of the immediate member nodes and links in this group.
      * By default this property is an instance of Layout -- no special layout is used, which just makes
      * sure each member node has a valid location.
+     *
+     * A group layout must not be shared with any Diagram#layout.
      */
     get layout(): Layout | null;
     set layout(value: Layout | null);

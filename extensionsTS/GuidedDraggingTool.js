@@ -89,9 +89,7 @@ var __extends = (this && this.__extends) || (function () {
             set: function (val) {
                 if (typeof val !== 'number' || isNaN(val) || val < 0)
                     throw new Error('new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number');
-                if (this._guidelineSnapDistance !== val) {
-                    this._guidelineSnapDistance = val;
-                }
+                this._guidelineSnapDistance = val;
             },
             enumerable: false,
             configurable: true
@@ -106,9 +104,7 @@ var __extends = (this && this.__extends) || (function () {
             set: function (val) {
                 if (typeof val !== 'boolean')
                     throw new Error('new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.');
-                if (this._isGuidelineEnabled !== val) {
-                    this._isGuidelineEnabled = val;
-                }
+                this._isGuidelineEnabled = val;
             },
             enumerable: false,
             configurable: true
@@ -172,7 +168,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(GuidedDraggingTool.prototype, "guidelineWidth", {
             /**
-             * Gets or sets the width guidelines.
+             * Gets or sets the strokeWidth of the guidelines.
              *
              * The default value is 1.
              */
@@ -210,9 +206,7 @@ var __extends = (this && this.__extends) || (function () {
             set: function (val) {
                 if (typeof val !== 'number' || isNaN(val) || val <= 0)
                     throw new Error('new value for GuidedDraggingTool.searchDistance must be a positive number.');
-                if (this._searchDistance !== val) {
-                    this._searchDistance = val;
-                }
+                this._searchDistance = val;
             },
             enumerable: false,
             configurable: true
@@ -227,9 +221,7 @@ var __extends = (this && this.__extends) || (function () {
             set: function (val) {
                 if (typeof val !== 'boolean')
                     throw new Error('new value for GuidedDraggingTool.isGuidelineSnapEnabled must be a boolean.');
-                if (this._isGuidelineSnapEnabled !== val) {
-                    this._isGuidelineSnapEnabled = val;
-                }
+                this._isGuidelineSnapEnabled = val;
             },
             enumerable: false,
             configurable: true
@@ -334,6 +326,8 @@ var __extends = (this && this.__extends) || (function () {
             var p2 = objBounds.y + objBounds.height;
             var marginOfError = this.guidelineSnapDistance;
             var distance = this.searchDistance;
+            if (distance === Infinity)
+                distance = this.diagram.documentBounds.width;
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(distance, marginOfError + 1);
@@ -445,6 +439,8 @@ var __extends = (this && this.__extends) || (function () {
             var p2 = objBounds.x + objBounds.width;
             var marginOfError = this.guidelineSnapDistance;
             var distance = this.searchDistance;
+            if (distance === Infinity)
+                distance = this.diagram.documentBounds.height;
             // compares with parts within narrow vertical area
             var area = objBounds.copy();
             area.inflate(marginOfError + 1, distance);
