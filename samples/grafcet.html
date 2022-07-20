@@ -419,15 +419,14 @@
   // at "Parallel" and "Exclusive" nodes.
   class BarLink extends go.Link {
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
-      const r = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft),
-        port.getDocumentPoint(go.Spot.BottomRight));
-      const op = otherport.getDocumentPoint(go.Spot.Center);
-      const below = op.y > r.centerY;
+      const r = port.getDocumentBounds();
+      const op = otherport.getDocumentBounds();
+      const below = op.centerY > r.centerY;
       const y = below ? r.bottom : r.top;
       if (node.category === "Parallel" || node.category === "Exclusive") {
-        if (op.x < r.left) return new go.Point(r.left, y);
-        if (op.x > r.right) return new go.Point(r.right, y);
-        return new go.Point(op.x, y);
+        if (op.right < r.left) return new go.Point(r.left, y);
+        if (op.left > r.right) return new go.Point(r.right, y);
+        return new go.Point((Math.max(r.left, op.left) + Math.min(r.right, op.right)) / 2, y);
       } else {
         return new go.Point(r.centerX, y);
       }

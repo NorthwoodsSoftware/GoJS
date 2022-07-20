@@ -212,31 +212,6 @@
           )
         );
 
-      // unmovable node that acts as a button
-      myDiagram.nodeTemplateMap.add('newbutton',
-        $(go.Node, "Horizontal",
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          {
-            selectable: false,
-            click: (e, node) => {
-              myDiagram.startTransaction('add node');
-              const newdata = { group: "Problems", loc: "0 50", text: "New item " + node.containingGroup.memberParts.count, color: 0 };
-              myDiagram.model.addNodeData(newdata);
-              myDiagram.commitTransaction('add node');
-              const newnode = myDiagram.findNodeForData(newdata);
-              myDiagram.select(newnode);
-              myDiagram.commandHandler.editTextBlock();
-            },
-            background: 'white'
-          },
-          $(go.Panel, "Auto",
-            $(go.Shape, "Rectangle", { strokeWidth: 0, stroke: null, fill: '#6FB583' }),
-            $(go.Shape, "PlusLine", { margin: 6, strokeWidth: 2, width: 12, height: 12, stroke: 'white', background: '#6FB583' })
-          ),
-          $(go.TextBlock, "New item", { font: '10px Lato, sans-serif', margin: 6, })
-        )
-      );
-
       // While dragging, highlight the dragged-over group
       function highlightGroup(grp, show) {
         if (show) {
@@ -350,8 +325,35 @@
               { desiredSize: new go.Size(10, 10), fill: '#009CCC', margin: 5 }),
             $(go.TextBlock, "Completed",
               { font: "700 13px Droid Serif, sans-serif" })
-          )  // end row 3
-        ));
+          ),  // end row 3
+          $(go.Panel, "Horizontal",
+            {
+              row: 4,
+              click: (e, node) => {
+                e.diagram.startTransaction('add node');
+                let sel = e.diagram.selection.first();
+                if (!sel) sel = e.diagram.findTopLevelGroups().first();
+                if (!(sel instanceof go.Group)) sel = sel.containingGroup;
+                if (!sel) return;
+                const newdata = { group: sel.key, loc: "0 9999", text: "New item " + sel.memberParts.count, color: 0 };
+                e.diagram.model.addNodeData(newdata);
+                e.diagram.commitTransaction('add node');
+                const newnode = myDiagram.findNodeForData(newdata);
+                e.diagram.select(newnode);
+                e.diagram.commandHandler.editTextBlock();
+                e.diagram.commandHandler.scrollToPart(newnode);
+              },
+              background: 'white',
+              margin: new go.Margin(10, 4, 4, 4)
+            },
+            $(go.Panel, "Auto",
+              $(go.Shape, "Rectangle", { strokeWidth: 0, stroke: null, fill: '#6FB583' }),
+              $(go.Shape, "PlusLine", { margin: 6, strokeWidth: 2, width: 12, height: 12, stroke: 'white', background: '#6FB583' })
+            ),
+            $(go.TextBlock, "New item", { font: '10px Lato, sans-serif', margin: 6, })
+          )
+        )
+      );
 
       load();
 

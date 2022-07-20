@@ -309,7 +309,7 @@ arr.push([
 arr.push([
   "treeMapper",
   "Tree Mapper",
-  "Displays two trees, allowing the user to dynamically draw or reconnect links mapping one tree node to another.",
+  "Displays two trees, allowing the user to dynamically draw or reconnect links mapping data from field to another.",
   "treeMapper",
   ["featured", "groups", "treelayout", "buttons"]]);
 

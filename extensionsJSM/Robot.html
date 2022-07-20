@@ -71,6 +71,9 @@
       <button id="clickLambda">Click Lambda</button><br />
       <button id="doubleClickLambda">Double Click Lambda</button><br />
     </p>
+    <p>Panning operation:<br />
+      <button id="pan">Pan the Diagram</button><br />
+    </p>
     <p>
       The <a>UndoManager</a> has been enabled in the main Diagram.
       Give focus to the Diagram and you can undo everything and then redo everything to confirm what was executed by the Robot.
@@ -257,6 +260,25 @@
       myRobot.mouseUp(loc.x + 10, loc.y + 10, 300, { clickCount: 2 });
     }
 
+    function pan() {
+      const pos1 = myDiagram.position.copy();
+
+      const pt = new go.Point(myDiagram.viewportBounds.x + 30, myDiagram.viewportBounds.centerY);
+      myRobot.mouseDown(pt.x, pt.y, 0, {});
+      // Minimal wait after mouseDown when moving, else the PanningTool will be pre-empted
+      // by the DragSelectingTool, which is controlled by the DragSelectingTool.delay property.
+      // Remember that these are document coordinates, which are shifted by the panning motion.
+      myRobot.mouseMove(pt.x + 20, pt.y + 10, 10, {});
+      myRobot.mouseMove(pt.x + 20, pt.y + 10, 30, {});
+      myRobot.mouseMove(pt.x + 20, pt.y + 10, 50, {});
+      myRobot.mouseUp(pt.x + 20, pt.y + 10, 70, {});
+
+      const pos2 = myDiagram.position.copy();
+      document.getElementById("myStatus").textContent =
+        "Document.position before: " + pos1.toString() + " " +
+        "Document.position after: " + pos2.toString();
+    }
+
     document.getElementById("dragFromPalette").onclick = dragFromPalette;
     document.getElementById("copyNode").onclick = copyNode;
     document.getElementById("dragSelectNodes").onclick = dragSelectNodes;
@@ -264,6 +286,7 @@
     document.getElementById("deleteSelection").onclick = deleteSelection;
     document.getElementById("clickLambda").onclick = clickLambda;
     document.getElementById("doubleClickLambda").onclick = doubleClickLambda;
+    document.getElementById("pan").onclick = pan;
 
     window.myDiagram = myDiagram; // Attach to the window for console debugging
   </script>

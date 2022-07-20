@@ -51,7 +51,7 @@
 
     <div id="allSampleContent" class="p-4 w-full">
 	<div id="sample">
-		<div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+		<div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
 		<p>
       This makes use of the "ScrollingTable" Panel defined in <a href="ScrollingTable.js" target="_blank">ScrollingTable.js</a>.
       The "AutoRepeatButton" Panel is also defined in that file. Each node is resizable.
@@ -72,11 +72,12 @@ const $ = go.GraphObject.make;
 
 const myDiagram = $(go.Diagram, 'myDiagramDiv',
   {
-    'PartResized': function(e) {
-      const node = e.subject;
-      const scroller = node.findObject('SCROLLER');
-      if (scroller !== null) scroller._updateScrollBar(scroller.findObject('TABLE'));
-    }
+    "LayoutCompleted": e => {
+        e.diagram.nodes.each(n => {
+          const table = n.findObject("TABLE");
+          if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
+        });
+      }
   });
 
 // support mouse wheel scrolling of table when the mouse is in the table

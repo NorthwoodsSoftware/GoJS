@@ -258,15 +258,14 @@
         if (back === null) return pt;
         // allow dragging a Node out of a Group if the Shift key is down
         if (part.diagram.lastInput.shift) return pt;
-        const p1 = back.getDocumentPoint(go.Spot.TopLeft);
-        const p2 = back.getDocumentPoint(go.Spot.BottomRight);
+        const r = back.getDocumentBounds();
         const b = part.actualBounds;
         const loc = part.location;
         // find the padding inside the group's placeholder that is around the member parts
         const m = grp.placeholder.padding;
         // now limit the location appropriately
-        const x = Math.max(p1.x + m.left, Math.min(pt.x, p2.x - m.right - b.width - 1)) + (loc.x - b.x);
-        const y = Math.max(p1.y + m.top, Math.min(pt.y, p2.y - m.bottom - b.height - 1)) + (loc.y - b.y);
+        const x = Math.max(r.x + m.left, Math.min(pt.x, r.right - m.right - b.width - 1)) + (loc.x - b.x);
+        const y = Math.max(r.y + m.top, Math.min(pt.y, r.bottom - m.bottom - b.height - 1)) + (loc.y - b.y);
         return new go.Point(x, y);
       }
 

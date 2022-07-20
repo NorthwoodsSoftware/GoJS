@@ -1,4 +1,5 @@
 "use strict";
+
 /*
 *  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
 */
@@ -35,9 +36,12 @@
 *
 * But if there are disconnected subnetworks, the {@link #primaryLayout} is applied to each subnetwork,
 * and then all of those results are arranged by the {@link #arrangingLayout}.
+* If you don't want to use an {@link #arrangingLayout} and you want to force the {@link #primaryLayout} to
+* operate on all of the subnetworks, set {@link #arrangingLayout} to null.
 *
 * In either case if there are any nodes in the side graph, those are arranged by the {@link #sideLayout}
-* to be on the side of the arrangement of the main graph of nodes and links.
+* to be on a side of the arrangement of the main graph of nodes and links.
+* The {@link #side} property controls which side they will be placed -- the default is BottomSide.
 *
 * Note: if you do not want to have singleton nodes be arranged by {@link #sideLayout},
 * set {@link #filter} to <code>function(part) { return true; }</code>.
@@ -85,10 +89,12 @@ ArrangingLayout.prototype.cloneProtected = function(copy) {
 * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
 */
 ArrangingLayout.prototype.doLayout = function(coll) {
-  coll = this.collectParts(coll);
+  var coll2 = this.collectParts(coll);
+  if (coll2.count === 0) return;
 
   var diagram = this.diagram;
-  if (diagram === null) throw new Error("No Diagram for this Layout");
+  if (diagram === null) diagram = coll2.first().diagram;
+  if (diagram === null) return;
 
   // implementations of doLayout that do not make use of a LayoutNetwork
   // need to perform their own transactions
@@ -96,24 +102,26 @@ ArrangingLayout.prototype.doLayout = function(coll) {
 
   var maincoll = new go.Set();
   var sidecoll = new go.Set();
-  this.splitParts(coll, maincoll, sidecoll);
+  this.splitParts(coll2, maincoll, sidecoll);
 
   var mainnet = null;
   var subnets = null;
   if (this.arrangingLayout !== null) {
+    this.arrangingLayout.diagram = diagram;
     var mainnet = this.makeNetwork(maincoll);
     var subnets = mainnet.splitIntoSubNetworks();
   }
   var bounds = null;
-  if (this.arrangingLayout !== null && subnets !== null && subnets.count > 1) {
-    var groups = new go.Set();
+  if (this.arrangingLayout !== null && mainnet !== null && subnets !== null && subnets.count > 1) {
+    var groups = new go.Map();
     var it = subnets.iterator;
     while (it.next()) {
       var net = it.value;
       var subcoll = net.findAllParts();
+      this.primaryLayout.diagram = diagram;
       this.preparePrimaryLayout(this.primaryLayout, subcoll);
       this.primaryLayout.doLayout(subcoll);
-      groups.add(this._makeMainNode(subcoll));
+      this._addMainNode(groups, subcoll, diagram);
     }
     var mit = mainnet.vertexes.iterator;
     while (mit.next()) {
@@ -121,20 +129,23 @@ ArrangingLayout.prototype.doLayout = function(coll) {
       if (v.node) {
         var subcoll = new go.Set();
         subcoll.add(v.node);
+        this.primaryLayout.diagram = diagram;
         this.preparePrimaryLayout(this.primaryLayout, subcoll);
         this.primaryLayout.doLayout(subcoll);
-        groups.add(this._makeMainNode(subcoll));
+        this._addMainNode(groups, subcoll, diagram);
       }
     }
 
-    this.arrangingLayout.doLayout(groups);
+    this.arrangingLayout.doLayout(groups.toKeySet());
     var git = groups.iterator;
     while (git.next()) {
-      var grp = git.value;
-      this.moveSubgraph(grp._subcoll, grp._subcollBounds, new go.Rect(grp.position, grp.desiredSize));
+      var grp = git.key;
+      var ginfo = git.value;
+      this.moveSubgraph(ginfo.parts, ginfo.bounds, new go.Rect(grp.position, grp.desiredSize));
     }
-    bounds = diagram.computePartsBounds(groups);  // not maincoll due to links without real bounds
+    bounds = diagram.computePartsBounds(groups.toKeySet());  // not maincoll due to links without real bounds
   } else {  // no this.arrangingLayout
+    this.primaryLayout.diagram = diagram;
     this.preparePrimaryLayout(this.primaryLayout, maincoll);
     this.primaryLayout.doLayout(maincoll);
     bounds = diagram.computePartsBounds(maincoll);
@@ -158,15 +169,13 @@ ArrangingLayout.prototype.doLayout = function(coll) {
  * @hidden @internal
  * @param {*} subcoll
  */
-ArrangingLayout.prototype._makeMainNode = function(subcoll) {
+ArrangingLayout.prototype._addMainNode = function(groups, subcoll, diagram) {
   var grp = new go.Node();
   grp.locationSpot = go.Spot.Center;
-  grp._subcoll = subcoll;
   var grpb = this.diagram.computePartsBounds(subcoll);
-  grp._subcollBounds = grpb;
   grp.desiredSize = grpb.size;
   grp.position = grpb.position;
-  return grp;
+  groups.add(grp, { parts: subcoll, bounds: grpb });
 }
 
 /**
@@ -229,7 +238,9 @@ ArrangingLayout.prototype.preparePrimaryLayout = function(primaryLayout, mainCol
  * @param {Rect} bounds the area where they should be moved according to the arrangingLayout
  */
 ArrangingLayout.prototype.moveSubgraph = function(subColl, subbounds, bounds) {
-  this.diagram.moveParts(subColl, bounds.position.subtract(subbounds.position), false);
+  var diagram = this.diagram;
+  if (!diagram) return;
+  diagram.moveParts(subColl, bounds.position.subtract(subbounds.position));
 }
 
 /**
@@ -256,14 +267,27 @@ ArrangingLayout.prototype.prepareSideLayout = function(sideLayout, sideColl, mai
  */
 ArrangingLayout.prototype.moveSideCollection = function(sidecoll, mainbounds, sidebounds) {
   var diagram = this.diagram;
-  if (this.side.includesSide(go.Spot.BottomSide)) {
-    diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.x, mainbounds.y + mainbounds.height + this.spacing.height - sidebounds.y), false);
+  if (!diagram) return;
+  var pos = null;
+  if (this.side.equals(go.Spot.Bottom)) {
+    pos = new go.Point(mainbounds.centerX - sidebounds.width/2, mainbounds.y + mainbounds.height + this.spacing.height);
+  } else if (this.side.equals(go.Spot.Right)) {
+    pos = new go.Point(mainbounds.x + mainbounds.width + this.spacing.width, mainbounds.centerY - sidebounds.height/2);
+  } else if (this.side.equals(go.Spot.Top)) {
+    pos = new go.Point(mainbounds.centerX - sidebounds.width/2, mainbounds.y - sidebounds.height - this.spacing.height);
+  } else if (this.side.equals(go.Spot.Left)) {
+    pos = new go.Point(mainbounds.x - sidebounds.width - this.spacing.width, mainbounds.centerY - sidebounds.height/2);
+  } else if (this.side.includesSide(go.Spot.BottomSide)) {
+    pos = new go.Point(mainbounds.x, mainbounds.y + mainbounds.height + this.spacing.height);
   } else if (this.side.includesSide(go.Spot.RightSide)) {
-    diagram.moveParts(sidecoll, new go.Point(mainbounds.x + mainbounds.width + this.spacing.width - sidebounds.x, mainbounds.y - sidebounds.y), false);
+    pos = new go.Point(mainbounds.x + mainbounds.width + this.spacing.width, mainbounds.y);
   } else if (this.side.includesSide(go.Spot.TopSide)) {
-    diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.x, mainbounds.y - sidebounds.height - this.spacing.height - sidebounds.y), false);
+    pos = new go.Point(mainbounds.x, mainbounds.y - sidebounds.height - this.spacing.height);
   } else if (this.side.includesSide(go.Spot.LeftSide)) {
-    diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.width - this.spacing.width - sidebounds.x, mainbounds.y - sidebounds.y), false);
+    pos = new go.Point(mainbounds.x - sidebounds.width - this.spacing.width, mainbounds.y);
+  }
+  if (pos !== null) {
+    diagram.moveParts(sidecoll, pos.subtract(sidebounds.position));
   }
 }
 
@@ -276,7 +300,6 @@ ArrangingLayout.prototype.moveSideCollection = function(sidecoll, mainbounds, si
 * The default value is a function that is true when there are any links connecting with the node.
 * Such default behavior will have the sideLayout position all of the singleton nodes.
 * @name ArrangingLayout#side
-
 * @return {function}
 */
 Object.defineProperty(ArrangingLayout.prototype, "filter", {
@@ -294,16 +317,20 @@ Object.defineProperty(ArrangingLayout.prototype, "filter", {
 * Gets or sets the side {@link Spot} where the side nodes and links should be laid out,
 * relative to the results of the main Layout.
 * The default value is Spot.BottomSide.
-* Currently only handles a single side.
+*
+* If the value is Spot.Bottom, Spot.Top, Spot.Right, or Spot.Left,
+* the side nodes will be centered along that side.
+*
+* This currently handles only a single side.
 * @name ArrangingLayout#side
-
 * @return {Spot}
 */
 Object.defineProperty(ArrangingLayout.prototype, "side", {
   get: function() { return this._side; },
   set: function(val) {
-    if (!(val instanceof go.Spot) || !val.isSide()) {
-      throw new Error("new value for ArrangingLayout.side must be a side Spot, not: " + val);
+    if (!(val instanceof go.Spot) ||
+        !(val.isSide() || val.equals(go.Spot.Top) || val.equals(go.Spot.Right) || val.equals(go.Spot.Bottom) || val.equals(go.Spot.Left))) {
+      throw new Error("new value for ArrangingLayout.side must be a side or middle-side Spot, not: " + val);
     }
     if (!this._side.equals(val)) {
       this._side = val.copy();
@@ -316,7 +343,6 @@ Object.defineProperty(ArrangingLayout.prototype, "side", {
 * Gets or sets the space between the main layout and the side layout.
 * The default value is Size(20, 20).
 * @name ArrangingLayout#spacing
-
 * @return {Size}
 */
 Object.defineProperty(ArrangingLayout.prototype, "spacing", {
@@ -335,7 +361,6 @@ Object.defineProperty(ArrangingLayout.prototype, "spacing", {
 * The default value is an instance of GridLayout.
 * Any new value must not be null.
 * @name ArrangingLayout#primaryLayout
-
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "primaryLayout", {
@@ -353,7 +378,6 @@ Object.defineProperty(ArrangingLayout.prototype, "primaryLayout", {
 * Set this property to null in order to get the default behavior of the @{link #primaryLayout}
 * when dealing with multiple connected graphs as a whole.
 * @name ArrangingLayout#arrangingLayout
-
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
@@ -370,7 +394,6 @@ Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
 * The default value is an instance of GridLayout.
 * Any new value must not be null.
 * @name ArrangingLayout#sideLayout
-
 * @return {Layout}
 */
 Object.defineProperty(ArrangingLayout.prototype, "sideLayout", {

@@ -26,11 +26,12 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         var myDiagram = $(go.Diagram, 'myDiagramDiv', {
-            'PartResized': function (e) {
-                var node = e.subject;
-                var scroller = node.findObject('SCROLLER');
-                if (scroller !== null)
-                    scroller._updateScrollBar(scroller.findObject('TABLE'));
+            "LayoutCompleted": function (e) {
+                e.diagram.nodes.each(function (n) {
+                    var table = n.findObject("TABLE");
+                    if (table !== null && table.panel._updateScrollBar)
+                        table.panel._updateScrollBar(table);
+                });
             }
         });
         // support mouse wheel scrolling of table when the mouse is in the table

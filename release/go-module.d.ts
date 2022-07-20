@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.12
+ * Type definitions for GoJS v2.2.13
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16726,20 +16726,22 @@ export class Brush {
  * though this is not common and not recommended for beginners.
  *
  * By default, GoJS has 12 Panel types, each corresponding to a PanelLayout subclass:
- *   - `'Position', PanelLayoutPosition`
- *   - `'Horizontal', PanelLayoutHorizontal`
- *   - `'Vertical', PanelLayoutVertical`
- *   - `'Spot', PanelLayoutSpot`
- *   - `'Auto', PanelLayoutAuto`
- *   - `'Table', PanelLayoutTable`
- *   - `'Viewbox', PanelLayoutViewbox`
- *   - `'TableRow', PanelLayoutTableRow`
- *   - `'TableColumn', PanelLayoutTableColumn`
- *   - `'Link', PanelLayoutLink`
- *   - `'Grid', PanelLayoutGrid`
- *   - `'Graduated', PanelLayoutGraduated`
+ *   - 'Position', `PanelLayoutPosition`
+ *   - 'Horizontal', `PanelLayoutHorizontal`
+ *   - 'Vertical', `PanelLayoutVertical`
+ *   - 'Spot', `PanelLayoutSpot`
+ *   - 'Auto', `PanelLayoutAuto`
+ *   - 'Table', `PanelLayoutTable`
+ *   - 'Viewbox', `PanelLayoutViewbox`
+ *   - 'TableRow', `PanelLayoutTableRow`
+ *   - 'TableColumn', `PanelLayoutTableColumn`
+ *   - 'Link', `PanelLayoutLink`
+ *   - 'Grid', `PanelLayoutGrid`
+ *   - 'Graduated', `PanelLayoutGraduated`
  *
- * These are included by default in builds of `go.js` and `go-debug.js`.
+ * None of these predefined panel layout classes have their own documentation pages.
+ *
+ * These panel layouts are included by default in builds of `go.js` and `go-module.js` and their respective debug versions.
  * When building from source, you can optionally exclude all of them except `Position`,
  * `Vertical`, `Auto`, `Link`, and `Grid`.
  * This is demonstrated in `minimalSource` and `maximalSource`, in the `/projects` folder.
@@ -16755,6 +16757,8 @@ export class Brush {
  * which sets each element's GraphObject#measuredBounds. These bounds can be used to determine object layout.
  * The arrange method must call #arrangeElement with each element of the Panel to position the objects relative to the Panel.
  * Remember that each Panel defines its own coordinate system, which is used for sizing and positioning of the panel's elements.
+ *
+ * An instance of a PanelLayout is shared by all copies of a Panel that uses it.
  *
  * There is an example PanelLayout in the <a href="../../samples/panelLayout.html">PanelLayout sample</a>.
  * There is a Flow PanelLayout extension at #PanelLayoutFlow, demonstrated at
@@ -18189,7 +18193,7 @@ export class RowColumnDefinition {
     set position(value: number);
     /**
      * Add a data-binding to this RowColumnDefinition for the given property names and optional conversion function.
-     * You can pass in the argumetns to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
+     * You can pass in the arguments to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
      *
      * @param {string=} targetprop A string naming the target property on the target object.
      *   This should not be the empty string.
@@ -18208,7 +18212,7 @@ export class RowColumnDefinition {
     bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
     /**
      * Add a data-binding of a property on this RowColumnDefinition to a property on a data object.
-     * You can pass in the argumetns to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
+     * You can pass in the arguments to a new Binding: `.bind(a, b)` instead of calling `.bind(new go.Binding(a, b)`.
      *
      * Read more about Bindings at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
      * @param {Binding} binding

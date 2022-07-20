@@ -12,7 +12,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.doubleClickLambda = exports.clickLambda = exports.deleteSelection = exports.clickContextMenu = exports.dragSelectNodes = exports.copyNode = exports.dragFromPalette = exports.init = void 0;
+    exports.pan = exports.doubleClickLambda = exports.clickLambda = exports.deleteSelection = exports.clickContextMenu = exports.dragSelectNodes = exports.copyNode = exports.dragFromPalette = exports.init = void 0;
     /*
     * This is an extension and not part of the main GoJS library.
     * Note that the API for this class may change with any version, even point releases.
@@ -22,7 +22,7 @@
     */
     var go = require("../release/go.js");
     var Robot_js_1 = require("./Robot.js");
-    var robot; // this global variable will hold an instance of the Robot class for myDiagram
+    var myRobot; // this global variable will hold an instance of the Robot class for myDiagram
     var myDiagram;
     var myPalette;
     function init() {
@@ -70,7 +70,7 @@
                 'undoManager.isEnabled': true
             });
         // a shared Robot that can be used by all commands for this one Diagram
-        robot = new Robot_js_1.Robot(myDiagram); // defined in Robot.js
+        myRobot = new Robot_js_1.Robot(myDiagram); // defined in Robot.js
         // initialize the Palette that is on the left side of the page
         myPalette =
             $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
@@ -88,9 +88,9 @@
     function dragFromPalette() {
         // simulate a drag-and-drop between Diagrams:
         var dragdrop = { sourceDiagram: myPalette, targetDiagram: myDiagram };
-        robot.mouseDown(5, 5, 0, dragdrop); // this should be where the Alpha node is in the source myPalette
-        robot.mouseMove(60, 60, 100, dragdrop);
-        robot.mouseUp(100, 100, 200, dragdrop); // this is where the node will be dropped in the target myDiagram
+        myRobot.mouseDown(5, 5, 0, dragdrop); // this should be where the Alpha node is in the source myPalette
+        myRobot.mouseMove(60, 60, 100, dragdrop);
+        myRobot.mouseUp(100, 100, 200, dragdrop); // this is where the node will be dropped in the target myDiagram
         // If successful in dragging a node from the Palette into the Diagram,
         // the DraggingTool will perform a transaction.
     }
@@ -102,10 +102,10 @@
         var loc = alpha.actualBounds.center;
         var options = { control: true, alt: true };
         // Simulate a mouse drag to move the Alpha node:
-        robot.mouseDown(loc.x, loc.y, 0, options);
-        robot.mouseMove(loc.x + 80, loc.y + 50, 50, options);
-        robot.mouseMove(loc.x + 20, loc.y + 100, 100, options);
-        robot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
+        myRobot.mouseDown(loc.x, loc.y, 0, options);
+        myRobot.mouseMove(loc.x + 80, loc.y + 50, 50, options);
+        myRobot.mouseMove(loc.x + 20, loc.y + 100, 100, options);
+        myRobot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
         // If successful, will have made a copy of the "Alpha" node below it.
         // Alternatively you could copy the Node using commands:
         // myDiagram.commandHandler.copySelection();
@@ -127,10 +127,10 @@
         // Simulate dragging in the background around the two Alpha nodes.
         // This uses timestamps to pretend to wait a while to avoid activating the PanningTool.
         // Hopefully this mouse down does not hit any Part, but in the Diagram's background:
-        robot.mouseDown(area.x, area.y, 0);
+        myRobot.mouseDown(area.x, area.y, 0);
         // NOTE that this mouseMove timestamp needs to be > myDiagram.toolManager.dragSelectingTool.delay:
-        robot.mouseMove(area.centerX, area.centerY, 200);
-        robot.mouseUp(area.right, area.bottom, 250);
+        myRobot.mouseMove(area.centerX, area.centerY, 200);
+        myRobot.mouseUp(area.right, area.bottom, 250);
         // Now should have selected both "Alpha" and "Alpha2" using the DragSelectingTool.
         // Alternatively you could select the Nodes programmatically:
         // alpha.isSelected = true;
@@ -143,23 +143,23 @@
             return;
         var loc = alpha.location;
         // right click on Alpha
-        robot.mouseDown(loc.x + 10, loc.y + 10, 0, { right: true });
-        robot.mouseUp(loc.x + 10, loc.y + 10, 100, { right: true });
+        myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, { right: true });
+        myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, { right: true });
         // Alternatively you could invoke the Show Context Menu command directly:
         // myDiagram.commandHandler.showContextMenu(alpha);
         // move mouse over first context menu button
-        robot.mouseMove(loc.x + 20, loc.y + 20, 200);
+        myRobot.mouseMove(loc.x + 20, loc.y + 20, 200);
         // and click that button
-        robot.mouseDown(loc.x + 20, loc.y + 20, 300);
-        robot.mouseUp(loc.x + 20, loc.y + 20, 350);
+        myRobot.mouseDown(loc.x + 20, loc.y + 20, 300);
+        myRobot.mouseUp(loc.x + 20, loc.y + 20, 350);
         // This should have invoked the ContextMenuButton's click function, showProperties,
         // which should have put a green message in the myStatus DIV.
     }
     exports.clickContextMenu = clickContextMenu;
     function deleteSelection() {
         // Simulate clicking the "Del" key:
-        robot.keyDown('Del');
-        robot.keyUp('Del');
+        myRobot.keyDown('Del');
+        myRobot.keyUp('Del');
         // Now the selected Nodes are deleted.
         // Alternatively you could invoke the Delete command directly:
         // myDiagram.commandHandler.deleteSelection();
@@ -171,8 +171,8 @@
             return;
         var loc = lambda.location;
         // click on Lambda
-        robot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
-        robot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
+        myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
+        myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
         // Clicking is just a sequence of input events.
         // There is no command in CommandHandler for such a basic gesture.
     }
@@ -183,10 +183,27 @@
             return;
         var loc = lambda.location;
         // double-click on Lambda
-        robot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
-        robot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
-        robot.mouseDown(loc.x + 10, loc.y + 10, 200, { clickCount: 2 });
-        robot.mouseUp(loc.x + 10, loc.y + 10, 300, { clickCount: 2 });
+        myRobot.mouseDown(loc.x + 10, loc.y + 10, 0, {});
+        myRobot.mouseUp(loc.x + 10, loc.y + 10, 100, {});
+        myRobot.mouseDown(loc.x + 10, loc.y + 10, 200, { clickCount: 2 });
+        myRobot.mouseUp(loc.x + 10, loc.y + 10, 300, { clickCount: 2 });
     }
     exports.doubleClickLambda = doubleClickLambda;
+    function pan() {
+        var pos1 = myDiagram.position.copy();
+        var pt = new go.Point(myDiagram.viewportBounds.x + 30, myDiagram.viewportBounds.centerY);
+        myRobot.mouseDown(pt.x, pt.y, 0, {});
+        // Minimal wait after mouseDown when moving, else the PanningTool will be pre-empted
+        // by the DragSelectingTool, which is controlled by the DragSelectingTool.delay property.
+        // Remember that these are document coordinates, which are shifted by the panning motion.
+        myRobot.mouseMove(pt.x + 20, pt.y + 10, 10, {});
+        myRobot.mouseMove(pt.x + 20, pt.y + 10, 30, {});
+        myRobot.mouseMove(pt.x + 20, pt.y + 10, 50, {});
+        myRobot.mouseUp(pt.x + 20, pt.y + 10, 70, {});
+        var pos2 = myDiagram.position.copy();
+        document.getElementById("myStatus").textContent =
+            "Document.position before: " + pos1.toString() + " " +
+                "Document.position after: " + pos2.toString();
+    }
+    exports.pan = pan;
 });

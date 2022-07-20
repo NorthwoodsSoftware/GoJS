@@ -59,10 +59,11 @@ function init() {
   myDiagram =
     $(go.Diagram, "myDiagramDiv",
       {
-        "PartResized": function(e) {
-          var node = e.subject;
-          var scroller = node.findObject("SCROLLER");
-          if (scroller !== null) scroller._updateScrollBar(scroller.findObject("TABLE"));
+        "LayoutCompleted": function(e) {
+          e.diagram.nodes.each(n => {
+            var table = n.findObject("TABLE");
+            if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
+          });
         }
       });
 
@@ -185,7 +186,7 @@ window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>
   <p>
     This makes use of the "ScrollingTable" Panel defined in <a href="ScrollingTable.js">ScrollingTable.js</a>.
     The "AutoRepeatButton" Panel is also defined in that file.

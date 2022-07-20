@@ -38,10 +38,10 @@ var __extends = (this && this.__extends) || (function () {
     var go = require("../release/go.js");
     /**
     * A custom Layout that provides one way to have a layout of layouts.
-    * It partitions nodes and links into separate subgraphs, applies a primary
-    * layout to each subgraph, and then arranges those results by an
+    * It partitions nodes and links into separate subnetworks, applies a primary
+    * layout to each subnetwork, and then arranges those results by an
     * arranging layout.  Any disconnected nodes are laid out later by a
-    * side layout, by default in a grid underneath the main body of subgraphs.
+    * side layout, by default in a grid underneath the main body of subnetworks.
     *
     * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Arranging.html">Arranging Layout</a> sample.
     *
@@ -67,17 +67,20 @@ var __extends = (this && this.__extends) || (function () {
     *
     * But if there are disconnected subnetworks, the {@link #primaryLayout} is applied to each subnetwork,
     * and then all of those results are arranged by the {@link #arrangingLayout}.
+    * If you don't want to use an {@link #arrangingLayout} and you want to force the {@link #primaryLayout} to
+    * operate on all of the subnetworks, set {@link #arrangingLayout} to null.
     *
     * In either case if there are any nodes in the side graph, those are arranged by the {@link #sideLayout}
     * to be on the side of the arrangement of the main graph of nodes and links.
+    * The {@link #side} property controls which side they will be placed -- the default is BottomSide.
     *
     * Note: if you do not want to have singleton nodes be arranged by {@link #sideLayout},
     * set {@link #filter} to <code>function(part) { return true; }</code>.
     * That will cause all singleton nodes to be arranged by {@link #arrangingLayout} as if they
-    * were each their own subgraph.
+    * were each their own subnetwork.
     *
     * If you both don't want to use {@link #sideLayout} and you don't want to use {@link #arrangingLayout}
-    * to lay out connected subgraphs, don't use this ArrangingLayout at all --
+    * to lay out connected subnetworks, don't use this ArrangingLayout at all --
     * just use whatever Layout you would have assigned to {@link #primaryLayout}.
     *
     * @category Layout Extension
@@ -87,8 +90,6 @@ var __extends = (this && this.__extends) || (function () {
         function ArrangingLayout() {
             var _this = _super.call(this) || this;
             _this._filter = null;
-            _this._side = go.Spot.BottomSide;
-            _this._spacing = new go.Size(20, 20);
             var play = new go.GridLayout();
             play.cellSize = new go.Size(1, 1);
             _this._primaryLayout = play;
@@ -98,6 +99,8 @@ var __extends = (this && this.__extends) || (function () {
             var slay = new go.GridLayout();
             slay.cellSize = new go.Size(1, 1);
             _this._sideLayout = slay;
+            _this._side = go.Spot.BottomSide;
+            _this._spacing = new go.Size(20, 20);
             return _this;
         }
         /**
@@ -123,9 +126,13 @@ var __extends = (this && this.__extends) || (function () {
         */
         ArrangingLayout.prototype.doLayout = function (coll) {
             var coll2 = this.collectParts(coll);
+            if (coll2.count === 0)
+                return;
             var diagram = this.diagram;
             if (diagram === null)
-                throw new Error("No Diagram for this Layout");
+                diagram = coll2.first().diagram;
+            if (diagram === null)
+                return;
             // implementations of doLayout that do not make use of a LayoutNetwork
             // need to perform their own transactions
             diagram.startTransaction("Arranging Layout");
@@ -135,6 +142,7 @@ var __extends = (this && this.__extends) || (function () {
             var mainnet = null;
             var subnets = null;
             if (this.arrangingLayout !== null) {
+                this.arrangingLayout.diagram = diagram;
                 mainnet = this.makeNetwork(maincoll);
                 subnets = mainnet.splitIntoSubNetworks();
             }
@@ -145,6 +153,7 @@ var __extends = (this && this.__extends) || (function () {
                 while (it.next()) {
                     var net = it.value;
                     var subcoll = net.findAllParts();
+                    this.primaryLayout.diagram = diagram;
                     this.preparePrimaryLayout(this.primaryLayout, subcoll);
                     this.primaryLayout.doLayout(subcoll);
                     this._addMainNode(groups, subcoll, diagram);
@@ -155,6 +164,7 @@ var __extends = (this && this.__extends) || (function () {
                     if (v.node) {
                         var subcoll = new go.Set();
                         subcoll.add(v.node);
+                        this.primaryLayout.diagram = diagram;
                         this.preparePrimaryLayout(this.primaryLayout, subcoll);
                         this.primaryLayout.doLayout(subcoll);
                         this._addMainNode(groups, subcoll, diagram);
@@ -170,6 +180,7 @@ var __extends = (this && this.__extends) || (function () {
                 bounds = diagram.computePartsBounds(groups.toKeySet()); // not maincoll due to links without real bounds
             }
             else { // no this.arrangingLayout
+                this.primaryLayout.diagram = diagram;
                 this.preparePrimaryLayout(this.primaryLayout, maincoll);
                 this.primaryLayout.doLayout(maincoll);
                 bounds = diagram.computePartsBounds(maincoll);
@@ -261,7 +272,7 @@ var __extends = (this && this.__extends) || (function () {
         };
         /**
          * Move a Set of Nodes and Links to the given area.
-         * @param {Set} subColl the Set of Nodes and Links that form a separate connected subgraph
+         * @param {Set} subColl the Set of Nodes and Links that form a separate connected subnetwork
          * @param {Rect} subbounds the area occupied by the subColl
          * @param {Rect} bounds the area where they should be moved according to the arrangingLayout
          */
@@ -269,7 +280,7 @@ var __extends = (this && this.__extends) || (function () {
             var diagram = this.diagram;
             if (!diagram)
                 return;
-            diagram.moveParts(subColl, bounds.position.subtract(subbounds.position), false);
+            diagram.moveParts(subColl, bounds.position.subtract(subbounds.position));
         };
         /**
          * This method is called just after the main layouts (the primaryLayouts and arrangingLayout)
@@ -296,17 +307,33 @@ var __extends = (this && this.__extends) || (function () {
             var diagram = this.diagram;
             if (!diagram)
                 return;
-            if (this.side.includesSide(go.Spot.BottomSide)) {
-                diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.x, mainbounds.y + mainbounds.height + this.spacing.height - sidebounds.y), false);
+            var pos = null;
+            if (this.side.equals(go.Spot.Bottom)) {
+                pos = new go.Point(mainbounds.centerX - sidebounds.width / 2, mainbounds.y + mainbounds.height + this.spacing.height);
+            }
+            else if (this.side.equals(go.Spot.Right)) {
+                pos = new go.Point(mainbounds.x + mainbounds.width + this.spacing.width, mainbounds.centerY - sidebounds.height / 2);
+            }
+            else if (this.side.equals(go.Spot.Top)) {
+                pos = new go.Point(mainbounds.centerX - sidebounds.width / 2, mainbounds.y - sidebounds.height - this.spacing.height);
+            }
+            else if (this.side.equals(go.Spot.Left)) {
+                pos = new go.Point(mainbounds.x - sidebounds.width - this.spacing.width, mainbounds.centerY - sidebounds.height / 2);
+            }
+            else if (this.side.includesSide(go.Spot.BottomSide)) {
+                pos = new go.Point(mainbounds.x, mainbounds.y + mainbounds.height + this.spacing.height);
             }
             else if (this.side.includesSide(go.Spot.RightSide)) {
-                diagram.moveParts(sidecoll, new go.Point(mainbounds.x + mainbounds.width + this.spacing.width - sidebounds.x, mainbounds.y - sidebounds.y), false);
+                pos = new go.Point(mainbounds.x + mainbounds.width + this.spacing.width, mainbounds.y);
             }
             else if (this.side.includesSide(go.Spot.TopSide)) {
-                diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.x, mainbounds.y - sidebounds.height - this.spacing.height - sidebounds.y), false);
+                pos = new go.Point(mainbounds.x, mainbounds.y - sidebounds.height - this.spacing.height);
             }
             else if (this.side.includesSide(go.Spot.LeftSide)) {
-                diagram.moveParts(sidecoll, new go.Point(mainbounds.x - sidebounds.width - this.spacing.width - sidebounds.x, mainbounds.y - sidebounds.y), false);
+                pos = new go.Point(mainbounds.x - sidebounds.width - this.spacing.width, mainbounds.y);
+            }
+            if (pos !== null) {
+                diagram.moveParts(sidecoll, pos.subtract(sidebounds.position));
             }
         };
         Object.defineProperty(ArrangingLayout.prototype, "filter", {
@@ -335,14 +362,19 @@ var __extends = (this && this.__extends) || (function () {
             * Gets or sets the side {@link Spot} where the side nodes and links should be laid out,
             * relative to the results of the main Layout.
             * The default value is Spot.BottomSide.
+            *
+            * If the value is Spot.Bottom, Spot.Top, Spot.Right, or Spot.Left,
+            * the side nodes will be centered along that side.
+            *
             * Currently only handles a single side.
             * @name ArrangingLayout#side
             * @return {Spot}
             */
             get: function () { return this._side; },
             set: function (val) {
-                if (!(val instanceof go.Spot) || !val.isSide()) {
-                    throw new Error("new value for ArrangingLayout.side must be a side Spot, not: " + val);
+                if (!(val instanceof go.Spot) ||
+                    !(val.isSide() || val.equals(go.Spot.Top) || val.equals(go.Spot.Right) || val.equals(go.Spot.Bottom) || val.equals(go.Spot.Left))) {
+                    throw new Error("new value for ArrangingLayout.side must be a side or middle-side Spot, not: " + val);
                 }
                 if (!this._side.equals(val)) {
                     this._side = val.copy();
@@ -389,10 +421,10 @@ var __extends = (this && this.__extends) || (function () {
         });
         Object.defineProperty(ArrangingLayout.prototype, "arrangingLayout", {
             /**
-            * Gets or sets the Layout used to arrange multiple separate connected subgraphs of the main graph.
+            * Gets or sets the Layout used to arrange multiple separate connected subnetworks of the main graph.
             * The default value is an instance of GridLayout.
-            * Set this property to null in order to get the default behavior of the @{link #primaryLayout}
-            * when dealing with multiple connected graphs as a whole.
+            * Set this property to null in order to get the @{link #primaryLayout} to operate on all
+            * connected graphs as a whole.
             */
             get: function () { return this._arrangingLayout; },
             set: function (val) {

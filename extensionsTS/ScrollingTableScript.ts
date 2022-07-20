@@ -20,10 +20,11 @@ export function init() {
   const myDiagram =
     $(go.Diagram, 'myDiagramDiv',
       {
-        'PartResized': function(e: go.DiagramEvent) {
-          const node = e.subject;
-          const scroller = node.findObject('SCROLLER');
-          if (scroller !== null) scroller._updateScrollBar(scroller.findObject('TABLE'));
+        "LayoutCompleted": e => {
+          e.diagram.nodes.each(n => {
+            const table = n.findObject("TABLE");
+            if (table !== null && (table.panel as any)._updateScrollBar) (table.panel as any)._updateScrollBar(table);
+          });
         }
       });
 

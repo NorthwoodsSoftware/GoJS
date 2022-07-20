@@ -96,6 +96,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
           if (u && obj instanceof go.TextBlock) obj.isUnderline = true;
         },
         mouseLeave: (e: go.InputEvent, obj: go.GraphObject) => { if (obj instanceof go.TextBlock) obj.isUnderline = false; },
+        isActionable: true,
         click: click,  // defined above
         toolTip: tooltip // shared by all HyperlinkText textblocks
       }
@@ -134,6 +135,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
           const tb = findTextBlock(panel);
           if (tb !== null) tb.isUnderline = false;
         },
+        isActionable: true,
         click: click,  // defined above
         toolTip: tooltip  // shared by all HyperlinkText panels
       }
