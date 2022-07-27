@@ -155,8 +155,8 @@ function init() {
     $(go.Node, "Spot",
       {
         selectionObjectName: "BODY",
-        mouseEnter: (e, node) => node.findObject("BUTTON").opacity = 1,
-        mouseLeave: (e, node) => node.findObject("BUTTON").opacity = 0,
+        mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
+        mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
         // handle dragging a Node onto a Node to (maybe) change the reporting relationship
         mouseDragEnter: (e, node, prev) => {
           const diagram = node.diagram;
@@ -221,7 +221,7 @@ function init() {
                 row: 0, column: 0, columnSpan: 5,
                 font: "12pt Segoe UI,sans-serif",
                 editable: true, isMultiline: false,
-                minSize: new go.Size(10, 16)
+                minSize: new go.Size(50, 16)
               },
               new go.Binding("text", "name").makeTwoWay()),
             $(go.TextBlock, "Title: ", textStyle(),
@@ -230,7 +230,7 @@ function init() {
               {
                 row: 1, column: 1, columnSpan: 4,
                 editable: true, isMultiline: false,
-                minSize: new go.Size(10, 14),
+                minSize: new go.Size(50, 14),
                 margin: new go.Margin(0, 0, 0, 3)
               },
               new go.Binding("text", "title").makeTwoWay()),
@@ -243,7 +243,7 @@ function init() {
                 font: "italic 9pt sans-serif",
                 wrap: go.TextBlock.WrapFit,
                 editable: true,  // by default newlines are allowed
-                minSize: new go.Size(10, 14)
+                minSize: new go.Size(100, 14)
               },
               new go.Binding("text", "comments").makeTwoWay())
           ) // end Table Panel
@@ -252,9 +252,18 @@ function init() {
       $("Button",
         $(go.Shape, "PlusLine", { width: 10, height: 10 }),
         {
-          row: 3, columnSpan: 2, alignment: go.Spot.Bottom,
-          name: "BUTTON", opacity: 0,  // initially not visible
+          name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
           click: (e, button) => addEmployee(button.part)
+        },
+        // button is visible either when node is selected or on mouse-over
+        new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+      ),
+      new go.Binding("isTreeExpanded").makeTwoWay(),
+      $("TreeExpanderButton",
+        {
+          name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
+          "_treeExpandedFigure": "TriangleUp",
+          "_treeCollapsedFigure": "TriangleDown"
         },
         // button is visible either when node is selected or on mouse-over
         new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
@@ -265,7 +274,7 @@ function init() {
     if (!node) return;
     const thisemp = node.data;
     myDiagram.startTransaction("add employee");
-    const newemp = { name: "(new person)", title: "", comments: "", parent: thisemp.key };
+    const newemp = { name: "(new person)", title: "(title)", comments: "", parent: thisemp.key };
     myDiagram.model.addNodeData(newemp);
     const newnode = myDiagram.findNodeForData(newemp);
     if (newnode) newnode.location = node.location;
