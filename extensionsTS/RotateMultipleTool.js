@@ -79,6 +79,8 @@ var __extends = (this && this.__extends) || (function () {
                 tool.walkTree(part, infos);
             });
             this._initialInfo = infos;
+            // forget the rotationPoint since we use _centerPoint instead
+            this.rotationPoint = new go.Point(NaN, NaN);
         };
         /**
          * @hidden @internal

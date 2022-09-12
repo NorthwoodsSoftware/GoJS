@@ -69,7 +69,7 @@
     This is in place of changing the <a>Diagram.scale</a>.
   </p>
   <p>
-    The current model in JSON format:
+    The current model in JSON format, automatically updated as the diagram is modified:
   </p>
   <textarea id="mySavedModel" style="width:100%;height:250px"></textarea>
 </div>
@@ -143,9 +143,9 @@ class GanttLayout extends go.Layout {
 // end of GanttLayout
 
 
-var GridCellHeight = 20; // document units
-var GridCellWidth = 12;  // document units per day
-var TimelineHeight = 24; // document units
+var GridCellHeight = 20; // document units; cannot be changed dynamically
+var GridCellWidth = 12;  // document units per day; this can be modified -- see rescale()
+var TimelineHeight = 24; // document units; cannot be changed dynamically
 
 const MsPerDay = 24 * 60 * 60 * 1000;
 
@@ -170,6 +170,7 @@ function convertXToStart(x, node) {
   return convertDaysToUnits(x / GridCellWidth);
 }
 
+// these four functions are used in TwoWay Bindings on the task/node template
 function convertDurationToW(duration) {
   return convertUnitsToDays(duration) * GridCellWidth;
 }
@@ -188,10 +189,10 @@ function convertPositionToStart(pos) {
 
 var StartDate = new Date();  // set from Model.modelData.origin
 
-function valueToText(n) {  // N is in days since StartDate
+function valueToText(n) {  // N document units after StartDate
   const startDate = StartDate;
   const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
-  const date = new Date(startDateMs + n * MsPerDay / GridCellWidth);
+  const date = new Date(startDateMs + (n / GridCellWidth) * MsPerDay);
   return date.toLocaleDateString();
 }
 
@@ -200,7 +201,7 @@ function dateToValue(d) {  // D is a Date
   const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
   const dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
   const msSinceStart = dateInMs - startDateMs;
-  return msSinceStart / MsPerDay * GridCellWidth;
+  return (msSinceStart / MsPerDay) * GridCellWidth;
 }
 
 
@@ -249,12 +250,13 @@ function standardContextMenus() {
   };
 }
 
-// the left side of the whole diagram
+// the tree on the left side of the page
 const myTasks =
   new go.Diagram("myTasksDiv",
     {
       initialContentAlignment: go.Spot.Right,
-      padding: new go.Margin(TimelineHeight, 0, 0, 0),
+      // make room on top for myTimeline and a bit of spacing; on bottom for whole task row and a bit more
+      padding: new go.Margin(TimelineHeight+4, 0, GridCellHeight, 0),  // needs to be the same vertically as for myGantt
       hasVerticalScrollbar: false,
       allowMove: false,
       allowCopy: false,
@@ -272,6 +274,7 @@ const myTasks =
             childPortSpot: go.Spot.Left,
             arrangementSpacing: new go.Size(0, 0)
           }),
+      mouseLeave: (e, node) => myHighlightTask.visible = false,
       "animationManager.isInitial": false,
       "TreeCollapsed": e => myGantt.layoutDiagram(true),
       "TreeExpanded": e => myGantt.layoutDiagram(true),
@@ -279,7 +282,21 @@ const myTasks =
 
 myTasks.nodeTemplate =
   $(go.Node, "Horizontal",
-    { height: 20 },
+    {
+      selectionAdorned: false,
+      height: GridCellHeight,
+      mouseEnter: (e, node) => {
+        node.background = "rgba(0,0,255,0.2)";
+        myHighlightTask.position = new go.Point(myGrid.actualBounds.x, node.actualBounds.y);
+        myHighlightTask.width = myGrid.actualBounds.width;
+        myHighlightTask.visible = true;
+      },
+      mouseLeave: (e, node) => {
+        node.background = node.isSelected ? "dodgerblue" : "transparent";
+        myHighlightTask.visible = false;
+      }
+    },
+    new go.Binding("background", "isSelected", s => s ? "dodgerblue" : "transparent").ofObject(),
     new go.Binding("isTreeExpanded").makeTwoWay(),
     $("TreeExpanderButton", { portId: "", scale: 0.85 }),
     $(go.TextBlock,
@@ -304,13 +321,14 @@ myTasks.linkTemplateMap.add("Dep",
   ));
 
 
-// the right side of the whole diagram
+// the right side of the page, holding both the timeline and all of the task bars
 myGantt =
   new go.Diagram("myGanttDiv",
     {
-      initialPosition: new go.Point(-7, -100),  // show labels
-      padding: new go.Margin(TimelineHeight, 0, 0, 0),
-      scrollMargin: new go.Margin(0, GridCellWidth*7, 0, 0),  // show a week beyond
+      initialPosition: new go.Point(-10, -100),  // show labels
+      // make room on top for myTimeline and a bit of spacing; on bottom for whole task row and a bit more
+      padding: new go.Margin(TimelineHeight+4, GridCellWidth*7, GridCellHeight, 0),  // needs to be the same vertically as for myTasks
+      scrollMargin: new go.Margin(0, GridCellWidth*7, 0, 0),  // and allow scrolling to a week beyond that
       allowCopy: false,
       "commandHandler.deletesTree": true,
       "draggingTool.isGridSnapEnabled": true,
@@ -320,26 +338,83 @@ myGantt =
       "resizingTool.cellSize": new go.Size(GridCellWidth, GridCellHeight),
       "resizingTool.minSize": new go.Size(GridCellWidth, GridCellHeight),
       layout: $(GanttLayout),
+      mouseOver: e => {
+        if (!myGrid || !myHighlightDay) return;
+        const lp = myGrid.getLocalPoint(e.documentPoint);
+        const day = Math.floor(convertXToStart(lp.x));  // floor gets start of day
+        myHighlightDay.position = new go.Point(convertStartToX(day), myGrid.position.y);
+        myHighlightDay.width = GridCellWidth;  // 1 day
+        myHighlightDay.height = myGrid.actualBounds.height;
+        myHighlightDay.visible = true;
+      },
+      mouseLeave: e => myHighlightDay.visible = false,
       "animationManager.isInitial": false,
       "SelectionMoved": e => e.diagram.layoutDiagram(true),
       "DocumentBoundsChanged": e => {
         // the grid extends to only the area needed
         const b = e.diagram.documentBounds;
-        const gridpart = e.diagram.parts.first();
-        if (gridpart !== null && gridpart.type === go.Panel.Grid) {
-          gridpart.desiredSize = new go.Size(b.right - gridpart.position.x, b.bottom);
-        }
-        // the timeline only covers the needed area
-        myTimeline.findObject("MAIN").width = b.right;
-        myTimeline.findObject("TICKS").height = e.diagram.viewportBounds.height;
-        myTimeline.graduatedMax = b.right;
+        myGrid.desiredSize = new go.Size(b.width + GridCellWidth*7, b.bottom);
+        // the timeline, which is not in the documentBounds, only covers the needed area
+        // widen to cover whole weeks
+        myTimeline.graduatedMax = Math.ceil(b.width / (GridCellWidth*7)) * (GridCellWidth*7);
+        myTimeline.findObject("MAIN").width = myTimeline.graduatedMax;
+        myTimeline.findObject("TICKS").height = Math.max(e.diagram.documentBounds.height, e.diagram.viewportBounds.height);
       }
     });
 
-myGantt.add($(go.Part, "Grid",
-  { layerName: "Grid", position: new go.Point(-10, 0), gridCellSize: new go.Size(3000, GridCellHeight) },
-  $(go.Shape, "LineH", { strokeWidth: 0.5 })
-));
+const myTimeline = // the timeline at the top of the myGantt viewport
+  $(go.Part, "Graduated",
+    {
+      layerName: "Adornment",
+      pickable: false, 
+      position: new go.Point(-26, 0),  // position will be set in "ViewportBoundsChanged" listener
+      graduatedTickUnit: GridCellWidth  // each tick is one day
+      // assume graduatedMax == length of line
+    },
+    $(go.Shape, "LineH",
+      {
+        name: "MAIN",
+        strokeWidth: 0,  // don't draw the actual line
+        height: TimelineHeight,  // width will be set in "DocumentBoundsChanged" listener
+        background: "lightgray"
+      }),
+    $(go.Shape, "LineV",
+      {
+        name: "TICKS",
+        interval: 7,  // once per week
+        alignmentFocus: new go.Spot(0.5, 0, 0, -TimelineHeight/2),  // tick marks cross over the timeline itself
+        stroke: "lightgray", strokeWidth: 0.5
+      }),
+    $(go.TextBlock,
+      {
+        alignmentFocus: go.Spot.Left,
+        interval: 7,  // once per week
+        graduatedFunction: valueToText,
+        graduatedSkip: (val, tb) => val > tb.panel.graduatedMax - GridCellWidth * 7  // don't show last label
+      }
+    )
+  );
+myGantt.add(myTimeline);
+
+const myGrid = // the grid of horizontal lines
+  $(go.Part, "Grid",
+    { layerName: "Grid", pickable: false, position: new go.Point(0, 0), gridCellSize: new go.Size(3000, GridCellHeight) },
+    $(go.Shape, "LineH", { strokeWidth: 0.5 })
+  );
+myGantt.add(myGrid);
+
+const myHighlightDay = // the vertical highlighter covering the day where the mouse is
+  $(go.Part,
+    { layerName: "Grid", visible: false, pickable: false, background: "rgba(255,0,0,0.2)",
+      position: new go.Point(0, 0), width: GridCellWidth, height: GridCellHeight });
+myGantt.add(myHighlightDay);
+
+const myHighlightTask = // the horizontal highlighter covering the current task
+  $(go.Part,
+    {
+      layerName: "Grid", visible: false, pickable: false, background: "rgba(0,0,255,0.2)",
+      position: new go.Point(0, 0), width: GridCellWidth, height: GridCellHeight });
+myGantt.add(myHighlightTask);
 
 myGantt.nodeTemplate =
   $(go.Node, "Spot",
@@ -377,7 +452,8 @@ myGantt.nodeTemplate =
             cursor: 'e-resize'
           }
         )
-      )
+      ),
+      mouseOver: (e, node) => myGantt.mouseOver(e)
     },
     standardContextMenus(),
     new go.Binding("position", "start", convertStartToPosition).makeTwoWay(convertPositionToStart),
@@ -410,29 +486,6 @@ myGantt.linkTemplateMap.add("Dep",
   ));
 
 
-// the timeline
-const myTimeline =
-  $(go.Part, "Graduated",
-    {
-      layerName: "Adornment",
-      location: new go.Point(0, 0),
-      locationSpot: go.Spot.Left,
-      locationObjectName: "MAIN",
-      graduatedTickUnit: GridCellWidth
-    },
-    $(go.Shape, "LineH", { name: "MAIN", strokeWidth: 0, height: TimelineHeight, background: "lightgray" }),
-    $(go.Shape, { name: "TICKS", geometryString: "M0 0 V1000", interval: 7, stroke: "lightgray", strokeWidth: 0.5 }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        interval: 7,  // once per week
-        graduatedFunction: valueToText
-      }
-    )
-  );
-myGantt.add(myTimeline);
-
-
 // The Model that is shared by both Diagrams
 const myModel = new go.GraphLinksModel(
   {
@@ -443,7 +496,7 @@ const myModel = new go.GraphLinksModel(
       [
         { key: 0, text: "Project X" },
           { key: 1, text: "Task 1", color: "darkgreen" },
-            { key: 11, text: "Task 1.1", color: "green", duration: convertDaysToUnits(10) },
+            { key: 11, text: "Task 1.1", color: "green", duration: convertDaysToUnits(7) },
             { key: 12, text: "Task 1.2", color: "green" },
               { key: 121, text: "Task 1.2.1", color: "lightgreen", duration: convertDaysToUnits(3) },
               { key: 122, text: "Task 1.2.2", color: "lightgreen", duration: convertDaysToUnits(5) },
@@ -494,17 +547,11 @@ const myModel = new go.GraphLinksModel(
   });
 StartDate = new Date(myModel.modelData.origin);
 
+
 // share model
 myTasks.model = myModel;
 myGantt.model = myModel;
 myModel.undoManager.isEnabled = true;
-
-// just for debugging:
-myModel.addChangedListener(e => {
-  if (e.isTransactionFinished) {  // show the model data in the page's TextArea
-    document.getElementById("mySavedModel").textContent = e.model.toJson();
-  }
-})
 
 // sync viewports
 var changingView = false;  // for preventing recursive updates
@@ -513,7 +560,7 @@ myTasks.addDiagramListener("ViewportBoundsChanged", e => {
   changingView = true;
   myGantt.scale = myTasks.scale;
   myGantt.position = new go.Point(myGantt.position.x, myTasks.position.y);
-  myTimeline.position = new go.Point(myTimeline.position.x, myTasks.viewportBounds.position.y);
+  myTimeline.position = new go.Point(myTimeline.position.x, myGantt.viewportBounds.position.y);
   changingView = false;
 });
 myGantt.addDiagramListener("ViewportBoundsChanged", e => {
@@ -521,6 +568,7 @@ myGantt.addDiagramListener("ViewportBoundsChanged", e => {
   changingView = true;
   myTasks.scale = myGantt.scale;
   myTasks.position = new go.Point(myTasks.position.x, myGantt.position.y);
+  myGantt.position = new go.Point(myGantt.position.x, myTasks.position.y);  // don't scroll more if myTasks can't scroll more
   myTimeline.position = new go.Point(myTimeline.position.x, myGantt.viewportBounds.position.y);
   changingView = false;
 });
@@ -538,10 +586,17 @@ function rescale() {
     diag.layout.cellHeight = GridCellHeight;
     diag.layoutDiagram(true);
     myTimeline.graduatedTickUnit = GridCellWidth;
-    diag.padding = new go.Margin(TimelineHeight, 0, 0, 0);
-    myTasks.padding = new go.Margin(TimelineHeight, 0, 0, 0);
+    diag.padding = new go.Margin(TimelineHeight+4, GridCellWidth*7, GridCellHeight, 0);
+    myTasks.padding = new go.Margin(TimelineHeight+4, 0, GridCellHeight, 0);
   }, null);  // skipsUndoManager
 }
+
+// just for debugging:
+myModel.addChangedListener(e => {
+  if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+    document.getElementById("mySavedModel").textContent = e.model.toJson();
+  }
+});
 </script>
     </div>
     <!-- * * * * * * * * * * * * * -->

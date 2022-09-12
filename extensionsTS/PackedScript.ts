@@ -23,7 +23,6 @@ interface PackedLayoutParams {
   size: go.Size;
   spacing: number;
   hasCircularNodes: boolean;
-  arrangesToOrigin: boolean;
 }
 
 let myDiagram: go.Diagram;
@@ -52,7 +51,7 @@ export function init() {
     $(go.Diagram, 'myDiagramDiv',  // must be the ID or reference to div
       {
         'animationManager.isEnabled': true,
-        layout: $(PackedLayout),
+        layout: $(PackedLayout, { arrangesToOrigin: false }),
         scale: 0.75, isReadOnly: true
       });
 
@@ -186,8 +185,7 @@ export function rebuildGraph() {
     aspectRatio: parseFloat(aspectRatio.value),
     size: new go.Size(parseFloat(layoutWidth.value), parseFloat(layoutHeight.value)),
     spacing: parseFloat(nodeSpacing.value),
-    hasCircularNodes: hasCircularNodes.checked,
-    arrangesToOrigin: false
+    hasCircularNodes: hasCircularNodes.checked
   };
 
   disableInputs(params);
@@ -204,7 +202,15 @@ export function rebuildGraph() {
 
   myDiagram.startTransaction('packed layout');
   generateNodeData();
-  myDiagram.layout = go.GraphObject.make(PackedLayout, params /* defined above */);
+  var lay = myDiagram.layout as PackedLayout;
+  lay.packShape = params.packShape;
+  lay.packMode = params.packMode;
+  lay.aspectRatio = params.aspectRatio;
+  lay.size = params.size;
+  lay.spacing = params.spacing;
+  lay.sortOrder = params.sortOrder;
+  lay.sortMode = params.sortMode;
+  lay.hasCircularNodes = params.hasCircularNodes;
   myDiagram.commitTransaction('packed layout');
 }
 

@@ -212,7 +212,7 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         const needed = idx > 0 || last < table.rowCount - 1;
         bar.opacity = needed ? 1.0 : 0.5;
         if (thumb) {
-            thumb.height = Math.max((rows / table.rowCount) * availh, Math.min(availh, 10));
+            thumb.height = Math.max((rows / table.rowCount) * availh, Math.min(availh, 10)) - (thumb instanceof go.Shape ? thumb.strokeWidth : 0);
             thumb.alignment = new go.Spot(0.5, (Math.min(table.rowCount, (idx + 0.5)) / table.rowCount), 0, 0);
         }
     }

@@ -85,6 +85,7 @@
   <a href="connectionPoints.html">Link Points</a>
   <a href="ports.html">Ports</a>
   <a href="nodes.html">Nodes</a>
+  <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
   <a href="trees.html">Trees</a>
@@ -126,7 +127,6 @@
   <a href="source.html">Building from Source</a>
   <a href="platforms.html">Platforms</a>
   <a href="deployment.html">Deployment</a>
-  <a href="typings.html">Typings</a>
       </nav>
     </div>      
       <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
@@ -409,6 +409,251 @@ Note that <a>Binding</a>s are <em>not</em> references from the data to any <a>Pa
 The whole point of separating models from diagrams is to avoid references from data to Diagrams or Nodes or Links or Tools.
 The only references from diagram to model are the <a>Diagram.model</a> property and each node or link's <a>Panel.data</a> property.
 </p>
+
+<h3>Item Arrays, Model Data, and Panels</h3>
+<p>
+Here's another diagram showing the relationships of data Objects in the model with GraphObjects
+(Node, Panel, TextBlock, Picture) in the Diagram.
+The Node is data bound to an Object in the <a>Model.nodeDataArray</a> that has several properties,
+including one named "items" which is an Array.
+One of the Panels in the Node has a data binding of the <a>Panel.itemArray</a> property with
+the source property name being "items".
+</p>
+<p>
+That Array has four Objects in it, each Object having "image" and "name" properties.
+The <a>Panel.itemTemplate</a> of the Panel whose <a>Panel.itemArray</a> is bound to that Array is defined
+so as to show a Panel with a RoundedRectangle Shape surrounding a Vertical Panel showing Picture over a TextBlock.
+</p>
+<p>
+The green dashed links show how the Binding transfers the property value from the data Object
+to the Picture or TextBlock GraphObject in the Node.
+</p>
+<pre class="lang-js" id="commented2" style="display:none"><code>
+
+//the type that makes up the main visual part of this, which is the file revision map
+diagram.nodeTemplateMap.add("FileNode",
+    $(go.Node, "Vertical", new go.Binding("location", "position", go.Point.parse), {margin: 20, scale: 1.2, isShadowed: true},
+    $(go.TextBlock, {margin: 5, shadowVisible: false, font: "bold 11pt sans-serif"}, new go.Binding("text", "key")),
+    $(go.Panel, "Auto", {portId: "TopLeft", toSpot: go.Spot.TopLeft},
+        $(go.Shape, "RoundedRectangle", {fill: "burlywood", portId: "Rectangle"}),
+        $(go.Panel, "Vertical", new go.Binding("itemArray", "items"), 
+            {itemTemplate:
+                $(go.Panel, "Auto", 
+                    $(go.Shape, "RoundedRectangle", new go.Binding("portId", "port"), {fill: "white", margin: 2, toSpot: go.Spot.Left}),
+                    $(go.Panel, "Vertical",
+                        {margin: 2},
+                        $(go.Picture,
+                            new go.Binding("source", "image", name => "../assets/images/" + name),
+                            new go.Binding("portId", "imagePort"),
+                            {width: 16, height: 16, margin: 2}),
+                        $(go.TextBlock, new go.Binding("text", "name"), new go.Binding("portId", "namePort"), {margin: 2})))}))));
+
+//a template for one of the tables that explains the data structure of one of the nodes (for example, Revision 1 or Revision 2)
+//a mockup of it might look something like the following:
+/*
++-----------------------+
+| key: Revision 1       |    Clearly, this would be repeated to create tables for each of the revisions. One thing that I would like
++----------+------------+    to try is to make yet another itemArray here to practice, where the actual data part of it (that
+| name     | image      |    displays the name and image for the items) is an itemArray of TableRows. This seems like it should be
++----------+------------+    possible, but maybe is somewhat hacky. Oh well, we're doing it anyway.
+| Folder 1 | folder.png |
++----------+------------+
+| Folder 2 | folder.png |
++----------+------------+
+| File 1   | folder.png |
++----------+------------+*/
+
+diagram.nodeTemplateMap.add("ItemArrayTable",
+    $(go.Node, "Auto", new go.Binding("location", "position", go.Point.parse),
+        $(go.Shape, "Rectangle", {fill: "#eee", portId: ""}),
+        $(go.Panel, "Auto", {margin: 3, portId: "rightSide", toSpot: go.Spot.Right},
+            //the outer Rectangle for the whole table
+            $(go.Shape, "Rectangle", {fill: "white"}),
+            $(go.Panel, "Vertical",
+                $(go.Panel, "Auto", {stretch: go.GraphObject.Fill, portId: "itemArrayText", fromSpot: go.Spot.Right},
+                    $(go.Shape, "Rectangle", {fill: "lightgoldenrodyellow", strokeWidth: 0}),
+                    $(go.TextBlock, "Item Array", {margin: 2}),
+                ),
+                $(go.Shape, "LineH", {height: 2, stretch: go.GraphObject.Fill}),
+                $(go.Panel, "Table", {defaultRowSeparatorStroke: "gray", defaultColumnSeparatorStroke: "gray", defaultSeparatorPadding: 2},
+                    //default for the header, which shouldn't have a column separator (which covers up the text)
+                    $(go.RowColumnDefinition, {row: 0, background: "lightgray", separatorStrokeWidth: 1, separatorStroke: "black"}),
+                    $(go.RowColumnDefinition, {row: 1, separatorStrokeWidth: 1, separatorStroke: "black"}),
+                    //we need the isPanelMain there to keep the element, according to the itemArray example (https://gojs.net/latest/intro/itemArrays.html)
+                    //it looks like only one thing can be the "main" element in the panel, which maybe is something that could be worth addressing later on
+                    $(go.Panel, "TableRow", {isPanelMain: true},
+                        $(go.TextBlock, "Index", {column: 0, margin: 2})),
+                    new go.Binding("itemArray", "items"), {
+                        itemTemplate:
+                        $(go.Panel, "TableRow", new go.Binding("portId", "port"), {fromSpot: go.Spot.LeftRightSides},
+                            $(go.TextBlock, new go.Binding("text", "index"), new go.Binding("portId", "index"), {column: 0, margin: 2, fromSpot: go.Spot.Left}))})))));
+
+diagram.nodeTemplateMap.add("NodeDataTable",
+    $(go.Node, "Auto", new go.Binding("location", "position", go.Point.parse),
+        $(go.Shape, "Rectangle", {fill: "#eee"}),
+        $(go.Panel, "Auto", {margin: 3},
+            $(go.Shape, "Rectangle", {fill: "white"}),
+            $(go.Panel, "Vertical",
+                $(go.Panel, "Auto", {stretch: go.GraphObject.Fill},
+                    $(go.Shape, "Rectangle", {fill: "lightgoldenrodyellow", strokeWidth: 0}),
+                    $(go.TextBlock, new go.Binding("text", "name"), {margin: 2})),
+                $(go.Panel, "Table", {defaultRowSeparatorStroke: "gray", defaultColumnSeparatorStroke: "gray", defaultSeparatorPadding: 2},
+                    $(go.RowColumnDefinition, {row: 0, background: "lightgray", separatorStrokeWidth: 1, separatorStroke: "black"}),
+                    $(go.RowColumnDefinition, {row: 1, separatorStrokeWidth: 1, separatorStroke: "black"}),
+                    $(go.Panel, "TableRow", {isPanelMain: true},
+                        $(go.TextBlock, "Property", {column: 0, margin: 2}),
+                        $(go.TextBlock, "Value", {column: 1, margin: 2})),
+                    new go.Binding("itemArray", "items"), {
+                        itemTemplate:
+                        $(go.Panel, "TableRow", new go.Binding("portId", "port"), {fromSpot: go.Spot.LeftRightSides},
+                            $(go.TextBlock, new go.Binding("text", "property"), {column: 0, margin: 2, font: "10pt monospace"}),
+                            $(go.TextBlock, new go.Binding("text", "value"), {column: 1, margin: 2}))})))));
+
+//this is intentionally an empty node, because we don't want it to display anything
+diagram.nodeTemplateMap.add("InvisibleLinkLabel",
+    $(go.Node, new go.Binding("segmentIndex"), new go.Binding("segmentOffset")));
+    
+diagram.nodeTemplateMap.add("Comment",
+    $(go.Node, new go.Binding("location", "position", go.Point.parse),
+        $(go.TextBlock, {textAlign: "center", stroke: "brown", fromSpot: go.Spot.Top},
+          new go.Binding("text", "text"),
+          new go.Binding("desiredSize", "size", go.Size.parse),
+          new go.Binding("portId", "Top"))));
+
+diagram.linkTemplateMap.add("BindingLink",
+    $(go.Link,
+        //this is the line itself
+        $(go.Shape, {stroke: "green", strokeWidth: 2, strokeDashArray: [2, 3]}),
+        $(go.Shape, {toArrow: "Boomerang", stroke: "green", fill: "green"})));
+
+diagram.linkTemplateMap.add("Comment",
+    $(go.Link, {curve: go.Link.Bezier, curviness: -30},
+        $(go.Shape,  {stroke: "brown", strokeWidth: 1, strokeDashArray: [3, 3]}),
+        $(go.Shape, {toArrow: "Boomerang", stroke: "brown", fill: "brown"})));
+
+diagram.linkTemplateMap.add("ReferenceLink",
+    $(go.Link, new go.Binding("curviness"), {curve: go.Link.Bezier},
+        $(go.Shape, {strokeWidth: 1.5}),
+        $(go.Shape, {toArrow: "Boomerang"}),
+        $(go.Panel, "Auto",
+            $(go.Shape, "Rectangle", {fill: "lightskyblue"}),
+            $(go.TextBlock, new go.Binding("text"), {stroke: "black", margin: 3}))));
+
+diagram.linkTemplateMap.add("ReferenceLinkNoText",
+    $(go.Link, new go.Binding("curviness"), {curve: go.Link.Bezier},
+        $(go.Shape, {strokeWidth: 1.5}),
+        $(go.Shape, {toArrow: "Boomerang"})));
+
+diagram.model = new go.GraphLinksModel({
+    //if it doesn't have this it won't work, courtesy of the dynamic ports example: https://gojs.net/latest/samples/dynamicPorts.html
+    //my understanding is that this is because when the arrays are created (usually), they do so without copying all of the specified data, probably for speed reasons
+    //this could then remove the link data and some "non-essential" properties that we do want to use here
+    //so it turns out that I wasn't doing it the wrong way, which is nice
+    copiesArrays: true,
+    copiesArrayObjects: true,
+    linkFromPortIdProperty: "fromPort",
+    linkToPortIdProperty: "toPort",
+    linkLabelKeysProperty: "keys",
+    nodeDataArray: [
+        {position: "340 -180", key: "FilesystemNodeDataTable", name: "Node Data", category: "NodeDataTable", items: [
+            {property: "key", value: "\"Filesystem\""},
+            {property: "position", value: "\"320 100\""},
+            {property: "name", value: "\"Filesystem\""},
+            {property: "category", value: "\"FileNode\""},
+            {property: "items", port: "itemsPort"},
+        ]},
+        //the diagram that we're actually explaining, which is effectively an itemArray with a couple items in it, arranged in a panel
+        {position: "225 40", dataTablePosition: "600 0", key: "Filesystem", name: "Filesystem", category: "FileNode", items: [
+            {name: "Folder 1", image: "folder.png", dataTablePosition: "375 0", index: "0", port: "Folder1", namePort: "Folder1Name", imagePort: "Folder1Image"},
+            {name: "Folder 3", image: "folder.png", dataTablePosition: "375 110", index: "1", port: "Folder3", namePort: "Folder3Name", imagePort: "Folder3Image"},
+            {name: "File 1", image: "document.png", dataTablePosition: "375 220", index: "2", port: "File1", namePort: "File1Name", imagePort: "File1Image"},
+            {name: "Picture 1", image: "picture.png", dataTablePosition: "375 330", index: "3", port: "Picture1", namePort: "Picture1Name", imagePort: "Picture1Image"}]},
+        //some more nodes, purely for testing purposes
+        {position: "80 335", size: "150 NaN", key: "Comment1", category: "Comment", text: 
+            "Data binding allows text or image source property value to be bound to TextBlock or Picture properties in the itemTemplate panel."},
+        //set the size to NaN to allow it to only take up the space that it needs, which appears to work!
+        //yay GoJS creators
+        {position: "40 140", size: "150 NaN", key: "Comment2", category: "Comment", text:
+            "Each of the items in the itemArray is displayed according to the itemTemplate, which here is a vertically arranged panel with a Picture and TextBlock."
+        },
+        {position: "60 -20", size: "150 NaN", key: "Comment3", category: "Comment", text:
+            "The items are displayed in a vertical panel that positions the items and sizes itself."
+        },
+        {key: "LinkLabel1", category: "InvisibleLinkLabel"},
+        {key: "LinkLabel2", category: "InvisibleLinkLabel"},
+    ],
+
+    linkDataArray: [
+        //explanation for itemTemplate and the itemArray in general
+        {from: "Comment2", to: "Filesystem", fromPort: "Top", toPort: "Folder1", category: "Comment"},
+        {from: "Comment2", to: "Filesystem", fromPort: "Top", toPort: "Folder3", category: "Comment"},
+        {from: "Comment2", to: "Filesystem", fromPort: "Top", toPort: "File1", category: "Comment"},
+        {from: "Comment2", to: "Filesystem", fromPort: "Top", toPort: "Picture1", category: "Comment"},
+        //explanation of the base panel
+        {from: "Comment3", to: "Filesystem", toPort: "TopLeft", category: "Comment"},
+        //to show how the data links work
+        {from: "Filesystem", to: "FilesystemNodeDataTable", category: "ReferenceLink", text: ".data", curviness: 50},
+        {from: "FilesystemNodeDataTable", to: "FilesystemItemArrayTable", category: "ReferenceLinkNoText", fromPort: "itemsPort", toPort: "itemArrayText"},
+        //item data information
+        {from: "FilesystemItemArrayTable", fromPort: "Folder1", to: "Folder1ItemDataTable", category: "ReferenceLinkNoText", curviness: 25},
+        {from: "FilesystemItemArrayTable", fromPort: "Folder3", to: "Folder3ItemDataTable", category: "ReferenceLinkNoText", curviness: 25},
+        {from: "FilesystemItemArrayTable", fromPort: "File1", to: "File1ItemDataTable", category: "ReferenceLinkNoText", curviness: 25},
+        {from: "FilesystemItemArrayTable", fromPort: "Picture1", to: "Picture1ItemDataTable", category: "ReferenceLinkNoText", curviness: 25},
+        //from item data to the respective items
+        {from: "Folder1ItemDataTable", to: "Filesystem", fromPort: "name", toPort: "Folder1Name", category: "BindingLink"},
+        {from: "Folder1ItemDataTable", to: "Filesystem", fromPort: "image", toPort: "Folder1Image", category: "BindingLink"},
+        {from: "Folder3ItemDataTable", to: "Filesystem", fromPort: "name", toPort: "Folder3Name", category: "BindingLink"},
+        {from: "Folder3ItemDataTable", to: "Filesystem", fromPort: "image", toPort: "Folder3Image", category: "BindingLink"},
+        {from: "File1ItemDataTable", to: "Filesystem", fromPort: "name", toPort: "File1Name", category: "BindingLink"},
+        {from: "File1ItemDataTable", to: "Filesystem", fromPort: "image", toPort: "File1Image", category: "BindingLink"},
+        {from: "Picture1ItemDataTable", to: "Filesystem", fromPort: "name", toPort: "Picture1Name", category: "BindingLink", keys: ["LinkLabel1"]},
+        {from: "Picture1ItemDataTable", to: "Filesystem", fromPort: "image", toPort: "Picture1Image", category: "BindingLink", keys: ["LinkLabel2"]},
+        //explanation for data binding
+        {from: "Comment1", to: "LinkLabel1", category: "Comment"},
+        {from: "Comment1", to: "LinkLabel2", category: "Comment"},
+    ]});
+        
+function createNodeItemArrayTable(reference) {
+    //the info table that we're making, blank at this point
+    //the revision that the info table will be of
+    let itemArrayTable = {
+        key: (reference.key + "ItemArrayTable"),
+        name: ("Key: " + reference.key),
+        items: reference.items,
+        port: reference.port,
+        imagePort: (reference.port + "Image"),
+        position: reference.dataTablePosition,
+        category: "ItemArrayTable"};
+
+    diagram.model.addNodeData(itemArrayTable);
+    return itemArrayTable;
+}
+
+function createItemDataTable(reference) {
+    //this will create an info table showing all of the properties of an item, similarly to the main node
+    //it is automatic though, so no need to create items
+    let itemDataTable = {
+        items: [
+            {port: "image", property: "image", value: `\"${reference.image}\"`},
+            {port: "name", property: "name", value: `\"${reference.name}\"`},
+        ],
+        name: "Item Data",
+        position: reference.dataTablePosition,
+        category: "NodeDataTable",
+        port: reference.port,
+        key: reference.port + "ItemDataTable"};
+    
+    diagram.model.addNodeData(itemDataTable);
+    return itemDataTable;
+}
+
+//create all relevant tables
+createNodeItemArrayTable(diagram.model.nodeDataArray[1]);
+for (let i = 0; i < diagram.model.nodeDataArray.length; i++)
+    createItemDataTable(diagram.model.nodeDataArray[1].items[i]);
+</code></pre>
+<script>goCode("commented2", 700, 640)</script>
+
 
 <h2 id="BindingStringAndNumberProperties">Binding string and number properties</h2>
 <p>

@@ -481,6 +481,7 @@ var __extends = (this && this.__extends) || (function () {
                 diagram.startTransaction('Layout');
             this._bounds = new go.Rect();
             this._enclosingCircle = null;
+            this._fixedSizeModeSpacing = 0;
             // push all nodes in parts iterator to an array for easy sorting
             var it = this.collectParts(coll).iterator;
             var nodes = [];

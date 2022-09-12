@@ -1113,7 +1113,7 @@ arr.push([
 ]);
 
 arr.push([
-  "../extensions/PackedLayout",
+  "../extensionsJSM/PackedLayout",
   "Packed Layout",
   "A custom Layout that positions nodes in a packed area.",
   "PackedLayout",

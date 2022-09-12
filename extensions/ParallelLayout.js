@@ -85,7 +85,7 @@ ParallelLayout.prototype.isSwitch = function(node) {
 }
 
 /**
- * Return an Array holding the Split node and the Merge node for this layout.
+ * Find and remember the Split node and the Merge node for this layout.
  * This signals an error if there is not exactly one Node that {@link #isSplit}
  * and exactly one Node that {@link #isMerge}.
  * This can be overridden; any override must set {@link #splitNode} and {@link #mergeNode}.

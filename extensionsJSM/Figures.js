@@ -360,6 +360,30 @@ go.Shape.defineFigureGenerator('XLine', (shape, w, h) => {
         .add(new go.PathSegment(go.PathSegment.Move, 0, 0))
         .add(new go.PathSegment(go.PathSegment.Line, w, h)));
 });
+go.Shape.defineFigureGenerator('LineRight', function (shape, w, h) {
+    return new go.Geometry()
+        .add(new go.PathFigure(0.25 * w, 0, false)
+        .add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, 0.5 * h))
+        .add(new go.PathSegment(go.PathSegment.Line, 0.25 * w, h)));
+});
+go.Shape.defineFigureGenerator('LineDown', function (shape, w, h) {
+    return new go.Geometry()
+        .add(new go.PathFigure(0, 0.25 * h, false)
+        .add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.75 * h))
+        .add(new go.PathSegment(go.PathSegment.Line, w, 0.25 * h)));
+});
+go.Shape.defineFigureGenerator('LineLeft', function (shape, w, h) {
+    return new go.Geometry()
+        .add(new go.PathFigure(0.75 * w, 0, false)
+        .add(new go.PathSegment(go.PathSegment.Line, 0.25 * w, 0.5 * h))
+        .add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, h)));
+});
+go.Shape.defineFigureGenerator('LineUp', function (shape, w, h) {
+    return new go.Geometry()
+        .add(new go.PathFigure(0, 0.75 * h, false)
+        .add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.25 * h))
+        .add(new go.PathSegment(go.PathSegment.Line, w, 0.75 * h)));
+});
 // OPTIONAL figures, not predefined in the v2.0 library:
 go.Shape.defineFigureGenerator('AsteriskLine', (shape, w, h) => {
     const offset = .2 / Math.SQRT2;

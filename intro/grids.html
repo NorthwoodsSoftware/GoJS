@@ -85,6 +85,7 @@
   <a href="connectionPoints.html">Link Points</a>
   <a href="ports.html">Ports</a>
   <a href="nodes.html">Nodes</a>
+  <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
   <a href="trees.html">Trees</a>
@@ -126,7 +127,6 @@
   <a href="source.html">Building from Source</a>
   <a href="platforms.html">Platforms</a>
   <a href="deployment.html">Deployment</a>
-  <a href="typings.html">Typings</a>
       </nav>
     </div>      
       <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
@@ -289,7 +289,6 @@ So if you wanted darker blue and darker green lines every five cells:
       $(go.Shape, "LineV", { stroke: "green", interval: 5 })
       );
 
-
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       { resizable: true },
@@ -396,6 +395,31 @@ To get a tablecloth effect, one can use both vertical and horizontal bars with a
 <p>
 This example limits dragging of all nodes by setting <a>DraggingTool.isGridSnapEnabled</a> to true.
 </p>
+<p>
+Another custom grid: dots
+</p>
+<pre class="lang-js" id="customBackground5"><code>
+  diagram.div.style.background = "white";
+
+  diagram.grid =
+    $(go.Panel, "Grid",
+      $(go.Shape, "LineH", { strokeWidth: 0.5, strokeDashArray: [0, 9.5, 0.5, 0] })
+    );
+
+  diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+
+  diagram.nodeTemplate =
+    $(go.Node, "Auto",
+      $(go.Shape, "Rectangle", { fill: "white" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "key"))
+    );
+  var nodeDataArray = [
+    { key: "Alpha" }
+  ];
+  diagram.model = new go.GraphLinksModel(nodeDataArray);
+</code></pre>
+<script>goCode("customBackground5", 600, 350)</script>
 <p>
 Here is an example of using a "Grid" <a>Panel</a> as a regular data bound element in a <a>Node</a>:
 </p>

@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.14
+ * Type definitions for GoJS v2.2.15
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -1674,6 +1674,14 @@ export class Size {
      * are equal with a tolerance of 0.5, false otherwise.
      */
     equalsApprox(s: Size): boolean;
+    /**
+     * Modify this Size so that its width and height are changed by the given distances.
+     * When the arguments are negative, this operation deflates this Size, but not beyond zero.
+     * @param {number} w The additional width, which must be a real number; may be negative.
+     * @param {number} h The additional height, which must be a real number; may be negative.
+     * @return {Rect} this.
+     */
+    inflate(w: number, h: number): Size;
     /**
      * Gets or sets the width value of the Size.
      * The value must not be negative.
@@ -5853,6 +5861,7 @@ export class DraggingTool extends Tool {
     /**
      * The cursor to show when a drop is allowed and will result in a copy.
      * This defaults to 'copy'.
+     * Read more about cursors at Diagram#currentCursor
      * @since 2.2
      */
     get copyCursor(): string;
@@ -5860,6 +5869,7 @@ export class DraggingTool extends Tool {
     /**
      * The cursor to show when a drop is allowed and will result in a move.
      * This defaults to the empty string, which refers to the Diagram#defaultCursor.
+     * Read more about cursors at Diagram#currentCursor
      * @since 2.2
      */
     get moveCursor(): string;
@@ -5867,6 +5877,7 @@ export class DraggingTool extends Tool {
     /**
      * The cursor to show when a drop is not allowed.
      * This defaults to 'no-drop'.
+     * Read more about cursors at Diagram#currentCursor
      * @since 2.2
      */
     get nodropCursor(): string;
@@ -6190,6 +6201,7 @@ export abstract class LinkingBaseTool extends Tool {
     /**
      * Gets or sets the cursor used during the linking or relinking operation.
      * This defaults to 'pointer'.
+     * Read more about cursors at Diagram#currentCursor
      * @since 2.2
      */
     get linkingCursor(): string;
@@ -11485,8 +11497,8 @@ export class Diagram {
      * To read more about cursor syntax, go to:
      * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor">CSS cursors (mozilla.org)</a>.
      *
-     * If the specified cursor is not accepted by the platform, GoJS will append
-     * `-webkit-` or `-moz-` prefixes.
+     * If the specified cursor is not accepted by the platform, this property setter will try prepending
+     * `-webkit-` and `-moz-` prefixes when assigning the "cursor" CSS style property.
      *
      * Setting this property does not notify about any changed event.
      * Setting this value to the empty string ('') returns the Diagram's cursor to the #defaultCursor.
@@ -13626,6 +13638,8 @@ export class CommandHandler {
      * If this command had been called before without any other zooming since then,
      * the original Diagram scale and position are restored.
      * This is normally invoked by the `Shift-Z` keyboard shortcut.
+     * If you do not want the behavior where this command might restore the original diagram scale and position on a subsequent call,
+     * set #isZoomToFitRestoreEnabled to false.
      *
      * As of 2.1, this animates zooming by default. Diagram#zoomToFit does not animate.
      *
@@ -13633,6 +13647,7 @@ export class CommandHandler {
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @expose
      * @see #canZoomToFit
+     * @see #isZoomToFitRestoreEnabled
      * @since 1.1
      */
     zoomToFit(): void;
@@ -15476,6 +15491,8 @@ export abstract class GraphObject {
      * Other strings should be valid CSS strings that specify a cursor.
      * This provides some more information about cursor syntax:
      * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor">CSS cursors (mozilla.org)</a>.
+     *
+     * Read more about cursors at Diagram#currentCursor
      * @see Diagram#defaultCursor
      * @see Diagram#currentCursor
      */
@@ -28394,6 +28411,7 @@ export class TreeLayout extends Layout {
      *
      * These values are in degrees, where 0 is along the positive X axis,
      * and where 90 is along the positive Y axis.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get angle(): number;
@@ -28419,6 +28437,7 @@ export class TreeLayout extends Layout {
      * at the start of the row of children for some reason.
      * For example, if you want to pretend the parent node is infinitely deep,
      * you can set this to be the breadth of the parent node.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get nodeIndent(): number;
@@ -28432,6 +28451,7 @@ export class TreeLayout extends Layout {
      *
      * This property is only sensible when the #alignment
      * is TreeLayout.AlignmentStart|AlignmentStart or TreeLayout.AlignmentEnd|AlignmentEnd.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get nodeIndentPastParent(): number;
@@ -28439,9 +28459,12 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the distance between child nodes.
      *
+     * This is the distance between sibling nodes.
+     * A negative value causes sibling nodes to overlap.
      * The default value is 20.
      *
-     * A negative value causes sibling nodes to overlap.
+     * The #layerSpacing property determines the distance between a parent node and the layer of its children.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get nodeSpacing(): number;
@@ -28449,13 +28472,14 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the distance between a parent node and its children.
      *
+     * This is the distance between a parent node and the layer of its children.
+     * Negative values may cause children to overlap with the parent.
      * The default value is 50.
      *
-     * This is the distance between a parent node and its first row
-     * of children, in case there are multiple rows of its children.
+     * The #nodeSpacing property determines the distance between siblings.
      * The #rowSpacing property determines the distance
-     * between rows of children.
-     * Negative values may cause children to overlap with the parent.
+     * between multiple rows or columns of children.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get layerSpacing(): number;
@@ -28470,6 +28494,7 @@ export class TreeLayout extends Layout {
      * unless the value of #layerSpacing is large enough.
      * A value of zero might still allow overlap between layers,
      * if #layerSpacing is negative.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get layerSpacingParentOverlap(): number;
@@ -28505,19 +28530,22 @@ export class TreeLayout extends Layout {
      * later rows, when the alignment is not a "center" alignment, the
      * #rowIndent property specifies that space at the
      * start of each row.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get breadthLimit(): number;
     set breadthLimit(value: number);
     /**
-     * Gets or sets the distance between rows of children.
+     * Gets or sets the distance between rows or columns of a parent node's immediate children.
      *
      * The default value is 25.
      *
      * This property is only used when there is more than one
      * row of children for a given parent node.
-     * #layerSpacing determines the distance between
-     * the parent node and its first row of child nodes.
+     * The #nodeSpacing property determines the distance between siblings.
+     * The #layerSpacing property determines the distance between
+     * the parent node and its first row or column of child nodes.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get rowSpacing(): number;
@@ -28530,6 +28558,7 @@ export class TreeLayout extends Layout {
      *
      * This is used to leave room for the links that connect a parent node
      * with the child nodes that are in additional rows.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get rowIndent(): number;
@@ -28540,6 +28569,7 @@ export class TreeLayout extends Layout {
      * The default value is 10.
      *
      * This is used by #addComments and #layoutComments.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get commentSpacing(): number;
@@ -28550,6 +28580,7 @@ export class TreeLayout extends Layout {
      * The default value is 20.
      *
      * This is used by #addComments and #layoutComments.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get commentMargin(): number;
@@ -28562,6 +28593,7 @@ export class TreeLayout extends Layout {
      * if the node has only a single port.
      *
      * The spot used depends on the value of #portSpot.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get setsPortSpot(): boolean;
@@ -28576,6 +28608,7 @@ export class TreeLayout extends Layout {
      * If the value is other than NoSpot, it is just assigned.
      * When #path is TreeLayout.PathSource|PathSource,
      * the port's ToSpot is set instead of the FromSpot.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get portSpot(): Spot;
@@ -28588,6 +28621,7 @@ export class TreeLayout extends Layout {
      * if the node has only a single port.
      *
      * The spot used depends on the value of #childPortSpot.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get setsChildPortSpot(): boolean;
@@ -28602,6 +28636,7 @@ export class TreeLayout extends Layout {
      * If the value is other than NoSpot, it is just assigned.
      * When #path is TreeLayout.PathSource|PathSource,
      * the port's FromSpot is set instead of the ToSpot.
+     *
      * This sets the #rootDefaults' property of the same name.
      */
     get childPortSpot(): Spot;
@@ -28665,10 +28700,10 @@ export class TreeLayout extends Layout {
     get alternateNodeIndent(): number;
     set alternateNodeIndent(value: number);
     /**
-     * Gets or sets the fraction of this node's breadth is added to #nodeIndent
+     * Gets or sets the fraction of this node's breadth is added to #alternateNodeIndent
      * to determine any spacing at the start of the children.
      *
-     * The default value is 0.0 -- the only indentation is specified by #nodeIndent.
+     * The default value is 0.0 -- the only indentation is specified by #alternateNodeIndent.
      * When the value is 1.0, the children will be indented past the breadth of the parent node.
      *
      * This property is only sensible when the #alignment
@@ -28693,7 +28728,8 @@ export class TreeLayout extends Layout {
      *
      * This is the distance between a parent node and its first row
      * of children, in case there are multiple rows of its children.
-     * The #rowSpacing property determines the distance
+     * The #alternateNodeSpacing property determines the distance between siblings.
+     * The #alternateRowSpacing property determines the distance
      * between rows of children.
      * Negative values may cause children to overlap with the parent.
      * This sets the #alternateDefaults' property of the same name.
@@ -28703,13 +28739,13 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the alternate fraction of the node's depth for which the children's layer starts overlapped with the parent's layer.
      *
-     * The default value is 0.0 -- there is overlap between layers only if #layerSpacing is negative.
-     * A value of 1.0 and a zero #layerSpacing will cause child nodes to completely overlap the parent.
+     * The default value is 0.0 -- there is overlap between layers only if #alternateLayerSpacing is negative.
+     * A value of 1.0 and a zero #alternateLayerSpacing will cause child nodes to completely overlap the parent.
      *
      * A value greater than zero may still cause overlap between layers,
-     * unless the value of #layerSpacing is large enough.
+     * unless the value of #alternateLayerSpacing is large enough.
      * A value of zero might still allow overlap between layers,
-     * if #layerSpacing is negative.
+     * if #alternateLayerSpacing is negative.
      * This sets the #alternateDefaults' property of the same name.
      */
     get alternateLayerSpacingParentOverlap(): number;
@@ -28740,10 +28776,10 @@ export class TreeLayout extends Layout {
      * does not modify the size or shape of any node, the nodes will
      * just be laid out in a line, one per row, and the breadth is
      * determined by the broadest node.
-     * The distance between rows is specified by #rowSpacing.
+     * The distance between rows is specified by #alternateRowSpacing.
      * To make room for the links that go around earlier rows to get to
      * later rows, when the alignment is not a "center" alignment, the
-     * #rowIndent property specifies that space at the
+     * #alternateRowIndent property specifies that space at the
      * start of each row.
      * This sets the #alternateDefaults' property of the same name.
      */
@@ -28756,7 +28792,7 @@ export class TreeLayout extends Layout {
      *
      * This property is only used when there is more than one
      * row of children for a given parent node.
-     * #layerSpacing determines the distance between
+     * The #alternateLayerSpacing property determines the distance between
      * the parent node and its first row of child nodes.
      * This sets the #alternateDefaults' property of the same name.
      */
@@ -28801,7 +28837,7 @@ export class TreeLayout extends Layout {
      * The default value is true -- this may modify the spot of the port of this node, the parent,
      * if the node has only a single port.
      *
-     * The spot used depends on the value of #portSpot.
+     * The spot used depends on the value of #alternatePortSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
     get alternateSetsPortSpot(): boolean;
@@ -28827,7 +28863,7 @@ export class TreeLayout extends Layout {
      * The default value is true -- this may modify the spot of the ports of the children nodes,
      * if the node has only a single port.
      *
-     * The spot used depends on the value of #childPortSpot.
+     * The spot used depends on the value of #alternateChildPortSpot.
      * This sets the #alternateDefaults' property of the same name.
      */
     get alternateSetsChildPortSpot(): boolean;
