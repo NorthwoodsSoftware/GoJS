@@ -32,7 +32,7 @@ You can use the GitHub repository to quickly [search through all of the sources]
 Graphs are constructed by creating one or more templates, with desired properties data-bound, and adding model data.
 
 ```html
-<div id="myDiagramDiv"></div>
+<div id="myDiagramDiv" style="width:400px; height:150px;"></div>
 
 <script src="https://unpkg.com/gojs"></script>
 
