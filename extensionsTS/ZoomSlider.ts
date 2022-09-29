@@ -222,6 +222,7 @@ export class ZoomSlider {
     this._zoomSliderOut = zoomOutBtn;
     zoomOutBtn.className = 'zoomButton';
     zoomOutBtn.innerHTML = '-';
+    zoomOutBtn.type = 'button';
     this._sliderDiv.appendChild(zoomOutBtn);
 
     const zoomRangeContainer = document.createElement('div');
@@ -241,6 +242,7 @@ export class ZoomSlider {
     this._zoomSliderIn = zoomInBtn;
     zoomInBtn.className = 'zoomButton';
     zoomInBtn.innerHTML = '+';
+    zoomInBtn.type = 'button';
     this._sliderDiv.appendChild(zoomInBtn);
 
     // Adds the slider as a sibling of the diagram
