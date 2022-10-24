@@ -47,11 +47,11 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   var s = document.createElement('script');
-  s.src = "https://www.googletagmanager.com/gtag/js?id=UA-1506307-5";
+  s.src = "https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84";
   document.body.appendChild(s);
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'UA-1506307-5');
+  gtag('js', new Date()); gtag('config', 'G-S5QK8VSK84');
   var getOutboundLink = function(url, label) {
     gtag('event', 'click', {
       'event_category': 'outbound',

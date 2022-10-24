@@ -209,6 +209,12 @@ function init() {
       const mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
       const my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
       const point = myDiagram.transformViewToDoc(new go.Point(mx, my));
+      // if there's nothing at that point
+      if (myDiagram.findPartAt(point) === null) {
+        // a return here doesn't allow the drop to happen
+        // return;
+      }
+      // otherwise create a new node at the drop point 
       myDiagram.startTransaction('new node');
       const newdata = {
         // assuming the locationSpot is Spot.Center:
@@ -247,7 +253,8 @@ function init() {
     myDiagram.skipsUndoManager = oldskips;
   }
 
-  // this is called upon an external drop in this diagram
+  // this is called upon an external drop in this diagram,
+  // after a new node has been created and selected
   function onDrop(newNode, point) {
     const it = myDiagram.findPartsAt(point).iterator;
     while (it.next()) {
@@ -263,9 +270,10 @@ function init() {
         myDiagram.lastInput = e;
         // should be running in a transaction already
         part.mouseDrop(e, part);
-        break;
+        return;
       }
     }
+    // didn't find anything to drop onto
   }
 
 
@@ -308,6 +316,7 @@ function init() {
         // on a mouse-drop add a link from the dropped-upon node to the new node
         mouseDrop: (e, node) => {
           const newnode = e.diagram.selection.first();
+          if (!mayConnect(node, newnode)) return;
           const incoming = newnode.findLinksInto().first();
           if (incoming) e.diagram.remove(incoming);
           e.diagram.model.addLinkData( { from: node.key, to: newnode.key });
@@ -330,12 +339,18 @@ function init() {
         mouseDrop: (e, link) => {
           const oldto = link.toNode;
           const newnode = e.diagram.selection.first();
-          if (oldto === newnode || link.fromNode === newnode) return;
+          if (!mayConnect(newnode, oldto)) return;
+          if (!mayConnect(link.fromNode, newnode)) return;
           link.toNode = newnode;
           e.diagram.model.addLinkData({ from: newnode.key, to: oldto.key });
         }
       }
     );
+
+  // Decide whether a link from node1 to node2 may be created by a drop operation
+  function mayConnect(node1, node2) {
+    return node1 !== node2;
+  }
 
   // Modify the CommandHandler's doKeyDown to do nothing except bubble the event
   // on a potential Paste command:
@@ -346,7 +361,8 @@ function init() {
     const control = e.meta || e.control;
     const shift = e.shift;
     const key = e.key;
-    if ((control && key === 'V') || (shift && key === 'Insert')) {
+    if (((control && key === 'V') || (shift && key === 'Insert')) &&
+        (!diagram.commandHandler.canPasteSelection() || diagram.selection.count === 0)) {
       // Instead of the usual behavior:
       // if (this.canPasteSelection()) this.pasteSelection();
       // let the event bubble up the DOM:
@@ -365,7 +381,12 @@ function init() {
     if (paste.length > 0) {
       // Create a new node out of the text and paste it at the mouse location
       const loc = myDiagram.lastInput.documentPoint;
-      myDiagram.model.addNodeData({ text: paste, location: loc });
+      const newdata = { text: paste, location: loc };
+      myDiagram.model.addNodeData(newdata);
+      const newnode = myDiagram.findNodeForData(newdata);
+      if (newnode) myDiagram.select(newnode);
+      // clear the GoJS clipboard
+      myDiagram.commandHandler.copyToClipboard(null);
     } else {
       // If the clipbooard does not contain anything, paste from GoJS instead
       const commandHandler = myDiagram.commandHandler;
