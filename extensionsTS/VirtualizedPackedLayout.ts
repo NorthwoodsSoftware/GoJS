@@ -702,7 +702,7 @@ export class VirtualizedPackedLayout extends go.Layout {
    * @expose
    * @this {VirtualizedPackedLayout}
    */
-  public commitLayout(): void {}
+  public override commitLayout(): void {}
 
   /**
    * @hidden @internal
@@ -745,7 +745,7 @@ export class VirtualizedPackedLayout extends go.Layout {
 
     const aspect = this._eAspectRatio;
     const shape = this.packShape;
-    const placementCost = this.placementCost;
+
     function score(n: ListNode<go.Rect>) {
       const a = n.data;
       const b = n.next.data;
@@ -1684,7 +1684,7 @@ export class VirtualizedPackedLayout extends go.Layout {
    * @this {VirtualizedPackedLayout}
    * @param {?} copy
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     copy._packShape = this._packShape;
     copy._packMode = this._packMode;
     copy._sortMode = this._sortMode;

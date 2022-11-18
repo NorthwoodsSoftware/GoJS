@@ -64,7 +64,7 @@ export class RadialLayout extends go.Layout {
   /**
    * Copies properties to a cloned Layout.
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     // don't copy .root
     copy._layerThickness = this._layerThickness;
@@ -74,7 +74,7 @@ export class RadialLayout extends go.Layout {
   /**
    * Use a LayoutNetwork that always creates RadialVertexes.
    */
-  public createNetwork(): go.LayoutNetwork {
+  public override createNetwork(): go.LayoutNetwork {
     const net = new go.LayoutNetwork(this);
     net.createVertex = () => new RadialVertex(net);
     return net;
@@ -84,7 +84,7 @@ export class RadialLayout extends go.Layout {
    * Find distances between root and vertexes, and then lay out radially.
    * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
    */
-  public doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
+  public override doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
     if (this.network === null) {
       this.network = this.makeNetwork(coll);
     }
@@ -284,7 +284,7 @@ export class RadialLayout extends go.Layout {
   /**
    * This override positions each Node and also calls {@link #rotateNode}.
    */
-  public commitLayout(): void {
+  public override commitLayout(): void {
     super.commitLayout();
     if (this.network !== null) {
       const it = this.network.vertexes.iterator;

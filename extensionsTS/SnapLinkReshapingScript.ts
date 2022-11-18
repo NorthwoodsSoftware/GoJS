@@ -15,7 +15,6 @@ import './Figures.js';
 import { SnapLinkReshapingTool } from './SnapLinkReshapingTool.js';
 
 let myDiagram: go.Diagram;
-let myPalette: go.Diagram;
 
 export function init() {
   if ((window as any).goSamples) (window as any).goSamples();  // init for these samples -- you don't need to call this
@@ -146,20 +145,19 @@ export function init() {
   if (link) link.isSelected = true;
 
   // initialize the Palette that is on the left side of the page
-  myPalette =
-    $(go.Palette, 'myPaletteDiv',  // must name or refer to the DIV HTML element
-      {
-        maxSelectionCount: 1,
-        nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
-        model: new go.GraphLinksModel([  // specify the contents of the Palette
-          { text: 'Start', figure: 'Circle', fill: 'green' },
-          { text: 'Step' },
-          { text: 'DB', figure: 'Database', fill: 'lightgray' },
-          { text: '???', figure: 'Diamond', fill: 'lightskyblue' },
-          { text: 'End', figure: 'Circle', fill: 'red' },
-          { text: 'Comment', figure: 'RoundedRectangle', fill: 'lightyellow' }
-        ])
-      });
+  $(go.Palette, 'myPaletteDiv',  // must name or refer to the DIV HTML element
+    {
+      maxSelectionCount: 1,
+      nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
+      model: new go.GraphLinksModel([  // specify the contents of the Palette
+        { text: 'Start', figure: 'Circle', fill: 'green' },
+        { text: 'Step' },
+        { text: 'DB', figure: 'Database', fill: 'lightgray' },
+        { text: '???', figure: 'Diamond', fill: 'lightskyblue' },
+        { text: 'End', figure: 'Circle', fill: 'red' },
+        { text: 'Comment', figure: 'RoundedRectangle', fill: 'lightyellow' }
+      ])
+    });
 }
 
 

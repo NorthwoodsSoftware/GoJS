@@ -94,7 +94,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
   /**
    * Use a "crosshair" cursor.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     this.diagram.currentCursor = 'crosshair';
     // until a mouse down occurs, allow the temporary link to be routed to the temporary node/port
@@ -104,7 +104,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
   /**
    * Add a point to the route that the temporary Link is accumulating.
    */
-  public doMouseDown(): void {
+  public override doMouseDown(): void {
     if (!this.isActive) {
       this.doActivate();
     }
@@ -133,7 +133,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
   /**
    * Have the temporary link reach to the last mouse point.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (this.isActive) {
       this.moveLastPoint(this.diagram.lastInput.documentPoint);
       super.doMouseMove();
@@ -147,7 +147,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
    *
    * If this event happens elsewhere in the diagram, this tool is not stopped: the drawing of the route continues.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (!this.isActive) return;
     const target = this.findTargetPort(this.isForwards);
     if (target !== null) {
@@ -209,7 +209,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
    * This method overrides the standard link creation method by additionally
    * replacing the default link route with the custom one laid out by the user.
    */
-  public insertLink(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject): go.Link | null {
+  public override insertLink(fromnode: go.Node, fromport: go.GraphObject, tonode: go.Node, toport: go.GraphObject): go.Link | null {
     const link = super.insertLink(fromnode, fromport, tonode, toport);
     if (link !== null && !this._firstMouseDown) {
       // ignore natural route by replacing with route accumulated by this tool
@@ -222,7 +222,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
    * This supports the "Z" command during this tool's operation to remove the last added point of the route.
    * Type ESCAPE to completely cancel the operation of the tool.
    */
-  public doKeyDown(): void {
+  public override doKeyDown(): void {
     if (!this.isActive) return;
     const e = this.diagram.lastInput;
     if (e.key === 'Z' && this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) {  // undo

@@ -68,7 +68,7 @@ export class SectorReshapingTool extends go.Tool {
    * This tool can only start if Diagram.allowReshape is true and the mouse-down event
    * is at a tool handle created by this tool.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly) return false;
@@ -80,7 +80,7 @@ export class SectorReshapingTool extends go.Tool {
   /**
    * If the Part is selected, show two angle-changing tool handles and one radius-changing tool handle.
    */
-  public updateAdornments(part: go.Part): void {
+  public override updateAdornments(part: go.Part): void {
     const data = part.data;
     if (part.isSelected && data !== null && !this.diagram.isReadOnly) {
       let ad = part.findAdornment(this.name);
@@ -129,7 +129,7 @@ export class SectorReshapingTool extends go.Tool {
   /**
    * Remember the original angles and radius and start a transaction.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     const diagram = this.diagram;
     this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
     if (this._handle === null) return;
@@ -148,7 +148,7 @@ export class SectorReshapingTool extends go.Tool {
   /**
    * Stop the transaction.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this.stopTransaction();
 
     this._handle = null;
@@ -158,7 +158,7 @@ export class SectorReshapingTool extends go.Tool {
   /**
    * Restore the original angles and radius and then stop this tool.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this._handle !== null) {
       const part = (this._handle.part as go.Adornment).adornedPart;
       if (part !== null) {
@@ -176,7 +176,7 @@ export class SectorReshapingTool extends go.Tool {
    * properties on the model data.
    * Those property names are currently parameterized as static members of SectorReshapingTool.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     const diagram = this.diagram;
     const h = this._handle;
     if (this.isActive && h !== null) {
@@ -205,8 +205,7 @@ export class SectorReshapingTool extends go.Tool {
   /**
    * Finish the transaction and stop the tool.
    */
-  public doMouseUp(): void {
-    const diagram = this.diagram;
+  public override doMouseUp(): void {
     if (this.isActive) {
       this.transactionResult = this.name;  // successful finish
     }

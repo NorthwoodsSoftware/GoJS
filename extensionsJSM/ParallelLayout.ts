@@ -136,7 +136,7 @@ export class ParallelLayout extends go.TreeLayout {
   /**
    * @hidden @internal
    */
-  public makeNetwork(coll: go.Iterable<go.Part>): go.TreeNetwork {
+  public override makeNetwork(coll: go.Iterable<go.Part>): go.TreeNetwork {
     const net = super.makeNetwork(coll) as go.TreeNetwork;
     // Groups might be unbalanced -- position them so that the Split node is centered under the parent node.
     var it = net.vertexes.iterator;
@@ -176,7 +176,7 @@ export class ParallelLayout extends go.TreeLayout {
   /**
    * @hidden @internal
    */
-  public commitNodes(): void {
+  public override commitNodes(): void {
     super.commitNodes();
     // Line up the Merge node to the center of the Split node
     var mergeNode = this.mergeNode;
@@ -197,7 +197,7 @@ export class ParallelLayout extends go.TreeLayout {
   /**
    * @hidden @internal
    */
-  public commitLinks(): void {
+  public override commitLinks(): void {
     const splitNode = this.splitNode;
     const mergeNode = this.mergeNode;
     if (splitNode === null || mergeNode === null || this.network === null) return;

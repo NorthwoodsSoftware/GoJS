@@ -30,17 +30,17 @@ import * as go from '../release/go.js';
  * @category Tool Extension
  */
 export class FreehandDrawingTool extends go.Tool {
-  // this is the Shape that is shown during a drawing operation
-  private _temporaryShape: go.GraphObject = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
   private _archetypePartData: go.ObjectData = {}; // the data to copy for a new polyline Part
   private _isBackgroundOnly: boolean = true; // affects canStart()
-
-  // the Shape has to be inside a temporary Part that is used during the drawing operation
-  private temp: go.GraphObject = go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
+  private _temporaryShape: go.GraphObject;
 
   constructor() {
     super();
     this.name = 'FreehandDrawing';
+    // this is the Shape that is shown during a drawing operation
+    this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+    // the Shape has to be inside a temporary Part that is used during the drawing operation
+    go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
   }
 
   /**
@@ -81,7 +81,7 @@ export class FreehandDrawingTool extends go.Tool {
    * Only start if the diagram is modifiable and allows insertions.
    * OPTIONAL: if the user is starting in the diagram's background, not over an existing Part.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
@@ -98,7 +98,7 @@ export class FreehandDrawingTool extends go.Tool {
   /**
    * Capture the mouse and use a "crosshair" cursor.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     this.diagram.isMouseCaptured = true;
     this.diagram.currentCursor = 'crosshair';
@@ -107,7 +107,7 @@ export class FreehandDrawingTool extends go.Tool {
   /**
    * Release the mouse and reset the cursor.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     super.doDeactivate();
     if (this.temporaryShape !== null && this.temporaryShape.part !== null) {
       this.diagram.remove(this.temporaryShape.part);
@@ -169,7 +169,7 @@ export class FreehandDrawingTool extends go.Tool {
   /**
    * Start drawing the line by starting to accumulate points in the {@link #temporaryShape}'s geometry.
    */
-  public doMouseDown(): void {
+  public override doMouseDown(): void {
     if (!this.isActive) {
       this.doActivate();
       // the first point
@@ -180,7 +180,7 @@ export class FreehandDrawingTool extends go.Tool {
   /**
    * Keep accumulating points in the {@link #temporaryShape}'s geometry.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (this.isActive) {
       this.addPoint(this.diagram.lastInput.documentPoint);
     }
@@ -191,7 +191,7 @@ export class FreehandDrawingTool extends go.Tool {
    * geometry string and the node position that the node template can bind to.
    * This copies the {@link #archetypePartData} and adds it to the model.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     const diagram = this.diagram;
     let started = false;
     if (this.isActive) {

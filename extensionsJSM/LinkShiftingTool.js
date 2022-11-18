@@ -249,8 +249,9 @@ export class LinkShiftingTool extends go.Tool {
         // support rotated ports
         const portang = port.getDocumentAngle();
         const center = port.getDocumentPoint(go.Spot.Center);
+        const farpt = pt.copy().offset((pt.x - center.x) * 1000, (pt.y - center.y) * 1000);
         const portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center), port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
-        let lp = link.getLinkPointFromPoint(port.part, port, center, pt, fromend);
+        let lp = link.getLinkPointFromPoint(port.part, port, center, farpt, fromend);
         lp = lp.copy().subtract(center).rotate(-portang).add(center);
         const spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))), Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));
         if (fromend) {

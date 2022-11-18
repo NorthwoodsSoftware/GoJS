@@ -71,7 +71,6 @@ var __extends = (this && this.__extends) || (function () {
                 var angleSin = Math.sin(radAngle);
                 var deltaWidth = newr.width - obj.naturalBounds.width;
                 var deltaHeight = newr.height - obj.naturalBounds.height;
-                var angleRight = (angle > 270 || angle < 90) ? 1 : 0;
                 var angleBottom = (angle > 0 && angle < 180) ? 1 : 0;
                 var angleLeft = (angle > 90 && angle < 270) ? 1 : 0;
                 var angleTop = (angle > 180 && angle < 360) ? 1 : 0;

@@ -577,7 +577,6 @@ export class PackedLayout extends go.Layout {
         }
         const aspect = this._eAspectRatio;
         const shape = this.packShape;
-        const placementCost = this.placementCost;
         function score(n) {
             const a = n.data;
             const b = n.next.data;

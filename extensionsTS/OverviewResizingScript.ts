@@ -71,14 +71,13 @@ export function init() {
   ]);
 
   // Overview
-  const myOverview =
-    $(go.Overview, 'myOverviewDiv',  // the HTML DIV element for the Overview
-      {
-        observed: myDiagram,
-        contentAlignment: go.Spot.Center,
-        'box.resizable': true,
-        'resizingTool': new OverviewResizingTool()
-      });
+  $(go.Overview, 'myOverviewDiv',  // the HTML DIV element for the Overview
+    {
+      observed: myDiagram,
+      contentAlignment: go.Spot.Center,
+      'box.resizable': true,
+      'resizingTool': new OverviewResizingTool()
+    });
 
   (document.getElementById('zoomToFit') as HTMLElement).addEventListener('click', function() {
     myDiagram.zoomToFit();

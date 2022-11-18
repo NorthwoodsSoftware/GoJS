@@ -153,7 +153,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @hidden
    * @param coll
    */
-  doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
+  public override doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
     this.lanePositions.clear();  // lane names --> start columns, left to right
     this.laneBreadths.clear();  // lane names --> needed width in columns
     this._layers = [[]];
@@ -170,7 +170,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @param v
    * @param topleft
    */
-  nodeMinLayerSpace(v: go.LayeredDigraphVertex, topleft: boolean): number {
+  protected override nodeMinLayerSpace(v: go.LayeredDigraphVertex, topleft: boolean): number {
     if (!this._neededSpaces) this._neededSpaces = this.computeNeededLayerSpaces(this.network as go.LayeredDigraphNetwork);
     if (v.node === null) return 0;
     let lay = v.layer;
@@ -333,7 +333,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @hidden
    * Replace the standard reduceCrossings behavior so that it respects lanes.
    */
-  reduceCrossings(): void {
+  protected override reduceCrossings(): void {
     this.setupLanes();
 
     // this just cares about the .index and ignores .column
@@ -446,7 +446,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @hidden
    * Disable normal straightenAndPack behavior, which would mess up the columns.
    */
-  straightenAndPack(): void {}
+  protected override straightenAndPack(): void {}
 
   /**
    * Given a vertex, get the lane (name) that its node belongs in.

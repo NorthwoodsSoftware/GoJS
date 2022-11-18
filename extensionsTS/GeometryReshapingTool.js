@@ -438,7 +438,6 @@ var __extends = (this && this.__extends) || (function () {
             var figi = h._fig;
             var segi = h._seg;
             if (this.isResegmenting && typ >= 4 && shape.geometry !== null) {
-                var locpt = shape.getLocalPoint(diagram.firstInput.documentPoint);
                 var geo = shape.geometry.copy();
                 var fig = geo.figures.elt(figi);
                 var seg = fig.segments.elt(segi);

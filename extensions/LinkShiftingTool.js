@@ -250,9 +250,10 @@ LinkShiftingTool.prototype.doReshape = function(pt) {
   // support rotated ports
   var portang = port.getDocumentAngle();
   var center = port.getDocumentPoint(go.Spot.Center);
+  var farpt = pt.copy().offset((pt.x-center.x) * 1000, (pt.y-center.y) * 1000);
   var portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center),
                           port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
-  var lp = link.getLinkPointFromPoint(port.part, port, center, pt, fromend);
+  var lp = link.getLinkPointFromPoint(port.part, port, center, farpt, fromend);
   lp = lp.copy().subtract(center).rotate(-portang).add(center);
   var spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))),
                          Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));

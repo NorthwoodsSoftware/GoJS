@@ -29,13 +29,13 @@ import * as go from '../release/go-module.js';
 export class FreehandDrawingTool extends go.Tool {
     constructor() {
         super();
-        // this is the Shape that is shown during a drawing operation
-        this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
         this._archetypePartData = {}; // the data to copy for a new polyline Part
         this._isBackgroundOnly = true; // affects canStart()
-        // the Shape has to be inside a temporary Part that is used during the drawing operation
-        this.temp = go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
         this.name = 'FreehandDrawing';
+        // this is the Shape that is shown during a drawing operation
+        this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+        // the Shape has to be inside a temporary Part that is used during the drawing operation
+        go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
     }
     /**
      * Gets or sets the Shape that is used to hold the line as it is being drawn.

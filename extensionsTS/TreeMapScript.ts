@@ -124,19 +124,6 @@ export function rebuildGraph() {
   myDiagram.model = model;
 }
 
-class Nodes {
-  public key: number;
-  public isGroup: boolean;
-  public parent: any;
-  public text: string;
-  public fill: string;
-  public size: number;
-  public total: number;
-  constructor(key: number, isGroup: boolean, parent: any, text: string, fill: string, size: number, total: number) {
-    this.key = key; this.isGroup = isGroup; this.parent = parent; this.text = text; this.fill = fill; this.size = size; this.total = total;
-  }
-}
-
 // Creates a random number (between MIN and MAX) of randomly colored nodes.
 export function generateNodeData(minNodes: number, maxNodes: number, minChil: number, maxChil: number) {
   const nodeArray = [];

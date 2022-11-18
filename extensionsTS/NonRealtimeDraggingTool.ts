@@ -38,7 +38,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
    * @param {Iterable.<Part>} parts A {@link Set} or {@link List} of {@link Part}s.
    * @return {Map.<Part,DraggingInfo>}
    */
-  public computeEffectiveCollection(coll: go.Iterable<go.Part>): go.Map<go.Part, go.DraggingInfo> {
+  public override computeEffectiveCollection(coll: go.Iterable<go.Part>): go.Map<go.Part, go.DraggingInfo> {
     const map = super.computeEffectiveCollection(coll, this.dragOptions);
     if (this.isActive && this._imagePart === null) {
       const bounds = this.diagram.computePartsBounds(map.toKeySet());
@@ -58,7 +58,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
    * When activated, replace the {@link #draggedParts} with the ghost dragged parts, which
    * consists of just one Part, the image, added to the Diagram at the current mouse point.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     if (this._imagePart !== null) {
       this._imagePart.location = this.diagram.lastInput.documentPoint;
@@ -72,7 +72,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
   /**
    * When deactivated, make sure any image is removed from the Diagram and all references are cleared out.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     if (this._imagePart !== null) {
       this.diagram.remove(this._imagePart);
     }
@@ -85,7 +85,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
   /**
    * Do the normal mouse-up behavior, but only after restoring {@link #draggedParts}.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     const partsmap = this._originalDraggedParts;
     if (partsmap !== null) {
       this.draggedParts = partsmap;
@@ -106,7 +106,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
    * If the user changes to "copying" mode by holding down the Control key,
    * return to the regular behavior and remove the image.
    */
-  public doKeyDown(): void {
+  public override doKeyDown(): void {
     if (this._imagePart !== null && this._originalDraggedParts !== null &&
       (this.diagram.lastInput.control || this.diagram.lastInput.meta) && this.mayCopy()) {
       this.draggedParts = this._originalDraggedParts;
@@ -119,7 +119,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
    * If the user changes back to "moving" mode,
    * show the image again and go back to dragging the ghost dragged parts.
    */
-  public doKeyUp(): void {
+  public override doKeyUp(): void {
     if (this._imagePart !== null && this._ghostDraggedParts !== null && this.mayMove()) {
       this._imagePart.location = this.diagram.lastInput.documentPoint;
       this.diagram.add(this._imagePart);

@@ -43,7 +43,7 @@ export class PortShiftingTool extends go.Tool {
    * and if the mouse down point is on a GraphObject "port" in a Spot Panel,
    * as determined by {@link #findPort}.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     const diagram = this.diagram;
     if (!super.canStart()) return false;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
@@ -78,7 +78,7 @@ export class PortShiftingTool extends go.Tool {
    * Start a transaction, call {@link #findPort} and remember it as the "port" property,
    * and remember the original value for the port's {@link GraphObject#alignment} property.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     this.startTransaction('Shifted Label');
     this.port = this.findPort();
     if (this.port !== null) {
@@ -90,7 +90,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Stop any ongoing transaction.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     super.doDeactivate();
     this.stopTransaction();
   }
@@ -98,7 +98,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Clear any reference to a port element.
    */
-  public doStop(): void {
+  public override doStop(): void {
     this.port = null;
     super.doStop();
   }
@@ -106,7 +106,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Restore the port's original value for GraphObject.alignment.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this.port !== null) {
       this.port.alignment = this._originalAlignment;
     }
@@ -116,7 +116,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * During the drag, call {@link #updateAlignment} in order to set the {@link GraphObject#alignment} of the port.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (!this.isActive) return;
     this.updateAlignment();
   }
@@ -125,7 +125,7 @@ export class PortShiftingTool extends go.Tool {
    * At the end of the drag, update the alignment of the port and finish the tool,
    * completing a transaction.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (!this.isActive) return;
     this.updateAlignment();
     this.transactionResult = 'Shifted Label';

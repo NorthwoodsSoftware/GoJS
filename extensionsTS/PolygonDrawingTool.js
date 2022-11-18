@@ -62,11 +62,11 @@ var __extends = (this && this.__extends) || (function () {
             _this._isOrthoOnly = false;
             _this._isGridSnapEnabled = false;
             _this._archetypePartData = {}; // the data to copy for a new polygon Part
+            _this.name = 'PolygonDrawing';
             // this is the Shape that is shown during a drawing operation
             _this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
             // the Shape has to be inside a temporary Part that is used during the drawing operation
-            _this.temp = go.GraphObject.make(go.Part, { layerName: 'Tool' }, _this._temporaryShape);
-            _this.name = 'PolygonDrawing';
+            go.GraphObject.make(go.Part, { layerName: 'Tool' }, _this._temporaryShape);
             return _this;
         }
         Object.defineProperty(PolygonDrawingTool.prototype, "isPolygon", {

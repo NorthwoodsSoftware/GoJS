@@ -34,11 +34,11 @@ export class PolygonDrawingTool extends go.Tool {
         this._isOrthoOnly = false;
         this._isGridSnapEnabled = false;
         this._archetypePartData = {}; // the data to copy for a new polygon Part
+        this.name = 'PolygonDrawing';
         // this is the Shape that is shown during a drawing operation
         this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
         // the Shape has to be inside a temporary Part that is used during the drawing operation
-        this.temp = go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
-        this.name = 'PolygonDrawing';
+        go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
     }
     /**
      * Gets or sets whether this tools draws a filled polygon or an unfilled open polyline.

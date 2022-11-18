@@ -13,6 +13,8 @@
 // just those definitions into your own code.  Do not load this file unless you really want to
 // define a lot of code that your app does not use and will not get garbage-collected.
 
+// See also the figures defined in the RoundedRectangles.js file.
+
 import * as go from '../release/go-module.js';
 
 // The following functions and variables are used throughout this file:
@@ -3295,7 +3297,6 @@ go.Shape.defineFigureGenerator('OfflineStorage', (shape, w, h) => {
   const geo = new go.Geometry();
   let param1 = shape ? shape.parameter1 : NaN;
   if (isNaN(param1)) param1 = .1; // Distance between 2 top lines
-  const l = 1 - param1; // Length of the top line
   const fig = new go.PathFigure(0, 0, true);
   geo.add(fig);
 
@@ -3791,7 +3792,6 @@ go.Shape.defineFigureGenerator('Inductor', (shape, w, h) => {
   const cpOffset = KAPPA * .1;
   const radius = .1;
   let centerx = .1;
-  const centery = .5;
   // Up
   const fig = new go.PathFigure((centerx - cpOffset * .5) * w, h, false);
   geo.add(fig);
@@ -4368,7 +4368,6 @@ go.Shape.defineFigureGenerator('BpmnTaskUser', (shape, w, h) => {
   const centery = radiushead;
   const alpha2 = Math.PI / 4;
   const KAPPA2 = ((4 * (1 - Math.cos(alpha2))) / (3 * Math.sin(alpha2)));
-  const cpOffset = KAPPA2 * .5;
   const radiusw = radiushead;
   const radiush = radiushead;
   const offsetw = KAPPA2 * radiusw;

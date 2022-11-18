@@ -201,11 +201,10 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
       return;
     }
     let rows = 0;
-    let rowh = 1;
     let last = idx;
     for (var i = idx; i < table.rowCount; i++) {
       var h = table.elt(i).actualBounds.height;
-      if (h > 0) { rows++; rowh += h; last = i; }
+      if (h > 0) { rows++; last = i; }
     }
     const needed = idx > 0 || last < table.rowCount-1;
     bar.opacity = needed ? 1.0 : 0.5;

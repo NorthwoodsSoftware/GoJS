@@ -77,7 +77,7 @@ export class RowResizingTool extends go.Tool {
    * Don't show anything if {@link #tableName} doesn't identify a {@link Panel}
    * that has a {@link Panel#type} of type {@link Panel.Table}.
    */
-  public updateAdornments(part: go.Part): void {
+  public override updateAdornments(part: go.Part): void {
     if (part === null || part instanceof go.Link) return;  // this tool never applies to Links
     if (part.isSelected && !this.diagram.isReadOnly) {
       const selelt = part.findObject(this.tableName);
@@ -165,7 +165,7 @@ export class RowResizingTool extends go.Tool {
    * the diagram is not read-only, the left mouse button is being used,
    * and this tool's adornment's resize handle is at the current mouse point.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
 
     const diagram = this.diagram;
@@ -180,7 +180,7 @@ export class RowResizingTool extends go.Tool {
    *
    * If the call to {@link Tool#findToolHandleAt} finds no "RowResizing" tool handle, this method returns without activating this tool.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     const diagram = this.diagram;
     this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
     if (this.handle === null) return;
@@ -195,7 +195,7 @@ export class RowResizingTool extends go.Tool {
   /**
    * Stop the current transaction and release the mouse.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this.stopTransaction();
     this._handle = null;
     this._adornedTable = null;
@@ -208,7 +208,7 @@ export class RowResizingTool extends go.Tool {
    * Call {@link #resize} with a new size determined by the current mouse point.
    * This determines the new bounds by calling {@link #computeResize}.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     const diagram = this.diagram;
     if (this.isActive) {
       const newpt = this.computeResize(diagram.lastInput.documentPoint);
@@ -220,7 +220,7 @@ export class RowResizingTool extends go.Tool {
    * Call {@link #resize} with the final bounds based on the most recent mouse point, and commit the transaction.
    * This determines the new bounds by calling {@link #computeResize}.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     const diagram = this.diagram;
     if (this.isActive) {
       const newpt = this.computeResize(diagram.lastInput.documentPoint);
@@ -268,7 +268,7 @@ export class RowResizingTool extends go.Tool {
   /**
    * Pressing the Delete key removes any column width setting and stops this tool.
    */
-  public doKeyDown(): void {
+  public override doKeyDown(): void {
     if (!this.isActive) return;
     const diagram = this.diagram;
     const e = diagram.lastInput;

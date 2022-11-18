@@ -22,6 +22,7 @@
     // If you need any of the other figures that are defined in this file, we suggest that you copy
     // just those definitions into your own code.  Do not load this file unless you really want to
     // define a lot of code that your app does not use and will not get garbage-collected.
+    // See also the figures defined in the RoundedRectangles.js file.
     var go = require("../release/go.js");
     // The following functions and variables are used throughout this file:
     /**
@@ -298,7 +299,7 @@
         }
         return geo;
     });
-    //go.Shape.defineFigureGenerator('Border', 'RoundedRectangle');  // predefined in 2.0
+    go.Shape.defineFigureGenerator('Border', 'RoundedRectangle'); // predefined in 2.0
     //go.Shape.defineFigureGenerator('Ellipse', (shape, w, h) => {  // predefined in 2.0
     //  const geo = new go.Geometry(go.Geometry.Ellipse);
     //  geo.startX = 0;
@@ -2879,7 +2880,6 @@
         var param1 = shape ? shape.parameter1 : NaN;
         if (isNaN(param1))
             param1 = .1; // Distance between 2 top lines
-        var l = 1 - param1; // Length of the top line
         var fig = new go.PathFigure(0, 0, true);
         geo.add(fig);
         fig.add(new go.PathSegment(go.PathSegment.Line, w, 0));
@@ -3296,7 +3296,6 @@
         var cpOffset = KAPPA * .1;
         var radius = .1;
         var centerx = .1;
-        var centery = .5;
         // Up
         var fig = new go.PathFigure((centerx - cpOffset * .5) * w, h, false);
         geo.add(fig);
@@ -3710,7 +3709,6 @@
         var centery = radiushead;
         var alpha2 = Math.PI / 4;
         var KAPPA2 = ((4 * (1 - Math.cos(alpha2))) / (3 * Math.sin(alpha2)));
-        var cpOffset = KAPPA2 * .5;
         var radiusw = radiushead;
         var radiush = radiushead;
         var offsetw = KAPPA2 * radiusw;

@@ -71,7 +71,7 @@ export class SpiralLayout extends go.Layout {
   /**
    * Copies properties to a cloned Layout.
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._radius = this._radius;
     copy._spacing = this._spacing;
@@ -84,7 +84,7 @@ export class SpiralLayout extends go.Layout {
    * This respects the {@link #spacing} property to affect the layout.
    * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
    */
-  public doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
+  public override doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
     if (this.network === null) {
       this.network = this.makeNetwork(coll);
     }

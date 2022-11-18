@@ -111,18 +111,6 @@
         myDiagram.model = model;
     }
     exports.rebuildGraph = rebuildGraph;
-    var Nodes = /** @class */ (function () {
-        function Nodes(key, isGroup, parent, text, fill, size, total) {
-            this.key = key;
-            this.isGroup = isGroup;
-            this.parent = parent;
-            this.text = text;
-            this.fill = fill;
-            this.size = size;
-            this.total = total;
-        }
-        return Nodes;
-    }());
     // Creates a random number (between MIN and MAX) of randomly colored nodes.
     function generateNodeData(minNodes, maxNodes, minChil, maxChil) {
         var nodeArray = [];

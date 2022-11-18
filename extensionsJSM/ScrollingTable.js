@@ -199,13 +199,11 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
             return;
         }
         let rows = 0;
-        let rowh = 1;
         let last = idx;
         for (var i = idx; i < table.rowCount; i++) {
             var h = table.elt(i).actualBounds.height;
             if (h > 0) {
                 rows++;
-                rowh += h;
                 last = i;
             }
         }

@@ -65,7 +65,7 @@
             { key: 0, everExpanded: false }
         ]);
         // Overview
-        var myOverview = $(go.Overview, 'myOverviewDiv', // the HTML DIV element for the Overview
+        $(go.Overview, 'myOverviewDiv', // the HTML DIV element for the Overview
         {
             observed: myDiagram,
             contentAlignment: go.Spot.Center,

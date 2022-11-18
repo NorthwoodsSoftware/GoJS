@@ -64,7 +64,7 @@ export class NodeLabelDraggingTool extends go.Tool {
    * and if the mouse down point is on a GraphObject "label" in a Spot Panel,
    * as determined by findLabel().
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!super.canStart()) return false;
     const diagram = this.diagram;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
@@ -79,7 +79,7 @@ export class NodeLabelDraggingTool extends go.Tool {
    * Start a transaction, call {@link #findLabel} and remember it as the "label" property,
    * and remember the original value for the label's {@link GraphObject#alignment} property.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     this.startTransaction('Shifted Label');
     this.label = this.findLabel();
     if (this.label !== null) {
@@ -98,7 +98,7 @@ export class NodeLabelDraggingTool extends go.Tool {
   /**
    * Stop any ongoing transaction.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     super.doDeactivate();
     this.stopTransaction();
   }
@@ -106,7 +106,7 @@ export class NodeLabelDraggingTool extends go.Tool {
   /**
    * Clear any reference to a label element.
    */
-  public doStop(): void {
+  public override doStop(): void {
     this.label = null;
     super.doStop();
   }
@@ -114,7 +114,7 @@ export class NodeLabelDraggingTool extends go.Tool {
   /**
    * Restore the label's original value for GraphObject.alignment.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this.label !== null) {
       this.label.alignment = this._originalAlignment;
     }
@@ -124,7 +124,7 @@ export class NodeLabelDraggingTool extends go.Tool {
   /**
    * During the drag, call updateAlignment in order to set the {@link GraphObject#alignment} of the label.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (!this.isActive) return;
     this.updateAlignment();
   }
@@ -133,7 +133,7 @@ export class NodeLabelDraggingTool extends go.Tool {
    * At the end of the drag, update the alignment of the label and finish the tool,
    * completing a transaction.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (!this.isActive) return;
     this.updateAlignment();
     this.transactionResult = 'Shifted Label';

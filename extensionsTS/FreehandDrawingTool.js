@@ -57,13 +57,13 @@ var __extends = (this && this.__extends) || (function () {
         __extends(FreehandDrawingTool, _super);
         function FreehandDrawingTool() {
             var _this = _super.call(this) || this;
-            // this is the Shape that is shown during a drawing operation
-            _this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
             _this._archetypePartData = {}; // the data to copy for a new polyline Part
             _this._isBackgroundOnly = true; // affects canStart()
-            // the Shape has to be inside a temporary Part that is used during the drawing operation
-            _this.temp = go.GraphObject.make(go.Part, { layerName: 'Tool' }, _this._temporaryShape);
             _this.name = 'FreehandDrawing';
+            // this is the Shape that is shown during a drawing operation
+            _this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+            // the Shape has to be inside a temporary Part that is used during the drawing operation
+            go.GraphObject.make(go.Part, { layerName: 'Tool' }, _this._temporaryShape);
             return _this;
         }
         Object.defineProperty(FreehandDrawingTool.prototype, "temporaryShape", {

@@ -190,7 +190,6 @@ export class SectorReshapingTool extends go.Tool {
      * Finish the transaction and stop the tool.
      */
     doMouseUp() {
-        const diagram = this.diagram;
         if (this.isActive) {
             this.transactionResult = this.name; // successful finish
         }

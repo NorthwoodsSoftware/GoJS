@@ -377,7 +377,6 @@ export class GeometryReshapingTool extends go.Tool {
         const figi = h._fig;
         const segi = h._seg;
         if (this.isResegmenting && typ >= 4 && shape.geometry !== null) {
-            const locpt = shape.getLocalPoint(diagram.firstInput.documentPoint);
             const geo = shape.geometry.copy();
             const fig = geo.figures.elt(figi);
             const seg = fig.segments.elt(segi);

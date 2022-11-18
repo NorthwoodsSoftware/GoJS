@@ -36,7 +36,7 @@ export class OverviewResizingTool extends go.ResizingTool {
    * @param {Shape} resizeBox
    * @return {Adornment}
    */
-  public makeAdornment(resizeBox: go.Shape): go.Adornment {
+  public override makeAdornment(resizeBox: go.Shape): go.Adornment {
     this._handleSize.setTo(resizeBox.strokeWidth * 3, resizeBox.strokeWidth * 3);
     // Set up the resize adornment
     const ad = new go.Adornment();
@@ -64,7 +64,7 @@ export class OverviewResizingTool extends go.ResizingTool {
    * @param {Adornment} elt
    * @param {number} angle
    */
-  public updateResizeHandles(elt: go.Adornment, angle: number) {
+  public override updateResizeHandles(elt: go.Adornment, angle: number) {
     if (elt === null) return;
     const handle = elt.findObject('RSZHND') as go.Shape;
     const box = elt.adornedObject as go.Shape;
@@ -76,7 +76,7 @@ export class OverviewResizingTool extends go.ResizingTool {
    * Overrides {@link ResizingTool#resize} to resize the overview box via setting the observed diagram's scale.
    * @param {Rect} newr the intended new rectangular bounds the overview box.
    */
-  public resize(newr: go.Rect): void {
+  public override resize(newr: go.Rect): void {
     const overview = this.diagram as go.Overview;
     const observed = overview.observed;
     if (observed === null) return;

@@ -660,7 +660,6 @@ var __extends = (this && this.__extends) || (function () {
             }
             var aspect = this._eAspectRatio;
             var shape = this.packShape;
-            var placementCost = this.placementCost;
             function score(n) {
                 var a = n.data;
                 var b = n.next.data;

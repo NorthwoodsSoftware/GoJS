@@ -210,13 +210,11 @@
                 return;
             }
             var rows = 0;
-            var rowh = 1;
             var last = idx;
             for (var i = idx; i < table.rowCount; i++) {
                 var h = table.elt(i).actualBounds.height;
                 if (h > 0) {
                     rows++;
-                    rowh += h;
                     last = i;
                 }
             }

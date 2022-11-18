@@ -107,7 +107,7 @@ export class DragCreatingTool extends go.Tool {
    * and there has been delay of at least {@link #delay} milliseconds
    * after the mouse-down before a mouse-move.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
 
     // gotta have some node data that can be copied
@@ -133,7 +133,7 @@ export class DragCreatingTool extends go.Tool {
   /**
    * Capture the mouse and show the {@link #box}.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     const diagram = this.diagram;
     this.isActive = true;
     diagram.isMouseCaptured = true;
@@ -144,7 +144,7 @@ export class DragCreatingTool extends go.Tool {
   /**
    * Release the mouse and remove any {@link #box}.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     const diagram = this.diagram;
     diagram.remove(this.box);
     diagram.isMouseCaptured = false;
@@ -155,7 +155,7 @@ export class DragCreatingTool extends go.Tool {
    * Update the {@link #box}'s position and size according to the value
    * of {@link #computeBoxBounds}.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (this.isActive && this.box !== null) {
       const r = this.computeBoxBounds();
       let shape = this.box.findObject('SHAPE');
@@ -168,7 +168,7 @@ export class DragCreatingTool extends go.Tool {
   /**
    * Call {@link #insertPart} with the value of a call to {@link #computeBoxBounds}.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (this.isActive) {
       const diagram = this.diagram;
       diagram.remove(this.box);

@@ -143,7 +143,6 @@ export class DragZoomingTool extends go.Tool {
      * of {@link #computeBoxBounds}.
      */
     doMouseMove() {
-        const diagram = this.diagram;
         if (this.isActive && this.box !== null) {
             const r = this.computeBoxBounds();
             let shape = this.box.findObject('SHAPE');

@@ -231,7 +231,6 @@ var __extends = (this && this.__extends) || (function () {
          * Finish the transaction and stop the tool.
          */
         SectorReshapingTool.prototype.doMouseUp = function () {
-            var diagram = this.diagram;
             if (this.isActive) {
                 this.transactionResult = this.name; // successful finish
             }

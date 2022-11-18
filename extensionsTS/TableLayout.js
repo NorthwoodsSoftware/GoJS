@@ -753,7 +753,6 @@ var __extends = (this && this.__extends) || (function () {
          * @hidden @internal
          */
         TableLayout.prototype.arrangeTable = function (children, union, rowcol) {
-            var l = children.length;
             var originx = this.arrangementOrigin.x;
             var originy = this.arrangementOrigin.y;
             var x = 0.0;
@@ -826,17 +825,6 @@ var __extends = (this && this.__extends) || (function () {
                         ar.y = y;
                         ar.width = colwidth;
                         ar.height = rowheight;
-                        // Also keep them for clip values
-                        var cellx = x;
-                        var celly = y;
-                        var cellw = colwidth;
-                        var cellh = rowheight;
-                        // Ending rows/col might have actual spaces that are larger than the remaining space
-                        // Modify them for clipping regions
-                        if (x + colwidth > union.width)
-                            cellw = Math.max(union.width - x, 0);
-                        if (y + rowheight > union.height)
-                            cellh = Math.max(union.height - y, 0);
                         // Construct alignment:
                         var align = child.alignment;
                         var alignx = 0.0;

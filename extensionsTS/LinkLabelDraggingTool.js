@@ -169,8 +169,14 @@ var __extends = (this && this.__extends) || (function () {
             var last = this.diagram.lastInput.documentPoint;
             var idx = lab.segmentIndex;
             var numpts = link.pointsCount;
-            // if the label is a "mid" label, assume it is positioned differently from a label at a particular segment
-            if (idx < -numpts || idx >= numpts) {
+            if (isNaN(idx) && link.path) { // handle fractions along the whole path
+                var labpt = link.path.getDocumentPoint(link.geometry.getPointAlongPath(lab.segmentFraction));
+                var angle = link.geometry.getAngleAlongPath(lab.segmentFraction);
+                var p = new go.Point(last.x - this._offset.x - labpt.x, last.y - this._offset.y - labpt.y);
+                lab.segmentOffset = p.rotate(-angle);
+            }
+            else if (idx < -numpts || idx >= numpts) {
+                // if the label is a "mid" label, assume it is positioned differently from a label at a particular segment
                 var mid = link.midPoint;
                 // need to rotate this point to account for the angle of the link segment at the mid-point
                 var p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);

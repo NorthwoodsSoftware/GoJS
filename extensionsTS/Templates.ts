@@ -9,6 +9,7 @@
 // are actually implemented, there may be some differences from what is in the library.
 
 // Caution: these may change in a future version.
+// @ts-nocheck
 
 import * as go from '../release/go.js';
 

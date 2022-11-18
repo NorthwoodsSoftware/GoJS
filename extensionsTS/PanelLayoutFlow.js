@@ -352,10 +352,8 @@ var __extends = (this && this.__extends) || (function () {
             }
             panel.panelLayoutState = null; // free up the temporary Arrays
         };
-        PanelLayoutFlow._ = (function () {
-            go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());
-        })();
         return PanelLayoutFlow;
     }(go.PanelLayout));
     exports.PanelLayoutFlow = PanelLayoutFlow;
+    go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());
 });

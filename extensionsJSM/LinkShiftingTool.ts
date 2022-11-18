@@ -76,7 +76,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Show an {@link Adornment} with a reshape handle at each end of the link which allows for shifting of the end points.
    */
-  public updateAdornments(part: go.Part): void {
+  public override updateAdornments(part: go.Part): void {
     if (part === null || !(part instanceof go.Link)) return;  // this tool only applies to Links
     const link: go.Link = part;
     // show handles if link is selected, remove them if no longer selected
@@ -146,7 +146,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * This tool may run when there is a mouse-down event on a reshaping handle.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
@@ -163,7 +163,7 @@ export class LinkShiftingTool extends go.Tool {
    * It also remembers the original points in case this tool is cancelled.
    * And it starts a transaction.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     const diagram = this.diagram;
     let h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingFrom');
     if (h === null) h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingTo');
@@ -184,7 +184,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * This stops the current shifting operation with the link as it is.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this.isActive = false;
     const diagram = this.diagram;
     diagram.isMouseCaptured = false;
@@ -195,7 +195,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Perform cleanup of tool state.
    */
-  public doStop(): void {
+  public override doStop(): void {
     this._handle = null;
     this._originalPoints = null;
   }
@@ -203,7 +203,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Restore the link route to be the original points and stop this tool.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this._handle !== null) {
       const ad = this._handle.part as go.Adornment;
       if (ad.adornedObject === null) return;
@@ -217,7 +217,7 @@ export class LinkShiftingTool extends go.Tool {
    * Call {@link #doReshape} with a new point determined by the mouse
    * to change the end point of the link.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (this.isActive) {
       this.doReshape(this.diagram.lastInput.documentPoint);
     }
@@ -227,7 +227,7 @@ export class LinkShiftingTool extends go.Tool {
    * Reshape the link's end with a point based on the most recent mouse point by calling {@link #doReshape},
    * and then stop this tool.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (this.isActive) {
       this.doReshape(this.diagram.lastInput.documentPoint);
       this.transactionResult = this.name;
@@ -254,9 +254,10 @@ export class LinkShiftingTool extends go.Tool {
     // support rotated ports
     const portang = port.getDocumentAngle();
     const center = port.getDocumentPoint(go.Spot.Center);
+    const farpt = pt.copy().offset((pt.x-center.x) * 1000, (pt.y-center.y) * 1000);
     const portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center),
                               port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
-    let lp = link.getLinkPointFromPoint(port.part as go.Node, port, center, pt, fromend);
+    let lp = link.getLinkPointFromPoint(port.part as go.Node, port, center, farpt, fromend);
     lp = lp.copy().subtract(center).rotate(-portang).add(center);
     const spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))),
                              Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));

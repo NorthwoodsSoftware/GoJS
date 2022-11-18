@@ -316,6 +316,4 @@ export class PanelLayoutFlow extends go.PanelLayout {
         panel.panelLayoutState = null; // free up the temporary Arrays
     }
 }
-PanelLayoutFlow._ = (() => {
-    go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());
-})();
+go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());

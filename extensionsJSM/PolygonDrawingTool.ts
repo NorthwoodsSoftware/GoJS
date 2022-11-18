@@ -34,9 +34,7 @@ export class PolygonDrawingTool extends go.Tool {
   private _archetypePartData: go.ObjectData= {}; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
-  private _temporaryShape: go.Shape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
-  // the Shape has to be inside a temporary Part that is used during the drawing operation
-  private temp: go.Part = go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
+  private _temporaryShape: go.Shape;
 
   /**
    * Constructs an PolygonDrawingTool and sets the name for the tool.
@@ -44,6 +42,10 @@ export class PolygonDrawingTool extends go.Tool {
   constructor() {
     super();
     this.name = 'PolygonDrawing';
+    // this is the Shape that is shown during a drawing operation
+    this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
+    // the Shape has to be inside a temporary Part that is used during the drawing operation
+    go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
   }
 
   /**
@@ -107,7 +109,7 @@ export class PolygonDrawingTool extends go.Tool {
    * When this tool is a mouse-down tool, it requires using the left mouse button in the background of a modifiable Diagram.
    * Modal uses of this tool will not call this canStart predicate.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
@@ -125,7 +127,7 @@ export class PolygonDrawingTool extends go.Tool {
   * and start accumulating points in the geometry of the {@link #temporaryShape}.
   * @this {PolygonDrawingTool}
   */
-  public doStart() {
+  public override doStart() {
     super.doStart();
     var diagram = this.diagram;
     if (!diagram) return;
@@ -138,7 +140,7 @@ export class PolygonDrawingTool extends go.Tool {
    * Start a transaction, capture the mouse, use a "crosshair" cursor,
    * and start accumulating points in the geometry of the {@link #temporaryShape}.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     var diagram = this.diagram;
     if (!diagram) return;
@@ -149,7 +151,7 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Stop the transaction and clean up.
    */
-  public doStop(): void {
+  public override doStop(): void {
     super.doStop();
     var diagram = this.diagram;
     if (!diagram) return;
@@ -349,7 +351,7 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Add another point to the geometry of the {@link #temporaryShape}.
    */
-  public doMouseDown(): void {
+  public override doMouseDown(): void {
     const diagram = this.diagram;
     if (!this.isActive) {
       this.doActivate();
@@ -367,7 +369,7 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Move the last point of the {@link #temporaryShape}'s geometry to follow the mouse point.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     const diagram = this.diagram;
     if (this.isActive) {
       this.moveLastPoint(diagram.lastInput.documentPoint);
@@ -377,7 +379,7 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Do not stop this tool, but continue to accumulate Points via mouse-down events.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     // don't stop this tool (the default behavior is to call stopTool)
   }
 
@@ -389,7 +391,7 @@ export class PolygonDrawingTool extends go.Tool {
    *
    * Typing the "ESCAPE" key causes the temporary Shape and its geometry to be discarded and this tool to be stopped.
    */
-  public doKeyDown(): void {
+  public override doKeyDown(): void {
     const diagram = this.diagram;
     if (!this.isActive) return;
     const e = diagram.lastInput;

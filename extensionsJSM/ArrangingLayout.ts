@@ -89,7 +89,7 @@ export class ArrangingLayout extends go.Layout {
   * @ignore @hidden @internal
   * Copies properties to a cloned Layout.
   */
-  cloneProtected(copy: this): void {
+  override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._filter = this._filter;
     if (this._primaryLayout !== null) copy._primaryLayout = this._primaryLayout.copy();
@@ -103,7 +103,7 @@ export class ArrangingLayout extends go.Layout {
   * @hidden @internal
   * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
   */
-  doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>) {
+   override doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>) {
     const coll2 = this.collectParts(coll);
     if (coll2.count === 0) return;
 

@@ -35,7 +35,7 @@ export class TreeMapLayout extends go.Layout {
   /**
    * Copies properties to a cloned Layout.
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._isTopLevelHorizontal = this._isTopLevelHorizontal;
   }
@@ -44,7 +44,7 @@ export class TreeMapLayout extends go.Layout {
    * This method actually positions all of the nodes by determining total area and then recursively tiling nodes from the top-level down.
    * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
    */
-   public doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
+  public override doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>): void {
     if (!(coll instanceof go.Diagram)) throw new Error('TreeMapLayout only works as the Diagram.layout');
     const diagram = coll;
     this.computeTotals(diagram);  // make sure data.total has been computed for every node

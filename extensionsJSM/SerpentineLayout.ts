@@ -112,7 +112,7 @@ export class SerpentineLayout extends go.Layout {
   /**
    * Copies properties to a cloned Layout.
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._spacing = this._spacing;
     copy._wrap = this._wrap;
@@ -127,7 +127,7 @@ export class SerpentineLayout extends go.Layout {
    * This respects the {@link #spacing} and {@link #wrap} properties to affect the layout.
    * @param {Iterable.<Part>} coll A collection of {@link Part}s.
    */
-  public doLayout(collection: go.Diagram | go.Iterable<go.Part> | go.Group): void {
+  public override doLayout(collection: go.Diagram | go.Iterable<go.Part> | go.Group): void {
     const diagram = this.diagram;
     const coll = this.collectParts(collection);
 

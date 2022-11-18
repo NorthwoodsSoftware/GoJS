@@ -58,7 +58,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
    * and if the mouse down point is on a GraphObject "label" in a Link Panel,
    * as determined by {@link #findLabel}.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!super.canStart()) return false;
     const diagram = this.diagram;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
@@ -73,7 +73,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
    * Start a transaction, call findLabel and remember it as the "label" property,
    * and remember the original values for the label's segment properties.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     this.startTransaction('Shifted Label');
     this.label = this.findLabel();
     if (this.label !== null) {
@@ -85,7 +85,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
   /**
    * Stop any ongoing transaction.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     super.doDeactivate();
     this.stopTransaction();
   }
@@ -93,7 +93,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
   /**
    * Clear any reference to a label element.
    */
-  public doStop(): void {
+  public override doStop(): void {
     this.label = null;
     super.doStop();
   }
@@ -101,7 +101,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
   /**
    * Restore the label's original value for GraphObject.segment... properties.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this.label !== null) {
       this.label.segmentFraction = this._originalFraction;
     }
@@ -111,7 +111,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
   /**
    * During the drag, call {@link #updateSegmentOffset} in order to set the segment... properties of the label.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     if (!this.isActive) return;
     this.updateSegmentOffset();
   }
@@ -120,7 +120,7 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
    * At the end of the drag, update the segment properties of the label and finish the tool,
    * completing a transaction.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     if (!this.isActive) return;
     this.updateSegmentOffset();
     this.transactionResult = 'Shifted Label';

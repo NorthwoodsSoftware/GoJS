@@ -149,7 +149,6 @@ export class DimensioningLink extends go.Link {
             this.addPointAt(topoint.x + g.x, topoint.y + g.y);
         }
         else {
-            const dist = this.extension;
             let r = 0.0;
             let s = 0.0;
             let t0 = 0.0;

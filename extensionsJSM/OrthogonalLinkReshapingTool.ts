@@ -33,7 +33,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
    * @hidden @internal
    * For orthogonal, straight links, create the handles and set reshaping behavior.
    */
-  public makeAdornment(pathshape: go.Shape): go.Adornment | null {
+  public override makeAdornment(pathshape: go.Shape): go.Adornment | null {
     const link = pathshape.part as go.Link;
 
     // add all normal handles first
@@ -53,7 +53,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
   /**
    * This stops the current reshaping operation and updates any link handles.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this._alreadyAddedPoint = false;
     // when we finish, recreate adornment to ensure proper reshaping behavior/cursor
     const link = this.adornedLink;
@@ -74,7 +74,7 @@ export class OrthogonalLinkReshapingTool extends go.LinkReshapingTool {
    * Change the route of the {@link #adornedLink} by moving the segment corresponding to the current
    * {@link #handle} to be at the given {@link Point}.
    */
-  public reshape(newpt: go.Point): void {
+  public override reshape(newpt: go.Point): void {
     const link = this.adornedLink;
 
     // identify if the handle being dragged is a segment dragging handle

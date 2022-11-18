@@ -81,7 +81,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
    * This override records information about the original point of the handle being dragged,
    * if the {@link #adornedLink} is Orthogonal and if {@link #avoidsNodes} is true.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     if (this.isActive && this.avoidsNodes && this.adornedLink !== null && this.adornedLink.isOrthogonal && this.handle !== null) {
       // assume the Link's route starts off correctly avoiding all nodes
@@ -102,7 +102,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
    * this method also avoids returning a Point that causes the adjacent segments, both before and after
    * the current handle's index, to cross over any Nodes that are {@link Node#avoidable}.
    */
-  public computeReshape(p: go.Point): go.Point {
+  public override computeReshape(p: go.Point): go.Point {
     let pt = p;
     const diagram = this.diagram;
     if (this.isGridSnapEnabled) {

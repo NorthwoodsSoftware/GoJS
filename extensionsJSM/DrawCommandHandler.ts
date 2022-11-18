@@ -365,7 +365,7 @@ export class DrawCommandHandler extends go.CommandHandler {
    * Set {@link #arrowKeyBehavior} to "select", "move" (the default), "scroll" (the standard behavior), or "none"
    * to affect the behavior when the user types an arrow key.
    */
-  public doKeyDown(): void {
+  public override doKeyDown(): void {
     const diagram = this.diagram;
     const e = diagram.lastInput;
 
@@ -504,7 +504,7 @@ export class DrawCommandHandler extends go.CommandHandler {
    * Reset the last offset for pasting.
    * @param {Iterable.<Part>} coll a collection of {@link Part}s.
    */
-  public copyToClipboard(coll: go.Iterable<go.Part>): void {
+  public override copyToClipboard(coll: go.Iterable<go.Part>): void {
     super.copyToClipboard(coll);
     this._lastPasteOffset.set(this.pasteOffset);
   }
@@ -513,7 +513,7 @@ export class DrawCommandHandler extends go.CommandHandler {
    * Paste from the clipboard with an offset incremented on each paste, and reset when copied.
    * @return {Set.<Part>} a collection of newly pasted {@link Part}s
    */
-  public pasteFromClipboard(): go.Set<go.Part> {
+  public override pasteFromClipboard(): go.Set<go.Part> {
     const coll = super.pasteFromClipboard();
     this.diagram.moveParts(coll, this._lastPasteOffset, false);
     this._lastPasteOffset.add(this.pasteOffset);

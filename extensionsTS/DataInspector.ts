@@ -630,7 +630,11 @@ export class Inspector {
   public convertToArrayOfNumber(propertyValue: string): Array<number> | null {
     if (propertyValue === 'null') return null;
     const split = propertyValue.split(' ');
+<<<<<<< Updated upstream
     const arr:number[] = [];
+=======
+    const arr: Array<number> = [];
+>>>>>>> Stashed changes
     for (let i = 0; i < split.length; i++) {
       const str = split[i];
       if (!str) continue;

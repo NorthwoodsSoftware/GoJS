@@ -184,7 +184,6 @@ var __extends = (this && this.__extends) || (function () {
          * of {@link #computeBoxBounds}.
          */
         DragZoomingTool.prototype.doMouseMove = function () {
-            var diagram = this.diagram;
             if (this.isActive && this.box !== null) {
                 var r = this.computeBoxBounds();
                 var shape = this.box.findObject('SHAPE');

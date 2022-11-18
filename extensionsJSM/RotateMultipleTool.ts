@@ -40,7 +40,7 @@ export class RotateMultipleTool extends go.RotatingTool {
    * Calls {@link RotatingTool#doActivate}, and then remembers the center point of the collection,
    * and the initial distances and angles of selected parts to the center.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     const diagram = this.diagram;
     // center point of the collection
@@ -82,7 +82,7 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Clean up any references to Parts.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this._initialInfo = null;
     super.doDeactivate();
   }
@@ -91,7 +91,7 @@ export class RotateMultipleTool extends go.RotatingTool {
    * Rotate all selected objects about their collective center.
    * When the control key is held down while rotating, all selected objects are rotated individually.
    */
-  public rotate(newangle: number): void {
+  public override rotate(newangle: number): void {
     const diagram = this.diagram;
     if (this._initialInfo === null) return;
     const node = this.adornedObject !== null ? this.adornedObject.part : null;
@@ -130,7 +130,7 @@ export class RotateMultipleTool extends go.RotatingTool {
    * depending on whether we are rotating the whole selection as one, or Parts individually.
    * @param {Point} newPoint in document coordinates
    */
-  public computeRotate(newPoint: go.Point): number {
+  public override computeRotate(newPoint: go.Point): number {
     const diagram = this.diagram;
     if (this.adornedObject === null) return 0.0;
     let angle = 0.0;

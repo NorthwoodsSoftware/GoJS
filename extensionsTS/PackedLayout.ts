@@ -522,7 +522,7 @@ export class PackedLayout extends go.Layout {
    * @this {PackedLayout}
    * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
    */
-  public doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>) {
+  public override doLayout(coll: go.Diagram | go.Group | go.Iterable<go.Part>) {
     const diagram = this.diagram;
     if (diagram !== null) diagram.startTransaction('Layout');
     this._bounds = new go.Rect();
@@ -676,7 +676,7 @@ export class PackedLayout extends go.Layout {
    * @expose
    * @this {PackedLayout}
    */
-  public commitLayout(): void {}
+  public override commitLayout(): void {}
 
   /**
    * @hidden @internal
@@ -719,7 +719,7 @@ export class PackedLayout extends go.Layout {
 
     const aspect = this._eAspectRatio;
     const shape = this.packShape;
-    const placementCost = this.placementCost;
+
     function score(n: ListNode<go.Rect>) {
       const a = n.data;
       const b = n.next.data;
@@ -1672,7 +1672,7 @@ export class PackedLayout extends go.Layout {
    * @this {PackedLayout}
    * @param {?} copy
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     copy._packShape = this._packShape;
     copy._packMode = this._packMode;
     copy._sortMode = this._sortMode;

@@ -15,7 +15,7 @@ import * as go from '../release/go.js';
 */
 
 /**
-* A custom tool for rescaling an object by modifying its {@link GraphObject#scale} property.
+* A custom tool for rescaling an object.
 *
 * Install the RescalingTool as a mouse-down tool by calling:
 * myDiagram.toolManager.mouseDownTools.add(new RescalingTool());
@@ -104,7 +104,7 @@ export class RescalingTool extends go.Tool {
   * @this {RescalingTool}
   * @param {Part} part
   */
-  updateAdornments(part: go.Part | null) {
+  override updateAdornments(part: go.Part | null) {
     if (part === null || part instanceof go.Link) return;
     if (part.isSelected && !this.diagram.isReadOnly) {
       var rescaleObj = this.findRescaleObject(part);
@@ -154,7 +154,7 @@ export class RescalingTool extends go.Tool {
   * @this {RescalingTool}
   * @return {boolean}
   */
-  canStart(): boolean {
+  public override canStart(): boolean {
     var diagram = this.diagram;
     if (diagram === null || diagram.isReadOnly) return false;
     if (!diagram.lastInput.left) return false;
@@ -168,7 +168,7 @@ export class RescalingTool extends go.Tool {
   * starts a transaction, and captures the mouse.
   * @this {RescalingTool}
   */
-  doActivate(): void {
+  public override doActivate(): void {
     var diagram = this.diagram;
     if (diagram === null) return;
     this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
@@ -189,7 +189,7 @@ export class RescalingTool extends go.Tool {
   * Stop the current transaction, forget the {@link #handle} and {@link #adornedObject}, and release the mouse.
   * @this {RescalingTool}
   */
-  doDeactivate(): void {
+  public override doDeactivate(): void {
     var diagram = this.diagram;
     if (diagram === null) return;
     this.stopTransaction();
@@ -203,7 +203,7 @@ export class RescalingTool extends go.Tool {
   * Restore the original {@link GraphObject#scale} of the adorned object.
   * @this {RescalingTool}
   */
-  doCancel(): void {
+  public override doCancel(): void {
     var diagram = this.diagram;
     if (diagram !== null) diagram.delaysLayout = false;
     this.scale(this.originalScale);
@@ -215,7 +215,7 @@ export class RescalingTool extends go.Tool {
   * This determines the new scale by calling {@link #computeScale}.
   * @this {RescalingTool}
   */
-  doMouseMove(): void {
+  public override doMouseMove(): void {
     var diagram = this.diagram;
     if (this.isActive && diagram !== null) {
       var newScale = this.computeScale(diagram.lastInput.documentPoint);
@@ -228,7 +228,7 @@ export class RescalingTool extends go.Tool {
   * and commit the transaction.
   * @this {RescalingTool}
   */
-  doMouseUp(): void {
+  public override doMouseUp(): void {
     var diagram = this.diagram;
     if (this.isActive && diagram !== null) {
       diagram.delaysLayout = false;
@@ -244,7 +244,7 @@ export class RescalingTool extends go.Tool {
   * @this {RescalingTool}
   * @param {number} newScale
   */
-  scale(newScale: number): void {
+  public scale(newScale: number): void {
     if (this._adornedObject !== null) {
       this._adornedObject.scale = newScale;
     }
@@ -259,7 +259,7 @@ export class RescalingTool extends go.Tool {
   * @this {RescalingTool}
   * @param {Point} newPoint in document coordinates
   */
-  computeScale(newPoint: go.Point): number {
+  public computeScale(newPoint: go.Point): number {
     var scale = this.originalScale;
     var origdist = Math.sqrt(this.originalPoint.distanceSquaredPoint(this.originalTopLeft));
     var newdist = Math.sqrt(newPoint.distanceSquaredPoint(this.originalTopLeft));

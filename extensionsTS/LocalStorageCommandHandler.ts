@@ -46,7 +46,7 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
    * and stores it as JSON in LocalStorage.
    * @param {Iterable.<Part>} coll a collection of {@link Part}s.
    */
-  public copyToClipboard(coll: go.Iterable<go.Part>): void {
+  public override copyToClipboard(coll: go.Iterable<go.Part>): void {
     try {
       if (coll === null) {
         window.localStorage.setItem(this.StorageKey, '');
@@ -76,7 +76,7 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
    * this makes a copy of the clipboard's parts and adds the copies to this {@link Diagram}.
    * @return {Set.<Part>} a collection of newly pasted {@link Part}s
    */
-  public pasteFromClipboard(): go.Set<go.Part> {
+  public override pasteFromClipboard(): go.Set<go.Part> {
     const coll = new go.Set<go.Part>();
     try {
       const clipstr = window.localStorage.getItem(this.StorageKey);
@@ -105,7 +105,7 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
    *
    * This works just like {@link CommandHandler#canPasteSelection}, but looks at LocalStorage instead of a static variable.
    */
-  public canPasteSelection(pos?: go.Point): boolean {
+  public override canPasteSelection(pos?: go.Point): boolean {
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
     if (!diagram.allowInsert || !diagram.allowClipboard) return false;

@@ -131,7 +131,7 @@ export class GeometryReshapingTool extends go.Tool {
    * Don't show anything if {@link #reshapeObjectName} doesn't return a {@link Shape}
    * that has a {@link Shape#geometry} of type {@link Geometry.Path}.
    */
-  public updateAdornments(part: go.Part): void {
+  public override updateAdornments(part: go.Part): void {
     if (part === null || part instanceof go.Link) return;  // this tool never applies to Links
     if (part.isSelected && !this.diagram.isReadOnly) {
       const selelt = part.findObject(this.reshapeObjectName);
@@ -335,7 +335,7 @@ export class GeometryReshapingTool extends go.Tool {
   /**
    * This tool may run when there is a mouse-down event on a reshape handle.
    */
-  public canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
 
     const diagram = this.diagram;
@@ -354,7 +354,7 @@ export class GeometryReshapingTool extends go.Tool {
    * It also remembers the original geometry in case this tool is cancelled.
    * And it starts a transaction.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     const diagram = this.diagram;
     if (diagram === null) return;
     this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
@@ -370,7 +370,6 @@ export class GeometryReshapingTool extends go.Tool {
     const figi = (h as any)._fig as number;
     const segi = (h as any)._seg as number;
     if (this.isResegmenting && typ >= 4 && shape.geometry !== null) {
-      const locpt = shape.getLocalPoint(diagram.firstInput.documentPoint);
       const geo = shape.geometry.copy();
       const fig = geo.figures.elt(figi);
       const seg = fig.segments.elt(segi);
@@ -418,7 +417,7 @@ export class GeometryReshapingTool extends go.Tool {
   /**
    * This stops the current reshaping operation with the Shape as it is.
    */
-  public doDeactivate(): void {
+  public override doDeactivate(): void {
     this.stopTransaction();
 
     this._handle = null;
@@ -431,7 +430,7 @@ export class GeometryReshapingTool extends go.Tool {
   /**
    * Restore the shape to be the original geometry and stop this tool.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     const shape = this._adornedShape;
     if (shape !== null) {
       // explicitly restore the original route, in case !UndoManager.isEnabled
@@ -444,7 +443,7 @@ export class GeometryReshapingTool extends go.Tool {
    * Call {@link #reshape} with a new point determined by the mouse
    * to change the geometry of the {@link #adornedShape}.
    */
-  public doMouseMove(): void {
+  public override doMouseMove(): void {
     const diagram = this.diagram;
     if (this.isActive && diagram !== null) {
       const newpt = this.computeReshape(diagram.lastInput.documentPoint);
@@ -456,7 +455,7 @@ export class GeometryReshapingTool extends go.Tool {
    * Reshape the Shape's geometry with a point based on the most recent mouse point by calling {@link #reshape},
    * and then stop this tool.
    */
-  public doMouseUp(): void {
+  public override doMouseUp(): void {
     const diagram = this.diagram;
     if (this.isActive && diagram !== null) {
       const newpt = this.computeReshape(diagram.lastInput.documentPoint);

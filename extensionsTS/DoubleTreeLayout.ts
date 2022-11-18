@@ -99,7 +99,7 @@ export class DoubleTreeLayout extends go.Layout {
   * @ignore
   * Copies properties to a cloned Layout.
   */
-  protected cloneProtected(copy: this): void {
+  protected override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._vertical = this._vertical;
     copy._directionFunction = this._directionFunction;
@@ -112,7 +112,7 @@ export class DoubleTreeLayout extends go.Layout {
    * into two separate subsets but sharing only a single root Node.
    * @param coll
    */
-  public doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
+  public override doLayout(coll: (go.Diagram | go.Group | go.Iterable<go.Part>)): void {
     const coll2: go.Set<go.Part> = this.collectParts(coll);
     if (coll2.count === 0) return;
     const diagram = this.diagram;

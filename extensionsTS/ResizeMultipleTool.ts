@@ -31,7 +31,7 @@ export class ResizeMultipleTool extends go.ResizingTool {
    * Overrides {@link ResizingTool#resize} to resize all selected objects to the same size.
    * @param {Rect} newr the intended new rectangular bounds for each Part's {@link Part#resizeObject}.
    */
-  public resize(newr: go.Rect): void {
+  public override resize(newr: go.Rect): void {
     const diagram = this.diagram;
     diagram.selection.each(function(part) {
       if (part instanceof go.Link) return; // only Nodes and simple Parts
@@ -49,7 +49,6 @@ export class ResizeMultipleTool extends go.ResizingTool {
       const deltaWidth = newr.width - obj.naturalBounds.width;
       const deltaHeight = newr.height - obj.naturalBounds.height;
 
-      const angleRight = (angle > 270 || angle < 90) ? 1 : 0;
       const angleBottom = (angle > 0 && angle < 180) ? 1 : 0;
       const angleLeft = (angle > 90 && angle < 270) ? 1 : 0;
       const angleTop = (angle > 180 && angle < 360) ? 1 : 0;

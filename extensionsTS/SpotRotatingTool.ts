@@ -34,7 +34,7 @@ export class SpotRotatingTool extends go.RotatingTool {
    * Adornment that the user may drag in order to move the {@link RotatingTool#rotationPoint}.
    * @param {Part} part
    */
-  updateAdornments(part: go.Part): void {
+  public override updateAdornments(part: go.Part): void {
     super.updateAdornments(part);
     if (part === null) return;
     if (part.isSelected && !this.diagram.isReadOnly) {
@@ -78,7 +78,7 @@ export class SpotRotatingTool extends go.RotatingTool {
    * also start when the user starts dragging the "MovingSpot" adornment/handle.
    * @returns boolean
    */
-  canStart(): boolean {
+  public override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly) return false;
@@ -95,7 +95,7 @@ export class SpotRotatingTool extends go.RotatingTool {
   /**
    * @hidden @internal
    */
-  doActivate(): void {
+  public override doActivate(): void {
     // might be dragging the spot handle instead of the rotate handle
     this.handle = this.findToolHandleAt(this.diagram.firstInput.documentPoint, "RotateSpot");
     if (this.handle !== null) {
@@ -112,7 +112,7 @@ export class SpotRotatingTool extends go.RotatingTool {
   /**
    * @hidden @internal
    */
-  doCancel(): void {
+  public override doCancel(): void {
     if (this.adornedObject !== null) {
       const part = this.adornedObject.part;
       if (part !== null) {
@@ -127,7 +127,7 @@ export class SpotRotatingTool extends go.RotatingTool {
   /**
    * @hidden @internal
    */
-  doMouseMove(): void {
+  public override doMouseMove(): void {
     if (this.isActive) {
       if (this.handle !== null && this.handle.part && this.handle.part.category === "RotateSpot") {
         // modify part.rotationSpot and this.rotationPoint
@@ -141,7 +141,7 @@ export class SpotRotatingTool extends go.RotatingTool {
   /**
    * @hidden @internal
    */
-  doMouseUp(): void {
+  public override doMouseUp(): void {
     if (this.isActive) {
       if (this.handle !== null && this.handle.part && this.handle.part.category === "RotateSpot") {
         // modify part.rotationSpot and this.rotationPoint

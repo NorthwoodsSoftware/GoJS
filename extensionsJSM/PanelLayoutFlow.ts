@@ -92,7 +92,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
    get spacing() { return this._spacing; }
    set spacing(s: go.Size) { this._spacing = s; }
 
-  public measure(panel: go.Panel, width: number, height: number, elements: Array<go.GraphObject>, union: go.Rect, minw: number, minh: number): void {
+  public override measure(panel: go.Panel, width: number, height: number, elements: Array<go.GraphObject>, union: go.Rect, minw: number, minh: number): void {
     const lineBreadths = [] as Array<number>;  // attach properties on panel
     const lineLengths = [] as Array<number>;
     (panel as any).panelLayoutState = { lineBreadths: lineBreadths, lineLengths: lineLengths };
@@ -187,7 +187,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return a;
   }
 
-  public arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
+  public override arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
     const lineBreadths = (panel as any).panelLayoutState.lineBreadths as Array<number>;
     const lineLengths = (panel as any).panelLayoutState.lineLengths as Array<number>;
     const pad = <go.Margin>panel.padding;
@@ -301,8 +301,6 @@ export class PanelLayoutFlow extends go.PanelLayout {
     }
     (panel as any).panelLayoutState = null;  // free up the temporary Arrays
   }
-
-  private static _ = (() => {
-    go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());
-  })();
 }
+
+go.Panel.definePanelLayout('Flow', new PanelLayoutFlow());

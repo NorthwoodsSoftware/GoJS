@@ -16,7 +16,7 @@ import { RadialLayout } from './RadialLayout.js';
 let myDiagram: go.Diagram;
 
 class CustomRadialLayout extends RadialLayout {
-  rotateNode(node: go.Node, angle: number, sweep: number, radius: number) {
+  public override rotateNode(node: go.Node, angle: number, sweep: number, radius: number) {
     // rotate the nodes and make sure the text is not upside-down
     node.angle = angle;
     const label = node.findObject('TEXTBLOCK');
@@ -25,7 +25,7 @@ class CustomRadialLayout extends RadialLayout {
     }
   }
 
-  commitLayers() {
+  public override commitLayers() {
     // optional: add circles in the background
     // need to remove any old ones first
     const diagram = this.diagram;

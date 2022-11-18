@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.17
+ * Type definitions for GoJS v2.2.18
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -19345,8 +19345,9 @@ export class Picture extends GraphObject {
      * If an image, this element must have its source (src) attribute defined.
      * Setting this does not set the Picture#source attribute and that attribute may be unknowable.
      *
-     * If this property is set to an HTMLImageElement, and that element is not yet loaded before it is used, the Diagrams using that Element
-     * will not redraw on their own. You must call `Diagram.redraw()` when the image is finished loading if you wish for the Diagram to redraw immediately.
+     * If this property is set to an HTMLImageElement, and that element is not yet loaded before it is used,
+     * the Diagrams using that Element will not redraw on their own.
+     * You must call #redraw after the image is finished loading if you wish for the Diagram to be updated immediately.
      */
     get element(): HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null;
     set element(value: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | null);
@@ -27511,6 +27512,21 @@ export class ForceDirectedEdge extends LayoutEdge {
  * The layout algorithm consists of four-major steps: Cycle Removal,
  * Layer Assignment, Crossing Reduction, and Straightening and Packing.
  * The layout cannot guarantee that it provides optimal positioning of nodes or routing of links.
+ *
+ * The Layer Assignment step can be slow if #layeringOption is
+ * LayeredDigraphLayout.LayerOptimalLinkLength, which is the default value.
+ *
+ * The CrossingReduction step is usually slow, but it can be avoided if you want to
+ * maintain a certain order within each layer by setting LayeredDigraphLayout#aggressiveOption
+ * to LayeredDigraphLayout.AggressiveNone.
+ *
+ * The Straightening and Packing step is usually slow, but you can set
+ * #packOption at the expense of less nicely placed nodes.
+ * Moreover, if you do not set this property, the layout will automatically remove the
+ * LayeredDigraphLayout.PackExpand flag if the graph is large enough,
+ * in order to improve performance.
+ *
+ * If performance remains a problem, contact us.
  * @extends Layout
  * @unrestricted
  * @category Layout
@@ -27694,7 +27710,7 @@ export class LayeredDigraphLayout extends Layout {
     protected commitLinks(): void;
     /**
      * Gets or sets the space between each layer.
-     * This value must be positive and it defaults to 25.
+     * This value must be non-negative and it defaults to 25.
      */
     get layerSpacing(): number;
     set layerSpacing(value: number);
@@ -27713,18 +27729,31 @@ export class LayeredDigraphLayout extends Layout {
     set direction(value: number);
     /**
      * Gets or set which cycle removal option is used.
+     * The value must be one of the following values:
+     * LayeredDigraphLayout.CycleDepthFirst,
+     * LayeredDigraphLayout.CycleGreedy, or
+     * LayeredDigraphLayout.CycleFromLayers.
      * The default value is LayeredDigraphLayout.CycleDepthFirst.
      */
     get cycleRemoveOption(): EnumValue;
     set cycleRemoveOption(value: EnumValue);
     /**
      * Gets or sets which layering option is being used.
-     * The default value is LayeredDigraphLayout.LayerOptimalLinkLength.
+     * The value must be one of the following values:
+     * LayeredDigraphLayout.LayerLongestPathSink,
+     * LayeredDigraphLayout.LayerLongestPathSource, or
+     * LayeredDigraphLayout.LayerOptimalLinkLength.
+     * The default value is LayeredDigraphLayout.LayerOptimalLinkLength,
+     * which is also the slowest option.
      */
     get layeringOption(): EnumValue;
     set layeringOption(value: EnumValue);
     /**
      * Gets or sets which indices initialization option is being used.
+     * The value must be one of the following values:
+     * LayeredDigraphLayout.InitDepthFirstOut,
+     * LayeredDigraphLayout.InitDepthFirstIn, or
+     * LayeredDigraphLayout.InitNaive.
      * The default value is LayeredDigraphLayout.InitDepthFirstOut.
      */
     get initializeOption(): EnumValue;
@@ -27738,12 +27767,21 @@ export class LayeredDigraphLayout extends Layout {
     /**
      * Gets or sets which aggressive option is being used to look for link crossings.
      * The default value is LayeredDigraphLayout.AggressiveLess.
+     * The fastest option is LayeredDigraphLayout.AggressiveNone.
      */
     get aggressiveOption(): EnumValue;
     set aggressiveOption(value: EnumValue);
     /**
      * Gets or sets the options used by the straighten and pack function.
-     * The default value is LayeredDigraphLayout.PackAll.
+     * The value must be a combination of the following bit flags:
+     * LayeredDigraphLayout.PackMedian,
+     * LayeredDigraphLayout.PackStraighten, and
+     * LayeredDigraphLayout.PackExpand.
+     * The default value is LayeredDigraphLayout.PackAll, which is a combination of all three flags.
+     * Each of the flags has a cost; PackExpand is particularly slow.
+     * However if you do not set this property, this layout will automatically turn off the PackExpand
+     * option for you if the graph is large enough.
+     * You can set this property value to LayeredDigraphLayout.PackNone to avoid most of the work.
      */
     get packOption(): number;
     set packOption(value: number);

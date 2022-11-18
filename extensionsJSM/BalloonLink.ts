@@ -40,7 +40,7 @@ export class BalloonLink extends go.Link {
   /**
    * Copies properties to a cloned BalloonLink.
    */
-  protected cloneProtected(copy: this): void {
+  protected override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._base = this._base;
   }
@@ -57,7 +57,7 @@ export class BalloonLink extends go.Link {
    * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link Link#fromNode}
    * and has a triangular shape with the base at the fromNode and the top at the toNode.
    */
-  public makeGeometry(): go.Geometry {
+  public override makeGeometry(): go.Geometry {
     if (this.fromNode === null) return new go.Geometry();
     // assume the fromNode is the comment and the toNode is the commented-upon node
     const bb = this.fromNode.actualBounds.copy().addMargin(<go.Margin>this.fromNode.margin);

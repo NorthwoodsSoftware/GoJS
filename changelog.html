@@ -320,6 +320,26 @@ myDiagram.nodeTemplate =
 
 <hr />
 
+
+<h4 id="2.2.18">Changes for 2.2.18</h4>
+<ul>
+  <li>
+    Fix for some initialization animations which could set <a>Part.location</a> incorrectly.
+  </li>
+  <li>
+    Fixed operation of the <a>LinkShiftingTool</a> extension when the mouse is inside the connected node.
+  </li>
+  <li>
+    The TypeScript extensions are now compiled with options <code>"noImplicitOverride": true, "noUnusedLocals": true</code>.
+  </li>
+  <li>
+    Fix since 2.2.0: Link bounds now always contain all JumpOvers.
+  </li>
+  <li>
+    Fix since 2.2.0: When a <a>Diagram.autoScale</a> is applied, dragging Parts outside of the viewport now reliably triggers a redraw.
+  </li>
+</ul>
+
 <h4 id="2.2.17">Changes for 2.2.17</h4>
 <ul>
   <li>
@@ -702,6 +722,56 @@ myDiagram.nodeTemplate =
     objects won't contain references to the model's data objects, if the external data is required to be immutable.
   </li>
 </ul>
+
+<h3 id="2.1.0">Other Changes for 2.1.0</h3>
+
+<ul>
+  <li>
+    Added <a>DoubleTreeLayout</a> to the extensions and extensionsJSM directories. This is now used by the
+    <a href="samples/doubleTree.html">Double Tree</a> sample.
+  </li>
+  <li>
+    Updated the sequencing of "ChangingSelection" and "ChangedSelection" <a>DiagramEvent</a>s to be outside of
+    transactions for commands and tools.
+    Exceptions include "ChangingSelection" being called during "Drag" and "Linking" operations when drag-copying or
+    inserting a link.
+    With "ChangedSelection" occuring after a transaction completes, any changes will be complete and can be used in
+    the listener.
+  </li>
+  <li>
+    <a>CommandHandler.zoomToFit</a> now animates by default.
+  </li>
+  <li>
+    Improved the <a>ContextMenuTool.defaultTouchContextMenu</a>'s "Paste" command to use the <a>ContextMenuTool.mouseDownPoint</a>
+    rather than the <a>Diagram.lastInput</a>'s <a>InputEvent.documentPoint</a>.
+  </li>
+  <li>
+    Added new property, <a>Diagram.opacity</a>. This may be useful for fade-in/out animations, or visual indication
+    of a disabled Diagram.
+  </li>
+  <li>
+    Added new method, <a>Diagram.findLinkForKey</a>, which will look for a link corresponding to a model's link
+    data object's unique key.
+    This will only return a link when using a <a>GraphLinksModel</a> with <a>GraphLinksModel.linkKeyProperty</a>
+    set to a non-empty string.
+  </li>
+  <li>
+    <a>Model.applyIncrementalJson</a> now throws an error if model properties (eg. nodeKeyProperty) included in the
+    JSON don't match the existing model.
+    This check only includes properties included in the output from <a>Model.toIncrementalJson</a>.
+  </li>
+  <li>
+    Added new methods, <a>Picture.reloadSource</a>, which reloads a Picture source in case the file on the server has
+    changed,
+    and <a>Picture.redraw</a> which redraws the picture, and can be useful to update the Picture if the source is
+    backed by an HTML Canvas or HTML Video Element.
+  </li>
+  <li>
+    Added new sample: <a href="samples/svgDataUrl.html" target="_blank">SVG Data URL</a> - Export SVG with Base64 hrefs instead
+    of the <a>Picture.source</a> URL.
+  </li>
+</ul>
+
 
 <hr />
 
@@ -1694,60 +1764,7 @@ myDiagram.nodeTemplate =
   </li>
 </ul>
 
-<h4 id="2.1.0">Other Changes for 2.1.0:</h4>
-<p>
-  See the major changes <a href="#2.1">above</a>.
-</p>
-<ul>
-  <li>
-    Added <a>DoubleTreeLayout</a> to the extensions and extensionsJSM directories. This is now used by the
-    <a href="samples/doubleTree.html">Double Tree</a> sample.
-  </li>
-  <li>
-    Updated the sequencing of "ChangingSelection" and "ChangedSelection" <a>DiagramEvent</a>s to be outside of
-    transactions for commands and tools.
-    Exceptions include "ChangingSelection" being called during "Drag" and "Linking" operations when drag-copying or
-    inserting a link.
-    With "ChangedSelection" occuring after a transaction completes, any changes will be complete and can be used in
-    the listener.
-  </li>
-  <li>
-    <a>CommandHandler.zoomToFit</a> now animates by default.
-  </li>
-  <li>
-    Improved the <a>ContextMenuTool.defaultTouchContextMenu</a>'s "Paste" command to use the <a>ContextMenuTool.mouseDownPoint</a>
-    rather than the <a>Diagram.lastInput</a>'s <a>InputEvent.documentPoint</a>.
-  </li>
-  <li>
-    Added new property, <a>Diagram.opacity</a>. This may be useful for fade-in/out animations, or visual indication
-    of a disabled Diagram.
-  </li>
-  <li>
-    Added new method, <a>Diagram.findLinkForKey</a>, which will look for a link corresponding to a model's link
-    data object's unique key.
-    This will only return a link when using a <a>GraphLinksModel</a> with <a>GraphLinksModel.linkKeyProperty</a>
-    set to a non-empty string.
-  </li>
-  <li>
-    <a>Model.applyIncrementalJson</a> now throws an error if model properties (eg. nodeKeyProperty) included in the
-    JSON don't match the existing model.
-    This check only includes properties included in the output from <a>Model.toIncrementalJson</a>.
-  </li>
-  <li>
-    Added new methods, <a>Picture.reloadSource</a>, which reloads a Picture source in case the file on the server has
-    changed,
-    and <a>Picture.redraw</a> which redraws the picture, and can be useful to update the Picture if the source is
-    backed by an HTML Canvas or HTML Video Element.
-  </li>
-  <li>
-    Added new sample: <a href="samples/svgDataUrl.html" target="_blank">SVG Data URL</a> - Export SVG with Base64 hrefs instead
-    of the <a>Picture.source</a> URL.
-  </li>
-</ul>
-
-
 <hr />
-
 
 <h4>Changes for 2.0 are <a href="../2.0.21/changelog.html">here</a>.</h4>
 

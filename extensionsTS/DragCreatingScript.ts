@@ -47,7 +47,7 @@ export function init() {
     ));
 
   class CustomDragCreatingTool extends DragCreatingTool {
-    insertPart(bounds: go.Rect): go.Part | null {  // override DragCreatingTool.insertPart
+    public override insertPart(bounds: go.Rect): go.Part | null {  // override DragCreatingTool.insertPart
       if (this.archetypeNodeData === null) return null;
       // use a different color each time
       this.archetypeNodeData.color = go.Brush.randomColor();

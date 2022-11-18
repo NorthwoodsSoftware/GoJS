@@ -708,7 +708,6 @@ export class TableLayout extends go.Layout {
      * @hidden @internal
      */
     arrangeTable(children, union, rowcol) {
-        const l = children.length;
         const originx = this.arrangementOrigin.x;
         const originy = this.arrangementOrigin.y;
         let x = 0.0;
@@ -781,17 +780,6 @@ export class TableLayout extends go.Layout {
                     ar.y = y;
                     ar.width = colwidth;
                     ar.height = rowheight;
-                    // Also keep them for clip values
-                    const cellx = x;
-                    const celly = y;
-                    let cellw = colwidth;
-                    let cellh = rowheight;
-                    // Ending rows/col might have actual spaces that are larger than the remaining space
-                    // Modify them for clipping regions
-                    if (x + colwidth > union.width)
-                        cellw = Math.max(union.width - x, 0);
-                    if (y + rowheight > union.height)
-                        cellh = Math.max(union.height - y, 0);
                     // Construct alignment:
                     let align = child.alignment;
                     let alignx = 0.0;

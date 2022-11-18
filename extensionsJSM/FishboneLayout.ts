@@ -44,7 +44,7 @@ export class FishboneLayout extends go.TreeLayout {
    * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
    * @return {LayoutNetwork}
    */
-  public makeNetwork(coll: go.Diagram | go.Group | go.Iterable<go.Part>): go.LayoutNetwork {
+  public override makeNetwork(coll: go.Diagram | go.Group | go.Iterable<go.Part>): go.LayoutNetwork {
     // assert(this.angle === 0 || this.angle === 180);
     // assert(this.alignment === go.TreeLayout.AlignmentBusBranching);
     // assert(this.path !== go.TreeLayout.PathSource);
@@ -79,7 +79,7 @@ export class FishboneLayout extends go.TreeLayout {
   /**
    * Add a direction property to each vertex and modify {@link TreeVertex#layerSpacing}.
    */
-  public assignTreeVertexValues(v: go.TreeVertex): void {
+  public override assignTreeVertexValues(v: go.TreeVertex): void {
     super.assignTreeVertexValues(v);
     (v as any)['_direction'] = 0;  // add this property to each TreeVertex
     if (v.parent !== null) {
@@ -97,7 +97,7 @@ export class FishboneLayout extends go.TreeLayout {
    * Assigns {@link Link#fromSpot}s and {@link Link#toSpot}s based on branching and angle
    * and moves vertexes based on dummy locations.
    */
-  public commitNodes(): void {
+  public override commitNodes(): void {
     if (this.network === null) return;
     // vertex Angle is set by BusBranching "inheritance";
     // assign spots assuming overall Angle === 0 or 180
@@ -152,7 +152,7 @@ export class FishboneLayout extends go.TreeLayout {
   /**
    * This override stops links from being committed since the work is done by the {@link FishboneLink} class.
    */
-  public commitLinks(): void { }
+  public override commitLinks(): void { }
 
   /**
    * Shifts subtrees within the fishbone based on angle and node spacing.
@@ -234,11 +234,11 @@ export class FishboneLayout extends go.TreeLayout {
  * @category Part Extension
  */
 export class FishboneLink extends go.Link {
-  public computeAdjusting(): go.EnumValue { return this.adjusting; }
+  public override computeAdjusting(): go.EnumValue { return this.adjusting; }
   /**
    * Determines the points for this link based on spots and maintains horizontal lines.
    */
-  public computePoints(): boolean {
+  public override computePoints(): boolean {
     const result = super.computePoints();
     if (result) {
       // insert middle point to maintain horizontal lines

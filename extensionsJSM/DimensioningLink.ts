@@ -49,7 +49,7 @@ export class DimensioningLink extends go.Link {
   /**
    * Copies properties to a cloned DimensioningLink.
    */
-  public cloneProtected(copy: this): void {
+  public override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._direction = this._direction;
     copy._extension = this._extension;
@@ -117,7 +117,7 @@ export class DimensioningLink extends go.Link {
    * Constructs the link's route by modifying {@link #points}.
    * @return {boolean} true if it computed a route of points
    */
-  public computePoints(): boolean {
+  public override computePoints(): boolean {
     const fromnode = this.fromNode;
     if (!fromnode) return false;
     const fromport = this.fromPort;
@@ -151,7 +151,6 @@ export class DimensioningLink extends go.Link {
       this.addPointAt(topoint.x + p.x, topoint.y + p.y);
       this.addPointAt(topoint.x + g.x, topoint.y + g.y);
     } else {
-      const dist = this.extension;
       let r = 0.0;
       let s = 0.0;
       let t0 = 0.0;

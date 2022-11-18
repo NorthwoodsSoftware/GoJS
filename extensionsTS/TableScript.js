@@ -242,7 +242,7 @@ var __extends = (this && this.__extends) || (function () {
             { key: 'Eta', color: 'coral', size: '50 50', group: 'ManApp' },
             { key: 'Theta', color: 'tomato', size: '100 50', group: 'AdmApp' }
         ]);
-        var myPalette = $(go.Palette, 'myPaletteDiv', {
+        $(go.Palette, 'myPaletteDiv', {
             nodeTemplateMap: myDiagram.nodeTemplateMap,
             'model.nodeDataArray': [
                 { key: 'Alpha', color: 'orange' },

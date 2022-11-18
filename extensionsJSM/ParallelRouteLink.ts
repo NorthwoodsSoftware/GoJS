@@ -24,7 +24,7 @@ export class ParallelRouteLink extends go.Link {
    * Constructs the link's route by modifying {@link #points}.
    * @return {boolean} true if it computed a route of points
    */
-  public computePoints(): boolean {
+  public override computePoints(): boolean {
     const result = super.computePoints();
     if (!this.isOrthogonal && this.curve !== go.Link.Bezier && this.hasCurviness()) {
       const curv = this.computeCurviness();

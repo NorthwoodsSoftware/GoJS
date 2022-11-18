@@ -26,7 +26,7 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
   /**
    * @hidden @internal
    */
-  public makeAdornment(pathshape: go.GraphObject): go.Adornment | null {
+  public override makeAdornment(pathshape: go.GraphObject): go.Adornment | null {
     const link = pathshape.part as go.Link;
     if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
       const adornment = new go.Adornment();
@@ -53,7 +53,7 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
    * It also remembers the original link route (a list of Points) and curviness in case this tool is cancelled.
    * And it starts a transaction.
    */
-  public doActivate(): void {
+  public override doActivate(): void {
     super.doActivate();
     if (this.adornedLink !== null) this._originalCurviness = this.adornedLink.curviness;
   }
@@ -61,7 +61,7 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
   /**
    * Restore the link route to be the original points and curviness and stop this tool.
    */
-  public doCancel(): void {
+  public override doCancel(): void {
     if (this.adornedLink !== null) this.adornedLink.curviness = this._originalCurviness;
     super.doCancel();
   }
@@ -73,7 +73,7 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
    * {@link #computeReshape} to constrain the input point.
    * @param {Point} newpt the value of the call to {@link #computeReshape}.
    */
-  public reshape(newpt: go.Point): void {
+  public override reshape(newpt: go.Point): void {
     const link = this.adornedLink;
     if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
       const start = link.getPoint(0);

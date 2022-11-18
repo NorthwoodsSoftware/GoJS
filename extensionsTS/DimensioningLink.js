@@ -194,7 +194,6 @@ var __extends = (this && this.__extends) || (function () {
                 this.addPointAt(topoint.x + g.x, topoint.y + g.y);
             }
             else {
-                var dist = this.extension;
                 var r = 0.0;
                 var s = 0.0;
                 var t0 = 0.0;

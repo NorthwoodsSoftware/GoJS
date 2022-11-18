@@ -38,7 +38,7 @@ var __extends = (this && this.__extends) || (function () {
     * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
     */
     /**
-    * A custom tool for rescaling an object by modifying its {@link GraphObject#scale} property.
+    * A custom tool for rescaling an object.
     *
     * Install the RescalingTool as a mouse-down tool by calling:
     * myDiagram.toolManager.mouseDownTools.add(new RescalingTool());

@@ -16,7 +16,7 @@ import { TableLayout } from './TableLayout.js';
 // define a custom ResizingTool to limit how far one can shrink a row or column
 class LaneResizingTool extends go.ResizingTool {
 
-  public computeMinSize(): go.Size {
+  public override computeMinSize(): go.Size {
     const diagram = this.diagram;
     if (this.adornedObject === null) return new go.Size();
     const lane = this.adornedObject.part;  // might be row or column
@@ -45,7 +45,7 @@ class LaneResizingTool extends go.ResizingTool {
     return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
   }
 
-  public resize(newr: go.Rect) {
+  public override resize(newr: go.Rect) {
     const diagram = this.diagram;
     if (this.adornedObject === null) return;
     const lane = this.adornedObject.part;
@@ -277,14 +277,13 @@ export function init() {
     { key: 'Theta', color: 'tomato', size: '100 50', group: 'AdmApp' }
   ]);
 
-  const myPalette =
-    $(go.Palette, 'myPaletteDiv',
-      {
-        nodeTemplateMap: myDiagram.nodeTemplateMap,
-        'model.nodeDataArray': [
-          { key: 'Alpha', color: 'orange' },
-          { key: 'Beta', color: 'tomato' },
-          { key: 'Gamma', color: 'goldenrod' }
-        ]
-      });
+  $(go.Palette, 'myPaletteDiv',
+    {
+      nodeTemplateMap: myDiagram.nodeTemplateMap,
+      'model.nodeDataArray': [
+        { key: 'Alpha', color: 'orange' },
+        { key: 'Beta', color: 'tomato' },
+        { key: 'Gamma', color: 'goldenrod' }
+      ]
+    });
 }
