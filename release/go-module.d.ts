@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.18
+ * Type definitions for GoJS v2.2.19
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -23625,9 +23625,6 @@ export class Layout {
      * @return {Point}
      */
     protected initialOrigin(origin: Point): Point;
-    set id(value: number);
-    set mayUseWorkerFunction(value: ((lay: Layout) => boolean) | null);
-    set workerStateChanged(value: ((state: any, layout: Layout) => void) | null);
 }
 /**
  * This provides an abstract view of a diagram as a
