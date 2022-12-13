@@ -302,7 +302,7 @@
       }
 
       // each Group is a "swimlane" with a header on the left and a resizable lane on the right
-      myDiagram.groupTemplate =
+      myDiagram.groupTemplateMap.add("Lane",
         $(go.Group, "Vertical", groupStyle(),
           {
             selectionObjectName: "SHAPE",  // selecting a lane causes the body of the lane to be highlit, not the label
@@ -380,10 +380,10 @@
               new go.Binding("visible", "isSubGraphExpanded", e => !e).ofObject(),
               new go.Binding("text", "text").makeTwoWay())
           )  // end Auto Panel
-        );  // end Group
+        ));  // end Group
 
       // define a custom resize adornment that has two resize handles if the group is expanded
-      myDiagram.groupTemplate.resizeAdornmentTemplate =
+      myDiagram.groupTemplateMap.get("Lane").resizeAdornmentTemplate =
         $(go.Adornment, "Spot",
           $(go.Placeholder),
           $(go.Shape,  // for changing the length of a lane
@@ -444,10 +444,10 @@
         [ // node data
           { key: "Pool1", text: "Pool", isGroup: true, category: "Pool" },
           { key: "Pool2", text: "Pool2", isGroup: true, category: "Pool" },
-          { key: "Lane1", text: "Lane1", isGroup: true, group: "Pool1", color: "lightblue" },
-          { key: "Lane2", text: "Lane2", isGroup: true, group: "Pool1", color: "lightgreen" },
-          { key: "Lane3", text: "Lane3", isGroup: true, group: "Pool1", color: "lightyellow" },
-          { key: "Lane4", text: "Lane4", isGroup: true, group: "Pool1", color: "orange" },
+          { key: "Lane1", text: "Lane1", isGroup: true, category: "Lane", group: "Pool1", color: "lightblue" },
+          { key: "Lane2", text: "Lane2", isGroup: true, category: "Lane", group: "Pool1", color: "lightgreen" },
+          { key: "Lane3", text: "Lane3", isGroup: true, category: "Lane", group: "Pool1", color: "lightyellow" },
+          { key: "Lane4", text: "Lane4", isGroup: true, category: "Lane", group: "Pool1", color: "orange" },
           { key: "oneA", group: "Lane1" },
           { key: "oneB", group: "Lane1" },
           { key: "oneC", group: "Lane1" },
@@ -463,8 +463,8 @@
           { key: "fourB", group: "Lane4" },
           { key: "fourC", group: "Lane4" },
           { key: "fourD", group: "Lane4" },
-          { key: "Lane5", text: "Lane5", isGroup: true, group: "Pool2", color: "lightyellow" },
-          { key: "Lane6", text: "Lane6", isGroup: true, group: "Pool2", color: "lightgreen" },
+          { key: "Lane5", text: "Lane5", isGroup: true, category: "Lane", group: "Pool2", color: "lightyellow" },
+          { key: "Lane6", text: "Lane6", isGroup: true, category: "Lane", group: "Pool2", color: "lightgreen" },
           { key: "fiveA", group: "Lane5" },
           { key: "sixA", group: "Lane6" }
         ],
