@@ -52,7 +52,7 @@
     <div id="allSampleContent" class="p-4 w-full">
 <div id="sample">
   <div style="width: 100%; display: flex; justify-content: space-between; border: solid 1px black">
-    <div id="myTasksDiv" style="width: 150px; margin-right: 2px; border-right: solid 1px black"></div>
+    <div id="myTasksDiv" style="width: 280px; margin-right: 2px; border-right: solid 1px black"></div>
     <div id="myGanttDiv" style="flex-grow: 1; height: 400px"></div>
   </div>
   <div id="slider">
@@ -272,7 +272,13 @@ const myTasks =
             nodeSpacing: 0,
             portSpot: go.Spot.Bottom,
             childPortSpot: go.Spot.Left,
-            arrangementSpacing: new go.Size(0, 0)
+            arrangementSpacing: new go.Size(0, 0),
+            // after the tree layout, change the width of each node so that all
+            // of the nodes have widths such that the collection has a given width
+            commitNodes: function() {  // method override
+              go.TreeLayout.prototype.commitNodes.call(this);
+              updateNodeWidths(400);
+            }
           }),
       mouseLeave: (e, node) => myHighlightTask.visible = false,
       "animationManager.isInitial": false,
@@ -281,8 +287,9 @@ const myTasks =
     });
 
 myTasks.nodeTemplate =
-  $(go.Node, "Horizontal",
+  $(go.Node, "Table",
     {
+      columnSizing: go.RowColumnDefinition.None,
       selectionAdorned: false,
       height: GridCellHeight,
       mouseEnter: (e, node) => {
@@ -298,12 +305,40 @@ myTasks.nodeTemplate =
     },
     new go.Binding("background", "isSelected", s => s ? "dodgerblue" : "transparent").ofObject(),
     new go.Binding("isTreeExpanded").makeTwoWay(),
-    $("TreeExpanderButton", { portId: "", scale: 0.85 }),
-    $(go.TextBlock,
-      { editable: true },
+    $(go.RowColumnDefinition, { column: 0, width: 14 }),
+    $("TreeExpanderButton", { column: 0, portId: "", scale: 0.85 }),
+    $(go.RowColumnDefinition, { column: 1, alignment: go.Spot.Left }),
+    $(go.TextBlock, { column: 1, editable: true },
       new go.Binding("text").makeTwoWay()),
+    // additional columns
+    $(go.RowColumnDefinition, { column: 2, width: 40, alignment: go.Spot.Right, separatorPadding: new go.Margin(0, 4), separatorStroke: "gray" }),
+    $(go.TextBlock, { column: 2 },
+      new go.Binding("text", "start", s => s.toFixed(2))),
+    $(go.RowColumnDefinition, { column: 3, width: 40, alignment: go.Spot.Right, separatorPadding: new go.Margin(0, 4), separatorStroke: "gray" }),
+    $(go.TextBlock, { column: 3 },
+      new go.Binding("text", "duration", d => d.toFixed(2))),
+
     standardContextMenus()
   );
+  
+var TREEWIDTH = 160;
+
+function updateNodeWidths(width) {
+  let minx = Infinity;
+  myTasks.nodes.each(n => {
+    if (n instanceof go.Node) {
+      minx = Math.min(minx, n.actualBounds.x);
+    }
+  });
+  if (minx === Infinity) return;
+  const right = minx + width;
+  myTasks.nodes.each(n => {
+    if (n instanceof go.Node) {
+      n.width = Math.max(0, right - n.actualBounds.x);
+      n.getColumnDefinition(1).width = TREEWIDTH - n.actualBounds.x;
+    }
+  });
+}
 
 myTasks.linkTemplate =
   $(go.Link,
