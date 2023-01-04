@@ -222,7 +222,7 @@
 
 <pre class="lang-js"><code>
   var tool = diagram.toolManager.clickSelectingTool;
-  tool.standardMouseSelect = function() {
+  tool.standardMouseSelect = function() { // must not be an arrow function (=>)
     // Maybe do something else before
     // ...
 
@@ -231,7 +231,7 @@
     // In cases where you want normal behavior, call the base functionality.
     // Note the reference to the prototype
     // and the call to 'call' passing it what 'this' should be.
-    go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
+    go.ClickSelectingTool.prototype.standardMouseSelect.call(this);
 
     // Maybe do something else after
     // ...
@@ -256,8 +256,8 @@
     );
 
   var tool = diagram.toolManager.clickSelectingTool;
-  tool.standardMouseSelect = function() {
-    var diagram = tool.diagram;
+  tool.standardMouseSelect = function() { // must not be an arrow function (=>)
+    var diagram = this.diagram;
     var e = diagram.lastInput;
     // to select containing Group if Part.canSelect() is false
     var curobj = diagram.findPartAt(e.documentPoint, false);
@@ -275,7 +275,7 @@
       }
     }
     // otherwise, call the base (would be super in ES6) functionality
-    go.ClickSelectingTool.prototype.standardMouseSelect.call(tool);
+    go.ClickSelectingTool.prototype.standardMouseSelect.call(this);
   }
 
   diagram.model = new go.Model([

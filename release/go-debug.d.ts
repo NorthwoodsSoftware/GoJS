@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.21
+ * Type definitions for GoJS v2.2.22
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -28258,6 +28258,48 @@ export class TreeLayout extends Layout {
      */
     layoutComments(v: TreeVertex): void;
     /**
+     * (Undocumented)
+     * @expose
+     * @param v
+     * @param offx
+     * @param offy
+     * @param subw
+     * @param subh
+     * @returns
+     */
+    customAlignment(v: TreeVertex, offx: number, offy: number, subw: number, subh: number): Array<number>;
+    /**
+     * Get the amount of space to insert between a child vertex and its parent spine
+     * when the parent's TreeVertex#alignment is Bus or BusBranching.
+     *
+     * This function is called on each child vertex to determine the initial distance of a child
+     * from the spine that connects to its parent vertex.
+     * This function is not called on the last odd child
+     * because that vertex is placed at the end of the spine rather than to either side.
+     * @expose
+     * @param {TreeVertex} child
+     * @return {number} By default this returns the parent's TreeVertex#nodeSpacing;
+     * a small value may result in unpleasant routing of links,
+     * a negative value may cause the node overlaps.
+     */
+    computeBusNodeSpacing(child: TreeVertex): number;
+    /**
+     * Get the amound of space to leave between the sibling child vertexes and this last odd vertex
+     * when the parent's TreeVertex#alignment is Bus or BusBranching.
+     *
+     * This function is called only when there is an odd number of child vertexes.
+     * This function is not called when the parent vertex only has one child.
+     * In that case there is no spine separating the two columns of child vertexes.
+     * @expose
+     * @param {TreeVertex} lastchild
+     * @param {number} dist the length of the central line (spine) separating the two sides,
+     * so far excluding the initial TreeVertex#nodeSpacing
+     * that extends form the parent's spine.
+     * @return {number} By default this returns the parent's TreeVertex#rowSpacing;
+     * a negative value may cause node overlaps.
+     */
+    computeBusLastRowSpacing(lastchild: TreeVertex, dist: number): number;
+    /**
      * Position each separate tree.
      *
      * This is called after each tree has been laid out and thus each subtree
@@ -28311,6 +28353,18 @@ export class TreeLayout extends Layout {
      * @expose
      */
     protected commitLinks(): void;
+    /**
+     * @expose
+     * @param {TreeVertex} v
+     * @return {number}
+     */
+    computeLayerSpacing(v: TreeVertex): number;
+    /**
+     * @expose
+     * @param {TreeVertex} v
+     * @return {number}
+     */
+    computeNodeIndent(v: TreeVertex): number;
     /**
      * Gets or sets the collection of root vertexes.
      *

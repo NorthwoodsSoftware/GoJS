@@ -225,18 +225,17 @@ If you want to add your own keyboard bindings, you can override the <a>CommandHa
 For example, to support using the "T" key to collapse or expand the currently selected <a>Group</a>:
 </p>
 <pre class="lang-js"><code>
-    myDiagram.commandHandler.doKeyDown = function() {
+    myDiagram.commandHandler.doKeyDown = function() { // must be a function, not an arrow =>
       var e = myDiagram.lastInput;
-      var cmd = myDiagram.commandHandler;
       if (e.key === "T") {  // could also check for e.control or e.shift
-        if (cmd.canCollapseSubGraph()) {
-          cmd.collapseSubGraph();
-        } else if (cmd.canExpandSubGraph()) {
-          cmd.expandSubGraph();
+        if (this.canCollapseSubGraph()) {
+          this.collapseSubGraph();
+        } else if (this.canExpandSubGraph()) {
+          this.expandSubGraph();
         }
       } else {
         // call base method with no arguments
-        go.CommandHandler.prototype.doKeyDown.call(cmd);
+        go.CommandHandler.prototype.doKeyDown.call(this);
       }
     };
 </code></pre>
@@ -356,7 +355,7 @@ for those tools that you want your users to access without a pointing device.
 Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programatically:
 </p>
 <pre class="lang-js"><code>
-  myDiagram.commandHandler.doKeyDown = function() {
+  myDiagram.commandHandler.doKeyDown = function() { // must be a function, not an arrow =>
     var e = myDiagram.lastInput;
     // The meta (Command) key substitutes for "control" for Mac commands
     var control = e.control || e.meta;
