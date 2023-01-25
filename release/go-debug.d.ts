@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.2.23
+ * Type definitions for GoJS v2.3.0
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -215,7 +215,7 @@ export interface ISurface {
     ownerDocument: Document;
     resize(pixelWidth: number, pixelHeight: number, width: number, height: number): boolean;
     elementFinished: ((a: GraphObject, b: SVGElement) => void) | null;
-    getBoundingClientRect(): ClientRect | DOMRect;
+    getBoundingClientRect(): DOMRect;
     focus(): void;
     dispose(): void;
     style: CSSStyleDeclaration;
@@ -240,11 +240,13 @@ export interface IContext {
     textAlign: string;
     imageSmoothingEnabled: boolean;
     clipInsteadOfFill: boolean;
+    currentlyShadowed: boolean;
     cachedTransform: any;
     commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
     arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise: boolean, lx?: number, ly?: number): void;
     beginPath(): void;
+    endPath(pathIndex?: number): void;
     bezierCurveTo(a: number, b: number, c: number, d: number, e: number, f: number): void;
     clearRect(x: number, y: number, w: number, h: number): void;
     clip(): void;
@@ -253,7 +255,7 @@ export interface IContext {
     createPattern(image: HTMLCanvasElement | HTMLImageElement, repetition: string): CanvasPattern | string;
     createRadialGradient(aX0: number, aY0: number, aR0: number, aX1: number, aY1: number, aR1: number): CanvasGradient | SGradient;
     drawImage(src: HTMLCanvasElement | HTMLImageElement | HTMLVideoElement, sx: number, sy: number, sw?: number, sh?: number, dx?: number, dy?: number, dw?: number, dh?: number): void;
-    fill(): void;
+    fill(fillRule?: boolean): void;
     fillRect(x: number, y: number, w: number, h: number): void;
     fillText(str: string, x: number, y: number): void;
     getImageData(x: number, y: number, w: number, h: number): ImageData;
@@ -270,7 +272,7 @@ export interface IContext {
     stroke(): void;
     transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
     translate(x: number, y: number): void;
-    fillContext(brush: BrushLike): void;
+    fillContext(brush: BrushLike, fillRule?: boolean): void;
     strokeContext(): void;
     shadowsSet(x: number, y: number, blur: number): void;
     shadowsOff(): void;
@@ -278,6 +280,7 @@ export interface IContext {
     enableDash(strokeDashArray: Array<number>, strokeDashOffset: number): void;
     disableDash(): void;
     clearContextCache(clearFont: boolean): void;
+    removePartFromView(p: GraphObject): void;
 }
 
 /**
@@ -1865,6 +1868,7 @@ export class Rect {
      * @param {number} w The additional width on each side, left and right; may be negative.
      * @param {number} h The additional height on each side, top and bottom; may be negative.
      * @return {Rect} this.
+     * @since 2.3
      * @see #grow
      * @see #addMargin
      * @see #subtractMargin
@@ -2723,6 +2727,7 @@ export class Geometry {
      *   - `B (startAngle, sweepAngle, centerX, centerY, radius)+` Arcs following GoJS canvas arc conventions
      *   - `X` Used before M-commands to denote separate PathFigures instead of a subpath
      *   - `F` Denotes whether the current PathFigure is filled (true if F is present)
+     *   - `F0` (instead of `F`) Denotes that the PathFigure should use the even-odd fill rule instead of the nonzero winding number rule (setting PathFigure#isEvenOdd)
      *   - `U` Denotes that the PathFigure is not shadowed
      *
      * See the <a href="../../intro/geometry.html">Introduction page on Geometry Parsing</a> for more details.
@@ -2949,8 +2954,9 @@ export class PathFigure {
      * @param {number=} sy optional: the Y coordinate of the start point (default is zero).
      * @param {boolean=} filled optional: whether the figure is filled (default is true).
      * @param {boolean=} shadowed optional: whether the figure may be drawn with a shadow (default is true).
+     * @param {boolean=} isEvenOdd optional: whether uses the even-odd rule (true) or nonzero winding number rule (the default, false).
      */
-    constructor(sx?: number, sy?: number, filled?: boolean, shadowed?: boolean);
+    constructor(sx?: number, sy?: number, filled?: boolean, shadowed?: boolean, isEvenOdd?: boolean);
     /**
      * Create a copy of this PathFigure, with the same values and segments.
      * @expose
@@ -2976,6 +2982,16 @@ export class PathFigure {
      */
     get isShadowed(): boolean;
     set isShadowed(value: boolean);
+    /**
+     * Gets or sets whether this PathFigure will render and hit-test with the even-odd fill rule
+     * or nonzero winding number fill rule (false).
+     * The default value is false, using the nonzero winding number rule.
+     *
+     * In <a href="../../intro/geometry.html">Geometry Path Strings</a>, this is set by using "F0" instead of "F" at the beginning of a figure.
+     * @since 2.3
+     */
+    get isEvenOdd(): boolean;
+    set isEvenOdd(value: boolean);
     /**
      * Gets or sets the starting point X coordinate of the PathFigure.
      * The default value is zero.
@@ -3266,7 +3282,7 @@ export class PathSegment {
  *
  * When real events fire on the Diagram, InputEvents are created automatically set update the value of Diagram#lastInput.
  * These events set the value of #event with the backing browser-defined Event,
- * which may be a MouseEvent, KeyboardEvent, PointerEvent, TouchEvent, and so on.
+ * which may be a MouseEvent, KeyboardEvent, PointerEvent, and so on.
  *
  * InputEvents backed by MouseEvents set both #button, the button that caused the action,
  * and #buttons, the set of buttons currently pressed after the action has happened.
@@ -10152,6 +10168,21 @@ export class Diagram {
      */
     constructor(init?: DiagramInitOptions);
     /**
+     * Gets or sets the rendering context type. Values are `'default'`, which uses the HTML Canvas,
+     * or `'svg'`, which builds and updates an SVG DOM.
+     *
+     * Setting this value dynamically is uncommon, typically a render is chosen only once,
+     * when the Diagram is initially created. Using the SVG rendering context is also uncommon,
+     * because the default canvas context has considerably greater performance.
+     *
+     * For more information, see the intro page on the
+     * <a href="../../intro/SVGContext.html">SVG drawing context</a>.
+     *
+     * @since 2.3
+     */
+    get renderer(): 'default' | 'svg';
+    set renderer(value: 'default' | 'svg');
+    /**
      * This static function returns `true` if GoJS detects a DOM.
      * In browser environments this is expected to be `true`, in Node-like environments, `false`.
      * Specifically, this will be `false` if there is no root `document` in the JavaScript context,
@@ -16269,10 +16300,11 @@ export abstract class GraphObject {
      * in the Extensions directory.
      *
      * @param {string} name a capitalized name; must not be `""` or `"None"`
-     * @param {Partial<T>?} config a plain JavaScript object with various property values to be set on this GraphObject.
+     * @param {Partial<T>=} config a plain JavaScript object with various property values to be set on this GraphObject.
+     * @param {...any} args If defined in the builder, the additional arguments that would be passed to GraphObject.takeBuilderArgument
      * @since 2.2
      */
-    static build<T extends GraphObject>(name: string, config?: Partial<T>): T;
+    static build<T extends GraphObject>(name: string, config?: Partial<T>, ...args: Array<any>): T;
     /**
      * (undocumented)
      * This never-documented method has been renamed #findBindingPanel for v2.2 and will be removed in v3.0.
@@ -19064,7 +19096,7 @@ export class TextBlock extends GraphObject {
     get stroke(): BrushLike;
     set stroke(value: BrushLike);
     /**
-     * This read-only property returns the total number of lines in this TextBlock, including lines created
+     * This read-only property returns the computed number of lines in this TextBlock, including lines created
      * from embedded newlines (`\n`), #wrapping, and #maxLines.
      *
      * This value may be meaningless before the TextBlock is measured.
@@ -27521,6 +27553,8 @@ export class ForceDirectedEdge extends LayoutEdge {
  * Moreover, if you do not set this property, the layout will automatically remove the
  * LayeredDigraphLayout.PackExpand flag if the graph is large enough,
  * in order to improve performance.
+ * It is also worth experimenting whether using #alignOption to straighten and pack
+ * provides good results for your graphs, as it is faster than #packOption.
  *
  * If performance remains a problem, contact us.
  * @extends Layout
@@ -27536,6 +27570,7 @@ export class LayeredDigraphLayout extends Layout {
     constructor(init?: Partial<LayeredDigraphLayout>);
     /**
      * Create a new LayoutNetwork of LayeredDigraphVertexes and LayeredDigraphEdges.
+     * @expose
      * @return {LayeredDigraphNetwork} a new LayoutNetwork.
      */
     createNetwork(): LayeredDigraphNetwork;
@@ -27588,11 +27623,13 @@ export class LayeredDigraphLayout extends Layout {
      * The default implementation returns 0 for nodes that do not
      * correspond to top-level Go objects.  For nodes that do correspond
      * to top-level Go objects, the column space is determined by the
-     * width and height of the object divided by the #columnSpcacing.
+     * width and height of the object divided by the #columnSpacing.
      * Note: all sub-classes that override this method should ensure that
      * nodes that do not correspond to top-level Go objects have a minimum
      * column space of 0.
      * This function can be overridden to provide "fine-tuning" of the layout.
+     *
+     * This property has no effect on positioning of nodes when using #alignOption.
      * @expose
      * @param {LayeredDigraphVertex} v
      * @param {boolean} topleft whether to return the distance from the vertex's position
@@ -27713,6 +27750,8 @@ export class LayeredDigraphLayout extends Layout {
     /**
      * Gets or sets the size of each column.
      * This value must be positive and it defaults to 25.
+     *
+     * When using #alignOption, this will act as node spacing for nodes within a layer.
      */
     get columnSpacing(): number;
     set columnSpacing(value: number);
@@ -27769,18 +27808,57 @@ export class LayeredDigraphLayout extends Layout {
     set aggressiveOption(value: EnumValue);
     /**
      * Gets or sets the options used by the straighten and pack function.
+     *
      * The value must be a combination of the following bit flags:
      * LayeredDigraphLayout.PackMedian,
      * LayeredDigraphLayout.PackStraighten, and
      * LayeredDigraphLayout.PackExpand.
      * The default value is LayeredDigraphLayout.PackAll, which is a combination of all three flags.
+     *
      * Each of the flags has a cost; PackExpand is particularly slow.
      * However if you do not set this property, this layout will automatically turn off the PackExpand
      * option for you if the graph is large enough.
      * You can set this property value to LayeredDigraphLayout.PackNone to avoid most of the work.
+     *
+     * This option is ignored if #alignOption is set to a value other than LayeredDigraphLayout.AlignNone.
+     * This tends to be slower than #alignOption, particularly for larger graphs.
+     * Larger graphs, however, will usually be more compact than when using alignOption.
+     *
+     * @see #alignOption
      */
     get packOption(): number;
     set packOption(value: number);
+    /**
+     * Gets or sets the options used by the straighten and pack function, as a potentially faster
+     * alternative to #packOption.
+     *
+     * When using this option, nodes are assigned coordinates within their layers
+     * to produce straighter paths of nodes and small edge lengths.
+     *
+     * When used as an alternative to #packOption, this tends to be faster,
+     * particularly for larger graphs.
+     * Larger graphs, however, will usually be less compact than when using packOption.
+     * If this option is set, packOption is ignored.
+     *
+     * This option does not use columns, but rather uses #columnSpacing to space nodes within a layer.
+     *
+     * The value must be a combination of the following bit flags:
+     * LayeredDigraphLayout.AlignUpperLeft,
+     * LayeredDigraphLayout.AlignUpperRight,
+     * LayeredDigraphLayout.AlignLowerLeft, and
+     * LayeredDigraphLayout.AlignLowerRight.
+     *
+     * Using LayeredDigraphLayout.AlignAll will tend to provide the most balanced results
+     * and is what we recommend starting with.
+     *
+     * The default value is LayeredDigraphLayout.AlignNone, meaning #packOption is used.
+     * LayeredDigraphLayout.AlignAll may become the default in a future major version.
+     *
+     * @see #packOption
+     * @since 2.3
+     */
+    get alignOption(): number;
+    set alignOption(value: number);
     /**
      * Gets or sets whether the FromSpot and ToSpot of each link should be set
      * to values appropriate for the given value of LayeredDigraphLayout#direction.
@@ -27929,6 +28007,45 @@ export class LayeredDigraphLayout extends Layout {
      * @constant
      */
     static PackAll: number;
+    /**
+     * This option means the the layout will pack nodes using the LayeredDigraphLayout#packOption instead of LayeredDigraphLayout#alignOption,
+     * a valid value for LayeredDigraphLayout#alignOption.
+     * @constant
+     */
+    static AlignNone: number;
+    /**
+     * This option aligns and compacts nodes based on upper neighbors, favoring leftmost neighbors,
+     * a valid value for LayeredDigraphLayout#alignOption.
+     * @constant
+     */
+    static AlignUpperLeft: number;
+    /**
+     * This option aligns and compacts nodes based on upper neighbors, favoring rightmost neighbors,
+     * a valid value for LayeredDigraphLayout#alignOption.
+     * @constant
+     */
+    static AlignUpperRight: number;
+    /**
+     * This option aligns and compacts nodes based on lower neighbors, favoring leftmost neighbors,
+     * a valid value for LayeredDigraphLayout#alignOption.
+     * @constant
+     */
+    static AlignLowerLeft: number;
+    /**
+     * This option aligns and compacts nodes based on lower neighbors, favoring rightmost neighbors,
+     * a valid value for LayeredDigraphLayout#alignOption.
+     * @constant
+     */
+    static AlignLowerRight: number;
+    /**
+     * Enable all options for the LayeredDigraphLayout#alignOption property;
+     * See also LayeredDigraphLayout.AlignUpperLeft, LayeredDigraphLayout.AlignUpperRight,
+     * LayeredDigraphLayout.AlignLowerLeft, and LayeredDigraphLayout.AlignLowerRight.
+     *
+     * This option will tend to balance nodes compared to their neighbors.
+     * @constant
+     */
+    static AlignAll: number;
 }
 /**
  * This class represents an abstract graph of LayeredDigraphVertexes and LayeredDigraphEdges
@@ -27955,6 +28072,23 @@ export class LayeredDigraphNetwork extends LayoutNetwork {
  * @unindexed
  */
 export class LayeredDigraphVertex extends LayoutVertex {
+    constructor(network: LayeredDigraphNetwork);
+    /**
+     * @param {LayoutEdge} edge
+     */
+    addSourceEdge(edge: LayoutEdge): void;
+    /**
+     * @param {LayoutEdge} edge
+     */
+    deleteSourceEdge(edge: LayoutEdge): void;
+    /**
+     * @param {LayoutEdge} edge
+     */
+    addDestinationEdge(edge: LayoutEdge): void;
+    /**
+     * @param {LayoutEdge} edge
+     */
+    deleteDestinationEdge(edge: LayoutEdge): void;
     /**
      * Gets or sets the layer to which the node is assigned.
      * The default value is -1.

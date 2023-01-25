@@ -16,7 +16,7 @@
       <div class="md:pl-4">
         <a class="text-white hover:text-white no-underline hover:no-underline
         font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="mb-0 p-1 ">GoJS</h1>
+          <h1 class="my-0 p-1 ">GoJS</h1>
         </a>
       </div>
       <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
@@ -394,6 +394,7 @@
   class GenogramLayout extends go.LayeredDigraphLayout {
     constructor() {
       super();
+      this.alignOption = go.LayeredDigraphLayout.AlignAll;
       this.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
       this.spouseSpacing = 30;  // minimum space between spouses
     }
@@ -554,15 +555,22 @@
       // (other than the ones that are the widest or tallest in their respective layer).
     }
 
+    initializeIndices() {
+      super.initializeIndices();
+      const vertical = this._direction === 90 || this._direction === 270;
+      this.network.edges.each(e => {
+        if (e.fromVertex.node && e.fromVertex.node.isLinkLabel) {
+          e.portFromPos = vertical ? e.fromVertex.focusX : e.fromVertex.focusY;
+        }
+        if (e.toVertex.node && e.toVertex.node.isLinkLabel) {
+          e.portToPos = vertical ? e.toVertex.focusX : e.toVertex.focusY;
+        }
+      })
+    }
+
     commitNodes() {
       super.commitNodes();
       const horiz = this.direction == 0.0 || this.direction == 180.0;
-      // position regular nodes
-      this.network.vertexes.each(v => {
-        if (v.node !== null && !v.node.isLinkLabel) {
-          v.node.moveTo(v.x, v.y);
-        }
-      });
       // position the spouses of each marriage vertex
       this.network.vertexes.each(v => {
         if (v.node === null) return;
@@ -616,25 +624,6 @@
           spouseB.move(pos);
         }
         lablink.ensureBounds();
-      });
-      // position only-child nodes to be under the marriage label node
-      this.network.vertexes.each(v => {
-        if (v.node === null || v.node.linksConnected.count > 1) return;
-        const mnode = this.findParentsMarriageLabelNode(v.node);
-        if (mnode !== null && mnode.linksConnected.count === 1) {  // if only one child
-          const mvert = this.network.findVertex(mnode);
-          const newbnds = v.node.actualBounds.copy();
-          if (horiz) {
-            newbnds.y = mvert.centerY - v.node.actualBounds.height / 2;
-          } else {
-            newbnds.x = mvert.centerX - v.node.actualBounds.width / 2;
-          }
-          // see if there's any empty space at the horizontal mid-point in that layer
-          const overlaps = this.diagram.findObjectsIn(newbnds, x => x.part, p => p !== v.node, true);
-          if (overlaps.count === 0) {
-            v.node.move(newbnds.position);
-          }
-        }
       });
     }
 

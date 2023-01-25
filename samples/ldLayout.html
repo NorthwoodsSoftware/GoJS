@@ -16,7 +16,7 @@
       <div class="md:pl-4">
         <a class="text-white hover:text-white no-underline hover:no-underline
         font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="mb-0 p-1 ">GoJS</h1>
+          <h1 class="my-0 p-1 ">GoJS</h1>
         </a>
       </div>
       <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
@@ -61,7 +61,7 @@
         $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
           {
             initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.LayeredDigraphLayout)
+            layout: $(go.LayeredDigraphLayout, { alignOption: go.LayeredDigraphLayout.AlignAll })
             // other Layout properties are set by the layout function, defined below
           });
 
@@ -198,15 +198,27 @@
       else if (aggressive === "AggressiveMore") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveMore;
 
       //TODO implement pack option
+      var i;
       var pack = document.getElementsByName("pack");
       var packing = 0;
-      for (var i = 0; i < pack.length; i++) {
+      for (i = 0; i < pack.length; i++) {
         if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
       }
       lay.packOption = packing;
 
       var setsPortSpots = document.getElementById("setsPortSpots");
       lay.setsPortSpots = setsPortSpots.checked;
+
+      var align = document.getElementsByName("align");
+      var alignOption = 0;
+      for (i = 0; i < align.length; i++) {
+        if (align[i].checked) alignOption = alignOption | parseInt(align[i].value, 10);
+      }
+      for (i = 0; i < pack.length; i++) {
+        var cb = pack[i];
+        cb.disabled = alignOption !== 0;
+      }
+      lay.alignOption = alignOption;
 
       myDiagram.commitTransaction("change Layout");
     }
@@ -257,6 +269,11 @@
       <input type="checkbox" name="pack" onclick="layout()" value="4" checked="checked" /> PackMedian
       <input type="checkbox" name="pack" onclick="layout()" value="2" checked="checked" /> PackStraighten
       <input type="checkbox" name="pack" onclick="layout()" value="1" checked="checked" /> PackExpand<br />
+      Align:
+      <input type="checkbox" name="align" onclick="layout()" value="1" checked="checked" /> AlignUpperLeft
+      <input type="checkbox" name="align" onclick="layout()" value="2" checked="checked" /> AlignUpperRight
+      <input type="checkbox" name="align" onclick="layout()" value="4" checked="checked" /> AlignLowerLeft
+      <input type="checkbox" name="align" onclick="layout()" value="8" checked="checked" /> AlignLowerRight<br />
       SetsPortSpots: <input type="checkbox" id="setsPortSpots" onclick="layout()" checked="checked" />
     </span>
   </div>
