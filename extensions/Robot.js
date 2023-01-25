@@ -1,6 +1,6 @@
 ﻿"use strict";
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A class for simulating mouse and keyboard input.

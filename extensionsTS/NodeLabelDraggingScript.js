@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -56,7 +56,7 @@
         });
         // define the Node template
         myDiagram.nodeTemplate =
-            $(go.Node, 'Spot', { locationObjectName: 'ICON', locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), { selectionObjectName: 'ICON' }, 
+            $(go.Node, 'Spot', { locationObjectName: 'ICON', locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), { selectionObjectName: 'ICON' },
             // define the node primary shape
             $(go.Shape, 'RoundedRectangle', {
                 name: 'ICON',
@@ -78,14 +78,14 @@
                 editable: true,
                 _isNodeLabel: true,
                 cursor: 'move' // visual hint that the user can do something with this node label
-            }, new go.Binding('text', 'text').makeTwoWay(), 
+            }, new go.Binding('text', 'text').makeTwoWay(),
             // The GraphObject.alignment property is what the NodeLabelDraggingTool modifies.
             // This TwoWay binding saves any changes to the same named property on the node data.
             new go.Binding('alignment', 'alignment', go.Spot.parse).makeTwoWay(go.Spot.stringify)));
         // unlike the normal selection Adornment, this one includes a Button
         myDiagram.nodeTemplate.selectionAdornmentTemplate =
             $(go.Adornment, 'Spot', $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'blue', strokeWidth: 2 }), $(go.Placeholder) // this represents the selected Node
-            ), 
+            ),
             // the button to create a "next" node, at the top-right corner
             $('Button', {
                 alignment: go.Spot.TopRight,

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
   byId("sample").parentElement.appendChild(b1);
   byId("sample").parentElement.appendChild(b2);
 
-  var copyright = 'Copyright 1998-2022 by Northwoods Software.';
+  var copyright = 'Copyright 1998-2023 by Northwoods Software.';
   var p2 = document.createElement("p");
   p2.classList = "text-xs";
   p2.innerHTML = (window.go) ? 'GoJS version ' + go.version + '. ' + copyright : copyright;

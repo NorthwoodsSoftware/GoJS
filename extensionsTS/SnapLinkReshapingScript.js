@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -76,7 +76,7 @@
             });
         }
         myDiagram.nodeTemplate =
-            $(go.Node, 'Spot', { locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), { selectable: true }, { resizable: true, resizeObjectName: 'PANEL' }, 
+            $(go.Node, 'Spot', { locationSpot: go.Spot.Center }, new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify), { selectable: true }, { resizable: true, resizeObjectName: 'PANEL' },
             // the main object is a Panel that surrounds a TextBlock with a Shape
             $(go.Panel, 'Auto', { name: 'PANEL' }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), $(go.Shape, 'Rectangle', // default figure
             {
@@ -89,7 +89,7 @@
                 maxSize: new go.Size(160, NaN),
                 wrap: go.TextBlock.WrapFit,
                 editable: true
-            }, new go.Binding('text').makeTwoWay())), 
+            }, new go.Binding('text').makeTwoWay())),
             // four small named ports, one on each side:
             makePort('T', go.Spot.Top, false, true), makePort('L', go.Spot.Left, true, true), makePort('R', go.Spot.Right, true, true), makePort('B', go.Spot.Bottom, true, false), {
                 mouseEnter: function (e, node) { if (node instanceof go.Node)
@@ -112,7 +112,7 @@
                 curve: go.Link.JumpOver,
                 corner: 5,
                 toShortLength: 4
-            }, new go.Binding('points').makeTwoWay(), 
+            }, new go.Binding('points').makeTwoWay(),
             // remember the Link.routing too
             new go.Binding('routing', 'routing', go.Binding.parseEnum(go.Link, go.Link.AvoidsNodes))
                 .makeTwoWay(go.Binding.toString), $(go.Shape, // the link path shape

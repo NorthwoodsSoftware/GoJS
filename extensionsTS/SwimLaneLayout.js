@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -39,15 +39,15 @@ var __extends = (this && this.__extends) || (function () {
     /**
      * A custom LayeredDigraphLayout that knows about "lanes"
      * and that positions each node in its respective lane.
-    
+
      * This assumes that each Node.data.lane property is a string that names the lane the node should be in.
      * You can set the {@link #laneProperty} property to use a different data property name.
      * It is commonplace to set this property to be the same as the {@link GraphLinksModel#nodeGroupKeyProperty},
      * so that the one property indicates that a particular node data is a member of a particular group
      * and thus that that group represents a lane.
-    
+
      * The lanes can be sorted by specifying the {@link #laneComparer} function.
-    
+
      * You can add extra space between the lanes by increasing {@link #laneSpacing} from its default of zero.
      * That number's unit is columns, {@link LayeredDigraphLayout#columnSpacing}, not in document coordinates.
      * @category Layout Extension

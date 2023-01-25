@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 // This file holds definitions of all standard shape figures -- string values for Shape.figure.
 // You do not need to load this file in order to use named Shape figure.
@@ -146,35 +146,45 @@ function freePoint(temp) {
  * @param {number} q1y
  * @param {number} q2x
  * @param {number} q2y
- * @param {Point} result
+ * @param {Point=} result
  * @return {Point}
  */
 function getIntersection(p1x, p1y, p2x, p2y, q1x, q1y, q2x, q2y, result) {
+    if (!result)
+        result = new go.Point();
     const dx1 = p1x - p2x;
     const dx2 = q1x - q2x;
-    let x;
-    let y;
-    if (dx1 === 0 || dx2 === 0) {
-        if (dx1 === 0) {
+    let x = NaN;
+    let y = NaN;
+    if (dx1 === 0) {
+        if (dx2 === 0) {
+            if (p1x === p2x) {
+                x = p1x;
+                y = p1y;
+            }
+        }
+        else {
             const m2 = (q1y - q2y) / dx2;
             const b2 = q1y - m2 * q1x;
             x = p1x;
             y = m2 * x + b2;
         }
-        else {
+    }
+    else {
+        if (dx2 === 0) {
             const m1 = (p1y - p2y) / dx1;
             const b1 = p1y - m1 * p1x;
             x = q1x;
             y = m1 * x + b1;
         }
-    }
-    else {
-        const m1 = (p1y - p2y) / dx1;
-        const m2 = (q1y - q2y) / dx2;
-        const b1 = p1y - m1 * p1x;
-        const b2 = q1y - m2 * q1x;
-        x = (b2 - b1) / (m1 - m2);
-        y = m1 * x + b1;
+        else {
+            const m1 = (p1y - p2y) / dx1;
+            const m2 = (q1y - q2y) / dx2;
+            const b1 = p1y - m1 * p1x;
+            const b2 = q1y - m2 * q1x;
+            x = (b2 - b1) / (m1 - m2);
+            y = m1 * x + b1;
+        }
     }
     result.x = x;
     result.y = y;

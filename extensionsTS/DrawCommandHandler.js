@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -378,7 +378,7 @@ var __extends = (this && this.__extends) || (function () {
             // assign each selected Part.zOrder to the computed value for each Layer
             diagram.selection.each(function (part) {
                 var z = layers.get(part.layer) || 0;
-                DrawCommandHandler._assignZOrder(part, 
+                DrawCommandHandler._assignZOrder(part,
                 // make sure a group's nested nodes are also behind everything else
                 z - 1 - DrawCommandHandler._findGroupDepth(part));
             });

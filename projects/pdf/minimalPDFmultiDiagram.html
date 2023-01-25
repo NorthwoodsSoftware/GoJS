@@ -4,15 +4,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Generating PDF with multiple Diagrams</title>
 <meta name="description" content="A demonstration of generating a PDF file showing multiple diagrams that are not visible on the page." />
-<!-- Copyright 1998-2022 by Northwoods Software Corporation. -->
+<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
 <meta charset="UTF-8">
 <script src="https://unpkg.com/gojs"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script src="https://unpkg.com/svg-to-pdfkit"></script>
 <script id="code">
-  // This just creates and initializes a Diagram.
-  // The details do not really matter for this demo.
+  const allModels = new go.Map();
+
   function init() {
-    var $ = go.GraphObject.make;
+    const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
@@ -20,6 +21,7 @@
 
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         $(go.Shape, "RoundedRectangle",
           { strokeWidth: 0, fill: "white" },
           new go.Binding("fill", "color")),
@@ -28,6 +30,52 @@
           new go.Binding("text"))
       );
 
+    // create and remember three models
+    allModels.add("one", new go.GraphLinksModel(
+      {
+        nodeDataArray: [
+          { key: 1, text: "one", color: "#FFAAAA" },
+          { key: 2, text: "one" + " 1", color: "#FFAAAA" },
+          { key: 3, text: "one" + " 2", color: "#FFAAAA" }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 }
+        ]
+      }));
+
+    allModels.add("two", new go.GraphLinksModel(
+      {
+        nodeDataArray: [
+          { key: 1, text: "two", color: "#AAFFAA", loc: "0 0" },
+          { key: 2, text: "two" + " 1", color: "#AAFFAA", loc: "150 -50" },
+          { key: 3, text: "two" + " 2", color: "#AAFFAA", loc: "-50 150" },
+          { key: 4, text: "two" + " 3", color: "#AAFFAA", loc: "1150 150" }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 1, to: 4 }
+        ]
+      }));
+
+    allModels.add("three", new go.GraphLinksModel(
+      {
+        nodeDataArray: [
+          { key: 1, text: "three", color: "#AAAAFF", loc: "0 0" },
+          { key: 2, text: "three" + " 1", color: "#AAAAFF", loc: "-150 -150" },
+          { key: 3, text: "three" + " 2", color: "#AAAAFF", loc: "150 150" },
+          { key: 4, text: "three" + " 3", color: "#AAAAFF", loc: "-150 150" },
+          { key: 5, text: "three" + " 4", color: "#AAAAFF", loc: "150 -150" }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 1, to: 4 },
+          { from: 1, to: 5 }
+        ]
+      }));
+
     fetchModel("one");
   }
 
@@ -35,19 +83,7 @@
   // which would initialize myDiagram rather than using the hidden diagram/div
   function fetchModel(name, callback) {
     if (!callback) callback = m => myDiagram.model = m;
-
-    // this ought to load a particular model for NAME, but
-    // for demonstration purposes this just creates a trivial model using NAME
-    const m = new go.GraphLinksModel();
-    m.nodeDataArray = [
-      { key: 1, text: "Root", color: "lightgreen" },
-      { key: 2, text: name, color: "yellow" },
-      { key: 3, text: name + "2", color: "orange" }
-    ];
-    m.linkDataArray = [
-      { from: 1, to: 2 },
-      { from: 1, to: 3 }
-    ];
+    const m = allModels.get(name) || allModels.get("one");
     callback(m);
   }
 
@@ -73,79 +109,67 @@
   //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
   //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
   //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
-  //   "imgResolutionFactor" for how large the image should be scaled when rendered for each page;
   //     larger is better but significantly increases memory usage (default is 3)
-  //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeImageData
+  //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeSvg
   function generatePdf(action, namelist, options) {
     if (!options) options = {};
 
-    var pageSize = options.pageSize || "LETTER";
-    pageSize = pageSize.toUpperCase();
+    const pageSize = (options.pageSize || "LETTER").toUpperCase();
     if (pageSize !== "LETTER" && pageSize !== "A4") throw new Error("unknown page size: " + pageSize);
     // LETTER: 612x792 pt == 816x1056 CSS units
     // A4: 595.28x841.89 pt == 793.71x1122.52 CSS units
-    var pageWidth = (pageSize === "LETTER" ? 612 : 595.28) * 96 / 72;  // convert from pt to CSS units
-    var pageHeight = (pageSize === "LETTER" ? 792 : 841.89) * 96 / 72;
+    const pageWidth = (pageSize === "LETTER" ? 612 : 595.28) * 96 / 72;  // convert from pt to CSS units
+    const pageHeight = (pageSize === "LETTER" ? 792 : 841.89) * 96 / 72;
 
-    var layout = options.layout || "portrait";
-    layout = layout.toLowerCase();
+    const layout = (options.layout || "portrait").toLowerCase();
     if (layout !== "portrait" && layout !== "landscape") throw new Error("unknown layout: " + layout);
     if (layout === "landscape") {
-      var temp = pageWidth;
+      const temp = pageWidth;
       pageWidth = pageHeight;
       pageHeight = temp;
     }
 
-    var margin = options.margin !== undefined ? options.margin : 36;  // pt: 0.5 inch margin on each side
-    var padding = options.padding !== undefined ? options.padding : new go.Margin(0);  // CSS units
+    const margin = options.margin !== undefined ? options.margin : 36;  // pt: 0.5 inch margin on each side
+    const padding = options.padding !== undefined ? options.padding : new go.Margin(0);  // CSS units
 
-    var imgWidth = options.imgWidth !== undefined ? options.imgWidth : (pageWidth-margin/72*96*2);  // CSS units
-    var imgHeight = options.imgHeight !== undefined ? options.imgHeight : (pageHeight-margin/72*96*2);  // CSS units
-    var imgResolutionFactor = options.imgResolutionFactor !== undefined ? options.imgResolutionFactor : 3;
+    const imgWidth = options.imgWidth !== undefined ? options.imgWidth : (pageWidth-margin/72*96*2);  // CSS units
+    const imgHeight = options.imgHeight !== undefined ? options.imgHeight : (pageHeight-margin/72*96*2);  // CSS units
 
-    var pageOptions = {
+    const pageOptions = {
       size: pageSize,
       margin: margin,  // pt
       layout: layout
     };
 
+    const namelistlength = namelist.length;
+
     function generateDiagram(namelist, doc, stream, callback) {
       if (namelist.length > 0) {
+        if (namelist.length !== namelistlength) doc.addPage(pageOptions);
         const name = namelist.shift();
         fetchModel(name, m =>
           useModel(m, e => {
             const diagram = e.diagram;
-            var bnds = diagram.documentBounds;
+            const bnds = diagram.documentBounds;
 
             // add some descriptive text
             doc.text("Diagram: " + name);
 
-            var db = diagram.documentBounds.copy().subtractMargin(diagram.padding).addMargin(padding);
-            var p = db.position;
-            // iterate over page areas of document bounds
-            for (var j = 0; j < db.height; j += imgHeight) {
-              for (var i = 0; i < db.width; i += imgWidth) {
+            const db = diagram.documentBounds.copy().subtractMargin(diagram.padding).addMargin(padding);
+            const p = db.position;
 
-                // if any page has no Parts partially or fully in it, skip rendering that page
-                var r = new go.Rect(p.x + i, p.y + j, imgWidth, imgHeight);
-                if (diagram.findPartsIn(r, true, false).count === 0) continue;
+            const makeOptions = {};
+            if (options.parts !== undefined) makeOptions.parts = options.parts;
+            if (options.background !== undefined) makeOptions.background = options.background;
+            if (options.showTemporary !== undefined) makeOptions.showTemporary = options.showTemporary;
+            if (options.showGrid !== undefined) makeOptions.showGrid = options.showGrid;
+            makeOptions.scale = Math.min(1, Math.min(imgWidth/db.width, imgHeight/db.height));
+            makeOptions.position = new go.Point(p.x, p.y);
+            makeOptions.size = new go.Size(db.width, db.height);
 
-                if (i > 0 || j > 0) doc.addPage(pageOptions);
+            const svg = diagram.makeSvg(makeOptions);
+            SVGtoPDF(doc, svg, doc.x, doc.y, null);
 
-                var makeOptions = {};
-                if (options.parts !== undefined) makeOptions.parts = options.parts;
-                if (options.background !== undefined) makeOptions.background = options.background;
-                if (options.showTemporary !== undefined) makeOptions.showTemporary = options.showTemporary;
-                if (options.showGrid !== undefined) makeOptions.showGrid = options.showGrid;
-                makeOptions.scale = imgResolutionFactor;
-                makeOptions.position = new go.Point(p.x + i, p.y + j);
-                makeOptions.size = new go.Size(imgWidth*imgResolutionFactor, imgHeight*imgResolutionFactor);
-                makeOptions.maxSize = new go.Size(Infinity, Infinity);
-              }
-
-              var imgdata = diagram.makeImageData(makeOptions);
-              doc.image(imgdata, { scale: 1/(imgResolutionFactor*96/72) });
-            }
             // then do rest of list
             generateDiagram(namelist, doc, stream, callback);
           })
@@ -157,8 +181,8 @@
 
     require(["blob-stream", "pdfkit"], (blobStream, PDFDocument) => {
       // start the PDF
-      var doc = new PDFDocument(pageOptions);
-      var stream = doc.pipe(blobStream());
+      const doc = new PDFDocument(pageOptions);
+      const stream = doc.pipe(blobStream());
       generateDiagram(namelist, doc, stream,
         () => {  // finish up the PDF
           doc.end();
@@ -177,8 +201,8 @@
 
   function downloadPdf() {  // called by HTML button
     generatePdf(blob => {
-      var datauri = window.URL.createObjectURL(blob);
-      var a = document.createElement("a");
+      const datauri = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
       a.style = "display: none";
       a.href = datauri;
       a.download = "myDiagram.pdf";
@@ -196,6 +220,7 @@
 <body onload="init()">
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  Models:
   <ul id="myList">
     <li><button onclick="fetchModel(event.target.textContent)">one</button></li>
     <li><button onclick="fetchModel(event.target.textContent)">two</button></li>

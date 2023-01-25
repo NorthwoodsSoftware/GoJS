@@ -1,6 +1,6 @@
 'use strict';
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // This file holds the definitions of several useful figures with rounded corners but straight sides:

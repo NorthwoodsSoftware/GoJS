@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -34,14 +34,14 @@
             $(go.Node, 'Auto', // the Shape will go around the whole table
             $(go.Shape, { strokeWidth: 0 }, // no border
             new go.Binding('fill', 'color')), $(go.Panel, 'Table', { padding: 3 }, $(go.TextBlock, { row: 0, column: 0, columnSpan: 2 }, { margin: 3, font: 'bold 10pt sans-serif' }, // some room around the bold text
-            new go.Binding('text', 'key')), 
+            new go.Binding('text', 'key')),
             // the first column has an assortment of CheckBoxes
             $(go.Panel, 'Vertical', { row: 1, column: 0, defaultAlignment: go.Spot.Left }, $('CheckBox', 'choice1', $(go.TextBlock, 'default')), $('CheckBox', 'choice2', { 'ButtonIcon.stroke': 'green' }, $(go.TextBlock, 'green')), $('CheckBox', 'choice3', { 'ButtonIcon.stroke': 'red', 'ButtonIcon.figure': 'XLine' }, $(go.TextBlock, 'red X')), $('CheckBox', 'choice4', { '_buttonFillOver': 'pink', '_buttonStrokeOver': 'red' }, $(go.TextBlock, 'pink over')), $('CheckBox', 'choice5', { 'Button.width': 32, 'Button.height': 32 }, $(go.TextBlock, 'BIG', { font: 'bold 12pt sans-serif' })), $('CheckBox', 'choice6', {
                 'Button.width': 20, 'Button.height': 20,
                 'ButtonBorder.figure': 'Circle', 'ButtonBorder.stroke': 'blue',
                 'ButtonIcon.figure': 'Circle', 'ButtonIcon.fill': 'blue',
                 'ButtonIcon.strokeWidth': 0, 'ButtonIcon.desiredSize': new go.Size(10, 10)
-            }, $(go.TextBlock, 'blue circle')), $('CheckBox', 'choice7', go.Panel.Vertical, $(go.TextBlock, 'vertical'))), 
+            }, $(go.TextBlock, 'blue circle')), $('CheckBox', 'choice7', go.Panel.Vertical, $(go.TextBlock, 'vertical'))),
             // the second column is a list of CheckBoxes
             $(go.Panel, 'Table', {
                 row: 1, column: 1,
@@ -50,10 +50,10 @@
                 itemTemplate: $('CheckBox', 'checked', go.Panel.TableRow, $(go.TextBlock, // align text towards the right, next to the Button
                 { column: 0, alignment: go.Spot.Right }, new go.Binding('text', 'name')), { 'Button.column': 1 } // put Button in second column, to the right of text
                 )
-            }, new go.Binding('itemArray', 'items')), 
+            }, new go.Binding('itemArray', 'items')),
             // now a checkbox at the bottom of the whole table
             $('CheckBox', '', // not data bound
-            { row: 3, columnSpan: 2, alignment: go.Spot.Left }, 
+            { row: 3, columnSpan: 2, alignment: go.Spot.Left },
             // this checkbox is not bound to model data, but it does toggle the Part.movable
             // property of the Node that this is in
             $(go.TextBlock, 'Node is not movable'), {

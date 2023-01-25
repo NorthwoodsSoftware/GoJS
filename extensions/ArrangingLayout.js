@@ -1,7 +1,7 @@
 "use strict";
 
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A custom Layout that provides one way to have a layout of layouts.

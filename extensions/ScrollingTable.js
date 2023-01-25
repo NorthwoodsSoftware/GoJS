@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // A "ScrollingTable" Panel
@@ -31,7 +31,7 @@ go.GraphObject.defineBuilder("AutoRepeatButton", function(args) {
     endClicking(e, obj);
     if (obj.click) {
       // wait milliseconds before starting clicks
-      obj._timer = setTimeout(function() { repeatClicking(e, obj); }, delay);  
+      obj._timer = setTimeout(function() { repeatClicking(e, obj); }, delay);
     }
   }
   function repeatClicking(e, obj) {

@@ -1,6 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 // HTML + JavaScript text editor menu, using HTML radio inputs and HTMLInfo.

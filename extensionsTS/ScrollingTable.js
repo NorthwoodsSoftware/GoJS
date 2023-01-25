@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -246,7 +246,7 @@
         return $(go.Panel, "Table", {
             _updateScrollBar: updateScrollBar,
             mouseEnter: function (e, table) { return table._updateScrollBar(table); }
-        }, 
+        },
         // this actually holds the item elements
         $(go.Panel, "Table", {
             name: tablename,
@@ -255,12 +255,12 @@
             background: "whitesmoke",
             rowSizing: go.RowColumnDefinition.None,
             defaultAlignment: go.Spot.Top
-        }), 
+        }),
         // this is the scrollbar
         $(go.RowColumnDefinition, { column: 1, sizing: go.RowColumnDefinition.None }), $(go.Panel, "Table", { name: "SCROLLBAR", column: 1, stretch: go.GraphObject.Vertical, background: "#DDDDDD",
             mouseEnter: function (e, bar) { return showScrollButtons(bar, true); },
             mouseLeave: function (e, bar) { return showScrollButtons(bar, false); }
-        }, 
+        },
         // the scroll up button
         $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0,
             click: function (e, obj) { e.handled = true; incrTableIndex(obj, -1); }
@@ -270,7 +270,7 @@
                 var local = bar.getLocalPoint(e.documentPoint);
                 setScrollIndexLocal(bar, local.y);
             }
-        }, 
+        },
         // the scroll thumb, gets all available extra height
         $(go.Shape, { name: "THUMB", row: 1,
             stretch: go.GraphObject.Horizontal, height: 10,
@@ -284,7 +284,7 @@
                 var local = thumb.panel.getLocalPoint(e.documentPoint);
                 setScrollIndexLocal(thumb, local.y);
             }
-        }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }), 
+        }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }),
         // the scroll down button
         $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0,
             click: function (e, obj) { e.handled = true; incrTableIndex(obj, +1); }

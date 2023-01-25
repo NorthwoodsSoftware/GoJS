@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v2.2.22
+ * Type definitions for GoJS v2.2.23
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright (C) 1998-2022 by Northwoods Software Corporation.
+ * Copyright (C) 1998-2023 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 
@@ -1422,7 +1422,7 @@ export class Point {
      * @param {number} a2y
      * @param {number} px
      * @param {number} py
-     * @return {number} &lt;0 if on the left side, or &gt;0 if on the right side, or zero if exactly on the finite line segment
+     * @return {number} &lt;0 if on the right side, or &gt;0 if on the left side, or zero if exactly on the finite line segment
      * @since 2.2
      */
     static compareWithLineSegment(a1x: number, a1y: number, a2x: number, a2y: number, px: number, py: number): number;
@@ -1436,9 +1436,9 @@ export class Point {
      * If the point is on the infinitely extended line but not within the segment,
      * then this returns a positive number if the point is beyond the end of the segment when going from A1 to A2,
      * or this returns a negative number if the point comes before the segment's start at A1.
-     * @param {Point} p one end of the finite line segment
-     * @param {Point} q the other end of the finite line segment
-     * @return {number} &lt;0 if on the left side, or &gt;0 if on the right side, or zero if exactly on the finite line segment
+     * @param {Point} p the start of the finite line segment
+     * @param {Point} q the end of the finite line segment
+     * @return {number} &lt;0 if this Point is on the right side of the line segment, or &gt;0 if this Point is on the left side, or zero if exactly on the finite line segment
      * @since 2.2
      */
     compareWithLineSegmentPoint(p: Point, q: Point): number;
@@ -9189,22 +9189,20 @@ export class Animation {
      */
     start(): this;
     /**
-   * Add a temporary Part to this animation.
-   * This part will be added to the Diagram when the animation is started,
-   * and removed from the Diagram when the animation completes.
-   * This is intended to be used with #add, to animate properties of this Part or its elements.
-   *
-   * The temporary part added is typically either a GraphObject#copy of an existing Part,
-   * which is to be deleted and requires a copy for animated effects, or else a wholly new temporary Part,
-   * constructed in memory for the purpose of creating some effect.
-   *
-   *
-   * @param {Part} part A part to add to the Diagram at the start of the animation and remove at the end.
-   *                    This is typically either a copied Part already in the Diagram, to animate its deletion,
-   *                    or a Part created programmatically to be used for some effect.
-   * @param {Diagram=} diagram The Diagram to add the temporary part to, and remove it from, at the start and end of animation, respectively.
-   * @return {Animation} this Animation
-   */
+     * Add a temporary Part to this animation.
+     * This part will be added to the Diagram when the animation is started,
+     * and removed from the Diagram when the animation completes.
+     * This is intended to be used with #add, to animate properties of this Part or its elements.
+     *
+     * The temporary part added is typically either a GraphObject#copy of an existing Part,
+     * which is to be deleted and requires a copy for animated effects, or else a wholly new temporary Part,
+     * constructed in memory for the purpose of creating some effect.
+     * @param {Part} part A part to add to the Diagram at the start of the animation and remove at the end.
+     *                    This is typically either a copied Part already in the Diagram, to animate its deletion,
+     *                    or a Part created programmatically to be used for some effect.
+     * @param {Diagram=} diagram The Diagram to add the temporary part to, and remove it from, at the start and end of animation, respectively.
+     * @return {Animation} this Animation
+     */
     addTemporaryPart(part: Part, diagram: Diagram): this;
     /**
      * Add an object (GraphObject or Diagram) and effect name, with specified start and end values, to this Animation.

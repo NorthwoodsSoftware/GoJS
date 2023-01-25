@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -176,35 +176,45 @@
      * @param {number} q1y
      * @param {number} q2x
      * @param {number} q2y
-     * @param {Point} result
+     * @param {Point=} result
      * @return {Point}
      */
     function getIntersection(p1x, p1y, p2x, p2y, q1x, q1y, q2x, q2y, result) {
+        if (!result)
+            result = new go.Point();
         var dx1 = p1x - p2x;
         var dx2 = q1x - q2x;
-        var x;
-        var y;
-        if (dx1 === 0 || dx2 === 0) {
-            if (dx1 === 0) {
+        var x = NaN;
+        var y = NaN;
+        if (dx1 === 0) {
+            if (dx2 === 0) {
+                if (p1x === p2x) {
+                    x = p1x;
+                    y = p1y;
+                }
+            }
+            else {
                 var m2 = (q1y - q2y) / dx2;
                 var b2 = q1y - m2 * q1x;
                 x = p1x;
                 y = m2 * x + b2;
             }
-            else {
+        }
+        else {
+            if (dx2 === 0) {
                 var m1 = (p1y - p2y) / dx1;
                 var b1 = p1y - m1 * p1x;
                 x = q1x;
                 y = m1 * x + b1;
             }
-        }
-        else {
-            var m1 = (p1y - p2y) / dx1;
-            var m2 = (q1y - q2y) / dx2;
-            var b1 = p1y - m1 * p1x;
-            var b2 = q1y - m2 * q1x;
-            x = (b2 - b1) / (m1 - m2);
-            y = m1 * x + b1;
+            else {
+                var m1 = (p1y - p2y) / dx1;
+                var m2 = (q1y - q2y) / dx2;
+                var b1 = p1y - m1 * p1x;
+                var b2 = q1y - m2 * q1x;
+                x = (b2 - b1) / (m1 - m2);
+                y = m1 * x + b1;
+            }
         }
         result.x = x;
         result.y = y;

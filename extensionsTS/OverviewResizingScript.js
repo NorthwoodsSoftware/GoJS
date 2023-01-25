@@ -1,5 +1,5 @@
 /*
-*  Copyright (C) 1998-2022 by Northwoods Software Corporation. All Rights Reserved.
+*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
 */
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -40,9 +40,9 @@
                 selectionObjectName: 'PANEL',
                 isTreeExpanded: false,
                 isTreeLeaf: false
-            }, 
+            },
             // the node's outer shape, which will surround the text
-            $(go.Panel, 'Auto', { name: 'PANEL' }, $(go.Shape, 'Circle', { fill: '#03A9F4', stroke: 'black' }), $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))), 
+            $(go.Panel, 'Auto', { name: 'PANEL' }, $(go.Shape, 'Circle', { fill: '#03A9F4', stroke: 'black' }), $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))),
             // the expand/collapse button, at the top-right corner
             $('TreeExpanderButton', {
                 name: 'TREEBUTTON',

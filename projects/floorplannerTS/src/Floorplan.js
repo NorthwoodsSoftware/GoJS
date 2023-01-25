@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 1998-2022 by Northwoods Software Corporation
+* Copyright (C) 1998-2023 by Northwoods Software Corporation
 * All Rights Reserved.
 *
 * Floorplan Class
@@ -2813,7 +2813,7 @@ var __extends = (this && this.__extends) || (function () {
     }(go.Diagram)); // end Floorplan class definition
     exports.Floorplan = Floorplan;
     /*
-    * Copyright (C) 1998-2022 by Northwoods Software Corporation
+    * Copyright (C) 1998-2023 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - GENERAL
@@ -3182,7 +3182,7 @@ var __extends = (this && this.__extends) || (function () {
         ));
     }
     /*
-    * Copyright (C) 1998-2022 by Northwoods Software Corporation
+    * Copyright (C) 1998-2023 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - FURNITURE
@@ -3377,7 +3377,7 @@ var __extends = (this && this.__extends) || (function () {
         }
     }
     /*
-    * Copyright (C) 1998-2022 by Northwoods Software Corporation
+    * Copyright (C) 1998-2023 by Northwoods Software Corporation
     * All Rights Reserved.
     *
     * FLOOR PLANNER CODE: TEMPLATES - WALLS
