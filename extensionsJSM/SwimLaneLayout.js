@@ -26,8 +26,9 @@ import * as go from '../release/go-module.js';
  * @category Layout Extension
  */
 export class SwimLaneLayout extends go.LayeredDigraphLayout {
-    constructor() {
-        super(...arguments);
+    /** @hidden */
+    constructor(init) {
+        super(init);
         // settable properties
         this._laneProperty = "lane"; // how to get lane identifier string from node data
         this._laneNames = []; // lane names, may be sorted using this.laneComparer
@@ -41,6 +42,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         // internal state
         this._layers = [[]];
         this._neededSpaces = [];
+        this.alignOption = go.LayeredDigraphLayout.AlignAll;
     }
     /**
      * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.

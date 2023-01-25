@@ -21,7 +21,7 @@
       <div class="md:pl-4">
         <a class="text-white hover:text-white no-underline hover:no-underline
         font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="mb-0 p-1 ">GoJS</h1>
+          <h1 class="my-0 p-1 ">GoJS</h1>
         </a>
       </div>
       <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
@@ -173,8 +173,7 @@ The most general kind of predefined <a>Panel</a> is "Button".
             click: incrementCounter },
           $(go.TextBlock, "Click me!")),
         $(go.TextBlock,
-          new go.Binding("text", "clickCount",
-                         function(c) { return "Clicked " + c + " times."; }))
+          new go.Binding("text", "clickCount", c => "Clicked " + c + " times."))
       )
     );
 
@@ -182,9 +181,7 @@ The most general kind of predefined <a>Panel</a> is "Button".
     var node = obj.part;
     var data = node.data;
     if (data && typeof(data.clickCount) === "number") {
-      node.diagram.model.commit(function(m) {
-        m.set(data, "clickCount", data.clickCount + 1);
-      }, "clicked");
+      node.diagram.model.commit(m => m.set(data, "clickCount", data.clickCount + 1), "clicked");
     }
   }
 
@@ -218,7 +215,7 @@ These properties parameterize the appearance of the button.
             "ButtonBorder.fill": "fuchsia",
             // set properties on the "Button" itself used by its event handlers
             "_buttonFillOver": "pink",
-            click: function(e, button) { alert(button.findObject("ButtonBorder").fill); }
+            click: (e, button) => alert(button.findObject("ButtonBorder").fill)
           },
           $(go.TextBlock, "fuchsia button\nwith pink highlight", { margin: 2, textAlign: "center" })
         ),
@@ -234,14 +231,14 @@ These properties parameterize the appearance of the button.
             "_buttonFillOver": "white",
             "_buttonStrokeOver": "cyan",
             "_buttonFillPressed": "lightgray",
-            click: function(e, button) { alert(button.findObject("ButtonBorder").stroke); }
+            click: (e, button) => alert(button.findObject("ButtonBorder").stroke)
           },
           $(go.TextBlock, "Circular\nbutton", { margin: 2, textAlign: "center" })
         ),
         $("Button",
           {
             margin: 2,
-            click: function(e, button) { alert(button.findObject("PIC").source); }
+            click: (e, button) => alert(button.findObject("PIC").source)
           },
           // the button content can be anything -- it doesn't have to be a TextBlock
           $(go.Picture, "images/50x40.png", { name: "PIC", width: 50, height: 40 })
@@ -251,7 +248,7 @@ These properties parameterize the appearance of the button.
             margin: 2,
             // buttons can be disabled too, by either setting or data binding:
             isEnabled: false,
-            click: function(e, button) { alert("won't be alerted"); }
+            click: (e, button) => alert("won't be alerted")
           },
           $(go.TextBlock, "disabled", { stroke: "gray" })
         )
@@ -544,16 +541,16 @@ Although you can implement context menus in any way you choose, it is common to 
     $("ContextMenu",
       $("ContextMenuButton",
         $(go.TextBlock, "Shift Left"),
-        { click: function(e, obj) { shiftNode(obj, -20); } }),
+        { click: (e, obj) => shiftNode(obj, -20) }),
       $("ContextMenuButton",
         $(go.TextBlock, "Shift Right"),
-        { click: function(e, obj) { shiftNode(obj, +20); } })
+        { click: (e, obj) => shiftNode(obj, +20) })
     );
 
   function shiftNode(obj, dist) {
     var adorn = obj.part;
     var node = adorn.adornedPart;
-    node.diagram.commit(function(d) {
+    node.diagram.commit(d => {
       var pos = node.location.copy();
       pos.x += dist;
       node.location = pos;
@@ -594,7 +591,7 @@ as well as on the button itself.
           "_buttonFillPressed": "lime"
         },
         $(go.TextBlock, "Shift Left"),
-        { click: function(e, obj) { shiftNode(obj, -20); } }
+        { click: (e, obj) => shiftNode(obj, -20) }
       ),
       $("ContextMenuButton",
         {
@@ -603,19 +600,19 @@ as well as on the button itself.
           "_buttonFillPressed": "lime"
         },
         $(go.TextBlock, "Shift Right"),
-        { click: function(e, obj) { shiftNode(obj, +20); } }
+        { click: (e, obj) => shiftNode(obj, +20) }
       ),
       $("ContextMenuButton",
         { isEnabled: false },
         $(go.TextBlock, "Shift Right", { stroke: "gray" }),
-        { click: function(e, obj) { alert("won't be alerted"); } }
+        { click: (e, obj) => alert("won't be alerted") }
       )
     );
 
   function shiftNode(obj, dist) {
     var adorn = obj.part;
     var node = adorn.adornedPart;
-    node.diagram.commit(function(d) {
+    node.diagram.commit(d => {
       var pos = node.location.copy();
       pos.x += dist;
       node.location = pos;

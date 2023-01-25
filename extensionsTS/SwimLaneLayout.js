@@ -54,8 +54,9 @@ var __extends = (this && this.__extends) || (function () {
      */
     var SwimLaneLayout = /** @class */ (function (_super) {
         __extends(SwimLaneLayout, _super);
-        function SwimLaneLayout() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
+        /** @hidden */
+        function SwimLaneLayout(init) {
+            var _this = _super.call(this, init) || this;
             // settable properties
             _this._laneProperty = "lane"; // how to get lane identifier string from node data
             _this._laneNames = []; // lane names, may be sorted using this.laneComparer
@@ -69,6 +70,7 @@ var __extends = (this && this.__extends) || (function () {
             // internal state
             _this._layers = [[]];
             _this._neededSpaces = [];
+            _this.alignOption = go.LayeredDigraphLayout.AlignAll;
             return _this;
         }
         Object.defineProperty(SwimLaneLayout.prototype, "laneProperty", {

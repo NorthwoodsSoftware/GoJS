@@ -21,7 +21,7 @@
       <div class="md:pl-4">
         <a class="text-white hover:text-white no-underline hover:no-underline
         font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="mb-0 p-1 ">GoJS</h1>
+          <h1 class="my-0 p-1 ">GoJS</h1>
         </a>
       </div>
       <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
@@ -175,7 +175,7 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
   // This method is called as a context menu button's click handler.
   // Rotate the selected node's color through a predefined sequence of colors.
   function changeColor(e, obj) {
-    diagram.commit(function(d) {
+    diagram.commit(d => {
       // get the context menu that holds the button that was clicked
       var contextmenu = obj.part;
       // get the node data to which the Node is data bound
@@ -222,21 +222,17 @@ The diagram gets its own context menu by setting <a>Diagram.contextMenu</a>.
     $("ContextMenu",
       $("ContextMenuButton",
         $(go.TextBlock, "Undo"),
-        { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-        new go.Binding("visible", "", function(o) {
-                                          return o.diagram.commandHandler.canUndo();
-                                        }).ofObject()),
+        { click: (e, obj) => e.diagram.commandHandler.undo() },
+        new go.Binding("visible", "", o => o.diagram.commandHandler.canUndo()).ofObject()),
       $("ContextMenuButton",
         $(go.TextBlock, "Redo"),
-        { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-        new go.Binding("visible", "", function(o) {
-                                          return o.diagram.commandHandler.canRedo();
-                                        }).ofObject()),
+        { click: (e, obj) => e.diagram.commandHandler.redo() },
+        new go.Binding("visible", "", o => o.diagram.commandHandler.canRedo()).ofObject()),
       // no binding, always visible button:
       $("ContextMenuButton",
         $(go.TextBlock, "New Node"),
-        { click: function(e, obj) {
-          e.diagram.commit(function(d) {
+        { click: (e, obj) => {
+          e.diagram.commit(d => {
             var data = {};
             d.model.addNodeData(data);
             part = d.findPartForData(data);  // must be same data reference, not a new {}

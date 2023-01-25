@@ -21,7 +21,7 @@
       <div class="md:pl-4">
         <a class="text-white hover:text-white no-underline hover:no-underline
         font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="mb-0 p-1 ">GoJS</h1>
+          <h1 class="my-0 p-1 ">GoJS</h1>
         </a>
       </div>
       <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
@@ -213,9 +213,9 @@ Unlike all other commands with parameters, multiple sets of parameters are not a
 There are no parameters, and case does not matter with this command.
 Separate PathFigures are important when different fills are desired per figure component.</li>
 
-<li><pre class="lang-js"><code>F</code></pre> The existence of this command specifies whether the current PathFigure is filled (true if <code>F</code> is present).
+<li><pre class="lang-js"><code>F</code></pre> <pre class="lang-js"><code>F0</code></pre> The existence of this command specifies whether the current PathFigure is filled (true if <code>F</code> is present).
+<code>F0</code> specifies a fill with the even-odd rule (setting <a>PathFigure.isEvenOdd</a>) instead of the default non-zero winding number rule. <code>F1</code> is a synonym of <code>F</code>.
 This is placed at the beginning of a figure.
-There is an optional parameter that is currently ignored.
 Case does not matter with this command.</li>
 
 <li><pre class="lang-js"><code>U</code></pre> The existence of this command specifies whether the current PathFigure is shadowed (<strong>false</strong> if <code>U</code> is present.
@@ -313,6 +313,29 @@ diagram.add(
 </code></pre>
 <script>goCode("a2", 600, 140)</script>
 The first and last PathFigures are shadowed; the second and third are unshadowed.
+
+<h3 id="EvenOdd">Even Odd</h3>
+<pre class="lang-js" id="even-odd"><code>
+  diagram.add($(go.Part,
+      $(go.Shape,
+        { geometryString:
+            "F M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
+          strokeWidth: 2, stroke: "black", fill: "lightcoral" })
+    ));
+
+  diagram.add($(go.Part,
+      $(go.Shape,
+        { geometryString:
+            "F0 M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
+          strokeWidth: 2, stroke: "black", fill: "lightcoral" })
+    ));
+  </code></pre>
+  <script>goCode("even-odd", 600, 140)</script>
+
+  <p>
+    Use <code>F</code> to fill with the (default) non-zero winding number rule, or <code>F0</code> to fill with the even-odd
+    <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule">fill rule</a>.
+  </p>
 
 <h3 id="GeometryParse">Geometry.parse</h3>
 <p>

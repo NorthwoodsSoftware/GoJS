@@ -19,6 +19,7 @@
 
 function SwimLaneLayout() {
   go.LayeredDigraphLayout.call(this);
+  this.alignOption = go.LayeredDigraphLayout.AlignAll;
 
   // settable properties
   this._laneProperty = "lane";  // how to get lane identifier string from node data

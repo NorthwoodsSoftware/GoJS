@@ -48,6 +48,11 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   private _layers: Array<Array<go.LayeredDigraphVertex>> = [[]];
   private _neededSpaces: Array<number> = [];
 
+  /** @hidden */
+  constructor(init?: Partial<SwimLaneLayout>) {
+    super(init);
+    this.alignOption = go.LayeredDigraphLayout.AlignAll;
+  }
 
   /**
    * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.
