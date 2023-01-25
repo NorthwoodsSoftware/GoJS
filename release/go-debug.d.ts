@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.0
+ * Type definitions for GoJS v2.3.1
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -257,6 +257,7 @@ export interface IContext {
     drawImage(src: HTMLCanvasElement | HTMLImageElement | HTMLVideoElement, sx: number, sy: number, sw?: number, sh?: number, dx?: number, dy?: number, dw?: number, dh?: number): void;
     fill(fillRule?: boolean): void;
     fillRect(x: number, y: number, w: number, h: number): void;
+    fillBackground(x: number, y: number, w: number, h: number): void;
     fillText(str: string, x: number, y: number): void;
     getImageData(x: number, y: number, w: number, h: number): ImageData;
     lineTo(x: number, y: number): void;
