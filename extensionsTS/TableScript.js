@@ -208,7 +208,7 @@ var __extends = (this && this.__extends) || (function () {
                         e.diagram.currentTool.doCancel();
                     }
                 }
-            }, new go.Binding('row'), new go.Binding('column', 'col'),
+            }, new go.Binding('row'), new go.Binding('column', 'col'), 
             // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
             $(go.Shape, {
                 fill: 'transparent', stroke: 'transparent',

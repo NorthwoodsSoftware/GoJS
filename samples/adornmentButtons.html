@@ -242,13 +242,12 @@
       // using dragNewNode also requires modifying the standard DraggingTool so that it
       // only calls commitTransaction when dragNewNode started a "button drag" transaction;
       // do this by overriding DraggingTool.doDeactivate:
-      var tool = myDiagram.toolManager.draggingTool;
-      tool.doDeactivate = function() {
+      myDiagram.toolManager.draggingTool.doDeactivate = function() {
         // commit "button drag" transaction, if it is ongoing; see dragNewNode, above
-        if (tool.diagram.undoManager.nestedTransactionNames.elt(0) === "button drag") {
-          tool.diagram.commitTransaction();
+        if (this.diagram.undoManager.nestedTransactionNames.elt(0) === "button drag") {
+          this.diagram.commitTransaction();
         }
-        go.DraggingTool.prototype.doDeactivate.call(tool);  // call the base method
+        go.DraggingTool.prototype.doDeactivate.call(this);  // call the base method
       };
 
 

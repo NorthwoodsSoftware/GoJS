@@ -90,10 +90,7 @@
                   alternateChildPortSpot: go.Spot.Left
                 }),
             "commandHandler.doKeyDown": function() {
-              if (this.diagram.lastInput.key === 'Esc') {
-                var myOverviewDiv = document.getElementById("myOverviewDiv");
-                if (myOverviewDiv) myOverviewDiv.style.display = "none";
-              }
+              if (this.diagram.lastInput.key === 'Esc') clearMagnifier();
               go.CommandHandler.prototype.doKeyDown.call(this);
             }
           });
@@ -231,7 +228,11 @@
         myOverviewDiv.style.display = "inline";
         myOverviewDiv.style.left = "0px";
         myOverviewDiv.style.top = (myDiagram.div.scrollHeight - myOverviewDiv.scrollHeight) + "px";
-        if (myOverview !== null) return;
+        if (myOverview !== null) {
+          myOverview.observed = myDiagram;
+          myOverview.position = new go.Point(-9999, -9999);
+          return;
+        }
 
         // create Overview
         myOverview =
@@ -249,7 +250,7 @@
 
         // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
         myDiagram.toolManager.doMouseMove = function() {
-          go.ToolManager.prototype.doMouseMove.call(myDiagram.toolManager);
+          go.ToolManager.prototype.doMouseMove.call(this);
           var myOverviewDiv = document.getElementById("myOverviewDiv");
           if (myOverviewDiv.style.display !== "none") {
             var e = myDiagram.lastInput;
@@ -262,18 +263,20 @@
 
         // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
         myDiagram.toolManager.doMouseDown = function() {
-          go.ToolManager.prototype.doMouseDown.call(myDiagram.toolManager);
-          var myOverviewDiv = document.getElementById("myOverviewDiv");
-          if (myOverviewDiv.style.display !== "none") {
-            // hide DIV
-            myOverviewDiv.style.display = "none";
-          }
+          go.ToolManager.prototype.doMouseDown.call(this);
+          clearMagnifier();
         };
       } else {
-        // hide DIV
-        myOverviewDiv.style.display = "none";
+        clearMagnifier();
       }
     }
+
+    function clearMagnifier() {
+      if (myOverview) myOverview.observed = null;
+      var myOverviewDiv = document.getElementById("myOverviewDiv");
+      if (myOverviewDiv) myOverviewDiv.style.display = "none";
+    }
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 

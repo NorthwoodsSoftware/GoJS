@@ -222,7 +222,7 @@
 
 <pre class="lang-js"><code>
   var tool = diagram.toolManager.clickSelectingTool;
-  tool.standardMouseSelect = function() { // must not be an arrow function (=>)
+  tool.standardMouseSelect = function() { // must not be an arrow function =>
     // Maybe do something else before
     // ...
 
@@ -256,7 +256,7 @@
     );
 
   var tool = diagram.toolManager.clickSelectingTool;
-  tool.standardMouseSelect = function() { // must not be an arrow function (=>)
+  tool.standardMouseSelect = function() { // must not be an arrow function =>
     var diagram = this.diagram;
     var e = diagram.lastInput;
     // to select containing Group if Part.canSelect() is false
@@ -358,14 +358,17 @@
 * This layout arranges nodes in a cascade specified by the offset property
 */
 class CascadeLayout extends go.Layout {
-  this._offset = new go.Size(12, 12);
+  constructor() {
+    super();
+    this._offset = new go.Size(12, 12);
+  }
 
   cloneProtected(copy) {
     super.cloneProtected(copy);
     copy._offset = this._offset;
   }
 
-  get offset() { return this._offset; },
+  get offset() { return this._offset; }
   set offset(val) {
     if (!(val instanceof go.Size)) {
       throw new Error("new value for CascadeLayout.offset must be a Size, not: " + val);
@@ -398,8 +401,7 @@ class CascadeLayout extends go.Layout {
       y += offset.height;
     }
   }
-}
-// end of CascadeLayout
+}  // end of CascadeLayout
 
   // Regular diagram setup:
 

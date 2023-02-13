@@ -279,7 +279,7 @@ You'll want to implement a Changed listener as follows:
 </p>
 <pre class="lang-js"><code>
   // notice whenever a transaction or undo/redo has occurred
-  diagram.addModelChangedListener(function(evt) {
+  diagram.addModelChangedListener(evt => {
     if (evt.isTransactionFinished) saveModel(evt.model);
   });
 </code></pre>
@@ -296,13 +296,13 @@ you can iterate over the list of changes to pick out the ones that you care abou
 For example, here is a listener that logs a message only when node data is added to or removed from the <a>Model.nodeDataArray</a>.
 </p>
 <pre class="lang-js"><code>
-  diagram.addModelChangedListener(function(evt) {
+  diagram.addModelChangedListener(evt => {
     // ignore unimportant Transaction events
     if (!evt.isTransactionFinished) return;
     var txn = evt.object;  // a Transaction
     if (txn === null) return;
     // iterate over all of the actual ChangedEvents of the Transaction
-    txn.changes.each(function(e) {
+    txn.changes.each(e => {
       // ignore any kind of change other than adding/removing a node
       if (e.modelChange !== "nodeDataArray") return;
       // record node insertions and removals
@@ -327,13 +327,13 @@ This not only checks for insertions to and removals from <a>GraphLinksModel.link
 but also changes to the "from" and the "to" properties of the link data.
 </p>
 <pre class="lang-js"><code>
-  diagram.addModelChangedListener(function(evt) {
+  diagram.addModelChangedListener(evt => {
     // ignore unimportant Transaction events
     if (!evt.isTransactionFinished) return;
     var txn = evt.object;  // a Transaction
     if (txn === null) return;
     // iterate over all of the actual ChangedEvents of the Transaction
-    txn.changes.each(function(e) {
+    txn.changes.each(e => {
       // record node insertions and removals
       if (e.change === go.ChangedEvent.Property) {
         if (e.modelChange === "linkFromKey") {
@@ -367,7 +367,7 @@ It is also possible to send incremental updates to a database using <a>Model.toI
 which iterate over the changes in a transaction and group them into a JSON-formatted string or an object representing any updates.
 </p>
 <pre class="lang-js"><code>
-  diagram.addModelChangedListener(function(e) {
+  diagram.addModelChangedListener(e => {
     // ignore unimportant Transaction events
     if (!evt.isTransactionFinished) return;
     var json = e.model.toIncrementalJson(e);

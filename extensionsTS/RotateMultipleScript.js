@@ -28,7 +28,7 @@
         myDiagram.nodeTemplate =
             $(go.Node, 'Auto', // the Shape will go around the TextBlock
             { locationSpot: go.Spot.Center, rotatable: true }, new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify), new go.Binding('angle').makeTwoWay(), // save the modified Node.angle in the model data
-            $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 },
+            $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, 
             // Shape.fill is bound to Node.data.color
             new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, // some room around the text
             // TextBlock.text is bound to Node.data.key

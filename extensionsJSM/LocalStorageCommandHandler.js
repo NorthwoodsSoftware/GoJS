@@ -122,7 +122,7 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
         }
         catch (ex) {
             // fallback implementation
-            return go.CommandHandler.prototype.canPasteSelection(pos);
+            return super.canPasteSelection(pos);
         }
     }
 }

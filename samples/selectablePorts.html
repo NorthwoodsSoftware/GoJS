@@ -181,7 +181,7 @@
           //?? Maybe this should only return selected items that are within selected Nodes
           //if (!node.isSelected) continue;
           node.ports.each(port => {
-            if (isPortSelected(shape)) items.push(itempanel);
+            if (isPortSelected(port)) items.push(port.findBindingPanel());
           });
         }
         return items;
@@ -193,8 +193,8 @@
       myDiagram.commandHandler.canDeleteSelection = function() {
         // true if there are any selected deletable nodes or links,
         // or if there are any selected items within nodes
-        return go.CommandHandler.prototype.canDeleteSelection.call(myDiagram.commandHandler) ||
-          findAllSelectedItems().length > 0;
+        return go.CommandHandler.prototype.canDeleteSelection.call(this) ||
+               findAllSelectedItems().length > 0;
       };
 
       myDiagram.commandHandler.deleteSelection = function() {
@@ -218,7 +218,7 @@
           }
           myDiagram.commitTransaction("delete items");
         } else {  // otherwise just delete nodes and/or links, as usual
-          go.CommandHandler.prototype.deleteSelection.call(myDiagram.commandHandler);
+          go.CommandHandler.prototype.deleteSelection.call(this);
         }
       };
 

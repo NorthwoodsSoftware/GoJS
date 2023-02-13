@@ -298,14 +298,14 @@
 
       // Override the standard CommandHandler deleteSelection behavior.
       // If there are any selected slices, delete them instead of deleting any selected nodes or links.
-      myDiagram.commandHandler.canDeleteSelection = () => {
+      myDiagram.commandHandler.canDeleteSelection = function() {
         // True if there are any selected deletable nodes or links,
         // or if there are any selected slices within nodes
-        return go.CommandHandler.prototype.canDeleteSelection.call(myDiagram.commandHandler) ||
-          findAllSelectedItems().length > 0;
+        return go.CommandHandler.prototype.canDeleteSelection.call(this) ||
+               findAllSelectedItems().length > 0;
       };
 
-      myDiagram.commandHandler.deleteSelection = () => {
+      myDiagram.commandHandler.deleteSelection = function() {
         var slices = findAllSelectedItems();
         if (slices.length > 0) {  // if there are any selected slices, delete them
           myDiagram.startTransaction("delete slices");
@@ -326,7 +326,7 @@
           });
           myDiagram.commitTransaction("delete slices");
         } else {  // otherwise just delete nodes and/or links, as usual
-          go.CommandHandler.prototype.deleteSelection.call(myDiagram.commandHandler);
+          go.CommandHandler.prototype.deleteSelection.call(this);
         }
       };
 

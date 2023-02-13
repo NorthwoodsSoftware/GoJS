@@ -305,7 +305,7 @@ To better understand the difference between document and viewport coordinates, l
           // measure the longest line's width
           textLines = label.split("\n");
           width = 0
-          textLines.forEach(function(text) {
+          textLines.forEach(text => {
             var textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
             if (textBlock.naturalBounds.right > width) {
               width = textBlock.naturalBounds.right;
@@ -445,8 +445,8 @@ not at the top-left corner of the whole Part.
       {
         locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
         layerName: "Background",
-        mouseOver: function (e, obj) { showPoint(obj.part.location); },
-        click: function (e, obj) { showPoint(obj.part.location); }
+        mouseOver: (e, obj) => showPoint(obj.part.location),
+        click: (e, obj) => showPoint(obj.part.location)
       },
       new go.Binding("location", "loc", go.Point.parse),
       $(go.Shape, "PlusLine",
@@ -607,7 +607,7 @@ diagram.nodeTemplate =
   );
 
 var nodes = [];
-for (var i = 0; i < 99; i++) {
+for (let i = 0; i < 99; i++) {
   nodes.push({ key: "Alpha", color: "lightblue" });
 }
 diagram.model = new go.GraphLinksModel(nodes,[]);
@@ -723,18 +723,18 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
   }
 
   var infscroll = document.getElementById('infscroll');
-  infscroll.addEventListener('change', function(e) {
-    myDiagram2.commit(function(d) { d.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll; });
+  infscroll.addEventListener('change', e => {
+    myDiagram2.commit(d => { d.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll; });
   });
 
   var poscomp = document.getElementById('poscomp');
-  poscomp.addEventListener('change', function(e) {
-    myDiagram2.commit(function(d) { d.positionComputation = poscomp.checked ? positionfunc : null; });
+  poscomp.addEventListener('change', e => {
+    myDiagram2.commit(d => { d.positionComputation = poscomp.checked ? positionfunc : null; });
   });
 
   var scalecomp = document.getElementById('scalecomp');
-  scalecomp.addEventListener('change', function(e) {
-    myDiagram2.commit(function(d) { d.scaleComputation = scalecomp.checked ? scalefunc : null; });
+  scalecomp.addEventListener('change', e => {
+    myDiagram2.commit(d => { d.scaleComputation = scalecomp.checked ? scalefunc : null; });
   });
 </script>
 
@@ -789,7 +789,7 @@ For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizi
   }
 
   // creates functions which have limited precision return values.
-  function prec(conv) { return function (g) { return conv(g).toPrecision(3) }}
+  function prec(conv) { return g => conv(g).toPrecision(3); }
 
   // generates cells in data tables
   function dataBlock(conv, alo1, alo2) {
@@ -837,17 +837,17 @@ For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizi
         $(go.Panel, "TableRow", {row: 1},
           $(go.TextBlock, "angle", {column: 0}),
           // container angle
-          dataBlock(function (g) { return g.angle }, 1, 2),
+          dataBlock(g => g.angle, 1, 2),
           // document angle
-          dataBlock(function (g) { return g.getDocumentAngle() }, 3, 2)),
+          dataBlock(g => g.getDocumentAngle(), 3, 2)),
 
         // scale row
         $(go.Panel, "TableRow", {row: 2},
           $(go.TextBlock, "scale", {column: 0}),
           // container scale
-          dataBlock(function (g) { return g.scale }, 1, 2),
+          dataBlock(g => g.scale, 1, 2),
           // document scale
-          dataBlock(function (g) { return g.getDocumentScale() }, 3, 2)),
+          dataBlock(g => g.getDocumentScale(), 3, 2)),
 
         // position row
         $(go.Panel, "TableRow", {row: 3},
@@ -855,24 +855,24 @@ For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizi
           $(go.TextBlock, "X Y", {column: 0}),
 
           // container x and y values
-          dataBlock(function (g) { return g.actualBounds.x }, 1, 1),
-          dataBlock(function (g) { return g.actualBounds.y }, 2, 1),
+          dataBlock(g => g.actualBounds.x, 1, 1),
+          dataBlock(g => g.actualBounds.y, 2, 1),
 
           // document x and y values
-          dataBlock(function (g) { return g.getDocumentBounds().x }, 3, 1),
-          dataBlock(function (g) { return g.getDocumentBounds().y }, 4, 1)),
+          dataBlock(g => g.getDocumentBounds().x, 3, 1),
+          dataBlock(g => g.getDocumentBounds().y, 4, 1)),
 
         // dimension row
         $(go.Panel, "TableRow", {row: 4},
           $(go.TextBlock, "size", {column: 0}),
 
           // container width and height
-          dataBlock(function (g) { return g.actualBounds.width }, 1, 1),
-          dataBlock(function (g) { return g.actualBounds.height }, 2, 1),
+          dataBlock(g => g.actualBounds.width, 1, 1),
+          dataBlock(g => g.actualBounds.height, 2, 1),
 
           // document width and height
-          dataBlock(function (g) { return g.getDocumentBounds().width }, 3, 1),
-          dataBlock(function (g) { return g.getDocumentBounds().width }, 4, 1)))));
+          dataBlock(g => g.getDocumentBounds().width, 3, 1),
+          dataBlock(g => g.getDocumentBounds().width, 4, 1)))));
 
 
   // data object for labels on data tables

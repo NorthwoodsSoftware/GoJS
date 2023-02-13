@@ -45,7 +45,7 @@ var __extends = (this && this.__extends) || (function () {
         myDiagram =
             $(go.Diagram, 'myDiagramDiv', {
                 // Define the template for Nodes, just some text inside a colored rectangle
-                nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
+                nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify), 
                 // temporarily put selected nodes in ForegFround layer
                 new go.Binding('layerName', 'isSelected', function (s) { return s ? 'Foreground' : ''; }).ofObject(), $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color'))),
                 'undoManager.isEnabled': true

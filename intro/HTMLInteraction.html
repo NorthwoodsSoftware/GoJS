@@ -368,7 +368,7 @@ diagram.model = new go.GraphLinksModel(
 var customEditor = new go.HTMLInfo();
 var customSelectBox = document.createElement("select");
 
-customEditor.show = function(textBlock, diagram, tool) {
+customEditor.show = (textBlock, diagram, tool) => {
   if (!(textBlock instanceof go.TextBlock)) return;
 
   // Populate the select box:
@@ -376,7 +376,7 @@ customEditor.show = function(textBlock, diagram, tool) {
 
   // this sample assumes textBlock.choices is not null
   var list = textBlock.choices;
-  for (var i = 0; i < list.length; i++) {
+  for (let i = 0; i < list.length; i++) {
     var op = document.createElement("option");
     op.text = list[i];
     op.value = list[i];
@@ -387,7 +387,7 @@ customEditor.show = function(textBlock, diagram, tool) {
   customSelectBox.value = textBlock.text;
 
   // Do a few different things when a user presses a key
-  customSelectBox.addEventListener("keydown", function(e) {
+  customSelectBox.addEventListener("keydown", e => {
     var key = e.key;
     if (key === "Enter") { // Accept on Enter
       tool.acceptText(go.TextEditingTool.Enter);
@@ -412,12 +412,12 @@ customEditor.show = function(textBlock, diagram, tool) {
   diagram.div.appendChild(customSelectBox);
 }
 
-customEditor.hide = function(diagram, tool) {
+customEditor.hide = (diagram, tool) => {
   diagram.div.removeChild(customSelectBox);
 }
 
 // This is necessary for HTMLInfo instances that are used as text editors
-customEditor.valueFunction = function() { return customSelectBox.value; }
+customEditor.valueFunction = () => customSelectBox.value;
 
 // Set the HTMLInfo:
 diagram.toolManager.textEditingTool.defaultTextEditor = customEditor;

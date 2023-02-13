@@ -346,7 +346,7 @@ See more samples that make use of <a>TreeLayout</a> in the <a href="../samples/i
 <p>Force-directed layout treats the graph as if it were a system of physical bodies with forces acting on them and between them.</p>
 
 <pre class="lang-js" id="fdlayout" style="display: none;"><code>
-    diagram.layout = $(go.ForceDirectedLayout);
+    diagram.layout = $(go.ForceDirectedLayout, { defaultSpringLength: 10 });
     diagram.initialAutoScale = go.Diagram.Uniform;
     diagram.contentAlignment = go.Spot.Center;
 
@@ -539,6 +539,7 @@ See more samples that make use of <a>CircularLayout</a> in the <a href="../sampl
   but available as source code in one of the three extension directories, with some documentation, and with corresponding samples.
 </p>
 <ul>
+  <li><a>ArrangingLayout</a>: sample at <a href="../extensions/Arranging.html" target="samples">ArrangingLayout Sample</a>, defined in <a href="../extensions/ArrangingLayout.js">ArrangingLayout.js</a></li>
   <li><a>DoubleTreeLayout</a>: sample at <a href="../samples/doubleTree.html" target="samples">DoubleTreeLayout Sample</a>, defined in <a href="../extensions/DoubleTreeLayout.js">DoubleTreeLayout.js</a></li>
   <li><a>FishboneLayout</a>: sample at <a href="../extensions/Fishbone.html" target="samples">FishboneLayout Sample</a>, defined in <a href="../extensions/FishboneLayout.js">FishboneLayout.js</a></li>
   <li><a>PackedLayout</a>: sample at <a href="../extensionsJSM/PackedLayout.html" target="samples">PackedLayout Sample</a>, defined in <a href="../extensionsJSM/PackedLayout.js">PackedLayout.js</a></li>
@@ -588,9 +589,9 @@ $(go.Diagram, . . .,
   {
     . . .,
     layout: $(go.TreeLayout, { isInitial: false, isOngoing: false }, . . .),
-    "InitialLayoutCompleted": function(e) {
+    "InitialLayoutCompleted": e => {
       // if not all Nodes have real locations, force a layout to happen
-      if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+      if (!e.diagram.nodes.all(n => n.location.isReal())) {
         e.diagram.layoutDiagram(true);
       }
     }

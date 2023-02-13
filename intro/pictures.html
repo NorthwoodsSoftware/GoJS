@@ -307,46 +307,39 @@ In this case what must be clipped is at the sides of the image.
     $(go.Part, "Spot",
       { scale: 2 },
       $(go.Picture, "../samples/images/55x55.png",
-        {
-          name: 'Picture',
-          desiredSize: new go.Size(55, 55),
-          background: 'red'
-        }
+        { width: 55, height: 55, background: 'red' }
       ),
       $(go.Shape,
-      {
-        strokeWidth: 0,
-        stroke: null,
-        geometryString: "f M0 0 L100 0 L100 100 L0 100 z M5,50a45,45 0 1,0 90,0a45,45 0 1,0 -90,0 z",
-        width: 56,
-        height: 56,
-        fill: 'black'
-      })
+        {
+          width: 55, height: 55,
+          geometryString: "f M0 0 L100 0 L100 100 L0 100 z M5,50a45,45 0 1,0 90,0a45,45 0 1,0 -90,0 z",
+          fill: 'black', strokeWidth: 0
+        })
     )
   );
 
   // Using Panel.isClipping
   diagram.add(
     $(go.Part, "Spot",
-      { isClipping: true, scale: 2  },
+      { scale: 2, isClipping: true },
       $(go.Shape, "Circle", { width: 55, strokeWidth: 0 } ),
       $(go.Picture, "../samples/images/55x55.png",
-        { width: 55, height: 55 }
-       )
+        { width: 55, height: 55 })
     )
   );
 
-  // Using Panel.isClipping and also having a surrounding panel
+  // Using Panel.isClipping and also having a surrounding border behind it
   diagram.add(
     $(go.Part, "Spot",
       { scale: 2 },
+      // the background border
       $(go.Shape, "Circle", { width: 65, strokeWidth: 0, fill: 'red' } ),
+      // the same clipping panel as the second example above
       $(go.Panel, "Spot",
         { isClipping: true  },
         $(go.Shape, "Circle", { width: 55, strokeWidth: 0 } ),
         $(go.Picture, "../samples/images/55x55.png",
-          { width: 55, height: 55 }
-         )
+          { width: 55, height: 55 })
       )
     )
   );
@@ -394,7 +387,7 @@ In this case what must be clipped is at the sides of the image.
 <pre class="lang-js"><code>
    $(go.Picture,
      { width: 64, height: 64 },
-     { sourceCrossOrigin: function(pict) { return "use-credentials"; } },
+     { sourceCrossOrigin: pict => "use-credentials" },
      new go.Binding("source", "path"))
 </code></pre>
 <p>
@@ -428,7 +421,7 @@ In this case what must be clipped is at the sides of the image.
 <pre class="lang-js" id="svg1"><code>
   diagram.add(
     $(go.Part,
-      $(go.Picture, { desiredSize: new go.Size(580, 580), source: "images/tiger.svg" })
+      $(go.Picture, { width: 580, height: 580, source: "images/tiger.svg" })
     ));
   diagram.scale = 0.5;
 </code></pre>

@@ -464,7 +464,7 @@ export class DrawCommandHandler extends go.CommandHandler {
   }
 
   /**
-   * Finds the nearest Part in the specified direction, based on their center points.
+   * Finds the nearest selectable Part in the specified direction, based on their center points.
    * if it doesn't find anything, it just returns the current Part.
    * @param {number} dir the direction, in degrees
    * @return {Part} the closest Part found in the given direction
@@ -480,6 +480,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     for (let i = 0; i < allParts.length; i++) {
       const nextPart = allParts[i];
       if (nextPart === originalPart) continue;  // skips over currently selected part
+      if (!nextPart.canSelect()) continue;
       const nextPoint = nextPart.actualBounds.center;
       const angle = originalPoint.directionPoint(nextPoint);
       const anglediff = this._angleCloseness(angle, dir);

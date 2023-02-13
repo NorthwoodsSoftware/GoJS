@@ -151,7 +151,7 @@ The same sequence happens for key-up events.
 </p>
 <p>
 Please note that the handling of keyboard commands depends on the diagram getting focus and then getting keyboard events.
-Do not apply any styling such as <pre class="lang-css"><code>canvas:focus { display: none; }</code></pre>.
+Do not apply any styling such as <pre class="lang-css"><code>canvas:focus { display: none; } /* DO NOT DO THIS! */</code></pre>.
 </p>
 
 <h2 id="KeyboardCommandBindings">Keyboard command bindings</h2>
@@ -293,15 +293,11 @@ You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable
     enable("Redo", cmdhnd.canRedo());
   }
   // notice whenever the selection may have changed
-  diagram.addDiagramListener("ChangedSelection", function(e) {
-    enableAll();
-  });
+  diagram.addDiagramListener("ChangedSelection", e => enableAll());
   // notice when the Paste command may need to be reenabled
-  diagram.addDiagramListener("ClipboardChanged", function(e) {
-    enableAll();
-  });
+  diagram.addDiagramListener("ClipboardChanged", e => enableAll());
   // notice whenever a transaction or undo/redo has occurred
-  diagram.addModelChangedListener(function(e) {
+  diagram.addModelChangedListener(e => {
     if (e.isTransactionFinished) enableAll();
   });
   // perform initial enablements after everything has settled down

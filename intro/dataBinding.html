@@ -271,7 +271,7 @@ own methods for declaring the relationships between parts.
       $(go.TextBlock,
         { stroke: "brown", textAlign: "center" },
         new go.Binding("text", "txt"),
-        new go.Binding("font", "bold", function(b) { return b ? "bold 10pt sans-serif" : "10pt sans-serif"; }))
+        new go.Binding("font", "bold", b => b ? "bold 10pt sans-serif" : "10pt sans-serif"))
   ));
 
   diagram.nodeTemplateMap.add("LinkLabel", // Template for comments on links
@@ -803,9 +803,9 @@ This makes it trivial to control the appearance of each node from the data by se
       $(go.Shape, "RoundedRectangle",
         { // default values if the data.highlight is undefined:
           fill: "yellow", stroke: "orange", strokeWidth: 2 },
-        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
-        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
-        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
+        new go.Binding("fill", "highlight", v => v ? "pink" : "lightblue"),
+        new go.Binding("stroke", "highlight", v => v ? "red" : "blue"),
+        new go.Binding("strokeWidth", "highlight", v => v ? 3 : 1)),
       $(go.TextBlock,
         { margin: 5 },
         new go.Binding("text", "key"))
@@ -858,9 +858,9 @@ For fun, this modification occurs about twice a second.
       $(go.Shape, "RoundedRectangle",
         { // default values if the data.highlight is undefined:
           fill: "yellow", stroke: "orange", strokeWidth: 2 },
-        new go.Binding("fill", "highlight", function(v) { return v ? "pink" : "lightblue"; }),
-        new go.Binding("stroke", "highlight", function(v) { return v ? "red" : "blue"; }),
-        new go.Binding("strokeWidth", "highlight", function(v) { return v ? 3 : 1; })),
+        new go.Binding("fill", "highlight", v => v ? "pink" : "lightblue"),
+        new go.Binding("stroke", "highlight", v => v ? "red" : "blue"),
+        new go.Binding("strokeWidth", "highlight", v => v ? 3 : 1)),
       $(go.TextBlock,
         { margin: 5 },
         new go.Binding("text", "key"))
@@ -872,13 +872,13 @@ For fun, this modification occurs about twice a second.
 
   function flash() {
     // all model changes should happen in a transaction
-    diagram.model.commit(function(m) {
+    diagram.model.commit(m => {
       var data = m.nodeDataArray[0];  // get the first node data
       m.set(data, "highlight", !data.highlight);
     }, "flash");
   }
   function loop() {
-    setTimeout(function() { flash(); loop(); }, 500);
+    setTimeout(() => { flash(); loop(); }, 500);
   }
   loop();
 </code></pre>
@@ -939,7 +939,7 @@ not via a data binding.
 
   function switchTo() {
     // all model changes should happen in a transaction
-    diagram.model.commit(function(m) {
+    diagram.model.commit(m => {
       var data = m.linkDataArray[0];  // get the first link data
       if (m.getToKeyForLinkData(data) === "Beta")
         m.setToKeyForLinkData(data, "Gamma");
@@ -948,7 +948,7 @@ not via a data binding.
     }, "reconnect link");
   }
   function loop() {
-    setTimeout(function() { switchTo(); loop(); }, 1000);
+    setTimeout(() => { switchTo(); loop(); }, 1000);
   }
   loop();
 </code></pre>
@@ -980,7 +980,7 @@ This example also turns off selection adornments, so that the only visual way to
       { selectionAdorned: false },  // no blue selection handle!
       $(go.Shape, "RoundedRectangle",
         // bind Shape.fill to Node.isSelected converted to a color
-        new go.Binding("fill", "isSelected", function(sel) {
+        new go.Binding("fill", "isSelected", sel => {
               return sel ? "dodgerblue" : "lightgray";
             }).ofObject()),  // no name means bind to the whole Part
       $(go.TextBlock,
@@ -1035,8 +1035,8 @@ diagram.model.nodeDataArray = [
 
 diagram.undoManager.isEnabled = true;
 
-changeColor = function() {  // define a function named "changeColor" callable by button.onclick
-  diagram.model.commit(function(m) {
+changeColor = () => {  // define a function named "changeColor" callable by button.onclick
+  diagram.model.commit(m => {
     // alternate between lightblue and lightgreen colors
     var oldcolor = m.modelData.color;
     var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
@@ -1072,9 +1072,9 @@ but also from the target object back to the source data.
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray);
 
-  window.shiftNode = (function() {  // define a function named "shiftNode" callable by button.onclick
+  window.shiftNode = () => {  // define a function named "shiftNode" callable by button.onclick
     // all model changes should happen in a transaction
-    diagram.commit(function(d) {
+    diagram.commit(d => {
       var data = d.model.nodeDataArray[0];  // get the first node data
       var node = d.findNodeForData(data);   // find the corresponding Node
       var p = node.location.copy();  // make a copy of the location, a Point
@@ -1085,7 +1085,7 @@ but also from the target object back to the source data.
       // show the updated location held by the "loc" property of the node data
       document.getElementById("bindTwoWayData").textContent = data.loc.toString();
     }, "shift node");
-  });
+  };
   window.shiftNode();
 
 </code></pre>

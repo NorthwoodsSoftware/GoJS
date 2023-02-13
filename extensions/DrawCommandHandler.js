@@ -467,7 +467,7 @@ DrawCommandHandler.prototype._arrowKeySelect = function() {
 };
 
 /**
-* Finds the nearest Part in the specified direction, based on their center points.
+* Finds the nearest selectable Part in the specified direction, based on their center points.
 * if it doesn't find anything, it just returns the current Part.
 * @this {DrawCommandHandler}
 * @param {number} dir the direction, in degrees
@@ -484,6 +484,7 @@ DrawCommandHandler.prototype._findNearestPartTowards = function(dir) {
   for (var i = 0; i < allParts.length; i++) {
     var nextPart = allParts[i];
     if (nextPart === originalPart) continue;  // skips over currently selected part
+    if (!nextPart.canSelect()) continue;
     var nextPoint = nextPart.actualBounds.center;
     var angle = originalPoint.directionPoint(nextPoint);
     var anglediff = this._angleCloseness(angle, dir);

@@ -186,6 +186,9 @@ More generally, you may want to try to center a particular <a>Node</a>.
 Here is how you can do that:
 </p>
 <pre class="lang-js" id="centernode"><code>
+  // allow the diagram to be scrolled a bit beyond the document bounds
+  diagram.scrollMargin = 100;
+
   diagram.nodeTemplate =
     $(go.Node, "Auto",
       new go.Binding("location", "loc"),
@@ -193,18 +196,18 @@ Here is how you can do that:
       $(go.TextBlock, { margin: 5 },
         // show the location as text in the node
         new go.Binding("text", "loc",
-                       function (p) { return p.x.toFixed() + ", " + p.y.toFixed(); }))
+                       p => p.x.toFixed() + ", " + p.y.toFixed()))
     );
 
   // initialize the model with random nodes:
   var nodeDataArray = [];
-  for (var i = 0; i &lt; 20; i++ ) {
+  for (let i = 0; i &lt; 20; i++ ) {
     nodeDataArray.push({ loc: new go.Point(Math.random() * 600, Math.random() * 300) });
   }
   diagram.model.nodeDataArray = nodeDataArray;
 
   // this event handler is called when the diagram is first ready
-  diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+  diagram.addDiagramListener("InitialLayoutCompleted", e => {
     // pick a random node data
     var data = nodeDataArray[Math.floor(Math.random()*nodeDataArray.length)];
     // find the corresponding Node

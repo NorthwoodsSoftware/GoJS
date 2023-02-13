@@ -135,7 +135,7 @@
 <p>
 How does one display a variable number of elements in a node by data binding to a JavaScript Array?
 The answer is simple: just bind (or set) <a>Panel.itemArray</a>.
-The <a>Panel</a> will contain as many elements as there are values in the bound Array.
+The <a>Panel</a> will create an element in the panel for each value in the Array.
 </p>
 <p>
 See samples that make use of item Arrays in the <a href="../samples/index.html#itemarrays">samples index</a>.
@@ -216,7 +216,7 @@ because strings (and numbers) do not have many useful properties.
         })
     );
 
-  diagram.model =
+  diagram.model =  // the same model data as above
     new go.GraphLinksModel(
       {
         nodeDataArray: [
@@ -407,7 +407,7 @@ The same is true for <a>GraphObject.column</a> if the itemTemplate is a <a>Panel
 </p>
 <p>
 Because that property is set when the item panels are created for Array item data, you can create <a>Binding</a>s where the source
-is that "row" property: <code>new go.Binding("targetProperty", "row", function(i) { return ...; }).ofObject()</code>.
+is that "row" property: <code>new go.Binding("targetProperty", "row", i => ...).ofObject()</code>.
 The following example demonstrates binding the Panel.background property to be light green if the row is even.
 </p>
 <pre class="lang-js" id="alternating"><code>
@@ -421,7 +421,7 @@ The following example demonstrates binding the Panel.background property to be l
           itemTemplate:
             $(go.Panel, "TableRow",
               new go.Binding("background", "row",
-                             function(i) { return i%2 === 0 ? "lightgreen" : "transparent" })
+                             i => i%2 === 0 ? "lightgreen" : "transparent")
                   .ofObject(),
               $(go.TextBlock, new go.Binding("text", "name"),
                 { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
@@ -433,7 +433,7 @@ The following example demonstrates binding the Panel.background property to be l
                 {
                   column: 3,
                   margin: new go.Margin(0, 1, 0, 0),
-                  click: function(e, obj) {
+                  click: (e, obj) => {
                     // OBJ is this Button Panel;
                     // find the TableRow Panel containing it
                     var itempanel = obj.panel;

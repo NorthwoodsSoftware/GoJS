@@ -216,26 +216,26 @@ This method can be overridden to return <code>false</code> if you wish to stop s
     // the "InitialAnimationStarting" listener when other buttons are pressed
     window.custom = false;
 
-    window.animateDefault = function() {
+    window.animateDefault = () => {
       window.custom = false;
       diagram.animationManager.initialAnimationStyle = go.AnimationManager.Default;
       diagram.model = go.Model.fromJson(diagram.model.toJson());
     }
-    window.animateLocations = function() {
+    window.animateLocations = () => {
       window.custom = false;
       diagram.animationManager.initialAnimationStyle = go.AnimationManager.AnimateLocations;
       diagram.model = go.Model.fromJson(diagram.model.toJson());
     }
-    window.animateNone = function() {
+    window.animateNone = () => {
       window.custom = false;
       diagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
       diagram.model = go.Model.fromJson(diagram.model.toJson());
     }
-    window.animateCustom = function() {
+    window.animateCustom = () => {
       window.custom = true;
       diagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
       // Customer listener zooms-in the Diagram on load:
-      diagram.addDiagramListener("InitialAnimationStarting", function(e) {
+      diagram.addDiagramListener("InitialAnimationStarting", e => {
         var animation = e.subject.defaultAnimation;
         if (window.custom === false) {
           // a different button was pressed, restore default values on the default animation:
@@ -348,8 +348,8 @@ diagram.nodeTemplate =
 diagram.model = new go.GraphLinksModel([{ key: 'Alpha' }]); // One node
 
 // attach this Diagram to the window to use a button
-window.animateTrigger1 = function() {
-  diagram.commit(function(diag) {
+window.animateTrigger1 = () => {
+  diagram.commit(diag => {
     var node = diag.nodes.first();
     node.elt(0).stroke = go.Brush.randomColor();
     node.elt(0).fill = go.Brush.randomColor();
@@ -431,9 +431,9 @@ diagram.model = new go.GraphLinksModel(
     { from: "Gamma", to: "Delta" }
   ]);
 
-window.animate1 = function() {
+window.animate1 = () => {
   var animation = new go.Animation();
-  diagram.nodes.each(function(node) {
+  diagram.nodes.each(node => {
     // Animate the node's angle from its current value to a random value between 0 and 150 degrees
     animation.add(node, "angle", node.angle, Math.random() * 150);
   });
@@ -487,7 +487,7 @@ window.animate1 = function() {
     ]);
 
     function protectedAnimation(f) {  // return a button event handler to start an animation
-      return function() {
+      return () => {
         // Stop any currently running animations
         diagram.animationManager.stopAnimation(true);
 
@@ -499,27 +499,27 @@ window.animate1 = function() {
     }
 
     window.animateAngleReverse =
-      protectedAnimation(function(animation) {
-        diagram.nodes.each(function(node) {
+      protectedAnimation(animation => {
+        diagram.nodes.each(node => {
           // Animate the node's angle from its current value a random value between 0 and 90
           animation.add(node, "angle", node.angle, Math.random() * 90);
         });
       });
 
     window.animateDiagramPosition =
-      protectedAnimation(function(animation) {
+      protectedAnimation(animation => {
         // shift the diagram contents towards the right and then back
         animation.add(diagram, "position", diagram.position, diagram.position.copy().offset(200, 15));
         animation.duration = 700;
       });
 
     window.animateZoomOut =
-      protectedAnimation(function(animation) {
+      protectedAnimation(animation => {
         animation.add(diagram, "scale", diagram.scale, 0.2);
       });
 
     window.animateZoomIn =
-      protectedAnimation(function(animation) {
+      protectedAnimation(animation => {
         animation.add(diagram, "scale", diagram.scale, 4);
       });
   </code></pre>
@@ -556,7 +556,7 @@ window.animate1 = function() {
 <pre class="lang-js"><code>
 // This presumes the object to be animated is a label within a Link
 go.AnimationManager.defineAnimationEffect('fraction',
-function(obj, startValue, endValue, easing, currentTime, duration, animation) {
+(obj, startValue, endValue, easing, currentTime, duration, animation) => {
   obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
 });
 </code></pre>
@@ -571,10 +571,10 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
 <pre class="lang-js"><code>
   function animateColorAndFraction() {
     // create one Animation for each link, so that they have independent durations
-    myDiagram.links.each(function(node) {
+    myDiagram.links.each(link => {
       var animation = new go.Animation()
-      animation.add(node.elt(1), "fill", node.elt(0).fill, go.Brush.randomColor());
-      animation.add(node.elt(1), "fraction", 0, 1);
+      animation.add(link.elt(1), "fill", link.elt(0).fill, go.Brush.randomColor());
+      animation.add(link.elt(1), "fraction", 0, 1);
       animation.duration = 1000 + (Math.random()*2000);
       animation.reversible = true; // Re-run backwards
       animation.runCount = Infinity; // Animate forever
@@ -615,17 +615,17 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
 
   // This presumes the object to be animated is a label within a Link
   go.AnimationManager.defineAnimationEffect('fraction',
-  function(obj, startValue, endValue, easing, currentTime, duration, animation) {
-    obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
-  });
+    (obj, startValue, endValue, easing, currentTime, duration, animation) => {
+      obj.segmentFraction = easing(currentTime, startValue, endValue - startValue, duration);
+    });
 
 
-  window.animateColorAndFraction = function() {
+  window.animateColorAndFraction = () => {
     // create one Animation for each link, so that they have independent durations
-    diagram.links.each(function(node) {
+    diagram.links.each(link => {
       var animation = new go.Animation()
-      animation.add(node.elt(1), "fill", node.elt(0).fill, go.Brush.randomColor());
-      animation.add(node.elt(1), "fraction", 0, 1);
+      animation.add(link.elt(1), "fill", link.elt(0).fill, go.Brush.randomColor());
+      animation.add(link.elt(1), "fraction", 0, 1);
       animation.duration = 1000 + (Math.random()*2000);
       animation.reversible = true; // Re-run backwards
       animation.runCount = Infinity; // Animate forever
@@ -656,9 +656,9 @@ function(obj, startValue, endValue, easing, currentTime, duration, animation) {
     deletion (and creation) effects in the <a href="../samples/customAnimations.html">Custom Animations extension sample</a>.
   </p>
   <pre class="lang-js"><code>
-myDiagram.addDiagramListener('SelectionDeleting', function(e) {
+myDiagram.addDiagramListener('SelectionDeleting', e => {
   // the DiagramEvent.subject is the collection of Parts about to be deleted
-  e.subject.each(function(part) {
+  e.subject.each(part => {
     if (!(part instanceof go.Node)) return; // only animate Nodes
     var animation = new go.Animation();
     var deletePart = part.copy();
@@ -696,9 +696,9 @@ myDiagram.addDiagramListener('SelectionDeleting', function(e) {
       ],
       [ ]);
 
-    diagram.addDiagramListener('SelectionDeleting', function(e) {
+    diagram.addDiagramListener('SelectionDeleting', e => {
       // the DiagramEvent.subject is the collection of Parts about to be deleted
-      e.subject.each(function(part) {
+      e.subject.each(part => {
         if (!(part instanceof go.Node)) return; // only animate Nodes
         var animation = new go.Animation();
         var deletePart = part.copy();
@@ -709,7 +709,7 @@ myDiagram.addDiagramListener('SelectionDeleting', function(e) {
       });
     });
 
-    window.deleteNode = function() {
+    window.deleteNode = () => {
       if (diagram.selection.count === 0) diagram.select(diagram.nodes.first());
       diagram.commandHandler.deleteSelection();
     }

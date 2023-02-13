@@ -206,17 +206,17 @@ layer when it is selected and back in its normal color layer when it is not sele
       $(go.TextBlock,
         { stroke: "white", font: "bold 12px sans-serif" }),
       {
-        selectionChanged: function(p) {
+        selectionChanged: p => {
           p.layerName = (p.isSelected ? "Foreground" : p.data.color);
         },
-        layerChanged: function(p, oldLayer, newLayer) {
+        layerChanged: (p, oldLayer, newLayer) => {
           if (newLayer !== null) p.elt(1).text = newLayer.name;
         }
       }
     );
 
   var array = [];
-  for (var i = 0; i &lt; 12; i++) {
+  for (let i = 0; i &lt; 12; i++) {
     var data = { loc: new go.Point(Math.random()*520, Math.random()*200) };
     switch (Math.floor(Math.random()*3)) {
       case 0: data.color = "blue"; break;
@@ -230,8 +230,8 @@ layer when it is selected and back in its normal color layer when it is not sele
   diagram.undoManager.isEnabled = true;
 
   // define this function so that the checkbox event handlers can call it
-  toggleVisible = function(layername, e) {
-    diagram.commit(function(d) {
+  toggleVisible = (layername, e) => {
+    diagram.commit(d => {
       var layer = d.findLayer(layername);
       if (layer !== null) layer.visible = e.currentTarget.checked;
     }, 'toggle ' + layername);
@@ -255,7 +255,7 @@ Buttons on the Part can be used to modify the z-order of each.
 </p>
 <pre class="lang-js" id="zOrder"><code>
   function changeZOrder(amt, obj) {
-    diagram.commit(function(d) {
+    diagram.commit(d => {
       var data = obj.part.data;
       d.model.set(data, "zOrder", data.zOrder + amt);
     }, 'modified zOrder');
@@ -273,16 +273,16 @@ Buttons on the Part can be used to modify the z-order of each.
         new go.Binding("text", "zOrder")),
       $("Button",
         { alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.BottomLeft,
-          click: function (e, obj) { changeZOrder(-1, obj); } },
+          click: (e, obj) => changeZOrder(-1, obj) },
         $(go.Shape, "LineH", { width: 14, height: 14 })),
       $("Button",
         { alignment: go.Spot.BottomRight, alignmentFocus: go.Spot.BottomRight,
-          click: function (e, obj) { changeZOrder(1, obj); } },
+          click: (e, obj) => changeZOrder(1, obj) },
         $(go.Shape, "PlusLine", { width: 14, height: 14 }))
     );
 
   var array = [];
-  for (var i = 0; i < 12; i++) {
+  for (let i = 0; i < 12; i++) {
     var data = { loc: new go.Point(Math.random()*500, Math.random()*200) };
     data.zOrder = (Math.floor(Math.random()*20))
     array.push(data);

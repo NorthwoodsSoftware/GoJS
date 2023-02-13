@@ -157,6 +157,12 @@
 <p>
   This page is almost identical to the page on <a href="makingImages.html">Making Images</a>, which shows how to render PNG images instead of SVG elements.
 </p>
+<p class="box bg-info">
+  Note that exporting a diagram to SVG is different from the functionality introduced in v2.3
+  that allows the interactive diagram to be rendered in SVG rather than in Canvas.
+  For more information please read: <a href="SVGContext.html">SVG Drawing Context</a>
+</p>
+
 <p>
 Below are several examples of using <a>Diagram.makeSvg</a> on the following diagram:
 </p>
@@ -195,20 +201,16 @@ Below are several examples of using <a>Diagram.makeSvg</a> on the following diag
 
 <script>
   window.extras = [];
-  window.goCode2 = function(pre) {
-    extras.push([pre, '2']);
-  }
-  window.goCode3 = function(pre) {
-    extras.push([pre, '3']);
-  }
-  window.addSVG = function(img) {
+  window.goCode2 = pre => extras.push([pre, '2']);
+  window.goCode3 = pre => extras.push([pre, '3']);
+  window.addSVG = img => {
     obj = document.getElementById("severalImages");
     img.className = "images";
     obj.appendChild(img)
-  }
+  };
 
-  window.extra = function() {
-    for (var i = 0; i < extras.length; i++) {
+  window.extra = () => {
+    for (let i = 0; i < extras.length; i++) {
       var ex = extras[i];
       if (ex[1] === '2') { // goCode2
         var pre = document.getElementById(ex[0]);
@@ -221,7 +223,7 @@ Below are several examples of using <a>Diagram.makeSvg</a> on the following diag
         f();
       }
     }
-  }
+  };
 </script>
 
 <hr/>
@@ -392,7 +394,7 @@ myDiagram.makeSvg({
 
 <pre class="lang-js" id="codea1"><code>
 var button = document.getElementById('openSVG');
-button.addEventListener('click', function() {
+button.addEventListener('click', () => {
   var newWindow = window.open("","newWindow");
   if (!newWindow) return;
   var newDocument = newWindow.document;

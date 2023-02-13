@@ -476,14 +476,14 @@ The same design of having the Node be a "Spot" Panel can also used for placing p
         $(go.TextBlock,
           { margin: new go.Margin(3, 0, 0, 0) },
           new go.Binding("text", "text"),
-          new go.Binding("stroke", "error", function(err) { return err ? "red" : "black" }))
+          new go.Binding("stroke", "error", err => err ? "red" : "black"))
       ),
       // decorations:
       $(go.Shape, "TriangleUp",
         { alignment: go.Spot.TopLeft,
           fill: "yellow", width: 14, height: 14,
           visible: false },
-        new go.Binding("visible", "info", function(i) { return i ? true : false; })),
+        new go.Binding("visible", "info", i => i ? true : false)),
       $(go.Shape, "StopSign",
         { alignment: go.Spot.TopRight,
           fill: "red", width: 14, height: 14,
@@ -493,7 +493,7 @@ The same design of having the Node be a "Spot" Panel can also used for placing p
         toolTip:
           $(go.Adornment, "Auto",
             $(go.Shape, { fill: "#FFFFCC" },
-              new go.Binding("visible", "info", function(i) { return i ? true : false; })),
+              new go.Binding("visible", "info", i => i ? true : false)),
             $(go.TextBlock, { margin: 4 },
               new go.Binding("text", "info"))
           )
@@ -528,7 +528,7 @@ The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and b
           new go.Binding("text"))
       ),
       $(go.Panel, "Spot",
-        new go.Binding("opacity", "ribbon", function(t) { return t ? 1 : 0; }),
+        new go.Binding("opacity", "ribbon", t => t ? 1 : 0),
         // note that the opacity defaults to zero (not visible),
         // in case there is no "ribbon" property
         { opacity: 0,

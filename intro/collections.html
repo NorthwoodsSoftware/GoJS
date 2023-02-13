@@ -171,7 +171,7 @@ A <a>List</a> is an ordered collection of values that are indexed by integers fr
 </p>
 
 <pre class="lang-js"><code>
-  var l = new go.List();
+  const l = new go.List();
   l.add("A");
   l.add("B");
   l.add("C");
@@ -196,7 +196,7 @@ A <a>List</a> is an ordered collection of values that are indexed by integers fr
 
 <pre class="lang-ts"><code>
   // TypeScript:
-  var l = new go.List&lt;string&gt;(); // Create a list of only strings
+  const l = new go.List&lt;string&gt;(); // Create a list of only strings
   l.add("A");
   l.add(23);  // throws an error during compilation or in an IDE
   l.add({});  // throws an error during compilation or in an IDE
@@ -210,12 +210,12 @@ on it to advance its position in the list.  Its <a>Iterator.value</a> will be a 
 its <a>Iterator.key</a> will be the corresponding index in the list.
 </p>
 <pre class="lang-js"><code>
-  var l = new go.List();
+  const l = new go.List();
   l.add("A");
   l.add("B");
   l.add("C");
 
-  var it = l.iterator;
+  const it = l.iterator;
   while (it.next()) {
     console.log(it.key + ": " + it.value);
   }
@@ -223,6 +223,9 @@ its <a>Iterator.key</a> will be the corresponding index in the list.
   // 0: A
   // 1: B
   // 2: C
+
+  // Or, if you just want to iterate over the items in the list:
+  l.each(item => console.log(item));
 </code></pre>
 
 <h2 id="Set">Set</h2>
@@ -234,7 +237,7 @@ This class is similar to the <code>Set</code> object that is defined in ECMAScri
 The optional argument to the <a>Set</a> constructor specifies the type of the items that may be added to the set.
 </p>
 <pre class="lang-js"><code>
-  var s = new go.Set();
+  const s = new go.Set();
   s.add("A");
   s.add("B");
   s.add("C");
@@ -254,7 +257,7 @@ The optional argument to the <a>Set</a> constructor specifies the type of the it
 
 <pre class="lang-ts"><code>
   // TypeScript:
-  var s = new go.Set&lt;string&gt;(); // Create a set of only strings
+  const s = new go.Set&lt;string&gt;(); // Create a set of only strings
   s.add("A");
   s.add(23);  // throws an error during compilation or in an IDE
   s.add({});  // throws an error during compilation or in an IDE
@@ -266,13 +269,13 @@ Iterating over the items in a <a>Set</a> is just like iterating over a <a>List</
 except that the order of the items may vary.
 </p>
 <pre class="lang-js"><code>
-  var s = new go.Set();
+  const s = new go.Set();
   s.add("A");
   s.add("B");
   s.add("C");
   s.add("B");  // duplicate is ignored
 
-  var it = s.iterator;
+  const it = s.iterator;
   while (it.next()) {
     console.log(it.value);
   }
@@ -280,6 +283,9 @@ except that the order of the items may vary.
   // A
   // B
   // C
+  
+  // Or, equivalent code using Set.each:
+  s.each(item => console.log(item));
 </code></pre>
 
 <h2 id="Map">Map</h2>
@@ -291,7 +297,7 @@ This class is similar to the <code>Map</code> object that is defined in ECMAScri
 The two optional arguments to the <a>Map</a> constructor specifies the types of the keys and the types of the item values that may be added to the map.
 </p>
 <pre class="lang-js"><code>
-  var m = new go.Map();
+  const m = new go.Map();
   m.add("A", 1);  // associate "A" with 1
   m.add("B", 2);
   m.add("C", 3);
@@ -315,7 +321,7 @@ The two optional arguments to the <a>Map</a> constructor specifies the types of 
 
 <pre class="lang-ts"><code>
   // TypeScript:
-  var m = new go.Map&lt;string, number&gt;(); // Create a map of strings to numbers
+  const m = new go.Map&lt;string, number&gt;(); // Create a map of strings to numbers
   m.add("A", 1);
   m.add(23, 23);  // throws an error during compilation or in an IDE
   m.add({}, 23);  // throws an error during compilation or in an IDE
@@ -327,14 +333,14 @@ but offering access to both the keys and the values.
 As with <a>Set</a>s the order of the items may vary.
 </p>
 <pre class="lang-js"><code>
-  var m = new go.Map();
+  const m = new go.Map();
   m.add("A", 1);  // associate "A" with 1
   m.add("B", 2);
   m.add("C", 3);
   m.add("B", 222);  // replace the value for "B"
 
   // Normal iteration lets you get both the key and its corresponding value:
-  var it = m.iterator;
+  const it = m.iterator;
   while (it.next()) {
     console.log(it.key + ": " + it.value);
   }
@@ -343,8 +349,11 @@ As with <a>Set</a>s the order of the items may vary.
   // B: 222
   // C: 3
 
+    // Or, equivalently using Map.each:
+  m.each(kvp => console.log(kvp.key + ": " + kvp.value));
+
   // To get a collection of the keys, use Map.iteratorKeys:
-  var kit = m.iteratorKeys;
+  const kit = m.iteratorKeys;
   while (kit.next()) {
     console.log(kit.value);
   }
@@ -354,7 +363,7 @@ As with <a>Set</a>s the order of the items may vary.
   // C
 
   // To get a collection of the values, use Map.iteratorValues:
-  var vit = m.iteratorValues;
+  const vit = m.iteratorValues;
   while (vit.next()) {
     console.log(vit.value);
   }
@@ -373,15 +382,15 @@ when needing to pass a collection on to other methods that take an <a>Iterator</
 <p>
 It is commonplace to iterate over the selected <a>Part</a>s of a <a>Diagram</a>:
 <pre class="lang-js"><code>
-  for (var it = diagram.selection.iterator; it.next(); ) {
-    var part = it.value;  // part is now a Node or a Group or a Link or maybe a simple Part
+  for (const it = diagram.selection.iterator; it.next(); ) {
+    const part = it.value;  // part is now a Node or a Group or a Link or maybe a simple Part
     if (part instanceof go.Node) { . . . }
     else if (part instanceof go.Link) { . . . }
   }
 </code></pre>
 Alternatively:
 <pre class="lang-js"><code>
-  diagram.selection.each(function(part) {
+  diagram.selection.each(part => {
     // part is now a Node or a Group or a Link or maybe a simple Part
     if (part instanceof go.Node) { . . . }
     else if (part instanceof go.Link) { . . . }
@@ -392,8 +401,8 @@ Alternatively:
 <p>
 Sometimes one needs to iterate over the <a>Node</a>s in a <a>Diagram</a>:
 <pre class="lang-js"><code>
-  for (var it = diagram.nodes; it.next(); ) {
-    var n = it.value;  // n is now a Node or a Group
+  for (const it = diagram.nodes; it.next(); ) {
+    const n = it.value;  // n is now a Node or a Group
     if (n.category === "Special") { . . . }
   }
 </code></pre>
@@ -402,10 +411,10 @@ Sometimes one needs to iterate over the <a>Node</a>s in a <a>Diagram</a>:
 <p>
 You can also iterate over the port elements in a <a>Node</a>, or the <a>Link</a>s connected to a port element:
 <pre class="lang-js"><code>
-  for (var pit = node.ports; pit.next(); ) {
-    var port = pit.value;  // port is now a GraphObject within the node
-    for (var lit = node.findLinksConnected(port.portId); lit.next(); ) {
-      var link = lit.value;  // link is now a Link connected with the port
+  for (const pit = node.ports; pit.next(); ) {
+    const port = pit.value;  // port is now a GraphObject within the node
+    for (const lit = node.findLinksConnected(port.portId); lit.next(); ) {
+      const link = lit.value;  // link is now a Link connected with the port
       if (link.data.xyz === 17) { . . . }
     }
   }
@@ -415,8 +424,8 @@ You can also iterate over the port elements in a <a>Node</a>, or the <a>Link</a>
 <p>
 Or perhaps you need to iterate over the elements of a <a>Panel</a>:
 <pre class="lang-js"><code>
-  for (var it = panel.elements; it.next(); ) {
-    var elt = it.value;  // elt is now a GraphObject that is an immediate child of the Panel
+  for (const it = panel.elements; it.next(); ) {
+    const elt = it.value;  // elt is now a GraphObject that is an immediate child of the Panel
     if (elt instanceof go.TextBlock) { . . . }
     else if (elt instanceof go.Panel) { . . . recurse . . . }
   }
@@ -426,8 +435,8 @@ Or perhaps you need to iterate over the elements of a <a>Panel</a>:
 <p>
 If you want to find <a>Node</a>s that are immediate members of a <a>Group</a>:
 <pre class="lang-js"><code>
-  for (var mit = group.memberParts; mit.next(); ) {
-    var part = mit.value;  // part is now a Part within the Group
+  for (const mit = group.memberParts; mit.next(); ) {
+    const part = mit.value;  // part is now a Part within the Group
     if (part instanceof go.Node) { . . . maybe work with part.data . . . }
   }
 </code></pre>

@@ -132,17 +132,20 @@
       <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
 
-  <style type="text/css">
+<style type="text/css">
   @media screen {
     img {
-      border: 1px solid rgba(255,0,0,.4);
+      border: 1px solid rgba(255, 0, 0, .4);
     }
   }
 
   /* @media print specifies CSS rules that only apply when printing */
   @media print {
+
     /* CSS reset to clear styles for printing */
-    html, body, div {
+    html,
+    body,
+    div {
       margin: 0;
       padding: 0;
       border: 0;
@@ -152,16 +155,24 @@
     }
 
     /* Hide everything on the page */
-    body * {
-      display: none;
+    * {
+      visibility: hidden;
+      margin: 0;
+      padding: 0;
     }
 
-    #container, #content, #myImages, #myImages * {
+    #container,
+    #content,
+    #myImages {
       /* Only display the images we want printed */
       /* all of the image's parent divs
          leading up to the body must be un-hidden (displayed) too
       */
-      display: block;
+      visibility: initial;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       /* CSS reset to clear the specific visible divs for printing */
       margin: 0;
       padding: 0;
@@ -169,6 +180,10 @@
       font-size: 100%;
       font: inherit;
       vertical-align: baseline;
+    }
+
+    #myImages img {
+      visibility: initial;
     }
 
     /* We have line breaks in the DIV
@@ -191,7 +206,7 @@
       /* Only some browsers respect this rule: */
       page-break-inside: avoid;
       /* Almost all browsers respect this rule: */
-      page-break-after:always;
+      page-break-after: always;
     }
   }
 
@@ -206,21 +221,26 @@
     /* Some browsers respect rules such as size: landscape */
     margin: 1cm;
   }
-  </style>
+</style>
 
 
 
 
 <h1>Printing</h1>
 <p>
-Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them, inserting them into a PDF or other document, or printing them directly from the browser. On this page we will create several images out of a large Diagram and prepare some CSS so that printing this page prints only those images.
+  Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them, inserting
+  them into a PDF or other document, or printing them directly from the browser. On this page we will create several
+  images out of a large Diagram and prepare some CSS so that printing this page prints only those images.
 </p>
 <p>
-This page uses <a>Diagram.makeImage</a>, which has its own introduction page: <a href="makingImages.html">Making Images with GoJS</a>.
+  This page uses <a>Diagram.makeImage</a>, which has its own introduction page: <a href="makingImages.html">Making
+    Images with GoJS</a>.
 </p>
 
 <p class="box bg-info">
-Depending on your situation, you may want to use SVG to print instead, and there is also a page on <a href="makingSVG.html">Making SVG with GoJS</a>, which is nearly identical to making images. In this page's examples you could substitute <a>Diagram.makeSvg</a> for the same result.
+  Depending on your situation, you may want to use SVG to print instead, and there is also a page on <a
+    href="makingSVG.html">Making SVG with GoJS</a>, which is nearly identical to making images. In this page's examples
+  you could substitute <a>Diagram.makeSvg</a> for the same result.
 </p>
 
 <p>
@@ -286,10 +306,10 @@ Depending on your situation, you may want to use SVG to print instead, and there
   var nit = myDiagram.nodes;
   var nodes = new go.List();
   nodes.addAll(nit);
-  for (var i = 0; i &lt; nodes.count - 1; i++) {
+  for (let i = 0; i &lt; nodes.count - 1; i++) {
     var from = nodes.elt(i);
     var numto = Math.floor(1 + (Math.random() * 3) / 2);
-    for (var j = 0; j &lt; numto; j++) {
+    for (let j = 0; j &lt; numto; j++) {
       var idx = Math.floor(i + 5 + Math.random() * 10);
       if (idx &gt;= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
       var to = nodes.elt(idx);
@@ -303,12 +323,10 @@ Depending on your situation, you may want to use SVG to print instead, and there
 <script>goCode("diag", 500, 500)</script>
 <script>
   window.extras = [];
-  window.goCode3 = function(pre) {
-    extras.push(pre);
-  }
+  window.goCode3 = pre => extras.push(pre);
 
-  window.extra = function() {
-    for (var i = 0; i < extras.length; i++) {
+  window.extra = () => {
+    for (let i = 0; i < extras.length; i++) {
       var ex = extras[i];
       var pre = document.getElementById(ex);
       var f = eval("(function () {" + pre.textContent + "\n})");
@@ -317,7 +335,9 @@ Depending on your situation, you may want to use SVG to print instead, and there
   }
 </script>
 <p>
-  Our code for print preparation contains a <code>generateImages</code> function that cuts the Diagram into several images of a given width and height. On this page it is called by default with (700, 960), but the width and height can be modified dynamically with HTML inputs below.
+  Our code for print preparation contains a <code>generateImages</code> function that cuts the Diagram into several
+  images of a given width and height. On this page it is called by default with (700, 960), but the width and height can
+  be modified dynamically with HTML inputs below.
 </p>
 <pre class="lang-js" id="manyImgCode"><code>
     // if width or height are below 50, they are set to 50
@@ -339,8 +359,8 @@ Depending on your situation, you may want to use SVG to print instead, and there
       var imgWidth = width;
       var imgHeight = height;
       var p = db.position;
-      for (var i = 0; i &lt; boundsheight; i += imgHeight) {
-        for (var j = 0; j &lt; boundswidth; j += imgWidth) {
+      for (let i = 0; i &lt; boundsheight; i += imgHeight) {
+        for (let j = 0; j &lt; boundswidth; j += imgWidth) {
           var img = myDiagram.makeImage({
             scale: 1,
             position: new go.Point(p.x + j, p.y + i),
@@ -355,7 +375,7 @@ Depending on your situation, you may want to use SVG to print instead, and there
     }
 
     var button = document.getElementById('makeImages');
-    button.addEventListener('click', function() {
+    button.addEventListener('click', () => {
       var width = parseInt(document.getElementById('widthInput').value);
       var height = parseInt(document.getElementById('heightInput').value);
       generateImages(width, height);
@@ -366,10 +386,13 @@ Depending on your situation, you may want to use SVG to print instead, and there
 </code></pre>
 
 <p>
-  We want to show nothing but the images when this HTML page is printed, so we must use CSS rules to hide all page elements except the images themselves and the DOM parents of the images leading up to the body (#content, #myImages).
+  We want to show nothing but the images when this HTML page is printed, so we must use CSS rules to hide all page
+  elements except the images themselves and the DOM parents of the images leading up to the body (#content, #myImages).
 </p>
 <p>
-  With the CSS below, printing this page will give yield nothing but the generated images that have been added to the end of this page. Typically the image or images used for printing may be hidden from the user completely, except when printing, or else added to a separate page in a new window.
+  With the CSS below, printing this page will give yield nothing but the generated images that have been added to the
+  end of this page. Typically the image or images used for printing may be hidden from the user completely, except when
+  printing, or else added to a separate page in a new window.
 </p>
 <pre class="lang-css" id="mycss"><code>
 /* @media print specifies CSS rules that only apply when printing */
@@ -433,12 +456,15 @@ Depending on your situation, you may want to use SVG to print instead, and there
 }
 </code></pre>
 <p>
-  The images at the end of this page are generated by calling <code>generateImages(700, 960)</code>. Using the inputs below the images can be replaced with those of a different size. Different papers, page orientations, and margins will require different sized images if they are to fill the paper, and (700, 960) is a suggested size for 8.5 inch by 11 paper in portrait orientation, with minimal margins.
+  The images at the end of this page are generated by calling <code>generateImages(700, 960)</code>. Using the inputs
+  below the images can be replaced with those of a different size. Different papers, page orientations, and margins will
+  require different sized images if they are to fill the paper, and (700, 960) is a suggested size for 8.5 inch by 11
+  paper in portrait orientation, with minimal margins.
 </p>
 <div style="border: 1px solid gray; padding: 10px; margin-bottom: 20px;">
-Width: <input id="widthInput" value="700" />
-Height: <input id="heightInput" value="960" />
-<button id="makeImages">Generate images for printing</button>
+  Width: <input id="widthInput" value="700" />
+  Height: <input id="heightInput" value="960" />
+  <button id="makeImages">Generate images for printing</button>
 </div>
 <div id="myImages">
 </div>

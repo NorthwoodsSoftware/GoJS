@@ -180,7 +180,7 @@ You may wish to copy and adapt these definitions when creating your own template
 <pre class="lang-js" id="templates"><code>
   // the "simple" template just shows the key string and the color in the background,
   // but it also includes a tooltip that shows the description
-  var simpletemplate =
+  const simpletemplate =
     $(go.Node, "Auto",
       $(go.Shape, "Ellipse",
         new go.Binding("fill", "color")),
@@ -196,7 +196,7 @@ You may wish to copy and adapt these definitions when creating your own template
     );
 
   // the "detailed" template shows all of the information in a Table Panel
-  var detailtemplate =
+  const detailtemplate =
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
         new go.Binding("fill", "color")),
@@ -212,7 +212,7 @@ You may wish to copy and adapt these definitions when creating your own template
     );
 
   // create the nodeTemplateMap, holding three node templates:
-  var templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
+  const templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
   // for each of the node categories, specify which template to use
   templmap.add("simple", simpletemplate);
   templmap.add("detailed", detailtemplate);
@@ -253,7 +253,7 @@ template to use from the itemTemplateMap.
 </p>
 <pre class="lang-js" id="itemTemplates"><code>
   // create a template map for items
-  var itemtemplates = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Panel&gt;();
+  const itemtemplates = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Panel&gt;();
 
   // the template when type == "text"
   itemtemplates.add("text",
@@ -270,7 +270,7 @@ template to use from the itemTemplateMap.
       // convert a function name into a function value,
       // because functions cannot be represented in JSON format
       new go.Binding("click", "handler",
-                      function(name) {
+                      name => {
                         if (name === "alert") return raiseAlert;  // defined below
                         return null;
                       })
@@ -294,7 +294,7 @@ template to use from the itemTemplateMap.
     );
 
   function raiseAlert(e, obj) {  // here OBJ will be the item Panel
-    var node = obj.part;
+    const node = obj.part;
     alert(node.data.key + ": " + obj.data.text);
   }
 
@@ -327,7 +327,7 @@ hold the data for the header, but have it be styled differently.
 In this example we define a "Header" item template in the <a>Panel.itemTemplateMap</a>.
 </p>
 <pre class="lang-js" id="header"><code>
-  var itemTemplateMap = new go.Map();
+  const itemTemplateMap = new go.Map();
   itemTemplateMap.add("",
     $(go.Panel, "TableRow",
       $(go.TextBlock, new go.Binding("text", "name"),
@@ -402,11 +402,11 @@ is associated with the new category value.
 <pre class="lang-js" id="changingCategory"><code>
   // this function changes the category of the node data to cause the Node to be replaced
   function changeCategory(e, obj) {
-    var node = obj.part;
+    const node = obj.part;
     if (node) {
-      var diagram = node.diagram;
+      const diagram = node.diagram;
       diagram.startTransaction("changeCategory");
-      var cat = diagram.model.getCategoryForNodeData(node.data);
+      let cat = diagram.model.getCategoryForNodeData(node.data);
       if (cat === "simple")
         cat = "detailed";
       else
@@ -418,7 +418,7 @@ is associated with the new category value.
 
   // The "simple" template just shows the key string and the color in the background.
   // There is a Button to invoke the changeCategory function.
-  var simpletemplate =
+  const simpletemplate =
     $(go.Node, "Spot",
       $(go.Panel, "Auto",
         $(go.Shape, "Ellipse",
@@ -434,7 +434,7 @@ is associated with the new category value.
 
   // The "detailed" template shows all of the information in a Table Panel.
   // There is a Button to invoke the changeCategory function.
-  var detailtemplate =
+  const detailtemplate =
     $(go.Node, "Spot",
       $(go.Panel, "Auto",
         $(go.Shape, "RoundedRectangle",
@@ -455,7 +455,7 @@ is associated with the new category value.
         { click: changeCategory })
     );
 
-  var templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
+  const templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
   templmap.add("simple", simpletemplate);
   templmap.add("detailed", detailtemplate);
   diagram.nodeTemplateMap = templmap;
@@ -494,7 +494,7 @@ Zoom in again and suddenly it uses the more detailed template.
 </p>
 <pre class="lang-js" id="changingMap"><code>
   // The "simple" template just shows the key string and the color in the background.
-  var simpletemplate =
+  const simpletemplate =
     $(go.Node, "Spot",
       $(go.Panel, "Auto",
         $(go.Shape, "Ellipse",
@@ -505,7 +505,7 @@ Zoom in again and suddenly it uses the more detailed template.
     );
 
   // The "detailed" template shows all of the information in a Table Panel.
-  var detailtemplate =
+  const detailtemplate =
     $(go.Node, "Spot",
       $(go.Panel, "Auto",
         $(go.Shape, "RoundedRectangle",
@@ -538,7 +538,7 @@ Zoom in again and suddenly it uses the more detailed template.
   diagram.nodeTemplate = detailtemplate;
 
   diagram.addDiagramListener("ViewportBoundsChanged",
-    function (e) {
+    e => {
       if (diagram.scale &lt; 0.9) {
         diagram.nodeTemplate = simpletemplate;
       } else {

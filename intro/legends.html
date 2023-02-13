@@ -269,10 +269,10 @@ make them appear not to move as the user scrolls or zooms.
 
   // Whenever the Diagram.position or Diagram.scale change,
   // update the position of all simple Parts that have a _viewPosition property.
-  diagram.addDiagramListener("ViewportBoundsChanged", function(e) {
-    e.diagram.commit(function(dia) {
+  diagram.addDiagramListener("ViewportBoundsChanged", e => {
+    e.diagram.commit(dia => {
       // only iterates through simple Parts in the diagram, not Nodes or Links
-      dia.parts.each(function(part) {
+      dia.parts.each(part => {
         // and only on those that have the "_viewPosition" property set to a Point
         if (part._viewPosition) {
           part.position = dia.transformViewToDoc(part._viewPosition);

@@ -43,7 +43,7 @@
                 toLinkableSelfNode: true, toLinkableDuplicates: true // optional
             }, new go.Binding('fill')), $(go.Shape, { width: 70, height: 70, fill: 'transparent', stroke: null }), $(go.TextBlock, new go.Binding('text')));
         myDiagram.linkTemplate =
-            $(go.Link, { reshapable: true, resegmentable: true },
+            $(go.Link, { reshapable: true, resegmentable: true }, 
             // { routing: go.Link.Orthogonal },  // optional, but need to keep LinkingTool.temporaryLink in sync, above
             { adjusting: go.Link.Stretch }, // optional
             new go.Binding('points', 'points').makeTwoWay(), $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: 'OpenTriangle' }));

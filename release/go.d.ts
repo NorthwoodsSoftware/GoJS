@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.1
+ * Type definitions for GoJS v2.3.2
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -241,6 +241,7 @@ export interface IContext {
     imageSmoothingEnabled: boolean;
     clipInsteadOfFill: boolean;
     currentlyShadowed: boolean;
+    isTemporary: boolean;
     cachedTransform: any;
     commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
@@ -27699,6 +27700,9 @@ export class LayeredDigraphLayout extends Layout {
      * (undocumented)
      * Adjusts the columns of nodes in the network to produce a layout which reduces
      * the number of bends and is tightly packed.
+     *
+     * When using #alignOption, nodes are assigned coordinates within their layers
+     * to produce straighter paths of nodes and small edge lengths.
      * @expose
      */
     protected straightenAndPack(): void;
@@ -28099,6 +28103,9 @@ export class LayeredDigraphVertex extends LayoutVertex {
     /**
      * Gets or sets the column to which the node is assigned.
      * The default value is -1.
+     *
+     * This property is not used during straightening and packing of nodes
+     * when using LayeredDigraphLayout#alignOption.
      */
     get column(): number;
     set column(value: number);
@@ -28111,6 +28118,9 @@ export class LayeredDigraphVertex extends LayoutVertex {
     /**
      * Gets or sets the connected component to which the node is assigned.
      * The default value is NaN.
+     *
+     * This property is not used during straightening and packing of nodes
+     * when using LayeredDigraphLayout#alignOption.
      */
     get component(): number;
     set component(value: number);
@@ -28166,6 +28176,8 @@ export class LayeredDigraphEdge extends LayoutEdge {
      * Location of the port at the from node of the link.
      * Allows the crossing matrix to correctly calculate the crossings for nodes with multiple ports.
      * The default value is NaN.
+     *
+     * This property is also used to align link ports when using LayeredDigraphLayout#alignOption.
      */
     get portFromPos(): number;
     set portFromPos(value: number);
@@ -28173,6 +28185,8 @@ export class LayeredDigraphEdge extends LayoutEdge {
      * Location of the port at the to node of the link.
      * Allows the crossing matrix to correctly calculate the crossings for nodes with multiple ports.
      * The default value is NaN.
+     *
+     * This property is also used to align link ports when using LayeredDigraphLayout#alignOption.
      */
     get portToPos(): number;
     set portToPos(value: number);

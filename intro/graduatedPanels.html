@@ -663,7 +663,7 @@ diagram.add(
       $(go.Shape, { geometryString: "M0 0 H400" }),
       $(go.Shape,
         { // skip drawing tick at 30
-          graduatedSkip: function (v) { return v === 30; },
+          graduatedSkip: v => v === 30,
           geometryString: "M0 0 V10"
         }
       ),
@@ -682,7 +682,7 @@ diagram.add(
       $(go.Shape, { geometryString: "M0 0 V10" }),
       $(go.TextBlock,
         { // always display two decimals
-          graduatedFunction: function(val) { return val.toFixed(2); },
+          graduatedFunction: val => val.toFixed(2),
           segmentOffset: new go.Point(0, 12)
         }
       )
@@ -726,7 +726,7 @@ var marker =
     $(go.Shape, "Circle", { fill: "transparent", strokeWidth: 0, cursor: "pointer" }),
     $(go.Shape, "Circle", { fill: "red", strokeWidth: 0, width: 8, height: 8 }),
     {
-      dragComputation: function(node, pt) {
+      dragComputation: (node, pt) => {
         var scale = gauge.findObject("SCALE");
         var loc = scale.getLocalPoint(pt);
         var val = scale.graduatedValueForPoint(loc);
@@ -738,7 +738,7 @@ var marker =
 diagram.add(marker);
 
 // once everything has been positioned, give the marker its location
-diagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+diagram.addDiagramListener("InitialLayoutCompleted", e => {
   var scale = gauge.findObject("SCALE");
   var gpt = scale.graduatedPointForValue(0);
   marker.location = scale.getDocumentPoint(gpt);

@@ -613,10 +613,10 @@ Here is a diagram that includes comments about the GraphObjects used to build so
   // the template for each attribute in a node's array of item data
   var itemTempl =
     $(go.Panel, "TableRow",
-      new go.Binding("portId", "name", function(n) { return n + "ITEMPANEL"; }),
-      new go.Binding("background", "row", function(i) { return (i === 2) ? "lightgreen" : "transparent"; }).ofObject(),
+      new go.Binding("portId", "name", n => n + "ITEMPANEL"),
+      new go.Binding("background", "row", i => (i === 2) ? "lightgreen" : "transparent").ofObject(),
       $(go.Shape,
-        new go.Binding("portId", "name", function(n) { return n + "SHAPE"; }),
+        new go.Binding("portId", "name", n => n + "SHAPE"),
         { column: 0, desiredSize: new go.Size(10, 10) },
         new go.Binding("figure", "figure"),
         new go.Binding("fill", "color")),
@@ -628,7 +628,7 @@ Here is a diagram that includes comments about the GraphObjects used to build so
           font: "bold 14px sans-serif"
         },
         new go.Binding("text", "name"),
-        new go.Binding("portId", "name", function(n) { return n + "TEXTBLOCK"; }))
+        new go.Binding("portId", "name", n => n + "TEXTBLOCK"))
     );
 
   // define the Node template, representing an entity
@@ -701,7 +701,7 @@ Here is a diagram that includes comments about the GraphObjects used to build so
       $(go.TextBlock,
         { stroke: "brown", textAlign: "center" },
         new go.Binding("text"),
-        new go.Binding("font", "bold", function(b) { return b ? "bold 10pt sans-serif" : "10pt sans-serif"; }))
+        new go.Binding("font", "bold", b => b ? "bold 10pt sans-serif" : "10pt sans-serif"))
     ));
 
   // so that comments can point at any named GraphObject in a Link

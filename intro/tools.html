@@ -322,8 +322,8 @@ At this time the syntax for setting properties on predefined subobjects only wor
           { from: 4, to: 5 },
           { from: 5, to: 6 },
           { from: 6, to: 7, text: "Receives input", curve: go.Link.Bezier, segmentOrientation: go.Link.OrientOpposite, segmentOffset: new go.Point(0,10) },
-          { from: 7, to: 6, text: "Input is not terminal", curve: go.Link.Bezier, segmentOrientation: go.Link.OrientAlong, segmentOffset: new go.Point(0,10) },
-          { from: 7, to: 9, text: "Input is terminal", segmentOrientation: go.Link.OrientAlong, segmentOffset: new go.Point(0,10) },
+          { from: 7, to: 6, text: "Input continues", curve: go.Link.Bezier, segmentOrientation: go.Link.OrientAlong, segmentOffset: new go.Point(0,10) },
+          { from: 7, to: 9, text: "Input stops tool", segmentOrientation: go.Link.OrientAlong, segmentOffset: new go.Point(0,10) },
           { from: 6, to: 8, text: "User cancels tool", segmentOrientation: go.Link.OrientAlong, segmentOffset: new go.Point(0,-10)},
           { from: 8, to: 9 },
           { from: 9, to: 10 },
@@ -470,7 +470,7 @@ There is also a TextBlock placed above the adorned shape showing the shape's cur
               { alignment: go.Spot.Top, alignmentFocus: new go.Spot(0.5, 1, 0, -2),
                 stroke: "dodgerblue" },
               new go.Binding("text", "adornedObject",
-                             function(shp) { return shp.naturalBounds.width.toFixed(0); })
+                             shp => shp.naturalBounds.width.toFixed(0))
                   .ofObject())
           ),
         selectionAdorned: false },  // don't show selection Adornment, a rectangle
@@ -627,10 +627,10 @@ both in the diagram and in the model.  No <a>Binding</a>s are needed for such mo
       $(go.Shape, { toArrow: "Standard" })
     );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: "Alpha", to: "Delta" }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -824,7 +824,7 @@ The default temporary ports are magenta rectangles.
         { stroke: "red", strokeWidth: 2, strokeDashArray: [4, 2] })
     );
 
-  var tempfromnode =
+  const tempfromnode =
     $(go.Node,
       { layerName: "Tool" },
       $(go.Shape, "RoundedRectangle",
@@ -834,7 +834,7 @@ The default temporary ports are magenta rectangles.
   diagram.toolManager.linkingTool.temporaryFromNode = tempfromnode;
   diagram.toolManager.linkingTool.temporaryFromPort = tempfromnode.port;
 
-  var temptonode =
+  const temptonode =
     $(go.Node,
       { layerName: "Tool" },
       $(go.Shape, "RoundedRectangle",
@@ -869,22 +869,39 @@ There are examples of linking tools defined in the samples and extensions direct
 <h2 id="CustomTools">Custom Tools</h2>
 <p>
   The GoJS samples and extensions demonstrate a number of custom tools, including:
-  <ul style="margin-bottom: 70px;">
-    <li><a href="../extensions/FloorPlanEditor.html">Resize Multiple Tool (in Floor Plan Editor)</a>
-    <li><a href="../samples/swimLanes.html">Lane Resizing Tool (in Swim Lanes)</a>
-    <li><a href="../samples/swimLanesVertical.html">Lane Resizing Tool (in Swim Lanes Vertical)</a>
-    <li><a href="../extensions/FloorPlanEditor.html">Rotate Multiple Tool (in Floor Plan Editor)</a>
-    <li><a href="../samples/seatingChart.html">Horizontal Text Rotating Tool (in Seating Chart)</a>
-    <li><a href="../extensions/GeometryReshapingTool.js">Geometry Reshaping Tool</a>
-      used by the <a href="../extensions/PolygonDrawing.html">Polygon Drawing</a> <a href="../extensions/FreehandDrawing.html">Freehand Drawing</a>
-    <li><a href="../extensions/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a>
-    <li><a href="../extensions/DragCreating.html">Drag Creating Tool</a>
-    <li><a href="../extensions/DragZooming.html">Drag Zooming Tool</a>
-    <li><a href="../extensions/PolylineLinking.html">Polyline Linking Tool</a>
-    <li><a href="../samples/sequenceDiagram.html">Messaging Tool (in Sequence Diagram)</a>
-    <li><a href="../samples/sequenceDiagram.html">Custom Linking Tool (in Grafcet Diagram)</a>
-  </ul>
+</p>
+<ul>
+  <li><a href="../extensions/ColumnResizing.html">Column Resizing Tool and Row Resizing Tool</a></li>
+  <li><a href="../extensions/CurvedLinkReshaping.html">Curved Link Reshaping Tool</a></li>
+  <li><a href="../extensions/DragCreating.html">Drag Creating Tool</a></li>
+  <li><a href="../extensions/DragZooming.html">Drag Zooming Tool</a></li>
+  <li><a href="../extensions/FreehandDrawing.html">Freehand Drawing Tool</a></li>
+  <li><a href="../extensions/GeometryReshaping.html">Geometry Reshaping Tool</a>
+    also used by the <a href="../extensions/PolygonDrawing.html">Polygon Drawing</a>,
+    and the <a href="../extensions/FreehandDrawing.html">Freehand Drawing</a> samples</li>
+  <li><a href="../extensions/GuidedDragging.html">Guided Dragging Tool</a></li>
+  <li><a href="../extensions/LinkLabelDragging.html">Link Label Dragging Tool</a></li>
+  <li><a href="../extensions/LinkLabelOnPathDragging.html">Link Label On Path Dragging Tool</a></li>
+  <li><a href="../extensions/LinkShifting.html">Link Shifting Tool</a></li>
+  <li><a href="../extensions/NodeLabelDragging.html">Node Label Dragging Tool</a></li>
+  <li><a href="../extensions/NonRealtimeDragging.html">Non-Realtime Dragging Tool</a></li>
+  <li><a href="../extensions/OrthogonalLinkReshaping.html">Orthogonal Link Reshaping Tool</a></li>
+  <li><a href="../extensions/OverviewResizing.html">Overview Resizing Tool</a></li>
+  <li><a href="../extensions/PolygonDrawing.html">Polygon Drawing Tool</a></li>
+  <li><a href="../extensions/PolylineLinking.html">Polyline Linking Tool</a></li>
+  <li><a href="../extensions/PortShifting.html">Port Shifting Tool</a></li>
+  <li><a href="../extensions/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a></li>
+  <li><a href="../extensions/Rescaling.html">Rescaling Tool</a></li>
+  <li><a href="../extensions/ResizeMultiple.html">Resize Multiple Tool</a></li>
+  <li><a href="../extensions/RotateMultiple.html">Rotate Multiple Tool</a></li>
+  <li><a href="../extensions/SectorReshaping.html">Sector Reshaping Tool</a></li>
+  <li><a href="../extensions/SnapLinkReshaping.html">Snap Link Reshaping Tool</a></li>
+  <li><a href="../extensions/SpotRotating.html">Spot Rotating Tool</a></li>
 
+  <li><a href="../samples/dragDropFields.html">Field Dragging Tool</a></li>
+  <li><a href="../samples/swimLanes.html">Lane Resizing Tool (in Swim Lanes)</a></li>
+  <li><a href="../samples/swimLanesVertical.html">Lane Resizing Tool (in Swim Lanes Vertical)</a></li>
+</ul>
 
       </div>
     </div>

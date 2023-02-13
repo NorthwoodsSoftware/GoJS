@@ -56,6 +56,9 @@
 
       myDiagram = $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
         {
+          "ModelChanged": function(e) {
+            if (e.isTransactionFinished) document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
+          },
           "undoManager.isEnabled": true  // enable undo & redo
         });
 
@@ -145,9 +148,6 @@
           {
             copiesArrays: true,
             copiesArrayObjects: true,
-            "Changed": function(e) {
-              if (e.isTransactionFinished) document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
-            },
             nodeDataArray:
               [
                 {

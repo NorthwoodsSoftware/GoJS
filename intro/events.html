@@ -400,16 +400,16 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
   }
 
   diagram.addDiagramListener("ObjectSingleClicked",
-      function(e) {
+      e => {
         var part = e.subject.part;
         if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.key);
       });
 
   diagram.addDiagramListener("BackgroundDoubleClicked",
-      function(e) { showMessage("Double-clicked at " + e.diagram.lastInput.documentPoint); });
+      e => showMessage("Double-clicked at " + e.diagram.lastInput.documentPoint));
 
   diagram.addDiagramListener("ClipboardPasted",
-      function(e) { showMessage("Pasted " + e.diagram.selection.count + " parts"); });
+      e => showMessage("Pasted " + e.diagram.selection.count + " parts"));
 
   var nodeDataArray = [
     { key: "Alpha" },
@@ -500,7 +500,7 @@ clicking on nodes and entering/leaving groups.
       $(go.Shape, "Ellipse", { fill: "white" }),
       $(go.TextBlock,
         new go.Binding("text", "key")),
-      { click: function(e, obj) { showMessage("Clicked on " + obj.part.data.key); } }
+      { click: (e, obj) => showMessage("Clicked on " + obj.part.data.key) }
     );
 
   diagram.groupTemplate =
@@ -515,11 +515,11 @@ clicking on nodes and entering/leaving groups.
             fill: "rgba(128,128,128,0.33)" }),
         $(go.Placeholder, { padding: 5 })
       ),
-      { mouseEnter: function(e, obj, prev) {  // change group's background brush
+      { mouseEnter: (e, obj, prev) => {  // change group's background brush
             var shape = obj.part.findObject("SHAPE");
             if (shape) shape.fill = "red";
           },
-        mouseLeave: function(e, obj, next) {  // restore to original brush
+        mouseLeave: (e, obj, next) => {  // restore to original brush
             var shape = obj.part.findObject("SHAPE");
             if (shape) shape.fill = "rgba(128,128,128,0.33)";
           } });
@@ -558,8 +558,8 @@ This example demonstrates both the "click" and the "selectionChanged" events:
       $(go.TextBlock,
         new go.Binding("text", "key")),
       {
-        click: function(e, obj) { showMessage("Clicked on " + obj.part.data.key); },
-        selectionChanged: function(part) {
+        click: (e, obj) => showMessage("Clicked on " + obj.part.data.key),
+        selectionChanged: part => {
             var shape = part.elt(0);
             shape.fill = part.isSelected ? "red" : "white";
           }

@@ -133,7 +133,7 @@
 
 
 
-<h1>SVG drawing context</h1>
+<h1>SVG Drawing Context</h1>
 <p>
 By default, <b>GoJS</b> renders to an HTML Canvas. This is more performant, especially with larger graphs, and is the right choice for most users.
 However, a few use-cases may require an SVG rendering context instead. Some examples:
@@ -144,7 +144,7 @@ However, a few use-cases may require an SVG rendering context instead. Some exam
   </li>
   <li>
     <strong>Accessibility:</strong> The SVG context creates DOM nodes with all currently-displayed text in the Diagram, which may be beneficial for screen readers.
-    However diagram authors may want to export SVG for this use-case instead, especially, if they intend screen readers to know about contents that are off-screen by default.</li>
+    However diagram authors may want to <a href="makingSVG.html">export SVG</a> for this use-case instead, especially, if they intend screen readers to know about contents that are off-screen by default.</li>
   <li>
     <strong>Selectability:</strong> When pointer events are turned off via CSS, users have the option of selecting text within GoJS TextBlocks.
   </li>
@@ -219,35 +219,35 @@ diagram.add(
   diagram.div.style.pointerEvents = 'none';
 
   diagram.nodeTemplate =
-  new go.Node("Auto")
-  .add(new go.Shape("RoundedRectangle", { strokeWidth: 0, fill: "white" })
-    .bind("fill", "color"))
-  .add(new go.TextBlock(
-    { margin: 8, font: "bold 14px sans-serif", stroke: '#333' })
-    .bind("text", "key"));
+    new go.Node("Auto")
+    .add(new go.Shape("RoundedRectangle", { strokeWidth: 0, fill: "white" })
+      .bind("fill", "color"))
+    .add(new go.TextBlock(
+      { margin: 8, font: "bold 14px sans-serif", stroke: '#333' })
+      .bind("text", "key"));
 
   diagram.model = new go.GraphLinksModel(
-  [
-  { key: "Alpha", color: "lightblue" },
-  { key: "Beta", color: "orange" },
-  { key: "Gamma", color: "lightgreen" },
-  { key: "Delta", color: "pink" }
-  ],
-  [
-  { from: "Alpha", to: "Beta" },
-  { from: "Alpha", to: "Gamma" },
-  { from: "Beta", to: "Beta" },
-  { from: "Gamma", to: "Delta" },
-  { from: "Delta", to: "Alpha" }
-  ]);
+    [
+    { key: "Alpha", color: "lightblue" },
+    { key: "Beta", color: "orange" },
+    { key: "Gamma", color: "lightgreen" },
+    { key: "Delta", color: "pink" }
+    ],
+    [
+    { from: "Alpha", to: "Beta" },
+    { from: "Alpha", to: "Gamma" },
+    { from: "Beta", to: "Beta" },
+    { from: "Gamma", to: "Delta" },
+    { from: "Delta", to: "Alpha" }
+    ]);
   document.getElementById('pointerToggle').addEventListener('click',
-  function(){
-    if (document.getElementById('pointerToggle').checked) {
-      diagram.div.style.pointerEvents = 'none';
-    } else {
-      diagram.div.style.pointerEvents = 'auto';
-    }
-  });
+    () => {
+      if (document.getElementById('pointerToggle').checked) {
+        diagram.div.style.pointerEvents = 'none';
+      } else {
+        diagram.div.style.pointerEvents = 'auto';
+      }
+    });
 </code></pre>
 <script>goCode("selectable", 200, 200)</script>
 <input type="checkbox" checked id="pointerToggle" /><label class="px-2" for="pointerToggle">pointer-events: none</label>

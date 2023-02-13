@@ -68,6 +68,9 @@
     const myDiagram =
       $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
+          "ModelChanged": function(e) {
+            if (e.isTransactionFinished) document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
+          },
           'undoManager.isEnabled': true // enable undo & redo
         });
 
@@ -145,12 +148,6 @@
       new go.GraphLinksModel( {
         copiesArrays: true,
         copiesArrayObjects: true,
-        'Changed': function (e) {
-          if (e.isTransactionFinished) {
-            const elt = document.getElementById('mySavedModel');
-            if (elt !== null) elt.textContent = myDiagram.model.toJson();
-          }
-        },
         nodeDataArray: [
             {
               key: 'Alpha', color: 'lightblue', choice1: true, choice2: true, choice3: true, choice4: true, choice5: true, choice6: true, choice7: true,

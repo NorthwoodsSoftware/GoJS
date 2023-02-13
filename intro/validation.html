@@ -421,10 +421,10 @@ You will see that the only permitted link destinations are nodes of the same col
     $(go.Link,
       { curve: go.Link.Bezier, relinkableFrom: true, relinkableTo: true },
       $(go.Shape, { strokeWidth: 2 },
-        new go.Binding("stroke", "fromNode", function(n) { return n.data.color; })
+        new go.Binding("stroke", "fromNode", n => n.data.color)
             .ofObject()),
       $(go.Shape, { toArrow: "Standard", stroke: null},
-        new go.Binding("fill", "fromNode", function(n) { return n.data.color; })
+        new go.Binding("fill", "fromNode", n => n.data.color)
             .ofObject())
     );
 
@@ -476,7 +476,7 @@ To emphasize the color restriction, links have their colors bound to the "from" 
 <pre class="lang-js"><code>
   $(go.Node, . . .,
     {
-      linkValidation: function(fromnode, fromport, tonode, toport) {
+      linkValidation: (fromnode, fromport, tonode, toport) => {
         // total number of links connecting with a port is limited to 1:
         return fromnode.findLinksConnected(fromport.portId).count +
                tonode.findLinksConnected(toport.portId).count < 1;
@@ -489,7 +489,7 @@ To emphasize the color restriction, links have their colors bound to the "from" 
 <pre class="lang-js"><code>
   $(go.Node, . . .,
     {
-      linkValidation: function(fromnode, fromport, tonode, toport) {
+      linkValidation: (fromnode, fromport, tonode, toport) => {
         // total number of links connecting with all ports of a node is limited to 1:
         return fromnode.linksConnected.count + tonode.linksConnected.count < 1;
       }
@@ -533,7 +533,7 @@ You can verify that by moving the group to see if the textual node moves too.
         // don't need to define handlers on member Nodes and Links
         handlesDragDropForMembers: true,
         // support highlighting of Groups when allowing a drop to add a member
-        mouseDragEnter: function(e, grp, prev) {
+        mouseDragEnter: (e, grp, prev) => {
           // this will call samePrefix; it is true if any node has the same key prefix
           if (grp.canAddMembers(grp.diagram.selection)) {
             var shape = grp.findObject("SHAPE");
@@ -543,13 +543,13 @@ You can verify that by moving the group to see if the textual node moves too.
             grp.diagram.currentCursor = "not-allowed";
           }
         },
-        mouseDragLeave: function(e, grp, next) {
+        mouseDragLeave: (e, grp, next) => {
           var shape = grp.findObject("SHAPE");
           if (shape) shape.fill = "rgba(128,128,128,0.33)";
           grp.diagram.currentCursor = "";
         },
         // actually add permitted new members when a drop occurs
-        mouseDrop: function(e, grp) {
+        mouseDrop: (e, grp) => {
           if (grp.canAddMembers(grp.diagram.selection)) {
             // this will only add nodes with the same key prefix
             grp.addMembers(grp.diagram.selection, true);
@@ -569,7 +569,7 @@ You can verify that by moving the group to see if the textual node moves too.
           fill: "rgba(128,128,128,0.33)" })
     );
 
-  diagram.mouseDrop = function(e) {
+  diagram.mouseDrop = e => {
     // dropping in diagram background removes nodes from any group
     diagram.commandHandler.addTopLevelParts(diagram.selection, true);
   };
@@ -675,10 +675,8 @@ diagram.nodeTemplate =
         margin: 8,
         editable: true,
         isMultiline: false,
-        textValidation: function(tb, olds, news) {
-          return news.indexOf("W") >= 0;  // new string must contain a "W"
-        },
-        errorFunction: function(tool, olds, news) {
+        textValidation: (tb, olds, news) => news.indexOf("W") >= 0,  // new string must contain a "W"
+        errorFunction: (tool, olds, news) => {
           // create and show tooltip about why editing failed for this textblock
           var mgr = tool.diagram.toolManager;
           mgr.hideToolTip();  // hide any currently showing tooltip
@@ -696,7 +694,7 @@ diagram.nodeTemplate =
                         "'\nbecause the new string does not contain the capital letter 'W'."));
           mgr.showToolTip(tt, node);
         },
-        textEdited: function(tb, olds, news) {
+        textEdited: (tb, olds, news) => {
           var mgr = tb.diagram.toolManager;
           mgr.hideToolTip();
         }

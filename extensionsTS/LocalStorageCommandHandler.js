@@ -151,7 +151,7 @@ var __extends = (this && this.__extends) || (function () {
             }
             catch (ex) {
                 // fallback implementation
-                return go.CommandHandler.prototype.canPasteSelection(pos);
+                return _super.prototype.canPasteSelection.call(this, pos);
             }
         };
         return LocalStorageCommandHandler;

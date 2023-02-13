@@ -341,7 +341,7 @@ export class DrawCommandHandler extends go.CommandHandler {
         // assign each selected Part.zOrder to the computed value for each Layer
         diagram.selection.each(function (part) {
             const z = layers.get(part.layer) || 0;
-            DrawCommandHandler._assignZOrder(part,
+            DrawCommandHandler._assignZOrder(part, 
             // make sure a group's nested nodes are also behind everything else
             z - 1 - DrawCommandHandler._findGroupDepth(part));
         });
@@ -479,7 +479,7 @@ export class DrawCommandHandler extends go.CommandHandler {
         }
     }
     /**
-     * Finds the nearest Part in the specified direction, based on their center points.
+     * Finds the nearest selectable Part in the specified direction, based on their center points.
      * if it doesn't find anything, it just returns the current Part.
      * @param {number} dir the direction, in degrees
      * @return {Part} the closest Part found in the given direction
@@ -496,6 +496,8 @@ export class DrawCommandHandler extends go.CommandHandler {
             const nextPart = allParts[i];
             if (nextPart === originalPart)
                 continue; // skips over currently selected part
+            if (!nextPart.canSelect())
+                continue;
             const nextPoint = nextPart.actualBounds.center;
             const angle = originalPoint.directionPoint(nextPoint);
             const anglediff = this._angleCloseness(angle, dir);

@@ -344,7 +344,7 @@ To better understand the relationships between objects and transactions in memor
 
   diagram.scale = 0.8;
 
-  var model = new go.GraphLinksModel();
+  const model = new go.GraphLinksModel();
   model.linkFromPortIdProperty = "fPID";
   model.linkToPortIdProperty = "tPID"
 
@@ -403,15 +403,15 @@ A typical case for using transactions is when some command makes a change to the
 </p>
 <pre class="lang-js" id="transaction"><code>
   // define a function named "addChild" that is invoked by a button click
-  addChild = function() {
-    var selnode = diagram.selection.first();
+  addChild = () => {
+    const selnode = diagram.selection.first();
     if (!(selnode instanceof go.Node)) return;
-    diagram.commit(function(d) {
+    diagram.commit(d => {
       // have the Model add a new node data
-      var newnode = { key: "N" };
+      const newnode = { key: "N" };
       d.model.addNodeData(newnode);  // this makes sure the key is unique
       // and then add a link data connecting the original node with the new one
-      var newlink = { from: selnode.data.key, to: newnode.key };
+      const newlink = { from: selnode.data.key, to: newnode.key };
       // add the new link to the model
       d.model.addLinkData(newlink);
     }, "add node and link");
@@ -426,11 +426,11 @@ A typical case for using transactions is when some command makes a change to the
 
   diagram.layout = $(go.TreeLayout);
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: "Alpha" },
     { key: "Beta" }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: "Alpha", to: "Beta" }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -461,16 +461,16 @@ corresponding to the data.
         new go.Binding("text", "someValue"))  // bind to the "someValue" data property
     );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: "Alpha", someValue: 1 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray);
   diagram.model.undoManager.isEnabled = true;
 
   // define a function named "incrementData" callable by onclick
-  incrementData = function() {
-    diagram.model.commit(function(m) {
-      var data = m.nodeDataArray[0];  // get the first node data
+  incrementData = () => {
+    diagram.model.commit(m => {
+      const data = m.nodeDataArray[0];  // get the first node data
       m.set(data, "someValue", data.someValue + 1);
     }, "increment");
   };

@@ -378,7 +378,7 @@ var __extends = (this && this.__extends) || (function () {
             // assign each selected Part.zOrder to the computed value for each Layer
             diagram.selection.each(function (part) {
                 var z = layers.get(part.layer) || 0;
-                DrawCommandHandler._assignZOrder(part,
+                DrawCommandHandler._assignZOrder(part, 
                 // make sure a group's nested nodes are also behind everything else
                 z - 1 - DrawCommandHandler._findGroupDepth(part));
             });
@@ -516,7 +516,7 @@ var __extends = (this && this.__extends) || (function () {
             }
         };
         /**
-         * Finds the nearest Part in the specified direction, based on their center points.
+         * Finds the nearest selectable Part in the specified direction, based on their center points.
          * if it doesn't find anything, it just returns the current Part.
          * @param {number} dir the direction, in degrees
          * @return {Part} the closest Part found in the given direction
@@ -533,6 +533,8 @@ var __extends = (this && this.__extends) || (function () {
                 var nextPart = allParts[i];
                 if (nextPart === originalPart)
                     continue; // skips over currently selected part
+                if (!nextPart.canSelect())
+                    continue;
                 var nextPoint = nextPart.actualBounds.center;
                 var angle = originalPoint.directionPoint(nextPoint);
                 var anglediff = this._angleCloseness(angle, dir);

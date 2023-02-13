@@ -34,9 +34,9 @@
         // define a simple Node template
         myDiagram.nodeTemplate =
             $(go.Node, 'Auto', // the Shape will go around the TextBlock
-            { resizable: true }, new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
+            { resizable: true }, new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify), 
             // save the modified size in the model node data
-            new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 },
+            new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, 
             // Shape.fill is bound to Node.data.color
             new go.Binding('fill', 'color')), $(go.TextBlock, { margin: 8 }, // some room around the text
             // TextBlock.text is bound to Node.data.key
