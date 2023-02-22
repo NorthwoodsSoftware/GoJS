@@ -1,7 +1,7 @@
 window.byId = (id) => {
   return document.getElementById(id);
 };
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   var p1 = document.createElement('p');
   window.dirName = location.pathname.split('/').slice(-2);
   window.samplePath = dirName.join('/'); // dir/name.html
@@ -141,7 +141,7 @@ function goViewSource() {
   elem.href = '../assets/css/prism.css';
   document.head.appendChild(elem);
   var prism = document.createElement('script');
-  prism.onload = function () {
+  prism.onload = () => {
     var script = byId('code');
     if (!script) return;
     var sp1 = document.createElement('pre');

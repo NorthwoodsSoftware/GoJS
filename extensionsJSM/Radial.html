@@ -94,11 +94,11 @@
         if (root === null)
           return;
         const circles = new go.Set();
-        gridlayer.parts.each(function(circle) {
+        gridlayer.parts.each(circle => {
           if (circle.name === 'CIRCLE')
             circles.add(circle);
         });
-        circles.each(function(circle) {
+        circles.each(circle => {
           diagram.remove(circle);
         });
         // add circles centered at the root
@@ -124,8 +124,8 @@
     // shows when hovering over a node
     const commonToolTip = $('ToolTip', $(go.Panel, 'Vertical', { margin: 3 }, $(go.TextBlock, // bound to node data
       { margin: 4, font: 'bold 12pt sans-serif' }, new go.Binding('text')), $(go.TextBlock, // bound to node data
-        new go.Binding('text', 'color', function(c) { return 'Color: ' + c; })), $(go.TextBlock, // bound to Adornment because of call to Binding.ofObject
-          new go.Binding('text', '', function(ad) { return 'Connections: ' + ad.adornedPart.linksConnected.count; }).ofObject())) // end Vertical Panel
+        new go.Binding('text', 'color', c => 'Color: ' + c)), $(go.TextBlock, // bound to Adornment because of call to Binding.ofObject
+          new go.Binding('text', '', ad => 'Connections: ' + ad.adornedPart.linksConnected.count).ofObject())) // end Vertical Panel
     ); // end Adornment
 
     // define the Node template
@@ -216,7 +216,7 @@
       if (diagram === null)
         return;
       // all other nodes should be visible and use the default category
-      diagram.nodes.each(function(n) {
+      diagram.nodes.each(n => {
         n.visible = true;
         if (n !== root)
           n.category = '';

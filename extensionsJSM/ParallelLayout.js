@@ -164,7 +164,7 @@ export class ParallelLayout extends go.TreeLayout {
         // connect to it from the splitNode vertex with a dummy edge
         if (this.splitNode) {
             var splitv = net.findVertex(this.splitNode);
-            net.vertexes.each(function (v) {
+            net.vertexes.each(v => {
                 if (splitv === null || v === splitv)
                     return;
                 if (v.sourceEdges.count === 0) {

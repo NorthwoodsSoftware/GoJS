@@ -96,16 +96,17 @@
                 // Uncommenting this filter will force all of the nodes and links to go into the main subset and thus
                 // will cause all those nodes to be arranged by this.arrangingLayout, here a CircularLayout,
                 // rather than by the this.sideLayout, which by default is a GridLayout.
-                //filter: function(part) { return true; },
+                //filter: part => true,
 
                 // additional custom properties for use by preparePrimaryLayout
                 _colors: ["red", "orange", "yellow", "lime", "cyan"],  // possible node colors
                 _colorIndex: 0,  // cycle through the given colors
 
+                // Color all of the nodes in each subgraph
                 // called for each separate connected subgraph
-                preparePrimaryLayout: function(lay, coll) {  // color all of the nodes in each subgraph
+                preparePrimaryLayout: function(lay, coll) {  // method override requires function, not =>
                   var root = null;  // find the root node in this subgraph
-                  coll.each(function(node) {
+                  coll.each(node => {
                     if (node instanceof go.Node && node.findLinksInto().count === 0) root = node;
                   });
                   var color = "white";  // determine the color for the nodes in this subgraph
@@ -118,7 +119,7 @@
                       color = this._colors[this._colorIndex++ % this._colors.length];
                     }
                   }
-                  coll.each(function(node) {  // assign the fill color for all of the nodes in the subgraph
+                  coll.each(node => {  // assign the fill color for all of the nodes in the subgraph
                     if (node instanceof go.Node) {
                       var shape = node.findObject("SHAPE");
                       if (shape !== null) shape.fill = color;
@@ -126,7 +127,8 @@
                   });
                 },
 
-                prepareSideLayout: function(lay, coll, b) {  // called once for the sideLayout
+                // called once for the sideLayout
+                prepareSideLayout: function(lay, coll, b) {  // method override requires function, not =>
                   // adjust how wide the GridLayout lays out
                   lay.wrappingWidth = Math.max(b.width, this.diagram.viewportBounds.width);
                 }
@@ -138,7 +140,7 @@
         $(go.Shape, { name: "SHAPE", figure: "RoundedRectangle", fill: "lightgray" },
           new go.Binding("fill", "color")),
         $(go.TextBlock, { margin: 2, textAlign: "center" },
-          new go.Binding("text", "key", function(s) {
+          new go.Binding("text", "key", s => {
             // insert newlines between lowercase followed by uppercase characters
             var arr = s.split("");
             for (let i = 1; i < arr.length-1; i++) {

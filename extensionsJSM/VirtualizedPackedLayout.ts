@@ -220,7 +220,7 @@ export class VirtualizedPackedLayout extends go.Layout {
    *   $(VirtualizedPackedLayout,
    *     {
    *       sortMode: VirtualizedPackedLayout.Area,
-   *       comparer: function(na, nb) {
+   *       comparer: (na, nb) => {
    *         var na = na.data;
    *         var nb = nb.data;
    *         if (da.someProperty < db.someProperty) return -1;
@@ -553,7 +553,7 @@ export class VirtualizedPackedLayout extends go.Layout {
     // push all nodes in parts iterator to an array for easy sorting
     let averageSize = 0;
     let maxSize = 0;
-    nodes.forEach(function(node) {
+    nodes.forEach(node => {
       averageSize += node.bounds.width + node.bounds.height;
       if (node.bounds.width > maxSize) {
         maxSize = node.bounds.width;

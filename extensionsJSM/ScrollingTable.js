@@ -68,17 +68,17 @@ go.GraphObject.defineBuilder('AutoRepeatButton', args => {
     const btndown = button.actionDown;
     const btnup = button.actionUp;
     const btncancel = button.actionCancel;
-    button.actionDown = function (e, btn) {
+    button.actionDown = (e, btn) => {
         delayClicking(e, btn);
         if (btndown)
             btndown(e, btn);
     };
-    button.actionUp = function (e, btn) {
+    button.actionUp = (e, btn) => {
         endClicking(e, btn);
         if (btnup)
             btnup(e, btn);
     };
-    button.actionCancel = function (e, btn) {
+    button.actionCancel = (e, btn) => {
         endClicking(e, btn);
         if (btncancel)
             btncancel(e, btn);
@@ -276,6 +276,6 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
     }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }), 
     // the scroll down button
     $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0,
-        click: function (e, obj) { e.handled = true; incrTableIndex(obj, +1); }
+        click: (e, obj) => { e.handled = true; incrTableIndex(obj, +1); }
     }, $(go.Shape, "TriangleDown", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 2, sizing: go.RowColumnDefinition.None })));
 });

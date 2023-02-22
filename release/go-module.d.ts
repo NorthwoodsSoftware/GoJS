@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.2
+ * Type definitions for GoJS v2.3.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -311,7 +311,7 @@ export interface IContext {
  * ```
  * Or:
  * ```js
- *   aList.each(function(val) {
+ *   aList.each(val => {
  *     console.log(val);
  *   });
  * ```
@@ -661,7 +661,7 @@ export class List<T> implements Iterable<T> {
  * ```
  * Or:
  * ```js
- *   aSet.each(function(val) {
+ *   aSet.each(val => {
  *       . . . val . . .
  *     });
  * ```
@@ -988,7 +988,7 @@ export interface IMapIterator<K, T> {
  * ```
  * Or:
  * ```js
- *   aMap.each(function(kvp) {
+ *   aMap.each(kvp => {
  *     console.log(kvp.key + ": " + kvp.value);
  *   });
  * ```
@@ -9062,7 +9062,7 @@ export class AnimationManager {
      *
      * ```js
      * myDiagram.animationManager.initialAnimationStyle = go.AnimationManager.None;
-     * myDiagram.addDiagramListener('InitialAnimationStarting', function(e) {
+     * myDiagram.addDiagramListener('InitialAnimationStarting', e => {
      *   var animation = e.subject.defaultAnimation;
      *   animation.easing = go.Animation.EaseOutExpo;
      *   animation.duration = 900;
@@ -9089,7 +9089,7 @@ export class AnimationManager {
      *
      * ```js
      * // This presumes the object to be animated is a Shape
-     * go.AnimationManager.defineAnimationEffect('fill', function(obj, startValue, endValue, easing, currentTime, duration, animation) {
+     * go.AnimationManager.defineAnimationEffect('fill', (obj, startValue, endValue, easing, currentTime, duration, animation) => {
      *   var hueValue = easing(currentTime, startValue, endValue - startValue, duration);
      *   obj.fill = 'hsl(' + hueValue + ', 100%, 80%)';
      * });
@@ -10137,7 +10137,7 @@ export class Diagram {
      *         { angle: 90, sorting: go.TreeLayout.SortingAscending }),
      *       "undoManager.isEnabled": true,  // enable undo & redo
      *       // a Changed listener on the Diagram.model
-     *       "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     *       "ModelChanged": e => { if (e.isTransactionFinished) saveModel(); }
      *     });
      * ```
      * @param {Element|string=} div A reference to a DIV HTML element or its ID as a string.
@@ -10150,7 +10150,7 @@ export class Diagram {
      * {
      *   allowZoom: false,
      *   "animationManager.isEnabled": false,
-     *   "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     *   "ModelChanged": e => { if (e.isTransactionFinished) saveModel(); }
      * }
      * ```
      */
@@ -10164,7 +10164,7 @@ export class Diagram {
      * {
      *   allowZoom: false,
      *   "animationManager.isEnabled": false,
-     *   "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(); }
+     *   "ModelChanged": e => { if (e.isTransactionFinished) saveModel(); }
      * }
      * ```
      */
@@ -10388,9 +10388,9 @@ export class Diagram {
      * myDiagram.findObjectAt(
      *   myDiagram.lastInput.documentPoint,
      *   // Navigation function
-     *   function(x) { return x.part; },
+     *   x => x.part,
      *   // Because of the navigation function, x will always be a Part.
-     *   function(x) { return x.canSelect(); }
+     *   x => x.canSelect()
      * );
      * ```
      * @param {Point} p A Point in document coordinates.
@@ -10434,7 +10434,7 @@ export class Diagram {
      * // Returns the Nodes that are at a given point, overlapping each other
      * myDiagram.findObjectsAt(somePoint,
      *   // Navigation function -- only return Nodes
-     *   function(x) { var p = x.part; return (p instanceof go.Node) ? p : null; }
+     *   x => { const p = x.part; return (p instanceof go.Node) ? p : null; }
      * );
      * ```
      * @param {Point} p A Point in document coordinates.
@@ -10485,9 +10485,9 @@ export class Diagram {
      * // Returns the Links that intersect a given rectangle and have a certain data property
      * myDiagram.findObjectsIn(someRect,
      *   // Navigation function -- only return Links
-     *   function(x) { var p = x.part; return (p instanceof go.Link) ? p : null; },
+     *   x => { const p = x.part; return (p instanceof go.Link) ? p : null; },
      *   // Predicate that always receives a Link, due to above navigation function
-     *   function(link) { return link.data.someProp > 17; },
+     *   link => link.data.someProp > 17,
      *   // the links may only partly overlap the given rectangle
      *   true
      * );
@@ -10545,9 +10545,9 @@ export class Diagram {
      *   // The circular area is centered at somePoint and has radius 100
      *   100,
      *   // Navigation function -- only return Nodes
-     *   function(x) { var p = x.part; return (p instanceof go.Node) ? p : null; },
+     *   x => { const p = x.part; return (p instanceof go.Node) ? p : null; },
      *   // Predicate that always receives a Node, due to above navigation function
-     *   function(node) { return node.data.someProp > 17; },
+     *   node => node.data.someProp > 17,
      *   // the nodes may only partly overlap the given circular area
      *   true
      * );
@@ -10680,7 +10680,7 @@ export class Diagram {
      *   allowDelete: false,
      *   "animationManager.isEnabled": false,  // turn off automatic animations
      *   // specify a group membership validation predicate
-     *   "commandHandler.memberValidation": function(group, part) { return ...; },
+     *   "commandHandler.memberValidation": (group, part) => ...,
      *   "commandHandler.copiesTree": true,  // for the copy command
      *   // mouse wheel zooms instead of scrolls
      *   "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
@@ -10688,7 +10688,7 @@ export class Diagram {
      *   "draggingTool.isGridSnapEnabled": true,
      *   layout: $(go.TreeLayout),
      *   // add a DiagramEvent listener
-     *   "ExternalObjectsDropped": function(e) { e.subject.each(function(part) { ... }); }
+     *   "ExternalObjectsDropped": e => { e.subject.each(part => { ... }); }
      * });
      * ```
      * @param {Object} props a plain JavaScript object with various property values to be set on this Diagram or on a part of this Diagram.
@@ -10716,7 +10716,7 @@ export class Diagram {
      *   allowDelete: false,
      *   "animationManager.isEnabled": false,  // turn off automatic animations
      *   // specify a group membership validation predicate
-     *   "commandHandler.memberValidation": function(group, part) { return ...; },
+     *   "commandHandler.memberValidation": (group, part) => return ...,
      *   "commandHandler.copiesTree": true,  // for the copy command
      *   // mouse wheel zooms instead of scrolls
      *   "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
@@ -10724,7 +10724,7 @@ export class Diagram {
      *   "draggingTool.isGridSnapEnabled": true,
      *   layout: $(go.TreeLayout),
      *   // add a DiagramEvent listener
-     *   "ExternalObjectsDropped": function(e) { e.subject.each(function(part) { ... }); }
+     *   "ExternalObjectsDropped": e => e.subject.each(part => { ... })
      * });
      * ```
      * @param {Object} props a plain JavaScript object with various property values to be set on this Diagram or on a part of this Diagram.
@@ -10895,7 +10895,7 @@ export class Diagram {
      * ```js
      * new go.Diagram("myDiagramDiv",
      *    {
-     *        "ModelChanged": function(e) { if (e.isTransactionFinished) saveModel(e.model); }
+     *        "ModelChanged": e => { if (e.isTransactionFinished) saveModel(e.model); }
      *        // ... other Diagram properties
      *    })
      * ```
@@ -10907,7 +10907,7 @@ export class Diagram {
      *    {
      *        // ... Diagram properties
      *    })
-     *    .addModelChangedListener(function(e) { if (e.isTransactionFinished) saveModel(e.model); })
+     *    .addModelChangedListener(e => { if (e.isTransactionFinished) saveModel(e.model); })
      * ```
      *
      * Do not add or remove Changed listeners during the execution of a Changed listener.
@@ -11697,7 +11697,7 @@ export class Diagram {
      * For example, if you want to prevent the user from dropping Parts into the background of the diagram,
      * and want to provide feedback about that during a drag:
      * ```js
-     *   myDiagram.mouseDragOver = function(e) {
+     *   myDiagram.mouseDragOver = e => {
      *     myDiagram.currentCursor = "no-drop";
      *   }
      * ```
@@ -11718,7 +11718,7 @@ export class Diagram {
      *
      * For example, if you want to prevent the user from dropping Parts into the background of the diagram:
      * ```js
-     *   myDiagram.mouseDrop = function(e) {
+     *   myDiagram.mouseDrop = e => {
      *     myDiagram.currentTool.doCancel();
      *   }
      * ```
@@ -11809,16 +11809,12 @@ export class Diagram {
      *    $("ContextMenu",
      *      $("ContextMenuButton",
      *        $(go.TextBlock, "Undo"),
-     *        { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-     *        new go.Binding("visible", "", function(o) {
-     *            return o.diagram.commandHandler.canUndo();
-     *          }).ofObject()),
+     *        { click: (e, obj) => e.diagram.commandHandler.undo() },
+     *        new go.Binding("visible", "", o => o.diagram.commandHandler.canUndo()).ofObject()),
      *      $("ContextMenuButton",
      *        $(go.TextBlock, "Redo"),
-     *        { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-     *        new go.Binding("visible", "", function(o) {
-     *            return o.diagram.commandHandler.canRedo();
-     *          }).ofObject())
+     *        { click: (e, obj) => e.diagram.commandHandler.redo() },
+     *        new go.Binding("visible", "", o => o.diagram.commandHandler.canRedo()).ofObject())
      *    );
      * ```
      * @see GraphObject#contextMenu
@@ -12089,7 +12085,7 @@ export class Diagram {
      * Search for Nodes or Groups by matching the Node data with example data holding values, RegExps, or predicates.
      *
      * For example, calling this method with an argument object:
-     * `{ sex: "M", name: /^Alex/i, age: function(n) { return n >= 18; } }`
+     * `{ sex: "M", name: /^Alex/i, age: n => n >= 18 }`
      * will return an iterator of Nodes whose `Node.data` is a JavaScript object whose:
      *   - sex is "M" (a case-sensitive string comparison), and
      *   - name starts with the string "Alex" (using a case-insensitive match), and
@@ -12772,11 +12768,13 @@ export class Diagram {
      *     As the SVG elements are created representing each graph object, this function is called on them,
      *     allowing you to modify the SVG as it is being built, to assign stylesheets, IDs, etc. Example:
      *     ```js
-     *     elementFinished: function(graphObject, SVGElement) {
+     *     elementFinished: (graphObject, SVGElement) => {
      *       // set something on every SVG element that represents a GoJS TextBlock
      *       if (graphObject instanceof go.TextBlock) SVGElement.setAttribute(...);
      *     }
      *     ```
+     *
+     * Note that the resulting SVG DOM is not interactive -- it is a snapshot of this diagram at this time.
      *
      * At the current time methods such as Diagram#makeImage,
      * Diagram#makeImageData and Diagram#makeSvg do not work on Overviews.
@@ -14285,8 +14283,8 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *     $(go.Shape,
  *       { strokeWidth: 2, stroke: "gray" },  // default color is "gray"
  *       { // here E is the InputEvent and OBJ is this Shape
- *         mouseEnter: function(e, obj) { obj.strokeWidth = 4; obj.stroke = "dodgerblue"; },
- *         mouseLeave: function(e, obj) { obj.strokeWidth = 2; obj.stroke = "gray"; }
+ *         mouseEnter: (e, obj) => { obj.strokeWidth = 4; obj.stroke = "dodgerblue"; },
+ *         mouseLeave: (e, obj) => { obj.strokeWidth = 2; obj.stroke = "gray"; }
  *       }));
  * ```
  *
@@ -14304,7 +14302,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *       { name: "TB", margin: 3 },
  *       new go.Binding("text", "key")),
  *     { // second arg will be this GraphObject, which in this case is the Node itself:
- *       click: function(e, node) {
+ *       click: (e, node) => {
  *         window.open("https://en.wikipedia.org/Wiki/" + node.data.key);
  *       }
  *     });
@@ -15602,7 +15600,7 @@ export abstract class GraphObject {
      *   $(go.Node, . . .,
      *     {
      *       doubleClick:  // here the second argument is this object, which is this Node
-     *         function(e, node) { window.open("../api/symbols/" + node.data.key + ".html"); }
+     *         (e, node) => { window.open("../api/symbols/" + node.data.key + ".html"); }
      *     },
      *     . . .
      *     );
@@ -15677,7 +15675,7 @@ export abstract class GraphObject {
      *       $("Button",
      *         $(go.TextBlock, "Command 1"),
      *         {
-     *           click: function(e, obj) {
+     *           click: (e, obj) => {
      *             var node = obj.part.adornedPart;
      *             alert("Command 1 on " + node.data.text);
      *             node.removeAdornment("ContextMenuOver");
@@ -15686,7 +15684,7 @@ export abstract class GraphObject {
      *       $("Button",
      *         $(go.TextBlock, "Command 2"),
      *         {
-     *           click: function(e, obj) {
+     *           click: (e, obj) => {
      *             var node = obj.part.adornedPart;
      *             alert("Command 2 on " + node.data.text);
      *             node.removeAdornment("ContextMenuOver");
@@ -15700,9 +15698,9 @@ export abstract class GraphObject {
      *   $(go.Node,
      *     . . .
      *     {
-     *       mouseEnter: function(e, node) {
+     *       mouseEnter: (e, node) => {
      *         nodeContextMenu.adornedObject = node;
-     *         nodeContextMenu.mouseLeave = function(ev, cm) {
+     *         nodeContextMenu.mouseLeave = (ev, cm) => {
      *           node.removeAdornment("ContextMenuOver");
      *         }
      *         node.addAdornment("ContextMenuOver", nodeContextMenu);
@@ -15747,8 +15745,8 @@ export abstract class GraphObject {
      *     {
      *       . . .
      *       // handle mouse enter/leave events to show/hide the ports
-     *       mouseEnter: function(e, obj) { showPorts(obj.part, true); },
-     *       mouseLeave: function(e, obj) { showPorts(obj.part, false); }
+     *       mouseEnter: (e, obj) => showPorts(obj.part, true),
+     *       mouseLeave: (e, obj) => showPorts(obj.part, false)
      *       . . .
      *     });
      * ```
@@ -16016,7 +16014,7 @@ export abstract class GraphObject {
      *         $("ToolTip",
      *           $(go.Panel, "Vertical",
      *             $(go.Picture,
-     *               new go.Binding("source", "src", function(s) { return "images/" + s + ".png"; })),
+     *               new go.Binding("source", "src", s => return "images/" + s + ".png")),
      *             $(go.TextBlock, { margin: 3 },
      *               new go.Binding("text", "key"))))
      *     });
@@ -16066,16 +16064,16 @@ export abstract class GraphObject {
      *  $("ContextMenu",
      *     $("ContextMenuButton",
      *       $(go.TextBlock, "Add top port"),
-     *       { click: function(e, obj) { addPort("top"); } }),
+     *       { click: (e, obj) => addPort("top") }),
      *     $("ContextMenuButton",
      *       $(go.TextBlock, "Add left port"),
-     *       { click: function(e, obj) { addPort("left"); } }),
+     *       { click: (e, obj) => addPort("left") }),
      *     $("ContextMenuButton",
      *       $(go.TextBlock, "Add right port"),
-     *       { click: function(e, obj) { addPort("right"); } }),
+     *       { click: (e, obj) => addPort("right") }),
      *     $("ContextMenuButton",
      *       $(go.TextBlock, "Add bottom port"),
-     *       { click: function(e, obj) { addPort("bottom"); } }));
+     *       { click: (e, obj) => addPort("bottom") }));
      * ```
      * and is used in the node template:
      * ```js
@@ -16124,7 +16122,7 @@ export abstract class GraphObject {
      *   .bind("fill", "color")
      *   // Shape.stroke is red when Node.isHighlighted is true, black otherwise
      *   .bind(new go.Binding("stroke", "isHighlighted",
-     *                 function(h) { return h ? "red" : "black"; }).ofObject())
+     *                 h => return h ? "red" : "black").ofObject())
      * ```
      *
      * If you need to call Binding#makeTwoWay or Binding#ofObject, you will have to use a `new go.Binding()` as
@@ -17473,6 +17471,17 @@ export class Panel extends GraphObject {
      */
     removeColumnDefinition(idx: number): void;
     /**
+     * For Panel.Table|Table Panels: Sets the given RowColumnDefinition.
+     * If the row or column definition does not exist on the Panel, this will create it.
+     * If it already exists on the Panel, this will copy the properties of the given RowColumnDefinition
+     * onto that RowColumnDefinition.
+     * @since 2.3
+     * @expose
+     * @param {RowColumnDefinition} rowOrColumnDef the non-negative zero-based integer column index.
+     * @return {Panel} this Panel
+     */
+    addRowColumnDefinition(rowOrColumnDef: RowColumnDefinition): this;
+    /**
      * For Panel.Table|Table Panels: Gets or sets how this Panel's rows deal with extra space.
      * Valid values are RowColumnDefinition.ProportionalExtra and RowColumnDefinition.None.
      * The default is RowColumnDefinition.ProportionalExtra.
@@ -17603,7 +17612,7 @@ export class Panel extends GraphObject {
      *          // set Panel.background to a color based on the Panel.itemIndex
      *          new go.Binding("background", "itemIndex",
      *                         // using this conversion function
-     *                         function(i) { return (i%2 === 0) ? "lightgreen" : "lightyellow"; })
+     *                         i => return (i%2 === 0) ? "lightgreen" : "lightyellow")
      *                   // bound to this Panel itself, not to the Panel.data item
      *                   .ofObject(),
      *          $(go.TextBlock,  // a trivial item template, just showing some text
@@ -17905,11 +17914,19 @@ export class Panel extends GraphObject {
  */
 export class RowColumnDefinition {
     /**
-     * You should not use this constructor, because calls to
-     * Panel#getRowDefinition or Panel#getColumnDefinition
+     * You can use this constructor with Panel#addRowColumnDefinition to add
+     * RowColumnDefinitions to Table Panels.
+     *
+     * Calls to Panel#getRowDefinition or Panel#getColumnDefinition
      * will automatically create and remember a RowColumnDefinition for you.
+     * @param {Partial<RowColumnDefinition | { row?: number, column?: number }>=} init Optional
+     * initialization properties. These can include `row` or `column` index numbers as a convenience
+     * instead of setting #isRow and #index.
      */
-    constructor();
+    constructor(init?: Partial<RowColumnDefinition & {
+        row?: number;
+        column?: number;
+    }>);
     /**
      * The default #sizing, which resolves to RowColumnDefinition.None or else
      * the Table Panel's rowSizing and columnSizing if present.
@@ -19410,6 +19427,13 @@ export class Picture extends GraphObject {
      * Attempts to reload a Picture#source image. This can be useful if the content on a server has changed, or was missing before.
      * If a new image is loaded, this Picture may remeasure and/or redraw.
      *
+     * Because of browsers caching assets, you may additionally need to force a re-fetch of the Picture's source URL
+     * with a `fetch` call such as:
+     *
+     * ```js
+     * fetch(thisPicture.source, { cache: 'reload', mode: 'no-cors' });
+     * ```
+     *
      * This should normally be called within a transaction.
      * @since 2.1
      */
@@ -19432,7 +19456,7 @@ export class Picture extends GraphObject {
      * ```js
      *    $(go.Picture,
      *      { width: 64, height: 64 },
-     *      { sourceCrossOrigin: function(pict) { return "use-credentials"; } },
+     *      { sourceCrossOrigin: pict => "use-credentials" },
      *      new go.Binding("source", "path"))
      * ```
      * @since 1.5
@@ -20402,7 +20426,7 @@ export class Part extends Panel {
      *   .bind("fill", "color")
      *   // Shape.stroke is red when Node.isHighlighted is true, black otherwise
      *   .bind(new go.Binding("stroke", "isHighlighted",
-     *                  function(h) { return h ? "red" : "black"; }).ofObject())
+     *                        h => h ? "red" : "black").ofObject())
      * ```
      * @see #highlightedChanged
      * @see Diagram#highlighteds
@@ -24256,7 +24280,7 @@ export class GridLayout extends Layout {
      *   $(go.GridLayout,
      *     {
      *       sorting: go.GridLayout.Ascending,
-     *       comparer: function(pa, pb) {
+     *       comparer: (pa, pb) => {
      *         var da = pa.data;
      *         var db = pb.data;
      *         if (da.someProperty < db.someProperty) return -1;
@@ -24555,7 +24579,7 @@ export class Model {
      * and maintain integrity between the two while avoiding serialization/deserialization.
      *
      * ```js
-     *   myDiagram.addModelChangedListener(function(e) {
+     *   myDiagram.addModelChangedListener(e => {
      *     if (e.isTransactionFinished) {
      *       var dataChanges = e.model.toIncrementalData(e);
      *       ... update React state/save to database ...
@@ -24610,7 +24634,7 @@ export class Model {
      * instead of sending the whole model.
      * Whereas it has always been easy to perform "batch" updates or "file saves":
      * ```js
-     *   myDiagram.addModelChangedListener(function(e) {
+     *   myDiagram.addModelChangedListener(e => {
      *     if (e.isTransactionFinished) {
      *       var json = e.model.toJson();
      *       // save the whole model upon each transaction completion or undo/redo
@@ -24620,7 +24644,7 @@ export class Model {
      * ```
      * You can now easily send "incremental" updates:
      * ```js
-     *   myDiagram.addModelChangedListener(function(e) {
+     *   myDiagram.addModelChangedListener(e => {
      *     if (e.isTransactionFinished) {
      *       var json = e.model.toIncrementalJson(e);
      *       // record each Transaction as a JSON-format string
@@ -25445,7 +25469,7 @@ export class Model {
  * As an example of a conversion function, let's use a function that adds some
  * text prefixing the data property value:
  * ```js
- *   new go.Binding("text", "say", function(v) { return "I say: " + v; })
+ *   new go.Binding("text", "say", v => "I say: " + v)
  * ```
  * Although simple conversions cover almost all binding cases, there are some infrequent uses
  * that are covered by "Advanced Conversions", discussed below.
@@ -25527,7 +25551,7 @@ export class Model {
  * consider this Binding on a Shape which changes the color of the Shape#stroke
  * depending on whether the Node is selected (Part#isSelected):
  * ```js
- *   new go.Binding("stroke", "isSelected", function(s) { return s ? "dodgerblue" : "gray"; }).ofObject()
+ *   new go.Binding("stroke", "isSelected", s => s ? "dodgerblue" : "gray").ofObject()
  * ```
  * Note the call to Binding#ofObject, which tells the Binding that it should use as the source
  * a GraphObject with a particular name.  However that name argument is optional -- supplying no name
@@ -28628,7 +28652,7 @@ export class TreeLayout extends Layout {
      *   $(go.TreeLayout,
      *     {
      *       sorting: go.TreeLayout.SortingAscending,
-     *       comparer: function(va, vb) {
+     *       comparer: (va, vb) => {
      *         var da = va.node.data;
      *         var db = vb.node.data;
      *         if (da.someProperty < db.someProperty) return -1;

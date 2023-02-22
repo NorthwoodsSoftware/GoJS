@@ -132,11 +132,11 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
       this._reducer = val;
       if (val) {
         const lay = this;
-        val.findLane = function(v: go.LayeredDigraphVertex) { return lay.getLane(v); }
-        val.getIndex = function(v: go.LayeredDigraphVertex): number { return v.index; }
-        val.getBary = function(v: go.LayeredDigraphVertex): number { return (v as any).bary || 0; }
-        val.setBary = function(v: go.LayeredDigraphVertex, val: number) { (v as any).bary = val; }
-        val.getConnectedNodesIterator = function(v: go.LayeredDigraphVertex) { return v.vertexes; }
+        val.findLane = (v: go.LayeredDigraphVertex) => lay.getLane(v);
+        val.getIndex = (v: go.LayeredDigraphVertex): number => v.index;
+        val.getBary = (v: go.LayeredDigraphVertex): number => (v as any).bary || 0;
+        val.setBary = (v: go.LayeredDigraphVertex, val: number) => (v as any).bary = val;
+        val.getConnectedNodesIterator = (v: go.LayeredDigraphVertex) => v.vertexes;
       }
       this.invalidateLayout();
     }
@@ -203,7 +203,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   private countEdgesForDirection(vertex: go.LayeredDigraphVertex, topleft: boolean) {
     let c = 0;
     const lay = vertex.layer;
-    vertex.edges.each(function(e) {
+    vertex.edges.each(e => {
       if (topleft) {
         if ((e.getOtherVertex(vertex) as go.LayeredDigraphVertex).layer >= lay) c++;
       } else {
@@ -216,7 +216,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   private computeNeededLayerSpaces(net: go.LayeredDigraphNetwork): Array<number> {
     // group all edges by their connected vertexes' least layer
     const layerMinEdges: Array<Array<go.LayeredDigraphEdge>> = [];
-    net.edges.each(function(e) {
+    net.edges.each(e => {
       // consider all edges, including dummy ones!
       const f = e.fromVertex as go.LayeredDigraphVertex;
       const t = e.toVertex as go.LayeredDigraphVertex;
@@ -230,9 +230,9 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     // sort each array of edges by their lowest connected vertex column
     // for edges with the same minimum column, sort by their maximum column
     const layerMaxEdges: Array<Array<go.LayeredDigraphEdge>> = []; // same as layerMinEdges, but sorted by maximum column
-    layerMinEdges.forEach(function(arr, lay) {
+    layerMinEdges.forEach((arr, lay) => {
       if (!arr) return;
-      arr.sort(function(e1, e2) {
+      arr.sort((e1, e2) => {
         const f1c = (e1.fromVertex as go.LayeredDigraphVertex).column;
         const t1c = (e1.toVertex as go.LayeredDigraphVertex).column;
         const f2c = (e2.fromVertex as go.LayeredDigraphVertex).column;
@@ -248,7 +248,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         return 0;
       });
       layerMaxEdges[lay] = arr.slice(0);
-      layerMaxEdges[lay].sort(function(e1, e2) {
+      layerMaxEdges[lay].sort((e1, e2) => {
           const f1c = (e1.fromVertex as go.LayeredDigraphVertex).column;
           const t1c = (e1.toVertex as go.LayeredDigraphVertex).column;
           const f2c = (e2.fromVertex as go.LayeredDigraphVertex).column;
@@ -267,7 +267,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
 
     // run through each array of edges to count how many overlaps there might be
     const layerOverlaps: Array<number> = [];
-    layerMinEdges.forEach(function(arr, lay) {
+    layerMinEdges.forEach((arr, lay) => {
       const mins = arr;  // sorted by min column
       const maxs = layerMaxEdges[lay];  // sorted by max column
       let maxoverlap = 0;  // maximum count for this layer
@@ -330,7 +330,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
 
     // sort vertexes so that vertexes are grouped by lane
     for (let i = 0; i <= this.maxLayer; i++) {
-      this._layers[i].sort(function(a, b) { return layout.compareVertexes(a, b); });
+      this._layers[i].sort((a, b) => layout.compareVertexes(a, b));
     }
   }
 
@@ -347,11 +347,11 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     if (red) {
       for (let i = 0; i < layers.length-1; i++) {
         red.reduceCrossings(layers[i], layers[i+1]);
-        layers[i].forEach(function(v, j) { v.index = j; })
+        layers[i].forEach((v, j) => v.index = j);
       }
       for (let i = layers.length-1; i > 0; i--) {
         red.reduceCrossings(layers[i], layers[i-1]);
-        layers[i].forEach(function(v, j) { v.index = j; })
+        layers[i].forEach((v, j) => v.index = j);
       }
     }
 
@@ -382,7 +382,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             lwidths.set(ln, totw + w);
           }
         }
-        lwidths.each(function(kvp) {
+        lwidths.each(kvp => {
           const lane = kvp.key;
           const colsInLayer = kvp.value;
           const colsMax = layout.laneBreadths.get(lane) || 0;

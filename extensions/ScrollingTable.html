@@ -59,7 +59,7 @@ function init() {
   myDiagram =
     $(go.Diagram, "myDiagramDiv",
       {
-        "LayoutCompleted": function(e) {
+        "LayoutCompleted": e => {
           e.diagram.nodes.each(n => {
             var table = n.findObject("TABLE");
             if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
@@ -68,7 +68,7 @@ function init() {
       });
 
   // support mouse wheel scrolling of table when the mouse is in the table
-  myDiagram.toolManager.doMouseWheel = function() {  // method override
+  myDiagram.toolManager.doMouseWheel = function() {  // method override requires function, not =>
     var e = this.diagram.lastInput;
     var tab = this.diagram.findObjectAt(e.documentPoint);
     while (tab !== null && !tab._updateScrollBar) tab = tab.panel;
@@ -112,7 +112,7 @@ function init() {
             defaultColumnSeparatorStrokeWidth: 0.5
           },
           new go.Binding("TABLE.itemArray", "items"),
-          new go.Binding("TABLE.column", "left", function(left) { return left ? 2 : 0; }),
+          new go.Binding("TABLE.column", "left", left => left ? 2 : 0),
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           {
             "TABLE.itemTemplate":

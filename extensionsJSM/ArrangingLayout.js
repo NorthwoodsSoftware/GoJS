@@ -48,7 +48,7 @@ import * as go from '../release/go-module.js';
 * The {@link #side} property controls which side they will be placed -- the default is BottomSide.
 *
 * Note: if you do not want to have singleton nodes be arranged by {@link #sideLayout},
-* set {@link #filter} to <code>function(part) { return true; }</code>.
+* set {@link #filter} to <code>part => true</code>.
 * That will cause all singleton nodes to be arranged by {@link #arrangingLayout} as if they
 * were each their own subnetwork.
 *
@@ -200,7 +200,7 @@ export class ArrangingLayout extends go.Layout {
     splitParts(coll, maincoll, sidecoll) {
         // first consider all Nodes
         const pred = this.filter;
-        coll.each(function (p) {
+        coll.each(p => {
             if (p instanceof go.Link)
                 return;
             let main;
@@ -218,7 +218,7 @@ export class ArrangingLayout extends go.Layout {
             }
         });
         // now assign Links based on which Nodes they connect with
-        coll.each(function (p) {
+        coll.each(p => {
             if (p instanceof go.Link) {
                 if (!p.fromNode || !p.toNode)
                     return;

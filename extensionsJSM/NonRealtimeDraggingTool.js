@@ -85,7 +85,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
         if (partsmap !== null && this.duration > 0) {
             var anim = new go.Animation();
             anim.duration = this.duration;
-            partsmap.each(function (kvp) {
+            partsmap.each(kvp => {
                 var part = kvp.key;
                 anim.add(part, "location", kvp.value.point, part.location);
             });

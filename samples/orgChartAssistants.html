@@ -74,7 +74,7 @@ function init() {
           title: "",
           comments: ""
         },
-        "clickCreatingTool.insertPart": function(loc) {  // override to scroll to the new node
+        "clickCreatingTool.insertPart": function(loc) {  // method override must be function, not =>
           const node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
           if (node !== null) {
             this.diagram.select(node);
@@ -116,7 +116,7 @@ function init() {
     "#008299", "#D24726", "#008A00", "#094AB2"];
 
   // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
-  myDiagram.layout.commitNodes = function() {
+  myDiagram.layout.commitNodes = function() {  // method override must be function, not =>
     go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
     // then go through all of the vertexes and set their corresponding node's Shape.fill
     // to a brush dependent on the TreeVertex.level value

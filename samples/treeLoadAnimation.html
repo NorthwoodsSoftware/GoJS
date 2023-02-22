@@ -158,7 +158,7 @@
         while (q.length > 0) {
           var tempNode = q.shift();
           // Add animation for all links that stem from the given node
-          tempNode.linksConnected.each(function (link) {
+          tempNode.linksConnected.each(link => {
             if (link.fromNode === tempNode) {
               myDiagram.startTransaction("animate link");
               originalValues.push({
@@ -206,9 +206,9 @@
         }
 
         // Chain animatons for each layer
-        animation.finished = function () {
+        animation.finished = () => {
           myDiagram.startTransaction("change link");
-          originalValues.each(function (newVal) {
+          originalValues.each(newVal => {
             var link = newVal.link;
             if (link.elements.count > 1) {
               // Set original values of each part of the link back to what they were
@@ -294,7 +294,7 @@
     }
 
     // Animation for changing the scale after a delay, endObj must contain the end scale but also the delay (offsetTime)
-    go.AnimationManager.defineAnimationEffect('customScale', function (part, startValue, endObj, easing, currentTime, duration, animation) {
+    go.AnimationManager.defineAnimationEffect('customScale', (part, startValue, endObj, easing, currentTime, duration, animation) => {
       if (endObj.offsetTime < currentTime) {
         part.scale = easing(currentTime - endObj.offsetTime, startValue, (endObj.endValue - startValue), duration - endObj.offsetTime);
       } else {
@@ -304,7 +304,7 @@
 
     // General animation for links that are made up of path segments, linear links do not have this, so therefore must use a special case
     go.AnimationManager.defineAnimationEffect('segmentLinkAnim',
-      function (link, geometry, layout, easing, currentTime, duration, animation) {
+      (link, geometry, layout, easing, currentTime, duration, animation) => {
         var animationState = animation.getTemporaryState(link);
         animationState.currentTime = currentTime;
         if (animationState.initial === undefined) {
@@ -360,7 +360,7 @@
           var prevValueY = animationState.startValue.y;
           var bezSegments = 0;
           // find the total length of all the linear segments
-          geometry.figures.first().segments.each(function (sgmt) {
+          geometry.figures.first().segments.each(sgmt => {
             if (sgmt.type === go.PathSegment.QuadraticBezier) {
               bezSegments++;
             } else {
@@ -403,7 +403,7 @@
         tempPoints.push(animationState.boundPoint2);
 
         // Add points from the original bezier which will be used to hold the position of the objects
-        animationState.origPoints.each(function (point) {
+        animationState.origPoints.each(point => {
           tempPoints.push(point);
         });
         // Changing the points will cause GoJS to call the modified makeGeometry which will remake the geometry
@@ -417,7 +417,7 @@
     );
 
     go.AnimationManager.defineAnimationEffect('linearLinkAnim',
-      function (link, geometry, endValue, easing, currentTime, duration, animation) {
+      (link, geometry, endValue, easing, currentTime, duration, animation) => {
         var animationState = animation.getTemporaryState(link);
         animationState.currentTime = currentTime
         if (animationState.initial === undefined) {

@@ -371,25 +371,25 @@ go.Shape.defineFigureGenerator('XLine', (shape, w, h) => {
         .add(new go.PathSegment(go.PathSegment.Move, 0, 0))
         .add(new go.PathSegment(go.PathSegment.Line, w, h)));
 });
-go.Shape.defineFigureGenerator('LineRight', function (shape, w, h) {
+go.Shape.defineFigureGenerator('LineRight', (shape, w, h) => {
     return new go.Geometry()
         .add(new go.PathFigure(0.25 * w, 0, false)
         .add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, 0.5 * h))
         .add(new go.PathSegment(go.PathSegment.Line, 0.25 * w, h)));
 });
-go.Shape.defineFigureGenerator('LineDown', function (shape, w, h) {
+go.Shape.defineFigureGenerator('LineDown', (shape, w, h) => {
     return new go.Geometry()
         .add(new go.PathFigure(0, 0.25 * h, false)
         .add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.75 * h))
         .add(new go.PathSegment(go.PathSegment.Line, w, 0.25 * h)));
 });
-go.Shape.defineFigureGenerator('LineLeft', function (shape, w, h) {
+go.Shape.defineFigureGenerator('LineLeft', (shape, w, h) => {
     return new go.Geometry()
         .add(new go.PathFigure(0.75 * w, 0, false)
         .add(new go.PathSegment(go.PathSegment.Line, 0.25 * w, 0.5 * h))
         .add(new go.PathSegment(go.PathSegment.Line, 0.75 * w, h)));
 });
-go.Shape.defineFigureGenerator('LineUp', function (shape, w, h) {
+go.Shape.defineFigureGenerator('LineUp', (shape, w, h) => {
     return new go.Geometry()
         .add(new go.PathFigure(0, 0.75 * h, false)
         .add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.25 * h))
@@ -2140,7 +2140,7 @@ go.Shape.defineFigureGenerator('Cube2', (shape, w, h) => {
     geo.spot2 = new go.Spot(.7, 1);
     return geo;
 });
-go.Shape.defineFigureGenerator('Cylinder1', function (shape, w, h) {
+go.Shape.defineFigureGenerator('Cylinder1', (shape, w, h) => {
     let param1 = shape ? shape.parameter1 : NaN; // half the height of the ellipse
     if (isNaN(param1))
         param1 = 5; // default value
@@ -2165,7 +2165,7 @@ go.Shape.defineFigureGenerator('Cylinder1', function (shape, w, h) {
     geo.spot2 = new go.Spot(1, 1);
     return geo;
 });
-go.Shape.defineFigureGenerator('Cylinder2', function (shape, w, h) {
+go.Shape.defineFigureGenerator('Cylinder2', (shape, w, h) => {
     let param1 = shape ? shape.parameter1 : NaN; // half the height of the ellipse
     if (isNaN(param1))
         param1 = 5; // default value
@@ -2190,7 +2190,7 @@ go.Shape.defineFigureGenerator('Cylinder2', function (shape, w, h) {
     geo.spot2 = new go.Spot(1, 1, 0, -2 * param1);
     return geo;
 });
-go.Shape.defineFigureGenerator('Cylinder3', function (shape, w, h) {
+go.Shape.defineFigureGenerator('Cylinder3', (shape, w, h) => {
     let param1 = shape ? shape.parameter1 : NaN; // half the width of the ellipse
     if (isNaN(param1))
         param1 = 5; // default value
@@ -2215,7 +2215,7 @@ go.Shape.defineFigureGenerator('Cylinder3', function (shape, w, h) {
     geo.spot2 = new go.Spot(1, 1);
     return geo;
 });
-go.Shape.defineFigureGenerator('Cylinder4', function (shape, w, h) {
+go.Shape.defineFigureGenerator('Cylinder4', (shape, w, h) => {
     let param1 = shape ? shape.parameter1 : NaN; // half the width of the ellipse
     if (isNaN(param1))
         param1 = 5; // default value
@@ -4468,7 +4468,7 @@ go.Shape.defineFigureGenerator('Gear', (shape, w, h) => {
         .add(new go.PathSegment(go.PathSegment.Move, 0.5 * w, 0.6 * h))
         .add(new go.PathSegment(go.PathSegment.Arc, 90, 360, 0.5 * w, 0.5 * h, 0.1 * w, 0.1 * h).close()));
 });
-go.Shape.defineFigureGenerator('Hand', function (shape, w, h) {
+go.Shape.defineFigureGenerator('Hand', (shape, w, h) => {
     const geo = new go.Geometry();
     const fig = new go.PathFigure(0, 0.5 * h, true);
     geo.add(fig);

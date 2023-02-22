@@ -68,7 +68,7 @@
     const myDiagram =
       $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
         {
-          "ModelChanged": function(e) {
+          "ModelChanged": e => {
             if (e.isTransactionFinished) document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
           },
           'undoManager.isEnabled': true // enable undo & redo
@@ -135,7 +135,7 @@
             // property of the Node that this is in
             $(go.TextBlock, 'Node is not movable'),
             {
-              '_doClick': function (e, obj) {
+              '_doClick': (e, obj) => {
                 if (obj.part !== null) obj.part.movable = !obj.part.movable; // toggle the Part.movable flag
               }
             })

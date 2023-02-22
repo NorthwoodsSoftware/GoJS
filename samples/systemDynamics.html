@@ -84,7 +84,7 @@
             go.LinkingTool.prototype.doActivate.call(this);
           },
           // override the link creation process
-          "linkingTool.insertLink": function(fromnode, fromport, tonode, toport) {
+          "linkingTool.insertLink": function(fromnode, fromport, tonode, toport) {  // method override must be function, not =>
             // to control what kind of Link is created,
             // change the LinkingTool.archetypeLinkData's category
             myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
@@ -98,10 +98,12 @@
 
           "clickCreatingTool.archetypeNodeData": {},  // enable ClickCreatingTool
           "clickCreatingTool.isDoubleClick": false,   // operates on a single click in background
-          "clickCreatingTool.canStart": function() {  // but only in "node" creation mode
+                                                      // but only in "node" creation mode
+          "clickCreatingTool.canStart": function() {  // method override must be function, not =>
             return SD.mode === "node" && go.ClickCreatingTool.prototype.canStart.call(this);
           },
-          "clickCreatingTool.insertPart": function(loc) {  // customize the data for the new node
+          // customize the data for the new node
+          "clickCreatingTool.insertPart": function(loc) {  // method override must be function, not =>
             SD.nodeCounter[SD.itemType] += 1;
             var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
             this.archetypeNodeData = {

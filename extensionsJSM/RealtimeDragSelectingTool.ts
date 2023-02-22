@@ -50,8 +50,8 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
    */
   public override doCancel(): void {
     const orig = this._originalSelection;
-    orig.each(function(p) { p.isSelected = true; });
-    this._temporarySelection.each(function(p) { if (!orig.contains(p)) p.isSelected = false; });
+    orig.each(p => p.isSelected = true);
+    this._temporarySelection.each(p => { if (!orig.contains(p)) p.isSelected = false; });
     super.doCancel();
   }
 
@@ -97,19 +97,19 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
     const found = diagram.findPartsIn(r, this.isPartialInclusion);
     if (e.control || e.meta) {  // toggle or deselect
       if (e.shift) {  // deselect only
-        temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-        found.each(function(p: go.Part) { p.isSelected = false; temp.add(p); });
+        temp.each((p: go.Part) => { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+        found.each((p: go.Part) => { p.isSelected = false; temp.add(p); });
       } else {  // toggle selectedness of parts based on _originalSelection
-        temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-        found.each(function(p: go.Part) { p.isSelected = !orig.contains(p); temp.add(p); });
+        temp.each((p: go.Part) => { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+        found.each((p: go.Part) => { p.isSelected = !orig.contains(p); temp.add(p); });
       }
     } else if (e.shift) {  // extend selection only
-      temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = orig.contains(p); });
-      found.each(function(p: go.Part) { p.isSelected = true; temp.add(p); });
+      temp.each((p: go.Part) => { if (!found.contains(p)) p.isSelected = orig.contains(p); });
+      found.each((p: go.Part) => { p.isSelected = true; temp.add(p); });
     } else {  // select found parts, and unselect all other previously selected parts
-      temp.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
-      orig.each(function(p: go.Part) { if (!found.contains(p)) p.isSelected = false; });
-      found.each(function(p: go.Part) { p.isSelected = true; temp.add(p); });
+      temp.each((p: go.Part) => { if (!found.contains(p)) p.isSelected = false; });
+      orig.each((p: go.Part) => { if (!found.contains(p)) p.isSelected = false; });
+      found.each((p: go.Part) => { p.isSelected = true; temp.add(p); });
     }
   }
 }

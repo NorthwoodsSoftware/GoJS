@@ -31,7 +31,7 @@ import * as go from '../release/go-module.js';
  */
 export class DoubleTreeLayout extends go.Layout {
   private _vertical: boolean = false;
-  private _directionFunction: ((node: go.Node) => boolean) = function(node: go.Node): boolean { return true; };
+  private _directionFunction: ((node: go.Node) => boolean) = node => true;
   private _bottomRightOptions: Partial<go.TreeLayout> | null = null;
   private _topLeftOptions: Partial<go.TreeLayout> | null = null;
 
@@ -162,7 +162,7 @@ export class DoubleTreeLayout extends go.Layout {
   protected separatePartsForLayout(coll: go.Set<go.Part>, leftParts: go.Set<go.Part>, rightParts: go.Set<go.Part>): void {
     let root: go.Node | null = null;  // the one root
     const roots = new go.Set<go.Node>();  // in case there are multiple roots
-    coll.each(function(node: go.Part) {
+    coll.each((node: go.Part) => {
       if (node instanceof go.Node && node.findTreeParentNode() === null) roots.add(node);
     });
     if (roots.count === 0) {  // just choose the first node as the root
@@ -180,7 +180,7 @@ export class DoubleTreeLayout extends go.Layout {
       root.location = new go.Point(0, 0);
       const forwards = (this.diagram ? this.diagram.isTreePathToChildren : true);
       // now make dummy links from the one root node to each node
-      roots.each(function(child) {
+      roots.each((child) => {
         const link = new go.Link();
         if (forwards) {
           link.fromNode = root;
@@ -198,7 +198,7 @@ export class DoubleTreeLayout extends go.Layout {
     rightParts.add(root);
     const lay = this;
     // look at all of the immediate children of the ROOT node
-    root.findTreeChildrenNodes().each(function(child) {
+    root.findTreeChildrenNodes().each((child) => {
         // in what direction is this child growing?
         const bottomright = lay.isPositiveDirection(child);
         const parts = bottomright ? rightParts : leftParts;

@@ -30,7 +30,7 @@ export class DoubleTreeLayout extends go.Layout {
     constructor() {
         super(...arguments);
         this._vertical = false;
-        this._directionFunction = function (node) { return true; };
+        this._directionFunction = node => true;
         this._bottomRightOptions = null;
         this._topLeftOptions = null;
     }
@@ -157,7 +157,7 @@ export class DoubleTreeLayout extends go.Layout {
     separatePartsForLayout(coll, leftParts, rightParts) {
         let root = null; // the one root
         const roots = new go.Set(); // in case there are multiple roots
-        coll.each(function (node) {
+        coll.each((node) => {
             if (node instanceof go.Node && node.findTreeParentNode() === null)
                 roots.add(node);
         });
@@ -178,7 +178,7 @@ export class DoubleTreeLayout extends go.Layout {
             root.location = new go.Point(0, 0);
             const forwards = (this.diagram ? this.diagram.isTreePathToChildren : true);
             // now make dummy links from the one root node to each node
-            roots.each(function (child) {
+            roots.each((child) => {
                 const link = new go.Link();
                 if (forwards) {
                     link.fromNode = root;
@@ -197,7 +197,7 @@ export class DoubleTreeLayout extends go.Layout {
         rightParts.add(root);
         const lay = this;
         // look at all of the immediate children of the ROOT node
-        root.findTreeChildrenNodes().each(function (child) {
+        root.findTreeChildrenNodes().each((child) => {
             // in what direction is this child growing?
             const bottomright = lay.isPositiveDirection(child);
             const parts = bottomright ? rightParts : leftParts;

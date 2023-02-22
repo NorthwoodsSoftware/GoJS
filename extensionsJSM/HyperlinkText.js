@@ -18,11 +18,11 @@ import * as go from '../release/go-module.js';
 //    $("HyperlinkText", "https://gojs.net", "Visit GoJS")
 //
 //    $("HyperlinkText",
-//        function(node) { return "https://gojs.net/" + node.data.version; },
-//        function(node) { return "Visit GoJS version " + node.data.version; })
+//        node => "https://gojs.net/" + node.data.version,
+//        node => "Visit GoJS version " + node.data.version)
 //
 //    $("HyperlinkText",
-//        function(node) { return "https://gojs.net/" + node.data.version; },
+//        node => "https://gojs.net/" + node.data.version,
 //        $(go.Panel, "Auto",
 //            $(go.Shape, ...),
 //            $(go.TextBlock, ...)
@@ -58,14 +58,14 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
             window.open(u, '_blank');
     };
     // define the tooltip
-    const tooltip = go.GraphObject.make('ToolTip', go.GraphObject.make(go.TextBlock, { name: 'TB', margin: 4 }, new go.Binding('text', '', function (obj) {
+    const tooltip = go.GraphObject.make('ToolTip', go.GraphObject.make(go.TextBlock, { name: 'TB', margin: 4 }, new go.Binding('text', '', obj => {
         // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
         obj = obj.part.adornedObject;
         let u = obj._url;
         if (typeof u === 'function')
             u = u(obj.findBindingPanel());
         return u;
-    }).ofObject()), new go.Binding('visible', 'text', function (t) { return !!t; }).ofObject('TB'));
+    }).ofObject()), new go.Binding('visible', 'text', t => !!t).ofObject('TB'));
     // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
     if (typeof (text) === 'string' || typeof (text) === 'function' || !anyGraphObjects) {
         if (text === null && typeof (url) === 'string')
@@ -73,15 +73,17 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         const tb = go.GraphObject.make(go.TextBlock, {
             '_url': url,
             cursor: 'pointer',
-            mouseEnter: function (e, obj) {
+            mouseEnter: (e, obj) => {
                 let u = obj._url;
                 if (typeof u === 'function')
                     u = u(obj.findBindingPanel());
                 if (u && obj instanceof go.TextBlock)
                     obj.isUnderline = true;
             },
-            mouseLeave: (e, obj) => { if (obj instanceof go.TextBlock)
-                obj.isUnderline = false; },
+            mouseLeave: (e, obj) => {
+                if (obj instanceof go.TextBlock)
+                    obj.isUnderline = false;
+            },
             isActionable: true,
             click: click,
             toolTip: tooltip // shared by all HyperlinkText textblocks
@@ -98,7 +100,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         return tb;
     }
     else {
-        const findTextBlock = function (obj) {
+        const findTextBlock = (obj) => {
             if (obj instanceof go.TextBlock)
                 return obj;
             if (obj instanceof go.Panel) {

@@ -240,15 +240,15 @@ export class ZoomSlider {
         this.diagram.addDiagramListener('ViewportBoundsChanged', this.updateOnViewportBoundsChanged);
         // Set up event handlers for buttons and input range slider
         const self = this;
-        zoomOutBtn.onclick = function () {
+        zoomOutBtn.onclick = () => {
             zoomRangeInput.stepDown();
             self.valueToScale();
         };
-        zoomInBtn.onclick = function () {
+        zoomInBtn.onclick = () => {
             zoomRangeInput.stepUp();
             self.valueToScale();
         };
-        const valChanged = function () {
+        const valChanged = () => {
             self.valueToScale();
         };
         zoomRangeInput.oninput = valChanged;

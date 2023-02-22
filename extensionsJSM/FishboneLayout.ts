@@ -54,7 +54,7 @@ export class FishboneLayout extends go.TreeLayout {
     // make a copy of the collection of TreeVertexes
     // because we will be modifying the TreeNetwork.vertexes collection in the loop
     const verts = new go.List<go.TreeVertex>().addAll(net.vertexes.iterator as go.Iterator<go.TreeVertex>);
-    verts.each(function(v: go.TreeVertex) {
+    verts.each((v: go.TreeVertex) => {
       // ignore leaves of tree
       if (v.destinationEdges.count === 0) return;
       if (v.destinationEdges.count % 2 === 1) {
@@ -102,7 +102,7 @@ export class FishboneLayout extends go.TreeLayout {
     // vertex Angle is set by BusBranching "inheritance";
     // assign spots assuming overall Angle === 0 or 180
     // and links are always connecting horizontal with vertical
-    this.network.edges.each(function(e) {
+    this.network.edges.each(e => {
       const link = e.link;
       if (link === null) return;
       link.fromSpot = go.Spot.None;

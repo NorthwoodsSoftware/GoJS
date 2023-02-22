@@ -19,7 +19,7 @@ import * as go from '../release/go-module.js';
 // Typical usage:
 //    $('Button',
 //      $(go.TextBlock, 'Click me!'),  // the content is just the text label
-//      { click: function(e, obj) { alert('I was clicked'); } }
+//      { click: (e, obj) => alert('I was clicked') }
 //    )
 // Note that a button click event handler is not invoked upon a click if isEnabledObject() returns false.
 go.GraphObject.defineBuilder('Button', (args) => {
@@ -364,8 +364,8 @@ go.GraphObject.defineBuilder('ContextMenu', (args) => {
 // Typical usage within an Adornment that is either a GraphObject.contextMenu or a Diagram.contextMenu:
 // $('ContextMenuButton',
 //   $(go.TextBlock, text),
-//   { click: function(e, obj) { alert('Command for ' + obj.part.adornedPart); } },
-//   new go.Binding('visible', '', function(data) { return ...OK to perform Command...; })
+//   { click: (e, obj) => alert('Command for ' + obj.part.adornedPart) },
+//   new go.Binding('visible', '', data => ... whether OK to perform Command ...)
 // )
 go.GraphObject.defineBuilder('ContextMenuButton', (args) => {
     const button = /** @type {Panel} */ (go.GraphObject.make('Button'));
@@ -440,7 +440,7 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args) => {
 // Examples:
 // $('CheckBoxButton', 'dataPropertyName', ...)
 // or:
-// $('CheckBoxButton', '', { '_doClick': function(e, obj) { alert('clicked!'); } })
+// $('CheckBoxButton', '', { '_doClick': (e, obj) => alert('clicked!') })
 go.GraphObject.defineBuilder('CheckBoxButton', (args) => {
     // process the one required string argument for this kind of button
     const propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));
@@ -478,7 +478,7 @@ go.GraphObject.defineBuilder('CheckBoxButton', (args) => {
 // $('CheckBox', 'aBooleanDataProperty', $(go.TextBlock, 'the checkbox label'))
 // or
 // $('CheckBox', 'someProperty', $(go.TextBlock, 'A choice'),
-//   { '_doClick': function(e, obj) { ... perform extra side-effects ... } })
+//   { '_doClick': (e, obj) => { ... perform extra side-effects ... } })
 go.GraphObject.defineBuilder('CheckBox', (args) => {
     // process the one required string argument for this kind of button
     const propname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args));

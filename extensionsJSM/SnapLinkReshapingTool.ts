@@ -147,7 +147,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
       }
       r.unionPoint(q1);
       const overlaps = this.diagram.findPartsIn(r, true, false);
-      if (overlaps.any(function(p) { return p instanceof go.Node && p.avoidable; })) return false;
+      if (overlaps.any(p => p instanceof go.Node && p.avoidable)) return false;
 
       if (index >= 2) {
         const p0 = this.adornedLink.getPoint(index-2);
@@ -158,7 +158,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
           r.unionPoint(new go.Point(p0.x, q1.y));
         }
         const overlaps = this.diagram.findPartsIn(r, true, false);
-        if (overlaps.any(function(p) { return p instanceof go.Node && p.avoidable; })) return false;
+        if (overlaps.any(p => p instanceof go.Node && p.avoidable)) return false;
       }
     }
 
@@ -173,7 +173,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
       }
       r.unionPoint(q2);
       const overlaps = this.diagram.findPartsIn(r, true, false);
-      if (overlaps.any(function(p) { return p instanceof go.Node && p.avoidable; })) return false;
+      if (overlaps.any(p => p instanceof go.Node && p.avoidable)) return false;
 
       if (index < this.adornedLink.pointsCount-2) {
         const p3 = this.adornedLink.getPoint(index+2);
@@ -184,7 +184,7 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
           r.unionPoint(new go.Point(p3.x, q2.y));
         }
         const overlaps = this.diagram.findPartsIn(r, true, false);
-        if (overlaps.any(function(p) { return p instanceof go.Node && p.avoidable; })) return false;
+        if (overlaps.any(p => p instanceof go.Node && p.avoidable)) return false;
       }
     }
 

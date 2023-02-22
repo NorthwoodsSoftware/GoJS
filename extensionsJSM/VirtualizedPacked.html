@@ -161,7 +161,7 @@
           "animationManager.isEnabled": false,  // don't have any unnecessary initial scrolling
           initialScale: 0.25,
           layout: new VirtualizedPackedGroupsLayout(),
-          "InitialLayoutCompleted": function(e) {  // initial scroll so that we see some nodes
+          "InitialLayoutCompleted": e => {  // initial scroll so that we see some nodes
             var first = null;
             var arr = myWholeModel.nodeDataArray;
             for (var i = 0; i < arr.length; i++) {
@@ -183,7 +183,7 @@
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
         { isLayoutPositioned: false },  // optimization
-        new go.Binding("position", "bounds", function(b) { return b.position; }),
+        new go.Binding("position", "bounds", b => b.position),
         { width: 50, height: 50 },  // in cooperation with the load function, below
         $(go.Shape, "Circle",
           {
@@ -200,8 +200,8 @@
       $(go.Group, "Auto",
         { isLayoutPositioned: false },  // optimization
         // note no Placeholder and no .layout, since VirtualizedPackedGroupsLayout will compute everything
-        new go.Binding("position", "bounds", function(b) { return new go.Point(b.x - b.width * 0.05, b.y - b.height * 0.05); }),
-        new go.Binding("desiredSize", "bounds", function(b) { return new go.Size(b.size.width * 1.1, b.size.height * 1.1); }),
+        new go.Binding("position", "bounds", b => new go.Point(b.x - b.width * 0.05, b.y - b.height * 0.05)),
+        new go.Binding("desiredSize", "bounds", b => new go.Size(b.size.width * 1.1, b.size.height * 1.1)),
         $(go.Shape, "Ellipse",
           {
             spot1: new go.Spot(0.05, 0.05), spot2: new go.Spot(0.95, 0.95),
@@ -383,7 +383,7 @@
 
       if (myRemoveTimer === null) {
         // only remove offscreen nodes after a delay
-        myRemoveTimer = setTimeout(function() { removeOffscreen(diagram); }, 3000);
+        myRemoveTimer = setTimeout(() => removeOffscreen(diagram), 3000);
       }
 
       updateCounts();  // only for this sample
@@ -407,7 +407,7 @@
         if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
           // even if the node is out of the viewport, keep it if it is selected or
           // if any link connecting with the node is still in the viewport
-          if (!n.linksConnected.any(function(l) { return l.actualBounds.intersectsRect(viewb); })) {
+          if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
             remove.push(d);
             if (model instanceof go.GraphLinksModel) {
               removeLinks.addAll(n.linksConnected);
@@ -421,7 +421,7 @@
         diagram.skipsUndoManager = true;
         model.removeNodeDataCollection(remove);
         if (model instanceof go.GraphLinksModel) {
-          removeLinks.each(function(l) { if (!l.isSelected) model.removeLinkData(l.data); });
+          removeLinks.each(l => { if (!l.isSelected) model.removeLinkData(l.data); });
         }
         diagram.skipsUndoManager = oldskips;
       }

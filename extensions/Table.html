@@ -54,53 +54,63 @@
 
 <script id="code">
   // define a custom ResizingTool to limit how far one can shrink a row or column
-  function LaneResizingTool() {
-    go.ResizingTool.call(this);
-  }
-  go.Diagram.inherit(LaneResizingTool, go.ResizingTool);
-
-  LaneResizingTool.prototype.computeMinSize = function() {
-    var diagram = this.diagram;
-    var lane = this.adornedObject.part;  // might be row or column
-    var horiz = (lane.category === "Column Header");  // or "Row Header"
-    var margin = diagram.nodeTemplate.margin;
-    var bounds = new go.Rect();
-    diagram.findTopLevelGroups().each(function(g) {
-      if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
-        var b = diagram.computePartsBounds(g.memberParts);
-        if (b.isEmpty()) return;  // nothing in there?  ignore it
-        b.unionPoint(g.location);  // keep any empty space on the left and top
-        b.addMargin(margin);  // assume the same node margin applies to all nodes
-        if (bounds.isEmpty()) {
-          bounds = b;
-        } else {
-          bounds.unionRect(b);
+  class LaneResizingTool extends go.ResizingTool {
+    computeMinSize() {
+      const diagram = this.diagram;
+      if (this.adornedObject === null)
+        return new go.Size();
+      const lane = this.adornedObject.part; // might be row or column
+      if (lane === null)
+        return new go.Size();
+      const horiz = (lane.category === 'Column Header'); // or "Row Header"
+      const margin = diagram.nodeTemplate.margin;
+      let bounds = new go.Rect();
+      diagram.findTopLevelGroups().each((g) => {
+        if (lane === null)
+          return;
+        if (horiz ? (g.column === lane.column) : (g.row === lane.row)) {
+          const b = diagram.computePartsBounds(g.memberParts);
+          if (b.isEmpty())
+            return; // nothing in there?  ignore it
+          b.unionPoint(g.location); // keep any empty space on the left and top
+          b.addMargin(margin); // assume the same node margin applies to all nodes
+          if (bounds.isEmpty()) {
+            bounds = b;
+          }
+          else {
+            bounds.unionRect(b);
+          }
         }
-      }
-    });
-
-    // limit the result by the standard value of computeMinSize
-    var msz = go.ResizingTool.prototype.computeMinSize.call(this);
-    if (bounds.isEmpty()) return msz;
-    return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
-  };
-
-  LaneResizingTool.prototype.resize = function(newr) {
-    var lane = this.adornedObject.part;
-    var horiz = (lane.category === "Column Header");
-    var lay = this.diagram.layout;  // the TableLayout
-    if (horiz) {
-      var col = lane.column;
-      var coldef = lay.getColumnDefinition(col);
-      coldef.width = newr.width;
-    } else {
-      var row = lane.row;
-      var rowdef = lay.getRowDefinition(row);
-      rowdef.height = newr.height;
+      });
+      // limit the result by the standard value of computeMinSize
+      const msz = super.computeMinSize();
+      if (bounds.isEmpty())
+        return msz;
+      return new go.Size(Math.max(msz.width, bounds.width), Math.max(msz.height, bounds.height));
     }
-    lay.invalidateLayout();
-  };
-  // end LaneResizingTool class
+
+    resize(newr) {
+      const diagram = this.diagram;
+      if (this.adornedObject === null)
+        return;
+      const lane = this.adornedObject.part;
+      if (lane === null)
+        return;
+      const horiz = (lane.category === 'Column Header');
+      const lay = diagram.layout; // the TableLayout
+      if (horiz) {
+        const col = lane.column;
+        const coldef = lay.getColumnDefinition(col);
+        coldef.width = newr.width;
+      }
+      else {
+        const row = lane.row;
+        const rowdef = lay.getRowDefinition(row);
+        rowdef.height = newr.height;
+      }
+      lay.invalidateLayout();
+    }
+  }  // end LaneResizingTool class
 
   function init() {
     if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -113,12 +123,12 @@
             $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
             $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
           ),
-          "SelectionMoved": function(e) { e.diagram.layoutDiagram(true); },
+          "SelectionMoved": e => e.diagram.layoutDiagram(true),
           "resizingTool": new LaneResizingTool(),
           // feedback that dropping in the background is not allowed
-          mouseDragOver: function(e) { e.diagram.currentCursor = "not-allowed"; },
+          mouseDragOver: e => e.diagram.currentCursor = "not-allowed",
           // when dropped in the background, not on a Node or a Group, cancel the drop
-          mouseDrop: function(e) { e.diagram.currentTool.doCancel(); },
+          mouseDrop: e => e.diagram.currentTool.doCancel(),
           "animationManager.isInitial": false,
           "undoManager.isEnabled": true
         });
@@ -245,17 +255,15 @@
           computesBoundsAfterDrag: true,
           computesBoundsIncludingLocation: true,
           handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-          mouseDragEnter: function(e, group, prev) { group.isHighlighted = true; },
-          mouseDragLeave: function(e, group, next) { group.isHighlighted = false; },
-          mouseDrop: function(e, group) {
+          mouseDragEnter: (e, group, prev) => { group.isHighlighted = true; },
+          mouseDragLeave: (e, group, next) => { group.isHighlighted = false; },
+          mouseDrop: (e, group) => {
             // if any dropped part wasn't already a member of this group, we'll want to let the group's row
             // column allow themselves to be resized automatically, in case the row height or column width
             // had been set manually by the LaneResizingTool
-            var anynew = e.diagram.selection.any(function(p) { return p.containingGroup !== group; });
+            var anynew = e.diagram.selection.any(p => p.containingGroup !== group);
             // Don't allow headers/siders to be dropped
-            var anyHeadersSiders = e.diagram.selection.any(function(p) {
-              return p.category === "Column Header" || p.category === "Row Sider";
-            });
+            var anyHeadersSiders = e.diagram.selection.any(p => p.category === "Column Header" || p.category === "Row Sider");
             if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
               if (anynew) {
                 e.diagram.layout.getRowDefinition(group.row).height = NaN;
@@ -276,11 +284,11 @@
             stretch: go.GraphObject.Fill
           },
           new go.Binding("fill", "color"),
-          new go.Binding("stroke", "isHighlighted", function(h) { return h ? "red" : "transparent"; }).ofObject()),
+          new go.Binding("stroke", "isHighlighted", h => h ? "red" : "transparent").ofObject()),
         $(go.Placeholder,
           { // leave a margin around the member nodes of the group which is the same as the member node margin
-            alignment: (function(m) { return new go.Spot(0, 0, m.top, m.left); })(myDiagram.nodeTemplate.margin),
-            padding: (function(m) { return new go.Margin(0, m.right, m.bottom, 0); })(myDiagram.nodeTemplate.margin)
+            alignment: (m => new go.Spot(0, 0, m.top, m.left))(myDiagram.nodeTemplate.margin),
+            padding: (m => new go.Margin(0, m.right, m.bottom, 0))(myDiagram.nodeTemplate.margin)
           })
       );
 

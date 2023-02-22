@@ -143,7 +143,7 @@
       // from a straight temporary link to a Bezier finished link
       // Custom animation for the curviness of a bezier link
       go.AnimationManager.defineAnimationEffect('curviness',
-        function (obj, startValue, endValue, easing, currentTime, duration, animationState) {
+        (obj, startValue, endValue, easing, currentTime, duration, animationState) => {
           if (isNaN(startValue)) startValue = 0;
           if (isNaN(endValue)) endValue = 20;
           obj.curviness = easing(currentTime, startValue, endValue - startValue, duration);
@@ -153,7 +153,7 @@
       // This animation can be used in LinkDrawn Diagram listeners to animate
       // from a straight temporary link to an Orthogonal finished link
       go.AnimationManager.defineAnimationEffect('orthogonalLinkanim',
-        function (link, initPoints, tempPoints, easing, currentTime, duration, animation) {
+        (link, initPoints, tempPoints, easing, currentTime, duration, animation) => {
           var animationState = animation.getTemporaryState(link);
           if (animationState.initial === undefined) {
             // On the first animaiton tick, save the initial points
@@ -180,7 +180,7 @@
       );
 
       go.AnimationManager.defineAnimationEffect('corner',
-        function (obj, startValue, endValue, easing, currentTime, duration, animation) {
+        (obj, startValue, endValue, easing, currentTime, duration, animation) => {
           // If no corner set, default to 0 -> 20
           startValue = startValue || 0;
           endValue = endValue || 20;
@@ -188,7 +188,7 @@
         }
       );
 
-      myDiagram.addDiagramListener('LinkDrawn', function (e) {
+      myDiagram.addDiagramListener('LinkDrawn', e => {
         var link = e.subject;
         var animation = new go.Animation();
         var linkChoice = document.getElementById("links").value
@@ -210,7 +210,7 @@
           animation.add(link, "orthogonalLinkanim", link.points, tempPoints);
           animation.duration = 300;
           // Chain animation after first one is completed
-          animation.finished = function () {
+          animation.finished = () => {
             // Set points back to what they were before the animation
             myDiagram.startTransaction("Fix Points");
             link.points = tempPoints.points;
@@ -232,7 +232,7 @@
 
 
       go.AnimationManager.defineAnimationEffect('bounceDelete',
-        function (obj, startValue, endValue, easing, currentTime, duration, animation) {
+        (obj, startValue, endValue, easing, currentTime, duration, animation) => {
           var animationState = animation.getTemporaryState(obj);
           if (animationState.initial === undefined) {
             // Set the initial positions as part of the animationState data
@@ -275,11 +275,11 @@
         return myPoint;
       }
 
-      myDiagram.addDiagramListener('SelectionDeleting', function (e) {
+      myDiagram.addDiagramListener('SelectionDeleting', e => {
         var deletionSelection = document.getElementById('deletion');
         var animation = new go.Animation();
         var diagram = e.diagram;
-        e.subject.each(function (p) {
+        e.subject.each(p => {
           // Because we are deleting this part, we cannot animate it, instead we must animate a temporary copy
           // The animation handles this via addTemporaryPart, which must be passed a copy
           var part = p.copy();
@@ -316,18 +316,18 @@
         animation.start();
       });
 
-      myDiagram.addDiagramListener('ClipboardPasted', function (e) {
+      myDiagram.addDiagramListener('ClipboardPasted', e => {
         var creationSelection = document.getElementById('creation');
         // For best performance, be sure to use only one Animation for the entire selection
         // instead of creating one animation for each object in the selection
         var animation = new go.Animation();
-        e.subject.each(function (part) {
+        e.subject.each(part => {
           addCreatedPart(part, animation, creationSelection.value)
         });
         animation.start();
       });
 
-      myDiagram.addDiagramListener('PartCreated', function (e) { // From ClickCreatingTool
+      myDiagram.addDiagramListener('PartCreated', e => { // From ClickCreatingTool
         var creationSelection = document.getElementById('creation');
         var animation = new go.Animation();
         addCreatedPart(e.subject, animation, creationSelection.value)
@@ -357,14 +357,14 @@
       }
 
 
-      document.getElementById('addNode').addEventListener('click', function (e) { addNode(); });
+      document.getElementById('addNode').addEventListener('click', e => addNode());
 
 
       function addNode() {
         var diagram = myDiagram;
         var tempNodes = new go.List();
         diagram.startTransaction("Add States");
-        diagram.nodes.each(function (node) {
+        diagram.nodes.each(node => {
           if (node.isSelected) {
             tempNodes.push(node);
           }
@@ -373,7 +373,7 @@
         // Set the easing to a custom easing function
         animation.easing = elasticEase;
         // Add a new node to the right of each node
-        tempNodes.each(function (part) {
+        tempNodes.each(part => {
           // get the node data for which the user clicked the button
           var fromNode = part;
           var fromData = part.data;
@@ -407,7 +407,7 @@
         diagram.commitTransaction("Add States");
       };
 
-      document.getElementById('reloadModel').addEventListener('click', function (e) {
+      document.getElementById('reloadModel').addEventListener('click', e => {
         myDiagram.model = go.Model.fromJson(myDiagram.model.toJson())
       });
 

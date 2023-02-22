@@ -190,14 +190,14 @@
       // Override the standard CommandHandler deleteSelection and canDeleteSelection behavior.
       // If there are any selected items, delete them instead of deleting any selected nodes or links.
 
-      myDiagram.commandHandler.canDeleteSelection = function() {
+      myDiagram.commandHandler.canDeleteSelection = function() {  // method override must be function, not =>
         // true if there are any selected deletable nodes or links,
         // or if there are any selected items within nodes
         return go.CommandHandler.prototype.canDeleteSelection.call(this) ||
                findAllSelectedItems().length > 0;
       };
 
-      myDiagram.commandHandler.deleteSelection = function() {
+      myDiagram.commandHandler.deleteSelection = function() {  // method override must be function, not =>
         var items = findAllSelectedItems();
         if (items.length > 0) {  // if there are any selected items, delete them
           myDiagram.startTransaction("delete items");

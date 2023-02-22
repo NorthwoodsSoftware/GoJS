@@ -92,13 +92,13 @@ myDiagram =
       "resizingTool.isGridSnapEnabled": true,
       "resizingTool.cellSize": new go.Size(10, 10),
       // override ResizingTool methods to limit where the resizing may go
-      "resizingTool.doMouseMove": function() {
+      "resizingTool.doMouseMove": function() {  // method override must be function, not =>
         var e = this.diagram.lastInput;
         e.documentPoint = limitPoint(e.documentPoint);
         e.viewPoint = this.diagram.transformDocToView(e.documentPoint);
         go.ResizingTool.prototype.doMouseMove.call(this);
       },
-      "resizingTool.doMouseUp": function() {
+      "resizingTool.doMouseUp": function() {  // method override must be function, not =>
         var e = this.diagram.lastInput;
         e.documentPoint = limitPoint(e.documentPoint);
         e.viewPoint = this.diagram.transformDocToView(e.documentPoint);

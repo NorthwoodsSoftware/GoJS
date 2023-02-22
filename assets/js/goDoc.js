@@ -71,7 +71,7 @@ function _traverseDOM(node) {
       node.nodeName === 'H4') &&
     node.id
   ) {
-    node.addEventListener('click', function (e) {
+    node.addEventListener('click', e => {
       window.location.hash = '#' + node.id;
     });
   }
@@ -83,7 +83,7 @@ function _traverseDOM(node) {
 var coll = document.getElementById('navButton');
 var navList = document.getElementById('navList');
 if (coll !== null) {
-  coll.addEventListener('click', function () {
+  coll.addEventListener('click', () => {
     this.classList.toggle('active');
     navList.classList.toggle('hidden');
     document.getElementById('navOpen').classList.toggle('hidden');

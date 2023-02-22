@@ -15,7 +15,7 @@ import * as go from '../release/go-module.js';
 // The basic "RoundedRectangle" (corners on all four sides) is built into the GoJS library --
 // you can see its definition in Figures.js.
 // Two of these are demonstrated at ../samples/twoHalves.html and ../samples/roundedGroups.html.
-go.Shape.defineFigureGenerator("RoundedTopRectangle", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RoundedTopRectangle", (shape, w, h) => {
     // this figure takes one parameter, the size of the corner
     let p1 = 5; // default corner size
     if (shape !== null) {
@@ -38,7 +38,7 @@ go.Shape.defineFigureGenerator("RoundedTopRectangle", function (shape, w, h) {
     geo.spot2 = new go.Spot(1, 1, -0.3 * p1, 0);
     return geo;
 });
-go.Shape.defineFigureGenerator("RoundedBottomRectangle", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RoundedBottomRectangle", (shape, w, h) => {
     // this figure takes one parameter, the size of the corner
     let p1 = 5; // default corner size
     if (shape !== null) {
@@ -61,7 +61,7 @@ go.Shape.defineFigureGenerator("RoundedBottomRectangle", function (shape, w, h) 
     geo.spot2 = new go.Spot(1, 1, -0.3 * p1, -0.3 * p1);
     return geo;
 });
-go.Shape.defineFigureGenerator("RoundedLeftRectangle", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RoundedLeftRectangle", (shape, w, h) => {
     // this figure takes one parameter, the size of the corner
     let p1 = 5; // default corner size
     if (shape !== null) {
@@ -84,7 +84,7 @@ go.Shape.defineFigureGenerator("RoundedLeftRectangle", function (shape, w, h) {
     geo.spot2 = new go.Spot(1, 1, -0.3 * p1, 0);
     return geo;
 });
-go.Shape.defineFigureGenerator("RoundedRightRectangle", function (shape, w, h) {
+go.Shape.defineFigureGenerator("RoundedRightRectangle", (shape, w, h) => {
     // this figure takes one parameter, the size of the corner
     let p1 = 5; // default corner size
     if (shape !== null) {
@@ -108,7 +108,7 @@ go.Shape.defineFigureGenerator("RoundedRightRectangle", function (shape, w, h) {
     return geo;
 });
 // these two figures have rounded ends
-go.Shape.defineFigureGenerator("CapsuleH", function (shape, w, h) {
+go.Shape.defineFigureGenerator("CapsuleH", (shape, w, h) => {
     const geo = new go.Geometry();
     if (w < h) {
         const fig = new go.PathFigure(w / 2, 0, true);
@@ -129,7 +129,7 @@ go.Shape.defineFigureGenerator("CapsuleH", function (shape, w, h) {
     }
 });
 go.Shape.defineFigureGenerator("Capsule", "CapsuleH"); // synonym
-go.Shape.defineFigureGenerator("CapsuleV", function (shape, w, h) {
+go.Shape.defineFigureGenerator("CapsuleV", (shape, w, h) => {
     const geo = new go.Geometry();
     if (h < w) {
         const fig = new go.PathFigure(0, h / 2, true);

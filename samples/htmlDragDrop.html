@@ -354,7 +354,7 @@ function init() {
 
   // Modify the CommandHandler's doKeyDown to do nothing except bubble the event
   // on a potential Paste command:
-  myDiagram.commandHandler.doKeyDown = function() {
+  myDiagram.commandHandler.doKeyDown = function() {  // method override must be function, not =>
     const diagram = this.diagram;
     const e = diagram.lastInput;
     // The meta (Command) key substitutes for "control" for Mac commands
@@ -373,7 +373,7 @@ function init() {
   };
 
   // handle inserting a new node using text that is in the system clipboard
-  document.addEventListener('paste', function (e) {
+  document.addEventListener('paste', e => {
     const paste = e.clipboardData.getData("text");
     // Decide if the clipboard should be pasted, or if we should let GoJS paste
     // This sample pastes from the clipboard if it contains any text at all,

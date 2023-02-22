@@ -280,14 +280,14 @@ export class DrawCommandHandler extends go.CommandHandler {
         diagram.startTransaction("pullToFront");
         // find the affected Layers
         const layers = new go.Map();
-        diagram.selection.each(function (part) {
+        diagram.selection.each(part => {
             if (part.layer !== null)
                 layers.set(part.layer, 0);
         });
         // find the maximum zOrder in each Layer
-        layers.iteratorKeys.each(function (layer) {
+        layers.iteratorKeys.each(layer => {
             let max = 0;
-            layer.parts.each(function (part) {
+            layer.parts.each(part => {
                 if (part.isSelected)
                     return;
                 const z = part.zOrder;
@@ -301,7 +301,7 @@ export class DrawCommandHandler extends go.CommandHandler {
             layers.set(layer, max);
         });
         // assign each selected Part.zOrder to the computed value for each Layer
-        diagram.selection.each(function (part) {
+        diagram.selection.each(part => {
             const z = layers.get(part.layer) || 0;
             DrawCommandHandler._assignZOrder(part, z + 1);
         });
@@ -318,14 +318,14 @@ export class DrawCommandHandler extends go.CommandHandler {
         diagram.startTransaction("pushToBack");
         // find the affected Layers
         const layers = new go.Map();
-        diagram.selection.each(function (part) {
+        diagram.selection.each(part => {
             if (part.layer !== null)
                 layers.set(part.layer, 0);
         });
         // find the minimum zOrder in each Layer
-        layers.iteratorKeys.each(function (layer) {
+        layers.iteratorKeys.each(layer => {
             let min = 0;
-            layer.parts.each(function (part) {
+            layer.parts.each(part => {
                 if (part.isSelected)
                     return;
                 const z = part.zOrder;
@@ -339,7 +339,7 @@ export class DrawCommandHandler extends go.CommandHandler {
             layers.set(layer, min);
         });
         // assign each selected Part.zOrder to the computed value for each Layer
-        diagram.selection.each(function (part) {
+        diagram.selection.each(part => {
             const z = layers.get(part.layer) || 0;
             DrawCommandHandler._assignZOrder(part, 
             // make sure a group's nested nodes are also behind everything else
@@ -353,7 +353,7 @@ export class DrawCommandHandler extends go.CommandHandler {
         if (part.layer === root.layer)
             part.zOrder = z;
         if (part instanceof go.Group) {
-            part.memberParts.each(function (m) {
+            part.memberParts.each(m => {
                 DrawCommandHandler._assignZOrder(m, z + 1, root);
             });
         }
@@ -361,7 +361,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     static _findGroupDepth(part) {
         if (part instanceof go.Group) {
             let d = 0;
-            part.memberParts.each(function (m) {
+            part.memberParts.each(m => {
                 d = Math.max(d, DrawCommandHandler._findGroupDepth(m));
             });
             return d + 1;

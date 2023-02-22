@@ -127,7 +127,7 @@
     return $(go.TextBlock, name,
       {
         margin: new go.Margin(2, 2, 0, 2),
-        mouseEnter: function(e, tb) {
+        mouseEnter: (e, tb) => {
           var ad = tb.part;
           if (ad.selectedTextBlock === tb) return;
           if (ad.selectedTextBlock) {  // this keeps a reference to the selected TextBlock
@@ -162,9 +162,9 @@
         width: 30, height: 30,
         fill: "white",
         background: "transparent",  // to catch a click anywhere in bounds
-        click: function(e, shape) {
+        click: (e, shape) => {
           var ad = shape.part;
-          e.diagram.commit(function(diag) {
+          e.diagram.commit(diag => {
             diag.model.set(ad.data, "figure", fig);
             ad.adornedPart.invalidateConnectedLinks();
           }, "modified figure");

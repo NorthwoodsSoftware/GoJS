@@ -191,7 +191,7 @@ export class GeometryReshapingTool extends go.Tool {
                         h.alignment = new go.Spot(0, 0, x - b.x, y - b.y);
                     }
                     if (unneeded !== null) {
-                        unneeded.forEach(function (h) { if (adornment)
+                        unneeded.forEach(h => { if (adornment)
                             adornment.remove(h); });
                     }
                     part.addAdornment(this.name, adornment);
@@ -209,9 +209,9 @@ export class GeometryReshapingTool extends go.Tool {
     _countHandles(geo) {
         var reseg = this.isResegmenting;
         var c = 0;
-        geo.figures.each(function (fig) {
+        geo.figures.each(fig => {
             c++;
-            fig.segments.each(function (seg) {
+            fig.segments.each(seg => {
                 if (reseg) {
                     if (seg.type === go.PathSegment.Line)
                         c++;

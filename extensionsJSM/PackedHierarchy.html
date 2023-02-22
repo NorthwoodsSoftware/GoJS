@@ -81,7 +81,7 @@
         this.packShape = PackedLayout.Spiral;
         this.hasCircularNodes = true;
         this.sortMode = PackedLayout.Area,
-        this.comparer = function(na, nb) {
+        this.comparer = (na, nb) => {
           // ensure label is placed last
           if (na.data.isLabel) {
             return 1;
@@ -145,7 +145,7 @@
         {
           toolTip: toolTipTemplate,
           selectionAdornmentTemplate: selectionAdornmentTemplate,
-          doubleClick: function(e, node) {
+          doubleClick: (e, node) => {
             const url = "../../api/symbols/" + node.data.key + ".html";
             window.open(url, "_blank");
           }
@@ -164,7 +164,7 @@
           { font: "12px Helvetica, Arial, sans-serif", stroke: "white", maxLines: 1 },
           new go.Binding("text"),
           new go.Binding("font"),
-          new go.Binding("stroke", "fill", function(f) { return go.Brush.isDark(f) ? "white" : "black"; }))
+          new go.Binding("stroke", "fill", f => go.Brush.isDark(f) ? "white" : "black"))
       );
 
     myDiagram.groupTemplate =

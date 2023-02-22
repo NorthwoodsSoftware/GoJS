@@ -217,7 +217,7 @@ export class PackedLayout extends go.Layout {
      *   $(PackedLayout,
      *     {
      *       sortMode: PackedLayout.Area,
-     *       comparer: function(na, nb) {
+     *       comparer: (na, nb) => {
      *         var na = na.data;
      *         var nb = nb.data;
      *         if (da.someProperty < db.someProperty) return -1;

@@ -71,7 +71,7 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool());
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", function(e) {
+    myDiagram.addDiagramListener("Modified", e => {
       var button = document.getElementById("saveModel");
       if (button) button.disabled = !myDiagram.isModified;
       var idx = document.title.indexOf("*");
@@ -104,7 +104,7 @@
       $("ToolTip",
         { "Border.figure": "RoundedRectangle" },
         $(go.TextBlock, { margin: 2 },
-          new go.Binding("text", "", function(d) { return d.category; })));
+          new go.Binding("text", "", d => d.category)));
 
     // define some common property settings
     function nodeStyle() {
@@ -152,7 +152,7 @@
         $(go.Shape, "Rectangle", portStyle(false),  // the only port
           { portId: "", alignment: new go.Spot(1, 0.5) }),
         { // if double-clicked, an input node will change its value, represented by the color.
-          doubleClick: function(e, obj) {
+          doubleClick: (e, obj) => {
             e.diagram.startTransaction("Toggle Input");
             var shp = obj.findObject("NODESHAPE");
             shp.fill = (shp.fill === green) ? red : green;
@@ -280,7 +280,7 @@
 
   // update the diagram every 250 milliseconds
   function loop() {
-    setTimeout(function() { updateStates(); loop(); }, 250);
+    setTimeout(() => { updateStates(); loop(); }, 250);
   }
 
   // update the value and appearance of each node according to its type and input values
@@ -288,13 +288,13 @@
     var oldskip = myDiagram.skipsUndoManager;
     myDiagram.skipsUndoManager = true;
     // do all "input" nodes first
-    myDiagram.nodes.each(function(node) {
+    myDiagram.nodes.each(node => {
       if (node.category === "input") {
         doInput(node);
       }
     });
     // now we can do all other kinds of nodes
-    myDiagram.nodes.each(function(node) {
+    myDiagram.nodes.each(node => {
       switch (node.category) {
         case "and": doAnd(node); break;
         case "or": doOr(node); break;
@@ -317,7 +317,7 @@
 
   // helper function for propagating results
   function setOutputLinks(node, color) {
-    node.findLinksOutOf().each(function(link) { link.findObject("SHAPE").stroke = color; });
+    node.findLinksOutOf().each(link => link.findObject("SHAPE").stroke = color);
   }
 
   // update nodes by the specific function for its type
@@ -352,13 +352,13 @@
 
   function doXor(node) {
     var truecount = 0;
-    node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+    node.findLinksInto().each(link => { if (linkIsTrue(link)) truecount++; });
     var color = truecount % 2 !== 0 ? green : red;
     setOutputLinks(node, color);
   }
   function doXnor(node) {
     var truecount = 0;
-    node.findLinksInto().each(function(link) { if (linkIsTrue(link)) truecount++; });
+    node.findLinksInto().each(link => { if (linkIsTrue(link)) truecount++; });
     var color = truecount % 2 === 0 ? green : red;
     setOutputLinks(node, color);
   }
@@ -366,7 +366,7 @@
   function doOutput(node) {
     // assume there is just one input link
     // we just need to update the node's Shape.fill
-    node.linksConnected.each(function(link) { node.findObject("NODESHAPE").fill = link.findObject("SHAPE").stroke; });
+    node.linksConnected.each(link => { node.findObject("NODESHAPE").fill = link.findObject("SHAPE").stroke; });
   }
 
   // save a model to and load a model from Json text, displayed below the Diagram

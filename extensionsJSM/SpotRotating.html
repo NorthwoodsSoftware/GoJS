@@ -74,13 +74,13 @@
 
   if (window.goSamples) goSamples(); // init for the samples -- you don't need to call this
   const $ = go.GraphObject.make; // for conciseness in defining templates
-  
+
   const myDiagram =
     $(go.Diagram, "myDiagramDiv",
       {
         rotatingTool: new SpotRotatingTool(),
         "undoManager.isEnabled": true,
-        "ModelChanged": function(e) {
+        "ModelChanged": e => {
           if (e.isTransactionFinished) {
             document.getElementById("mySavedModel").value = myDiagram.model.toJson();
           }

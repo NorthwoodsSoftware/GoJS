@@ -33,7 +33,7 @@ export class ResizeMultipleTool extends go.ResizingTool {
    */
   public override resize(newr: go.Rect): void {
     const diagram = this.diagram;
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       if (part instanceof go.Link) return; // only Nodes and simple Parts
       const obj = part.resizeObject;
 

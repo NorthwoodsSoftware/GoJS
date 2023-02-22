@@ -67,7 +67,7 @@
             isReadOnly: true,
             layout: $(RadialLayout, {
               maxLayers: 2,
-              rotateNode: function(node, angle, sweep, radius) {
+              rotateNode: function(node, angle, sweep, radius) {  // method override must be function, not =>
                 // rotate the nodes and make sure the text is not upside-down
                 node.angle = angle;
                 var label = node.findObject("TEXTBLOCK");
@@ -75,7 +75,7 @@
                   label.angle = ((angle > 90 && angle < 270 || angle < -90) ? 180 : 0);
                 }
               },
-              commitLayers: function() {  // override
+              commitLayers: function() {  // method override must be function, not =>
                 // optional: add circles in the background
                 // need to remove any old ones first
                 const diagram = this.diagram;

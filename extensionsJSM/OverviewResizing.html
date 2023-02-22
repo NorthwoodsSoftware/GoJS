@@ -91,7 +91,7 @@
             alignmentFocus: go.Spot.Center,
             // customize the expander behavior to
             // create children if the node has never been expanded
-            click: function (e, obj) {
+            click: (e, obj) => {
                 const node = obj.part; // get the Node containing this Button
                 if (node === null)
                     return;
@@ -112,12 +112,8 @@
         'box.resizable': true,
         'resizingTool': new OverviewResizingTool()
     });
-    document.getElementById('zoomToFit').addEventListener('click', function () {
-        myDiagram.zoomToFit();
-    });
-    document.getElementById('expandAtRandom').addEventListener('click', function () {
-        expandAtRandom();
-    });
+    document.getElementById('zoomToFit').addEventListener('click',  () => myDiagram.zoomToFit());
+    document.getElementById('expandAtRandom').addEventListener('click', () => expandAtRandom());
 
     function expandNode(node) {
       const diagram = node.diagram;
@@ -175,7 +171,7 @@
     }
     function expandAtRandom() {
       const eligibleNodes = [];
-      myDiagram.nodes.each(function (n) {
+      myDiagram.nodes.each(n => {
           if (!n.isTreeExpanded)
               eligibleNodes.push(n);
       });

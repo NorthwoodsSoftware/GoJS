@@ -81,7 +81,7 @@ const myDiagram = $(go.Diagram, 'myDiagramDiv',
   });
 
 // support mouse wheel scrolling of table when the mouse is in the table
-myDiagram.toolManager.doMouseWheel = function() {  // method override
+myDiagram.toolManager.doMouseWheel = function() {  // method override, cannot use =>
   const e = this.diagram.lastInput;
   let tab = this.diagram.findObjectAt(e.documentPoint);
   while (tab !== null && !tab._updateScrollBar) tab = tab.panel;
@@ -125,7 +125,7 @@ myDiagram.nodeTemplate =
           defaultColumnSeparatorStrokeWidth: 0.5
         },
         new go.Binding('TABLE.itemArray', 'items'),
-        new go.Binding('TABLE.column', 'left', function(left) { return left ? 2 : 0; }),
+        new go.Binding('TABLE.column', 'left', left => left ? 2 : 0),
         new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
         {
           'TABLE.itemTemplate':

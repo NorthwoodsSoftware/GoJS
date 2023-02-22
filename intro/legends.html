@@ -258,6 +258,38 @@ make them appear not to move as the user scrolls or zooms.
 <pre class="lang-js" id="static"><code>
   setupForLegend(diagram);  // this creates a diagram just like the first example
 
+  const myTitle =
+    $(go.Part,
+      { layerName: "Grid" },  // this Layer is behind everything and is not interactive
+      $(go.TextBlock, "A Title", { font: "bold 24pt sans-serif", stroke: "green" }));
+  myDiagram.add(myTitle);
+
+  myDiagram.addDiagramListener("ViewportBoundsChanged", e => {
+    e.diagram.commit(dia => {
+      const h = dia.viewportBounds.height * dia.scale;
+      myTitle.scale = 1/dia.scale;  // counteract any zooming
+      myTitle.ensureBounds();       // update actualBounds
+      const pos = new go.Point(0, h - myTitle.actualBounds.height * dia.scale);
+      myTitle.position = dia.transformViewToDoc(pos);
+    }, null);  // set skipsUndoManager to true, to avoid recording these changes
+  });
+</code></pre>
+<script>goCode("static", 300, 200);</script>
+<p>
+Note that as the user pans or scrolls or zooms the diagram, the title remains at the same bottom-left corner
+at apparently the same effective size.
+This example makes use of the "Grid" <a>Layer</a> (see <a href="layers.html">Intro to Layers</a>), which
+is convenient for making sure the title (or legend) stays in the background and does not participate in
+selection or mouse events or the <a>UndoManager</a>.
+</p>
+<p>
+Here's a more general solution where any number of non-Node and non-Link Parts can be positioned
+according to a "_viewPosition" property.
+Note that that property is in viewport coordinates, not in document coordinates!
+</p>
+<pre class="lang-js" id="static2"><code>
+  setupForLegend(diagram);  // this creates a diagram just like the first example
+
   diagram.add(
     $(go.Part,
       {
@@ -275,21 +307,14 @@ make them appear not to move as the user scrolls or zooms.
       dia.parts.each(part => {
         // and only on those that have the "_viewPosition" property set to a Point
         if (part._viewPosition) {
-          part.position = dia.transformViewToDoc(part._viewPosition);
           part.scale = 1/dia.scale;  // counteract any zooming
+          part.position = dia.transformViewToDoc(part._viewPosition);
         }
       })
     }, null);  // set skipsUndoManager to true, to avoid recording these changes
   });
 </code></pre>
-<script>goCode("static", 300, 200);</script>
-<p>
-Note that as the user pans or scrolls or zooms the diagram, the title remains at the same viewport position
-at apparently the same effective size.
-This example makes use of the "Grid" <a>Layer</a> (see <a href="layers.html">Intro to Layers</a>), which
-is convenient for making sure the title (or legend) stays in the background and does not participate in
-selection or mouse events or the <a>UndoManager</a>.
-</p>
+<script>goCode("static2", 300, 200);</script>
 
       </div>
     </div>

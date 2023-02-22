@@ -47,8 +47,8 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
      */
     doCancel() {
         const orig = this._originalSelection;
-        orig.each(function (p) { p.isSelected = true; });
-        this._temporarySelection.each(function (p) { if (!orig.contains(p))
+        orig.each(p => p.isSelected = true);
+        this._temporarySelection.each(p => { if (!orig.contains(p))
             p.isSelected = false; });
         super.doCancel();
     }
@@ -91,27 +91,27 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
         const found = diagram.findPartsIn(r, this.isPartialInclusion);
         if (e.control || e.meta) { // toggle or deselect
             if (e.shift) { // deselect only
-                temp.each(function (p) { if (!found.contains(p))
+                temp.each((p) => { if (!found.contains(p))
                     p.isSelected = orig.contains(p); });
-                found.each(function (p) { p.isSelected = false; temp.add(p); });
+                found.each((p) => { p.isSelected = false; temp.add(p); });
             }
             else { // toggle selectedness of parts based on _originalSelection
-                temp.each(function (p) { if (!found.contains(p))
+                temp.each((p) => { if (!found.contains(p))
                     p.isSelected = orig.contains(p); });
-                found.each(function (p) { p.isSelected = !orig.contains(p); temp.add(p); });
+                found.each((p) => { p.isSelected = !orig.contains(p); temp.add(p); });
             }
         }
         else if (e.shift) { // extend selection only
-            temp.each(function (p) { if (!found.contains(p))
+            temp.each((p) => { if (!found.contains(p))
                 p.isSelected = orig.contains(p); });
-            found.each(function (p) { p.isSelected = true; temp.add(p); });
+            found.each((p) => { p.isSelected = true; temp.add(p); });
         }
         else { // select found parts, and unselect all other previously selected parts
-            temp.each(function (p) { if (!found.contains(p))
+            temp.each((p) => { if (!found.contains(p))
                 p.isSelected = false; });
-            orig.each(function (p) { if (!found.contains(p))
+            orig.each((p) => { if (!found.contains(p))
                 p.isSelected = false; });
-            found.each(function (p) { p.isSelected = true; temp.add(p); });
+            found.each((p) => { p.isSelected = true; temp.add(p); });
         }
     }
 }

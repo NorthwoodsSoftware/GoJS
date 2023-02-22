@@ -130,16 +130,18 @@ function init() {
       },
     });
 
-  const toolTipTemplate =
-    $("ToolTip",
-      $(go.TextBlock, { margin: 4 },
-        new go.Binding("text", "", d => d.key + "\nlocation: [" + d.latlong.join(", ") + "]"))
-    );
-
   // the node template describes how each Node should be constructed
   myDiagram.nodeTemplate =
     $(go.Node, "Auto",
-      { toolTip: toolTipTemplate, locationSpot: go.Spot.Center, cursor: "pointer" },
+      {
+        locationSpot: go.Spot.Center,
+        cursor: "pointer",
+        toolTip:
+          $("ToolTip",
+            $(go.TextBlock, { margin: 4, textAlign: "center" },
+              new go.Binding("text", "", d => `${d.key}\n[${d.latlong[0].toFixed(6)}, ${d.latlong[1].toFixed(6)}]`))
+          )
+      },
       $(go.Shape, "Circle",
         {
           fill: "rgba(0, 255, 0, .4)", stroke: "#082D47", strokeWidth: 1,
@@ -163,17 +165,25 @@ function init() {
 
   myDiagram.linkTemplate =
     $(go.Link,
-      { layerName: "Background", curve: go.Link.Bezier, curviness: 5 },
+      {
+        layerName: "Background",
+        curve: go.Link.Bezier, curviness: 5,
+        toolTip:
+          $("ToolTip",
+            $(go.TextBlock, { margin: 4, textAlign: "center" },
+              new go.Binding("text", "", d => `${d.from} -- ${d.to}`)),
+          )
+      },
       $(go.Shape, { strokeWidth: 3, stroke: "rgba(100,100,255,.7)" })
     );
 
   // DraggingTool needs to disable panning of Leaflet map
-  myDiagram.toolManager.draggingTool.doActivate = function() {
+  myDiagram.toolManager.draggingTool.doActivate = function() {  // method override must be function, not =>
     myLeafletMap.dragging.disable();
     go.DraggingTool.prototype.doActivate.call(this);
   }
 
-  myDiagram.toolManager.draggingTool.doDeactivate = function() {
+  myDiagram.toolManager.draggingTool.doDeactivate = function() {  // method override must be function, not =>
     myLeafletMap.dragging.enable();
     go.DraggingTool.prototype.doDeactivate.call(this);
   }

@@ -52,7 +52,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     // remember initial angle and distance for each Part
     const infos = new go.Map<go.Part, PartInfo>();
     const tool = this;
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       tool.walkTree(part, infos);
     });
     this._initialInfo = infos;
@@ -100,7 +100,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     // when rotating individual parts, remember the original angle difference
     const angleDiff = newangle - node.rotateObject.angle;
     const tool = this;
-    this._initialInfo.each(function(kvp) {
+    this._initialInfo.each(kvp => {
       const part = kvp.key;
       if (part instanceof go.Link) return; // only Nodes and simple Parts
       const partInfo = kvp.value;
