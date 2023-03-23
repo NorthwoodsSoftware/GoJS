@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.3
+ * Type definitions for GoJS v2.3.4
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -242,6 +242,7 @@ export interface IContext {
     clipInsteadOfFill: boolean;
     currentlyShadowed: boolean;
     isTemporary: boolean;
+    filter: string;
     cachedTransform: any;
     commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
@@ -10182,8 +10183,8 @@ export class Diagram {
      *
      * @since 2.3
      */
-    get renderer(): 'default' | 'svg';
-    set renderer(value: 'default' | 'svg');
+    get renderer(): 'default' | 'svg' | 'canvas';
+    set renderer(value: 'default' | 'svg' | 'canvas');
     /**
      * This static function returns `true` if GoJS detects a DOM.
      * In browser environments this is expected to be `true`, in Node-like environments, `false`.
@@ -14778,6 +14779,14 @@ export abstract class GraphObject {
     get opacity(): number;
     set opacity(value: number);
     /**
+     * Undocumented. May not work in Safari.
+     */
+    get filter(): string;
+    /**
+     * Undocumented. May not work in Safari.
+     */
+    set filter(value: string);
+    /**
      * Gets or sets whether a GraphObject is visible.
      * The default value is true.
      * A not visible object takes no space in the Panel that it is in.
@@ -15170,10 +15179,13 @@ export abstract class GraphObject {
      * objects in a Panel.
      * You cannot modify the top or left or right or bottom of the value of this property --
      * if you want to change the margin you must set this property to a different Margin.
-     * Default margin is Margin(0,0,0,0).
+     * Default margin is `Margin(0,0,0,0)`.
+     *
+     * For most uses, increasing a margin will increase the space this GraphObject takes in its containing panel.
+     * When an object has a GraphObject#stretch value applied, margins may decrease the size of that object.
      *
      * The property setter accepts a number instead of a Margin object: providing a
-     * number N will result in using a Margin(N, N, N, N).
+     * number `N` will result in using a `Margin(N, N, N, N)`.
      * The property getter will always return a Margin.
      * @see #desiredSize
      * @see #measuredBounds
@@ -23173,12 +23185,6 @@ export class Link extends Part {
      * (undocumented)
      */
     get lastPickIndex(): number;
-    /**
-     * (undocumented)
-     * Maybe invalidate the geometries of other links that jump or gap over this link
-     * @param {Rect} prevbounds
-     */
-    invalidateOtherJumpOvers(prevbounds: Rect): void;
     /**
      * Gets or sets how the route is computed, including whether it uses the points of its old route to determine the new route.
      * The value must be one of Link.None|None, Link.End|End, Link.Scale|Scale, or Link.Stretch|Stretch.

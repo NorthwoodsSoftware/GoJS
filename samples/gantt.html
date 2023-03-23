@@ -284,7 +284,19 @@ const myTasks =
       "animationManager.isInitial": false,
       "TreeCollapsed": e => myGantt.layoutDiagram(true),
       "TreeExpanded": e => myGantt.layoutDiagram(true),
+      "ChangedSelection": e => {  // selecting a bar also selects the corresponding task in myTasks
+        if (myChangingSelection) return;
+        myChangingSelection = true;
+        const tasks = [];
+        e.diagram.selection.each(part => {
+          if (part instanceof go.Node) tasks.push(myGantt.findNodeForData(part.data));
+        });
+        myGantt.selectCollection(tasks);
+        myChangingSelection = false;
+      }
     });
+
+var myChangingSelection = false;
 
 myTasks.nodeTemplate =
   $(go.Node, "Table",
@@ -301,6 +313,10 @@ myTasks.nodeTemplate =
       mouseLeave: (e, node) => {
         node.background = node.isSelected ? "dodgerblue" : "transparent";
         myHighlightTask.visible = false;
+      },
+      doubleClick: (e, node) => {  // scroll myGantt so the corresponding bar is visible
+        const bar = myGantt.findNodeForData(node.data);
+        if (bar) myGantt.commandHandler.scrollToPart(bar);
       }
     },
     new go.Binding("background", "isSelected", s => s ? "dodgerblue" : "transparent").ofObject(),
@@ -321,7 +337,7 @@ myTasks.nodeTemplate =
     standardContextMenus()
   );
   
-var TREEWIDTH = 160;
+var TREEWIDTH = 160;  // document units, may be modified, used by updateNodeWidths
 
 function updateNodeWidths(width) {
   let minx = Infinity;
@@ -338,11 +354,35 @@ function updateNodeWidths(width) {
       n.getColumnDefinition(1).width = TREEWIDTH - n.actualBounds.x;
     }
   });
+  myTasksHeader.getColumnDefinition(1).width = TREEWIDTH - myTasksHeader.actualBounds.x;
 }
+
+const myTasksHeader = // the timeline at the top of the myTasks viewport
+  $(go.Part, "Table",
+    {
+      layerName: "Adornment",
+      pickable: false, 
+      position: new go.Point(-26, 0),  // position will be set in "ViewportBoundsChanged" listener
+      columnSizing: go.RowColumnDefinition.None,
+      selectionAdorned: false,
+      height: GridCellHeight,
+      background: "lightgray"
+    },
+    $(go.RowColumnDefinition, { column: 0, width: 14 }),
+    $(go.RowColumnDefinition, { column: 1 }),
+    $(go.TextBlock, "Name", { column: 1 }),
+    // additional columns
+    $(go.RowColumnDefinition, { column: 2, width: 40, alignment: go.Spot.Right, separatorPadding: new go.Margin(0, 4), separatorStroke: "gray" }),
+    $(go.TextBlock, "Start", { column: 2 }),
+    $(go.RowColumnDefinition, { column: 3, width: 40, alignment: go.Spot.Right, separatorPadding: new go.Margin(0, 4), separatorStroke: "gray" }),
+    $(go.TextBlock, "Dur.", { column: 3 }),
+  );
+myTasks.add(myTasksHeader);
 
 myTasks.linkTemplate =
   $(go.Link,
     {
+      selectable: false,
       routing: go.Link.Orthogonal,
       fromEndSegmentLength: 1,
       toEndSegmentLength: 1
@@ -352,7 +392,7 @@ myTasks.linkTemplate =
 
 myTasks.linkTemplateMap.add("Dep",
   $(go.Link,  // ignore these links in the Tasks diagram
-    { visible: false, isTreeLink: false }
+    { selectable: false, visible: false, isTreeLink: false }
   ));
 
 
@@ -394,6 +434,16 @@ myGantt =
         myTimeline.graduatedMax = Math.ceil(b.width / (GridCellWidth*7)) * (GridCellWidth*7);
         myTimeline.findObject("MAIN").width = myTimeline.graduatedMax;
         myTimeline.findObject("TICKS").height = Math.max(e.diagram.documentBounds.height, e.diagram.viewportBounds.height);
+      },
+      "ChangedSelection": e => {  // selecting a task also selects the corresponding bar in myGantt
+        if (myChangingSelection) return;
+        myChangingSelection = true;
+        const bars = [];
+        e.diagram.selection.each(part => {
+          if (part instanceof go.Node) bars.push(myTasks.findNodeForData(part.data));
+        });
+        myTasks.selectCollection(bars);
+        myChangingSelection = false;
       }
     });
 
@@ -516,7 +566,7 @@ myGantt.linkTemplateMap.add("Dep",
       isTreeLink: false, isLayoutPositioned: false,
       fromSpot: new go.Spot(0.999999, 1), toSpot: new go.Spot(0.000001, 0)
     },
-    $(go.Shape, { stroke: "brown" }),
+    $(go.Shape, { stroke: "brown", strokeWidth: 3 }),
     $(go.Shape, { toArrow: "Standard", fill: "brown", strokeWidth: 0, scale: 0.75 })
   ));
 
@@ -593,6 +643,7 @@ var changingView = false;  // for preventing recursive updates
 myTasks.addDiagramListener("ViewportBoundsChanged", e => {
   if (changingView) return;
   changingView = true;
+  myTasksHeader.position = new go.Point(myTasksHeader.position.x, myTasks.viewportBounds.position.y);
   myGantt.scale = myTasks.scale;
   myGantt.position = new go.Point(myGantt.position.x, myTasks.position.y);
   myTimeline.position = new go.Point(myTimeline.position.x, myGantt.viewportBounds.position.y);
@@ -603,6 +654,7 @@ myGantt.addDiagramListener("ViewportBoundsChanged", e => {
   changingView = true;
   myTasks.scale = myGantt.scale;
   myTasks.position = new go.Point(myTasks.position.x, myGantt.position.y);
+  myTasksHeader.position = new go.Point(myTasksHeader.position.x, myTasks.viewportBounds.position.y);
   myGantt.position = new go.Point(myGantt.position.x, myTasks.position.y);  // don't scroll more if myTasks can't scroll more
   myTimeline.position = new go.Point(myTimeline.position.x, myGantt.viewportBounds.position.y);
   changingView = false;

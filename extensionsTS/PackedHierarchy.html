@@ -56,50 +56,51 @@
     if (window.goSamples) window.goSamples();  // init for these samples -- you don't need to call this
 
     require(["./PackedLayout"], function(app) {
-      var PackedLayout = app.PackedLayout;
+      const PackedLayout = app.PackedLayout;
 
       // subclass PackedLayout to change default properties and override commitLayout function
-      function HierarchyLayout() {
-        PackedLayout.call(this);
-        this.packShape = PackedLayout.Spiral;
-        this.hasCircularNodes = true;
-        this.sortMode = PackedLayout.Area,
-        this.comparer = function(na, nb) {
-          // ensure label is placed last
-          if (na.data.isLabel) {
-            return 1;
+      class HierarchyLayout extends PackedLayout {
+        constructor() {
+          super();
+          this.packShape = PackedLayout.Spiral;
+          this.hasCircularNodes = true;
+          this.sortMode = PackedLayout.Area,
+          this.comparer = function(na, nb) {
+            // ensure label is placed last
+            if (na.data.isLabel) {
+              return 1;
+            }
+            if (nb.data.isLabel) {
+              return -1;
+            }
+            // otherwise sort in ascending order by size (all nodes are circular, so using width or height here doesn't matter)
+            return (na.actualBounds.width - nb.actualBounds.width);
+          };
+        }
+
+        /* after each group has had its layout applied, size and position it according
+        * to the smallest enclosing circle which goes around all of its nodes */
+        commitLayout() {
+          if (this.group !== null) {
+            const groupData = keyToNodeDataMap.get(this.group.key);
+
+            const enclosingCircle = this.enclosingCircle;
+            const actualBounds = this.actualBounds;
+
+            const size = new go.Size(enclosingCircle.width, enclosingCircle.width);
+            this.diagram.model.setDataProperty(groupData, "size", size);
+
+            const dx = enclosingCircle.centerX - actualBounds.centerX;
+            const dy = enclosingCircle.centerY - actualBounds.centerY;
+            const position = new go.Point((actualBounds.width - enclosingCircle.width) / 2 + dx, (actualBounds.height - enclosingCircle.height) / 2 + dy);
+            this.diagram.model.setDataProperty(groupData, "position", position);
           }
-          if (nb.data.isLabel) {
-            return -1;
-          }
-          // otherwise sort in ascending order by size (all nodes are circular, so using width or height here doesn't matter)
-          return (na.actualBounds.width - nb.actualBounds.width);
         }
       }
-      go.Diagram.inherit(HierarchyLayout, PackedLayout);
 
-      /* after each group has had its layout applied, size and position it according
-      * to the smallest enclosing circle which goes around all of its nodes */
-      HierarchyLayout.prototype.commitLayout = function() {
-        if (this.group !== null) {
-          var groupData = keyToNodeDataMap.get(this.group.key);
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-          var enclosingCircle = this.enclosingCircle;
-          var actualBounds = this.actualBounds;
-
-          var size = new go.Size(enclosingCircle.width, enclosingCircle.width);
-          this.diagram.model.setDataProperty(groupData, "size", size);
-
-          var dx = enclosingCircle.centerX - actualBounds.centerX;
-          var dy = enclosingCircle.centerY - actualBounds.centerY;
-          var position = new go.Point((actualBounds.width - enclosingCircle.width) / 2 + dx, (actualBounds.height - enclosingCircle.height) / 2 + dy);
-          this.diagram.model.setDataProperty(groupData, "position", position);
-        }
-      }
-
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      var myDiagram =
+      const myDiagram =
         $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
           {
             layout: $(HierarchyLayout), // defined above
@@ -109,14 +110,14 @@
           });
 
       // common definitions for both Nodes and Groups
-      var toolTipTemplate =
+      const toolTipTemplate =
         $(go.Adornment, "Auto",
           $(go.Shape, { fill: "white" }),
           $(go.TextBlock, { margin: 4 },
             new go.Binding("text", "tooltip"))
         );
 
-      var selectionAdornmentTemplate =
+        const selectionAdornmentTemplate =
         $(go.Adornment, "Auto",
           $(go.Shape, "Circle",
             { fill: null, stroke: "dodgerblue", strokeWidth: 3,
@@ -130,7 +131,7 @@
             toolTip: toolTipTemplate,
             selectionAdornmentTemplate: selectionAdornmentTemplate,
             doubleClick: function(e, node) {
-              var url = "../../api/symbols/" + node.data.key + ".html";
+              const url = "../../api/symbols/" + node.data.key + ".html";
               window.open(url, "_blank");
             }
           }
@@ -162,7 +163,7 @@
         );
 
       // Collect all of the data for the model of the class hierarchy
-      var nodeDataArray = [
+      const nodeDataArray = [
         { key: "GoJS", text: "GoJS", children: [] },
         // large label to be placed at the very end
         {
@@ -177,32 +178,32 @@
         }
       ];
 
-      var keyToNodeDataMap = new go.Map();
+      const keyToNodeDataMap = new go.Map();
       keyToNodeDataMap.add("GoJS", nodeDataArray[0]);
 
       // Iterate over all of the classes in "go"
-      for (var k in go) {
-        var cls = go[k];
+      for (let k in go) {
+        const cls = go[k];
         if (!cls) continue;
-        var proto = cls.prototype;
+        const proto = cls.prototype;
         if (!proto) continue;
         proto.constructor.className = k;  // remember name
 
-        var propCount = 0;  // count number of properties on the class
-        for (var prop in proto) {
+        let propCount = 0;  // count number of properties on the class
+        for (let prop in proto) {
           if (proto.hasOwnProperty(prop)) {
             propCount++;
           }
         }
 
-        var data = { key: k, text: k, propCount: propCount, children: [] };
+        const data = { key: k, text: k, propCount: propCount, children: [] };
         if (keyToNodeDataMap.has(k)) {
           data.children = keyToNodeDataMap.get(k).children;
         }
         keyToNodeDataMap.add(k, data); // will replace existing key if there is one
 
         // find base class constructor
-        var base = Object.getPrototypeOf(proto).constructor;
+        const base = Object.getPrototypeOf(proto).constructor;
         if (base === Object) {  // "root" node?
           data.group = "GoJS";
           keyToNodeDataMap.get("GoJS").children.push(data);
@@ -221,16 +222,16 @@
       }
 
       // create groups and add labels to groups with only 1 child
-      for (var i = nodeDataArray.length - 1; i >= 0; i--) {
-        var n = nodeDataArray[i];
+      for (let i = nodeDataArray.length - 1; i >= 0; i--) {
+        const n = nodeDataArray[i];
         if (n.children.length > 0) {
           n.isGroup = true;
         }
 
         // add tooltip and/or size node using the total number of properties it has and has inherited
-        var totalCount = n.propCount;
-        var parentKey = n.group;
-        var parentData;
+        let totalCount = n.propCount;
+        let parentKey = n.group;
+        let parentData;
         while ((parentData = keyToNodeDataMap.get(parentKey)) !== null && parentData.propCount !== undefined) {
           totalCount += parentData.propCount;
           parentKey = parentData.group;
