@@ -10,14 +10,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
 <script src="https://unpkg.com/svg-to-pdfkit"></script>
 <script id="code">
+  // Remember three separate models for the diagram
   const allModels = new go.Map();
 
+  // This just creates and initializes a Diagram.
+  // The details do not really matter for this demo.
+  var myDiagram = null;
   function init() {
     const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
-        { "grid.visible": true });
+        {
+          "grid.visible": true,
+          "undoManager.isEnabled": true
+        });
 
     myDiagram.nodeTemplate =
       $(go.Node, "Auto",
@@ -109,7 +116,6 @@
   //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
   //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
   //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
-  //     larger is better but significantly increases memory usage (default is 3)
   //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeSvg
   function generatePdf(action, namelist, options) {
     if (!options) options = {};
@@ -137,7 +143,7 @@
 
     const pageOptions = {
       size: pageSize,
-      margin: margin,  // pt
+      margin: margin,  // unit is pt
       layout: layout
     };
 

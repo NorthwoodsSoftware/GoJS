@@ -12,6 +12,7 @@
 <script id="code">
   // This just creates and initializes a Diagram.
   // The details do not really matter for this demo.
+  var myDiagram = null;
   function init() {
     const $ = go.GraphObject.make;
 
@@ -56,7 +57,6 @@
   //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
   //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
   //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
-  //     larger is better but significantly increases memory usage (default is 3)
   //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeSvg
   function generatePdf(action, diagram, options) {
     if (!(diagram instanceof go.Diagram)) throw new Error("no Diagram provided when calling generatePdf");
@@ -85,7 +85,7 @@
 
     const pageOptions = {
       size: pageSize,
-      margin: margin,  // pt
+      margin: margin,  // unit is pt
       layout: layout
     };
 
@@ -99,7 +99,7 @@
 
       const db = diagram.documentBounds.copy().subtractMargin(diagram.padding).addMargin(padding);
       const p = db.position;
-
+      // render just a single page
       const makeOptions = {};
       if (options.parts !== undefined) makeOptions.parts = options.parts;
       if (options.background !== undefined) makeOptions.background = options.background;

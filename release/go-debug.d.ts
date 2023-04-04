@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.4
+ * Type definitions for GoJS v2.3.5
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4338,6 +4338,21 @@ export class UndoManager {
      * @see #commitTransaction
      */
     rollbackTransaction(): boolean;
+    /**
+     * After an undo, call this to discard all of the transactions after
+     * this point in the history, as indicated by the #historyIndex.
+     * This method is called when a transaction occurs after some number of undo's
+     * without the same number of redo's, in order to remove all of the transactions
+     * that happened after the current history point, and then adding the new transaction.
+     *
+     * This modifies the #history but leaves #historyIndex unchanged.
+     * After a successful discard, #canRedo will return false.
+     *
+     * This method does nothing if #canRedo returns false,
+     * or if an undo or a redo is ongoing.
+     * @since 2.4
+     */
+    discardHistoryAfterIndex(): void;
     /**
      * This predicate returns true if you can call #undo.
      * This will return false if #isEnabled is false (as it is by default),
@@ -15156,8 +15171,7 @@ export abstract class GraphObject {
     get measuredBounds(): Rect;
     /**
      * This read-only property returns the natural bounding rectangle of this GraphObject in local coordinates,
-     * before any transformation by #scale or #angle,
-     * and before any resizing due to #minSize or #maxSize or #stretch.
+     * before any transformation by #scale or #angle.
      * Defaults to unknown (NaN,NaN).
      *
      * You must not modify any of the properties of the Rect that is the value of this property.
@@ -17447,7 +17461,6 @@ export class Panel extends GraphObject {
      * it will automatically create one and return it.
      *
      * If this Panel is not a Table Panel, this method returns null.
-     * @expose
      * @param {number} idx the non-negative zero-based integer row index.
      * @return {RowColumnDefinition}
      */
@@ -17470,7 +17483,6 @@ export class Panel extends GraphObject {
      * it will automatically create one and return it.
      *
      * If this Panel is not a Table Panel, this method returns null.
-     * @expose
      * @param {number} idx the non-negative zero-based integer column index.
      * @return {RowColumnDefinition}
      */
@@ -17488,11 +17500,62 @@ export class Panel extends GraphObject {
      * If it already exists on the Panel, this will copy the properties of the given RowColumnDefinition
      * onto that RowColumnDefinition.
      * @since 2.3
-     * @expose
      * @param {RowColumnDefinition} rowOrColumnDef the non-negative zero-based integer column index.
      * @return {Panel} this Panel
+     * @see #addRowDefinition
+     * @see #addColumnDefinition
      */
     addRowColumnDefinition(rowOrColumnDef: RowColumnDefinition): this;
+    /**
+     * For Panel.Table|Table Panels: Sets the row RowColumnDefinition given by the index.
+     * If the row definition does not exist on the Panel, this will create it.
+     * If it already exists on the Panel, this will copy the properties of the given RowColumnDefinition options
+     * onto that definition.
+     *
+     * This is a convenience method for #addRowColumnDefinition. Instead of writing:
+     * ```js
+     * .addRowColumnDefinition(new go.RowColumnDefinition({ row: 2, height: 60 }))
+     * ```
+     *
+     * You can write:
+     *
+     * ```js
+     * .addRowDefinition(2, { height: 60 })
+     * ```
+     *
+     * @since 2.3
+     * @param {RowColumnDefinition} rowIndex the non-negative zero-based integer row index.
+     * @param {Partial<RowColumnDefinition>} options the initialization options passed to the RowColumnDefinition constructor.
+     * @return {Panel} this Panel
+     * @see #addColumnDefinition
+     * @see #addRowColumnDefinition
+     */
+    addRowDefinition(rowIndex: number, options: Partial<RowColumnDefinition>): Panel;
+    /**
+     * For Panel.Table|Table Panels: Sets the column RowColumnDefinition given by the index.
+     * If the column definition does not exist on the Panel, this will create it.
+     * If it already exists on the Panel, this will copy the properties of the given RowColumnDefinition options
+     * onto that definition.
+     *
+     * This is a convenience method for #addRowColumnDefinition. Instead of writing:
+     * ```js
+     * .addRowColumnDefinition(new go.RowColumnDefinition({ column: 2, width: 60 }))
+     * ```
+     *
+     * You can write:
+     *
+     * ```js
+     * .addColumnDefinition(2, { width: 60 })
+     * ```
+     *
+     * @since 2.3
+     * @param {RowColumnDefinition} colIndex the non-negative zero-based integer column index.
+     * @param {Partial<RowColumnDefinition>} options the initialization options passed to the RowColumnDefinition constructor.
+     * @return {Panel} this Panel
+     * @see #addRowDefinition
+     * @see #addRowColumnDefinition
+     */
+    addColumnDefinition(colIndex: number, options: Partial<RowColumnDefinition>): Panel;
     /**
      * For Panel.Table|Table Panels: Gets or sets how this Panel's rows deal with extra space.
      * Valid values are RowColumnDefinition.ProportionalExtra and RowColumnDefinition.None.
@@ -27842,7 +27905,8 @@ export class LayeredDigraphLayout extends Layout {
     get aggressiveOption(): EnumValue;
     set aggressiveOption(value: EnumValue);
     /**
-     * Gets or sets the options used by the straighten and pack function.
+     * Gets or sets the options used by the straighten and pack function;
+     * this option is deprecated -- we recommend using #alignOption instead for better alignment and speed.
      *
      * The value must be a combination of the following bit flags:
      * LayeredDigraphLayout.PackMedian,
@@ -27955,19 +28019,21 @@ export class LayeredDigraphLayout extends Layout {
      */
     static CycleFromLayers: EnumValue;
     /**
-     * Assign layers using optimal link length layering;
+     * Assign layers using optimal link length layering, so that links tend to cross the fewest number of layers;
      * A valid value for LayeredDigraphLayout#layeringOption.
      * @constant
      */
     static LayerOptimalLinkLength: EnumValue;
     /**
-     * Assign layers using longest path sink layering;
+     * Assign layers using longest path sink layering, so that nodes are placed in the latest layer possible
+     * possibly resulting in longer links to nodes at the last/deepest layers;
      * a valid value for LayeredDigraphLayout#layeringOption.
      * @constant
      */
     static LayerLongestPathSink: EnumValue;
     /**
-     * Assign layers using longest path source layering;
+     * Assign layers using longest path source layering, so that nodes without any predecessors are placed
+     * in the first layer possibly resulting in longer links from nodes at the first/shallowest layers;
      * a valid value for LayeredDigraphLayout#layeringOption.
      * @constant
      */
@@ -28010,13 +28076,15 @@ export class LayeredDigraphLayout extends Layout {
     static AggressiveMore: EnumValue;
     /**
      * Does minimal work in packing the nodes;
-     * a valid value for LayeredDigraphLayout#packOption.
+     * a valid value for LayeredDigraphLayout#packOption;
+     * but we recommend using #alignOption instead for better alignment and speed.
      * @constant
      */
     static PackNone: number;
     /**
      * This option gives more chances for the packing algorithm to improve the network,
      * but is very expensive in time for large networks;
+     * but we recommend using #alignOption instead for better alignment and speed;
      * a valid value for LayeredDigraphLayout#packOption.
      * @constant
      */
@@ -28024,19 +28092,22 @@ export class LayeredDigraphLayout extends Layout {
     /**
      * This option tries to have the packing algorithm straighten many of the
      * links that cross layers,
-     * a valid value for LayeredDigraphLayout#packOption.
+     * a valid value for LayeredDigraphLayout#packOption;
+     * but we recommend using #alignOption instead for better alignment and speed.
      * @constant
      */
     static PackStraighten: number;
     /**
      * This option tries to have the packing algorithm center groups of nodes
      * based on their relationships with nodes in other layers,
-     * a valid value for LayeredDigraphLayout#packOption.
+     * a valid value for LayeredDigraphLayout#packOption;
+     * but we recommend using #alignOption instead for better alignment and speed.
      * @constant
      */
     static PackMedian: number;
     /**
      * Enable all options for the LayeredDigraphLayout#packOption property;
+     * but we recommend using #alignOption instead for better alignment and speed;
      * See also LayeredDigraphLayout.PackExpand, LayeredDigraphLayout.PackStraighten,
      * and LayeredDigraphLayout.PackMedian.
      * @constant

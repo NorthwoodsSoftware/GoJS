@@ -12,14 +12,15 @@
 <script id="code">
   // This just creates and initializes a Diagram.
   // The details do not really matter for this demo.
+  var myDiagram = null;
   function init() {
     const $ = go.GraphObject.make;
 
     myDiagram =
       $(go.Diagram, "myDiagramDiv",
         {
-          "undoManager.isEnabled": true,
-          "grid.visible": true
+          "grid.visible": true,
+          "undoManager.isEnabled": true
         });
 
     myDiagram.nodeTemplate =
@@ -57,7 +58,6 @@
   //   "padding" instead of the Diagram.padding when adjusting the Diagram.documentBounds for the area to render
   //   "imgWidth", size of diagram image for one page; defaults to the page width minus margins
   //   "imgHeight", size of diagram image for one page; defaults to the page height minus margins
-  //     larger is better but significantly increases memory usage (default is 3)
   //   "parts", "background", "showTemporary", "showGrid", all are passed to Diagram.makeSvg
   function generatePdf(action, diagram, options) {
     if (!(diagram instanceof go.Diagram)) throw new Error("no Diagram provided when calling generatePdf");
@@ -86,7 +86,7 @@
 
     const pageOptions = {
       size: pageSize,
-      margin: margin,  // pt
+      margin: margin,  // unit is pt
       layout: layout
     };
 
@@ -146,7 +146,7 @@
       const frame = document.getElementById("myFrame");
       if (frame) {
         frame.style.display = "block";
-        frame.src = datauri;  // doesn't work in IE 11, but works everywhere else
+        frame.src = datauri;
         setTimeout(() => window.URL.revokeObjectURL(datauri), 1);
       }
     }, myDiagram, pdfOptions);
