@@ -110,7 +110,10 @@
       makeOptions.size = new go.Size(db.width, db.height);
 
       const svg = diagram.makeSvg(makeOptions);
-      SVGtoPDF(doc, svg, margin, margin, null);
+      let x = 0;
+      // horizontally center the image within the page
+      //x = Math.max(0, ((imgWidth - (makeOptions.scale*db.width))*72/96) / 2);
+      SVGtoPDF(doc, svg, margin+x, margin, null);
 
       doc.end();
       stream.on('finish', () => action(stream.toBlob('application/pdf')));

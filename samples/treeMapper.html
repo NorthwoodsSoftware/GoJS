@@ -53,18 +53,7 @@
     <script id="code">
   // Use a TreeNode so that when a node is not visible because a parent is collapsed,
   // connected links seem to be connected with the lowest visible parent node.
-  // This also forces other links connecting with nodes in the group to be rerouted,
-  // because collapsing/expanding nodes will cause many nodes to move and to appear or disappear.
   class TreeNode extends go.Node {
-    constructor() {
-      super();
-      this.treeExpandedChanged = node => {
-        if (node.containingGroup !== null) {
-          node.containingGroup.findExternalLinksConnected().each(l => l.invalidateRoute());
-        }
-      };
-    }
-
     findVisibleNode() {
       // redirect links to lowest visible "ancestor" in the tree
       var n = this;
@@ -129,11 +118,19 @@
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
       const $ = go.GraphObject.make;  // for conciseness in defining templates
 
+      function handleTreeCollapseExpand(e) {
+        e.subject.each(n => {
+          n.findExternalTreeLinksConnected().each(l => l.invalidateRoute());
+        });
+      }
+
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
             "commandHandler.copiesTree": true,
             "commandHandler.deletesTree": true,
+            "TreeCollapsed": handleTreeCollapseExpand,
+            "TreeExpanded": handleTreeCollapseExpand,
             // newly drawn links always map a node in one tree to a node in another tree
             "linkingTool.archetypeLinkData": { category: "Mapping" },
             "linkingTool.linkValidation": checkLink,
