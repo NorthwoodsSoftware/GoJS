@@ -19,7 +19,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        var myDiagram = $(go.Diagram, "myDiagramDiv", {
+        var myDiagram = new go.Diagram("myDiagramDiv", {
             rotatingTool: new SpotRotatingTool_js_1.SpotRotatingTool(),
             "undoManager.isEnabled": true,
             "ModelChanged": function (e) {

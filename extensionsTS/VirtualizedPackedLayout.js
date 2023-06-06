@@ -139,7 +139,7 @@ var __extends = (this && this.__extends) || (function () {
      * change in the future if PackedLayout's implementation is generalized.
      * @category Layout Extension
      */
-    var VirtualizedPackedLayout = /** @class */ (function (_super) {
+    var VirtualizedPackedLayout = exports.VirtualizedPackedLayout = /** @class */ (function (_super) {
         __extends(VirtualizedPackedLayout, _super);
         function VirtualizedPackedLayout() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -796,7 +796,7 @@ var __extends = (this && this.__extends) || (function () {
          * @return {Array<Rect>} an array of positioned rectangles corresponding to the nodes argument
          */
         VirtualizedPackedLayout.prototype.fitRects = function (nodes) {
-            var _a;
+            var _a, _b;
             var sideSpacing = (this.spacing + this._fixedSizeModeSpacing) / 2;
             var fits = [];
             var segments = new CircularDoublyLinkedList();
@@ -877,14 +877,14 @@ var __extends = (this && this.__extends) || (function () {
                     }
                     // check skip fits
                     if (hasIntersections && !fit.s1.data.p1Concave && (fit.s1.next.data.p1Concave || fit.s1.next.next.data.p1Concave)) {
-                        var _b = this.findNextOrientedSegment(fit, fit.s1.next), nextSegment = _b[0], usePreviousSegment = _b[1];
+                        var nextSegment = (_a = this.findNextOrientedSegment(fit, fit.s1.next), _a[0]), usePreviousSegment = _a[1];
                         var nextSegmentTouchesFit = false;
                         while (hasIntersections && nextSegment !== null) {
                             fit.bounds = this.rectAgainstMultiSegment(fit.s1, nextSegment, bounds.width, bounds.height);
                             hasIntersections = this.fastFitHasIntersections(fit) || this.fitHasIntersections(fit);
                             nextSegmentTouchesFit = this.segmentIsOnFitPerimeter(nextSegment.data, fit.bounds);
                             if (hasIntersections || !nextSegmentTouchesFit) {
-                                _a = this.findNextOrientedSegment(fit, nextSegment), nextSegment = _a[0], usePreviousSegment = _a[1];
+                                _b = this.findNextOrientedSegment(fit, nextSegment), nextSegment = _b[0], usePreviousSegment = _b[1];
                             }
                         }
                         if (!hasIntersections && nextSegment !== null && nextSegmentTouchesFit) {
@@ -1161,7 +1161,7 @@ var __extends = (this && this.__extends) || (function () {
          * @param segments the list of segments to update
          */
         VirtualizedPackedLayout.prototype.updateSegments = function (fit, segments) {
-            var _a, _b, _c, _d, _e, _f, _g;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
             var s0 = fit.s1;
             while (this.pointIsOnFitPerimeter(s0.data.x1, s0.data.y1, fit.bounds)) {
                 s0 = s0.prev;
@@ -1193,10 +1193,10 @@ var __extends = (this && this.__extends) || (function () {
             if (s0.data.p1Concave) {
                 testOrientation = (testOrientation + 3) % 4;
             }
-            var _h = this.cornerFromRect(testOrientation, fit.bounds), cornerX = _h[0], cornerY = _h[1];
+            var cornerX = (_a = this.cornerFromRect(testOrientation, fit.bounds), _a[0]), cornerY = _a[1];
             var extended0 = this.approxEqual(cornerX, s0.data.x2) && this.approxEqual(cornerY, s0.data.y2);
             var shortened0Precond;
-            var _j = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), cornerX2 = _j[0], cornerY2 = _j[1];
+            var cornerX2 = (_b = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), _b[0]), cornerY2 = _b[1];
             if (s0.data.isHorizontal) {
                 shortened0Precond = this.numberIsBetween(cornerX2, s0.data.x1, s0.data.x2) && this.approxEqual(cornerY2, s0.data.y1);
             }
@@ -1210,14 +1210,14 @@ var __extends = (this && this.__extends) || (function () {
                     && shortened0Precond);
             if (extended0) {
                 // extend s0
-                _a = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), s0.data.x2 = _a[0], s0.data.y2 = _a[1];
+                _c = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), s0.data.x2 = _c[0], s0.data.y2 = _c[1];
                 this._tree.setTo(s0.data, Segment.rectFromSegment(s0.data));
                 nextConvexCornerOrientation = (testOrientation + 3) % 4;
                 this.updateMinMaxSegments(s0.data);
             }
             else {
                 if (shortened0) {
-                    _b = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), s0.data.x2 = _b[0], s0.data.y2 = _b[1];
+                    _d = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), s0.data.x2 = _d[0], s0.data.y2 = _d[1];
                     this._tree.setTo(s0.data, Segment.rectFromSegment(s0.data));
                 }
                 var newSegment = new Segment(s0.data.x2, s0.data.y2, cornerX, cornerY, true);
@@ -1257,7 +1257,7 @@ var __extends = (this && this.__extends) || (function () {
             if (sNext.next.data.p1Concave) {
                 testOrientation = (testOrientation + 1) % 4;
             }
-            _c = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), cornerX2 = _c[0], cornerY2 = _c[1];
+            _e = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), cornerX2 = _e[0], cornerY2 = _e[1];
             if (sNext.data.isHorizontal && this.numberIsBetween(cornerX2, sNext.data.x1, sNext.data.x2) && this.approxEqual(cornerY2, sNext.data.y1)
                 || (!sNext.data.isHorizontal && this.numberIsBetween(cornerY2, sNext.data.y1, sNext.data.y2) && this.approxEqual(cornerX2, sNext.data.x1))
                 || (sNext.data.isHorizontal && this.numberIsBetween(fit.bounds.left, sNext.data.x1, sNext.data.x2) && this.numberIsBetween(fit.bounds.right, sNext.data.x1, sNext.data.x2)
@@ -1274,7 +1274,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
             }
             this.removeBetween(segments, s0, sNext);
-            _d = this.cornerFromRect(testOrientation, fit.bounds), cornerX = _d[0], cornerY = _d[1];
+            _f = this.cornerFromRect(testOrientation, fit.bounds), cornerX = _f[0], cornerY = _f[1];
             if (this.approxEqual(cornerX, sNext.data.x1) && this.approxEqual(cornerY, sNext.data.y1)) {
                 // extend sNext
                 if (s0.data.isHorizontal === sNext.data.isHorizontal && (s0.data.isHorizontal ? this.approxEqual(s0.data.y1, sNext.data.y1) : this.approxEqual(s0.data.x1, sNext.data.x1))) {
@@ -1287,7 +1287,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.updateMinMaxSegments(s0.data);
                 }
                 else {
-                    _e = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), sNext.data.x1 = _e[0], sNext.data.y1 = _e[1];
+                    _g = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds), sNext.data.x1 = _g[0], sNext.data.y1 = _g[1];
                     this._tree.setTo(sNext.data, Segment.rectFromSegment(sNext.data));
                     lastConvexCornerOrientation = (testOrientation + 1) % 4;
                     this.updateMinMaxSegments(sNext.data);
@@ -1331,13 +1331,13 @@ var __extends = (this && this.__extends) || (function () {
             }
             else { // if (this.pointIsOnFitPerimeter(sNext.data.x1, sNext.data.y1, fit.bounds))
                 // shorten existing segment
-                _f = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), sNext.data.x1 = _f[0], sNext.data.y1 = _f[1];
+                _h = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds), sNext.data.x1 = _h[0], sNext.data.y1 = _h[1];
                 sNext.data.p1Concave = true;
                 this._tree.setTo(sNext.data, Segment.rectFromSegment(sNext.data));
                 lastConvexCornerOrientation = (testOrientation + 3) % 4;
             }
             while (nextConvexCornerOrientation !== lastConvexCornerOrientation) {
-                _g = this.cornerFromRect((nextConvexCornerOrientation + 3) % 4, fit.bounds), cornerX = _g[0], cornerY = _g[1];
+                _j = this.cornerFromRect((nextConvexCornerOrientation + 3) % 4, fit.bounds), cornerX = _j[0], cornerY = _j[1];
                 var newSegment = new Segment(s0.data.x2, s0.data.y2, cornerX, cornerY, false);
                 s0 = segments.insertAfter(newSegment, s0);
                 this._tree.add(newSegment);
@@ -1676,7 +1676,6 @@ var __extends = (this && this.__extends) || (function () {
         VirtualizedPackedLayout.Ascending = 31;
         return VirtualizedPackedLayout;
     }(go.Layout));
-    exports.VirtualizedPackedLayout = VirtualizedPackedLayout;
     /**
      * @hidden @internal
      * Class for a node in a {{@link CircularDoublyLinkedList}.

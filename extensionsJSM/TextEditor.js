@@ -8,6 +8,26 @@ import * as go from '../release/go-module.js';
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
 // This file exposes one instance of HTMLInfo, window.TextEditor
+// Typical usage is:
+// <pre>
+//   new go.Diagram(...,
+//      {
+//        "textEditingTool.defaultTextEditor": window.TextEditor,
+//        . . .
+//      })
+// </pre>
+// or:
+// <pre>
+//    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
+// </pre>
+// <pre>
+//   $(go.Node, . . .,
+//     . . .
+//       $(go.TextBlock, { textEditor: window.TextEditor, . . . })
+//     . . .
+//   )
+// </pre>
+// If you do use this code, copy it into your project and modify it there.
 // See also TextEditor.html
 ((window) => {
     const TextEditor = new go.HTMLInfo();
@@ -23,6 +43,8 @@ import * as go from '../release/go-module.js';
         textarea.rows = tempText.lineCount;
     }, false);
     textarea.addEventListener('keydown', (e) => {
+        if (e.isComposing)
+            return;
         const tool = TextEditor.tool;
         if (tool.textBlock === null)
             return;
@@ -47,7 +69,7 @@ import * as go from '../release/go-module.js';
     // handle focus:
     textarea.addEventListener('focus', (e) => {
         const tool = TextEditor.tool;
-        if (!tool || tool.currentTextEditor === null)
+        if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingTool.StateNone)
             return;
         if (tool.state === go.TextEditingTool.StateActive) {
             tool.state = go.TextEditingTool.StateEditing;

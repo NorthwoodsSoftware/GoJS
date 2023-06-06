@@ -22,7 +22,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv');
+    new go.Diagram('myDiagramDiv');
 
   myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
 

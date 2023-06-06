@@ -14,6 +14,26 @@ import * as go from '../release/go.js';
 
 // HTML + JavaScript text editor using an HTML Select Element and HTMLInfo.
 // This file exposes one instance of HTMLInfo, window.TextEditorSelectBox
+// Typical usage is:
+// <pre>
+//   new go.Diagram(...,
+//      {
+//        "textEditingTool.defaultTextEditor": window.TextEditorSelectBox,
+//        . . .
+//      })
+// </pre>
+// or:
+// <pre>
+//    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditorSelectBox;
+// </pre>
+// or:
+// <pre>
+//   $(go.Node, . . .,
+//     . . .
+//       $(go.TextBlock, { textEditor: window.TextEditorSelectBox, . . . })
+//     . . .
+//   )
+// </pre>
 // see /samples/customTextEditingTool.html
 // see also textEditorRadioButton.js for another custom editor
 // see also textEditor.html for a re-implementation of the default text editor
@@ -47,6 +67,7 @@ import * as go from '../release/go.js';
 
     // Do a few different things when a user presses a key
     customSelectBox.addEventListener('keydown', (e) => {
+      if (e.isComposing) return;
       const key = e.key;
       if (key === "Enter") { // Accept on Enter
         (tool as any).acceptText(go.TextEditingTool.Enter);

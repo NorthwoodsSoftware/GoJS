@@ -41,7 +41,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
+            new go.Diagram('myDiagramDiv', // must be the ID or reference to div
             {
                 'animationManager.isEnabled': true,
                 layout: $(PackedLayout_js_1.PackedLayout, { arrangesToOrigin: false }),

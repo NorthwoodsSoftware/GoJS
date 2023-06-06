@@ -19,7 +19,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv', // the ID of the DIV HTML element
+    new go.Diagram('myDiagramDiv', // the ID of the DIV HTML element
       {
         layout: $(go.ForceDirectedLayout,
           { defaultSpringLength: 50, defaultElectricalCharge: 50 }),

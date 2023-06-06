@@ -62,7 +62,7 @@
                 });
                 this.diagrams[i] = diagram;
                 // make an overview for each diagram
-                var overview = $(go.Overview, 'ge-overview-' + i, { observed: diagram });
+                var overview = new go.Overview('ge-overview-' + i, { observed: diagram });
                 this.overviews[i] = overview;
             }
             // if there are no diagrams, there will be no overviews, so do not list that option in View menu
@@ -73,7 +73,7 @@
             // build palette(s)
             this.palettes = [];
             for (var i = 0; i < palettesCount; i++) {
-                var palette = $(go.Palette, 'ge-palette-' + i);
+                var palette = new go.Palette('ge-palette-' + i);
                 this.palettes[i] = palette;
             }
             // Go Cloud Storage stuff

@@ -43,7 +43,7 @@ var __extends = (this && this.__extends) || (function () {
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', {
+            new go.Diagram('myDiagramDiv', {
                 // Define the template for Nodes, just some text inside a colored rectangle
                 nodeTemplate: $(go.Node, 'Auto', { minSize: new go.Size(60, 20), resizable: true }, new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify), new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify), 
                 // temporarily put selected nodes in ForegFround layer

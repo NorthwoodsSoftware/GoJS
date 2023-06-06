@@ -14,6 +14,27 @@ import * as go from '../release/go.js';
 
 // HTML + JavaScript text editor menu, using HTML radio inputs and HTMLInfo.
 // This file exposes one instance of HTMLInfo, window.TextEditorRadioButtons
+// Typical usage is:
+// <pre>
+//   new go.Diagram(...,
+//      {
+//        "textEditingTool.defaultTextEditor": window.TextEditorRadioButtons,
+//        . . .
+//      })
+// </pre>
+// or:
+// <pre>
+//    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditorRadioButtons;
+// </pre>
+// or:
+// <pre>
+//   $(go.Node, . . .,
+//     . . .
+//       $(go.TextBlock, { textEditor: window.TextEditorRadioButtons, . . . })
+//     . . .
+//   )
+// </pre>
+// If you do use this code, copy it into your project and modify it there.
 // see /samples/customTextEditingTool.html
 // see also textEditorSelectBox.js for another custom editor
 // see also textEditor.html for a re-implementation of the default text editor
@@ -77,6 +98,7 @@ import * as go from '../release/go.js';
 
     // Do a few different things when a user presses a key
     customText.addEventListener('keydown', (e) => {
+      if (e.isComposing) return;
       const key = e.key;
       if (key === "Enter") { // Accept on Enter
         (tool as any).acceptText(go.TextEditingTool.Enter);

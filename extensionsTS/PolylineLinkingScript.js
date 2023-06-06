@@ -28,7 +28,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', { "undoManager.isEnabled": true });
+            new go.Diagram('myDiagramDiv', { "undoManager.isEnabled": true });
         // install custom linking tool, defined in PolylineLinkingTool.js
         var tool = new PolylineLinkingTool_js_1.PolylineLinkingTool();
         // tool.temporaryLink.routing = go.Link.Orthogonal;  // optional, but need to keep link template in sync, below

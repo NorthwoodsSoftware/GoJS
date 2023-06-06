@@ -34,7 +34,7 @@
             });
         });
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        var myDiagram = new go.Diagram('myDiagramDiv', {
             initialContentAlignment: go.Spot.Center,
             'undoManager.isEnabled': true // enable undo & redo
         });

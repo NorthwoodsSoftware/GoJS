@@ -58,7 +58,7 @@
       const $ = go.GraphObject.make;
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv",
+        new go.Diagram("myDiagramDiv",
           {
             // what to do when a drag-drop occurs in the Diagram's background
             mouseDrop: e => finishDrop(e, null),
@@ -131,6 +131,7 @@
             mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
             mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
             computesBoundsAfterDrag: true,
+            computesBoundsIncludingLocation: true,
             // when the selection is dropped into a Group, add the selected Parts into that Group;
             // if it fails, cancel the tool, rolling back any changes
             mouseDrop: finishDrop,
@@ -175,6 +176,7 @@
             mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
             mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
             computesBoundsAfterDrag: true,
+            computesBoundsIncludingLocation: true,
             // when the selection is dropped into a Group, add the selected Parts into that Group;
             // if it fails, cancel the tool, rolling back any changes
             mouseDrop: finishDrop,
@@ -258,7 +260,7 @@
 
       // setup the tree view; will be initialized with data by the load() function
       myTreeView =
-        $(go.Diagram, "myTreeView",
+        new go.Diagram("myTreeView",
           {
             initialContentAlignment: go.Spot.TopLeft,
             allowMove: false,  // don't let users mess up the tree

@@ -19,7 +19,7 @@ export function init() {
   var $ = go.GraphObject.make;
 
   const myDiagram =
-    $(go.Diagram, "myDiagramDiv",  // create a Diagram for the DIV HTML element
+    new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
       {
         initialAutoScale: go.Diagram.Uniform,
         layout:

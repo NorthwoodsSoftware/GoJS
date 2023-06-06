@@ -72,6 +72,22 @@ class QuadObj {
  */
 export class Quadtree {
     /**
+     * Gets the node capacity of this quadtree. This is the number of objects a node can contain before it splits.
+     */
+    get nodeCapacity() { return this._nodeCapacity; }
+    /**
+     * Gets the maximum depth the Quadtree will allow before it will no longer split..
+     */
+    get maxLevels() { return this._maxLevels; }
+    /**
+     * Gets the boundaries of the node. All nodes should be square.
+     */
+    get bounds() { return this._root.bounds; }
+    /**
+     * Gets the root node of the tree
+     */
+    get root() { return this._root; }
+    /**
      * In most cases, simply calling this constructor with no arguments will produce the desired behaviour.
      * @constructor
      * @param {number=} nodeCapacity The node capacity of this quadtree. This is the number of objects a node can contain before it splits. Defaults to 1.
@@ -98,22 +114,6 @@ export class Quadtree {
         }
         this._root = new QuadNode(bounds, null, 0);
     }
-    /**
-     * Gets the node capacity of this quadtree. This is the number of objects a node can contain before it splits.
-     */
-    get nodeCapacity() { return this._nodeCapacity; }
-    /**
-     * Gets the maximum depth the Quadtree will allow before it will no longer split..
-     */
-    get maxLevels() { return this._maxLevels; }
-    /**
-     * Gets the boundaries of the node. All nodes should be square.
-     */
-    get bounds() { return this._root.bounds; }
-    /**
-     * Gets the root node of the tree
-     */
-    get root() { return this._root; }
     /**
      * Clears the Quadtree, removing all objects and children nodes. Keeps the current bounds of the root node.
      * @this {Quadtree}

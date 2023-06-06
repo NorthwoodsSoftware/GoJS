@@ -29,7 +29,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv');
+            new go.Diagram('myDiagramDiv');
         myDiagram.toolManager.mouseDownTools.insertAt(3, $(GeometryReshapingTool_js_1.GeometryReshapingTool, { isResegmenting: true }));
         myDiagram.nodeTemplate =
             $(go.Node, new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {

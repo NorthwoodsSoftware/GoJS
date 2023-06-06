@@ -28,7 +28,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', {
+            new go.Diagram('myDiagramDiv', {
                 'undoManager.isEnabled': true,
                 'linkReshapingTool': new OrthogonalLinkReshapingTool_js_1.OrthogonalLinkReshapingTool()
             });

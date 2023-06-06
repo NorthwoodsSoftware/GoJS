@@ -18,7 +18,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         "LayoutCompleted": e => {
           e.diagram.nodes.each(n => {

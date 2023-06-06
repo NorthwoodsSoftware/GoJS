@@ -91,7 +91,7 @@ class Fit {
  * layout as having a width or height of 0.1 instead.
  * @category Layout Extension
  */
-export class PackedLayout extends go.Layout {
+class PackedLayout extends go.Layout {
     constructor() {
         super(...arguments);
         // configuration defaults
@@ -1577,6 +1577,7 @@ PackedLayout.Descending = 30;
  * @constant
  */
 PackedLayout.Ascending = 31;
+export { PackedLayout };
 /**
  * @hidden @internal
  * Class for a node in a {{@link CircularDoublyLinkedList}.

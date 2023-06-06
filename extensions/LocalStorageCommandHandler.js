@@ -24,7 +24,7 @@
 * <p>
 * Typical usage:
 * <pre>
-*   $(go.Diagram, "myDiagramDiv",
+*   new go.Diagram("myDiagramDiv",
 *     {
 *       commandHandler: $(LocalStorageCommandHandler),
 *       . . .

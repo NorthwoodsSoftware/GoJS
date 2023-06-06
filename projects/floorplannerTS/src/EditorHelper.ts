@@ -75,7 +75,7 @@ export class EditorHelper {
       this.diagrams[i] = diagram;
 
       // make an overview for each diagram
-      const overview = $(go.Overview, 'ge-overview-' + i, { observed: diagram });
+      const overview = new go.Overview('ge-overview-' + i, { observed: diagram });
       this.overviews[i] = overview;
 
     }
@@ -89,7 +89,7 @@ export class EditorHelper {
     // build palette(s)
     this.palettes = [];
     for (let i = 0; i < palettesCount; i++) {
-      const palette = $(go.Palette, 'ge-palette-' + i);
+      const palette = new go.Palette('ge-palette-' + i);
       this.palettes[i] = palette;
     }
 

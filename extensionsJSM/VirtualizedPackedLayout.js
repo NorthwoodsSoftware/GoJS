@@ -110,7 +110,7 @@ class Fit {
  * change in the future if PackedLayout's implementation is generalized.
  * @category Layout Extension
  */
-export class VirtualizedPackedLayout extends go.Layout {
+class VirtualizedPackedLayout extends go.Layout {
     constructor() {
         super(...arguments);
         // configuration defaults
@@ -1587,6 +1587,7 @@ VirtualizedPackedLayout.Descending = 30;
  * @constant
  */
 VirtualizedPackedLayout.Ascending = 31;
+export { VirtualizedPackedLayout };
 /**
  * @hidden @internal
  * Class for a node in a {{@link CircularDoublyLinkedList}.

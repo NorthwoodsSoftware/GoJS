@@ -29,7 +29,7 @@
      * @hidden @internal
      * This FigureParameter class describes various properties each parameter uses in figures.
      */
-    var FigureParameter = /** @class */ (function () {
+    var FigureParameter = exports.FigureParameter = /** @class */ (function () {
         function FigureParameter(name, def, min, max) {
             if (min === undefined)
                 min = 0.0;
@@ -132,7 +132,6 @@
         FigureParameter.definedParameters = {};
         return FigureParameter;
     }());
-    exports.FigureParameter = FigureParameter;
     /** @ignore */
     var _CachedPoints = [];
     /**
@@ -1778,7 +1777,6 @@
         geo.add(fig);
         fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
         fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
-        fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
         fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
         fig.add(new go.PathSegment(go.PathSegment.Line, x, h));
         fig.add(new go.PathSegment(go.PathSegment.Line, x, y2));
@@ -1809,7 +1807,6 @@
         var fig = new go.PathFigure(0, y1, true);
         geo.add(fig);
         fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
-        fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
         fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
         fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
         fig.add(new go.PathSegment(go.PathSegment.Line, x, h));

@@ -37,7 +37,7 @@ export function init() {
   });
 
   const $ = go.GraphObject.make;
-  const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+  const myDiagram = new go.Diagram('myDiagramDiv', {
     initialContentAlignment: go.Spot.Center,  // center the content
     'undoManager.isEnabled': true  // enable undo & redo
   });
@@ -69,7 +69,7 @@ export function init() {
       { from: 'Delta', to: 'Alpha' }
     ]);
 
-  const myDiagram2 = $(go.Diagram, 'myDiagramDiv2', {
+  const myDiagram2 = new go.Diagram('myDiagramDiv2', {
     initialContentAlignment: go.Spot.Center,  // center the content
     'undoManager.isEnabled': true  // enable undo & redo
   });

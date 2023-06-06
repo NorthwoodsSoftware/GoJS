@@ -19,7 +19,7 @@ import * as go from '../release/go.js';
  *
  * Typical usage:
  * ```js
- *   $(go.Diagram, "myDiagramDiv",
+ *   new go.Diagram("myDiagramDiv",
  *     {
  *       commandHandler: $(DrawCommandHandler),
  *       . . .

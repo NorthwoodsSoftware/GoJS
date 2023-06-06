@@ -21,7 +21,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       { "undoManager.isEnabled": true });
 
   // install custom linking tool, defined in PolylineLinkingTool.js

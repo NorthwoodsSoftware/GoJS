@@ -19,7 +19,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         'animationManager.isEnabled': false,
         'undoManager.isEnabled': true

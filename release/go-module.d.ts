@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.7
+ * Type definitions for GoJS v2.3.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -8476,6 +8476,12 @@ export class ContextMenuTool extends Tool {
      * Unlike most tools, the first mouse-up should not stop this tool.
      */
     doMouseUp(): void;
+    /**
+     * Consider calling Tool#stopTool.
+     * @expose
+     * @param currobj
+     */
+    maybeStopTool(currobj: GraphObject): void;
     /**
      * Handle mouse-enter, mouse-over, and mouse-leave events, as well as tooltips.
      */

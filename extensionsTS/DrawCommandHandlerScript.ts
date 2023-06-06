@@ -20,7 +20,7 @@ export function init() {
 
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  myDiagram = new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
       "commandHandler.archetypeGroupData": { isGroup: true },

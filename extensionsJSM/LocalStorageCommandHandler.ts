@@ -22,7 +22,7 @@ import * as go from '../release/go-module.js';
  *
  * Typical usage:
  * ```js
- *   $(go.Diagram, "myDiagramDiv",
+ *   new go.Diagram("myDiagramDiv",
  *     {
  *       commandHandler: $(LocalStorageCommandHandler),
  *       ...

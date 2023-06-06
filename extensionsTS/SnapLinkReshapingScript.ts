@@ -22,7 +22,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv',  // must name or refer to the DIV HTML element
+    new go.Diagram('myDiagramDiv',  // must name or refer to the DIV HTML element
       {
         // supply a simple narrow grid that manually reshaped link routes will follow
         grid: $(go.Panel, 'Grid',
@@ -35,7 +35,10 @@ export function init() {
         // when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
         // so that combined with Link.adjusting == End the link will retain its reshaped mid points
         // even after nodes are moved
-        'LinkReshaped': (e: go.DiagramEvent) => { e.subject.routing = go.Link.Orthogonal; },
+        "LinkReshaped": e => {
+          e.subject.adjusting = go.Link.End;
+          e.subject.routing = go.Link.Orthogonal;
+        },
         'animationManager.isEnabled': false,
         'undoManager.isEnabled': true
       });
@@ -124,7 +127,6 @@ export function init() {
       { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true },
       {
         routing: go.Link.AvoidsNodes,  // but this is changed to go.Link.Orthgonal when the Link is reshaped
-        adjusting: go.Link.End,
         curve: go.Link.JumpOver,
         corner: 5,
         toShortLength: 4
@@ -132,6 +134,8 @@ export function init() {
       new go.Binding('points').makeTwoWay(),
       // remember the Link.routing too
       new go.Binding('routing', 'routing', go.Binding.parseEnum(go.Link, go.Link.AvoidsNodes))
+        .makeTwoWay(go.Binding.toString),
+      new go.Binding("adjusting", "adjusting", go.Binding.parseEnum(go.Link, go.Link.None))
         .makeTwoWay(go.Binding.toString),
       $(go.Shape,  // the link path shape
         { isPanelMain: true, strokeWidth: 2 }),
@@ -145,7 +149,7 @@ export function init() {
   if (link) link.isSelected = true;
 
   // initialize the Palette that is on the left side of the page
-  $(go.Palette, 'myPaletteDiv',  // must name or refer to the DIV HTML element
+  new go.Palette('myPaletteDiv',  // must name or refer to the DIV HTML element
     {
       maxSelectionCount: 1,
       nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram

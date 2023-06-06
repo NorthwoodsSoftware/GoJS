@@ -11,11 +11,11 @@ export function init() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
 
   const myDiagram =
-    $(go.Diagram, "myDiagramDiv",
+    new go.Diagram("myDiagramDiv",
       {
         rotatingTool: new SpotRotatingTool(),
         "undoManager.isEnabled": true,
-        "ModelChanged": function(e) {
+        "ModelChanged": function(e: go.ChangedEvent) {
           if (e.isTransactionFinished) {
             const ta = document.getElementById("mySavedModel") as HTMLTextAreaElement;
             if (ta) ta.value = myDiagram.model.toJson();

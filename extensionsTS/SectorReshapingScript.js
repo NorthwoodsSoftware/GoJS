@@ -26,7 +26,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        var myDiagram = new go.Diagram('myDiagramDiv', {
             'animationManager.isEnabled': false,
             'undoManager.isEnabled': true
         });

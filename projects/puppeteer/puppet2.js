@@ -33,7 +33,7 @@ const parseDataUrl = (dataUrl) => {
   const imageData = await page.evaluate(() => {
     var $ = go.GraphObject.make;
 
-    var myDiagram = $(go.Diagram, "myDiagramDiv",
+    var myDiagram = new go.Diagram("myDiagramDiv",
       {
         "animationManager.isEnabled": false,
         "undoManager.isEnabled": true  // enable undo & redo

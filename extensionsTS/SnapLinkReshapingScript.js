@@ -29,7 +29,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+            new go.Diagram('myDiagramDiv', // must name or refer to the DIV HTML element
             {
                 // supply a simple narrow grid that manually reshaped link routes will follow
                 grid: $(go.Panel, 'Grid', { gridCellSize: new go.Size(8, 8) }, $(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.5 }), $(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.5 })),
@@ -38,7 +38,10 @@
                 // when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
                 // so that combined with Link.adjusting == End the link will retain its reshaped mid points
                 // even after nodes are moved
-                'LinkReshaped': function (e) { e.subject.routing = go.Link.Orthogonal; },
+                "LinkReshaped": function (e) {
+                    e.subject.adjusting = go.Link.End;
+                    e.subject.routing = go.Link.Orthogonal;
+                },
                 'animationManager.isEnabled': false,
                 'undoManager.isEnabled': true
             });
@@ -108,13 +111,13 @@
             $(go.Link, // the whole link panel
             { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true }, {
                 routing: go.Link.AvoidsNodes,
-                adjusting: go.Link.End,
                 curve: go.Link.JumpOver,
                 corner: 5,
                 toShortLength: 4
             }, new go.Binding('points').makeTwoWay(), 
             // remember the Link.routing too
             new go.Binding('routing', 'routing', go.Binding.parseEnum(go.Link, go.Link.AvoidsNodes))
+                .makeTwoWay(go.Binding.toString), new go.Binding("adjusting", "adjusting", go.Binding.parseEnum(go.Link, go.Link.None))
                 .makeTwoWay(go.Binding.toString), $(go.Shape, // the link path shape
             { isPanelMain: true, strokeWidth: 2 }), $(go.Shape, // the arrowhead
             { toArrow: 'Standard', stroke: null }));
@@ -123,7 +126,7 @@
         if (link)
             link.isSelected = true;
         // initialize the Palette that is on the left side of the page
-        $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
+        new go.Palette('myPaletteDiv', // must name or refer to the DIV HTML element
         {
             maxSelectionCount: 1,
             nodeTemplateMap: myDiagram.nodeTemplateMap,

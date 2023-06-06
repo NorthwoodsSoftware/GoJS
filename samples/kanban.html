@@ -133,7 +133,7 @@
       const $ = go.GraphObject.make;
 
       myDiagram =
-        $(go.Diagram, "myDiagramDiv",
+        new go.Diagram("myDiagramDiv",
           {
             // make sure the top-left corner of the viewport is occupied
             contentAlignment: go.Spot.TopLeft,
@@ -248,6 +248,7 @@
             click: (e, grp) => {  // allow simple click on group to clear selection
               if (!e.shift && !e.control && !e.meta) e.diagram.clearSelection();
             },
+            computesBoundsIncludingLocation: true,
             computesBoundsAfterDrag: true,  // needed to prevent recomputing Group.placeholder bounds too soon
             handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
             mouseDragEnter: (e, grp, prev) => highlightGroup(grp, true),

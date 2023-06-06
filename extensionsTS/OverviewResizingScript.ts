@@ -20,7 +20,7 @@ export function init() {
 
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  myDiagram = new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       layout: $(go.ForceDirectedLayout),
       'undoManager.isEnabled': true  // enable undo & redo
@@ -71,13 +71,13 @@ export function init() {
   ]);
 
   // Overview
-  $(go.Overview, 'myOverviewDiv',  // the HTML DIV element for the Overview
+  const myOverview = new go.Overview('myOverviewDiv',  // the HTML DIV element for the Overview
     {
       observed: myDiagram,
       contentAlignment: go.Spot.Center,
-      'box.resizable': true,
-      'resizingTool': new OverviewResizingTool()
     });
+  myOverview.box.resizable = true;
+  myOverview.toolManager.resizingTool = new OverviewResizingTool();
 
   (document.getElementById('zoomToFit') as HTMLElement).addEventListener('click', function() {
     myDiagram.zoomToFit();

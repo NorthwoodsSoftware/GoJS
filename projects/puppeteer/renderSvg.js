@@ -34,7 +34,7 @@ const fs = require('fs');
   const svgString = await page.evaluate(() => {
     var $ = go.GraphObject.make;
 
-    var myDiagram = $(go.Diagram, "myDiagramDiv",
+    var myDiagram = new go.Diagram("myDiagramDiv",
       {
         "animationManager.isEnabled": false,
         layout: $(go.ForceDirectedLayout)

@@ -54,7 +54,7 @@
                 stat.textContent = msg;
         }
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+            new go.Diagram('myDiagramDiv', // must name or refer to the DIV HTML element
             {
                 nodeTemplate: $(go.Node, 'Auto', {
                     click: nodeClicked,
@@ -73,7 +73,7 @@
         myRobot = new Robot_js_1.Robot(myDiagram); // defined in Robot.js
         // initialize the Palette that is on the left side of the page
         myPalette =
-            $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
+            new go.Palette('myPaletteDiv', // must name or refer to the DIV HTML element
             {
                 nodeTemplate: myDiagram.nodeTemplate,
                 model: new go.GraphLinksModel([

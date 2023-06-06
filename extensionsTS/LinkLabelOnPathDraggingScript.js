@@ -26,7 +26,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', // the ID of the DIV HTML element
+        var myDiagram = new go.Diagram('myDiagramDiv', // the ID of the DIV HTML element
         {
             layout: $(go.ForceDirectedLayout, { defaultSpringLength: 50, defaultElectricalCharge: 50 }),
             'undoManager.isEnabled': true

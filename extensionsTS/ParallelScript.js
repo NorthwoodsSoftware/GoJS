@@ -26,7 +26,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', // must be the ID or reference to div
+        var myDiagram = new go.Diagram('myDiagramDiv', // must be the ID or reference to div
         {
             allowCopy: false,
             allowDelete: false,

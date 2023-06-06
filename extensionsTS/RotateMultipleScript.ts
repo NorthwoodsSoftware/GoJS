@@ -10,7 +10,7 @@ export function init() {
 
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  const myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  const myDiagram = new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       rotatingTool: new RotateMultipleTool(),  // defined in RotateMultipleTool.js
       'undoManager.isEnabled': true  // enable undo & redo

@@ -21,7 +21,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv',  // must be the ID or reference to div
+    new go.Diagram('myDiagramDiv',  // must be the ID or reference to div
       {
         initialAutoScale: go.Diagram.Uniform,
         'animationManager.isEnabled': false,

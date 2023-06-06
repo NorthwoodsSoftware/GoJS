@@ -19,7 +19,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   const myDiagram: go.Diagram =
-    $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+    new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
       {
         'animationManager.isEnabled': false,
         // allow double-click in background to create a new node

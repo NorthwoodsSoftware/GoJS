@@ -32,9 +32,20 @@ var __extends = (this && this.__extends) || (function () {
     /**
     * A custom RotatingTool that also supports the user moving the point about which the object is rotated.
     *
+    * Typical usage:
+    * <pre>
+    *   new go.Diagram(. . .,
+    *     {
+    *       rotatingTool: new SpotRotatingTool(),
+    *       . . .
+    *     })
+    * </pre>
+    *
     * This tool uses two separate Adornments -- the regular one holding the rotation handle and an
     * additional one named "MovingSpot" that holds the handle for interactively moving the
     * {@link RotatingTool#rotationPoint} by changing the {@link Part#rotationSpot}.
+    *
+    * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SpotRotating.html">Spot Rotating</a> sample.
     * @category Tool Extension
     */
     var SpotRotatingTool = /** @class */ (function (_super) {

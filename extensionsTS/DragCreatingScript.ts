@@ -21,7 +21,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         // Define the template for Nodes, just some text inside a colored rectangle
         nodeTemplate:

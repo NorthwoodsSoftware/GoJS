@@ -405,8 +405,8 @@
     //     . . .
     //   )
     go.GraphObject.defineBuilder('PanelExpanderButton', function (args) {
-        var eltname = (go.GraphObject.takeBuilderArgument(args, 'COLLAPSIBLE'));
-        var button = (go.GraphObject.make('Button', {
+        var eltname = /** @type {string} */ (go.GraphObject.takeBuilderArgument(args, 'COLLAPSIBLE'));
+        var button = /** @type {Panel} */ (go.GraphObject.make('Button', {
             '_buttonExpandedFigure': 'M0 0 M0 6 L4 2 8 6 M8 8',
             '_buttonCollapsedFigure': 'M0 0 M0 2 L4 6 8 2 M8 8',
             '_buttonFillNormal': 'rgba(0, 0, 0, 0)',

@@ -26,12 +26,12 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+        var myDiagram = new go.Diagram('myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             commandHandler: new LocalStorageCommandHandler_js_1.LocalStorageCommandHandler(),
             'undoManager.isEnabled': true // enable undo & redo
         });
-        var myDiagram2 = $(go.Diagram, 'myDiagramDiv2', // create a Diagram for the DIV HTML element
+        var myDiagram2 = new go.Diagram('myDiagramDiv2', // create a Diagram for the DIV HTML element
         {
             commandHandler: new LocalStorageCommandHandler_js_1.LocalStorageCommandHandler(),
             'undoManager.isEnabled': true // enable undo & redo

@@ -43,7 +43,7 @@ var __extends = (this && this.__extends) || (function () {
      *
      * Typical usage:
      * ```js
-     *   $(go.Diagram, "myDiagramDiv",
+     *   new go.Diagram("myDiagramDiv",
      *     {
      *       commandHandler: $(DrawCommandHandler),
      *       . . .

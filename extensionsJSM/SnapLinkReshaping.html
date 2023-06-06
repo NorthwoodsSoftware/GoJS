@@ -55,7 +55,7 @@
       <div id="myPaletteDiv" style="width: 105px; height: 620px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
       <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
     </div>
-    <label><input type="checkbox" id="AvoidsNodesCheckBox" checked="checked"/>avoidsNodes</label>
+    <label><input type="checkbox" id="AvoidsNodesCheckBox" checked="checked"/>SnapLinkReshapingTool.avoidsNodes</label>
     <p>
       This sample is a simplified version of the <a href="../samples/draggableLink.html">Draggable Link</a> sample.
       Links are not draggable, there are no custom <a>Adornment</a>s, nodes are not rotatable, and links
@@ -96,7 +96,7 @@
   {"text":"Step", "key":-11, "loc":"536 280"}
   ],
     "linkDataArray": [
-  {"from":-10, "to":-11, "fromPort":"R", "toPort":"L", "points":[121,240,131,240,132,240,132,240,216,240,216,176,264,176,264,104,392,104,392,240,480,240,480,280,501,280,511,280], "routing":"Orthogonal"}
+  {"from":-10, "to":-11, "fromPort":"R", "toPort":"L", "points":[121,240,131,240,132,240,132,240,216,240,216,176,264,176,264,104,392,104,392,240,480,240,480,280,501,280,511,280]}
     ]}
     </textarea>
   </div>
@@ -110,7 +110,7 @@
     const $ = go.GraphObject.make; // for conciseness in defining templates
 
     const myDiagram =
-      $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+      new go.Diagram('myDiagramDiv', // must name or refer to the DIV HTML element
         {
           // supply a simple narrow grid that manually reshaped link routes will follow
           grid: $(go.Panel, 'Grid', { gridCellSize: new go.Size(8, 8) }, $(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.5 }), $(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.5 })),
@@ -119,7 +119,10 @@
           // when the user reshapes a Link, change its Link.routing from AvoidsNodes to Orthogonal,
           // so that combined with Link.adjusting == End the link will retain its reshaped mid points
           // even after nodes are moved
-          'LinkReshaped': (e) => { e.subject.routing = go.Link.Orthogonal; },
+          "LinkReshaped": e => {
+            e.subject.adjusting = go.Link.End;
+            e.subject.routing = go.Link.Orthogonal;
+          },
           'animationManager.isEnabled': false,
           'undoManager.isEnabled': true
         });
@@ -213,7 +216,6 @@
         { relinkableFrom: true, relinkableTo: true, reshapable: true, resegmentable: true },
         {
           routing: go.Link.AvoidsNodes,
-          adjusting: go.Link.End,
           curve: go.Link.JumpOver,
           corner: 5,
           toShortLength: 4
@@ -221,6 +223,8 @@
         new go.Binding('points').makeTwoWay(),
         // remember the Link.routing too
         new go.Binding('routing', 'routing', go.Binding.parseEnum(go.Link, go.Link.AvoidsNodes))
+          .makeTwoWay(go.Binding.toString),
+        new go.Binding("adjusting", "adjusting", go.Binding.parseEnum(go.Link, go.Link.None))
           .makeTwoWay(go.Binding.toString),
         $(go.Shape, // the link path shape
           { isPanelMain: true, strokeWidth: 2 }),
@@ -234,7 +238,7 @@
 
     // initialize the Palette that is on the left side of the page
     const myPalette =
-      $(go.Palette, 'myPaletteDiv', // must name or refer to the DIV HTML element
+      new go.Palette('myPaletteDiv', // must name or refer to the DIV HTML element
         {
           maxSelectionCount: 1,
           nodeTemplateMap: myDiagram.nodeTemplateMap,

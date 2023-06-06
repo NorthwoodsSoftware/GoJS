@@ -84,7 +84,7 @@ var coll = document.getElementById('navButton');
 var navList = document.getElementById('navList');
 if (coll !== null) {
   coll.addEventListener('click', () => {
-    this.classList.toggle('active');
+    coll.classList.toggle('active');
     navList.classList.toggle('hidden');
     document.getElementById('navOpen').classList.toggle('hidden');
     document.getElementById('navClosed').classList.toggle('hidden');

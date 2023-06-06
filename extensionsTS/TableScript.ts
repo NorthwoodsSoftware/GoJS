@@ -74,7 +74,7 @@ export function init() {
   const $ = go.GraphObject.make;
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         layout: $(TableLayout,
           $(go.RowColumnDefinition, { row: 1, height: 22 }),  // fixed size column headers
@@ -277,13 +277,13 @@ export function init() {
     { key: 'Theta', color: 'tomato', size: '100 50', group: 'AdmApp' }
   ]);
 
-  $(go.Palette, 'myPaletteDiv',
+  new go.Palette('myPaletteDiv',
     {
       nodeTemplateMap: myDiagram.nodeTemplateMap,
-      'model.nodeDataArray': [
+      model: new go.GraphLinksModel([
         { key: 'Alpha', color: 'orange' },
         { key: 'Beta', color: 'tomato' },
         { key: 'Gamma', color: 'goldenrod' }
-      ]
+      ])
     });
 }

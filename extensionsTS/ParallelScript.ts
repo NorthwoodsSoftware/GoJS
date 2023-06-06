@@ -19,7 +19,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv',  // must be the ID or reference to div
+    new go.Diagram('myDiagramDiv',  // must be the ID or reference to div
       {
         allowCopy: false,    // would need to merge copied nodes and links to
         allowDelete: false,  //   use the single "Split" and "Merge" nodes

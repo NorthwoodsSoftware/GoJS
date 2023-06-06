@@ -1175,7 +1175,7 @@ export function init() {
   // ------------------------------------------the main Diagram----------------------------------------------
 
   myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         nodeTemplateMap: nodeTemplateMap,
         linkTemplateMap: linkTemplateMap,
@@ -1246,7 +1246,7 @@ export function init() {
 
   // initialize the first Palette, BPMN Spec Level 1
   const myPaletteLevel1 =
-    $(go.Palette, 'myPaletteLevel1',
+    new go.Palette('myPaletteLevel1',
       { // share the templates with the main Diagram
         nodeTemplateMap: palNodeTemplateMap,
         groupTemplateMap: palGroupTemplateMap,
@@ -1260,7 +1260,7 @@ export function init() {
 
   // initialize the second Palette, BPMN Spec Level 2
   const myPaletteLevel2 =
-    $(go.Palette, 'myPaletteLevel2',
+    new go.Palette('myPaletteLevel2',
       { // share the templates with the main Diagram
         nodeTemplateMap: palNodeTemplateMap,
         groupTemplateMap: palGroupTemplateMap,
@@ -1274,7 +1274,7 @@ export function init() {
 
   // initialize the third Palette, random other stuff
   const myPaletteLevel3 =
-    $(go.Palette, 'myPaletteLevel3',
+    new go.Palette('myPaletteLevel3',
       { // share the templates with the main Diagram
         nodeTemplateMap: palNodeTemplateMap,
         groupTemplateMap: palGroupTemplateMap,
@@ -1420,7 +1420,7 @@ export function init() {
   // ------------------------------------------  Overview   ----------------------------------------------
 
   const myOverview =
-    $(go.Overview, 'myOverviewDiv',
+    new go.Overview('myOverviewDiv',
       { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
   // change color of viewport border in Overview
   (myOverview.box.elt(0) as go.Shape).stroke = 'dodgerblue';

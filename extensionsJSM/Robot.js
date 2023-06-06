@@ -12,11 +12,27 @@ import * as go from '../release/go-module.js';
 /**
  * A class for simulating mouse and keyboard input.
  *
- * As a special hack, this supports limited simulation of drag-and-drop between Diagrams,
+ * As a special feature, this supports limited simulation of drag-and-drop between Diagrams,
  * by setting both the `sourceDiagram` and `targetDiagram` properties
  * on the `eventprops` argument of the mouseDown/mouseMove/mouseUp methods.
  * Although {@link InputEvent#targetDiagram} is a real property,
  * the `sourceDiagram` property is only used by these Robot methods.
+ *
+ * Typical setup:
+ * <pre>
+ *    // a shared Robot that can be used by all commands for this one Diagram
+ *    myRobot = new Robot(myDiagram);  // defined in Robot.js
+ * </pre>
+ * Then later:
+ * <pre>
+ *    // Simulate a mouse drag to move a node:
+ *    const loc = ...;  // some Point in document coordinates that is within the bounds of a node
+ *    const options = {};  // possible settings of InputEvent, such as setting control or shift to true
+ *    myRobot.mouseDown(loc.x, loc.y, 0, options);
+ *    myRobot.mouseMove(loc.x + 80, loc.y + 50, 50, options);
+ *    myRobot.mouseMove(loc.x + 20, loc.y + 100, 100, options);
+ *    myRobot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
+ * </pre>
  *
  * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Robot.html">Simulating Input</a> sample.
  * @category Extension

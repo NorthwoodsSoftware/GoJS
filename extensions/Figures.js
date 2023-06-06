@@ -2012,7 +2012,6 @@ go.Shape.defineFigureGenerator("Arrow", function(shape, w, h) {
   geo.add(fig);
   fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
   fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, x, h));
   fig.add(new go.PathSegment(go.PathSegment.Line, x, y2));
@@ -2047,7 +2046,6 @@ go.Shape.defineFigureGenerator("Arrow2", function(shape, w, h) {
   var fig = new go.PathFigure(0, y1, true);
   geo.add(fig);
   fig.add(new go.PathSegment(go.PathSegment.Line, x, y1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, x, 0));
   fig.add(new go.PathSegment(go.PathSegment.Line, w, .5 * h));
   fig.add(new go.PathSegment(go.PathSegment.Line, x, h));

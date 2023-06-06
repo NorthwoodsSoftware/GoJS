@@ -20,7 +20,7 @@ export function init() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
   const myDiagram =
-    $(go.Diagram, 'myDiagramDiv',
+    new go.Diagram('myDiagramDiv',
       {
         validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
         'undoManager.isEnabled': true

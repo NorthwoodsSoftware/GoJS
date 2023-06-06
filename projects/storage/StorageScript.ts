@@ -28,7 +28,7 @@ export function init() {
   });
 
   const $ = go.GraphObject.make;
-  const myDiagram = $(go.Diagram, 'myDiagramDiv', {
+  const myDiagram = new go.Diagram('myDiagramDiv', {
     initialContentAlignment: go.Spot.Center,  // center the content
     'undoManager.isEnabled': true  // enable undo & redo
   });

@@ -28,7 +28,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', // must name or refer to the DIV HTML element
+            new go.Diagram('myDiagramDiv', // must name or refer to the DIV HTML element
             {
                 // have mouse wheel events zoom in and out instead of scroll up and down
                 'toolManager.mouseWheelBehavior': go.ToolManager.WheelZoom,

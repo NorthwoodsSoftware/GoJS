@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var sidebutton = byId('navButton');
   var navList = byId('navList');
   sidebutton.addEventListener('click', function () {
-    this.classList.toggle('active');
+    sidebutton.classList.toggle('active');
     navList.classList.toggle('hidden');
     byId('navOpen').classList.toggle('hidden');
     byId('navClosed').classList.toggle('hidden');
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var topButton = byId('topnavButton');
   var topnavList = byId('topnavList');
   topButton.addEventListener('click', function () {
-    this.classList.toggle('active');
+    topButton.classList.toggle('active');
     topnavList.classList.toggle('hidden');
     byId('topnavOpen').classList.toggle('hidden');
     byId('topnavClosed').classList.toggle('hidden');

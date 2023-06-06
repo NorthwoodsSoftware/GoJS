@@ -27,7 +27,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+        myDiagram = new go.Diagram('myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             layout: $(go.ForceDirectedLayout),
             'undoManager.isEnabled': true // enable undo & redo
@@ -65,13 +65,13 @@
             { key: 0, everExpanded: false }
         ]);
         // Overview
-        $(go.Overview, 'myOverviewDiv', // the HTML DIV element for the Overview
+        var myOverview = new go.Overview('myOverviewDiv', // the HTML DIV element for the Overview
         {
             observed: myDiagram,
             contentAlignment: go.Spot.Center,
-            'box.resizable': true,
-            'resizingTool': new OverviewResizingTool_js_1.OverviewResizingTool()
         });
+        myOverview.box.resizable = true;
+        myOverview.toolManager.resizingTool = new OverviewResizingTool_js_1.OverviewResizingTool();
         document.getElementById('zoomToFit').addEventListener('click', function () {
             myDiagram.zoomToFit();
         });

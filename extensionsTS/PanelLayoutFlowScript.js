@@ -26,7 +26,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
-        var myDiagram = $(go.Diagram, "myDiagramDiv", { "undoManager.isEnabled": true });
+        var myDiagram = new go.Diagram("myDiagramDiv", { "undoManager.isEnabled": true });
         myDiagram.nodeTemplate =
             $(go.Node, "Vertical", $(go.TextBlock, { font: "bold 10pt sans-serif" }, new go.Binding("text")), $(go.Shape, {
                 width: 40, height: 40,

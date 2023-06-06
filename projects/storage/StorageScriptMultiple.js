@@ -34,7 +34,7 @@
             });
         });
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        var myDiagram = new go.Diagram('myDiagramDiv', {
             initialContentAlignment: go.Spot.Center,
             'undoManager.isEnabled': true // enable undo & redo
         });
@@ -57,7 +57,7 @@
             { from: 'Gamma', to: 'Delta' },
             { from: 'Delta', to: 'Alpha' }
         ]);
-        var myDiagram2 = $(go.Diagram, 'myDiagramDiv2', {
+        var myDiagram2 = new go.Diagram('myDiagramDiv2', {
             initialContentAlignment: go.Spot.Center,
             'undoManager.isEnabled': true // enable undo & redo
         });

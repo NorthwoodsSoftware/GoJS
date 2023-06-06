@@ -10,6 +10,26 @@
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
 // This file exposes one instance of HTMLInfo, window.TextEditor
+// Typical usage is:
+// <pre>
+//   new go.Diagram(...,
+//      {
+//        "textEditingTool.defaultTextEditor": window.TextEditor,
+//        . . .
+//      })
+// </pre>
+// or:
+// <pre>
+//    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
+// </pre>
+// <pre>
+//   $(go.Node, . . .,
+//     . . .
+//       $(go.TextBlock, { textEditor: window.TextEditor, . . . })
+//     . . .
+//   )
+// </pre>
+// If you do use this code, copy it into your project and modify it there.
 // See also TextEditor.html
 (function(window) {
   var textarea = document.createElement('textarea');
@@ -25,6 +45,7 @@
   }, false);
 
   textarea.addEventListener('keydown', function(e) {
+    if (e.isComposing) return;
     var tool = TextEditor.tool;
     if (tool.textBlock === null) return;
     var key = e.key;
@@ -45,7 +66,7 @@
   // handle focus:
   textarea.addEventListener('focus', function(e) {
     var tool = TextEditor.tool;
-    if (!tool || tool.currentTextEditor === null) return;
+    if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingTool.StateNone) return;
 
     if (tool.state === go.TextEditingTool.StateActive) {
       tool.state = go.TextEditingTool.StateEditing;

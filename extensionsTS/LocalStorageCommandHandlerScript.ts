@@ -18,13 +18,13 @@ export function init() {
 
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  const myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  const myDiagram = new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       commandHandler: new LocalStorageCommandHandler(),  // defined in DrawCommandHandler.js
       'undoManager.isEnabled': true  // enable undo & redo
     });
 
-  const myDiagram2 = $(go.Diagram, 'myDiagramDiv2',  // create a Diagram for the DIV HTML element
+  const myDiagram2 = new go.Diagram('myDiagramDiv2',  // create a Diagram for the DIV HTML element
     {
 
       commandHandler: new LocalStorageCommandHandler(),  // defined in DrawCommandHandler.js

@@ -29,7 +29,7 @@
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make; // for conciseness in defining templates
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', {
+            new go.Diagram('myDiagramDiv', {
                 initialDocumentSpot: go.Spot.Center,
                 initialViewportSpot: go.Spot.Center,
                 // Define the template for Nodes, just some text inside a colored rectangle

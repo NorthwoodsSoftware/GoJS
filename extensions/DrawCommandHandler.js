@@ -21,7 +21,7 @@
 * <p>
 * Typical usage:
 * <pre>
-*   $(go.Diagram, "myDiagramDiv",
+*   new go.Diagram("myDiagramDiv",
 *     {
 *       commandHandler: $(DrawCommandHandler),
 *       . . .
@@ -31,7 +31,8 @@
 * or:
 * <pre>
 *    myDiagram.commandHandler = new DrawCommandHandler();
-* </pre>*/
+* </pre>
+*/
 function DrawCommandHandler() {
   go.CommandHandler.call(this);
   this._arrowKeyBehavior = "move";

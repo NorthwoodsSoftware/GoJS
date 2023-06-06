@@ -103,7 +103,7 @@ var __extends = (this && this.__extends) || (function () {
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', {
+        var myDiagram = new go.Diagram('myDiagramDiv', {
             layout: $(TableLayout_js_1.TableLayout, $(go.RowColumnDefinition, { row: 1, height: 22 }), // fixed size column headers
             $(go.RowColumnDefinition, { column: 1, width: 22 }) // fixed size row headers
             ),
@@ -242,13 +242,13 @@ var __extends = (this && this.__extends) || (function () {
             { key: 'Eta', color: 'coral', size: '50 50', group: 'ManApp' },
             { key: 'Theta', color: 'tomato', size: '100 50', group: 'AdmApp' }
         ]);
-        $(go.Palette, 'myPaletteDiv', {
+        new go.Palette('myPaletteDiv', {
             nodeTemplateMap: myDiagram.nodeTemplateMap,
-            'model.nodeDataArray': [
+            model: new go.GraphLinksModel([
                 { key: 'Alpha', color: 'orange' },
                 { key: 'Beta', color: 'tomato' },
                 { key: 'Gamma', color: 'goldenrod' }
-            ]
+            ])
         });
     }
     exports.init = init;

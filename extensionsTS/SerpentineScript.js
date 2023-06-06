@@ -26,7 +26,7 @@
         if (window.goSamples)
             window.goSamples(); // init for these samples -- you don't need to call this
         var $ = go.GraphObject.make;
-        var myDiagram = $(go.Diagram, 'myDiagramDiv', // create a Diagram for the DIV HTML element
+        var myDiagram = new go.Diagram('myDiagramDiv', // create a Diagram for the DIV HTML element
         {
             isTreePathToChildren: false,
             layout: $(SerpentineLayout_js_1.SerpentineLayout) // defined in SerpentineLayout.js

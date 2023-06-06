@@ -13,7 +13,7 @@ import { go } from './minimal-index';
 window.init = function() {
   const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-  const myDiagram = $(go.Diagram, 'myDiagramDiv',  // create a Diagram for the DIV HTML element
+  const myDiagram = new go.Diagram('myDiagramDiv',  // create a Diagram for the DIV HTML element
     {
       'undoManager.isEnabled': true  // enable undo & redo
     });

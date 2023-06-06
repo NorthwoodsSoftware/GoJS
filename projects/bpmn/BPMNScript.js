@@ -804,7 +804,7 @@ var __extends = (this && this.__extends) || (function () {
         linkTemplateMap.add('', sequenceLinkTemplate); // default
         // ------------------------------------------the main Diagram----------------------------------------------
         myDiagram =
-            $(go.Diagram, 'myDiagramDiv', {
+            new go.Diagram('myDiagramDiv', {
                 nodeTemplateMap: nodeTemplateMap,
                 linkTemplateMap: linkTemplateMap,
                 groupTemplateMap: groupTemplateMap,
@@ -872,7 +872,7 @@ var __extends = (this && this.__extends) || (function () {
             return 0;
         }
         // initialize the first Palette, BPMN Spec Level 1
-        var myPaletteLevel1 = $(go.Palette, 'myPaletteLevel1', {
+        var myPaletteLevel1 = new go.Palette('myPaletteLevel1', {
             nodeTemplateMap: palNodeTemplateMap,
             groupTemplateMap: palGroupTemplateMap,
             layout: $(go.GridLayout, {
@@ -882,7 +882,7 @@ var __extends = (this && this.__extends) || (function () {
             })
         });
         // initialize the second Palette, BPMN Spec Level 2
-        var myPaletteLevel2 = $(go.Palette, 'myPaletteLevel2', {
+        var myPaletteLevel2 = new go.Palette('myPaletteLevel2', {
             nodeTemplateMap: palNodeTemplateMap,
             groupTemplateMap: palGroupTemplateMap,
             layout: $(go.GridLayout, {
@@ -892,7 +892,7 @@ var __extends = (this && this.__extends) || (function () {
             })
         });
         // initialize the third Palette, random other stuff
-        var myPaletteLevel3 = $(go.Palette, 'myPaletteLevel3', {
+        var myPaletteLevel3 = new go.Palette('myPaletteLevel3', {
             nodeTemplateMap: palNodeTemplateMap,
             groupTemplateMap: palGroupTemplateMap,
             layout: $(go.GridLayout, {
@@ -1015,7 +1015,7 @@ var __extends = (this && this.__extends) || (function () {
             ] // end nodeDataArray
         }); // end model
         // ------------------------------------------  Overview   ----------------------------------------------
-        var myOverview = $(go.Overview, 'myOverviewDiv', { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
+        var myOverview = new go.Overview('myOverviewDiv', { observed: myDiagram, maxScale: 0.5, contentAlignment: go.Spot.Center });
         // change color of viewport border in Overview
         myOverview.box.elt(0).stroke = 'dodgerblue';
         // start with a simple preset model:
