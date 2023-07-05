@@ -52,12 +52,33 @@
     <div id="allSampleContent" class="p-4 w-full">
   <script src="../extensions/Figures.js"></script>
   <script src="../extensions/DrawCommandHandler.js"></script>
-    <script id="code">
+  <script id="code">
+      
     function init() {
 
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
       const $ = go.GraphObject.make;
+
+      // Colors are predefined to allow easy manipulation of themes
+      const colors = {
+        red: "#ff3333",
+        blue: "#3358ff",
+        green: "#25ad23",
+        magenta: "#d533ff",
+        purple: "#7d33ff",
+        orange: "#ff6233",
+        brown: "#8e571e",
+        white: "#ffffff",
+        black: "#000000",
+        beige: "#fffcd5",
+        extralightblue: "#d5ebff",
+        extralightred: "#f2dfe0",
+        lightblue: "#a5d2fa",
+        lightgray: "#cccccc",
+        lightgreen: "#b3e6b3", 
+        lightred: "#fcbbbd",
+      }
 
       myDiagram =
         new go.Diagram("myDiagramDiv",
@@ -120,8 +141,8 @@
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           $(go.Shape,
             { // the border
-              name: "SHAPE", fill: "white",
-              portId: "", cursor: "pointer",
+              name: "SHAPE", fill: colors.white, cursor: "pointer",
+              portId: "",
               fromLinkable: true, toLinkable: true,
               fromLinkableDuplicates: true, toLinkableDuplicates: true,
               fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
@@ -132,12 +153,12 @@
             new go.Binding("strokeWidth", "thickness"),
             new go.Binding("strokeDashArray", "dash")),
           // this Shape prevents mouse events from reaching the middle of the port
-          $(go.Shape, { width: 100, height: 40, strokeWidth: 0, fill: "transparent" }),
+          $(go.Shape, { width: 100, height: 40, strokeWidth: 0, fill: "transparent"}),
           $(go.TextBlock,
             { margin: 1, textAlign: "center", overflow: go.TextBlock.OverflowEllipsis, editable: true },
             // this Binding is TwoWay due to the user editing the text with the TextEditingTool
             new go.Binding("text").makeTwoWay(),
-            new go.Binding("stroke", "color"))
+            new go.Binding("stroke", "color")),
         );
 
       myDiagram.nodeTemplate.toolTip =
@@ -167,8 +188,8 @@
               var p = new go.Point().setRectSpot(selnode.actualBounds, spot);
               p.subtract(selnode.location);
               p.scale(2, 2);
-              p.x += Math.sign(p.x) * 60;
-              p.y += Math.sign(p.y) * 60;
+              p.x += Math.sign(p.x) * 30;
+              p.y += Math.sign(p.y) * 30;
               p.add(selnode.location);
               p.snapToGridPoint(e.diagram.grid.gridOrigin, e.diagram.grid.gridCellSize);
               // make the new node a copy of the selected node
@@ -192,9 +213,11 @@
           {
             figure: fig,
             alignment: spot, alignmentFocus: spot.opposite(),
-            width: (spot.equals(go.Spot.Top) || spot.equals(go.Spot.Bottom)) ? 36 : 18,
-            height: (spot.equals(go.Spot.Top) || spot.equals(go.Spot.Bottom)) ? 18 : 36,
-            fill: "orange", strokeWidth: 0,
+            width: (spot.equals(go.Spot.Top) || spot.equals(go.Spot.Bottom)) ? 25 : 18,
+            height: (spot.equals(go.Spot.Top) || spot.equals(go.Spot.Bottom)) ? 18 : 25,
+            fill: "orange", stroke: colors.white, strokeWidth: 4,
+            mouseEnter: (e, shape) => shape.fill = "dodgerblue",
+            mouseLeave: (e, shape) => shape.fill = "orange",
             isActionable: true,  // needed because it's in an Adornment
             click: maker, contextClick: maker
           });
@@ -203,10 +226,12 @@
       // create a button that brings up the context menu
       function CMButton(options) {
         return $(go.Shape,
-          {
-            fill: "orange", stroke: "gray", background: "transparent",
-            geometryString: "F1 M0 0 M0 4h4v4h-4z M6 4h4v4h-4z M12 4h4v4h-4z M0 12",
+            {
+            fill: "orange", stroke: "rgba(0, 0, 0, 0)", strokeWidth: 15, background: "transparent",
+            geometryString: "F1 M0 0 b 0 360 -4 0 4 z M10 0 b 0 360 -4 0 4 z M20 0 b 0 360 -4 0 4",// M10 0 A2 2 0 1 0 14 10 M20 0 A2 2 0 1 0 24 10,
             isActionable: true, cursor: "context-menu",
+            mouseEnter: (e, shape) => shape.fill = "dodgerblue",
+            mouseLeave: (e, shape) => shape.fill = "orange",
             click: (e, shape) => {
               e.diagram.commandHandler.showContextMenu(shape.part.adornedPart);
             }
@@ -258,12 +283,12 @@
         return [
           $("ContextMenuButton",
             $(go.Panel, "Horizontal",
-              ColorButton("white", "fill"), ColorButton("beige", "fill"), ColorButton("aliceblue", "fill"), ColorButton("lightyellow", "fill")
+              ColorButton(colors.white, "fill"), ColorButton(colors.beige, "fill"), ColorButton(colors.extralightblue, "fill"), ColorButton(colors.extralightred, "fill")
             )
           ),
           $("ContextMenuButton",
             $(go.Panel, "Horizontal",
-              ColorButton("lightgray", "fill"), ColorButton("lightgreen", "fill"), ColorButton("lightblue", "fill"), ColorButton("pink", "fill")
+              ColorButton(colors.lightgray, "fill"), ColorButton(colors.lightgreen, "fill"), ColorButton(colors.lightblue, "fill"), ColorButton(colors.lightred, "fill")
             )
           )
         ];
@@ -273,12 +298,12 @@
         return [
           $("ContextMenuButton",
             $(go.Panel, "Horizontal",
-              ColorButton("black"), ColorButton("green"), ColorButton("blue"), ColorButton("red")
+              ColorButton(colors.black), ColorButton(colors.green), ColorButton(colors.blue), ColorButton(colors.red)
             )
           ),
           $("ContextMenuButton",
             $(go.Panel, "Horizontal",
-              ColorButton("brown"), ColorButton("magenta"), ColorButton("purple"), ColorButton("orange")
+              ColorButton(colors.white), ColorButton(colors.magenta), ColorButton(colors.purple), ColorButton(colors.orange)
             )
           )
         ];
@@ -386,8 +411,7 @@
             $(go.Shape,
               {
                 parameter1: 10,
-                fill: "white", strokeWidth: 2,
-                portId: "", cursor: "pointer",
+                fill: colors.white, strokeWidth: 2, cursor: "pointer",
                 fromLinkable: true, toLinkable: true,
                 fromLinkableDuplicates: true, toLinkableDuplicates: true,
                 fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
@@ -397,7 +421,7 @@
               new go.Binding("strokeWidth", "thickness"),
               new go.Binding("strokeDashArray", "dash")),
             $(go.Placeholder,
-              { background: "transparent", margin: 10 })
+              { background: "transparent", margin: 20 })
           ),
           $(go.TextBlock,
             {
@@ -432,27 +456,54 @@
           {
             layerName: "Foreground",
             routing: go.Link.AvoidsNodes, corner: 10,
-            toShortLength: 4,  // assume arrowhead at "to" end, need to avoid bad appearance when path is thick
+            fromShortLength: 10, toShortLength: 15,  // assume arrowhead at "to" end, need to avoid bad appearance when path is thick
             relinkableFrom: true, relinkableTo: true,
             reshapable: true, resegmentable: true
           },
           new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
           new go.Binding("toSpot", "toSpot", go.Spot.parse),
-          new go.Binding("fromShortLength", "dir", dir => dir === 2 ? 4 : 0),
-          new go.Binding("toShortLength", "dir", dir => dir >= 1 ? 4 : 0),
+          new go.Binding("fromShortLength", "dir", dir => dir >= 1 ? 10 : 0),
+          new go.Binding("toShortLength", "dir", dir => dir >= 1 ? 10 : 0),
           new go.Binding("points").makeTwoWay(),  // TwoWay due to user reshaping with LinkReshapingTool
+          
           $(go.Shape, { strokeWidth: 2 },
             new go.Binding("stroke", "color"),
             new go.Binding("strokeWidth", "thickness"),
             new go.Binding("strokeDashArray", "dash")),
-          $(go.Shape, { fromArrow: "Backward", strokeWidth: 0, scale: 4/3, visible: false },
-            new go.Binding("visible", "dir", dir => dir === 2),
+          $(go.Shape, // custom arrowheads to create the lifted effect
+            { segmentIndex: 0, segmentOffset: new go.Point(15, 0),
+              segmentOrientation: go.Link.OrientAlong,
+              alignmentFocus: go.Spot.Right,
+              figure: "circle", width: 10, strokeWidth: 0
+            },
             new go.Binding("fill", "color"),
-            new go.Binding("scale", "thickness", t => (2+t)/3)),
-          $(go.Shape, { toArrow: "Standard", strokeWidth: 0, scale: 4/3 },
+            new go.Binding("visible", "dir", dir => dir === 1)),
+          $(go.Shape, 
+            { segmentIndex: -1, segmentOffset: new go.Point(-10, 6),
+              segmentOrientation: go.Link.OrientPlus90,
+              alignmentFocus: go.Spot.Right,
+              figure: "triangle",
+              width: 12, height: 12, strokeWidth: 0
+            },
+            new go.Binding("fill", "color"),
             new go.Binding("visible", "dir", dir => dir >= 1),
+            new go.Binding("width", "thickness", t => 7 + (3 * t)),  // custom arrowhead must scale with the size of the while
+            new go.Binding("height", "thickness", t => 7 + (3 * t)), // while remaining centered on line
+            new go.Binding("segmentOffset", "thickness", t => new go.Point(-15, 4 + (1.5 * t)))
+          ),
+          $(go.Shape, 
+            { segmentIndex: 0, segmentOffset: new go.Point(15, -6),
+              segmentOrientation: go.Link.OrientMinus90,
+              alignmentFocus: go.Spot.Right,
+              figure: "triangle",
+              width: 12, height: 12, strokeWidth: 0
+            },
             new go.Binding("fill", "color"),
-            new go.Binding("scale", "thickness", t => (2+t)/3)),
+            new go.Binding("visible", "dir", dir => dir === 2),
+            new go.Binding("width", "thickness", t => 7 + (3 * t)),
+            new go.Binding("height", "thickness", t => 7 + (3 * t)),
+            new go.Binding("segmentOffset", "thickness", t => new go.Point(-15, 4 + (1.5 * t)))
+          ),
           $(go.TextBlock,
             { alignmentFocus: new go.Spot(0, 1, -4, 0), editable: true },
             new go.Binding("text").makeTwoWay(),  // TwoWay due to user editing with TextEditingTool
@@ -485,7 +536,7 @@
       // All buttons modify the link data, not the Link, so the Bindings need not be TwoWay.
 
       function ArrowButton(num) {
-        var geo = "M0 0 M16 16 M0 8 L16 8  M12 11 L16 8 L12 5";
+        var geo = "M0 0 M8 16 M0 8 L16 8  M12 11 L16 8 L12 5";
         if (num === 0) {
           geo = "M0 0 M16 16 M0 8 L16 8";
         } else if (num === 2) {
@@ -584,6 +635,7 @@
       myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
     }
     window.addEventListener('DOMContentLoaded', init);
+
   </script>
 
 <div id="sample">
@@ -605,28 +657,40 @@
     <button id="saveModel" onclick="save()">Save</button>
   </div>
   <textarea id="mySavedModel" style="width:100%;height:300px">
-{ "class": "GraphLinksModel",
-  "nodeDataArray": [
-{"key":1, "loc":"0 0", "text":"Alpha", "details":"some information about Alpha and its importance"},
-{"key":2, "loc":"170 0", "text":"Beta", "color":"blue", "thickness":2, "figure":"Procedure"},
-{"key":3, "loc":"0 100", "text":"Gamma", "color":"green", "figure":"Cylinder1"},
-{"key":4, "loc":"80 180", "text":"Delta", "color":"red", "figure":"Terminator", "size":"80 40"},
-{"key":5, "loc":"350 -50", "text":"Zeta", "group":7, "color":"blue", "figure":"CreateRequest"},
-{"key":6, "loc":"350 50", "text":"Eta", "group":7, "figure":"Document", "fill":"lightyellow"},
-{"key":7, "isGroup":true, "text":"Theta", "color":"green", "fill":"lightgreen"},
-{"key":8, "loc":"520 50", "text":"Iota", "fill":"pink"}
- ],
-  "linkDataArray": [
-{"from":1, "to":2, "dash":[ 6,3 ], "thickness":4},
-{"from":1, "to":3, "dash":[ 2,4 ], "color":"green", "text":"label"},
-{"from":3, "to":4, "color":"red", "text":"a red label", "fromSpot":"RightSide"},
-{"from":2, "to":1},
-{"from":5, "to":6, "text":"in a group"},
-{"from":2, "to":7},
-{"from":6, "to":8, "dir":0},
-{"from":6, "to":8, "dir":1},
-{"from":6, "to":8, "dir":2}
- ]}
+    { "class": "GraphLinksModel",
+    "nodeDataArray": [
+  {"text":"Find Problem","key":-9,"loc":"-20 -140","color":"#3358ff","fill":"white","figure":"Procedure","thickness":3},
+  {"text":"What do we want?","key":-10,"loc":"-110 -320","group":-16,"figure":"Ellipse","fill":"white"},
+  {"text":"What do our users want?","key":-11,"loc":"70 -320","group":-20,"figure":"Ellipse","fill":"#ffffff","color":"black"},
+  {"text":"Meetings","key":-12,"loc":"-110 -440","group":-16,"figure":"TriangleDown","fill":"#ffffff"},
+  {"text":"Reviews","key":-13,"loc":"70 -440","group":-20,"figure":"TriangleDown","fill":"#ffffff","color":"black"},
+  {"text":"Can we solve it?","key":-14,"loc":"190 -140","color":"#7d33ff","fill":"#ffffff","figure":"Diamond","size":"140 80","thickness":3},
+  {"text":"Design Prototype","key":-7,"loc":"337.191 -440","color":"black","fill":"#f2dfe0","group":-17,"figure":"Procedure","size":"140 80"},
+  {"text":"Does it work?","key":-8,"loc":"337.191 -300","color":"black","fill":"#f2dfe0","group":-17,"figure":"Diamond","size":"140 80"},
+  {"text":"Market/Sell\nSolution","key":-15,"loc":"470 -157.5","color":"#25ad23","fill":"#ffffff","group":-19,"figure":"Rectangle","size":"120 60"},
+  {"isGroup":true,"text":"Problem-Solving Process","key":-17,"loc":"365.40458203125 -370","fill":"#fcbbbd","thickness":3,"color":"#000000"},
+  {"text":"Implement \nSolution","key":-18,"loc":"470 -82.5","color":"#25ad23","fill":"#ffffff","group":-19,"figure":"Rectangle","size":"120 60"},
+  {"isGroup":true,"text":"Internal","key":-16,"loc":"-110 -380","fill":"#d5ebff","dash":null,"thickness":1,"group":-22},
+  {"isGroup":true,"text":"External","key":-20,"loc":"70 -380","fill":"#d5ebff","dash":null,"thickness":1,"group":-22},
+  {"isGroup":true,"text":"Distribute Solution","key":-19,"loc":"470 -120","fill":"#b3e6b3","thickness":2,"dash":[4,4]},
+  {"text":"Yes!","key":-21,"loc":"350 -120","size":"60 40","figure":"ManualOperation","fill":"#ffffff","color":"#25ad23","thickness":3},
+  {"isGroup":true,"text":"Sources","key":-22,"loc":"-20 -388.66328125","fill":"#a5d2fa","dash":[4,4],"color":"#3358ff"}
+  ],
+    "linkDataArray": [
+  {"from":-12,"to":-10,"points":[-110,-410,-110,-400,-110,-380,-110,-380,-110,-360,-110,-350],"dash":null,"dir":1},
+  {"from":-13,"to":-11,"points":[70,-410,70,-400,70,-380,70,-380,70,-360,70,-350],"dash":null,"color":"#000000","dir":1},
+  {"from":-10,"to":-9,"points":[-110,-290,-110,-280,-110,-230,-40,-230,-40,-180,-40,-170],"dir":2,"dash":[4,4]},
+  {"from":-11,"to":-9,"points":[70,-290,70,-280,70,-230,0,-230,0,-180,0,-170],"dash":[4,4],"dir":2},
+  {"from":-9,"to":-14,"points":[40,-140,50,-140,80,-140,80,-140,110,-140,120,-140],"dir":1,"color":"#3358ff"},
+  {"from":-14,"to":-9,"points":[190,-100,190,-90,190,-72.39579391479492,-20,-72.39579391479492,-20,-100,-20,-110],"fromSpot":"BottomSide","toSpot":"BottomSide","text":"No","color":"#ff3333","thickness":2,"dir":1},
+  {"from":-14,"to":-7,"points":[190,-180,190,-190,190,-440,223.5955,-440,257.191,-440,267.191,-440],"fromSpot":"TopSide","toSpot":"LeftSide","color":"#7d33ff","dir":1},
+  {"from":-7,"to":-8,"points":[337.191,-400,337.191,-390,337.191,-370,337.191,-370,337.191,-350,337.191,-340],"dir":1},
+  {"from":-8,"to":-15,"points":[360.5243333333333,-260,360.5243333333333,-250,360.5243333333333,-157.5,380.26216666666664,-157.5,400,-157.5,410,-157.5],"toSpot":"LeftSide","dir":1},
+  {"from":-8,"to":-18,"points":[313.85766666666666,-260,313.85766666666666,-242,313.85766666666666,-82.5,356.92883333333333,-82.5,400,-82.5,410,-82.5],"toSpot":"LeftSide","fromSpot":"BottomSide","text":"","dir":1},
+  {"from":-8,"to":-7,"points":[407.191,-300,417.191,-300,443,-300,443,-440,417.191,-440,407.191,-440],"toSpot":"RightSide","fromSpot":"RightSide","text":"No\n","color":"#ff3333","dir":1},
+  {"from":-15,"to":-13,"points":[530,-157.5,540,-157.5,563.3333740234375,-157.5,563.3333740234375,-557.7291679382324,182.66668701171875,-557.7291679382324,182.66668701171875,-440,140,-440,130,-440],"toSpot":"RightSide","fromSpot":"RightSide","dash":[2,4],"dir":1},
+  {"from":-18,"to":-12,"points":[530,-82.5,540,-82.5,587.3333740234375,-82.5,587.3333740234375,-579.0624961853027,-238.66665649414062,-579.0624961853027,-238.66665649414062,-440,-180,-440,-170,-440],"fromSpot":"RightSide","toSpot":"LeftSide","dash":[2,4],"dir":1}
+  ]}
   </textarea>
 </div>
     </div>

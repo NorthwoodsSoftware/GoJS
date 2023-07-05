@@ -60,9 +60,8 @@
       myFullDiagram =
         new go.Diagram("fullDiagram",  // each diagram refers to its DIV HTML element by id
           {
-            initialAutoScale: go.Diagram.UniformToFill,  // automatically scale down to show whole tree
-            maxScale: 0.25,
-            contentAlignment: go.Spot.Center,  // center the tree in the viewport
+            initialAutoScale: go.Diagram.Uniform,  // automatically scale down to show whole tree
+            contentAlignment: go.Spot.Center,  // center the tree in the viewport if it fits
             isReadOnly: true,  // don't allow user to change the diagram
             "animationManager.isEnabled": false,
             layout: $(go.TreeLayout,
@@ -75,9 +74,10 @@
       myLocalDiagram =  // this is very similar to the full Diagram
         new go.Diagram("localDiagram",
           {
-            autoScale: go.Diagram.UniformToFill,
+            initialAutoScale: go.Diagram.UniformToFill,
             contentAlignment: go.Spot.Center,
             isReadOnly: true,
+            "animationManager.isInitial": false,
             layout: $(go.TreeLayout,
               { angle: 90, sorting: go.TreeLayout.SortingAscending }),
             "LayoutCompleted": e => {
@@ -128,9 +128,9 @@
           },
           $(go.Shape, "Ellipse",
             {
-              fill: $(go.Brush, "Radial", { 0.0: "yellow", 1.0: "white" }),
+              fill: $(go.Brush, "Radial", { 0.0: "gold", 0.5: "gold", 1.0: "white" }),
               stroke: null,
-              desiredSize: new go.Size(400, 400)
+              desiredSize: new go.Size(300, 300)
             })
         );
       myFullDiagram.add(highlighter);
@@ -159,7 +159,7 @@
       if (node !== null) {
         // make sure the selected node is in the viewport
         myFullDiagram.scrollToRect(node.actualBounds);
-        // move the large yellow node behind the selected node to highlight it
+        // move the large gold part behind the selected node to highlight it
         highlighter.location = node.location;
         // create a new model for the local Diagram
         var model = new go.TreeModel();
@@ -215,7 +215,7 @@
   focusing on a specific node in the tree and those nodes that are logically "near" it.
   When the selection changes in either diagram, the lower diagram changes its focus to the selected node.
   To show which node in the full tree is selected,
-  a large yellow highlighter part employing a radial <a>Brush</a> is placed in the background layer of the upper diagram behind the selected node.
+  a large gold highlighter part employing a radial <a>Brush</a> is placed in the background layer of the upper diagram behind the selected node.
   The Create New Tree button will randomly generate a new <a>TreeModel</a> to be used by the diagrams.
   </p>
   <p>

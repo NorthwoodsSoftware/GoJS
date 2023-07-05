@@ -14,7 +14,8 @@ import * as go from '../release/go-module.js';
 
 // This file holds the definitions of several useful figures with rounded corners but straight sides:
 // "RoundedTopRectangle", "RoundedBottomRectangle", "RoundedLeftRectangle", "RoundedRightRectangle",
-// "CapsuleH", and "CapsuleV".
+// (each with rounded corners on one side) and "Capsule" (with rounded corners occupying opposite sides
+// and parallel sides between them).
 // The basic "RoundedRectangle" (corners on all four sides) is built into the GoJS library --
 // you can see its definition in Figures.js.
 // Two of these are demonstrated at ../samples/twoHalves.html and ../samples/roundedGroups.html.
@@ -111,44 +112,41 @@ go.Shape.defineFigureGenerator("RoundedRightRectangle", (shape, w, h) => {
   return geo;
 });
 
-// these two figures have rounded ends
-go.Shape.defineFigureGenerator("CapsuleH", (shape, w, h) => {
+
+// narrow ends of rectangular area are completely rounded
+go.Shape.defineFigureGenerator("Capsule", function(shape, w, h) {
   const geo = new go.Geometry();
   if (w < h) {
-    const fig = new go.PathFigure(w/2, 0, true);
-    fig.add(new go.PathSegment(go.PathSegment.Bezier, w/2, h, w, 0, w, h));
-    fig.add(new go.PathSegment(go.PathSegment.Bezier, w/2, 0, 0, h, 0, 0));
-    geo.add(fig);
-    return geo;
-  } else {
-    const fig = new go.PathFigure(h/2, 0, true);
-    geo.add(fig);
-    // Outline
-    fig.add(new go.PathSegment(go.PathSegment.Line, w-h/2, 0));
-    fig.add(new go.PathSegment(go.PathSegment.Arc, 270, 180, w-h/2, h/2, h/2, h/2));
-    fig.add(new go.PathSegment(go.PathSegment.Line, w-h/2, h));
-    fig.add(new go.PathSegment(go.PathSegment.Arc, 90, 180, h/2, h/2, h/2, h/2));
-    return geo;
-  }
-});
-go.Shape.defineFigureGenerator("Capsule", "CapsuleH");  // synonym
-
-go.Shape.defineFigureGenerator("CapsuleV", (shape, w, h) => {
-  const geo = new go.Geometry();
-  if (h < w) {
-    const fig = new go.PathFigure(0, h/2, true);
-    fig.add(new go.PathSegment(go.PathSegment.Bezier, w, h/2, 0, h, w, h));
-    fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, h/2, w, 0, 0, 0));
-    geo.add(fig);
-    return geo;
-  } else {
     const fig = new go.PathFigure(0, w/2, true);
     geo.add(fig);
     // Outline
+    const f = w*0.156;
     fig.add(new go.PathSegment(go.PathSegment.Arc, 180, 180, w/2, w/2, w/2, w/2));
     fig.add(new go.PathSegment(go.PathSegment.Line, w, h-w/2));
     fig.add(new go.PathSegment(go.PathSegment.Arc, 0, 180, w/2, h-w/2, w/2, w/2));
     fig.add(new go.PathSegment(go.PathSegment.Line, 0, w/2));
+    geo.spot1 = new go.Spot(0, 0, f, f);
+    geo.spot2 = new go.Spot(1, 1, -f, -f);
+    return geo;
+  } else if (w > h) {
+    const fig = new go.PathFigure(h/2, 0, true);
+    geo.add(fig);
+    // Outline
+    const f = h*0.156;
+    fig.add(new go.PathSegment(go.PathSegment.Line, w-h/2, 0));
+    fig.add(new go.PathSegment(go.PathSegment.Arc, 270, 180, w-h/2, h/2, h/2, h/2));
+    fig.add(new go.PathSegment(go.PathSegment.Line, w-h/2, h));
+    fig.add(new go.PathSegment(go.PathSegment.Arc, 90, 180, h/2, h/2, h/2, h/2));
+    geo.spot1 = new go.Spot(0, 0, f, f);
+    geo.spot2 = new go.Spot(1, 1, -f, -f);
+    return geo;
+  } else {  // w === h
+    geo.type = go.Geometry.Ellipse;
+    geo.endX = w;
+    geo.endY = h;
+    const f = w*0.156;
+    geo.spot1 = new go.Spot(0, 0, f, f);
+    geo.spot2 = new go.Spot(1, 1, -f, -f);
     return geo;
   }
 });

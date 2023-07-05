@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.8
+ * Type definitions for GoJS v2.3.9
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10614,10 +10614,10 @@ export class Diagram {
      *
      * This is useful in situations where you do not wish for the first content added to the diagram to be considered
      * the "initial" content, such as with a Node that represents a "Loading" bar.
-     * @param {function(Diagram=)|null=} func an optional function of actions to perform as part of another diagram initialization.
+     * @param {function(Diagram)|null=} func an optional function of actions to perform as part of another diagram initialization.
      * @since 1.1
      */
-    delayInitialization(func?: ((diag?: Diagram) => void) | null): void;
+    delayInitialization(func?: ((diag: Diagram) => void) | null): void;
     /**
      * Usage of this method is uncommon and may affect performance,
      * for efficiency do not call this method unless you have a well-defined need.
@@ -12691,6 +12691,17 @@ export class Diagram {
      * @since 1.2
      */
     findTreeRoots(): Iterator<Node>;
+    /**
+     * (undocumented)
+     * Gets or sets the conditions under which "child" nodes become not visible.
+     * By default this property is Diagram.TreeParentCollapsed: only the true tree parent node's
+     * Node#isTreeExpanded property controls the visibility of a child node.
+     *
+     * You can set this to Diagram.AllParentsCollapsed, to require all of a node's
+     * "parents" to be collapsed in order for the node to become hidden.
+     * Caution: cycles in the graph structure may cause all of the nodes in the cycle to become hidden.
+     */
+    get treeCollapsePolicy(): EnumValue;
     set treeCollapsePolicy(value: EnumValue);
     /**
      * Register an event handler that is called when there is a DiagramEvent of a given name.

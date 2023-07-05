@@ -80,7 +80,7 @@
 <div>
   <div id="tagsDiv">
   </div>
-  <div id="samplesDiv" class="flex flex-wrap">
+  <div id="samplesDiv" class="mt-6 grid grid-cols-2 gap-y-10 gap-x-6 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
   </div>
   <div>
     <h3><a href="all.html">Complete list of all samples</a></h3>
@@ -154,31 +154,44 @@
     for (var i = 0; i < filteredSamples.length; i++) {
       var sample = filteredSamples[i];
       var samplediv = document.createElement('div');
-      samplediv.className = "sample-item";
-
-      var inner = document.createElement('div');
-      inner.className = "sample-item-inner";
+      samplediv.className = "group relative";
 
       var a = document.createElement('a');
+      a.className = "hover:no-underline";
       a.href = sample[0] + '.html';
 
-      var img = document.createElement('img');
-      img.src = '../assets/images/screenshots/' + sample[3] + '.png';
+      var imgdiv = document.createElement("div");
+      imgdiv.className = "w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none";
+
+      var img = document.createElement("img");
+      img.src = "../assets/images/screenshots/" + sample[3] + ".png";
       img.alt = sample[2];
-      a.appendChild(img);
+      img.className = "w-full h-full object-center object-cover lg:w-full lg:h-full";
+      imgdiv.append(img);
 
-      var title = document.createElement('h2');
-      title.textContent = sample[1];
-      a.appendChild(title);
+      var content = document.createElement("div");
+      content.className = "mt-4";
 
-      var desc = document.createElement('p');
+      var header = document.createElement("h3");
+      header.className = "text-md hover:underline";
+      header.textContent = sample[1];
+
+      var span = document.createElement("span");
+      span.ariaHidden = true;
+      span.className = "absolute inset-0";
+      header.append(span);
+
+      var desc = document.createElement("p");
+      desc.className = "mt-1 text-sm text-black";
       desc.textContent = sample[2];
 
-      inner.appendChild(a);
-      inner.appendChild(desc);
-      samplediv.appendChild(inner);
+      content.append(header);
+      content.append(desc);
 
-      sampleListDiv.appendChild(samplediv);
+      a.append(imgdiv);
+      a.append(content);
+      samplediv.append(a);
+      sampleListDiv.append(samplediv);
     }
   }
 
