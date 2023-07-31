@@ -172,14 +172,14 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
     var up = bar.findObject("UP");
     var uph = 0;
     if (up) {
-      up.opacity = (idx > 0) ? 1.0 : 0.3;
+      up.opacity = 0.0; //(idx > 0) ? 1.0 : 0.3;
       uph = up.actualBounds.height;
     }
 
     var down = bar.findObject("DOWN");
     var downh = 0;
     if (down) {
-      down.opacity = (idx < table.rowCount - 1) ? 1.0 : 0.3;
+      down.opacity = 0.0; //(idx < table.rowCount - 1) ? 1.0 : 0.3;
       downh = down.actualBounds.height;
     }
 
@@ -219,13 +219,13 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
     if (down) down.opacity = show ? ((idx < table.rowCount - 1) ? 1.0 : 0.3) : 0.0;
 
     var thumb = bar.findObject("THUMB");
-    if (thumb) thumb.opacity = table.rowCount > 0 ? 1 : 0;
+    if (thumb) thumb.opacity = table.rowCount > 0 ? 1.0 : 0.0;
   }
 
   return $(go.Panel, "Table",
       { // in case external code wants to update the scrollbar
         _updateScrollBar: updateScrollBar,
-        mouseEnter: function(e, table) { table._updateScrollBar(table); }
+        //mouseEnter: function(e, table) { table._updateScrollBar(table); }
       },
 
       // this actually holds the item elements
@@ -250,7 +250,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
 
         // the scroll up button
         $("AutoRepeatButton",
-          { name: "UP", row: 0, opacity: 0,
+          { name: "UP", row: 0, opacity: 0.0,
             click: function(e, obj) { e.handled = true; incrTableIndex(obj, -1); }
           },
           $(go.Shape, "TriangleUp",
@@ -284,7 +284,7 @@ go.GraphObject.defineBuilder("ScrollingTable", function(args) {
 
         // the scroll down button
         $("AutoRepeatButton",
-          { name: "DOWN", row: 2, opacity: 0,
+          { name: "DOWN", row: 2, opacity: 0.0,
             click: function(e, obj) { e.handled = true; incrTableIndex(obj, +1); }
           },
           $(go.Shape, "TriangleDown",

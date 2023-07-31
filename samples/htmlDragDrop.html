@@ -79,7 +79,7 @@
       </div>
       <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
     </div>
-    <input id="removeCheckBox" type="checkbox" /><label for="removeCheckBox">Remove HTML item after drag</label>
+    <input id="removeCheckBox" type="checkbox" /><label for="removeCheckBox">Remove HTML item after drop</label>
     <p>
       The "Palette" in this sample is not a <a>Palette</a> (or GoJS component) at all.
       It is a collection of HTML elements with draggable attributes using the
@@ -209,11 +209,11 @@ function init() {
       const mx = event.clientX - bbox.left * ((can.width / pixelratio) / bbw);
       const my = event.clientY - bbox.top * ((can.height / pixelratio) / bbh);
       const point = myDiagram.transformViewToDoc(new go.Point(mx, my));
-      // if there's nothing at that point
-      if (myDiagram.findPartAt(point) === null) {
-        // a return here doesn't allow the drop to happen
-        // return;
-      }
+      // // if there's nothing at that point
+      // if (myDiagram.findPartAt(point) === null) {
+      //   // a return here doesn't allow the drop to happen
+      //   return;
+      // }
       // otherwise create a new node at the drop point 
       myDiagram.startTransaction('new node');
       const newdata = {
@@ -225,6 +225,7 @@ function init() {
       myDiagram.model.addNodeData(newdata);
       const newnode = myDiagram.findNodeForData(newdata);
       if (newnode) {
+        newnode.ensureBounds();
         myDiagram.select(newnode);
         onDrop(newnode, point);
       }
@@ -256,6 +257,7 @@ function init() {
   // this is called upon an external drop in this diagram,
   // after a new node has been created and selected
   function onDrop(newNode, point) {
+    // look for a drop directly onto a Node or Link
     const it = myDiagram.findPartsAt(point).iterator;
     while (it.next()) {
       const part = it.value;

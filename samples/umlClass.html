@@ -192,35 +192,46 @@
           )
         );
 
-      function convertIsTreeLink(r) {
-        return r === "generalization";
+      function linkStyle() {
+        return { isTreeLink: false, fromEndSegmentLength: 0, toEndSegmentLength: 0 };
       }
 
-      function convertFromArrow(r) {
-        switch (r) {
-          case "generalization": return "";
-          default: return "";
-        }
-      }
-
-      function convertToArrow(r) {
-        switch (r) {
-          case "generalization": return "Triangle";
-          case "aggregation": return "StretchedDiamond";
-          default: return "";
-        }
-      }
-
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { routing: go.Link.Orthogonal },
-          new go.Binding("isLayoutPositioned", "relationship", convertIsTreeLink),
+      myDiagram.linkTemplate =  // by default, "Inheritance" or "Generalization"
+        $(go.Link, linkStyle(), { isTreeLink: true },
           $(go.Shape),
-          $(go.Shape, { scale: 1.3, fill: "white" },
-            new go.Binding("fromArrow", "relationship", convertFromArrow)),
-          $(go.Shape, { scale: 1.3, fill: "white" },
-            new go.Binding("toArrow", "relationship", convertToArrow))
+          $(go.Shape, { toArrow: "Triangle", fill: "white" })
         );
+
+      myDiagram.linkTemplateMap.add("Association",
+        $(go.Link, linkStyle(),
+          $(go.Shape)
+        ));
+
+      myDiagram.linkTemplateMap.add("Realization",
+        $(go.Link, linkStyle(),
+          $(go.Shape, { strokeDashArray: [3, 2] }),
+          $(go.Shape, { toArrow: "Triangle", fill: "white" })
+        ));
+
+      myDiagram.linkTemplateMap.add("Dependency",
+        $(go.Link, linkStyle(),
+          $(go.Shape, { strokeDashArray: [3, 2] }),
+          $(go.Shape, { toArrow: "OpenTriangle" })
+        ));
+
+      myDiagram.linkTemplateMap.add("Composition",
+        $(go.Link, linkStyle(),
+          $(go.Shape),
+          $(go.Shape, { fromArrow: "StretchedDiamond", scale: 1.3 }),
+          $(go.Shape, { toArrow: "OpenTriangle" })
+        ));
+
+      myDiagram.linkTemplateMap.add("Aggregation",
+        $(go.Link, linkStyle(),
+          $(go.Shape),
+          $(go.Shape, { fromArrow: "StretchedDiamond", fill: "white", scale: 1.3 }),
+          $(go.Shape, { toArrow: "OpenTriangle" })
+        ));
 
       // setup a few example class nodes and relationships
       var nodedata = [
@@ -283,14 +294,15 @@
         }
       ];
       var linkdata = [
-        { from: 12, to: 11, relationship: "generalization" },
-        { from: 13, to: 11, relationship: "generalization" },
-        { from: 14, to: 13, relationship: "aggregation" }
+        { from: 12, to: 11 },
+        { from: 13, to: 11 },
+        { from: 14, to: 13, relationship: "Association" }
       ];
       myDiagram.model = new go.GraphLinksModel(
         {
           copiesArrays: true,
           copiesArrayObjects: true,
+          linkCategoryProperty: "relationship",
           nodeDataArray: nodedata,
           linkDataArray: linkdata
         });

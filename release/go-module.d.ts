@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.9
+ * Type definitions for GoJS v2.3.10
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -19195,6 +19195,15 @@ export class TextBlock extends GraphObject {
      */
     get overflow(): EnumValue;
     set overflow(value: EnumValue);
+    /**
+     * Gets whether the TextBlock text is truncated (overflowed) or not.
+     * This value is set during a TextBlock's measurement.
+     *
+     * As with all read-only properties, using this property as a binding source is unlikely to be useful.
+     * @since 2.3
+     * @see #overflow
+     */
+    get isOverflowed(): boolean;
     /**
      * Gets or sets the Brush or string that describes the stroke (color) of the text that is drawn.
      *

@@ -181,13 +181,13 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         const up = bar.findObject("UP");
         let uph = 0;
         if (up) {
-            up.opacity = (idx > 0) ? 1.0 : 0.3;
+            up.opacity = 0.0; //(idx > 0) ? 1.0 : 0.3;
             uph = up.actualBounds.height;
         }
         const down = bar.findObject("DOWN");
         let downh = 0;
         if (down) {
-            down.opacity = (idx < table.rowCount - 1) ? 1.0 : 0.3;
+            down.opacity = 0.0; //(idx < table.rowCount - 1) ? 1.0 : 0.3;
             downh = down.actualBounds.height;
         }
         const thumb = bar.findObject("THUMB");
@@ -230,11 +230,11 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
             down.opacity = show ? ((idx < table.rowCount - 1) ? 1.0 : 0.3) : 0.0;
         const thumb = bar.findObject("THUMB");
         if (thumb)
-            thumb.opacity = table.rowCount > 0 ? 1 : 0;
+            thumb.opacity = table.rowCount > 0 ? 1.0 : 0.0;
     }
     return $(go.Panel, "Table", {
         _updateScrollBar: updateScrollBar,
-        mouseEnter: (e, table) => table._updateScrollBar(table)
+        //mouseEnter: (e, table) => (table as any)._updateScrollBar(table)
     }, 
     // this actually holds the item elements
     $(go.Panel, "Table", {
@@ -251,7 +251,7 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         mouseLeave: (e, bar) => showScrollButtons(bar, false)
     }, 
     // the scroll up button
-    $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0,
+    $("AutoRepeatButton", { name: "UP", row: 0, opacity: 0.0,
         click: (e, obj) => { e.handled = true; incrTableIndex(obj, -1); }
     }, $(go.Shape, "TriangleUp", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }), {
         click: (e, bar) => {
@@ -275,7 +275,7 @@ go.GraphObject.defineBuilder("ScrollingTable", args => {
         }
     }), $(go.RowColumnDefinition, { row: 1, stretch: go.GraphObject.Vertical }), 
     // the scroll down button
-    $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0,
+    $("AutoRepeatButton", { name: "DOWN", row: 2, opacity: 0.0,
         click: (e, obj) => { e.handled = true; incrTableIndex(obj, +1); }
     }, $(go.Shape, "TriangleDown", { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 2, sizing: go.RowColumnDefinition.None })));
 });
