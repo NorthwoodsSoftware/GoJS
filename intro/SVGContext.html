@@ -135,7 +135,8 @@
 
 <h1>SVG Drawing Context</h1>
 <p>
-By default, <b>GoJS</b> renders to an HTML Canvas. This is more performant, especially with larger graphs, and is the right choice for most users.
+By default, <b>GoJS</b> renders to an HTML Canvas. This is more performant, especially with larger graphs,
+and is the right choice for most users.
 However, a few use-cases may require an SVG rendering context instead. Some examples:
 </p>
 <ul>
@@ -143,17 +144,22 @@ However, a few use-cases may require an SVG rendering context instead. Some exam
     <strong>Animated gifs:</strong> The SVG context can display animated gif content, unlike the default Canvas renderer.
   </li>
   <li>
-    <strong>Accessibility:</strong> The SVG context creates DOM nodes with all currently-displayed text in the Diagram, which may be beneficial for screen readers.
-    However diagram authors may want to <a href="makingSVG.html">export SVG</a> for this use-case instead, especially, if they intend screen readers to know about contents that are off-screen by default.</li>
+    <strong>Accessibility:</strong> The SVG context creates DOM nodes with all currently-displayed text in the Diagram,
+    which may be beneficial for screen readers.
+    However diagram authors may want to <a href="makingSVG.html">export SVG</a> for this use-case instead,
+    especially, if they intend screen readers to know about contents that are off-screen by default.</li>
   <li>
-    <strong>Selectability:</strong> When pointer events are turned off via CSS, users have the option of selecting text within GoJS TextBlocks.
+    <strong>Selectability:</strong> When pointer events are turned off via CSS,
+    users have the option of selecting text within GoJS TextBlocks.
   </li>
 </ul>
 <p>
-  Unless you have a specific use case in mind, usage of the default Canvas context is recommended instead. SVG renderer functionality is new and not yet fully supported, and SVG content is more susceptible to interference from other content on the site (such as CSS rules).
+  Unless you have a specific use case in mind, usage of the default Canvas context is recommended instead.
+  SVG content is more susceptible to interference from other content on the site such as CSS rules.
 </p>
 <p>
-  Note that GoJS also has <a href="./makingSVG.html">SVG export</a>, which a can be useful for generating static SVG diagrams or content for a PDF, and its usage is more common.
+  Note that GoJS also has <a href="./makingSVG.html">SVG export</a>, which a can be useful for generating
+  static SVG diagrams or content for a PDF, and its usage is more common.
 </p>
 
 <p>Enabling the SVG context is done by setting <a>Diagram.renderer</a> to <code>'svg'</code>:</p>
@@ -166,7 +172,8 @@ However, a few use-cases may require an SVG rendering context instead. Some exam
 
 <h2 id="AnimatedGifs">Animated Gifs</h2>
 
-<p>Due to limitations in the HTML Canvas, gif frames beyond the first cannot be displayed. The SVG context avoids this problem, and will show gif animations:</p>
+<p>Due to limitations in the HTML Canvas, gif frames beyond the first cannot be displayed.
+  The SVG context avoids this problem, and will show gif animations:</p>
 
 <pre class="lang-js" id="gif-bad"><code>
 // Using HTML Canvas, the gif cannot animate
@@ -190,10 +197,15 @@ diagram.add(
 <h2 id="Accessibility">Accessibility</h2>
 
 <p>
-  The SVG context <strong>might</strong> improve accessibility for some screen readers, but there is no guarantee, and some applications may still need to provide more information, especially since any text not visible to the user will be removed from the DOM (eg, as a user pans or zooms).
+  The SVG context <strong>might</strong> improve accessibility for some screen readers,
+  but there is no guarantee, and some applications may still need to provide more information,
+  especially since any text not visible to the user will be removed from the DOM (eg, as a user pans or zooms).
 </p>
 
-<p>The SVG Context functions by updating-as-needed the DOM inside of an <code>&lt;SVG&gt;</code> element. This can greatly impact page performance, which is why the SVG context is not recommended unless needed, but has the benefit of inserting all TextBlock text into the DOM under <code>&lt;text&gt;</code> tags.</p> The above caffeine GoJS Part is render on the screen using this SVG, inside of an <code>&lt;SVG&gt;</code> element:
+<p>The SVG Context functions by updating-as-needed the DOM inside of an <code>&lt;SVG&gt;</code> element.
+  This can greatly impact page performance, which is why the SVG context is not recommended unless needed,
+  but has the benefit of inserting all TextBlock text into the DOM under <code>&lt;text&gt;</code> tags.</p>
+  The above caffeine GoJS Part is render on the screen using this SVG, inside of an <code>&lt;SVG&gt;</code> element:
 
 <pre class="lang-html" ><code></code>
 &lt;g transform="matrix(1, 0, 0, 1, 0, 0)"&gt;
@@ -204,7 +216,9 @@ diagram.add(
 
 <h2 id="Selectability">Selectability</h2>
 
-<p>Since the SVG context renders SVG DOM nodes, text is selectable. However, GoJS by default captures all input, disabling events from reaching the SVG, in order to implement its own events. You can disable this event layer if you need to, allowing browser text selection of the underlying SVG:</p>
+<p>Since the SVG context renders SVG DOM nodes, text is selectable. However, GoJS by default captures all input,
+  disabling events from reaching the SVG, in order to implement its own events.
+  You can disable this event layer if you need to, allowing browser text selection of the underlying SVG:</p>
 
 <pre class="lang-css"><code>
   #myDiagramDiv {
@@ -252,7 +266,8 @@ diagram.add(
 <script>goCode("selectable", 200, 200)</script>
 <input type="checkbox" checked id="pointerToggle" /><label class="px-2" for="pointerToggle">pointer-events: none</label>
 
-<p>With pointer events disabled, you can select the text, but you can no longer interact with the diagram via touch or mouse. This may be useful in some applications where users are expected to select or copy text.</p>
+<p>With pointer events disabled, you can select the text, but you can no longer interact with the diagram via touch or mouse.
+  This may be useful in some applications where users are expected to select or copy text.</p>
 
       </div>
     </div>

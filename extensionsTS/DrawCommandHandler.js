@@ -75,8 +75,8 @@ var __extends = (this && this.__extends) || (function () {
              */
             get: function () { return this._arrowKeyBehavior; },
             set: function (val) {
-                if (val !== 'move' && val !== 'select' && val !== 'scroll' && val !== 'none') {
-                    throw new Error('DrawCommandHandler.arrowKeyBehavior must be either "move", "select", "scroll", or "none", not: ' + val);
+                if (val !== 'move' && val !== 'select' && val !== 'scroll' && val !== 'none' && val !== 'tree') {
+                    throw new Error('DrawCommandHandler.arrowKeyBehavior must be either "move", "select", "scroll", "tree", or "none", not: ' + val);
                 }
                 this._arrowKeyBehavior = val;
             },
@@ -430,6 +430,10 @@ var __extends = (this && this.__extends) || (function () {
                     this._arrowKeyMove();
                     return;
                 }
+                else if (behavior === 'tree') {
+                    this._arrowKeyTree();
+                    return;
+                }
                 // otherwise drop through to get the default scrolling behavior
             }
             // otherwise still does all standard commands
@@ -552,6 +556,110 @@ var __extends = (this && this.__extends) || (function () {
         DrawCommandHandler.prototype._angleCloseness = function (a, dir) {
             return Math.min(Math.abs(dir - a), Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a)));
         };
+        /**
+        * To be called when arrow keys should change the selected node in a tree and expand or collapse subtrees.
+        * @this {DrawCommandHandler}
+        */
+        DrawCommandHandler.prototype._arrowKeyTree = function () {
+            var diagram = this.diagram;
+            var selected = diagram.selection.first();
+            if (!(selected instanceof go.Node))
+                return;
+            var e = diagram.lastInput;
+            if (e.key === "Right") {
+                if (selected.isTreeLeaf) {
+                    // no-op
+                }
+                else if (!selected.isTreeExpanded) {
+                    if (diagram.commandHandler.canExpandTree(selected)) {
+                        diagram.commandHandler.expandTree(selected); // expands the tree
+                    }
+                }
+                else { // already expanded -- select the first child node
+                    var first = this._sortTreeChildrenByY(selected).first();
+                    if (first !== null)
+                        diagram.select(first);
+                }
+            }
+            else if (e.key === "Left") {
+                if (!selected.isTreeLeaf && selected.isTreeExpanded) {
+                    if (diagram.commandHandler.canCollapseTree(selected)) {
+                        diagram.commandHandler.collapseTree(selected); // collapses the tree
+                    }
+                }
+                else { // either a leaf or is already collapsed -- select the parent node
+                    var parent_1 = selected.findTreeParentNode();
+                    if (parent_1 !== null)
+                        diagram.select(parent_1);
+                }
+            }
+            else if (e.key === "Up") {
+                var parent_2 = selected.findTreeParentNode();
+                if (parent_2 !== null) {
+                    var list = this._sortTreeChildrenByY(parent_2);
+                    var idx = list.indexOf(selected);
+                    if (idx > 0) { // if there is a previous sibling
+                        var prev = list.elt(idx - 1);
+                        // keep looking at the last child until it's a leaf or collapsed
+                        while (prev !== null && prev.isTreeExpanded && !prev.isTreeLeaf) {
+                            var children = this._sortTreeChildrenByY(prev);
+                            prev = children.last();
+                        }
+                        if (prev !== null)
+                            diagram.select(prev);
+                    }
+                    else { // no previous sibling -- select parent
+                        diagram.select(parent_2);
+                    }
+                }
+            }
+            else if (e.key === "Down") {
+                // if at an expanded parent, select the first child
+                if (selected.isTreeExpanded && !selected.isTreeLeaf) {
+                    var first = this._sortTreeChildrenByY(selected).first();
+                    if (first !== null)
+                        diagram.select(first);
+                }
+                else {
+                    while (selected instanceof go.Node) {
+                        var parent_3 = selected.findTreeParentNode();
+                        if (parent_3 === null)
+                            break;
+                        var list = this._sortTreeChildrenByY(parent_3);
+                        var idx = list.indexOf(selected);
+                        if (idx < list.length - 1) { // select next lower node
+                            diagram.select(list.elt(idx + 1));
+                            break;
+                        }
+                        else { // already at bottom of list of children
+                            selected = parent_3;
+                        }
+                    }
+                }
+            }
+            // make sure the selection is now in the viewport, but not necessarily centered
+            var sel = diagram.selection.first();
+            if (sel !== null)
+                diagram.scrollToRect(sel.actualBounds);
+        };
+        DrawCommandHandler.prototype._sortTreeChildrenByY = function (node) {
+            var list = new go.List().addAll(node.findTreeChildrenNodes());
+            list.sort(function (a, b) {
+                var aloc = a.location;
+                var bloc = b.location;
+                if (aloc.y < bloc.y)
+                    return -1;
+                if (aloc.y > bloc.y)
+                    return 1;
+                if (aloc.x < bloc.x)
+                    return -1;
+                if (aloc.x > bloc.x)
+                    return 1;
+                return 0;
+            });
+            return list;
+        };
+        ;
         /**
          * Reset the last offset for pasting.
          * @param {Iterable.<Part>} coll a collection of {@link Part}s.

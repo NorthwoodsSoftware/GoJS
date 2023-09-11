@@ -46,8 +46,8 @@ export class DrawCommandHandler extends go.CommandHandler {
    */
   get arrowKeyBehavior(): string { return this._arrowKeyBehavior; }
   set arrowKeyBehavior(val: string) {
-    if (val !== 'move' && val !== 'select' && val !== 'scroll' && val !== 'none') {
-      throw new Error('DrawCommandHandler.arrowKeyBehavior must be either "move", "select", "scroll", or "none", not: ' + val);
+    if (val !== 'move' && val !== 'select' && val !== 'scroll' && val !== 'none' && val !== 'tree') {
+      throw new Error('DrawCommandHandler.arrowKeyBehavior must be either "move", "select", "scroll", "tree", or "none", not: ' + val);
     }
     this._arrowKeyBehavior = val;
   }
@@ -274,13 +274,13 @@ export class DrawCommandHandler extends go.CommandHandler {
     diagram.startTransaction("pullToFront");
     // find the affected Layers
     const layers = new go.Map<go.Layer, number>();
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       if (part.layer !== null) layers.set(part.layer, 0);
     });
     // find the maximum zOrder in each Layer
-    layers.iteratorKeys.each(function(layer) {
+    layers.iteratorKeys.each(layer => {
       let max = 0;
-      layer.parts.each(function(part) {
+      layer.parts.each(part => {
         if (part.isSelected) return;
         const z = part.zOrder;
         if (isNaN(z)) {
@@ -292,7 +292,7 @@ export class DrawCommandHandler extends go.CommandHandler {
       layers.set(layer, max);
     });
     // assign each selected Part.zOrder to the computed value for each Layer
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       const z = layers.get(part.layer as go.Layer) || 0;
       DrawCommandHandler._assignZOrder(part, z + 1);
     });
@@ -310,13 +310,13 @@ export class DrawCommandHandler extends go.CommandHandler {
     diagram.startTransaction("pushToBack");
     // find the affected Layers
     const layers = new go.Map<go.Layer, number>();
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       if (part.layer !== null) layers.set(part.layer, 0);
     });
     // find the minimum zOrder in each Layer
-    layers.iteratorKeys.each(function(layer) {
+    layers.iteratorKeys.each(layer => {
       let min = 0;
-      layer.parts.each(function(part) {
+      layer.parts.each(part => {
         if (part.isSelected) return;
         const z = part.zOrder;
         if (isNaN(z)) {
@@ -328,7 +328,7 @@ export class DrawCommandHandler extends go.CommandHandler {
       layers.set(layer, min);
     });
     // assign each selected Part.zOrder to the computed value for each Layer
-    diagram.selection.each(function(part) {
+    diagram.selection.each(part => {
       const z = layers.get(part.layer as go.Layer) || 0;
       DrawCommandHandler._assignZOrder(part,
           // make sure a group's nested nodes are also behind everything else
@@ -341,7 +341,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     if (root === undefined) root = part;
     if (part.layer === root.layer) part.zOrder = z;
     if (part instanceof go.Group) {
-      part.memberParts.each(function(m) {
+      part.memberParts.each(m => {
         DrawCommandHandler._assignZOrder(m, z+1, root);
       });
     }
@@ -350,7 +350,7 @@ export class DrawCommandHandler extends go.CommandHandler {
   private static _findGroupDepth(part: go.Part): number {
     if (part instanceof go.Group) {
       let d = 0;
-      part.memberParts.each(function(m) {
+      part.memberParts.each(m => {
         d = Math.max(d, DrawCommandHandler._findGroupDepth(m));
       });
       return d+1;
@@ -380,6 +380,9 @@ export class DrawCommandHandler extends go.CommandHandler {
         return;
       } else if (behavior === 'move') {
         this._arrowKeyMove();
+        return;
+      } else if (behavior === 'tree') {
+        this._arrowKeyTree();
         return;
       }
       // otherwise drop through to get the default scrolling behavior
@@ -499,6 +502,94 @@ export class DrawCommandHandler extends go.CommandHandler {
   private _angleCloseness(a: number, dir: number): number {
     return Math.min(Math.abs(dir - a), Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a)));
   }
+
+
+  /**
+  * To be called when arrow keys should change the selected node in a tree and expand or collapse subtrees.
+  * @this {DrawCommandHandler}
+  */
+  _arrowKeyTree() {
+    const diagram = this.diagram;
+    let selected = diagram.selection.first();
+    if (!(selected instanceof go.Node)) return;
+
+    const e = diagram.lastInput;
+    if (e.key === "Right") {
+      if (selected.isTreeLeaf) {
+        // no-op
+      } else if (!selected.isTreeExpanded) {
+        if (diagram.commandHandler.canExpandTree(selected)) {
+          diagram.commandHandler.expandTree(selected);  // expands the tree
+        }
+      } else {  // already expanded -- select the first child node
+        const first = this._sortTreeChildrenByY(selected).first();
+        if (first !== null) diagram.select(first);
+      }
+    } else if (e.key === "Left") {
+      if (!selected.isTreeLeaf && selected.isTreeExpanded) {
+        if (diagram.commandHandler.canCollapseTree(selected)) {
+          diagram.commandHandler.collapseTree(selected);  // collapses the tree
+        }
+      } else {  // either a leaf or is already collapsed -- select the parent node
+        const parent = selected.findTreeParentNode();
+        if (parent !== null) diagram.select(parent);
+      }
+    } else if (e.key === "Up") {
+      const parent = selected.findTreeParentNode();
+      if (parent !== null) {
+        const list = this._sortTreeChildrenByY(parent);
+        const idx = list.indexOf(selected);
+        if (idx > 0) {  // if there is a previous sibling
+          let prev: go.Node | null = list.elt(idx - 1);
+          // keep looking at the last child until it's a leaf or collapsed
+          while (prev !== null && prev.isTreeExpanded && !prev.isTreeLeaf) {
+            const children = this._sortTreeChildrenByY(prev);
+            prev = children.last();
+          }
+          if (prev !== null) diagram.select(prev);
+        } else {  // no previous sibling -- select parent
+          diagram.select(parent);
+        }
+      }
+    } else if (e.key === "Down") {
+      // if at an expanded parent, select the first child
+      if (selected.isTreeExpanded && !selected.isTreeLeaf) {
+        const first = this._sortTreeChildrenByY(selected).first();
+        if (first !== null) diagram.select(first);
+      } else {
+        while (selected instanceof go.Node) {
+          const parent = selected.findTreeParentNode();
+          if (parent === null) break;
+          const list = this._sortTreeChildrenByY(parent);
+          const idx = list.indexOf(selected);
+          if (idx < list.length - 1) {  // select next lower node
+            diagram.select(list.elt(idx + 1));
+            break;
+          } else {  // already at bottom of list of children
+            selected = parent;
+          }
+        }
+      }
+    }
+
+    // make sure the selection is now in the viewport, but not necessarily centered
+    const sel = diagram.selection.first();
+    if (sel !== null) diagram.scrollToRect(sel.actualBounds);
+  }
+
+  _sortTreeChildrenByY(node: go.Node): go.List<go.Node> {
+    const list = new go.List().addAll(node.findTreeChildrenNodes()) as go.List<go.Node>;
+    list.sort((a, b) => {
+      const aloc = a.location;
+      const bloc = b.location;
+      if (aloc.y < bloc.y) return -1;
+      if (aloc.y > bloc.y) return 1;
+      if (aloc.x < bloc.x) return -1;
+      if (aloc.x > bloc.x) return 1;
+      return 0;
+    });
+    return list;
+  };
 
 
   /**

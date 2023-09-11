@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.10
+ * Type definitions for GoJS v2.3.11
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -17864,7 +17864,7 @@ export class Panel extends GraphObject {
      * The main element will not paint its stroke, if it has any.
      * This assumes that the main element is a Shape.
      *
-     * Since 2.2: For Groups: Gets or sets whether this Group's Placeholder clips its member nodes.
+     * Since 2.2: For Groups: Gets or sets whether this Group's Part#resizeObject clips its member nodes.
      * For compatibility, if the Group is a Spot Panel, it will not clip its members.
      *
      * When this property is `true`, the Spot panel will size itself to be the *intersection* of the main element bounds and

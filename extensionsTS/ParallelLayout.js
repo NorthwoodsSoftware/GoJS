@@ -313,12 +313,12 @@ var __extends = (this && this.__extends) || (function () {
                         var pts = link.points.copy();
                         var p2 = pts.elt(pts.length - 4);
                         var p3 = pts.elt(pts.length - 3);
-                        if (this.angle === 0 && p2.x === p3.x) {
+                        if (this.angle === 0 && p2.x === p3.x && p2.y !== p3.y) {
                             var x = mergeNode.position.x - this.layerSpacing / 2;
                             pts.setElt(pts.length - 4, new go.Point(x, p2.y));
                             pts.setElt(pts.length - 3, new go.Point(x, p3.y));
                         }
-                        else if (this.angle === 90 && p2.y === p3.y) {
+                        else if (this.angle === 90 && p2.y === p3.y && p2.x !== p3.x) {
                             var y = mergeNode.position.y - this.layerSpacing / 2;
                             pts.setElt(pts.length - 4, new go.Point(p2.x, y));
                             pts.setElt(pts.length - 3, new go.Point(p3.x, y));

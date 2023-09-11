@@ -295,7 +295,6 @@
         $(go.Group, "Spot",
           {
             locationSpot: go.Spot.Center,
-            avoidableMargin: 10,  // extra space on the sides
             layout: $(ParallelLayout, { angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
             mouseDragEnter: (e, group) => {
               var sh = group.findObject("SHAPE");
@@ -327,8 +326,7 @@
           {
             selectable: false,
             deletable: false,
-            routing: go.Link.Orthogonal, corner: 5,
-            fromEndSegmentLength: 4, toEndSegmentLength: 4,
+            routing: go.Link.AvoidsNodes, corner: 5,
             toShortLength: 2,
             // links cannot be deleted
             // If a node from the Palette is dragged over this node, its outline will turn green
@@ -347,7 +345,7 @@
         );
 
       function isLoopBack(link) {
-        if (!link) return false;
+        if (!link || !link.fromNode || !link.toNode) return false;
         if (link.fromNode.containingGroup !== link.toNode.containingGroup) return false;
         var cat = link.fromNode.category;
         return (cat === "EndFor" || cat === "EndWhile" || cat === "EndIf");

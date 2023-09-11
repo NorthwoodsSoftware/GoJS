@@ -257,11 +257,11 @@ export class ParallelLayout extends go.TreeLayout {
           const pts = link.points.copy();
           const p2 = pts.elt(pts.length - 4);
           const p3 = pts.elt(pts.length - 3);
-          if (this.angle === 0 && p2.x === p3.x) {
+          if (this.angle === 0 && p2.x === p3.x && p2.y !== p3.y) {
             const x = mergeNode.position.x - this.layerSpacing / 2;
             pts.setElt(pts.length - 4, new go.Point(x, p2.y));
             pts.setElt(pts.length - 3, new go.Point(x, p3.y));
-          } else if (this.angle === 90 && p2.y === p3.y) {
+          } else if (this.angle === 90 && p2.y === p3.y && p2.x !== p3.x) {
             const y = mergeNode.position.y - this.layerSpacing / 2;
             pts.setElt(pts.length - 4, new go.Point(p2.x, y));
             pts.setElt(pts.length - 3, new go.Point(p3.x, y));
