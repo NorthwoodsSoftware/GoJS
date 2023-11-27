@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.11
+ * Type definitions for GoJS v2.3.12
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -10355,6 +10355,12 @@ export class Diagram {
      * Scales the Diagram to uniformly fit into the viewport. To have this done automatically,
      * set the Diagram's #autoScale to Diagram.Uniform.
      *
+     * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
+     * might be limited.
+     *
+     * The scale will not be increased past the value of #defaultScale, which is normally 1.0,
+     * so as to prevent a single node from appearing to fill up the whole viewport.
+     *
      * To Animate zoomToFit, use CommandHandler#zoomToFit.
      * @see CommandHandler#zoomToFit
      */
@@ -12434,6 +12440,11 @@ export class Diagram {
      * and zoomed, depending on various Diagram properties named "initial...".
      * You may want to set #initialScale instead of setting this property around the time
      * that you are loading a model.
+     *
+     * @see #minScale
+     * @see #maxScale
+     * @see #initialScale
+     * @see #defaultScale
      */
     get scale(): number;
     set scale(value: number);
@@ -12470,6 +12481,11 @@ export class Diagram {
      *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
+     *
+     * The scale will not be increased past the value of #defaultScale, which is normally 1.0,
+     * so as to prevent a single node from appearing to fill up the whole viewport.
+     *
+     * @see #initialAutoScale
      */
     get autoScale(): EnumValue;
     set autoScale(value: EnumValue);
@@ -12493,6 +12509,11 @@ export class Diagram {
      *
      * Note that depending on the values of #maxScale and #minScale, the actual value for #scale
      * might be limited.
+     *
+     * The scale will not be increased past the value of #defaultScale, which is normally 1.0,
+     * so as to prevent a single node from appearing to fill up the whole viewport.
+     *
+     * @see #autoScale
      */
     get initialAutoScale(): EnumValue;
     set initialAutoScale(value: EnumValue);
@@ -13711,6 +13732,7 @@ export class CommandHandler {
      * @expose
      * @see #canZoomToFit
      * @see #isZoomToFitRestoreEnabled
+     * @see Diagram#zoomToFit
      * @since 1.1
      */
     zoomToFit(): void;
@@ -21971,6 +21993,14 @@ export class Group extends Node {
     get handlesDragDropForMembers(): boolean;
     set handlesDragDropForMembers(value: boolean);
     /**
+    * (undocumented)
+    */
+    get avoidableMembers(): boolean;
+    /**
+    * (undocumented)
+    */
+    set avoidableMembers(value: boolean);
+    /**
      * This read-only property returns an iterator over the member Parts of this Group.
      * Setting Part#containingGroup to refer to this Group
      * will add that part to this collection.
@@ -27953,6 +27983,7 @@ export class LayeredDigraphLayout extends Layout {
      */
     get packOption(): number;
     set packOption(value: number);
+    set packIterations(value: number);
     /**
      * Gets or sets the options used by the straighten and pack function, as a potentially faster
      * alternative to #packOption.

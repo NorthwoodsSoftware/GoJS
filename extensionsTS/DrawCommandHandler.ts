@@ -508,7 +508,7 @@ export class DrawCommandHandler extends go.CommandHandler {
   * To be called when arrow keys should change the selected node in a tree and expand or collapse subtrees.
   * @this {DrawCommandHandler}
   */
-  _arrowKeyTree() {
+  private _arrowKeyTree() {
     const diagram = this.diagram;
     let selected = diagram.selection.first();
     if (!(selected instanceof go.Node)) return;
@@ -577,7 +577,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     if (sel !== null) diagram.scrollToRect(sel.actualBounds);
   }
 
-  _sortTreeChildrenByY(node: go.Node): go.List<go.Node> {
+  private _sortTreeChildrenByY(node: go.Node): go.List<go.Node> {
     const list = new go.List().addAll(node.findTreeChildrenNodes()) as go.List<go.Node>;
     list.sort((a, b) => {
       const aloc = a.location;
