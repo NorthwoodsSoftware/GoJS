@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v2.3.16
+ * Type definitions for GoJS v2.3.17
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16229,6 +16229,18 @@ export abstract class GraphObject {
      * @return {GraphObject} this GraphObject
      */
     bind(binding: Binding): this;
+    /**
+     * @undocumented
+     */
+    bindTwoWay(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    /**
+     * @undocumented
+     */
+    bindObject(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion, objectSrcname?: string): this;
+    /**
+     * @undocumented
+     */
+    bindModel(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
     /**
      * Set any number of properties on this GraphObject. This is common in initialization.
      * This method can only be used to set existing properties on this object. To attach new properties,
