@@ -1,324 +1,510 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Entity Relationship</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML." />
+<meta itemprop="description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML." />
+<meta property="og:description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML." />
+<meta name="twitter:description" content="Interactive entity-relationship diagram or data model diagram implemented by GoJS in JavaScript for HTML." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Entity Relationship />
+<meta property="og:title" content=Entity Relationship />
+<meta name="twitter:title" content=Entity Relationship />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/entityRelationship.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/entityRelationship.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/entityRelationship.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/entityRelationship.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/entityRelationship.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Entity Relationship | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script src="../extensions/Figures.js"></script>
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",   // must name or refer to the DIV HTML element
-          {
-            allowDelete: false,
-            allowCopy: false,
-            "undoManager.isEnabled": true
-          });
-
-      function colorSwitch(n){
-        const isDark = myDiagram.model.modelData.darkMode;
-        if (n === "green") return (isDark ? "#429E6F" :"#62bd8e");
-        if (n === "blue") return (isDark ? "#3f9fc6" :"#3999bf");
-        if (n === "purple") return (isDark ? "#9951c9" :"#7f36b0");
-        if (n === "red") return (isDark ? "#ff4d3d" :"#c41000");
-        return "black";
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // the template for each attribute in a node's array of item data
-      const itemTempl =
-        $(go.Panel, "Horizontal",
-          $(go.Shape,
-            { desiredSize: new go.Size(15, 15), strokeJoin: "round", strokeWidth: 3, stroke: "#eeeeee", margin: 2 },
-            new go.Binding("figure", "figure"),
-            new go.Binding("fill", "color", n => colorSwitch(n)),
-            new go.Binding("stroke", "color", n => colorSwitch(n))
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/Figures.js"></script>
+<script src="../extensions/Themes.js"></script>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must name or refer to the DIV HTML element
+      {
+        allowDelete: false,
+        allowCopy: false,
+        layout: $(go.ForceDirectedLayout, { isInitial: false }),
+        'undoManager.isEnabled': true,
+        // use "Modern" themes from extensions/Themes
+        'themeManager.themeMap': new go.Map([
+          { key: 'light', value: Modern },
+          { key: 'dark', value: ModernDark },
+        ]),
+        'themeManager.changesDivBackground': true,
+        'themeManager.currentTheme': document.getElementById('theme').value,
+      }
+    );
+
+    myDiagram.themeManager.set('light', {
+      colors: {
+        primary: '#f7f9fc',
+        green: '#62bd8e',
+        blue: '#3999bf',
+        purple: '#7f36b0',
+        red: '#c41000',
+      },
+    });
+    myDiagram.themeManager.set('dark', {
+      colors: {
+        primary: '#4a4a4a',
+        green: '#429e6f',
+        blue: '#3f9fc6',
+        purple: '#9951c9',
+        red: '#ff4d3d',
+      },
+    });
+
+    // the template for each attribute in a node's array of item data
+    const itemTempl = $(go.Panel,
+      'Horizontal',
+      { margin: new go.Margin(2, 0) },
+      $(go.Shape,
+        { desiredSize: new go.Size(15, 15), strokeWidth: 0, margin: new go.Margin(0, 5, 0, 0) },
+        new go.Binding('figure', 'figure'),
+        new go.ThemeBinding('fill', 'color').ofData()
+      ),
+      $(go.TextBlock,
+        { font: '14px sans-serif', stroke: 'black' },
+        new go.Binding('text', 'name'),
+        new go.Binding('font', 'iskey', (k) => (k ? 'italic 14px sans-serif' : '14px sans-serif')),
+        new go.ThemeBinding('stroke', 'text')
+      )
+    );
+
+    // define the Node template, representing an entity
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto', // the whole node panel
+      {
+        selectionAdorned: true,
+        resizable: true,
+        layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized,
+        fromSpot: go.Spot.LeftRightSides,
+        toSpot: go.Spot.LeftRightSides,
+      },
+      new go.Binding('location', 'location').makeTwoWay(),
+      // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
+      // clear out any desiredSize set by the ResizingTool.
+      new go.Binding('desiredSize', 'visible', (v) => new go.Size(NaN, NaN)).ofObject('LIST'),
+      // define the node's outer shape, which will surround the Table
+      $(go.Shape, 'RoundedRectangle', { stroke: '#e8f1ff', strokeWidth: 3 }, new go.ThemeBinding('fill', 'primary')),
+      $(go.Panel,
+        'Table',
+        { margin: 8, stretch: go.Stretch.Fill },
+        $(go.RowColumnDefinition, { row: 0, sizing: go.Sizing.None }),
+        // the table header
+        $(go.TextBlock,
+          {
+            row: 0,
+            alignment: go.Spot.Center,
+            margin: new go.Margin(0, 24, 0, 2), // leave room for Button
+            font: 'bold 18px sans-serif',
+          },
+          new go.Binding('text', 'key'),
+          new go.ThemeBinding('stroke', 'text')
+        ),
+        // the collapse/expand button
+        $('PanelExpanderButton',
+          'LIST', // the name of the element whose visibility this button toggles
+          { row: 0, alignment: go.Spot.TopRight },
+          new go.ThemeBinding('ButtonIcon.stroke', 'text')
+        ),
+        $(go.Panel,
+          'Table',
+          { name: 'LIST', row: 1, alignment: go.Spot.TopLeft },
+          $(go.TextBlock,
+            'Attributes',
+            {
+              row: 0,
+              alignment: go.Spot.Left,
+              margin: new go.Margin(3, 24, 3, 2),
+              font: 'bold 15px sans-serif',
+            },
+            new go.ThemeBinding('stroke', 'text')
+          ),
+          $('PanelExpanderButton', 'NonInherited', { row: 0, alignment: go.Spot.Right }, new go.ThemeBinding('ButtonIcon.stroke', 'text')),
+          $(go.Panel,
+            'Vertical',
+            {
+              row: 1,
+              name: 'NonInherited',
+              alignment: go.Spot.TopLeft,
+              defaultAlignment: go.Spot.Left,
+              itemTemplate: itemTempl,
+            },
+            new go.Binding('itemArray', 'items')
           ),
           $(go.TextBlock,
-            { font: " 14px sans-serif", stroke: "black" },
-            new go.Binding("text", "name"), new go.Binding("stroke",  "", n => (myDiagram.model.modelData.darkMode) ? "#f5f5f5" :"#000000")),
-        );
-
-      // define the Node template, representing an entity
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",  // the whole node panel
-          {
-            selectionAdorned: true,
-            resizable: true,
-            layoutConditions: go.Part.LayoutConditionsStandard & ~go.Part.LayoutConditionsNodeSized,
-            fromSpot: go.Spot.LeftRightSides,
-            toSpot: go.Spot.LeftRightSides,
-            isShadowed: true,
-            shadowOffset: new go.Point(4, 4),
-            shadowColor: "#919cab"
-          },
-          new go.Binding("location", "location").makeTwoWay(),
-          // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
-          // clear out any desiredSize set by the ResizingTool.
-          new go.Binding("desiredSize", "visible", v => new go.Size(NaN, NaN)).ofObject("LIST"),
-          // define the node's outer shape, which will surround the Table
-          $(go.Shape, "RoundedRectangle",
-            { stroke: "#e8f1ff", strokeWidth: 3 },
-            new go.Binding("fill", "", n => (myDiagram.model.modelData.darkMode) ? "#4a4a4a" : "#f7f9fc")
-          ),
-          $(go.Panel, "Table",
+            'Inherited Attributes',
             {
-              margin: 8,
-              stretch: go.GraphObject.Fill,
-              width: 160
+              row: 2,
+              alignment: go.Spot.Left,
+              margin: new go.Margin(3, 24, 3, 2), // leave room for Button
+              font: 'bold 15px sans-serif',
             },
-            $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
-            // the table header
-            $(go.TextBlock,
-              {
-                row: 0, alignment: go.Spot.Center,
-                margin: new go.Margin(0, 24, 0, 2),  // leave room for Button
-                font: "bold 16px sans-serif"
-              },
-              new go.Binding("text", "key"),
-              new go.Binding("stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-            // the collapse/expand button
-            $("PanelExpanderButton", "LIST",  // the name of the element whose visibility this button toggles
-              { row: 0, alignment: go.Spot.TopRight },
-              new go.Binding("ButtonIcon.stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-            $(go.Panel, "Table",
-              { name: "LIST", row: 1, stretch: go.GraphObject.Horizontal },
-              $(go.TextBlock,
-                {
-                  font: "bold 15px sans-serif",
-                  text: "Attributes",
-                  row: 0,
-                  alignment: go.Spot.TopLeft,
-                  margin: new go.Margin(8, 0, 0, 0),
-                },
-                new go.Binding("stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-              $("PanelExpanderButton", "NonInherited", // the name of the element whose visibility this button toggles
-                {
-                  row: 0,
-                  column: 1
-                },
-                new go.Binding("ButtonIcon.stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-              $(go.Panel, "Vertical",
-                {
-                  name: "NonInherited",
-                  alignment: go.Spot.TopLeft,
-                  defaultAlignment: go.Spot.Left,
-                  itemTemplate: itemTempl,
-                  row: 1
-                },
-                new go.Binding("itemArray", "items")),
-              $(go.TextBlock,
-                {
-                  font: "bold 15px sans-serif",
-                  text: "Inherited Attributes",
-                  row: 2,
-                  alignment: go.Spot.TopLeft,
-                  margin: new go.Margin(8, 0, 0, 0),
-                },
-                new go.Binding("visible", "visibility", Boolean),
-                new go.Binding("stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-              $("PanelExpanderButton", "Inherited", // the name of the element whose visibility this button toggles
-                {
-                  row: 2,
-                  column: 1,
-                },
-                new go.Binding("visible", "visibility", Boolean),
-                new go.Binding("ButtonIcon.stroke", "", n => (myDiagram.model.modelData.darkMode) ? "#d6d6d6" : "#000000")),
-              $(go.Panel, "Vertical",
-                {
-                  name: "Inherited",
-                  alignment: go.Spot.TopLeft,
-                  defaultAlignment: go.Spot.Left,
-                  itemTemplate: itemTempl,
-                  row: 3
-                },
-                new go.Binding("itemArray", "inheriteditems"))
-            )
-          ) // end Table Panel
-        );  // end Node
+            new go.Binding('visible', 'inheritedItems', (arr) => Array.isArray(arr) && arr.length > 0),
+            new go.ThemeBinding('stroke', 'text')
+          ),
+          $('PanelExpanderButton',
+            'Inherited',
+            { row: 2, alignment: go.Spot.Right },
+            new go.Binding('visible', 'inheritedItems', (arr) => Array.isArray(arr) && arr.length > 0),
+            new go.ThemeBinding('ButtonIcon.stroke', 'text')
+          ),
+          $(go.Panel,
+            'Vertical',
+            {
+              row: 3,
+              name: 'Inherited',
+              alignment: go.Spot.TopLeft,
+              defaultAlignment: go.Spot.Left,
+              itemTemplate: itemTempl,
+            },
+            new go.Binding('itemArray', 'inheritedItems')
+          )
+        )
+      ) // end Table Panel
+    ); // end Node
 
-      // define the Link template, representing a relationship
-      myDiagram.linkTemplate =
-        $(go.Link,  // the whole link panel
-          {
-            selectionAdorned: true,
-            layerName: "Background",
-            reshapable: true,
-            routing: go.Link.AvoidsNodes,
-            corner: 5,
-            curve: go.Link.JumpOver,
-            isShadowed: true,
-            shadowOffset: new go.Point(2, 2),
-            shadowColor: "#919cab"
-          },
-          $(go.Shape,  // the link shape
-            { stroke: "#f7f9fc", strokeWidth: 4 }),
-          $(go.Panel, "Auto", {segmentIndex: 0 , segmentOffset: new go.Point(22,0)},
-            $(go.Shape, "RoundedRectangle", {fill: "#f7f9fc"}, {stroke: "#eeeeee"}),
-            $(go.TextBlock,  // the "from" label
-              {
-                textAlign: "center",
-                font: "bold 14px sans-serif",
-                stroke: "black",
-                background: "#f7f9fc",
-                segmentOffset: new go.Point(NaN, NaN),
-                segmentOrientation: go.Link.OrientUpright
-              },
-              new go.Binding("text", "text"))),
-            $(go.Panel, "Auto",
-              {
-                segmentIndex: -1,
-                segmentOffset: new go.Point(-13,0)
-              },
-              $(go.Shape, "RoundedRectangle", {fill: "#edf6fc"}, {stroke: "#eeeeee"}),
-              $(go.TextBlock,  // the "to" label
-                {
-                  textAlign: "center",
-                  font: "bold 14px sans-serif",
-                  stroke: "black",
-                  segmentIndex: -1,
-                  segmentOffset: new go.Point(NaN, NaN),
-                  segmentOrientation: go.Link.OrientUpright
-                },
-              new go.Binding("text", "toText"))),
-        );
+    // define the Link template, representing a relationship
+    myDiagram.linkTemplate = $(go.Link, // the whole link panel
+      {
+        selectionAdorned: true,
+        layerName: 'Background',
+        reshapable: true,
+        routing: go.Routing.AvoidsNodes,
+        corner: 5,
+        curve: go.Curve.JumpOver,
+      },
+      $(go.Shape, // the link shape
+        { stroke: '#f7f9fc', strokeWidth: 3 },
+        new go.ThemeBinding('stroke', 'link')
+      ),
+      $(go.TextBlock, // the "from" label
+        {
+          textAlign: 'center',
+          font: 'bold 14px sans-serif',
+          stroke: 'black',
+          segmentIndex: 0,
+          segmentOffset: new go.Point(NaN, NaN),
+          segmentOrientation: go.Orientation.Upright,
+        },
+        new go.Binding('text', 'text'),
+        new go.ThemeBinding('stroke', 'text')
+      ),
+      $(go.TextBlock, // the "to" label
+        {
+          textAlign: 'center',
+          font: 'bold 14px sans-serif',
+          stroke: 'black',
+          segmentIndex: -1,
+          segmentOffset: new go.Point(NaN, NaN),
+          segmentOrientation: go.Orientation.Upright,
+        },
+        new go.Binding('text', 'toText'),
+        new go.ThemeBinding('stroke', 'text')
+      )
+    );
 
-      // create the model for the E-R diagram
-      const nodeDataArray = [
-        {
-          key: "Products", visibility: true, location: new go.Point(250,250) ,
-          items: [{ name: "ProductID", iskey: true, figure: "Decision", color: "purple" },
-          { name: "ProductName", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "ItemDescription", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "WholesalePrice", iskey: false, figure: "Circle", color: "green", },
-          { name: "ProductPhoto", iskey: false, figure: "TriangleUp", color: "red"}],
-          inheriteditems: [{ name: "SupplierID", iskey: false, figure: "Decision", color: "purple" },
-          { name: "CategoryID", iskey: false, figure: "Decision", color: "purple" }]
-        },
-        {
-          key: "Suppliers", visibility: false,location: new go.Point(500,0) ,
-          items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: "purple" },
-          { name: "CompanyName", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "ContactName", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "Address", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "ShippingDistance", iskey: false, figure: "Circle", color: "green", },
-          { name: "Logo", iskey: false, figure: "TriangleUp", color: "red"}],
-          inheriteditems: []
-        },
-        {
-          key: "Categories", visibility: true,location: new go.Point(0,30) ,
-          items: [{ name: "CategoryID", iskey: true, figure: "Decision", color: "purple" },
-          { name: "CategoryName", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "Description", iskey: false, figure: "Hexagon", color: "blue" },
-          { name: "Icon", iskey: false, figure: "TriangleUp", color: "red"}],
-          inheriteditems: [{ name: "SupplierID", iskey: false, figure: "Decision", color: "purple" }]
-        },
-        {
-          key: "Order Details", visibility: true,location: new go.Point(600,350) ,
-          items: [{ name: "OrderID", iskey: true, figure: "Decision", color: "purple" },
-          { name: "UnitPrice", iskey: false, figure: "Circle", color: "green", },
-          { name: "Quantity", iskey: false, figure: "Circle", color: "green",  },
-          { name: "Discount", iskey: false, figure: "Circle", color: "green" }],
-          inheriteditems: [{ name: "ProductID", iskey: true, figure: "Decision", color: "purple" }]
-        },
-      ];
-      const linkDataArray = [
-        { from: "Products", to: "Suppliers", text: "0..N", toText: "1" },
-        { from: "Products", to: "Categories", text: "0..N", toText: "1" },
-        { from: "Order Details", to: "Products", text: "0..N", toText: "1" },
-        { from: "Categories", to: "Suppliers", text: "0..N", toText: "1" }
-      ];
-      myDiagram.model = new go.GraphLinksModel(
-        {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          modelData: { darkMode: false },
-          nodeDataArray: nodeDataArray,
-          linkDataArray: linkDataArray
-        });
+    // create the model for the E-R diagram
+    const nodeDataArray = [
+      {
+        key: 'Products',
+        location: new go.Point(250, 250),
+        items: [
+          { name: 'ProductID', iskey: true, figure: 'Decision', color: 'purple' },
+          { name: 'ProductName', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'ItemDescription', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'WholesalePrice', iskey: false, figure: 'Circle', color: 'green' },
+          { name: 'ProductPhoto', iskey: false, figure: 'TriangleUp', color: 'red' },
+        ],
+        inheritedItems: [
+          { name: 'SupplierID', iskey: false, figure: 'Decision', color: 'purple' },
+          { name: 'CategoryID', iskey: false, figure: 'Decision', color: 'purple' },
+        ],
+      },
+      {
+        key: 'Suppliers',
+        location: new go.Point(500, 0),
+        items: [
+          { name: 'SupplierID', iskey: true, figure: 'Decision', color: 'purple' },
+          { name: 'CompanyName', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'ContactName', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'Address', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'ShippingDistance', iskey: false, figure: 'Circle', color: 'green' },
+          { name: 'Logo', iskey: false, figure: 'TriangleUp', color: 'red' },
+        ],
+        inheritedItems: [],
+      },
+      {
+        key: 'Categories',
+        location: new go.Point(0, 30),
+        items: [
+          { name: 'CategoryID', iskey: true, figure: 'Decision', color: 'purple' },
+          { name: 'CategoryName', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'Description', iskey: false, figure: 'Hexagon', color: 'blue' },
+          { name: 'Icon', iskey: false, figure: 'TriangleUp', color: 'red' },
+        ],
+        inheritedItems: [{ name: 'SupplierID', iskey: false, figure: 'Decision', color: 'purple' }],
+      },
+      {
+        key: 'Order Details',
+        location: new go.Point(600, 350),
+        items: [
+          { name: 'OrderID', iskey: true, figure: 'Decision', color: 'purple' },
+          { name: 'UnitPrice', iskey: false, figure: 'Circle', color: 'green' },
+          { name: 'Quantity', iskey: false, figure: 'Circle', color: 'green' },
+          { name: 'Discount', iskey: false, figure: 'Circle', color: 'green' },
+        ],
+        inheritedItems: [{ name: 'ProductID', iskey: false, figure: 'Decision', color: 'purple' }],
+      },
+    ];
+    const linkDataArray = [
+      { from: 'Products', to: 'Suppliers', text: '0..N', toText: '1' },
+      { from: 'Products', to: 'Categories', text: '0..N', toText: '1' },
+      { from: 'Order Details', to: 'Products', text: '0..N', toText: '1' },
+      { from: 'Categories', to: 'Suppliers', text: '0..N', toText: '1' },
+    ];
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: nodeDataArray,
+      linkDataArray: linkDataArray,
+    });
+  }
+
+  const changeTheme = () => {
+    const myDiagram = go.Diagram.fromDiv('myDiagramDiv');
+    if (myDiagram) {
+      myDiagram.themeManager.currentTheme = document.getElementById('theme').value;
     }
+  };
 
-    function buttonClick() {
-      const myDiagramDiv = document.getElementById("myDiagramDiv");
-      const button = document.getElementById("darkMode");
-      myDiagramDiv.style["background-color"] = (button.innerHTML === "Dark Mode") ? "#242424" : "#ffffff";
-      button.innerHTML = (button.innerHTML === "Dark Mode") ? "Light Mode" : "Dark Mode";
-      colorSwitch();
-    }
-
-    function colorSwitch() {
-      myDiagram.model.commit(m => {
-        m.set(m.modelData, "darkMode", !m.modelData.darkMode);
-      }, null);
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
-  <button id="darkMode" onclick="buttonClick()">Dark Mode</button>
-  <p>Sample for representing the relationship between various entities.  Try dragging the nodes -- their links will avoid other nodes, by virtue of the <a>Routing.AvoidsNodes</a> property assigned to the
-    custom link template's <a>Link.routing</a>. Also note the use of <a href="../intro/buttons.html" target="_blank">Panel Expander Buttons</a> to allow for expandable/collapsible node data.
+  Theme:
+  <select id="theme" onchange="changeTheme()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  <p>
+    Sample for representing the relationship between various entities. Try dragging the nodes -- their links will avoid other nodes, by virtue of the
+    <a>Routing.AvoidsNodes</a> property assigned to the custom link template's <a>Link.routing</a>. Also note the use of
+    <a href="../intro/buttons.html" target="_blank">Panel Expander Buttons</a> to allow for expandable/collapsible node data.
   </p>
   <p>Buttons are defined in <a href="../extensions/Buttons.js">Buttons.js</a>.</p>
-  <p>The dark and light modes are controlled by using a boolean model property representing the current mode of the diagram. See the API page on <a href="../api/symbols/Model.html">Models</a> for more information of model data.</p>
+  <p>The dark and light themes are controlled using the <a>ThemeManager</a>.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Force Directed Layout</h4>
+<p>
+This predefined layout treats the graph as if it were a system of physical bodies with forces acting on and between them.
+The layout iteratively moves nodes and links to minimize the total sum of forces on each node. The resulting layout will normally not contain
+overlapping Nodes, excluding cases where the graph is densely interconnected.
+More information can be found in the <a href="../intro/layouts.html#ForceDirectedLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#force-directed">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Theming</h4>
+<p>
+  <b>GoJS</b> allows diagrams to be themed. This is commonly used to provide a light and dark mode for diagrams.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#themeManager" target="api">Diagram.themeManager</a> handles themes within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/ThemeManager.html" target="api">ThemeManager</a> can by shared by multiple diagrams,
+  and is responsible to managing the current theme and default theme, along with any theme updates.
+  More information can be found in the <a href="../intro/theming.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#theme">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,287 +1,374 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Zooming only changes the distance between nodes, not the apparent size of each node."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Spacing rather than Scaling when Zooming</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Zooming only changes the distance between nodes, not the apparent size of each node." />
+<meta itemprop="description" content="Zooming only changes the distance between nodes, not the apparent size of each node." />
+<meta property="og:description" content="Zooming only changes the distance between nodes, not the apparent size of each node." />
+<meta name="twitter:description" content="Zooming only changes the distance between nodes, not the apparent size of each node." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Spacing Zoom />
+<meta property="og:title" content=Spacing Zoom />
+<meta name="twitter:title" content=Spacing Zoom />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/minimal.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/minimal.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/minimal.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/spacingZoom.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/spacingZoom.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Spacing Zoom | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          commandHandler: new SpacingCommandHandler(),
-          // update the SpacingCommandHandler.space from the model at the end of each transaction
-          "ModelChanged": e => {
-            if (e.isTransactionFinished) {
-              myDiagram.commandHandler.space = myDiagram.model.modelData.space;
-            }
-          },
-          "undoManager.isEnabled": true  // enable undo & redo
-        });
-
-      // Define a simple Node template that cannot be shared with other Diagrams,
-      // because of the use of the Node.location Binding conversion functions.
-      // The SpacingCommandHandler also assumes the Node.location is bound to the data property named "loc".
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",  // the Shape will go around the TextBlock
-          new go.Binding("location", "loc", spacedLocationParse).makeTwoWay(spacedLocationStringify),
-          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
-            // Shape.fill is bound to Node.data.color
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 8 },  // some room around the text
-            // TextBlock.text is bound to Node.data.key
-            new go.Binding("text", "key"))
-        );
-
-      // but use the default Link template, by not setting Diagram.linkTemplate
-
-      // create the model data that will be represented by Nodes and Links
-      myDiagram.model = new go.GraphLinksModel(
-        [
-          { key: "Alpha", color: "lightblue", loc: "0 0" },
-          { key: "Beta", color: "orange", loc: "100 0" },
-          { key: "Gamma", color: "lightgreen", loc: "0 100" },
-          { key: "Delta", color: "pink", loc: "100 100" }
-        ],
-        [
-          { from: "Alpha", to: "Beta" },
-          { from: "Alpha", to: "Gamma" },
-          { from: "Beta", to: "Beta" },
-          { from: "Gamma", to: "Delta" },
-          { from: "Delta", to: "Alpha" }
-        ]);
-
-      // the "space" property is kept on the Model.modelData too
-      myDiagram.model.modelData.space = 1.0;
-    }
-
-
-    // Conversion functions -- these only work with myDiagram, assuming it uses a SpacingCommandHandler
-
-    function spacedLocationParse(str) {
-      const cmd = myDiagram.commandHandler;
-      if (!(cmd instanceof SpacingCommandHandler)) throw new Error("not using SpacingCommandHandler");
-      const pt = go.Point.parse(str);
-      pt.x = (pt.x - cmd.spaceCenter.x) * cmd.space + cmd.spaceCenter.x;
-      if (cmd.isYSpaced) {
-        pt.y = (pt.y - cmd.spaceCenter.y) * cmd.space + cmd.spaceCenter.y;
-      }
-      return pt;
-    }
-
-    function spacedLocationStringify(pt, data) {
-      const cmd = myDiagram.commandHandler;
-      if (!cmd._isUpdating) {
-        pt = pt.copy();
-        pt.x = (pt.x - cmd.spaceCenter.x) / cmd.space + cmd.spaceCenter.x;
-        if (cmd.isYSpaced) {
-          pt.y = (pt.y - cmd.spaceCenter.y) / cmd.space + cmd.spaceCenter.y;
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
-        return go.Point.stringify(pt);
-      } else {
-        return data.loc;
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
+        
 
-    // The custom CommandHandler that avoids changing the Diagram.scale
-    class SpacingCommandHandler extends go.CommandHandler {
-      constructor() {
-        super();
-        this._space = 1.0;  // replaces Diagram.scale; also copied to/from Model.modelData.space
-        this._spaceCenter = new go.Point(0, 0);  // not currently used -- should this be saved on modelData too?
-        this._isYSpaced = true;  // scale Y along with X?  This option is just for demonstration purposes.
-        this._isUpdating = false;
-      }
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-      // Overrides of commands that scale the diagram -- change the space instead
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-      decreaseZoom(factor) {
-        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-        this.setSpace(this.space * factor);
-      }
-      canDecreaseZoom(factor) {
-        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-        return this.checkSpace(this.space * factor);
-      }
-
-      increaseZoom(factor) {
-        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-        this.setSpace(this.space / factor);
-      }
-      canIncreaseZoom(factor) {
-        if (factor === undefined/*notpresent*/) factor = 1.0 / this.zoomFactor;
-        return this.checkSpace(this.space / factor);
-      }
-
-      resetZoom(newspace) {
-        if (newspace === undefined/*notpresent*/) newspace = 1.0;
-        this.setSpace(newspace);
-      }
-      canResetZoom(newspace) {
-        return this.checkSpace(newspace);
-      }
-
-      // actually set a new value for SPACE
-      setSpace(s) {
-        this.space = Math.max(0.1, Math.min(10.0, s));
-      }
-
-      // validity check for a new value for SPACE
-      checkSpace(s) {
-        return 0.1 <= s && s <= 10.0;
-      }
-
-
-      // Properties for SpacingCommandHandler
-
-      get space() { return this._space; }
-      set space(val) {
-        if (val !== this._space) {
-          this._space = val;
-          const diagram = this.diagram;
-          if (diagram !== null) {  // store in model too, and support undo
-            diagram.model.setDataProperty(diagram.model.modelData, "space", val);
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        commandHandler: new SpacingCommandHandler(),
+        // update the SpacingCommandHandler.space from the model at the end of each transaction
+        ModelChanged: (e) => {
+          if (e.isTransactionFinished) {
+            myDiagram.commandHandler.space = myDiagram.model.modelData.space;
           }
-          this.updateAllLocations();
-          // update the page showing the current value
-          document.getElementById("SPACE").textContent = val.toString();
-        }
+        },
+        'undoManager.isEnabled': true, // enable undo & redo
       }
+    );
 
-      get spaceCenter() { return this._spaceCenter; }
-      set spaceCenter(val) {
-        if (!val.equals(this._spaceCenter)) {
-          this._spaceCenter = val.copy();
-        }
+    // Define a simple Node template that cannot be shared with other Diagrams,
+    // because of the use of the Node.location Binding conversion functions.
+    // The SpacingCommandHandler also assumes the Node.location is bound to the data property named "loc".
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto', // the Shape will go around the TextBlock
+      new go.Binding('location', 'loc', spacedLocationParse).makeTwoWay(spacedLocationStringify),
+      $(go.Shape,
+        'RoundedRectangle',
+        { strokeWidth: 0 },
+        // Shape.fill is bound to Node.data.color
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock,
+        { margin: 8 }, // some room around the text
+        // TextBlock.text is bound to Node.data.text
+        new go.Binding('text')
+      )
+    );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue', loc: '0 0' },
+        { key: 2, text: 'Beta', color: 'orange', loc: '100 0' },
+        { key: 3, text: 'Gamma', color: 'lightgreen', loc: '0 100' },
+        { key: 4, text: 'Delta', color: 'pink', loc: '100 100' },
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 },
+      ]
+    );
+
+    // the "space" property is kept on the Model.modelData too
+    myDiagram.model.modelData.space = 1.0;
+  }
+
+  // Conversion functions -- these only work with myDiagram, assuming it uses a SpacingCommandHandler
+
+  function spacedLocationParse(str) {
+    const cmd = myDiagram.commandHandler;
+    if (!(cmd instanceof SpacingCommandHandler)) throw new Error('not using SpacingCommandHandler');
+    const pt = go.Point.parse(str);
+    pt.x = (pt.x - cmd.spaceCenter.x) * cmd.space + cmd.spaceCenter.x;
+    if (cmd.isYSpaced) {
+      pt.y = (pt.y - cmd.spaceCenter.y) * cmd.space + cmd.spaceCenter.y;
+    }
+    return pt;
+  }
+
+  function spacedLocationStringify(pt, data) {
+    const cmd = myDiagram.commandHandler;
+    if (!cmd._isUpdating) {
+      pt = pt.copy();
+      pt.x = (pt.x - cmd.spaceCenter.x) / cmd.space + cmd.spaceCenter.x;
+      if (cmd.isYSpaced) {
+        pt.y = (pt.y - cmd.spaceCenter.y) / cmd.space + cmd.spaceCenter.y;
       }
+      return go.Point.stringify(pt);
+    } else {
+      return data.loc;
+    }
+  }
 
-      get isYSpaced() { return this._isYSpaced; }
-      set isYSpaced(val) {
-        if (val !== this._isYSpaced) {
-          this._isYSpaced = val;
-          this.updateAllLocations();
-        }
-      }
+  // The custom CommandHandler that avoids changing the Diagram.scale
+  class SpacingCommandHandler extends go.CommandHandler {
+    constructor() {
+      super();
+      this._space = 1.0; // replaces Diagram.scale; also copied to/from Model.modelData.space
+      this._spaceCenter = new go.Point(0, 0); // not currently used -- should this be saved on modelData too?
+      this._isYSpaced = true; // scale Y along with X?  This option is just for demonstration purposes.
+      this._isUpdating = false;
+    }
 
-      // If the spacing or isYSpaced properties change value,
-      // we need to update the effective locations of all nodes.
-      // Assume Node.location is data bound to "loc" property.
-      updateAllLocations() {
+    // Overrides of commands that scale the diagram -- change the space instead
+
+    decreaseZoom(factor) {
+      if (factor === undefined /*notpresent*/) factor = 1.0 / this.zoomFactor;
+      this.setSpace(this.space * factor);
+    }
+    canDecreaseZoom(factor) {
+      if (factor === undefined /*notpresent*/) factor = 1.0 / this.zoomFactor;
+      return this.checkSpace(this.space * factor);
+    }
+
+    increaseZoom(factor) {
+      if (factor === undefined /*notpresent*/) factor = 1.0 / this.zoomFactor;
+      this.setSpace(this.space / factor);
+    }
+    canIncreaseZoom(factor) {
+      if (factor === undefined /*notpresent*/) factor = 1.0 / this.zoomFactor;
+      return this.checkSpace(this.space / factor);
+    }
+
+    resetZoom(newspace) {
+      if (newspace === undefined /*notpresent*/) newspace = 1.0;
+      this.setSpace(newspace);
+    }
+    canResetZoom(newspace) {
+      return this.checkSpace(newspace);
+    }
+
+    // actually set a new value for SPACE
+    setSpace(s) {
+      this.space = Math.max(0.1, Math.min(10.0, s));
+    }
+
+    // validity check for a new value for SPACE
+    checkSpace(s) {
+      return 0.1 <= s && s <= 10.0;
+    }
+
+    // Properties for SpacingCommandHandler
+
+    get space() {
+      return this._space;
+    }
+    set space(val) {
+      if (val !== this._space) {
+        this._space = val;
         const diagram = this.diagram;
-        if (diagram === null) return;
-        this._isUpdating = true;
-        diagram.skipsUndoManager = true;
-        diagram.startTransaction("respace nodes");
-        diagram.parts.each(p => p.updateTargetBindings("loc"));
-        diagram.nodes.each(n => n.updateTargetBindings("loc"));
-        diagram.commitTransaction("respace nodes");
-        diagram.skipsUndoManager = false;
-        this._isUpdating = false;
+        if (diagram !== null) {
+          // store in model too, and support undo
+          diagram.model.setDataProperty(diagram.model.modelData, 'space', val);
+        }
+        this.updateAllLocations();
+        // update the page showing the current value
+        document.getElementById('SPACE').textContent = val.toString();
       }
     }
-    // end SpacingCommandHandler class
 
-
-    function onIsYSpacedToggled() {
-      myDiagram.commandHandler.isYSpaced = !myDiagram.commandHandler.isYSpaced;
+    get spaceCenter() {
+      return this._spaceCenter;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+    set spaceCenter(val) {
+      if (!val.equals(this._spaceCenter)) {
+        this._spaceCenter = val.copy();
+      }
+    }
+
+    get isYSpaced() {
+      return this._isYSpaced;
+    }
+    set isYSpaced(val) {
+      if (val !== this._isYSpaced) {
+        this._isYSpaced = val;
+        this.updateAllLocations();
+      }
+    }
+
+    // If the spacing or isYSpaced properties change value,
+    // we need to update the effective locations of all nodes.
+    // Assume Node.location is data bound to "loc" property.
+    updateAllLocations() {
+      const diagram = this.diagram;
+      if (diagram === null) return;
+      this._isUpdating = true;
+      diagram.skipsUndoManager = true;
+      diagram.startTransaction('respace nodes');
+      diagram.parts.each((p) => p.updateTargetBindings('loc'));
+      diagram.nodes.each((n) => n.updateTargetBindings('loc'));
+      diagram.commitTransaction('respace nodes');
+      diagram.skipsUndoManager = false;
+      this._isUpdating = false;
+    }
+  }
+  // end SpacingCommandHandler class
+
+  function onIsYSpacedToggled() {
+    myDiagram.commandHandler.isYSpaced = !myDiagram.commandHandler.isYSpaced;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 400px; height: 400px"></div>
   Spacing factor: <span id="SPACE">1.0</span>
   <br />
   <label><input type="checkbox" onclick="onIsYSpacedToggled()" checked="checked" />Is Y Axis Spaced?</label>
   <br />
   <p>
-  Click in the diagram and then try zooming in and out of the diagram by using control-mouse-wheel.
-  If you don't want to hold down the control key, click the mouse wheel button in the diagram to
-  toggle between mouse wheel events zooming instead of scrolling.
+    Click in the diagram and then try zooming in and out of the diagram by using control-mouse-wheel. If you don't want to hold down the control key, click the
+    mouse wheel button in the diagram to toggle between mouse wheel events zooming instead of scrolling.
   </p>
   <p>
-  This diagram uses a custom <a>CommandHandler</a> to replace the standard zooming behavior.
-  The <a>CommandHandler.decreaseZoom</a>, <a>CommandHandler.increaseZoom</a>, and
-  <a>CommandHandler.resetZoom</a> commands no longer change the <a>Diagram.scale</a>.
-  Instead they change the effective <a>Part.location</a> for all of the <a>Node</a>s by changing
-  the value of the conversion function that is getting the location from the "loc" property on the node data.
+    This diagram uses a custom <a>CommandHandler</a> to replace the standard zooming behavior. The <a>CommandHandler.decreaseZoom</a>,
+    <a>CommandHandler.increaseZoom</a>, and <a>CommandHandler.resetZoom</a> commands no longer change the <a>Diagram.scale</a>. Instead they change the
+    effective <a>Part.location</a> for all of the <a>Node</a>s by changing the value of the conversion function that is getting the location from the "loc"
+    property on the node data.
   </p>
   <p>
-  As the value of SpacingCommandHandler.space changes, all of the Bindings on "loc" are re-evaluated,
-  causing the nodes to get new locations.  The value of the "loc" data property remains unchanged by the Binding.
-  However the TwoWay Binding does cause the "loc" data property to be modified when the user drags a node.
+    As the value of SpacingCommandHandler.space changes, all of the Bindings on "loc" are re-evaluated, causing the nodes to get new locations. The value of the
+    "loc" data property remains unchanged by the Binding. However the TwoWay Binding does cause the "loc" data property to be modified when the user drags a
+    node.
   </p>
   <p>
-  The conversion functions also depend on the SpacingCommandHandler.isYSpaced property, which can be toggled by the checkbox.
-  When false the conversion functions do not space along the Y axis, but only along the X axis.
+    The conversion functions also depend on the SpacingCommandHandler.isYSpaced property, which can be toggled by the checkbox. When false the conversion
+    functions do not space along the Y axis, but only along the X axis.
   </p>
   <p>
-  Because the conversion functions are dependent on the particular Diagram,
-  and because the node template depends on the conversion functions,
-  the template cannot be used by other Diagrams.
+    Because the conversion functions are dependent on the particular Diagram, and because the node template depends on the conversion functions, the template
+    cannot be used by other Diagrams.
   </p>
   <p>
-  The SpacingCommandHandler.space property is duplicated on the <a>Model.modelData</a> object, both so that the information
-  is saved in the model as well as to support undo/redo.
+    The SpacingCommandHandler.space property is duplicated on the <a>Model.modelData</a> object, both so that the information is saved in the model as well as
+    to support undo/redo.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

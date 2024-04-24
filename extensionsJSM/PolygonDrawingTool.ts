@@ -1,37 +1,37 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * The PolygonDrawingTool class lets the user draw a new polygon or polyline shape by clicking where the corners should go.
  * Right click or type ENTER to finish the operation.
  *
- * Set {@link #isPolygon} to false if you want this tool to draw open unfilled polyline shapes.
- * Set {@link #archetypePartData} to customize the node data object that is added to the model.
+ * Set {@link isPolygon} to false if you want this tool to draw open unfilled polyline shapes.
+ * Set {@link archetypePartData} to customize the node data object that is added to the model.
  * Data-bind to those properties in your node template to customize the appearance and behavior of the part.
  *
- * This tool uses a temporary {@link Shape}, {@link #temporaryShape}, held by a {@link Part} in the "Tool" layer,
+ * This tool uses a temporary {@link go.Shape}, {@link temporaryShape}, held by a {@link go.Part} in the "Tool" layer,
  * to show interactively what the user is drawing.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/PolygonDrawing.html">Polygon Drawing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/PolygonDrawing.html">Polygon Drawing</a> sample.
  * @category Tool Extension
  */
 export class PolygonDrawingTool extends go.Tool {
-  private _isPolygon: boolean = true;
-  private _hasArcs: boolean = false;
-  private _isOrthoOnly: boolean = false;
-  private _isGridSnapEnabled: boolean = false;
-  private _archetypePartData: go.ObjectData= {}; // the data to copy for a new polygon Part
+  private _isPolygon: boolean;
+  private _hasArcs: boolean;
+  private _isOrthoOnly: boolean;
+  private _isGridSnapEnabled: boolean;
+  private _archetypePartData: go.ObjectData; // the data to copy for a new polygon Part
 
   // this is the Shape that is shown during a drawing operation
   private _temporaryShape: go.Shape;
@@ -39,13 +39,19 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Constructs an PolygonDrawingTool and sets the name for the tool.
    */
-  constructor() {
+  constructor(init?: Partial<PolygonDrawingTool>) {
     super();
     this.name = 'PolygonDrawing';
+    this._isPolygon = true;
+    this._hasArcs = false;
+    this._isOrthoOnly = false;
+    this._isGridSnapEnabled = false;
+    this._archetypePartData = {}; // the data to copy for a new polygon Part
     // this is the Shape that is shown during a drawing operation
-    this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
+    this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
     // the Shape has to be inside a temporary Part that is used during the drawing operation
-    go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
+    new go.Part({ layerName: 'Tool' }).add(this._temporaryShape);
+    if (init) Object.assign(this, init);
   }
 
   /**
@@ -53,45 +59,66 @@ export class PolygonDrawingTool extends go.Tool {
    *
    * The default value is true.
    */
-  get isPolygon(): boolean { return this._isPolygon; }
-  set isPolygon(val: boolean) { this._isPolygon = val; }
-
+  get isPolygon(): boolean {
+    return this._isPolygon;
+  }
+  set isPolygon(val: boolean) {
+    this._isPolygon = val;
+  }
 
   /**
    * Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
    *
    * The default value is false -- only use straight lines.
    */
-  get hasArcs(): boolean { return this._hasArcs; }
-  set hasArcs(val: boolean) { this._hasArcs = val; }
+  get hasArcs(): boolean {
+    return this._hasArcs;
+  }
+  set hasArcs(val: boolean) {
+    this._hasArcs = val;
+  }
 
   /**
    * Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
    * The default value is false -- draw segments in any direction. This does not restrict the closing segment, which may not be orthogonal.
    */
-  get isOrthoOnly(): boolean { return this._isOrthoOnly; }
-  set isOrthoOnly(val: boolean) { this._isOrthoOnly = val; }
+  get isOrthoOnly(): boolean {
+    return this._isOrthoOnly;
+  }
+  set isOrthoOnly(val: boolean) {
+    this._isOrthoOnly = val;
+  }
 
   /**
    * Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
    * The default value is false
    */
-  get isGridSnapEnabled(): boolean { return this._isGridSnapEnabled; }
-  set isGridSnapEnabled(val: boolean) { this._isGridSnapEnabled = val; }
+  get isGridSnapEnabled(): boolean {
+    return this._isGridSnapEnabled;
+  }
+  set isGridSnapEnabled(val: boolean) {
+    this._isGridSnapEnabled = val;
+  }
 
   /**
    * Gets or sets the node data object that is copied and added to the model
    * when the drawing operation completes.
    */
-  get archetypePartData(): go.ObjectData { return this._archetypePartData; }
-  set archetypePartData(val: go.ObjectData) { this._archetypePartData = val; }
+  get archetypePartData(): go.ObjectData {
+    return this._archetypePartData;
+  }
+  set archetypePartData(val: go.ObjectData) {
+    this._archetypePartData = val;
+  }
 
   /**
    * Gets or sets the Shape that is used to hold the line as it is being drawn.
    *
    * The default value is a simple Shape drawing an unfilled open thin black line.
    */
-  get temporaryShape(): go.Shape { return this._temporaryShape; }
+  get temporaryShape(): go.Shape {
+    return this._temporaryShape;
+  }
   set temporaryShape(val: go.Shape) {
     if (this._temporaryShape !== val && val !== null) {
       val.name = 'SHAPE';
@@ -109,7 +136,7 @@ export class PolygonDrawingTool extends go.Tool {
    * When this tool is a mouse-down tool, it requires using the left mouse button in the background of a modifiable Diagram.
    * Modal uses of this tool will not call this canStart predicate.
    */
-  public override canStart(): boolean {
+  override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
@@ -119,30 +146,29 @@ export class PolygonDrawingTool extends go.Tool {
     if (!diagram.firstInput.left) return false;
     // can't start when mouse-down on an existing Part
     const obj = diagram.findObjectAt(diagram.firstInput.documentPoint, null, null);
-    return (obj === null);
+    return obj === null;
   }
 
   /**
-  * Start a transaction, capture the mouse, use a "crosshair" cursor,
-  * and start accumulating points in the geometry of the {@link #temporaryShape}.
-  * @this {PolygonDrawingTool}
-  */
-  public override doStart() {
+   * Start a transaction, capture the mouse, use a "crosshair" cursor,
+   * and start accumulating points in the geometry of the {@link temporaryShape}.
+   */
+  override doStart() {
     super.doStart();
-    var diagram = this.diagram;
+    const diagram = this.diagram;
     if (!diagram) return;
     this.startTransaction(this.name);
-    diagram.currentCursor = diagram.defaultCursor = "crosshair";
+    diagram.currentCursor = diagram.defaultCursor = 'crosshair';
     if (!diagram.lastInput.isTouchEvent) diagram.isMouseCaptured = true;
   }
 
   /**
    * Start a transaction, capture the mouse, use a "crosshair" cursor,
-   * and start accumulating points in the geometry of the {@link #temporaryShape}.
+   * and start accumulating points in the geometry of the {@link temporaryShape}.
    */
-  public override doActivate(): void {
+  override doActivate(): void {
     super.doActivate();
-    var diagram = this.diagram;
+    const diagram = this.diagram;
     if (!diagram) return;
     // the first point
     if (!diagram.lastInput.isTouchEvent) this.addPoint(diagram.lastInput.documentPoint);
@@ -151,11 +177,11 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Stop the transaction and clean up.
    */
-  public override doStop(): void {
+  override doStop(): void {
     super.doStop();
-    var diagram = this.diagram;
+    const diagram = this.diagram;
     if (!diagram) return;
-    diagram.currentCursor = diagram.defaultCursor = "auto";
+    diagram.currentCursor = diagram.defaultCursor = 'auto';
     if (this.temporaryShape !== null && this.temporaryShape.part !== null) {
       diagram.remove(this.temporaryShape.part);
     }
@@ -163,11 +189,11 @@ export class PolygonDrawingTool extends go.Tool {
     this.stopTransaction();
   }
 
- /**
-  * @hidden @internal
-  * Given a potential Point for the next segment, return a Point it to snap to the grid, and remain orthogonal, if either is applicable.
-  */
-  public modifyPointForGrid(p: go.Point): go.Point {
+  /**
+   * @hidden @internal
+   * Given a potential Point for the next segment, return a Point it to snap to the grid, and remain orthogonal, if either is applicable.
+   */
+  modifyPointForGrid(p: go.Point): go.Point {
     const pregrid = p.copy();
     const grid = this.diagram.grid;
     if (grid !== null && grid.visible && this.isGridSnapEnabled) {
@@ -186,24 +212,27 @@ export class PolygonDrawingTool extends go.Tool {
       let lastPt = new go.Point(fig.startX, fig.startY); // assuming segments.count === 1
       if (segments.count > 1) {
         // the last segment is the current temporary segment, which we might be altering. We want the segment before
-        const secondLastSegment = (segments.elt(segments.count - 2));
+        const secondLastSegment = segments.elt(segments.count - 2);
         lastPt = new go.Point(secondLastSegment.endX, secondLastSegment.endY);
       }
-      if (pregrid.distanceSquared(lastPt.x, pregrid.y) < pregrid.distanceSquared(pregrid.x, lastPt.y)) { // closer to X coord
+      if (
+        pregrid.distanceSquared(lastPt.x, pregrid.y) < pregrid.distanceSquared(pregrid.x, lastPt.y)
+      ) {
+        // closer to X coord
         return new go.Point(lastPt.x, p.y);
-      } else { // closer to Y coord
+      } else {
+        // closer to Y coord
         return new go.Point(p.x, lastPt.y);
       }
     }
     return p;
   }
 
-
   /**
    * @hidden @internal
-   * This internal method adds a segment to the geometry of the {@link #temporaryShape}.
+   * This internal method adds a segment to the geometry of the {@link temporaryShape}.
    */
-  public addPoint(p: go.Point): void {
+  addPoint(p: go.Point): void {
     const diagram = this.diagram;
     const shape = this.temporaryShape;
     if (shape === null) return;
@@ -216,8 +245,8 @@ export class PolygonDrawingTool extends go.Tool {
     let geo: go.Geometry | null = null;
     // if it's not in the Diagram, re-initialize the Shape's geometry and add the Part to the Diagram
     if (part !== null && part.diagram === null) {
-      const fig = new go.PathFigure(q.x, q.y, true);  // possibly filled, depending on Shape.fill
-      geo = new go.Geometry().add(fig);  // the Shape.geometry consists of a single PathFigure
+      const fig = new go.PathFigure(q.x, q.y, true); // possibly filled, depending on Shape.fill
+      geo = new go.Geometry().add(fig); // the Shape.geometry consists of a single PathFigure
       this.temporaryShape.geometry = geo;
       // position the Shape's Part, accounting for the stroke width
       part.position = viewpt.copy().offset(-shape.strokeWidth / 2, -shape.strokeWidth / 2);
@@ -230,12 +259,28 @@ export class PolygonDrawingTool extends go.Tool {
         if (this.hasArcs) {
           const lastseg = fig.segments.last();
           if (lastseg === null) {
-            fig.add(new go.PathSegment(go.PathSegment.QuadraticBezier, q.x, q.y, (fig.startX + q.x) / 2, (fig.startY + q.y) / 2));
+            fig.add(
+              new go.PathSegment(
+                go.SegmentType.QuadraticBezier,
+                q.x,
+                q.y,
+                (fig.startX + q.x) / 2,
+                (fig.startY + q.y) / 2
+              )
+            );
           } else {
-            fig.add(new go.PathSegment(go.PathSegment.QuadraticBezier, q.x, q.y, (lastseg.endX + q.x) / 2, (lastseg.endY + q.y) / 2));
+            fig.add(
+              new go.PathSegment(
+                go.SegmentType.QuadraticBezier,
+                q.x,
+                q.y,
+                (lastseg.endX + q.x) / 2,
+                (lastseg.endY + q.y) / 2
+              )
+            );
           }
         } else {
-          fig.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
+          fig.add(new go.PathSegment(go.SegmentType.Line, q.x, q.y));
         }
       }
     }
@@ -244,9 +289,9 @@ export class PolygonDrawingTool extends go.Tool {
 
   /**
    * @hidden @internal
-   * This internal method changes the last segment of the geometry of the {@link #temporaryShape} to end at the given point.
+   * This internal method changes the last segment of the geometry of the {@link temporaryShape} to end at the given point.
    */
-  public moveLastPoint(p: go.Point): void {
+  moveLastPoint(p: go.Point): void {
     p = this.modifyPointForGrid(p);
     const diagram = this.diagram;
     // must copy whole Geometry in order to change a PathSegment
@@ -263,7 +308,7 @@ export class PolygonDrawingTool extends go.Tool {
       // modify the last PathSegment to be the given Point p
       seg.endX = p.x - viewpt.x;
       seg.endY = p.y - viewpt.y;
-      if (seg.type === go.PathSegment.QuadraticBezier) {
+      if (seg.type === go.SegmentType.QuadraticBezier) {
         let prevx = 0.0;
         let prevy = 0.0;
         if (segs.count > 1) {
@@ -283,9 +328,9 @@ export class PolygonDrawingTool extends go.Tool {
 
   /**
    * @hidden @internal
-   * This internal method removes the last segment of the geometry of the {@link #temporaryShape}.
+   * This internal method removes the last segment of the geometry of the {@link temporaryShape}.
    */
-  public removeLastPoint(): void {
+  removeLastPoint(): void {
     // must copy whole Geometry in order to remove a PathSegment
     const shape = this.temporaryShape;
     if (shape.geometry === null) return;
@@ -301,9 +346,9 @@ export class PolygonDrawingTool extends go.Tool {
 
   /**
    * Add a new node data JavaScript object to the model and initialize the Part's
-   * position and its Shape's geometry by copying the {@link #temporaryShape}'s {@link Shape#geometry}.
+   * position and its Shape's geometry by copying the {@link temporaryShape}'s {@link go.Shape.geometry}.
    */
-  public finishShape(): void {
+  finishShape(): void {
     const diagram = this.diagram;
     const shape: go.Shape = this.temporaryShape;
     if (shape !== null && this.archetypePartData !== null) {
@@ -349,27 +394,29 @@ export class PolygonDrawingTool extends go.Tool {
   }
 
   /**
-   * Add another point to the geometry of the {@link #temporaryShape}.
+   * Add another point to the geometry of the {@link temporaryShape}.
    */
-  public override doMouseDown(): void {
+  override doMouseDown(): void {
     const diagram = this.diagram;
     if (!this.isActive) {
       this.doActivate();
     }
     // a new temporary end point, the previous one is now "accepted"
     this.addPoint(diagram.lastInput.documentPoint);
-    if (!diagram.lastInput.left) {  // e.g. right mouse down
+    if (!diagram.lastInput.left) {
+      // e.g. right mouse down
       this.finishShape();
-    } else if (diagram.lastInput.clickCount > 1) {  // e.g. double-click
+    } else if (diagram.lastInput.clickCount > 1) {
+      // e.g. double-click
       this.removeLastPoint();
       this.finishShape();
     }
   }
 
   /**
-   * Move the last point of the {@link #temporaryShape}'s geometry to follow the mouse point.
+   * Move the last point of the {@link temporaryShape}'s geometry to follow the mouse point.
    */
-  public override doMouseMove(): void {
+  override doMouseMove(): void {
     const diagram = this.diagram;
     if (this.isActive) {
       this.moveLastPoint(diagram.lastInput.documentPoint);
@@ -379,25 +426,27 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Do not stop this tool, but continue to accumulate Points via mouse-down events.
    */
-  public override doMouseUp(): void {
+  override doMouseUp(): void {
     // don't stop this tool (the default behavior is to call stopTool)
   }
 
   /**
    * Typing the "ENTER" key accepts the current geometry (excluding the current mouse point)
-   * and creates a new part in the model by calling {@link #finishShape}.
+   * and creates a new part in the model by calling {@link finishShape}.
    *
    * Typing the "Z" key causes the previous point to be discarded.
    *
    * Typing the "ESCAPE" key causes the temporary Shape and its geometry to be discarded and this tool to be stopped.
    */
-  public override doKeyDown(): void {
+  override doKeyDown(): void {
     const diagram = this.diagram;
     if (!this.isActive) return;
     const e = diagram.lastInput;
-    if (e.key === '\r') {  // accept
-      this.finishShape();  // all done!
-    } else if (e.key === 'Z') {  // undo
+    if (e.key === '\r') {
+      // accept
+      this.finishShape(); // all done!
+    } else if (e.key === 'Z') {
+      // undo
       this.undo();
     } else {
       super.doKeyDown();
@@ -407,7 +456,7 @@ export class PolygonDrawingTool extends go.Tool {
   /**
    * Undo: remove the last point and continue the drawing of new points.
    */
-  public undo(): void {
+  undo(): void {
     const diagram = this.diagram;
     // remove a point, and then treat the last one as a temporary one
     this.removeLastPoint();

@@ -1,26 +1,29 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * The RealtimeDragSelectingTool class lets the user select and deselect Parts within the {@link DragSelectingTool#box}
+ * The RealtimeDragSelectingTool class lets the user select and deselect Parts within the {@link go.DragSelectingTool.box}
  * during a drag, not just at the end of the drag.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RealtimeDragSelecting.html">Realtime Drag Selecting</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/RealtimeDragSelecting.html">Realtime Drag Selecting</a> sample.
  * @category Tool Extension
  */
 export class RealtimeDragSelectingTool extends go.DragSelectingTool {
-    constructor() {
-        super(...arguments);
+    constructor(init) {
+        super();
+        this.name = 'RealtimeDragSelecting';
         this._originalSelection = new go.Set();
         this._temporarySelection = new go.Set();
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * Remember the original collection of selected Parts.
@@ -47,9 +50,11 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
      */
     doCancel() {
         const orig = this._originalSelection;
-        orig.each(p => p.isSelected = true);
-        this._temporarySelection.each(p => { if (!orig.contains(p))
-            p.isSelected = false; });
+        orig.each((p) => (p.isSelected = true));
+        this._temporarySelection.each((p) => {
+            if (!orig.contains(p))
+                p.isSelected = false;
+        });
         super.doCancel();
     }
     /**
@@ -81,7 +86,7 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
     }
     /**
      * For a given rectangle, select Parts that are within that rectangle.
-     * @param {Rect} r rectangular bounds in document coordinates.
+     * @param r - rectangular bounds in document coordinates.
      */
     selectInRect(r) {
         const diagram = this.diagram;
@@ -89,29 +94,56 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
         const temp = this._temporarySelection;
         const e = diagram.lastInput;
         const found = diagram.findPartsIn(r, this.isPartialInclusion);
-        if (e.control || e.meta) { // toggle or deselect
-            if (e.shift) { // deselect only
-                temp.each((p) => { if (!found.contains(p))
-                    p.isSelected = orig.contains(p); });
-                found.each((p) => { p.isSelected = false; temp.add(p); });
+        if (e.control || e.meta) {
+            // toggle or deselect
+            if (e.shift) {
+                // deselect only
+                temp.each((p) => {
+                    if (!found.contains(p))
+                        p.isSelected = orig.contains(p);
+                });
+                found.each((p) => {
+                    p.isSelected = false;
+                    temp.add(p);
+                });
             }
-            else { // toggle selectedness of parts based on _originalSelection
-                temp.each((p) => { if (!found.contains(p))
-                    p.isSelected = orig.contains(p); });
-                found.each((p) => { p.isSelected = !orig.contains(p); temp.add(p); });
+            else {
+                // toggle selectedness of parts based on _originalSelection
+                temp.each((p) => {
+                    if (!found.contains(p))
+                        p.isSelected = orig.contains(p);
+                });
+                found.each((p) => {
+                    p.isSelected = !orig.contains(p);
+                    temp.add(p);
+                });
             }
         }
-        else if (e.shift) { // extend selection only
-            temp.each((p) => { if (!found.contains(p))
-                p.isSelected = orig.contains(p); });
-            found.each((p) => { p.isSelected = true; temp.add(p); });
+        else if (e.shift) {
+            // extend selection only
+            temp.each((p) => {
+                if (!found.contains(p))
+                    p.isSelected = orig.contains(p);
+            });
+            found.each((p) => {
+                p.isSelected = true;
+                temp.add(p);
+            });
         }
-        else { // select found parts, and unselect all other previously selected parts
-            temp.each((p) => { if (!found.contains(p))
-                p.isSelected = false; });
-            orig.each((p) => { if (!found.contains(p))
-                p.isSelected = false; });
-            found.each((p) => { p.isSelected = true; temp.add(p); });
+        else {
+            // select found parts, and unselect all other previously selected parts
+            temp.each((p) => {
+                if (!found.contains(p))
+                    p.isSelected = false;
+            });
+            orig.each((p) => {
+                if (!found.contains(p))
+                    p.isSelected = false;
+            });
+            found.each((p) => {
+                p.isSelected = true;
+                temp.add(p);
+            });
         }
     }
 }

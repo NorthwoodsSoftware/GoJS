@@ -1,353 +1,398 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Show the ChangedEvents that occur as the user modifies diagrams that share a single model, and the state of the UndoManager."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Update Demo GoJS Sample</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Show the ChangedEvents that occur as the user modifies diagrams that share a single model, and the state of the UndoManager." />
+<meta itemprop="description" content="Show the ChangedEvents that occur as the user modifies diagrams that share a single model, and the state of the UndoManager." />
+<meta property="og:description" content="Show the ChangedEvents that occur as the user modifies diagrams that share a single model, and the state of the UndoManager." />
+<meta name="twitter:description" content="Show the ChangedEvents that occur as the user modifies diagrams that share a single model, and the state of the UndoManager." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Update Demo />
+<meta property="og:title" content=Update Demo />
+<meta name="twitter:title" content=Update Demo />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/updateDemo.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/updateDemo.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/updateDemo.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/updateDemo.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/updateDemo.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Update Demo | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      blueDiagram =
-        new go.Diagram("blueDiagram",
-          {
-            // double-click in background creates a new node there
-            "clickCreatingTool.archetypeNodeData": { text: "node" }
-          });
-
-      blueDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          new go.Binding("location", "loc").makeTwoWay(),
-          $(go.Shape, "RoundedRectangle",
-            {
-              fill: $(go.Brush, "Linear", { 0: "#00ACED", 0.5: "#00ACED", 1: "#0079A6" }),
-              stroke: "#0079A6",
-              portId: "", cursor: "pointer",  // the node's only port is the Shape
-              fromLinkable: true, fromLinkableDuplicates: true, fromLinkableSelfNode: true,
-              toLinkable: true, toLinkableDuplicates: true, toLinkableSelfNode: true
-            }),
-          $(go.TextBlock,
-            { margin: 3, font: "bold 10pt Arial, sans-serif", stroke: "whitesmoke", editable: true },
-            new go.Binding("text").makeTwoWay())
-        );
-
-      blueDiagram.linkTemplate =
-        $(go.Link,
-          {
-            curve: go.Link.Bezier, adjusting: go.Link.Stretch,
-            relinkableFrom: true, relinkableTo: true, reshapable: true
-          },
-          $(go.Shape,  // the link shape
-            { strokeWidth: 2, stroke: "blue" }),
-          $(go.Shape,  // the arrowhead
-            {
-              toArrow: "standard",
-              fill: "blue", stroke: null
-            })
-        );
-
-
-      greenDiagram =
-        new go.Diagram("greenDiagram",
-          {
-            // double-click in background creates a new node there
-            "clickCreatingTool.archetypeNodeData": { key: "node" }
-          });
-
-      greenDiagram.nodeTemplate =
-        $(go.Node, "Vertical",
-          new go.Binding("location", "loc").makeTwoWay(),
-          $(go.Shape, "Ellipse",
-            { fill: "lightgreen", width: 20, height: 20, portId: "" }),
-          $(go.TextBlock,
-            { margin: 3, font: "bold 12px Georgia, sans-serif" },
-            new go.Binding("text"))
-        );
-
-      greenDiagram.linkTemplate =
-        $(go.Link,
-          $(go.Shape,  // the link shape
-            { strokeWidth: 2, stroke: "#76C176" }),
-          $(go.Shape,  // the arrowhead
-            {
-              toArrow: "standard",
-              fill: "#76C176", stroke: null
-            })
-        );
-
-
-      // create the model data that will be represented in both diagrams simultaneously
-      var model = new go.GraphLinksModel(
-        [
-          { key: 1, text: "Alpha", loc: new go.Point(20, 20) },
-          { key: 2, text: "Beta", loc: new go.Point(160, 120) }
-        ],
-        [
-          { from: 1, to: 2 }
-        ]);
-
-      // the two Diagrams share the same model
-      blueDiagram.model = model;
-      greenDiagram.model = model;
-
-      // now turn on undo/redo
-      model.undoManager.isEnabled = true;
-
-
-      // **********************************************************
-      // A third diagram is on this page to display the undo state.
-      // It functions as a tree view, showing the Transactions
-      // in the UndoManager history.
-      // **********************************************************
-
-      var undoDisplay =
-        new go.Diagram("undoDisplay",
-          {
-            allowMove: false,
-            maxSelectionCount: 1,
-            initialContentAlignment: go.Spot.TopLeft,
-            layout:
-              $(go.TreeLayout,
-                {
-                  alignment: go.TreeLayout.AlignmentStart,
-                  angle: 0,
-                  compaction: go.TreeLayout.CompactionNone,
-                  layerSpacing: 16,
-                  layerSpacingParentOverlap: 1,
-                  nodeIndentPastParent: 1.0,
-                  nodeSpacing: 0,
-                  setsPortSpot: false,
-                  setsChildPortSpot: false,
-                  arrangementSpacing: new go.Size(2, 2)
-                }),
-            "animationManager.isEnabled": false
-          });
-
-      undoDisplay.nodeTemplate =
-        $(go.Node,
-          $("TreeExpanderButton",
-            { width: 14, "ButtonBorder.fill": "whitesmoke" }),
-          $(go.Panel, "Horizontal",
-            { position: new go.Point(16, 0) },
-            new go.Binding("background", "color"),
-            $(go.TextBlock, { margin: 2 },
-              new go.Binding("text", "text"))
-          )
-        );
-
-      undoDisplay.linkTemplate = $(go.Link);  // not really used
-
-      var undoModel =
-        new go.TreeModel(  // initially empty
-          { isReadOnly: true });
-      undoDisplay.model = undoModel;
-
-      // ******************************************************
-      // Add an undo listener to the main model
-      // ******************************************************
-
-      var changedLog = document.getElementById("modelChangedLog");
-      var editToRedo = null; // a node in the undoDisplay
-      var editList = [];
-
-      model.addChangedListener(e => {
-        // do not display some uninteresting kinds of transaction notifications
-        if (e.change === go.ChangedEvent.Transaction) {
-          if (e.propertyName === "CommittingTransaction" || e.modelChange === "SourceChanged") return;
-          // do not display any layout transactions
-          if (e.oldValue === "Layout") return;
-        }  // You will probably want to use e.isTransactionFinished instead
-
-        // Add entries into the log
-        var changes = e.toString();
-        if (changes[0] !== "*") changes = "&nbsp;&nbsp;" + changes;
-        changedLog.innerHTML += changes + "<br/>";
-        changedLog.scrollTop = changedLog.scrollHeight;
-
-        // Modify the undoDisplay Diagram, the tree view
-        if (e.propertyName === "CommittedTransaction") {
-          if (editToRedo != null) {
-            // remove from the undo display diagram all nodes after editToRedo
-            for (var i = editToRedo.data.index + 1; i < editList.length; i++) {
-              undoDisplay.remove(editList[i]);
-            }
-            editList = editList.slice(0, editToRedo.data.index);
-            editToRedo = null;
-          }
-
-          // delay the update of the undoDisplay tree, to catch the results of calls to Transaction.optimize
-          setTimeout(() => {
-            var tx = e.object;
-            var txname = (tx !== null ? e.object.name : "");
-            var parentData = { text: txname, tag: e.object, index: editList.length - 1 };
-            undoModel.addNodeData(parentData)
-            var parentKey = undoModel.getKeyForNodeData(parentData);
-            var parentNode = undoDisplay.findNodeForKey(parentKey);
-            editList.push(parentNode);
-            if (tx !== null) {
-              var allChanges = tx.changes;
-              var odd = true;
-              allChanges.each(change => {
-                var childData = {
-                  color: (odd ? "white" : "#E0FFED"),
-                  text: change.toString(),
-                  parent: parentKey
-                };
-                undoModel.addNodeData(childData)
-                odd = !odd;
-              });
-              undoDisplay.commandHandler.collapseTree(parentNode);
-            }
-          }, 10);
-        } else if (e.propertyName === "FinishedUndo" || e.propertyName === "FinishedRedo") {
-          var undoManager = model.undoManager;
-          if (editToRedo !== null) {
-            editToRedo.isSelected = false;
-            editToRedo = null;
-          }
-          // Find the node that represents the undo or redo state and select it
-          var nextEdit = undoManager.transactionToRedo;
-          if (nextEdit !== null) {
-            var itr = undoDisplay.nodes;
-            while (itr.next()) {
-              var node = itr.value;
-              if (node.data.tag === nextEdit) {
-                node.isSelected = true;
-                editToRedo = node;
-                break;
-              }
-            }
-          }
-        }
-      }); // end model changed listener
-
-      model.addChangedListener(e => {
-        if (e.isTransactionFinished) {
-          var tx = e.object;
-          if (tx instanceof go.Transaction) {
-            console.log(tx.toString());
-            tx.changes.each(c => {
-              if (c.model) console.log("  " + c.toString());
-            });
-          }
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
-    } // end init
 
-    function clearLog() {
-      var div = document.getElementById("modelChangedLog").innerHTML = "";
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    blueDiagram = new go.Diagram('blueDiagram', {
+      // double-click in background creates a new node there
+      'clickCreatingTool.archetypeNodeData': { text: 'node' },
+    });
+
+    blueDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      new go.Binding('location', 'loc').makeTwoWay(),
+      $(go.Shape, 'RoundedRectangle', {
+        fill: $(go.Brush, 'Linear', { 0: '#00ACED', 0.5: '#00ACED', 1: '#0079A6' }),
+        stroke: '#0079A6',
+        portId: '',
+        cursor: 'pointer', // the node's only port is the Shape
+        fromLinkable: true,
+        fromLinkableDuplicates: true,
+        fromLinkableSelfNode: true,
+        toLinkable: true,
+        toLinkableDuplicates: true,
+        toLinkableSelfNode: true,
+      }),
+      $(go.TextBlock, { margin: 3, font: 'bold 10pt Arial, sans-serif', stroke: 'whitesmoke', editable: true }, new go.Binding('text').makeTwoWay())
+    );
+
+    blueDiagram.linkTemplate = $(go.Link,
+      {
+        curve: go.Curve.Bezier,
+        adjusting: go.LinkAdjusting.Stretch,
+        relinkableFrom: true,
+        relinkableTo: true,
+        reshapable: true,
+      },
+      $(go.Shape, // the link shape
+        { strokeWidth: 2, stroke: 'blue' }
+      ),
+      $(go.Shape, // the arrowhead
+        {
+          toArrow: 'standard',
+          fill: 'blue',
+          stroke: null,
+        }
+      )
+    );
+
+    greenDiagram = new go.Diagram('greenDiagram', {
+      // double-click in background creates a new node there
+      'clickCreatingTool.archetypeNodeData': { key: 'node' },
+    });
+
+    greenDiagram.nodeTemplate = $(go.Node,
+      'Vertical',
+      new go.Binding('location', 'loc').makeTwoWay(),
+      $(go.Shape, 'Ellipse', { fill: 'lightgreen', width: 20, height: 20, portId: '' }),
+      $(go.TextBlock, { margin: 3, font: 'bold 12px Georgia, sans-serif' }, new go.Binding('text'))
+    );
+
+    greenDiagram.linkTemplate = $(go.Link,
+      $(go.Shape, // the link shape
+        { strokeWidth: 2, stroke: '#76C176' }
+      ),
+      $(go.Shape, // the arrowhead
+        {
+          toArrow: 'standard',
+          fill: '#76C176',
+          stroke: null,
+        }
+      )
+    );
+
+    // create the model data that will be represented in both diagrams simultaneously
+    var model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', loc: new go.Point(20, 20) },
+        { key: 2, text: 'Beta', loc: new go.Point(160, 120) },
+      ],
+      [{ from: 1, to: 2 }]
+    );
+
+    // the two Diagrams share the same model
+    blueDiagram.model = model;
+    greenDiagram.model = model;
+
+    // now turn on undo/redo
+    model.undoManager.isEnabled = true;
+
+    // **********************************************************
+    // A third diagram is on this page to display the undo state.
+    // It functions as a tree view, showing the Transactions
+    // in the UndoManager history.
+    // **********************************************************
+
+    var undoDisplay = new go.Diagram('undoDisplay', {
+      allowMove: false,
+      maxSelectionCount: 1,
+      initialContentAlignment: go.Spot.TopLeft,
+      layout: $(go.TreeLayout, {
+        alignment: go.TreeAlignment.Start,
+        angle: 0,
+        compaction: go.TreeCompaction.None,
+        layerSpacing: 16,
+        layerSpacingParentOverlap: 1,
+        nodeIndentPastParent: 1.0,
+        nodeSpacing: 0,
+        setsPortSpot: false,
+        setsChildPortSpot: false,
+        arrangementSpacing: new go.Size(2, 2),
+      }),
+      'animationManager.isEnabled': false,
+    });
+
+    undoDisplay.nodeTemplate = $(go.Node,
+      $('TreeExpanderButton', { width: 14, 'ButtonBorder.fill': 'whitesmoke' }),
+      $(go.Panel,
+        'Horizontal',
+        { position: new go.Point(16, 0) },
+        new go.Binding('background', 'color'),
+        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'text'))
+      )
+    );
+
+    undoDisplay.linkTemplate = $(go.Link); // not really used
+
+    var undoModel = new go.TreeModel({ isReadOnly: true }); // initially empty
+    undoDisplay.model = undoModel;
+
+    // ******************************************************
+    // Add an undo listener to the main model
+    // ******************************************************
+
+    var changedLog = document.getElementById('modelChangedLog');
+    var editToRedo = null; // a node in the undoDisplay
+    var editList = [];
+
+    model.addChangedListener((e) => {
+      // do not display some uninteresting kinds of transaction notifications
+      if (e.change === go.ChangeType.Transaction) {
+        if (e.propertyName === 'CommittingTransaction' || e.modelChange === 'SourceChanged') return;
+        // do not display any layout transactions
+        if (e.oldValue === 'Layout') return;
+      } // You will probably want to use e.isTransactionFinished instead
+
+      // Add entries into the log
+      var changes = e.toString();
+      if (changes[0] !== '*') changes = '&nbsp;&nbsp;' + changes;
+      changedLog.innerHTML += changes + '<br/>';
+      changedLog.scrollTop = changedLog.scrollHeight;
+
+      // Modify the undoDisplay Diagram, the tree view
+      if (e.propertyName === 'CommittedTransaction') {
+        if (editToRedo != null) {
+          // remove from the undo display diagram all nodes after editToRedo
+          for (var i = editToRedo.data.index + 1; i < editList.length; i++) {
+            undoDisplay.remove(editList[i]);
+          }
+          editList = editList.slice(0, editToRedo.data.index);
+          editToRedo = null;
+        }
+
+        // delay the update of the undoDisplay tree, to catch the results of calls to Transaction.optimize
+        setTimeout(() => {
+          var tx = e.object;
+          var txname = tx !== null ? e.object.name : '';
+          var parentData = { text: txname, tag: e.object, index: editList.length - 1 };
+          undoModel.addNodeData(parentData);
+          var parentKey = undoModel.getKeyForNodeData(parentData);
+          var parentNode = undoDisplay.findNodeForKey(parentKey);
+          editList.push(parentNode);
+          if (tx !== null) {
+            var allChanges = tx.changes;
+            var odd = true;
+            allChanges.each((change) => {
+              var childData = {
+                color: odd ? 'white' : '#E0FFED',
+                text: change.toString(),
+                parent: parentKey,
+              };
+              undoModel.addNodeData(childData);
+              odd = !odd;
+            });
+            undoDisplay.commandHandler.collapseTree(parentNode);
+          }
+        }, 10);
+      } else if (e.propertyName === 'FinishedUndo' || e.propertyName === 'FinishedRedo') {
+        var undoManager = model.undoManager;
+        if (editToRedo !== null) {
+          editToRedo.isSelected = false;
+          editToRedo = null;
+        }
+        // Find the node that represents the undo or redo state and select it
+        var nextEdit = undoManager.transactionToRedo;
+        if (nextEdit !== null) {
+          var itr = undoDisplay.nodes;
+          while (itr.next()) {
+            var node = itr.value;
+            if (node.data.tag === nextEdit) {
+              node.isSelected = true;
+              editToRedo = node;
+              break;
+            }
+          }
+        }
+      }
+    }); // end model changed listener
+  } // end init
+
+  function clearLog() {
+    var div = (document.getElementById('modelChangedLog').innerHTML = '');
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <p>Update Demo <b>GoJS</b> Sample</p>
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
-  <div style="width:100%; white-space:nowrap">
-    <div style="display: inline-block; vertical-align: top; width:50%">
-      <div id="blueDiagram" style="border: solid 1px blue; width:100%; height:300px;"></div>
-      <div style="width:100%; height:20px"></div>
-      <div id="greenDiagram" style="border: solid 1px green; width:100%; height:300px"></div>
+  <div style="width: 100%; white-space: nowrap">
+    <div style="display: inline-block; vertical-align: top; width: 50%">
+      <div id="blueDiagram" style="border: solid 1px blue; width: 100%; height: 300px"></div>
+      <div style="width: 100%; height: 20px"></div>
+      <div id="greenDiagram" style="border: solid 1px green; width: 100%; height: 300px"></div>
     </div>
-    <div style="display: inline-block; vertical-align: top; width:50%">
-      <div style="width:100%; height:300px">
-        <button onclick="clearLog()" style="height:20px; font-size: 11px;">Clear Model log</button>
-        <div id="modelChangedLog" style="height:280px;border: solid 1px gray; font-family:Monospace; font-size:11px; overflow:scroll"></div>
+    <div style="display: inline-block; vertical-align: top; width: 50%">
+      <div style="width: 100%; height: 300px">
+        <button onclick="clearLog()" style="height: 20px; font-size: 11px">Clear Model log</button>
+        <div id="modelChangedLog" style="height: 280px; border: solid 1px gray; font-family: Monospace; font-size: 11px; overflow: scroll"></div>
       </div>
-      <div style="width:100%; height:20px"></div>
+      <div style="width: 100%; height: 20px"></div>
       <div>
-        <button onclick="blueDiagram.commandHandler.undo()" style="height:20px; font-size: 11px;">Undo</button>
-        <button onclick="blueDiagram.commandHandler.redo()" style="height:20px; font-size: 11px;">Redo</button>
-        <div id="undoDisplay" style="height:280px; border: solid 1px gray"></div>
+        <button onclick="blueDiagram.commandHandler.undo()" style="height: 20px; font-size: 11px">Undo</button>
+        <button onclick="blueDiagram.commandHandler.redo()" style="height: 20px; font-size: 11px">Redo</button>
+        <div id="undoDisplay" style="height: 280px; border: solid 1px gray"></div>
       </div>
     </div>
   </div>
   <p>
-  This sample has two Diagrams, named "blueDiagram" and "greenDiagram", that display the same Model.
-  Each diagram uses its own templates for its nodes and links, causing the appearance of each diagram to be different.
-  However making a change in one diagram that changes the model causes those model changes to be reflected in the other diagram.
+    This sample has two Diagrams, named "blueDiagram" and "greenDiagram", that display the same Model. Each diagram uses its own templates for its nodes and
+    links, causing the appearance of each diagram to be different. However making a change in one diagram that changes the model causes those model changes to
+    be reflected in the other diagram.
   </p>
   <p>
-  This sample also shows, next to the blue diagram, almost all of the <a>ChangedEvent</a>s that the shared model undergoes.
-  (For clarity it leaves out some of the Transaction-oriented events.)
-  The model Changed listener adds a line for each ChangedEvent to the "modelChangedLog" DIV.
-  Transaction notification events start with an asterisk "*",
-  while property changes and collection insertions and removals start with an exclamation mark "!".
+    This sample also shows, next to the blue diagram, almost all of the <a>ChangedEvent</a>s that the shared model undergoes. (For clarity it leaves out some of
+    the Transaction-oriented events.) The model Changed listener adds a line for each ChangedEvent to the "modelChangedLog" DIV. Transaction notification events
+    start with an asterisk "*", while property changes and collection insertions and removals start with an exclamation mark "!".
   </p>
   <p>
-  Next to the green diagram there is a tree view display of the <a>UndoManager</a>'s history.
-  The <a>UndoManager.history</a> is a <a>List</a> of <a>Transaction</a>s,
-  where each <a>Transaction.changes</a> property holds all of the ChangedEvents that occurred due to some command or tool operation.
-  These ChangedEvents are reflective of both changes to the model (prefixed with "!m") and to the diagram (prefixed with "!d").
-  You will note that there are often several diagram changes for each model change.
+    Next to the green diagram there is a tree view display of the <a>UndoManager</a>'s history. The <a>UndoManager.history</a> is a <a>List</a> of
+    <a>Transaction</a>s, where each <a>Transaction.changes</a> property holds all of the ChangedEvents that occurred due to some command or tool operation.
+    These ChangedEvents are reflective of both changes to the model (prefixed with "!m") and to the diagram (prefixed with "!d"). You will note that there are
+    often several diagram changes for each model change.
   </p>
   <p>
-  This demo is different from the <a href="twoDiagrams.html">Two Diagrams</a> sample, which is an example of two Diagrams,
-  each sharing/showing a different <a>Model</a>, but sharing the same <a>UndoManager</a>.
+    This demo is different from the <a href="twoDiagrams.html">Two Diagrams</a> sample, which is an example of two Diagrams, each sharing/showing a different
+    <a>Model</a>, but sharing the same <a>UndoManager</a>.
   </p>
   <p>
-  Many of the other samples demonstrate saving the whole model by calling <a>Model.toJson</a>.
-  If you want to save incrementally, you should do so at the end of each transaction, when <a>ChangedEvent.isTransactionFinished</a>.
-  The <a>ChangedEvent.object</a> may be a <a>Transaction</a>.
-  Look through the <a>Transaction.changes</a> list for the model changes that you want to save.
-  This code demonstrates the basic idea:
+    Many of the other samples demonstrate saving the whole model by calling <a>Model.toJson</a>. If you want to save incrementally, you should do so at the end
+    of each transaction, when <a>ChangedEvent.isTransactionFinished</a>. The <a>ChangedEvent.object</a> may be a <a>Transaction</a> or null if there were no
+    recorded changes. Look through the <a>Transaction.changes</a> list for the model changes that you want to save. This code demonstrates the basic idea:
   </p>
   <pre>
   model.addChangedListener(e => {
     if (e.isTransactionFinished) {
       const tx = e.object;
       if (tx instanceof go.Transaction) {
-            console.log(tx.toString());
+        console.log(tx.toString());
         tx.changes.each(c => {
           // consider which ChangedEvents to record
           if (c.model) console.log("  " + c.toString());
@@ -357,11 +402,70 @@
   });
   </pre>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

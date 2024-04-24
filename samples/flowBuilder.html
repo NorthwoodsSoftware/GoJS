@@ -1,375 +1,476 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Flow Builder</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
+<meta itemprop="description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
+<meta property="og:description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
+<meta name="twitter:description" content="An editor of flow diagrams that supports deletion by dropping onto a particular node and relinking by dragging a link." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Flow Builder />
+<meta property="og:title" content=Flow Builder />
+<meta name="twitter:title" content=Flow Builder />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/flowBuilder.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/flowBuilder.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/flowBuilder.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/flowBuilder.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/flowBuilder.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Flow Builder | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            allowCopy: false,
-            layout:
-              $(go.LayeredDigraphLayout,
-                {
-                  setsPortSpots: false,  // Links already know their fromSpot and toSpot
-                  columnSpacing: 5,
-                  isInitial: false,
-                  isOngoing: false,
-                  alignOption: go.LayeredDigraphLayout.AlignAll
-                }),
-            validCycle: go.Diagram.CycleNotDirected,
-            "undoManager.isEnabled": true
-          });
-
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        const button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        const idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.slice(0, idx);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
 
-      const graygrad = $(go.Brush, "Linear",
-        { 0: "white", 0.1: "whitesmoke", 0.9: "whitesmoke", 1: "lightgray" });
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      myDiagram.nodeTemplate =  // the default node template
-        $(go.Node, "Spot",
-          { selectionAdorned: false, textEditable: true, locationObjectName: "BODY" },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          // the main body consists of a Rectangle surrounding the text
-          $(go.Panel, "Auto",
-            { name: "BODY" },
-            $(go.Shape, "Rectangle",
-              { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
-            $(go.TextBlock,
-              {
-                stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
-              },
-              new go.Binding("text").makeTwoWay())
-          ),
-          // output port
-          $(go.Panel, "Auto",
-            { alignment: go.Spot.Right, portId: "from", fromLinkable: true, cursor: "pointer", click: addNodeAndLink },
-            $(go.Shape, "Circle",
-              { width: 22, height: 22, fill: "white", stroke: "dodgerblue", strokeWidth: 3 }),
-            $(go.Shape, "PlusLine",
-              { width: 11, height: 11, fill: null, stroke: "dodgerblue", strokeWidth: 3 })
-          ),
-          // input port
-          $(go.Panel, "Auto",
-            { alignment: go.Spot.Left, portId: "to", toLinkable: true },
-            $(go.Shape, "Circle",
-              { width: 8, height: 8, fill: "white", stroke: "gray" }),
-            $(go.Shape, "Circle",
-              { width: 4, height: 4, fill: "dodgerblue", stroke: null })
-          )
-        );
+        
 
-      myDiagram.nodeTemplate.contextMenu =
-        $("ContextMenu",
-          $("ContextMenuButton",
-            $(go.TextBlock, "Rename"),
-            { click: (e, obj) => e.diagram.commandHandler.editTextBlock() },
-            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canEditTextBlock()).ofObject()),
-          // add one for Editing...
-          $("ContextMenuButton",
-            $(go.TextBlock, "Delete"),
-            { click: (e, obj) => e.diagram.commandHandler.deleteSelection() },
-            new go.Binding("visible", "", o => o.diagram && o.diagram.commandHandler.canDeleteSelection()).ofObject())
-        );
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-      myDiagram.nodeTemplateMap.add("Loading",
-        $(go.Node, "Spot",
-          { selectionAdorned: false, textEditable: true, locationObjectName: "BODY" },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          // the main body consists of a Rectangle surrounding the text
-          $(go.Panel, "Auto",
-            { name: "BODY" },
-            $(go.Shape, "Rectangle",
-              { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
-            $(go.TextBlock,
-              {
-                stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
-              },
-              new go.Binding("text", "text"))
-          ),
-          // output port
-          $(go.Panel, "Auto",
-            { alignment: go.Spot.Right, portId: "from", fromLinkable: true, click: addNodeAndLink },
-            $(go.Shape, "Circle",
-              { width: 22, height: 22, fill: "white", stroke: "dodgerblue", strokeWidth: 3 }),
-            $(go.Shape, "PlusLine",
-              { width: 11, height: 11, fill: null, stroke: "dodgerblue", strokeWidth: 3 })
-          )
-        ));
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      layout: $(go.LayeredDigraphLayout, {
+        setsPortSpots: false, // Links already know their fromSpot and toSpot
+        columnSpacing: 5,
+        isInitial: false,
+        isOngoing: false,
+      }),
+      validCycle: go.CycleMode.NotDirected,
+      'undoManager.isEnabled': true,
+    });
 
-      myDiagram.nodeTemplateMap.add("End",
-        $(go.Node, "Spot",
-          { selectionAdorned: false, textEditable: true, locationObjectName: "BODY" },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          // the main body consists of a Rectangle surrounding the text
-          $(go.Panel, "Auto",
-            { name: "BODY" },
-            $(go.Shape, "Rectangle",
-              { fill: graygrad, stroke: "gray", minSize: new go.Size(120, 21) },
-              new go.Binding("fill", "isSelected", s => s ? "dodgerblue" : graygrad).ofObject()),
-            $(go.TextBlock,
-              {
-                stroke: "black", font: "12px sans-serif", editable: true,
-                margin: new go.Margin(3, 3 + 11, 3, 3 + 4), alignment: go.Spot.Left
-              },
-              new go.Binding("text", "text"))
-          ),
-          // input port
-          $(go.Panel, "Auto",
-            { alignment: go.Spot.Left, portId: "to", toLinkable: true },
-            $(go.Shape, "Circle",
-              { width: 8, height: 8, fill: "white", stroke: "gray" }),
-            $(go.Shape, "Circle",
-              { width: 4, height: 4, fill: "dodgerblue", stroke: null })
-          )
-        ));
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      const button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
 
+    const graygrad = $(go.Brush, 'Linear', { 0: 'white', 0.1: 'whitesmoke', 0.9: 'whitesmoke', 1: 'lightgray' });
 
-      // dropping a node on this special node will cause the selection to be deleted;
-      // linking or relinking to this special node will cause the link to be deleted
-      myDiagram.nodeTemplateMap.add("Recycle",
-        $(go.Node, "Auto",
-          {
-            portId: "to", toLinkable: true, deletable: false,
-            layerName: "Background", locationSpot: go.Spot.Center
-          },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          {
-            dragComputation: (node, pt, gridpt) => pt,
-            mouseDrop: (e, obj) => e.diagram.commandHandler.deleteSelection()
-          },
+    myDiagram.nodeTemplate = // the default node template
+      $(go.Node,
+        'Spot',
+        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        // the main body consists of a Rectangle surrounding the text
+        $(go.Panel,
+          'Auto',
+          { name: 'BODY' },
           $(go.Shape,
-            { fill: "lightgray", stroke: "gray" }),
-          $(go.TextBlock, "Drop Here\nTo Delete",
-            { margin: 5, textAlign: "center" })
-        ));
-
-      // this is a click event handler that adds a node and a link to the diagram,
-      // connecting with the node on which the click occurred
-      function addNodeAndLink(e, obj) {
-        const fromNode = obj.part;
-        const diagram = fromNode.diagram;
-        diagram.startTransaction("Add State");
-        // get the node data for which the user clicked the button
-        const fromData = fromNode.data;
-        // create a new "State" data object, positioned off to the right of the fromNode
-        const p = fromNode.location.copy();
-        p.x += diagram.toolManager.draggingTool.gridSnapCellSize.width;
-        const toData = {
-          text: "new",
-          loc: go.Point.stringify(p)
-        };
-        // add the new node data to the model
-        const model = diagram.model;
-        model.addNodeData(toData);
-        // create a link data from the old node data to the new node data
-        const linkdata = {
-          from: model.getKeyForNodeData(fromData),
-          to: model.getKeyForNodeData(toData)
-        };
-        // and add the link data to the model
-        model.addLinkData(linkdata);
-        // select the new Node
-        const newnode = diagram.findNodeForData(toData);
-        diagram.select(newnode);
-        // snap the new node to a valid location
-        newnode.location = diagram.toolManager.draggingTool.computeMove(newnode, p);
-        // then account for any overlap
-        shiftNodesToEmptySpaces();
-        diagram.commitTransaction("Add State");
-      }
-
-      // Highlight ports when they are targets for linking or relinking.
-      let OldTarget = null;  // remember the last highlit port
-      function highlight(port) {
-        if (OldTarget !== port) {
-          lowlight();  // remove highlight from any old port
-          OldTarget = port;
-          port.scale = 1.3;  // highlight by enlarging
-        }
-      }
-      function lowlight() {  // remove any highlight
-        if (OldTarget) {
-          OldTarget.scale = 1.0;
-          OldTarget = null;
-        }
-      }
-
-      // Connecting a link with the Recycle node removes the link
-      myDiagram.addDiagramListener("LinkDrawn", e => {
-        const link = e.subject;
-        if (link.toNode.category === "Recycle") myDiagram.remove(link);
-        lowlight();
-      });
-      myDiagram.addDiagramListener("LinkRelinked", e => {
-        const link = e.subject;
-        if (link.toNode.category === "Recycle") myDiagram.remove(link);
-        lowlight();
-      });
-
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { selectionAdorned: false, fromPortId: "from", toPortId: "to", relinkableTo: true },
-          $(go.Shape,
-            { stroke: "gray", strokeWidth: 2 },
+            'Rectangle',
+            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
+            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
+          ),
+          $(go.TextBlock,
             {
-              mouseEnter: (e, obj) => { obj.strokeWidth = 5; obj.stroke = "dodgerblue"; },
-              mouseLeave: (e, obj) => { obj.strokeWidth = 2; obj.stroke = "gray"; }
-            })
-        );
+              stroke: 'black',
+              font: '12px sans-serif',
+              editable: true,
+              margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
+              alignment: go.Spot.Left,
+            },
+            new go.Binding('text').makeTwoWay()
+          )
+        ),
+        // output port
+        $(go.Panel,
+          'Auto',
+          { alignment: go.Spot.Right, portId: 'from', fromLinkable: true, cursor: 'pointer', click: addNodeAndLink },
+          $(go.Shape, 'Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
+          $(go.Shape, 'PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
+        ),
+        // input port
+        $(go.Panel,
+          'Auto',
+          { alignment: go.Spot.Left, portId: 'to', toLinkable: true },
+          $(go.Shape, 'Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
+          $(go.Shape, 'Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
+        )
+      );
 
-      function commonLinkingToolInit(tool) {
-        // the temporary link drawn during a link drawing operation (LinkingTool) is thick and blue
-        tool.temporaryLink =
-          $(go.Link, { layerName: "Tool" },
-            $(go.Shape, { stroke: "dodgerblue", strokeWidth: 5 }));
+    myDiagram.nodeTemplate.contextMenu = $('ContextMenu',
+      $('ContextMenuButton',
+        $(go.TextBlock, 'Rename'),
+        { click: (e, obj) => e.diagram.commandHandler.editTextBlock() },
+        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canEditTextBlock()).ofObject()
+      ),
+      // add one for Editing...
+      $('ContextMenuButton',
+        $(go.TextBlock, 'Delete'),
+        { click: (e, obj) => e.diagram.commandHandler.deleteSelection() },
+        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canDeleteSelection()).ofObject()
+      )
+    );
 
-        // change the standard proposed ports feedback from blue rectangles to transparent circles
-        tool.temporaryFromPort.figure = "Circle";
-        tool.temporaryFromPort.stroke = null;
-        tool.temporaryFromPort.strokeWidth = 0;
-        tool.temporaryToPort.figure = "Circle";
-        tool.temporaryToPort.stroke = null;
-        tool.temporaryToPort.strokeWidth = 0;
+    myDiagram.nodeTemplateMap.add(
+      'Loading',
+      $(go.Node,
+        'Spot',
+        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        // the main body consists of a Rectangle surrounding the text
+        $(go.Panel,
+          'Auto',
+          { name: 'BODY' },
+          $(go.Shape,
+            'Rectangle',
+            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
+            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
+          ),
+          $(go.TextBlock,
+            {
+              stroke: 'black',
+              font: '12px sans-serif',
+              editable: true,
+              margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
+              alignment: go.Spot.Left,
+            },
+            new go.Binding('text', 'text')
+          )
+        ),
+        // output port
+        $(go.Panel,
+          'Auto',
+          { alignment: go.Spot.Right, portId: 'from', fromLinkable: true, click: addNodeAndLink },
+          $(go.Shape, 'Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
+          $(go.Shape, 'PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
+        )
+      )
+    );
 
-        // provide customized visual feedback as ports are targeted or not
-        tool.portTargeted = (realnode, realport, tempnode, tempport, toend) => {
-          if (realport === null) {  // no valid port nearby
-            lowlight();
-          } else if (toend) {
-            highlight(realport);
-          }
-        };
+    myDiagram.nodeTemplateMap.add(
+      'End',
+      $(go.Node,
+        'Spot',
+        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        // the main body consists of a Rectangle surrounding the text
+        $(go.Panel,
+          'Auto',
+          { name: 'BODY' },
+          $(go.Shape,
+            'Rectangle',
+            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
+            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
+          ),
+          $(go.TextBlock,
+            {
+              stroke: 'black',
+              font: '12px sans-serif',
+              editable: true,
+              margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
+              alignment: go.Spot.Left,
+            },
+            new go.Binding('text', 'text')
+          )
+        ),
+        // input port
+        $(go.Panel,
+          'Auto',
+          { alignment: go.Spot.Left, portId: 'to', toLinkable: true },
+          $(go.Shape, 'Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
+          $(go.Shape, 'Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
+        )
+      )
+    );
+
+    // dropping a node on this special node will cause the selection to be deleted;
+    // linking or relinking to this special node will cause the link to be deleted
+    myDiagram.nodeTemplateMap.add(
+      'Recycle',
+      $(go.Node,
+        'Auto',
+        {
+          portId: 'to',
+          toLinkable: true,
+          deletable: false,
+          layerName: 'Background',
+          locationSpot: go.Spot.Center,
+        },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        {
+          dragComputation: (node, pt, gridpt) => pt,
+          mouseDrop: (e, obj) => e.diagram.commandHandler.deleteSelection(),
+        },
+        $(go.Shape, { fill: 'lightgray', stroke: 'gray' }),
+        $(go.TextBlock, 'Drop Here\nTo Delete', { margin: 5, textAlign: 'center' })
+      )
+    );
+
+    // this is a click event handler that adds a node and a link to the diagram,
+    // connecting with the node on which the click occurred
+    function addNodeAndLink(e, obj) {
+      const fromNode = obj.part;
+      const diagram = fromNode.diagram;
+      diagram.startTransaction('Add State');
+      // get the node data for which the user clicked the button
+      const fromData = fromNode.data;
+      // create a new "State" data object, positioned off to the right of the fromNode
+      const p = fromNode.location.copy();
+      p.x += diagram.toolManager.draggingTool.gridSnapCellSize.width;
+      const toData = {
+        text: 'new',
+        loc: go.Point.stringify(p),
+      };
+      // add the new node data to the model
+      const model = diagram.model;
+      model.addNodeData(toData);
+      // create a link data from the old node data to the new node data
+      const linkdata = {
+        from: model.getKeyForNodeData(fromData),
+        to: model.getKeyForNodeData(toData),
+      };
+      // and add the link data to the model
+      model.addLinkData(linkdata);
+      // select the new Node
+      const newnode = diagram.findNodeForData(toData);
+      diagram.select(newnode);
+      // snap the new node to a valid location
+      newnode.location = diagram.toolManager.draggingTool.computeMove(newnode, p);
+      // then account for any overlap
+      shiftNodesToEmptySpaces();
+      diagram.commitTransaction('Add State');
+    }
+
+    // Highlight ports when they are targets for linking or relinking.
+    let OldTarget = null; // remember the last highlit port
+    function highlight(port) {
+      if (OldTarget !== port) {
+        lowlight(); // remove highlight from any old port
+        OldTarget = port;
+        port.scale = 1.3; // highlight by enlarging
       }
+    }
+    function lowlight() {
+      // remove any highlight
+      if (OldTarget) {
+        OldTarget.scale = 1.0;
+        OldTarget = null;
+      }
+    }
 
-      const ltool = myDiagram.toolManager.linkingTool;
-      commonLinkingToolInit(ltool);
-      // do not allow links to be drawn starting at the "to" port
-      ltool.direction = go.LinkingTool.ForwardsOnly;
+    // Connecting a link with the Recycle node removes the link
+    myDiagram.addDiagramListener('LinkDrawn', (e) => {
+      const link = e.subject;
+      if (link.toNode.category === 'Recycle') myDiagram.remove(link);
+      lowlight();
+    });
+    myDiagram.addDiagramListener('LinkRelinked', (e) => {
+      const link = e.subject;
+      if (link.toNode.category === 'Recycle') myDiagram.remove(link);
+      lowlight();
+    });
 
-      const rtool = myDiagram.toolManager.relinkingTool;
-      commonLinkingToolInit(rtool);
-      // change the standard relink handle to be a shape that takes the shape of the link
-      rtool.toHandleArchetype =
-        $(go.Shape,
-          { isPanelMain: true, fill: null, stroke: "dodgerblue", strokeWidth: 5 });
+    myDiagram.linkTemplate = $(go.Link,
+      { selectionAdorned: false, fromPortId: 'from', toPortId: 'to', relinkableTo: true },
+      $(go.Shape,
+        { stroke: 'gray', strokeWidth: 2 },
+        {
+          mouseEnter: (e, obj) => {
+            obj.strokeWidth = 5;
+            obj.stroke = 'dodgerblue';
+          },
+          mouseLeave: (e, obj) => {
+            obj.strokeWidth = 2;
+            obj.stroke = 'gray';
+          },
+        }
+      )
+    );
 
-      // use a special DraggingTool to cause the dragging of a Link to start relinking it
-      myDiagram.toolManager.draggingTool = new DragLinkingTool();
+    function commonLinkingToolInit(tool) {
+      // the temporary link drawn during a link drawing operation (LinkingTool) is thick and blue
+      tool.temporaryLink = $(go.Link, { layerName: 'Tool' }, $(go.Shape, { stroke: 'dodgerblue', strokeWidth: 5 }));
 
-      // detect when dropped onto an occupied cell
-      myDiagram.addDiagramListener("SelectionMoved", shiftNodesToEmptySpaces);
+      // change the standard proposed ports feedback from blue rectangles to transparent circles
+      tool.temporaryFromPort.figure = 'Circle';
+      tool.temporaryFromPort.stroke = null;
+      tool.temporaryFromPort.strokeWidth = 0;
+      tool.temporaryToPort.figure = 'Circle';
+      tool.temporaryToPort.stroke = null;
+      tool.temporaryToPort.strokeWidth = 0;
 
-      function shiftNodesToEmptySpaces() {
-        myDiagram.selection.each(node => {
-          if (!(node instanceof go.Node)) return;
-          // look for Parts overlapping the node
-          while (true) {
-            const exist = myDiagram.findObjectsIn(node.actualBounds,
+      // provide customized visual feedback as ports are targeted or not
+      tool.portTargeted = (realnode, realport, tempnode, tempport, toend) => {
+        if (realport === null) {
+          // no valid port nearby
+          lowlight();
+        } else if (toend) {
+          highlight(realport);
+        }
+      };
+    }
+
+    const ltool = myDiagram.toolManager.linkingTool;
+    commonLinkingToolInit(ltool);
+    // do not allow links to be drawn starting at the "to" port
+    ltool.direction = go.LinkingDirection.ForwardsOnly;
+
+    const rtool = myDiagram.toolManager.relinkingTool;
+    commonLinkingToolInit(rtool);
+    // change the standard relink handle to be a shape that takes the shape of the link
+    rtool.toHandleArchetype = $(go.Shape, { isPanelMain: true, fill: null, stroke: 'dodgerblue', strokeWidth: 5 });
+
+    // use a special DraggingTool to cause the dragging of a Link to start relinking it
+    myDiagram.toolManager.draggingTool = new DragLinkingTool();
+
+    // detect when dropped onto an occupied cell
+    myDiagram.addDiagramListener('SelectionMoved', shiftNodesToEmptySpaces);
+
+    function shiftNodesToEmptySpaces() {
+      myDiagram.selection.each((node) => {
+        if (!(node instanceof go.Node)) return;
+        // look for Parts overlapping the node
+        while (true) {
+          const exist = myDiagram
+            .findObjectsIn(
+              node.actualBounds,
               // only consider Parts
-              obj => obj.part,
+              (obj) => obj.part,
               // ignore Links and the dropped node itself
-              part => part instanceof go.Node && part !== node,
+              (part) => part instanceof go.Node && part !== node,
               // check for any overlap, not complete containment
-              true).first();
-            if (exist === null) break;
-            // try shifting down beyond the existing node to see if there's empty space
-            node.moveTo(node.actualBounds.x, exist.actualBounds.bottom + 10);
-          }
-        });
-      }
-
-      // prevent nodes from being dragged to the left of where the layout placed them
-      myDiagram.addDiagramListener("LayoutCompleted", e => {
-        myDiagram.nodes.each(node => {
-          if (node.category === "Recycle") return;
-          node.minLocation = new go.Point(node.location.x, -Infinity);
-        });
+              true
+            )
+            .first();
+          if (exist === null) break;
+          // try shifting down beyond the existing node to see if there's empty space
+          node.moveTo(node.actualBounds.x, exist.actualBounds.bottom + 10);
+        }
       });
-
-      load();  // load initial diagram from the mySavedModel textarea
     }
 
-    function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-      // if any nodes don't have a real location, explicitly do a layout
-      if (myDiagram.nodes.any(n => !n.location.isReal())) layout();
-    }
+    // prevent nodes from being dragged to the left of where the layout placed them
+    myDiagram.addDiagramListener('LayoutCompleted', (e) => {
+      myDiagram.nodes.each((node) => {
+        if (node.category === 'Recycle') return;
+        node.minLocation = new go.Point(node.location.x, -Infinity);
+      });
+    });
 
-    function layout() {
-      myDiagram.layoutDiagram(true);
-    }
+    load(); // load initial diagram from the mySavedModel textarea
+  }
 
+  function save() {
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+    // if any nodes don't have a real location, explicitly do a layout
+    if (myDiagram.nodes.any((n) => !n.location.isReal())) layout();
+  }
+
+  function layout() {
+    myDiagram.layoutDiagram(true);
+  }
 
   // Define a custom tool that changes a drag operation on a Link to a relinking operation,
   // but that operates like a normal DraggingTool otherwise.
@@ -387,8 +488,9 @@
       const diagram = this.diagram;
       if (diagram === null) return;
       this.standardMouseSelect();
-      const main = this.currentPart;  // this is set by the standardMouseSelect
-      if (main instanceof go.Link) { // maybe start relinking instead of dragging
+      const main = this.currentPart; // this is set by the standardMouseSelect
+      if (main instanceof go.Link) {
+        // maybe start relinking instead of dragging
         const relinkingtool = diagram.toolManager.relinkingTool;
         // tell the RelinkingTool to work on this Link, not what is under the mouse
         relinkingtool.originalLink = main;
@@ -404,16 +506,16 @@
   }
   // end DragLinkingTool
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   <button onclick="layout()">Do Layout</button>
   <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <textarea id="mySavedModel" style="width: 100%; height: 300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
     { "key":1, "text":"Loading Screen", "category":"Loading" },
@@ -432,13 +534,106 @@
     { "from":4, "to":6 }
   ]
 }
-   </textarea>
+   </textarea
+  >
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Layered Digraph Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a general directed graph in layers (rows or columns). This is more general than <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+as it does not require that the graph be tree-structured.
+More information can be found in the <a href="../intro/layouts.html#LayeredDigraphLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#layered-digraph">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Context Menus</h4>
+<p>
+A GoJS context menu is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+an object that has its <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> set.
+The context menu is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
+as you can see in the code below in the assignment of the Node's <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> and <a href="../api/symbols/Diagram.html#contextMenu" target="api">Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed.
+Each "ContextMenuButton" is a Panel on which you can set the <a href="../api/symbols/GraphObject.html#click" target="api">GraphObject.click</a> event handler.
+In the event handler <code>obj.part</code> will be the whole context menu Adornment.
+<code>obj.part.adornedPart</code> will be the adorned Node or Link.
+The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
+</p>
+<p>
+More information can be found in the <a href="../intro/contextmenus.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#contextmenus">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

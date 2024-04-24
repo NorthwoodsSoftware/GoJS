@@ -1,160 +1,308 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="An organization chart editor -- edit details and change relationships."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Org Chart Editor</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="An organization chart editor -- edit details and change relationships." />
+<meta itemprop="description" content="An organization chart editor -- edit details and change relationships." />
+<meta property="og:description" content="An organization chart editor -- edit details and change relationships." />
+<meta name="twitter:description" content="An organization chart editor -- edit details and change relationships." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=OrgChart Editor />
+<meta property="og:title" content=OrgChart Editor />
+<meta name="twitter:title" content=OrgChart Editor />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/orgChartEditor.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/orgChartEditor.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/orgChartEditor.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/orgChartEditor.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/orgChartEditor.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      OrgChart Editor | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-
-  <link rel="stylesheet" href="../extensions/DataInspector.css" />
-  <script src="../extensions/DataInspector.js"></script>
-
-  <script id="code">
-function init() {
-
-  // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-  // For details, see https://gojs.net/latest/intro/buildingObjects.html
-  const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-  myDiagram =
-    new go.Diagram("myDiagramDiv", // must be the ID or reference to div
-      {
-        allowCopy: false,
-        allowDelete: false,
-        //initialAutoScale: go.Diagram.Uniform,
-        maxSelectionCount: 1, // users can select only one part at a time
-        validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
-        "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
-          name: "(new person)",
-          title: "",
-          comments: ""
-        },
-        "clickCreatingTool.insertPart": function(loc) {  // method override must be function, not =>
-          const node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
-          if (node !== null) {
-            this.diagram.select(node);
-            this.diagram.commandHandler.scrollToPart(node);
-            this.diagram.commandHandler.editTextBlock(node.findObject("NAMETB"));
-          }
-          return node;
-        },
-        layout:
-          $(go.TreeLayout,
-            {
-              treeStyle: go.TreeLayout.StyleLastParents,
-              arrangement: go.TreeLayout.ArrangementHorizontal,
-              // properties for most of the tree:
-              angle: 90,
-              layerSpacing: 35,
-              // properties for the "last parents":
-              alternateAngle: 90,
-              alternateLayerSpacing: 35,
-              alternateAlignment: go.TreeLayout.AlignmentBus,
-              alternateNodeSpacing: 20
-            }),
-        "undoManager.isEnabled": true // enable undo & redo
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
       });
 
-  // when the document is modified, add a "*" to the title and enable the "Save" button
-  myDiagram.addDiagramListener("Modified", e => {
-    const button = document.getElementById("SaveButton");
-    if (button) button.disabled = !myDiagram.isModified;
-    const idx = document.title.indexOf("*");
-    if (myDiagram.isModified) {
-      if (idx < 0) document.title += "*";
-    } else {
-      if (idx >= 0) document.title = document.title.slice(0, idx);
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
     }
   });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-  const levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
-    "#008299", "#D24726", "#008A00", "#094AB2"];
+        
 
-  // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
-  myDiagram.layout.commitNodes = function() {  // method override must be function, not =>
-    go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
-    // then go through all of the vertexes and set their corresponding node's Shape.fill
-    // to a brush dependent on the TreeVertex.level value
-    myDiagram.layout.network.vertexes.each(v => {
-      if (v.node) {
-        const level = v.level % (levelColors.length);
-        const color = levelColors[level];
-        const shape = v.node.findObject("SHAPE");
-        if (shape) shape.stroke = $(go.Brush, "Linear", { 0: color, 1: go.Brush.lightenBy(color, 0.05), start: go.Spot.Left, end: go.Spot.Right });
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&subset=latin,latin-ext" rel="stylesheet"
+  type="text/css">
+<style>
+  :modal {
+    padding: 2rem;
+    border-radius: 0.25rem;
+    border-width: 0;
+    box-shadow: 0 0 #0000, 0 0 #0000, 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  }
+
+  #hidden {
+    font: 500 18px Inter;
+    opacity: 0;
+  }
+</style>
+<link rel="stylesheet" href="../extensions/DataInspector.css" />
+<script src="../extensions/DataInspector.js"></script>
+
+<script id="code">
+  function init() {
+    const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      new go.Diagram("myDiagramDiv", // must be the ID or reference to div
+        {
+          allowCopy: false,
+          allowDelete: false,
+          initialAutoScale: go.AutoScale.UniformToFill,
+          maxSelectionCount: 1, // users can select only one part at a time
+          validCycle: go.CycleMode.DestinationTree, // make sure users can only create trees
+          "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
+            name: "(New person)",
+            title: "(Title)",
+            dept: "(Dept)"
+          },
+          "clickCreatingTool.insertPart": function (loc) {  // method override must be function, not =>
+            const node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+            if (node !== null) {
+              this.diagram.select(node);
+              this.diagram.commandHandler.scrollToPart(node);
+              this.diagram.commandHandler.editTextBlock(node.findObject("NAMETB"));
+            }
+            return node;
+          },
+          layout:
+            $(go.TreeLayout,
+              {
+                treeStyle: go.TreeStyle.LastParents,
+                arrangement: go.TreeArrangement.Horizontal,
+                // properties for most of the tree:
+                angle: 90,
+                layerSpacing: 35,
+                // properties for the "last parents":
+                alternateAngle: 90,
+                alternateLayerSpacing: 35,
+                alternateAlignment: go.TreeAlignment.Bus,
+                alternateNodeSpacing: 20
+              }),
+          "undoManager.isEnabled": true, // enable undo & redo
+          "themeManager.changesDivBackground": true,
+          "themeManager.currentTheme": document.getElementById("theme").value
+        });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", e => {
+      const button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
       }
     });
-  };
 
-  // this is used to determine feedback during drags
-  function mayWorkFor(node1, node2) {
-    if (!(node1 instanceof go.Node)) return false;  // must be a Node
-    if (node1 === node2) return false;  // cannot work for yourself
-    if (node2.isInTreeOf(node1)) return false;  // cannot work for someone who works for you
-    return true;
-  }
+    // set up some colors/fonts for the default ('light') and dark Themes
+    myDiagram.themeManager.set("light", {
+      colors: {
+        background: "#fff",
+        text: "#111827",
+        textHighlight: '#11a8cd',
+        subtext: "#6b7280",
+        badge: "#f0fdf4",
+        badgeBorder: "#16a34a33",
+        badgeText: "#15803d",
+        divider: "#6b7280",
+        shadow: "#9ca3af",
+        tooltip: "#1f2937",
+        levels: ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
+          "#008299", "#D24726", "#008A00", "#094AB2"],
+        dragOver: "#f0f9ff",
+        link: "#9ca3af",
+        div: "#f3f4f6"
+      },
+      fonts: {
+        name: "500 0.875rem Inter, sans-serif",
+        normal: "0.875rem Inter, sans-serif",
+        badge: "500 0.75rem Inter, sans-serif",
+        link: "600 0.875rem Inter, sans-serif"
+      }
+    });
 
-  // This function provides a common style for most of the TextBlocks.
-  // Some of these values may be overridden in a particular TextBlock.
-  function textStyle() {
-    return { font: "9pt  Segoe UI,sans-serif", stroke: "white" };
-  }
+    myDiagram.themeManager.set("dark", {
+      colors: {
+        background: "#111827",
+        text: "#fff",
+        subtext: "#d1d5db",
+        badge: "#22c55e19",
+        badgeBorder: "#22c55e21",
+        badgeText: "#4ade80",
+        shadow: "#111827",
+        dragOver: "#082f49",
+        link: "#6b7280",
+        div: "#1f2937"
+      }
+    });
 
-  // This converter is used by the Picture.
-  function findHeadShot(pic) {
-    if (!pic) return "images/HSnopic.png"; // There are only 16 images on the server
-    return "images/HS" + pic;
-  }
+    // this is used to determine feedback during drags
+    function mayWorkFor(node1, node2) {
+      if (!(node1 instanceof go.Node)) return false;  // must be a Node
+      if (node1 === node2) return false;  // cannot work for yourself
+      if (node2.isInTreeOf(node1)) return false;  // cannot work for someone who works for you
+      return true;
+    }
 
-  // define the Node template
-  myDiagram.nodeTemplate =
-    $(go.Node, "Spot",
-      {
+    // This converter is used by the Picture.
+    function findHeadShot(pic) {
+      if (!pic) return "../samples/images/user.svg"; // There are only 16 images on the server
+      return "../samples/images/HS" + pic;
+    }
+
+    // Used to convert the node's tree level into a theme color
+    function findLevelColor(node) {
+      return node.findTreeLevel();
+    }
+
+    // Gets the text for a tooltip based on the adorned object's name
+    function toolTipTextConverter(obj) {
+      if (obj.name === "EMAIL") return obj.part.data.email;
+      if (obj.name === "PHONE") return obj.part.data.phone;
+    }
+
+    // Align the tooltip based on the adorned object's viewport bounds
+    function toolTipAlignConverter(obj, tt) {
+      const d = obj.diagram;
+      const bot = obj.getDocumentPoint(go.Spot.Bottom);
+      const viewPt = d.transformDocToView(bot).offset(0, 35);
+      // if tooltip would be below viewport, show above instead
+      const align = d.viewportBounds.height >= viewPt.y / d.scale ? new go.Spot(0.5, 1, 0, 6) : new go.Spot(0.5, 0, 0, -6);
+
+      tt.alignment = align;
+      tt.alignmentFocus = align.y === 1 ? go.Spot.Top : go.Spot.Bottom;
+    }
+
+    // a tooltip for the Email and Phone buttons
+    const toolTip =
+      new go.Adornment(go.Panel.Spot, { isShadowed: true, shadowOffset: new go.Point(0, 2) }).add(
+        new go.Placeholder(),
+        new go.Panel(go.Panel.Auto)
+          .add(
+            new go.Shape("RoundedRectangle", { strokeWidth: 0, shadowVisible: true })
+              .theme("fill", "background"),
+            new go.TextBlock({ margin: 2 })
+              .bindObject("text", "adornedObject", toolTipTextConverter)
+              .theme("stroke", "text")
+              .theme("font", "normal")
+          )
+          // sets alignment and alignmentFocus based on adorned object's position in viewport
+          .bindObject("", "adornedObject", toolTipAlignConverter)
+      )
+        .theme("shadowColor", "shadow");
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      new go.Node(go.Panel.Spot, {
+        isShadowed: true,
+        shadowOffset: new go.Point(0, 2),
         selectionObjectName: "BODY",
+        // show/hide buttons when mouse enters/leaves
         mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
         mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
         // handle dragging a Node onto a Node to (maybe) change the reporting relationship
@@ -165,7 +313,7 @@ function init() {
           const shape = node.findObject("SHAPE");
           if (shape) {
             shape._prevFill = shape.fill;  // remember the original brush
-            shape.fill = "darkred";
+            shape.fill = diagram.themeManager.findValue("dragOver", "colors"); // "#e0f2fe";
           }
         },
         mouseDragLeave: (e, node, next) => {
@@ -187,216 +335,284 @@ function init() {
             }
           }
         }
-      },
-      // for sorting, have the Node.text be the data.name
-      new go.Binding("text", "name"),
-      // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-      new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
-      $(go.Panel, "Auto",
-        { name: "BODY" },
-        // define the node's outer shape
-        $(go.Shape, "Rectangle",
-          { name: "SHAPE", fill: "#333333", stroke: 'white', strokeWidth: 3.5, portId: "" }),
-        $(go.Panel, "Horizontal",
-          $(go.Picture,
+      })
+        .add(
+          new go.Panel(go.Panel.Auto, { name: "BODY" }).add(
+            // define the node's outer shape
+            new go.Shape("RoundedRectangle",
+              { name: "SHAPE", strokeWidth: 0, portId: "", spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight })
+              .theme("fill", "background"),
+            new go.Panel(go.Panel.Table, { margin: 0.5, defaultRowSeparatorStrokeWidth: 0.5 })
+              .theme("defaultRowSeparatorStroke", "divider")
+              .add(
+                new go.Panel(go.Panel.Table, { padding: new go.Margin(18, 18, 18, 24) })
+                  .addColumnDefinition(0, { width: 240 })
+                  .add(
+                    new go.Panel(go.Panel.Table, { column: 0, alignment: go.Spot.Left, stretch: go.Stretch.Vertical, defaultAlignment: go.Spot.Left }).add(
+                      new go.Panel(go.Panel.Horizontal, { row: 0 }).add(
+                        new go.TextBlock({ editable: true, minSize: new go.Size(10, 14) })
+                          .bindTwoWay("text", "name")
+                          .theme("stroke", "text")
+                          .theme("font", "name"),
+                        new go.Panel(go.Panel.Auto, { margin: new go.Margin(0, 0, 0, 10) }).add(
+                          new go.Shape("Capsule", { parameter1: 6, parameter2: 6 })
+                            .theme("fill", "badge")
+                            .theme("stroke", "badgeBorder"),
+                          new go.TextBlock({ editable: true, minSize: new go.Size(10, 12), margin: new go.Margin(2, -1) })
+                            .bindTwoWay("text", "dept")
+                            .theme("stroke", "badgeText")
+                            .theme("font", "badge")
+                        )
+                      ),
+                      new go.TextBlock({ row: 1, editable: true, minSize: new go.Size(10, 14) })
+                        .bindTwoWay("text", "title")
+                        .theme("stroke", "subtext")
+                        .theme("font", "normal")
+                    ),
+                    new go.Panel(go.Panel.Spot, { isClipping: true, column: 1 }).add(
+                      new go.Shape("Circle", { desiredSize: new go.Size(50, 50), strokeWidth: 0 }),
+                      new go.Picture({ name: "PICTURE", source: "../samples/images/user.svg", desiredSize: new go.Size(50, 50) })
+                        .bind("source", "pic", findHeadShot)
+                    )
+                  ),
+                new go.Panel(go.Panel.Table, { row: 1, stretch: go.Stretch.Horizontal, defaultColumnSeparatorStrokeWidth: 0.5 })
+                  .theme("defaultColumnSeparatorStroke", "divider")
+                  .add(
+                    makeBottomButton("EMAIL"),
+                    makeBottomButton("PHONE")
+                  )
+              )
+          ),  // end Auto Panel
+          new go.Shape("RoundedLeftRectangle", {
+            alignment: go.Spot.Left, alignmentFocus: go.Spot.Left,
+            stretch: go.Stretch.Vertical, width: 6, strokeWidth: 0
+          })
+            .themeObject("fill", "", "levels", findLevelColor),
+          $("Button",
+            $(go.Shape, "PlusLine", { width: 8, height: 8, stroke: "#0a0a0a", strokeWidth: 2 }),
             {
-              name: "Picture",
-              desiredSize: new go.Size(70, 70),
-              margin: 1.5,
-              source: "images/HSnopic.png"  // the default image
+              name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
+              click: (e, button) => addEmployee(button.part)
             },
-            new go.Binding("source", "pic", findHeadShot)),
-          // define the panel where the text will appear
-          $(go.Panel, "Table",
+            // button is visible either when node is selected or on mouse-over
+            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+          ),
+          $("TreeExpanderButton",
             {
-              minSize: new go.Size(130, NaN),
-              maxSize: new go.Size(150, NaN),
-              margin: new go.Margin(6, 10, 0, 6),
-              defaultAlignment: go.Spot.Left
+              "_treeExpandedFigure": "LineUp", "_treeCollapsedFigure": "LineDown",
+              name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0  // initially not visible
             },
-            $(go.RowColumnDefinition, { column: 2, width: 4 }),
-            $(go.TextBlock, textStyle(),  // the name
-              {
-                name: "NAMETB",
-                row: 0, column: 0, columnSpan: 5,
-                font: "12pt Segoe UI,sans-serif",
-                editable: true, isMultiline: false,
-                minSize: new go.Size(50, 16)
-              },
-              new go.Binding("text", "name").makeTwoWay()),
-            $(go.TextBlock, "Title: ", textStyle(),
-              { row: 1, column: 0 }),
-            $(go.TextBlock, textStyle(),
-              {
-                row: 1, column: 1, columnSpan: 4,
-                editable: true, isMultiline: false,
-                minSize: new go.Size(50, 14),
-                margin: new go.Margin(0, 0, 0, 3)
-              },
-              new go.Binding("text", "title").makeTwoWay()),
-            $(go.TextBlock, textStyle(),
-              { row: 2, column: 0 },
-              new go.Binding("text", "key", v => "ID: " + v)),
-            $(go.TextBlock, textStyle(),  // the comments
-              {
-                row: 3, column: 0, columnSpan: 5,
-                font: "italic 9pt sans-serif",
-                wrap: go.TextBlock.WrapFit,
-                editable: true,  // by default newlines are allowed
-                minSize: new go.Size(100, 14)
-              },
-              new go.Binding("text", "comments").makeTwoWay())
-          ) // end Table Panel
-        ) // end Horizontal Panel
-      ), // end Auto Panel
-      $("Button",
-        $(go.Shape, "PlusLine", { width: 10, height: 10 }),
-        {
-          name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
-          click: (e, button) => addEmployee(button.part)
-        },
-        // button is visible either when node is selected or on mouse-over
-        new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-      ),
-      new go.Binding("isTreeExpanded").makeTwoWay(),
-      $("TreeExpanderButton",
-        {
-          name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
-          "_treeExpandedFigure": "TriangleUp",
-          "_treeCollapsedFigure": "TriangleDown"
-        },
-        // button is visible either when node is selected or on mouse-over
-        new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-      )
-    );  // end Node, a Spot Panel
+            // button is visible either when node is selected or on mouse-over
+            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+          )
+        )
+        .theme("shadowColor", "shadow")
+        // for sorting, have the Node.text be the data.name
+        .bind("text", "name")
+        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+        .bindObject("layerName", "isSelected", sel => sel ? "Foreground" : "")
+        .bindTwoWay("isTreeExpanded");
 
-  function addEmployee(node) {
-    if (!node) return;
-    const thisemp = node.data;
-    myDiagram.startTransaction("add employee");
-    const newemp = { name: "(new person)", title: "(title)", comments: "", parent: thisemp.key };
-    myDiagram.model.addNodeData(newemp);
-    const newnode = myDiagram.findNodeForData(newemp);
-    if (newnode) newnode.location = node.location;
-    myDiagram.commitTransaction("add employee");
-    myDiagram.commandHandler.scrollToPart(newnode);
+
+    function makeBottomButton(name) {
+      const phonePath = 'F M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z';
+      const emailPath = 'F M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3zM19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z'
+      const convertSelectedToThemeProp = s => s ? 'textHighlight' : 'text';
+      const isEmail = name === "EMAIL";
+      return new go.Panel(go.Panel.Table,
+        {
+          mouseEnter: (e, obj) => myDiagram.model.set(obj.part.data, name, true),
+          mouseLeave: (e, obj) => myDiagram.model.set(obj.part.data, name, false),
+          name, background: "transparent",
+          cursor: 'Pointer',
+          column: isEmail ? 0 : 1,
+          width: 140, height: 40,
+          toolTip: toolTip,
+          click: (e, obj) => {
+            dialog.firstElementChild.firstElementChild.innerHTML =  // the modal's span
+              `You clicked to ${isEmail ? 'send email to' : 'call'} ${obj.part.data.name} at ${obj.part.data[name.toLowerCase()]}`;
+            dialog.showModal();
+          }
+        })
+        .add(
+          new go.Panel(go.Panel.Horizontal)
+            .add(
+              new go.Shape(
+                {
+                  geometryString: isEmail ? emailPath : phonePath,
+                  strokeWidth: 0,
+                  desiredSize: isEmail ? new go.Size(20, 16) : new go.Size(20, 20),
+                  margin: new go.Margin(0, 12, 0, 0),
+                })
+                .theme("fill", "text")
+                .themeData('fill', name, null, convertSelectedToThemeProp)
+              ,
+              new go.TextBlock(isEmail ? "Email" : "Phone")
+                .theme("stroke", "text")
+                .themeData('stroke', name, null, convertSelectedToThemeProp)
+                .theme("font", "link")
+            )
+        )
+    }
+
+    function addEmployee(node) {
+      if (!node) return;
+      const thisemp = node.data;
+      let newnode;
+      myDiagram.model.commit(m => {
+        const newemp = { name: "(New person)", title: "(Title)", dept: thisemp.dept, parent: thisemp.key };
+        m.addNodeData(newemp);
+        newnode = myDiagram.findNodeForData(newemp);
+        // set location so new node doesn't animate in from top left
+        if (newnode) newnode.location = node.location;
+      }, 'add employee');
+      myDiagram.commandHandler.scrollToPart(newnode);
+    }
+
+    // the context menu allows users to make a position vacant,
+    // remove a role and reassign the subtree, or remove a department
+    myDiagram.nodeTemplate.contextMenu =
+      $("ContextMenu",
+        $("ContextMenuButton",
+          $(go.TextBlock, "Add Employee"),
+          {
+            click: (e, button) => addEmployee(button.part.adornedPart)
+          }
+        ),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Vacate Position"),
+          {
+            click: (e, button) => {
+              const node = button.part.adornedPart;
+              if (node !== null) {
+                const thisemp = node.data;
+                myDiagram.model.commit(m => {
+                  // update the name, picture, email, and phone, but leave the title/department
+                  m.set(thisemp, "name", "(Vacant)");
+                  m.set(thisemp, "pic", "");
+                  m.set(thisemp, "email", "none");
+                  m.set(thisemp, "phone", "none");
+                }, "vacate");
+              }
+            }
+          }
+        ),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove Role"),
+          {
+            click: (e, button) => {
+              // reparent the subtree to this node's boss, then remove the node
+              const node = button.part.adornedPart;
+              if (node !== null) {
+                myDiagram.model.commit(m => {
+                  const chl = node.findTreeChildrenNodes();
+                  // iterate through the children and set their parent key to our selected node's parent key
+                  while (chl.next()) {
+                    const emp = chl.value;
+                    m.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
+                  }
+                  // and now remove the selected node itself
+                  m.removeNodeData(node.data);
+                }, "reparent remove")
+              }
+            }
+          }
+        ),
+        $("ContextMenuButton",
+          $(go.TextBlock, "Remove Department"),
+          {
+            click: (e, button) => {
+              // remove the whole subtree, including the node itself
+              const node = button.part.adornedPart;
+              if (node !== null) {
+                myDiagram.commit(d => d.removeParts(node.findTreeParts()), "remove dept");
+              }
+            }
+          }
+        )
+      );
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Routing.Orthogonal, layerName: "Background", corner: 5 },
+        $(go.Shape, { strokeWidth: 2 },
+          new go.ThemeBinding("stroke", "link")
+        ));  // the link shape
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+
+
+    // support editing the properties of the selected person in HTML
+    myInspector = new Inspector("myInspector", myDiagram,
+      {
+        properties: {
+          "key": { readOnly: true },
+          // Don't show these temporary data values
+          "EMAIL": { show: false },
+          "PHONE": { show: false }
+        }
+      });
+
+    // Setup zoom to fit button
+    document.getElementById("zoomToFit").addEventListener("click", () => myDiagram.commandHandler.zoomToFit());
+
+    document.getElementById("centerRoot").addEventListener("click", () => {
+      myDiagram.scale = 1;
+      myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
+    });
+  } // end init
+
+
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    // make sure new data keys are unique positive integers
+    let lastkey = 1;
+    myDiagram.model.makeUniqueKeyFunction = (model, data) => {
+      let k = data.key || lastkey;
+      while (model.findNodeDataForKey(k)) k++;
+      data.key = lastkey = k;
+      return k;
+    };
   }
 
-  // the context menu allows users to make a position vacant,
-  // remove a role and reassign the subtree, or remove a department
-  myDiagram.nodeTemplate.contextMenu =
-    $("ContextMenu",
-      $("ContextMenuButton",
-        $(go.TextBlock, "Add Employee"),
-        {
-          click: (e, button) => addEmployee(button.part.adornedPart)
-        }
-      ),
-      $("ContextMenuButton",
-        $(go.TextBlock, "Vacate Position"),
-        {
-          click: (e, button) => {
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              const thisemp = node.data;
-              myDiagram.startTransaction("vacate");
-              // update the key, name, picture, and comments, but leave the title
-              myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
-              myDiagram.model.setDataProperty(thisemp, "pic", "");
-              myDiagram.model.setDataProperty(thisemp, "comments", "");
-              myDiagram.commitTransaction("vacate");
-            }
-          }
-        }
-      ),
-      $("ContextMenuButton",
-        $(go.TextBlock, "Remove Role"),
-        {
-          click: (e, button) => {
-            // reparent the subtree to this node's boss, then remove the node
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              myDiagram.startTransaction("reparent remove");
-              const chl = node.findTreeChildrenNodes();
-              // iterate through the children and set their parent key to our selected node's parent key
-              while (chl.next()) {
-                const emp = chl.value;
-                myDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
-              }
-              // and now remove the selected node itself
-              myDiagram.model.removeNodeData(node.data);
-              myDiagram.commitTransaction("reparent remove");
-            }
-          }
-        }
-      ),
-      $("ContextMenuButton",
-        $(go.TextBlock, "Remove Department"),
-        {
-          click: (e, button) => {
-            // remove the whole subtree, including the node itself
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              myDiagram.startTransaction("remove dept");
-              myDiagram.removeParts(node.findTreeParts());
-              myDiagram.commitTransaction("remove dept");
-            }
-          }
-        }
-      )
-    );
+  function changeTheme() {
+    const myDiagram = go.Diagram.fromDiv("myDiagramDiv");
+    if (myDiagram) {
+      myDiagram.themeManager.currentTheme = document.getElementById("theme").value;
+    }
+  }
 
-  // define the Link template
-  myDiagram.linkTemplate =
-    $(go.Link, go.Link.Orthogonal,
-      { layerName: "Background", corner: 5 },
-      $(go.Shape, { strokeWidth: 1.5, stroke: "#F5F5F5" }));  // the link shape
-
-  // read in the JSON-format data from the "mySavedModel" element
-  load();
-
-
-  // support editing the properties of the selected person in HTML
-  if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
-    {
-      properties: {
-        "key": { readOnly: true },
-        "comments": {}
-      }
+  window.addEventListener("DOMContentLoaded", () => {
+    dialog = document.querySelector('dialog');
+    dialog.addEventListener("click", (e) => {
+      dialog.close();
     });
-
-  // Setup zoom to fit button
-  document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
-
-  document.getElementById('centerRoot').addEventListener('click', () => {
-    myDiagram.scale = 1;
-    myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
+    // setTimeout only to ensure font is loaded before loading diagram
+    // you may want to use an asset loading library for this
+    // to keep this sample simple, it does not
+    setTimeout(() => {
+      init();
+    }, 300);
   });
-} // end init
 
 
-// Show the diagram's model in JSON format
-function save() {
-  document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-  myDiagram.isModified = false;
-}
-function load() {
-  myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-  // make sure new data keys are unique positive integers
-  let lastkey = 1;
-  myDiagram.model.makeUniqueKeyFunction = (model, data) => {
-    let k = data.key || lastkey;
-    while (model.findNodeDataForKey(k)) k++;
-    data.key = lastkey = k;
-    return k;
-  };
-}
-
-window.addEventListener('DOMContentLoaded', init);
-  </script>
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: #34343C; border: solid 1px black; height: 570px;"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; height: 625px;"></div>
+  Theme:
+  <select id="theme" onchange="changeTheme()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark" selected>Dark</option>
+  </select>
   <div>
     Edit details:<br>
     <div id="myInspector"></div>
@@ -407,7 +623,8 @@ window.addEventListener('DOMContentLoaded', init);
   </p>
   <p>
     Select a node to edit its data values.
-    This sample uses the <a href="../extensions/DataInspector.html">Data Inspector</a> extension to display and modify Part data.
+    This sample uses the <a href="../samples/DataInspector.html">Data Inspector</a> extension to display and modify Part
+    data.
     Because this simple app is part of a static web site, there is no way to upload a photograph for a person.
   </p>
   <p>
@@ -418,20 +635,25 @@ window.addEventListener('DOMContentLoaded', init);
   <p>
     Drag a node onto another in order to change relationships, if permitted.
     Right-click or tap-hold a Node to bring up a context menu that allows you to:
-    <ul>
-      <li>Add Employee - add a new person as a direct report to this person</li>
-      <li>Vacate Position - remove the information specific to the current person in that role</li>
-      <li>Remove Role - removes the person entirely and changes the direct reports to report to the (former) boss</li>
-      <li>Remove Department - removes the person and whole subtree</li>
-    </ul>
+  <ul>
+    <li>Add Employee - add a new person as a direct report to this person</li>
+    <li>Vacate Position - remove the information specific to the current person in that role</li>
+    <li>Remove Role - removes the person entirely and changes the direct reports to report to the (former) boss</li>
+    <li>Remove Department - removes the person and whole subtree</li>
+  </ul>
   </p>
   <p>
-    To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started tutorial</a>.
+    To learn how to build an org chart from scratch with GoJS, see the <a href="../learn/index.html">Getting Started
+      tutorial</a>.
+  </p>
+  <p>
+    This sample is set to the dark theme by default.
   </p>
   <p>
     If you want to have some "assistant" nodes on the side, above the regular reports,
-    see the <a href="orgChartAssistants.html">Org Chart Assistants</a> sample, which is a copy of this sample
-    that uses a custom <a>TreeLayout</a> to position "assistants" that way.
+    see the <a href="orgChartAssistants.html">Org Chart Assistants</a> sample,
+    which is a more simply styled version of this sample that uses a custom <a>TreeLayout</a> to position "assistants"
+    that way.
   </p>
   <div>
     <div>
@@ -442,32 +664,156 @@ window.addEventListener('DOMContentLoaded', init);
     <textarea id="mySavedModel" style="width:100%; height:270px;">
 { "class": "go.TreeModel",
   "nodeDataArray": [
-{"key":1, "name":"Stella Payne Diaz", "title":"CEO", "pic":"1.jpg"},
-{"key":2, "name":"Luke Warm", "title":"VP Marketing/Sales", "pic":"2.jpg", "parent":1},
-{"key":3, "name":"Meg Meehan Hoffa", "title":"Sales", "pic":"3.jpg", "parent":2},
-{"key":4, "name":"Peggy Flaming", "title":"VP Engineering", "pic":"4.jpg", "parent":1},
-{"key":5, "name":"Saul Wellingood", "title":"Manufacturing", "pic":"5.jpg", "parent":4},
-{"key":6, "name":"Al Ligori", "title":"Marketing", "pic":"6.jpg", "parent":2},
-{"key":7, "name":"Dot Stubadd", "title":"Sales Rep", "pic":"7.jpg", "parent":3},
-{"key":8, "name":"Les Ismore", "title":"Project Mgr", "pic":"8.jpg", "parent":5},
-{"key":9, "name":"April Lynn Parris", "title":"Events Mgr", "pic":"9.jpg", "parent":6},
-{"key":10, "name":"Xavier Breath", "title":"Engineering", "pic":"10.jpg", "parent":4},
-{"key":11, "name":"Anita Hammer", "title":"Process", "pic":"11.jpg", "parent":5},
-{"key":12, "name":"Billy Aiken", "title":"Software", "pic":"12.jpg", "parent":10},
-{"key":13, "name":"Stan Wellback", "title":"Testing", "pic":"13.jpg", "parent":10},
-{"key":14, "name":"Marge Innovera", "title":"Hardware", "pic":"14.jpg", "parent":10},
-{"key":15, "name":"Evan Elpus", "title":"Quality", "pic":"15.jpg", "parent":5},
-{"key":16, "name":"Lotta B. Essen", "title":"Sales Rep", "pic":"16.jpg", "parent":3}
+{"key":1, "name":"Stella Payne Diaz", "title":"CEO", "dept": "Management", "pic":"1.jpg", "email": "sdiaz@example.com", "phone": "(234) 555-6789" },
+{"key":2, "name":"Luke Warm", "title":"VP Marketing/Sales", "dept": "Management", "pic":"2.jpg", "email": "lwarm@example.com", "phone": "(234) 555-6789", "parent":1},
+{"key":3, "name":"Meg Meehan Hoffa", "title":"Sales", "dept": "Sales", "pic":"3.jpg", "email": "mhoffa@example.com", "phone": "(234) 555-6789", "parent":2},
+{"key":4, "name":"Peggy Flaming", "title":"VP Engineering", "dept": "Management", "pic":"4.jpg", "email": "pflaming@example.com", "phone": "(234) 555-6789", "parent":1},
+{"key":5, "name":"Saul Wellingood", "title":"Manufacturing", "dept": "Production", "pic":"5.jpg", "email": "swellingood@example.com", "phone": "(234) 555-6789", "parent":4},
+{"key":6, "name":"Al Ligori", "title":"Marketing", "dept": "Marketing", "pic":"6.jpg", "email": "aligori@example.com", "phone": "(234) 555-6789", "parent":2},
+{"key":7, "name":"Dot Stubadd", "title":"Sales Rep", "dept": "Sales", "pic":"7.jpg", "email": "dstubadd@example.com", "phone": "(234) 555-6789", "parent":3},
+{"key":8, "name":"Les Ismore", "title":"Project Mgr", "dept": "Production", "pic":"8.jpg", "email": "lismore@example.com", "phone": "(234) 555-6789", "parent":5},
+{"key":9, "name":"April Lynn Parris", "title":"Events Mgr", "dept": "Marketing", "pic":"9.jpg", "email": "aparris@example.com", "phone": "(234) 555-6789", "parent":6},
+{"key":10, "name":"Xavier Breath", "title":"Engineering", "dept": "Engineering", "pic":"10.jpg", "email": "xbreath@example.com", "phone": "(234) 555-6789", "parent":4},
+{"key":11, "name":"Anita Hammer", "title":"Process", "dept": "Production", "pic":"11.jpg", "email": "ahammer@example.com", "phone": "(234) 555-6789", "parent":5},
+{"key":12, "name":"Billy Aiken", "title":"Software", "dept": "Engineering", "pic":"12.jpg", "email": "baiken@example.com", "phone": "(234) 555-6789", "parent":10},
+{"key":13, "name":"Stan Wellback", "title":"Testing", "dept": "Engineering", "pic":"13.jpg", "email": "swellback@example.com", "phone": "(234) 555-6789", "parent":10},
+{"key":14, "name":"Marge Innovera", "title":"Hardware", "dept": "Engineering", "pic":"14.jpg", "email": "minnovera@example.com", "phone": "(234) 555-6789", "parent":10},
+{"key":15, "name":"Evan Elpus", "title":"Quality", "dept": "Production", "pic":"15.jpg", "email": "eelpus@example.com", "phone": "(234) 555-6789", "parent":5},
+{"key":16, "name":"Lotta B. Essen", "title":"Sales Rep", "dept": "Sales", "pic":"16.jpg", "email": "lessen@example.com", "phone": "(234) 555-6789", "parent":3}
  ]
 }
     </textarea>
   </div>
-</div>
+  <dialog>
+    <div style="display: flex; flex-direction: column;">
+      <p></p>
+      <p>Click anywhere to close</p>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </dialog>
+  <p id="hidden">this forces the font to load in Chromium browsers</p>
+</div>
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Context Menus</h4>
+<p>
+A GoJS context menu is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+an object that has its <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> set.
+The context menu is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
+as you can see in the code below in the assignment of the Node's <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> and <a href="../api/symbols/Diagram.html#contextMenu" target="api">Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed.
+Each "ContextMenuButton" is a Panel on which you can set the <a href="../api/symbols/GraphObject.html#click" target="api">GraphObject.click</a> event handler.
+In the event handler <code>obj.part</code> will be the whole context menu Adornment.
+<code>obj.part.adornedPart</code> will be the adorned Node or Link.
+The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
+</p>
+<p>
+More information can be found in the <a href="../intro/contextmenus.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#contextmenus">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Data Inspector</h4>
+<p>Using a premade GoJS extension, you can create an HTML-based inspector that displays and allows editing of data for the selected Part (if any),
+or for a particular JavaScript object, or for the shared <a href="../api/symbols/Model.html#modelData" target="api">Model.modelData</a> object,
+which exists even if there are no nodes or links.
+</p>
+<p>The inspector code lies in <a href="../extensions/DataInspector.js">DataInspector.js</a> and <a href="../extensions/DataInspector.css">DataInspector.css</a>.
+This code is meant to be a starting point for making your own model data inspector.
+</p>
+<p>
+A generic demonstration of this extension can be found in the <a href="../samples/DataInspector.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#inspector">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Theming</h4>
+<p>
+  <b>GoJS</b> allows diagrams to be themed. This is commonly used to provide a light and dark mode for diagrams.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#themeManager" target="api">Diagram.themeManager</a> handles themes within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/ThemeManager.html" target="api">ThemeManager</a> can by shared by multiple diagrams,
+  and is responsible to managing the current theme and default theme, along with any theme updates.
+  More information can be found in the <a href="../intro/theming.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#theme">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

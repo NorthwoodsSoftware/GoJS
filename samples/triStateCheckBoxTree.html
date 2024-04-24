@@ -1,245 +1,348 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>GoJS Tree View with Check Boxes</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees." />
+<meta itemprop="description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees." />
+<meta property="og:description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees." />
+<meta name="twitter:description" content="A traditional tree view using TreeLayout with tri-state checkboxes showing partially checked subtrees." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Tri-state CheckBox Tree />
+<meta property="og:title" content=Tri-state CheckBox Tree />
+<meta name="twitter:title" content=Tri-state CheckBox Tree />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/triStateCheckBoxTree.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/triStateCheckBoxTree.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/triStateCheckBoxTree.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/triStateCheckBoxTree.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/triStateCheckBoxTree.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Tri-state CheckBox Tree | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-    // This button assumes data binding to the "checked" property.
-    go.GraphObject.defineBuilder("TriStateCheckBoxButton", args => {
-      var button = /** @type {Panel} */ (
-        go.GraphObject.make("Button",
-          {
-            "ButtonBorder.fill": "white",
-            width: 14,
-            height: 14
-          },
-          go.GraphObject.make(go.Shape,
-            {
-              name: "ButtonIcon",
-              geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2',  // a 'check' mark
-              strokeWidth: 2,
-              stretch: go.GraphObject.Fill,  // this Shape expands to fill the Button
-              geometryStretch: go.GraphObject.Uniform,  // the check mark fills the Shape without distortion
-              background: null,
-              visible: false  // visible set to false: not checked, unless data.checked is true
-            },
-            new go.Binding("visible", "checked", p => p === true || p === null),
-            new go.Binding("stroke", "checked", p => p === null ? null : "black"),
-            new go.Binding("background", "checked", p => p === null ? "gray" : null)
-          )
-        )
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  // This button assumes data binding to the "checked" property.
+  go.GraphObject.defineBuilder('TriStateCheckBoxButton', (args) => {
+    const button = go.GraphObject.build('Button', {
+        width: 14, height: 14,
+        'ButtonBorder.fill': 'white'
+      })
+      .add(
+        new go.Shape({
+            name: 'ButtonIcon',
+            geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
+            strokeWidth: 2,
+            stretch: go.Stretch.Fill, // this Shape expands to fill the Button
+            geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
+            background: null,
+            visible: false, // visible set to false: not checked, unless data.checked is true
+          })
+          .bind('visible', 'checked', (p) => p === true || p === null)
+          .bind('stroke', 'checked', (p) => (p === null ? null : 'black'))
+          .bind('background', 'checked', (p) => (p === null ? 'gray' : null))
       );
 
-      function updateCheckBoxesDown(node, val) {
-        node.diagram.model.setDataProperty(node.data, "checked", val);
-        node.findTreeChildrenNodes().each(child => updateCheckBoxesDown(child, val))
+    function updateCheckBoxesDown(node, val) {
+      node.diagram.model.setDataProperty(node.data, 'checked', val);
+      node.findTreeChildrenNodes().each((child) => updateCheckBoxesDown(child, val));
+    }
+
+    function updateCheckBoxesUp(node) {
+      var parent = node.findTreeParentNode();
+      if (parent !== null) {
+        var anychecked = parent.findTreeChildrenNodes().any((n) => n.data.checked !== false && n.data.checked !== undefined);
+        var allchecked = parent.findTreeChildrenNodes().all((n) => n.data.checked === true);
+        node.diagram.model.setDataProperty(parent.data, 'checked', allchecked ? true : anychecked ? null : false);
+        updateCheckBoxesUp(parent);
       }
+    }
 
-      function updateCheckBoxesUp(node) {
-        var parent = node.findTreeParentNode();
-        if (parent !== null) {
-          var anychecked = parent.findTreeChildrenNodes().any(n => n.data.checked !== false && n.data.checked !== undefined);
-          var allchecked = parent.findTreeChildrenNodes().all(n =>n.data.checked === true);
-          node.diagram.model.setDataProperty(parent.data, "checked", (allchecked ? true : (anychecked ? null : false)));
-          updateCheckBoxesUp(parent);
-        }
-      }
+    button.click = (e, button) => {
+      if (!button.isEnabledObject()) return;
+      var diagram = e.diagram;
+      if (diagram === null || diagram.isReadOnly) return;
+      if (diagram.model.isReadOnly) return;
+      e.handled = true;
+      var shape = button.findObject('ButtonIcon');
+      diagram.startTransaction('checkbox');
+      // Assume the name of the data property is "checked".
+      var node = button.part;
+      var oldval = node.data.checked;
+      var newval = oldval !== true; // newval will always be either true or false, never null
+      // Set this data.checked property and those of all its children to the same value
+      updateCheckBoxesDown(node, newval);
+      // Walk up the tree and update all of their checkboxes
+      updateCheckBoxesUp(node);
+      // support extra side-effects without clobbering the click event handler:
+      if (typeof button['_doClick'] === 'function') button['_doClick'](e, button);
+      diagram.commitTransaction('checkbox');
+    };
 
-      button.click = (e, button) => {
-        if (!button.isEnabledObject()) return;
-        var diagram = e.diagram;
-        if (diagram === null || diagram.isReadOnly) return;
-        if (diagram.model.isReadOnly) return;
-        e.handled = true;
-        var shape = button.findObject("ButtonIcon");
-        diagram.startTransaction("checkbox");
-        // Assume the name of the data property is "checked".
-        var node = button.part;
-        var oldval = node.data.checked;
-        var newval = (oldval !== true);  // newval will always be either true or false, never null
-        // Set this data.checked property and those of all its children to the same value
-        updateCheckBoxesDown(node, newval);
-        // Walk up the tree and update all of their checkboxes
-        updateCheckBoxesUp(node);
-        // support extra side-effects without clobbering the click event handler:
-        if (typeof button["_doClick"] === "function") button["_doClick"](e, button);
-        diagram.commitTransaction("checkbox");
-      };
+    return button;
+  });
 
-      return button;
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowMove: false,
+      allowCopy: false,
+      allowDelete: false,
+      allowHorizontalScroll: false,
+      layout: $(go.TreeLayout, {
+        alignment: go.TreeAlignment.Start,
+        angle: 0,
+        compaction: go.TreeCompaction.None,
+        layerSpacing: 16,
+        layerSpacingParentOverlap: 1,
+        nodeIndentPastParent: 1.0,
+        nodeSpacing: 0,
+        setsPortSpot: false,
+        setsChildPortSpot: false,
+      }),
     });
 
-    function init() {
+    myDiagram.nodeTemplate = $(go.Node,
+      {
+        // no Adornment: instead change panel background color by binding to Node.isSelected
+        selectionAdorned: false,
+        // a custom function to allow expanding/collapsing on double-click
+        // this uses similar logic to a TreeExpanderButton
+        doubleClick: (e, node) => {
+          var cmd = myDiagram.commandHandler;
+          if (node.isTreeExpanded) {
+            if (!cmd.canCollapseTree(node)) return;
+          } else {
+            if (!cmd.canExpandTree(node)) return;
+          }
+          e.handled = true;
+          if (node.isTreeExpanded) {
+            cmd.collapseTree(node);
+          } else {
+            cmd.expandTree(node);
+          }
+        },
+      },
+      $('TreeExpanderButton', {
+        width: 14,
+        'ButtonBorder.fill': 'whitesmoke',
+        'ButtonBorder.stroke': 'lightgray',
+        _buttonFillOver: 'rgba(0,128,255,0.25)',
+        _buttonStrokeOver: null,
+        _buttonFillPressed: 'rgba(0,128,255,0.4)',
+      }),
+      $(go.Panel,
+        'Horizontal',
+        { position: new go.Point(16, 0), margin: new go.Margin(0, 2, 0, 0), defaultAlignment: go.Spot.Center },
+        new go.Binding('background', 'isSelected', (s) => (s ? 'lightblue' : 'white')).ofObject(),
+        $('TriStateCheckBoxButton'),
+        $(go.TextBlock, { font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) }, new go.Binding('text', 'key', (s) => 'item ' + s))
+      ) // end Horizontal Panel
+    ); // end Node
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
+    // without lines
+    //myDiagram.linkTemplate = $(go.Link);
 
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            allowMove: false,
-            allowCopy: false,
-            allowDelete: false,
-            allowHorizontalScroll: false,
-            layout:
-              $(go.TreeLayout,
-                {
-                  alignment: go.TreeLayout.AlignmentStart,
-                  angle: 0,
-                  compaction: go.TreeLayout.CompactionNone,
-                  layerSpacing: 16,
-                  layerSpacingParentOverlap: 1,
-                  nodeIndentPastParent: 1.0,
-                  nodeSpacing: 0,
-                  setsPortSpot: false,
-                  setsChildPortSpot: false
-                })
-          });
+    // with lines
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        selectable: false,
+        routing: go.Routing.Orthogonal,
+        fromEndSegmentLength: 4,
+        toEndSegmentLength: 4,
+        fromSpot: new go.Spot(0.001, 1, 7, 0),
+        toSpot: go.Spot.Left,
+      },
+      $(go.Shape, { stroke: 'gray', strokeDashArray: [1, 2] })
+    );
 
-      myDiagram.nodeTemplate =
-        $(go.Node,
-          { // no Adornment: instead change panel background color by binding to Node.isSelected
-            selectionAdorned: false,
-            // a custom function to allow expanding/collapsing on double-click
-            // this uses similar logic to a TreeExpanderButton
-            doubleClick: (e, node) => {
-              var cmd = myDiagram.commandHandler;
-              if (node.isTreeExpanded) {
-                if (!cmd.canCollapseTree(node)) return;
-              } else {
-                if (!cmd.canExpandTree(node)) return;
-              }
-              e.handled = true;
-              if (node.isTreeExpanded) {
-                cmd.collapseTree(node);
-              } else {
-                cmd.expandTree(node);
-              }
-            }
-          },
-          $("TreeExpanderButton",
-            {
-              width: 14,
-              "ButtonBorder.fill": "whitesmoke",
-              "ButtonBorder.stroke": "lightgray",
-              "_buttonFillOver": "rgba(0,128,255,0.25)",
-              "_buttonStrokeOver": null,
-              "_buttonFillPressed": "rgba(0,128,255,0.4)"
-            }),
-          $(go.Panel, "Horizontal",
-            { position: new go.Point(16, 0), margin: new go.Margin(0, 2, 0, 0), defaultAlignment: go.Spot.Center },
-            new go.Binding("background", "isSelected", s => s ? "lightblue" : "white").ofObject(),
-            $("TriStateCheckBoxButton"),
-            $(go.TextBlock,
-              { font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) },
-              new go.Binding("text", "key", s =>"item " + s))
-          )  // end Horizontal Panel
-        );  // end Node
-
-      // without lines
-      //myDiagram.linkTemplate = $(go.Link);
-
-      // with lines
-      myDiagram.linkTemplate =
-        $(go.Link,
-          {
-            selectable: false,
-            routing: go.Link.Orthogonal,
-            fromEndSegmentLength: 4,
-            toEndSegmentLength: 4,
-            fromSpot: new go.Spot(0.001, 1, 7, 0),
-            toSpot: go.Spot.Left
-          },
-          $(go.Shape,
-            { stroke: 'gray', strokeDashArray: [1, 2] }));
-
-      // create a random tree
-      var nodeDataArray = [{ key: 0 }];
-      var max = 25;
-      var count = 0;
-      while (count < max) {
-        count = makeTree(3, count, max, nodeDataArray, nodeDataArray[0]);
-      }
-      myDiagram.model = new go.TreeModel(nodeDataArray);
+    // create a random tree
+    var nodeDataArray = [{ key: 0 }];
+    var max = 25;
+    var count = 0;
+    while (count < max) {
+      count = makeTree(3, count, max, nodeDataArray, nodeDataArray[0]);
     }
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+  }
 
-    function makeTree(level, count, max, nodeDataArray, parentdata) {
-      var numchildren = Math.floor(Math.random() * 10);
-      for (var i = 0; i < numchildren; i++) {
-        if (count >= max) return count;
-        count++;
-        var childdata = { key: count, parent: parentdata.key };
-        nodeDataArray.push(childdata);
-        if (level > 0 && Math.random() > 0.5) {
-          count = makeTree(level - 1, count, max, nodeDataArray, childdata);
-        }
+  function makeTree(level, count, max, nodeDataArray, parentdata) {
+    var numchildren = Math.floor(Math.random() * 10);
+    for (var i = 0; i < numchildren; i++) {
+      if (count >= max) return count;
+      count++;
+      var childdata = { key: count, parent: parentdata.key };
+      nodeDataArray.push(childdata);
+      if (level > 0 && Math.random() > 0.5) {
+        count = makeTree(level - 1, count, max, nodeDataArray, childdata);
       }
-      return count;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+    return count;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: 1px solid black; width: 400px; height: 500px"></div>
   <p>
-    This sample is derived from the <a href="treeView.html" target="_blank">Tree View</a> sample.
-    It adds the definition of the "TriStateCheckBoxButton" which is defined only to be used in a tree.
+    This sample is derived from the <a href="treeView.html" target="_blank">Tree View</a> sample. It adds the definition of the "TriStateCheckBoxButton" which
+    is defined only to be used in a tree.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,74 +1,83 @@
 ﻿/*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
  * when the selected part is nearly aligned with another part.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/GuidedDragging.html">Guided Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/GuidedDragging.html">Guided Dragging</a> sample.
  * @category Tool Extension
  */
 export class GuidedDraggingTool extends go.DraggingTool {
   // horizontal guidelines
-  public guidelineHtop: go.Part;
-  public guidelineHbottom: go.Part;
-  public guidelineHcenter: go.Part;
+  guidelineHtop: go.Part;
+  guidelineHbottom: go.Part;
+  guidelineHcenter: go.Part;
   // vertical guidelines
-  public guidelineVleft: go.Part;
-  public guidelineVright: go.Part;
-  public guidelineVcenter: go.Part;
+  guidelineVleft: go.Part;
+  guidelineVright: go.Part;
+  guidelineVcenter: go.Part;
 
   // properties that the programmer can modify
-  private _guidelineSnapDistance: number = 6;
-  private _isGuidelineEnabled: boolean = true;
-  private _horizontalGuidelineColor: string = 'gray';
-  private _verticalGuidelineColor: string = 'gray';
-  private _centerGuidelineColor: string = 'gray';
-  private _guidelineWidth: number = 1;
-  private _searchDistance: number = 1000;
-  private _isGuidelineSnapEnabled: boolean = true;
+  private _guidelineSnapDistance: number;
+  private _isGuidelineEnabled: boolean;
+  private _horizontalGuidelineColor: string;
+  private _verticalGuidelineColor: string;
+  private _centerGuidelineColor: string;
+  private _guidelineWidth: number;
+  private _searchDistance: number;
+  private _isGuidelineSnapEnabled: boolean;
 
   /**
    * Constructs a GuidedDraggingTool and sets up the temporary guideline parts.
    */
-  constructor() {
+  constructor(init?: Partial<GuidedDraggingTool>) {
     super();
+    this.name = 'GuidedDragging';
+    this._guidelineSnapDistance = 6;
+    this._isGuidelineEnabled = true;
+    this._horizontalGuidelineColor = 'gray';
+    this._verticalGuidelineColor = 'gray';
+    this._centerGuidelineColor = 'gray';
+    this._guidelineWidth = 1;
+    this._searchDistance = 1000;
+    this._isGuidelineSnapEnabled = true;
 
     const partProperties = { layerName: 'Tool', isInDocumentBounds: false };
     const shapeProperties = { stroke: 'gray', isGeometryPositioned: true };
 
-    const $ = go.GraphObject.make;
     // temporary parts for horizonal guidelines
-    this.guidelineHtop =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 100 0' }));
-    this.guidelineHbottom =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 100 0' }));
-    this.guidelineHcenter =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 100 0' }));
+    this.guidelineHtop = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 100 0' })
+    );
+    this.guidelineHbottom = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 100 0' })
+    );
+    this.guidelineHcenter = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 100 0' })
+    );
     // temporary parts for vertical guidelines
-    this.guidelineVleft =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 0 100' }));
-    this.guidelineVright =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 0 100' }));
-    this.guidelineVcenter =
-      $(go.Part, partProperties,
-        $(go.Shape, shapeProperties, { geometryString: 'M0 0 0 100' }));
+    this.guidelineVleft = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 0 100' })
+    );
+    this.guidelineVright = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 0 100' })
+    );
+    this.guidelineVcenter = new go.Part(partProperties).add(
+      new go.Shape(shapeProperties).set({ geometryString: 'M0 0 0 100' })
+    );
+    if (init) Object.assign(this, init);
   }
 
   /**
@@ -77,7 +86,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * The default value is 6.
    * Guidelines will show up when the aligned nodes are ± 6px away from perfect alignment.
    */
-  get guidelineSnapDistance(): number { return this._guidelineSnapDistance; }
+  get guidelineSnapDistance(): number {
+    return this._guidelineSnapDistance;
+  }
   set guidelineSnapDistance(val: number) {
     if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('new value for GuidedDraggingTool.guidelineSnapDistance must be a non-negative number');
     this._guidelineSnapDistance = val;
@@ -88,7 +99,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is true.
    */
-  get isGuidelineEnabled(): boolean { return this._isGuidelineEnabled; }
+  get isGuidelineEnabled(): boolean {
+    return this._isGuidelineEnabled;
+  }
   set isGuidelineEnabled(val: boolean) {
     if (typeof val !== 'boolean') throw new Error('new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.');
     this._isGuidelineEnabled = val;
@@ -99,12 +112,18 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is "gray".
    */
-  get horizontalGuidelineColor(): string { return this._horizontalGuidelineColor; }
+  get horizontalGuidelineColor(): string {
+    return this._horizontalGuidelineColor;
+  }
   set horizontalGuidelineColor(val: string) {
     if (this._horizontalGuidelineColor !== val) {
       this._horizontalGuidelineColor = val;
-      if (this.guidelineHbottom) (this.guidelineHbottom.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
-      if (this.guidelineHtop) (this.guidelineHtop.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
+      if (this.guidelineHbottom) {
+        (this.guidelineHbottom.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
+      }
+      if (this.guidelineHtop) {
+        (this.guidelineHtop.elements.first() as go.Shape).stroke = this._horizontalGuidelineColor;
+      }
     }
   }
 
@@ -113,12 +132,18 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is "gray".
    */
-  get verticalGuidelineColor(): string { return this._verticalGuidelineColor; }
+  get verticalGuidelineColor(): string {
+    return this._verticalGuidelineColor;
+  }
   set verticalGuidelineColor(val: string) {
     if (this._verticalGuidelineColor !== val) {
       this._verticalGuidelineColor = val;
-      if (this.guidelineVleft) (this.guidelineVleft.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
-      if (this.guidelineVright) (this.guidelineVright.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
+      if (this.guidelineVleft) {
+        (this.guidelineVleft.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
+      }
+      if (this.guidelineVright) {
+        (this.guidelineVright.elements.first() as go.Shape).stroke = this._verticalGuidelineColor;
+      }
     }
   }
 
@@ -127,12 +152,18 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is "gray".
    */
-  get centerGuidelineColor(): string { return this._centerGuidelineColor; }
+  get centerGuidelineColor(): string {
+    return this._centerGuidelineColor;
+  }
   set centerGuidelineColor(val: string) {
     if (this._centerGuidelineColor !== val) {
       this._centerGuidelineColor = val;
-      if (this.guidelineVcenter) (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
-      if (this.guidelineHcenter) (this.guidelineHcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      if (this.guidelineVcenter) {
+        (this.guidelineVcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      }
+      if (this.guidelineHcenter) {
+        (this.guidelineHcenter.elements.first() as go.Shape).stroke = this._centerGuidelineColor;
+      }
     }
   }
 
@@ -141,17 +172,31 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is 1.
    */
-  get guidelineWidth(): number { return this._guidelineWidth; }
+  get guidelineWidth(): number {
+    return this._guidelineWidth;
+  }
   set guidelineWidth(val: number) {
     if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('New value for GuidedDraggingTool.guidelineWidth must be a non-negative number.');
     if (this._guidelineWidth !== val) {
       this._guidelineWidth = val;
-      if (this.guidelineVcenter) (this.guidelineVcenter.elements.first() as go.Shape).strokeWidth = val;
-      if (this.guidelineHcenter) (this.guidelineHcenter.elements.first() as go.Shape).strokeWidth = val;
-      if (this.guidelineVleft) (this.guidelineVleft.elements.first() as go.Shape).strokeWidth = val;
-      if (this.guidelineVright) (this.guidelineVright.elements.first() as go.Shape).strokeWidth = val;
-      if (this.guidelineHbottom) (this.guidelineHbottom.elements.first() as go.Shape).strokeWidth = val;
-      if (this.guidelineHtop) (this.guidelineHtop.elements.first() as go.Shape).strokeWidth = val;
+      if (this.guidelineVcenter) {
+        (this.guidelineVcenter.elements.first() as go.Shape).strokeWidth = val;
+      }
+      if (this.guidelineHcenter) {
+        (this.guidelineHcenter.elements.first() as go.Shape).strokeWidth = val;
+      }
+      if (this.guidelineVleft) {
+        (this.guidelineVleft.elements.first() as go.Shape).strokeWidth = val;
+      }
+      if (this.guidelineVright) {
+        (this.guidelineVright.elements.first() as go.Shape).strokeWidth = val;
+      }
+      if (this.guidelineHbottom) {
+        (this.guidelineHbottom.elements.first() as go.Shape).strokeWidth = val;
+      }
+      if (this.guidelineHtop) {
+        (this.guidelineHtop.elements.first() as go.Shape).strokeWidth = val;
+      }
     }
   }
 
@@ -161,7 +206,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * The default value is 1000.
    * Set this to Infinity if you want to search the entire diagram no matter how far away.
    */
-  get searchDistance(): number { return this._searchDistance; }
+  get searchDistance(): number {
+    return this._searchDistance;
+  }
   set searchDistance(val: number) {
     if (typeof val !== 'number' || isNaN(val) || val <= 0) throw new Error('new value for GuidedDraggingTool.searchDistance must be a positive number.');
     this._searchDistance = val;
@@ -172,7 +219,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is true.
    */
-  get isGuidelineSnapEnabled(): boolean { return this._isGuidelineSnapEnabled; }
+  get isGuidelineSnapEnabled(): boolean {
+    return this._isGuidelineSnapEnabled;
+  }
   set isGuidelineSnapEnabled(val: boolean) {
     if (typeof val !== 'boolean') throw new Error('new value for GuidedDraggingTool.isGuidelineSnapEnabled must be a boolean.');
     this._isGuidelineSnapEnabled = val;
@@ -181,7 +230,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
   /**
    * Removes all of the guidelines from the grid.
    */
-  public clearGuidelines(): void {
+  clearGuidelines(): void {
     if (this.guidelineHbottom) this.diagram.remove(this.guidelineHbottom);
     if (this.guidelineHcenter) this.diagram.remove(this.guidelineHcenter);
     if (this.guidelineHtop) this.diagram.remove(this.guidelineHtop);
@@ -193,7 +242,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
   /**
    * Calls the base method and removes the guidelines from the graph.
    */
-  public override doDeactivate(): void {
+  override doDeactivate(): void {
     super.doDeactivate();
     // clear any guidelines when dragging is done
     this.clearGuidelines();
@@ -202,7 +251,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
   /**
    * Shows vertical and horizontal guidelines for the dragged part.
    */
-  public override doDragOver(pt: go.Point, obj: go.GraphObject): void {
+  override doDragOver(pt: go.Point, obj: go.GraphObject): void {
     // clear all existing guidelines in case either show... method decides to show a guideline
     this.clearGuidelines();
 
@@ -222,7 +271,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * On a mouse-up, snaps the selected part to the nearest guideline.
    * If not snapping, the part remains at its position.
    */
-  public override doDropOnto(pt: go.Point, obj: go.GraphObject): void {
+  override doDropOnto(pt: go.Point, obj: go.GraphObject): void {
     this.clearGuidelines();
 
     // gets the selected (perhaps copied) Part
@@ -236,7 +285,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
       const e = this.diagram.lastInput;
       const snap = this.isGuidelineSnapEnabled && !e.shift;
 
-      this.showHorizontalMatches(part, false, snap);  // false means don't show guidelines
+      this.showHorizontalMatches(part, false, snap); // false means don't show guidelines
       this.showVerticalMatches(part, false, snap);
     }
   }
@@ -246,33 +295,36 @@ export class GuidedDraggingTool extends go.DraggingTool {
    * since the node is likely to have moved a different amount than all its connected links in the regular
    * operation of the DraggingTool.
    */
-  public invalidateLinks(node: go.Part): void {
+  invalidateLinks(node: go.Part): void {
     if (node instanceof go.Node) node.invalidateConnectedLinks();
   }
 
   /**
    * This predicate decides whether or not the given Part should guide the dragged part.
-   * @param {Part} part  a stationary Part to which the dragged part might be aligned
-   * @param {Part} guidedpart  the Part being dragged
+   * @param part -  a stationary Part to which the dragged part might be aligned
+   * @param guidedpart -  the Part being dragged
    */
   protected isGuiding(part: go.Part, guidedpart: go.Part): boolean {
-    return part instanceof go.Part &&
-           !part.isSelected &&
-           !(part instanceof go.Link) &&
-           guidedpart instanceof go.Part &&
-           part.containingGroup === guidedpart.containingGroup &&
-           part.layer !== null && !part.layer.isTemporary;
+    return (
+      part instanceof go.Part &&
+      !part.isSelected &&
+      !(part instanceof go.Link) &&
+      guidedpart instanceof go.Part &&
+      part.containingGroup === guidedpart.containingGroup &&
+      part.layer !== null &&
+      !part.layer.isTemporary
+    );
   }
 
   /**
    * This finds parts that are aligned near the selected part along horizontal lines. It compares the selected
-   * part to all parts within a rectangle approximately twice the {@link #searchDistance} wide.
-   * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
-   * @param {Node} part
-   * @param {boolean} guideline if true, show guideline
-   * @param {boolean} snap if true, snap the part to where the guideline would be
+   * part to all parts within a rectangle approximately twice the {@link searchDistance} wide.
+   * The guidelines appear when a part is aligned within a margin-of-error equal to {@link guidelineSnapDistance}.
+   * @param part
+   * @param guideline - if true, show guideline
+   * @param snap - if true, snap the part to where the guideline would be
    */
-  public showHorizontalMatches(part: go.Part, guideline: boolean, snap: boolean): void {
+  showHorizontalMatches(part: go.Part, guideline: boolean, snap: boolean): void {
     const objBounds = part.locationObject.getDocumentBounds();
     const p0 = objBounds.y;
     const p1 = objBounds.y + objBounds.height / 2;
@@ -284,10 +336,12 @@ export class GuidedDraggingTool extends go.DraggingTool {
     // compares with parts within narrow vertical area
     const area = objBounds.copy();
     area.inflate(distance, marginOfError + 1);
-    const otherObjs = this.diagram.findObjectsIn(area,
+    const otherObjs = this.diagram.findObjectsIn(
+      area,
       (obj) => obj.part as go.Part,
       (p) => this.isGuiding(p as go.Part, part),
-      true) as go.Set<go.Part>;
+      true
+    ) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;
     let bestObj: any = null; // TS 2.6 won't let this be go.Part | null
@@ -347,7 +401,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
       if (bestSpot === go.Spot.Center) {
         if (snap) {
           // call Part.move in order to automatically move member Parts of Groups
-          part.move(new go.Point(objBounds.x - offsetX, bestPoint.y - objBounds.height / 2 - offsetY));
+          part.move(
+            new go.Point(objBounds.x - offsetX, bestPoint.y - objBounds.height / 2 - offsetY)
+          );
           this.invalidateLinks(part);
         }
         if (guideline) {
@@ -381,13 +437,13 @@ export class GuidedDraggingTool extends go.DraggingTool {
 
   /**
    * This finds parts that are aligned near the selected part along vertical lines. It compares the selected
-   * part to all parts within a rectangle approximately twice the {@link #searchDistance} tall.
-   * The guidelines appear when a part is aligned within a margin-of-error equal to {@link #guidelineSnapDistance}.
-   * @param {Part} part
-   * @param {boolean} guideline if true, show guideline
-   * @param {boolean} snap if true, don't show guidelines but just snap the part to where the guideline would be
+   * part to all parts within a rectangle approximately twice the {@link searchDistance} tall.
+   * The guidelines appear when a part is aligned within a margin-of-error equal to {@link guidelineSnapDistance}.
+   * @param part
+   * @param guideline - if true, show guideline
+   * @param snap - if true, don't show guidelines but just snap the part to where the guideline would be
    */
-  public showVerticalMatches(part: go.Part, guideline: boolean, snap: boolean): void {
+  showVerticalMatches(part: go.Part, guideline: boolean, snap: boolean): void {
     const objBounds = part.locationObject.getDocumentBounds();
     const p0 = objBounds.x;
     const p1 = objBounds.x + objBounds.width / 2;
@@ -399,13 +455,15 @@ export class GuidedDraggingTool extends go.DraggingTool {
     // compares with parts within narrow vertical area
     const area = objBounds.copy();
     area.inflate(marginOfError + 1, distance);
-    const otherObjs = this.diagram.findObjectsIn(area,
+    const otherObjs = this.diagram.findObjectsIn(
+      area,
       (obj) => obj.part as go.Part,
       (p) => this.isGuiding(p as go.Part, part),
-      true) as go.Set<go.Part>;
+      true
+    ) as go.Set<go.Part>;
 
     let bestDiff: number = marginOfError;
-    let bestObj: any = null;  // TS 2.6 won't let this be go.Part | null
+    let bestObj: any = null; // TS 2.6 won't let this be go.Part | null
     let bestSpot: go.Spot = go.Spot.Default;
     let bestOtherSpot: go.Spot = go.Spot.Default;
     // vertical line -- comparing x-values
@@ -462,7 +520,9 @@ export class GuidedDraggingTool extends go.DraggingTool {
       if (bestSpot === go.Spot.Center) {
         if (snap) {
           // call Part.move in order to automatically move member Parts of Groups
-          part.move(new go.Point(bestPoint.x - objBounds.width / 2 - offsetX, objBounds.y - offsetY));
+          part.move(
+            new go.Point(bestPoint.x - objBounds.width / 2 - offsetX, objBounds.y - offsetY)
+          );
           this.invalidateLinks(part);
         }
         if (guideline) {

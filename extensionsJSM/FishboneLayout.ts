@@ -1,59 +1,63 @@
 ﻿/*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
- * FishboneLayout is a custom {@link Layout} derived from {@link TreeLayout} for creating "fishbone" diagrams.
- * A fishbone diagram also requires a {@link Link} class that implements custom routing, {@link FishboneLink}.
+ * FishboneLayout is a custom {@link go.Layout} derived from {@link go.TreeLayout} for creating "fishbone" diagrams.
+ * A fishbone diagram also requires a {@link go.Link} class that implements custom routing, {@link FishboneLink}.
  *
  * This only works for angle === 0 or angle === 180.
  *
  * This layout assumes Links are automatically routed in the way needed by fishbone diagrams,
  * by using the FishboneLink class instead of go.Link.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Fishbone.html">Fishbone Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/Fishbone.html">Fishbone Layout</a> sample.
  * @category Layout Extension
  */
 export class FishboneLayout extends go.TreeLayout {
   /**
    * Constructs a FishboneLayout and sets the following properties:
-   *   - {@link #alignment} = {@link TreeLayout.AlignmentBusBranching}
-   *   - {@link #setsPortSpot} = false
-   *   - {@link #setsChildPortSpot} = false
+   *   - {@link TreeLayout.alignment} = {@link go.TreeAlignment.BusBranching}
+   *   - {@link TreeLayout.setsPortSpot} = false
+   *   - {@link TreeLayout.setsChildPortSpot} = false
    */
-  constructor() {
+  constructor(init?: Partial<FishboneLayout>) {
     super();
-    this.alignment = go.TreeLayout.AlignmentBusBranching;
+    this.alignment = go.TreeAlignment.BusBranching;
     this.setsPortSpot = false;
     this.setsChildPortSpot = false;
+    if (init) Object.assign(this, init);
   }
 
   /**
-   * Create and initialize a {@link LayoutNetwork} with the given nodes and links.
+   * Create and initialize a {@link go.LayoutNetwork} with the given nodes and links.
    * This override creates dummy vertexes, when necessary, to allow for proper positioning within the fishbone.
-   * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
-   * @return {LayoutNetwork}
+   * @param coll - A {@link go.Diagram} or a {@link go.Group} or a collection of {@link go.Part}s.
    */
-  public override makeNetwork(coll: go.Diagram | go.Group | go.Iterable<go.Part>): go.LayoutNetwork {
+  override makeNetwork(
+    coll: go.Diagram | go.Group | go.Iterable<go.Part>
+  ): go.LayoutNetwork {
     // assert(this.angle === 0 || this.angle === 180);
-    // assert(this.alignment === go.TreeLayout.AlignmentBusBranching);
-    // assert(this.path !== go.TreeLayout.PathSource);
+    // assert(this.alignment === go.TreeAlignment.BusBranching);
+    // assert(this.path !== go.TreePath.Source);
 
     // call base method for standard behavior
     const net = super.makeNetwork(coll);
     // make a copy of the collection of TreeVertexes
     // because we will be modifying the TreeNetwork.vertexes collection in the loop
-    const verts = new go.List<go.TreeVertex>().addAll(net.vertexes.iterator as go.Iterator<go.TreeVertex>);
+    const verts = new go.List<go.TreeVertex>().addAll(
+      net.vertexes.iterator as go.Iterator<go.TreeVertex>
+    );
     verts.each((v: go.TreeVertex) => {
       // ignore leaves of tree
       if (v.destinationEdges.count === 0) return;
@@ -77,11 +81,11 @@ export class FishboneLayout extends go.TreeLayout {
   }
 
   /**
-   * Add a direction property to each vertex and modify {@link TreeVertex#layerSpacing}.
+   * Add a direction property to each vertex and modify {@link go.TreeVertex.layerSpacing}.
    */
-  public override assignTreeVertexValues(v: go.TreeVertex): void {
+  override assignTreeVertexValues(v: go.TreeVertex): void {
     super.assignTreeVertexValues(v);
-    (v as any)['_direction'] = 0;  // add this property to each TreeVertex
+    (v as any)['_direction'] = 0; // add this property to each TreeVertex
     if (v.parent !== null) {
       // The parent node will be moved to where the last dummy will be;
       // reduce the space to account for the future hole.
@@ -94,15 +98,15 @@ export class FishboneLayout extends go.TreeLayout {
   }
 
   /**
-   * Assigns {@link Link#fromSpot}s and {@link Link#toSpot}s based on branching and angle
+   * Assigns {@link go.Link.fromSpot}s and {@link go.Link.toSpot}s based on branching and angle
    * and moves vertexes based on dummy locations.
    */
-  public override commitNodes(): void {
+  override commitNodes(): void {
     if (this.network === null) return;
     // vertex Angle is set by BusBranching "inheritance";
     // assign spots assuming overall Angle === 0 or 180
     // and links are always connecting horizontal with vertical
-    this.network.edges.each(e => {
+    this.network.edges.each((e) => {
       const link = e.link;
       if (link === null) return;
       link.fromSpot = go.Spot.None;
@@ -129,7 +133,7 @@ export class FishboneLayout extends go.TreeLayout {
     while (vit.next()) {
       const v = vit.value as go.TreeVertex;
       const len = v.children.length;
-      if (len === 0) continue;  // ignore leaf nodes
+      if (len === 0) continue; // ignore leaf nodes
       if (v.parent === null) continue; // don't move root node
       const dummy2 = v.children[len - 1];
       v.centerX = dummy2.centerX;
@@ -152,12 +156,12 @@ export class FishboneLayout extends go.TreeLayout {
   /**
    * This override stops links from being committed since the work is done by the {@link FishboneLink} class.
    */
-  public override commitLinks(): void { }
+  override commitLinks(): void {}
 
   /**
    * Shifts subtrees within the fishbone based on angle and node spacing.
    */
-  public shift(v: go.TreeVertex): void {
+  shift(v: go.TreeVertex): void {
     const p = v.parent;
     if (p !== null && (v.angle === 90 || v.angle === 270)) {
       const g = p.parent;
@@ -200,8 +204,9 @@ export class FishboneLayout extends go.TreeLayout {
             }
           }
         }
-      } else {  // g === null: V is a child of the tree ROOT
-        const dir = ((p.angle === 0) ? 1 : -1);
+      } else {
+        // g === null: V is a child of the tree ROOT
+        const dir = p.angle === 0 ? 1 : -1;
         (v as any)['_direction'] = dir;
         this.shiftAll(dir, 0, p, v);
       }
@@ -215,10 +220,15 @@ export class FishboneLayout extends go.TreeLayout {
   /**
    * Shifts a subtree.
    */
-  public shiftAll(direction: number, absolute: number, root: go.TreeVertex, v: go.TreeVertex): void {
+  shiftAll(
+    direction: number,
+    absolute: number,
+    root: go.TreeVertex,
+    v: go.TreeVertex
+  ): void {
     // assert(root.angle === 0 || root.angle === 180);
     let locx = v.centerX;
-    locx += direction * Math.abs(root.centerY - v.centerY) / 2;
+    locx += (direction * Math.abs(root.centerY - v.centerY)) / 2;
     locx += absolute;
     v.centerX = locx;
     for (let i = 0; i < v.children.length; i++) {
@@ -230,15 +240,22 @@ export class FishboneLayout extends go.TreeLayout {
 }
 
 /**
- * Custom {@link Link} class for {@link FishboneLayout}.
+ * Custom {@link go.Link} class for {@link FishboneLayout}.
  * @category Part Extension
  */
 export class FishboneLink extends go.Link {
-  public override computeAdjusting(): go.EnumValue { return this.adjusting; }
+  constructor(init?: Partial<FishboneLink>) {
+    super();
+    if (init) Object.assign(this, init);
+  }
+
+  override computeAdjusting(): go.LinkAdjusting {
+    return this.adjusting;
+  }
   /**
    * Determines the points for this link based on spots and maintains horizontal lines.
    */
-  public override computePoints(): boolean {
+  override computePoints(): boolean {
     const result = super.computePoints();
     if (result) {
       // insert middle point to maintain horizontal lines
@@ -251,24 +268,24 @@ export class FishboneLink extends go.Link {
           // pretend the link is coming from the opposite direction than the declared FromSpot
           const fromctr = fromport.getDocumentPoint(go.Spot.Center);
           const fromfar = fromctr.copy();
-          fromfar.x += (this.fromSpot.equals(go.Spot.Left) ? 99999 : -99999);
+          fromfar.x += this.fromSpot.equals(go.Spot.Left) ? 99999 : -99999;
           p1 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, fromfar, true).copy();
           // update the route points
           this.setPoint(0, p1);
           let endseg = this.fromEndSegmentLength;
           if (isNaN(endseg)) endseg = fromport.fromEndSegmentLength;
-          p1.x += (this.fromSpot.equals(go.Spot.Left)) ? endseg : -endseg;
+          p1.x += this.fromSpot.equals(go.Spot.Left) ? endseg : -endseg;
           this.setPoint(1, p1);
         } else {
-          p1 = this.getPoint(1);  // points 0 & 1 should be OK already
+          p1 = this.getPoint(1); // points 0 & 1 should be OK already
         }
         const tonode = this.toNode;
         const toport = this.toPort;
         if (tonode !== null && toport !== null) {
           const toctr = toport.getDocumentPoint(go.Spot.Center);
           const far = toctr.copy();
-          far.x += (this.fromSpot.equals(go.Spot.Left)) ? -99999 / 2 : 99999 / 2;
-          far.y += (toctr.y < p1.y) ? 99999 : -99999;
+          far.x += this.fromSpot.equals(go.Spot.Left) ? -99999 / 2 : 99999 / 2;
+          far.y += toctr.y < p1.y ? 99999 : -99999;
           const p2 = this.getLinkPointFromPoint(tonode, toport, toctr, far, false);
           this.setPoint(2, p2);
           let dx = Math.abs(p2.y - p1.y) / 2;
@@ -276,15 +293,18 @@ export class FishboneLink extends go.Link {
           this.insertPoint(2, new go.Point(p2.x + dx, p1.y));
         }
       } else if (this.toSpot.equals(go.Spot.Right) || this.toSpot.equals(go.Spot.Left)) {
-        const p1: go.Point = this.getPoint(1);  // points 1 & 2 should be OK already
+        const p1: go.Point = this.getPoint(1); // points 1 & 2 should be OK already
         const fromnode = this.fromNode;
         const fromport = this.fromPort;
         if (fromnode !== null && fromport !== null) {
           const parentlink = fromnode.findLinksInto().first();
           const fromctr = fromport.getDocumentPoint(go.Spot.Center);
           const far = fromctr.copy();
-          far.x += (parentlink !== null && parentlink.fromSpot.equals(go.Spot.Left)) ? -99999 / 2 : 99999 / 2;
-          far.y += (fromctr.y < p1.y) ? 99999 : -99999;
+          far.x +=
+            parentlink !== null && parentlink.fromSpot.equals(go.Spot.Left)
+              ? -99999 / 2
+              : 99999 / 2;
+          far.y += fromctr.y < p1.y ? 99999 : -99999;
           const p0 = this.getLinkPointFromPoint(fromnode, fromport, fromctr, far, true);
           this.setPoint(0, p0);
           let dx = Math.abs(p1.y - p0.y) / 2;

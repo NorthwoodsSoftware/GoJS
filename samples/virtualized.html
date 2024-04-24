@@ -1,171 +1,239 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="An example of virtualization where node bounds information is present in the node data, so no layout is required."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Virtualized Sample with no Layout</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="An example of virtualization where node bounds information is present in the node data, so no layout is required." />
+<meta itemprop="description" content="An example of virtualization where node bounds information is present in the node data, so no layout is required." />
+<meta property="og:description" content="An example of virtualization where node bounds information is present in the node data, so no layout is required." />
+<meta name="twitter:description" content="An example of virtualization where node bounds information is present in the node data, so no layout is required." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Virtualized />
+<meta property="og:title" content=Virtualized />
+<meta name="twitter:title" content=Virtualized />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/virtualized.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/virtualized.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/virtualized.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/virtualized.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/virtualized.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Virtualized | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-    <div id="allSampleContent" class="p-4 w-full">
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
 <style>
-  #mySpinner { display: none; position: absolute; z-index: 100; animation: spin 1s linear infinite; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  #mySpinner {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 </style>
 
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 600px"></div>
-  <img id="mySpinner" src="images/spinner.png">
+  <img id="mySpinner" src="images/spinner.png" />
   <div id="description">
-  <p>
-    This uses a <a>GraphLinksModel</a> but not any <a>Layout</a>.
-    It demonstrates the virtualization of Links as well as simple Nodes.
-  </p>
-  Node data in Model: <span id="myMessage1"></span>.
-  Actual Nodes in Diagram: <span id="myMessage2"></span>.<br />
-  Link data in model: <span id="myMessage3"></span>.
-  Actual Links in Diagram: <span id="myMessage4"></span>.
+    <p>This uses a <a>GraphLinksModel</a> but not any <a>Layout</a>. It demonstrates the virtualization of Links as well as simple Nodes.</p>
+    Node data in Model: <span id="myMessage1"></span>. Actual Nodes in Diagram: <span id="myMessage2"></span>.<br />
+    Link data in model: <span id="myMessage3"></span>. Actual Links in Diagram: <span id="myMessage4"></span>.
   </div>
 
-  <script id="code" type="module">
-    import * as go from "../release/go-module.js";
-    import { Quadtree } from '../extensionsJSM/Quadtree.js';
-
-
+  <script src="../extensions/Quadtree.js"></script>
+  <script id="code">
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;  // for conciseness in defining templates
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     // The Diagram just shows what should be visible in the viewport.
     // Its model does NOT include node data for the whole graph, but only that
     // which might be visible in the viewport.
-    const myDiagram =
-      new go.Diagram("myDiagramDiv",
+    const myDiagram = new go.Diagram('myDiagramDiv', {
+      initialDocumentSpot: go.Spot.Center,
+      initialViewportSpot: go.Spot.Center,
+
+      // Assume there's no Layout -- all data.bounds are provided
+      layout: $(go.Layout, { isInitial: false, isOngoing: false }), // never invalidates
+
+      // Define the template for Nodes, used by virtualization.
+      nodeTemplate: $(go.Node,
+        'Auto',
+        { isLayoutPositioned: false }, // optimization
+        new go.Binding('position', 'bounds', (b) => b.position).makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
+        { width: 70, height: 70 }, // in cooperation with the load function, below
+        $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')),
+        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color')),
         {
-          initialDocumentSpot: go.Spot.Center,
-          initialViewportSpot: go.Spot.Center,
+          toolTip: $('ToolTip',
+            $(go.TextBlock,
+              { margin: 3 },
+              new go.Binding('text', '', (d) => `key: ${d.key}\nbounds: ${d.bounds}\ntext: ${d.text}\nprop1: ${d.prop1}\nprop2: ${d.prop2}`)
+            )
+          ),
+        }
+      ),
 
-          // Assume there's no Layout -- all data.bounds are provided
-          layout: $(go.Layout, { isInitial: false, isOngoing: false }),  // never invalidates
+      // Define the template for Links
+      linkTemplate: $(go.Link,
+        { isLayoutPositioned: false }, // optimization
+        $(go.Shape, { strokeWidth: 2 }, new go.Binding('stroke', 'state', (s) => LinkColors[s])),
+        $(go.Shape, { toArrow: 'OpenTriangle', strokeWidth: 2 }, new go.Binding('stroke', 'state', (s) => LinkColors[s]))
+      ),
 
-          // Define the template for Nodes, used by virtualization.
-          nodeTemplate:
-            $(go.Node, "Auto",
-              { isLayoutPositioned: false },  // optimization
-              new go.Binding("position", "bounds", b => b.position)
-                .makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
-              { width: 70, height: 70 },  // in cooperation with the load function, below
-              $(go.Shape, "Rectangle",
-                new go.Binding("fill", "color")),
-              $(go.TextBlock,
-                { margin: 2 },
-                new go.Binding("text", "color")),
-              {
-                toolTip:
-                  $("ToolTip",
-                    $(go.TextBlock, { margin: 3 },
-                      new go.Binding("text", "",
-                        d => `key: ${d.key}\nbounds: ${d.bounds}\ntext: ${d.text}\nprop1: ${d.prop1}\nprop2: ${d.prop2}`))
-                  )
-              }
-            ),
+      'animationManager.isEnabled': false,
+    });
 
-          // Define the template for Links
-          linkTemplate:
-            $(go.Link,
-              { isLayoutPositioned: false },  // optimization
-              $(go.Shape, { strokeWidth: 2 },
-                new go.Binding("stroke", "state", s => LinkColors[s])),
-              $(go.Shape, { toArrow: "OpenTriangle", strokeWidth: 2 },
-                new go.Binding("stroke", "state", s => LinkColors[s]))
-            ),
-
-          "animationManager.isEnabled": false
-        });
-
-    const LinkColors = ["black", "green", "blue", "red"];
+    const LinkColors = ['black', 'green', 'blue', 'red'];
 
     // This model includes all of the data
-    const myWholeModel =
-      new go.GraphLinksModel();  // must match the model used by the Diagram, below
+    const myWholeModel = new go.GraphLinksModel(); // must match the model used by the Diagram, below
     const myWholeQuadtree = new Quadtree();
 
     // Do not set myDiagram.model = myWholeModel -- that would create a zillion Nodes and Links!
     // In the future Diagram may have built-in support for virtualization.
     // For now, we have to implement virtualization ourselves by having the Diagram's model
     // be different than the "real" model.
-    myDiagram.model =   // this only holds nodes that should be in the viewport
-      new go.GraphLinksModel();  // must match the model, above
+    myDiagram.model = // this only holds nodes that should be in the viewport
+      new go.GraphLinksModel(); // must match the model, above
 
     // for now, we have to implement virtualization ourselves
     myDiagram.isVirtualized = true;
-    myDiagram.addDiagramListener("ViewportBoundsChanged", onViewportChanged);
+    myDiagram.addDiagramListener('ViewportBoundsChanged', onViewportChanged);
 
     myDiagram.addModelChangedListener(onModelChanged);
-    myDiagram.model.makeUniqueKeyFunction = virtualUniqueKey;  // ensure uniqueness in myWholeModel
-    myDiagram.commandHandler.selectAll = () => {};  // make Select All command a no-op
+    myDiagram.model.makeUniqueKeyFunction = virtualUniqueKey; // ensure uniqueness in myWholeModel
+    myDiagram.commandHandler.selectAll = () => {}; // make Select All command a no-op
 
-    myDiagram.delayInitialization(() => spinDuring(myDiagram, "mySpinner", load));
+    myDiagram.delayInitialization(() => spinDuring(myDiagram, 'mySpinner', load));
 
     // implement a wait spinner in HTML with CSS animation
-    function spinDuring(diagram, spinner, compute) {  // where compute is a function of zero args
+    function spinDuring(diagram, spinner, compute) {
+      // where compute is a function of zero args
       // show the animated spinner
-      if (typeof spinner === "string") spinner = document.getElementById(spinner);
+      if (typeof spinner === 'string') spinner = document.getElementById(spinner);
       if (spinner) {
         // position it in the middle of the viewport DIV
-        const x = Math.floor(diagram.div.offsetWidth/2 - spinner.naturalWidth/2);
-        const y = Math.floor(diagram.div.offsetHeight/2 - spinner.naturalHeight/2);
-        spinner.style.left = x + "px";
-        spinner.style.top = y + "px";
-        spinner.style.display = "inline";
+        const x = Math.floor(diagram.div.offsetWidth / 2 - spinner.naturalWidth / 2);
+        const y = Math.floor(diagram.div.offsetHeight / 2 - spinner.naturalHeight / 2);
+        spinner.style.left = x + 'px';
+        spinner.style.top = y + 'px';
+        spinner.style.display = 'inline';
       }
       setTimeout(() => {
         try {
-          compute();  // do the computation
+          compute(); // do the computation
         } finally {
-          if (spinner) spinner.style.display = "none";
+          if (spinner) spinner.style.display = 'none';
         }
       }, 20);
     }
@@ -180,30 +248,32 @@
       const temp = new go.Rect();
       for (let i = 0; i < total; i++) {
         const nd = {
-          key: i,  // this node data's key
-          color: go.Brush.randomColor(),  // the node's color
+          key: i, // this node data's key
+          color: go.Brush.randomColor(), // the node's color
           //!!!???@@@ this needs to be customized to account for your chosen Node template
           bounds: new go.Rect((i % sqrt) * 140, Math.floor(i / sqrt) * 140, 70, 70),
-          text: "Node " + i.toString(),
+          text: 'Node ' + i.toString(),
           prop1: Math.random() * 100,
-          prop2: Math.random() * 100
-        }
+          prop2: Math.random() * 100,
+        };
         data.push(nd);
         myWholeQuadtree.add(nd, nd.bounds);
 
-        if (i > 0 && i%sqrt > 0) {  // link sequential nodes
+        if (i > 0 && i % sqrt > 0) {
+          // link sequential nodes
           const ld = {
             from: i - 1,
             to: i,
-            state: Math.floor(Math.random() * 4)
+            state: Math.floor(Math.random() * 4),
           };
           ldata.push(ld);
         }
-        if (i > sqrt) {  // link nodes vertically
+        if (i > sqrt) {
+          // link nodes vertically
           const ld = {
-            from: i-sqrt,
+            from: i - sqrt,
             to: i,
-            state: Math.floor(Math.random() * 4)
+            state: Math.floor(Math.random() * 4),
           };
           ldata.push(ld);
         }
@@ -234,7 +304,8 @@
       for (let i = 0; i < ndata.length; i++) {
         const d = ndata[i];
         if (!d.bounds) continue;
-        if (b.isEmpty()) b.set(d.bounds); else b.unionRect(d.bounds);
+        if (b.isEmpty()) b.set(d.bounds);
+        else b.unionRect(d.bounds);
       }
       return b;
     }
@@ -244,7 +315,7 @@
       const diagram = e.diagram;
       // make sure there are Nodes for each node data that is in the viewport
       // and each Link that is connected to such a Node
-      const viewb = diagram.viewportBounds;  // the new viewportBounds
+      const viewb = diagram.viewportBounds; // the new viewportBounds
       const model = diagram.model;
 
       const oldskips = diagram.skipsUndoManager;
@@ -301,7 +372,7 @@
 
       diagram.skipsUndoManager = oldskips;
 
-      updateCounts();  // only for this sample
+      updateCounts(); // only for this sample
     }
 
     function addNode(diagram, wholeModel, data) {
@@ -312,24 +383,25 @@
       if (n !== null) n.ensureBounds();
     }
 
-    function onModelChanged(e) {  // handle moves and insertions and removals
+    function onModelChanged(e) {
+      // handle moves and insertions and removals
       if (e.model.skipsUndoManager) return;
-      if (e.change === go.ChangedEvent.Property) {
-        if (e.propertyName === "bounds") {
+      if (e.change === go.ChangeType.Property) {
+        if (e.propertyName === 'bounds') {
           myWholeQuadtree.move(e.object, e.newValue.bounds.x, e.newValue.bounds.y);
         }
-      } else if (e.change === go.ChangedEvent.Insert) {
-        if (e.propertyName === "nodeDataArray") {
+      } else if (e.change === go.ChangeType.Insert) {
+        if (e.propertyName === 'nodeDataArray') {
           myWholeModel.addNodeData(e.newValue);
           myWholeQuadtree.add(e.newValue, e.newValue.bounds);
-        } else if (e.propertyName === "linkDataArray") {
+        } else if (e.propertyName === 'linkDataArray') {
           myWholeModel.addLinkData(e.newValue);
         }
-      } else if (e.change === go.ChangedEvent.Remove) {
-        if (e.propertyName === "nodeDataArray") {
+      } else if (e.change === go.ChangeType.Remove) {
+        if (e.propertyName === 'nodeDataArray') {
           myWholeModel.removeNodeData(e.oldValue);
           myWholeQuadtree.remove(e.oldValue);
-        } else if (e.propertyName === "linkDataArray") {
+        } else if (e.propertyName === 'linkDataArray') {
           myWholeModel.removeLinkData(e.oldValue);
         }
       }
@@ -339,18 +411,104 @@
     // This function is only used in this sample to demonstrate the effects of the virtualization.
     // In a real application you would delete this function and all calls to it.
     function updateCounts() {
-      document.getElementById("myMessage1").textContent = myWholeModel.nodeDataArray.length;
-      document.getElementById("myMessage2").textContent = myDiagram.nodes.count;
-      document.getElementById("myMessage3").textContent = myWholeModel.linkDataArray.length;
-      document.getElementById("myMessage4").textContent = myDiagram.links.count;
+      document.getElementById('myMessage1').textContent = myWholeModel.nodeDataArray.length;
+      document.getElementById('myMessage2').textContent = myDiagram.nodes.count;
+      document.getElementById('myMessage3').textContent = myWholeModel.linkDataArray.length;
+      document.getElementById('myMessage4').textContent = myDiagram.links.count;
     }
   </script>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Groups</h4>
+<p>
+The <a href="../api/symbols/Group.html" target="api">Group</a> class is used to treat a collection of <a href="../api/symbols/Node.html" target="api">Node</a>s and <a href="../api/symbols/Link.html" target="api">Link</a>s as if they were a single <a href="../api/symbols/Node.html" target="api">Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+<p>
+A subgraph is <em>not</em> another <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
+All of the <a href="../api/symbols/Part.html" target="api">Part</a>s that are members of a <a href="../api/symbols/Group.html" target="api">Group</a> belong to the same Diagram as the Group.
+There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
+There can even be links between member nodes and the containing group itself.
+</p>
+<p>
+More information can be found in the <a href="../intro/groups.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#groups">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>ToolTips</h4>
+<p>
+A tooltip is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the mouse hovers over an object that has its <a href="../api/symbols/GraphObject.html#toolTip" target="api">GraphObject.toolTip</a> set.
+The tooltip part is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a tooltip as a "ToolTip" Panel holding a <a href="../api/symbols/TextBlock.html" target="api">TextBlock</a> or a Panel of TextBlocks and other objects.
+Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed, and where the border is a rectangular <a href="../api/symbols/Shape.html" target="api">Shape</a> with a light gray fill.
+However you can implement the tooltip as any arbitrarily complicated Adornment.
+</p>
+<p>
+More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tooltips">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

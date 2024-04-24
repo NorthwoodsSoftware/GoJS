@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="Arrange disconnected circular subgraphs in a circle and put disconnected nodes in a grid underneath." />
+<meta itemprop="description" content="Arrange disconnected circular subgraphs in a circle and put disconnected nodes in a grid underneath." />
+<meta property="og:description" content="Arrange disconnected circular subgraphs in a circle and put disconnected nodes in a grid underneath." />
+<meta name="twitter:description" content="Arrange disconnected circular subgraphs in a circle and put disconnected nodes in a grid underneath." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Arranging Layout />
+<meta property="og:title" content=Arranging Layout />
+<meta name="twitter:title" content=Arranging Layout />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/Arranging.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/Arranging.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/Arranging.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/Arranging.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/Arranging.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Arranging Layout | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/ArrangingLayout.js"></script>
+
+<script id="code">
+  function init() {
+    var $ = go.GraphObject.make;
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        initialAutoScale: go.AutoScale.Uniform,
+        layout: $(ArrangingLayout, {
+          // create a circular arrangement of circular layouts
+          primaryLayout: $(go.CircularLayout), // must specify the primaryLayout
+          arrangingLayout: $(go.CircularLayout, { nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular, spacing: 30 }),
+
+          // Uncommenting this filter will force all of the nodes and links to go into the main subset and thus
+          // will cause all those nodes to be arranged by this.arrangingLayout, here a CircularLayout,
+          // rather than by the this.sideLayout, which by default is a GridLayout.
+          //filter: part => true,
+
+          // additional custom properties for use by preparePrimaryLayout
+          _colors: ['red', 'orange', 'yellow', 'lime', 'cyan'], // possible node colors
+          _colorIndex: 0, // cycle through the given colors
+
+          // called for each separate connected subgraph
+          // color all of the nodes in each subgraph
+          preparePrimaryLayout: function (lay, coll) {
+            // method override requires function, not =>
+            var root = null; // find the root node in this subgraph
+            coll.each((node) => {
+              if (node instanceof go.Node && node.findLinksInto().count === 0) root = node;
+            });
+            var color = 'white'; // determine the color for the nodes in this subgraph
+            if (root !== null) {
+              // root.key will be the name of the class that this node represents
+              // Special case: "LayoutNetwork", "LayoutVertex", and "LayoutEdge" classes are "violet"
+              if (root.key.indexOf('Layout') === 0 && root.key.length > 'Layout'.length) {
+                color = 'violet';
+              } else {
+                // otherwise cycle through the Array of colors
+                color = this._colors[this._colorIndex++ % this._colors.length];
+              }
+            }
+            coll.each((node) => {
+              // assign the fill color for all of the nodes in the subgraph
+              if (node instanceof go.Node) {
+                var shape = node.findObject('SHAPE');
+                if (shape !== null) shape.fill = color;
+              }
+            });
+          },
+
+          // called once for the sideLayout
+          prepareSideLayout: function (lay, coll, b) {
+            // method override requires function, not =>
+            // adjust how wide the GridLayout lays out
+            lay.wrappingWidth = Math.max(b.width, this.diagram.viewportBounds.width);
+          },
+        }),
+      }
+    );
+
+    myDiagram.nodeTemplate = $(go.Node,
+      go.Panel.Auto,
+      $(go.Shape, { name: 'SHAPE', figure: 'RoundedRectangle', fill: 'lightgray' }, new go.Binding('fill', 'color')),
+      $(go.TextBlock,
+        { margin: 2, textAlign: 'center' },
+        new go.Binding('text', 'key', (s) => {
+          // insert newlines between lowercase followed by uppercase characters
+          var arr = s.split('');
+          for (var i = 1; i < arr.length - 1; i++) {
+            var a = arr[i - 1];
+            var b = arr[i];
+            if (a === a.toLowerCase() && b === b.toUpperCase()) {
+              arr.splice(i, 0, '\n');
+              i += 2;
+            }
+          }
+          return arr.join('');
+        })
+      )
+    );
+
+    myDiagram.linkTemplate = $(go.Link, { layerName: 'Background' }, $(go.Shape));
+
+    // Collect all of the data for the model of the class hierarchy
+    var nodeDataArray = [];
+
+    // Iterate over all of the classes in "go"
+    for (const k in go) {
+      var cls = go[k];
+      // ignore enums and other stuff
+      if (typeof cls !== 'function') continue;
+      // find base class constructor
+      var base = Object.getPrototypeOf(cls);
+      if (base === Object) {
+        // "root" node?
+        nodeDataArray.push({ key: k });
+      } else {
+        // add a node for this class and a tree-parent reference to the base class name
+        nodeDataArray.push({ key: k, parent: base.name });
+      }
+    }
+
+    // Create the model for the hierarchy diagram
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 800px; min-width: 200px"></div>
+  <p>
+    This sample demonstrates a custom Layout, <a>ArrangingLayout</a>, that provides layouts of layouts. It assumes the graph should be split up and laid out by
+    potentially three separate Layouts.
+  </p>
+  <p>
+    The first step of ArrangingLayout is that all unconnected nodes are separated out to be laid out later by the <a>ArrangingLayout.sideLayout</a>, which by
+    default is a <a>GridLayout</a>.
+  </p>
+  <p>
+    The remaining nodes and links are partitioned into separate subgraphs with no links between subgraphs. The <a>ArrangingLayout.primaryLayout</a> is performed
+    on each subgraph.
+  </p>
+  <p>
+    If there is more than one subgraph, those subgraphs are treated as if they were individual nodes and are laid out by the
+    <a>ArrangingLayout.arrangingLayout</a>.
+  </p>
+  <p>
+    Finally the unconnected nodes are laid out by <a>ArrangingLayout.sideLayout</a> and they are all positioned at the <a>ArrangingLayout.side</a> Spot relative
+    to the main body of nodes and links.
+  </p>
+  <p>This extension layout is defined in its own file, as <a href="ArrangingLayout.js">ArrangingLayout.js</a>.</p>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Grid Layouts</h4>
+<p>
+This predefined layout is used for placing Nodes in a grid-like arrangement.
+Nodes can be ordered, spaced apart, and wrapped as needed. This Layout ignores any Links connecting the nodes being laid out. 
+More information can be found in the <a href="../intro/layouts.html#GridLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#gridlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

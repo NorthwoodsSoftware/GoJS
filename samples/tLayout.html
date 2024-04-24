@@ -1,337 +1,408 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Interactive demonstration of tree layout features by the TreeLayout class."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Tree Layout</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Interactive demonstration of tree layout features by the TreeLayout class." />
+<meta itemprop="description" content="Interactive demonstration of tree layout features by the TreeLayout class." />
+<meta property="og:description" content="Interactive demonstration of tree layout features by the TreeLayout class." />
+<meta name="twitter:description" content="Interactive demonstration of tree layout features by the TreeLayout class." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Tree Layout />
+<meta property="og:title" content=Tree Layout />
+<meta name="twitter:title" content=Tree Layout />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/tLayout.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/tLayout.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/tLayout.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/tLayout.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/tLayout.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Tree Layout | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <style type="text/css">
-    input[type="number"] {
-      width: 45px;
-    }
-  </style>
-  <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // must be the ID or reference to div
-          {
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.TreeLayout,
-              { comparer: go.LayoutVertex.smartComparer }) // have the comparer sort by numbers as well as letters
-            // other properties are set by the layout function, defined below
-          });
-
-      // define the Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-          { locationSpot: go.Spot.Center },
-          new go.Binding("text", "text"),  // for sorting
-          $(go.Shape, "Ellipse",
-            {
-              fill: "lightgray",  // the initial value, but data binding may provide different value
-              stroke: null,
-              desiredSize: new go.Size(30, 30)
-            },
-            new go.Binding("desiredSize", "size"),
-            new go.Binding("fill", "fill")),
-          $(go.TextBlock,
-            new go.Binding("text", "text"))
-        );
-
-      // define the Link template
-      myDiagram.linkTemplate =
-        $(go.Link,
-          {
-            routing: go.Link.Orthogonal,
-            selectable: false
-          },
-          $(go.Shape,
-            { strokeWidth: 3, stroke: "#333" }));
-
-      // generate a tree with the default values
-      rebuildGraph();
-    }
-
-    function rebuildGraph() {
-      var minNodes = document.getElementById("minNodes").value;
-      minNodes = parseInt(minNodes, 10);
-
-      var maxNodes = document.getElementById("maxNodes").value;
-      maxNodes = parseInt(maxNodes, 10);
-
-      var minChil = document.getElementById("minChil").value;
-      minChil = parseInt(minChil, 10);
-
-      var maxChil = document.getElementById("maxChil").value;
-      maxChil = parseInt(maxChil, 10);
-
-      var hasRandomSizes = document.getElementById("randomSizes").checked;
-
-      // create and assign a new model
-      var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes);
-      myDiagram.model = new go.TreeModel(nodeDataArray);
-
-      // update the diagram layout customized by the various control values
-      layout();
-    }
-
-    // Creates a random number (between MIN and MAX) of randomly colored nodes.
-    function generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes) {
-      var nodeArray = [];
-      if (minNodes === undefined || isNaN(minNodes) || minNodes < 1) minNodes = 1;
-      if (maxNodes === undefined || isNaN(maxNodes) || maxNodes < minNodes) maxNodes = minNodes;
-
-      // Create a bunch of node data
-      var numNodes = Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes;
-      for (var i = 0; i < numNodes; i++) {
-        nodeArray.push({
-          key: i,  // the unique identifier
-          // "parent" is set by code below that assigns children
-          text: i.toString(),  // some text to be shown by the node template
-          fill: go.Brush.randomColor(),  // a color to be shown by the node template
-          size: (hasRandomSizes) ? new go.Size(Math.random() * 50 + 20, Math.random() * 50 + 20) : new go.Size(30, 30)
-        });
-      }
-
-      // Randomize the node data
-      for (i = 0; i < nodeArray.length; i++) {
-        var swap = Math.floor(Math.random() * nodeArray.length);
-        var temp = nodeArray[swap];
-        nodeArray[swap] = nodeArray[i];
-        nodeArray[i] = temp;
-      }
-
-      // Takes the random collection of node data and creates a random tree with them.
-      // Respects the minimum and maximum number of links from each node.
-      // The minimum can be disregarded if we run out of nodes to link to.
-      if (nodeArray.length > 1) {
-        if (minChil === undefined || isNaN(minChil) || minChil < 0) minChil = 0;
-        if (maxChil === undefined || isNaN(maxChil) || maxChil < minChil) maxChil = minChil;
-
-        // keep the Set of node data that do not yet have a parent
-        var available = new go.Set();
-        available.addAll(nodeArray);
-        for (var i = 0; i < nodeArray.length; i++) {
-          var parent = nodeArray[i];
-          available.remove(parent);
-
-          // assign some number of node data as children of this parent node data
-          var children = Math.floor(Math.random() * (maxChil - minChil + 1)) + minChil;
-          for (var j = 0; j < children; j++) {
-            var child = available.first();
-            if (child === null) break;  // oops, ran out already
-            available.remove(child);
-            // have the child node data refer to the parent node data by its key
-            child.parent = parent.key;
-          }
-          if (available.count === 0) break;  // nothing left?
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
-      return nodeArray;
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-    // Update the layout from the controls, and then perform the layout again
-    function layout() {
-      myDiagram.startTransaction("change Layout");
-      var lay = myDiagram.layout;
+        
 
-      var style = document.getElementById("style").value;
-      if (style === "Layered") lay.treeStyle = go.TreeLayout.StyleLayered;
-      else if (style === "Alternating") lay.treeStyle = go.TreeLayout.StyleAlternating;
-      else if (style === "LastParents") lay.treeStyle = go.TreeLayout.StyleLastParents;
-      else if (style === "RootOnly") lay.treeStyle = go.TreeLayout.StyleRootOnly;
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-      var layerStyle = document.getElementById("layerStyle").value;
-      if (layerStyle === "Individual") lay.layerStyle = go.TreeLayout.LayerIndividual;
-      else if (layerStyle === "Siblings") lay.layerStyle = go.TreeLayout.LayerSiblings;
-      else if (layerStyle === "Uniform") lay.layerStyle = go.TreeLayout.LayerUniform;
+<style type="text/css">
+  input[type='number'] {
+    width: 45px;
+  }
+</style>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-      var angle = getRadioValue("angle");
-      angle = parseFloat(angle, 10);
-      lay.angle = angle;
-
-      var align = document.getElementById("align").value;
-      if (align === "CenterChildren") lay.alignment = go.TreeLayout.AlignmentCenterChildren;
-      else if (align === "CenterSubtrees") lay.alignment = go.TreeLayout.AlignmentCenterSubtrees;
-      else if (align === "Start") lay.alignment = go.TreeLayout.AlignmentStart;
-      else if (align === "End") lay.alignment = go.TreeLayout.AlignmentEnd;
-      else if (align === "Bus") lay.alignment = go.TreeLayout.AlignmentBus;
-      else if (align === "BusBranching") lay.alignment = go.TreeLayout.AlignmentBusBranching;
-      else if (align === "TopLeftBus") lay.alignment = go.TreeLayout.AlignmentTopLeftBus;
-      else if (align === "BottomRightBus") lay.alignment = go.TreeLayout.AlignmentBottomRightBus;
-
-      var nodeSpacing = document.getElementById("nodeSpacing").value;
-      nodeSpacing = parseFloat(nodeSpacing, 10);
-      lay.nodeSpacing = nodeSpacing;
-
-      var nodeIndent = document.getElementById("nodeIndent").value;
-      nodeIndent = parseFloat(nodeIndent, 10);
-      lay.nodeIndent = nodeIndent;
-
-      var nodeIndentPastParent = document.getElementById("nodeIndentPastParent").value;
-      nodeIndentPastParent = parseFloat(nodeIndentPastParent, 10);
-      lay.nodeIndentPastParent = nodeIndentPastParent;
-
-      var layerSpacing = document.getElementById("layerSpacing").value;
-      layerSpacing = parseFloat(layerSpacing, 10);
-      lay.layerSpacing = layerSpacing;
-
-      var layerSpacingParentOverlap = document.getElementById("layerSpacingParentOverlap").value;
-      layerSpacingParentOverlap = parseFloat(layerSpacingParentOverlap, 10);
-      lay.layerSpacingParentOverlap = layerSpacingParentOverlap;
-
-      var sorting = document.getElementById("sorting").value;
-      if (sorting === "Forwards") lay.sorting = go.TreeLayout.SortingForwards;
-      else if (sorting === "Reverse") lay.sorting = go.TreeLayout.SortingReverse;
-      else if (sorting === "Ascending") lay.sorting = go.TreeLayout.SortingAscending;
-      else if (sorting === "Descending") lay.sorting = go.TreeLayout.SortingDescending;
-
-      var compaction = getRadioValue("compaction");
-      if (compaction === "Block") lay.compaction = go.TreeLayout.CompactionBlock;
-      else if (compaction === "None") lay.compaction = go.TreeLayout.CompactionNone;
-
-      var breadthLimit = document.getElementById("breadthLimit").value;
-      breadthLimit = parseFloat(breadthLimit, 10);
-      lay.breadthLimit = breadthLimit;
-
-      var rowSpacing = document.getElementById("rowSpacing").value;
-      rowSpacing = parseFloat(rowSpacing, 10);
-      lay.rowSpacing = rowSpacing;
-
-      var rowIndent = document.getElementById("rowIndent").value;
-      rowIndent = parseFloat(rowIndent, 10);
-      lay.rowIndent = rowIndent;
-
-      var setsPortSpot = document.getElementById("setsPortSpot").checked;
-      lay.setsPortSpot = setsPortSpot;
-
-      var setsChildPortSpot = document.getElementById("setsChildPortSpot").checked;
-      lay.setsChildPortSpot = setsChildPortSpot;
-
-      if (style !== "Layered") {
-        var altAngle = getRadioValue("altAngle");
-        altAngle = parseFloat(altAngle, 10);
-        lay.alternateAngle = altAngle;
-
-        var altAlign = document.getElementById("altAlign").value;
-        if (altAlign === "CenterChildren") lay.alternateAlignment = go.TreeLayout.AlignmentCenterChildren;
-        else if (altAlign === "CenterSubtrees") lay.alternateAlignment = go.TreeLayout.AlignmentCenterSubtrees;
-        else if (altAlign === "Start") lay.alternateAlignment = go.TreeLayout.AlignmentStart;
-        else if (altAlign === "End") lay.alternateAlignment = go.TreeLayout.AlignmentEnd;
-        else if (altAlign === "Bus") lay.alternateAlignment = go.TreeLayout.AlignmentBus;
-        else if (altAlign === "BusBranching") lay.alternateAlignment = go.TreeLayout.AlignmentBusBranching;
-        else if (altAlign === "TopLeftBus") lay.alternateAlignment = go.TreeLayout.AlignmentTopLeftBus;
-        else if (altAlign === "BottomRightBus") lay.alternateAlignment = go.TreeLayout.AlignmentBottomRightBus;
-
-        var altNodeSpacing = document.getElementById("altNodeSpacing").value;
-        altNodeSpacing = parseFloat(altNodeSpacing, 10);
-        lay.alternateNodeSpacing = altNodeSpacing;
-
-        var altNodeIndent = document.getElementById("altNodeIndent").value;
-        altNodeIndent = parseFloat(altNodeIndent, 10);
-        lay.alternateNodeIndent = altNodeIndent;
-
-        var altNodeIndentPastParent = document.getElementById("altNodeIndentPastParent").value;
-        altNodeIndentPastParent = parseFloat(altNodeIndentPastParent, 10);
-        lay.alternateNodeIndentPastParent = altNodeIndentPastParent;
-
-        var altLayerSpacing = document.getElementById("altLayerSpacing").value;
-        altLayerSpacing = parseFloat(altLayerSpacing, 10);
-        lay.alternateLayerSpacing = altLayerSpacing;
-
-        var altLayerSpacingParentOverlap = document.getElementById("altLayerSpacingParentOverlap").value;
-        altLayerSpacingParentOverlap = parseFloat(altLayerSpacingParentOverlap, 10);
-        lay.alternateLayerSpacingParentOverlap = altLayerSpacingParentOverlap;
-
-        var altSorting = document.getElementById("altSorting").value;
-        if (altSorting === "Forwards") lay.alternateSorting = go.TreeLayout.SortingForwards;
-        else if (altSorting === "Reverse") lay.alternateSorting = go.TreeLayout.SortingReverse;
-        else if (altSorting === "Ascending") lay.alternateSorting = go.TreeLayout.SortingAscending;
-        else if (altSorting === "Descending") lay.alternateSorting = go.TreeLayout.SortingDescending;
-
-        var altCompaction = getRadioValue("altCompaction");
-        if (altCompaction === "Block") lay.alternateCompaction = go.TreeLayout.CompactionBlock;
-        else if (altCompaction === "None") lay.alternateCompaction = go.TreeLayout.CompactionNone;
-
-        var altBreadthLimit = document.getElementById("altBreadthLimit").value;
-        altBreadthLimit = parseFloat(altBreadthLimit, 10);
-        lay.alternateBreadthLimit = altBreadthLimit;
-
-        var altRowSpacing = document.getElementById("altRowSpacing").value;
-        altRowSpacing = parseFloat(altRowSpacing, 10);
-        lay.alternateRowSpacing = altRowSpacing;
-
-        var altRowIndent = document.getElementById("altRowIndent").value;
-        altRowIndent = parseFloat(altRowIndent, 10);
-        lay.alternateRowIndent = altRowIndent;
-
-        var altSetsPortSpot = document.getElementById("altSetsPortSpot").checked;
-        lay.alternateSetsPortSpot = altSetsPortSpot;
-
-        var altSetsChildPortSpot = document.getElementById("altSetsChildPortSpot").checked;
-        lay.alternateSetsChildPortSpot = altSetsChildPortSpot;
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must be the ID or reference to div
+      {
+        initialAutoScale: go.AutoScale.UniformToFill,
+        layout: $(go.TreeLayout, { comparer: go.LayoutVertex.smartComparer }), // have the comparer sort by numbers as well as letters
+        // other properties are set by the layout function, defined below
       }
+    );
 
-      myDiagram.commitTransaction("change Layout");
+    // define the Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      'Spot',
+      { locationSpot: go.Spot.Center },
+      new go.Binding('text', 'text'), // for sorting
+      $(go.Shape,
+        'Ellipse',
+        {
+          fill: 'lightgray', // the initial value, but data binding may provide different value
+          stroke: null,
+          desiredSize: new go.Size(30, 30),
+        },
+        new go.Binding('desiredSize', 'size'),
+        new go.Binding('fill', 'fill')
+      ),
+      $(go.TextBlock, new go.Binding('text', 'text'))
+    );
+
+    // define the Link template
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        routing: go.Routing.Orthogonal,
+        selectable: false,
+      },
+      $(go.Shape, { strokeWidth: 3, stroke: '#333' })
+    );
+
+    // generate a tree with the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var minNodes = document.getElementById('minNodes').value;
+    minNodes = parseInt(minNodes, 10);
+
+    var maxNodes = document.getElementById('maxNodes').value;
+    maxNodes = parseInt(maxNodes, 10);
+
+    var minChil = document.getElementById('minChil').value;
+    minChil = parseInt(minChil, 10);
+
+    var maxChil = document.getElementById('maxChil').value;
+    maxChil = parseInt(maxChil, 10);
+
+    var hasRandomSizes = document.getElementById('randomSizes').checked;
+
+    // create and assign a new model
+    var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes);
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+
+    // update the diagram layout customized by the various control values
+    layout();
+  }
+
+  // Creates a random number (between MIN and MAX) of randomly colored nodes.
+  function generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes) {
+    var nodeArray = [];
+    if (minNodes === undefined || isNaN(minNodes) || minNodes < 1) minNodes = 1;
+    if (maxNodes === undefined || isNaN(maxNodes) || maxNodes < minNodes) maxNodes = minNodes;
+
+    // Create a bunch of node data
+    var numNodes = Math.floor(Math.random() * (maxNodes - minNodes + 1)) + minNodes;
+    for (var i = 0; i < numNodes; i++) {
+      nodeArray.push({
+        key: i, // the unique identifier
+        // "parent" is set by code below that assigns children
+        text: i.toString(), // some text to be shown by the node template
+        fill: go.Brush.randomColor(), // a color to be shown by the node template
+        size: hasRandomSizes ? new go.Size(Math.random() * 50 + 20, Math.random() * 50 + 20) : new go.Size(30, 30),
+      });
     }
 
-    function getRadioValue(name) {
-      var radio = document.getElementsByName(name);
-      for (var i = 0; i < radio.length; i++)
-        if (radio[i].checked) return radio[i].value;
+    // Randomize the node data
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+
+    // Takes the random collection of node data and creates a random tree with them.
+    // Respects the minimum and maximum number of links from each node.
+    // The minimum can be disregarded if we run out of nodes to link to.
+    if (nodeArray.length > 1) {
+      if (minChil === undefined || isNaN(minChil) || minChil < 0) minChil = 0;
+      if (maxChil === undefined || isNaN(maxChil) || maxChil < minChil) maxChil = minChil;
+
+      // keep the Set of node data that do not yet have a parent
+      var available = new go.Set();
+      available.addAll(nodeArray);
+      for (var i = 0; i < nodeArray.length; i++) {
+        var parent = nodeArray[i];
+        available.remove(parent);
+
+        // assign some number of node data as children of this parent node data
+        var children = Math.floor(Math.random() * (maxChil - minChil + 1)) + minChil;
+        for (var j = 0; j < children; j++) {
+          var child = available.first();
+          if (child === null) break; // oops, ran out already
+          available.remove(child);
+          // have the child node data refer to the parent node data by its key
+          child.parent = parent.key;
+        }
+        if (available.count === 0) break; // nothing left?
+      }
+    }
+    return nodeArray;
+  }
+
+  // Update the layout from the controls, and then perform the layout again
+  function layout() {
+    myDiagram.startTransaction('change Layout');
+    var lay = myDiagram.layout;
+
+    var style = document.getElementById('style').value;
+    if (style === 'Layered') lay.treeStyle = go.TreeStyle.Layered;
+    else if (style === 'Alternating') lay.treeStyle = go.TreeStyle.Alternating;
+    else if (style === 'LastParents') lay.treeStyle = go.TreeStyle.LastParents;
+    else if (style === 'RootOnly') lay.treeStyle = go.TreeStyle.RootOnly;
+
+    var layerStyle = document.getElementById('layerStyle').value;
+    if (layerStyle === 'Individual') lay.layerStyle = go.TreeLayerStyle.Individual;
+    else if (layerStyle === 'Siblings') lay.layerStyle = go.TreeLayerStyle.Siblings;
+    else if (layerStyle === 'Uniform') lay.layerStyle = go.TreeLayerStyle.Uniform;
+
+    var angle = getRadioValue('angle');
+    angle = parseFloat(angle, 10);
+    lay.angle = angle;
+
+    var align = document.getElementById('align').value;
+    if (align === 'CenterChildren') lay.alignment = go.TreeAlignment.CenterChildren;
+    else if (align === 'CenterSubtrees') lay.alignment = go.TreeAlignment.CenterSubtrees;
+    else if (align === 'Start') lay.alignment = go.TreeAlignment.Start;
+    else if (align === 'End') lay.alignment = go.TreeAlignment.End;
+    else if (align === 'Bus') lay.alignment = go.TreeAlignment.Bus;
+    else if (align === 'BusBranching') lay.alignment = go.TreeAlignment.BusBranching;
+    else if (align === 'TopLeftBus') lay.alignment = go.TreeAlignment.TopLeftBus;
+    else if (align === 'BottomRightBus') lay.alignment = go.TreeAlignment.BottomRightBus;
+
+    var nodeSpacing = document.getElementById('nodeSpacing').value;
+    nodeSpacing = parseFloat(nodeSpacing, 10);
+    lay.nodeSpacing = nodeSpacing;
+
+    var nodeIndent = document.getElementById('nodeIndent').value;
+    nodeIndent = parseFloat(nodeIndent, 10);
+    lay.nodeIndent = nodeIndent;
+
+    var nodeIndentPastParent = document.getElementById('nodeIndentPastParent').value;
+    nodeIndentPastParent = parseFloat(nodeIndentPastParent, 10);
+    lay.nodeIndentPastParent = nodeIndentPastParent;
+
+    var layerSpacing = document.getElementById('layerSpacing').value;
+    layerSpacing = parseFloat(layerSpacing, 10);
+    lay.layerSpacing = layerSpacing;
+
+    var layerSpacingParentOverlap = document.getElementById('layerSpacingParentOverlap').value;
+    layerSpacingParentOverlap = parseFloat(layerSpacingParentOverlap, 10);
+    lay.layerSpacingParentOverlap = layerSpacingParentOverlap;
+
+    var sorting = document.getElementById('sorting').value;
+    if (sorting === 'Forwards') lay.sorting = go.TreeSorting.Forwards;
+    else if (sorting === 'Reverse') lay.sorting = go.TreeSorting.Reverse;
+    else if (sorting === 'Ascending') lay.sorting = go.TreeSorting.Ascending;
+    else if (sorting === 'Descending') lay.sorting = go.TreeSorting.Descending;
+
+    var compaction = getRadioValue('compaction');
+    if (compaction === 'Block') lay.compaction = go.TreeCompaction.Block;
+    else if (compaction === 'None') lay.compaction = go.TreeCompaction.None;
+
+    var breadthLimit = document.getElementById('breadthLimit').value;
+    breadthLimit = parseFloat(breadthLimit, 10);
+    lay.breadthLimit = breadthLimit;
+
+    var rowSpacing = document.getElementById('rowSpacing').value;
+    rowSpacing = parseFloat(rowSpacing, 10);
+    lay.rowSpacing = rowSpacing;
+
+    var rowIndent = document.getElementById('rowIndent').value;
+    rowIndent = parseFloat(rowIndent, 10);
+    lay.rowIndent = rowIndent;
+
+    var setsPortSpot = document.getElementById('setsPortSpot').checked;
+    lay.setsPortSpot = setsPortSpot;
+
+    var setsChildPortSpot = document.getElementById('setsChildPortSpot').checked;
+    lay.setsChildPortSpot = setsChildPortSpot;
+
+    if (style !== 'Layered') {
+      var altAngle = getRadioValue('altAngle');
+      altAngle = parseFloat(altAngle, 10);
+      lay.alternateAngle = altAngle;
+
+      var altAlign = document.getElementById('altAlign').value;
+      if (altAlign === 'CenterChildren') lay.alternateAlignment = go.TreeAlignment.CenterChildren;
+      else if (altAlign === 'CenterSubtrees') lay.alternateAlignment = go.TreeAlignment.CenterSubtrees;
+      else if (altAlign === 'Start') lay.alternateAlignment = go.TreeAlignment.Start;
+      else if (altAlign === 'End') lay.alternateAlignment = go.TreeAlignment.End;
+      else if (altAlign === 'Bus') lay.alternateAlignment = go.TreeAlignment.Bus;
+      else if (altAlign === 'BusBranching') lay.alternateAlignment = go.TreeAlignment.BusBranching;
+      else if (altAlign === 'TopLeftBus') lay.alternateAlignment = go.TreeAlignment.TopLeftBus;
+      else if (altAlign === 'BottomRightBus') lay.alternateAlignment = go.TreeAlignment.BottomRightBus;
+
+      var altNodeSpacing = document.getElementById('altNodeSpacing').value;
+      altNodeSpacing = parseFloat(altNodeSpacing, 10);
+      lay.alternateNodeSpacing = altNodeSpacing;
+
+      var altNodeIndent = document.getElementById('altNodeIndent').value;
+      altNodeIndent = parseFloat(altNodeIndent, 10);
+      lay.alternateNodeIndent = altNodeIndent;
+
+      var altNodeIndentPastParent = document.getElementById('altNodeIndentPastParent').value;
+      altNodeIndentPastParent = parseFloat(altNodeIndentPastParent, 10);
+      lay.alternateNodeIndentPastParent = altNodeIndentPastParent;
+
+      var altLayerSpacing = document.getElementById('altLayerSpacing').value;
+      altLayerSpacing = parseFloat(altLayerSpacing, 10);
+      lay.alternateLayerSpacing = altLayerSpacing;
+
+      var altLayerSpacingParentOverlap = document.getElementById('altLayerSpacingParentOverlap').value;
+      altLayerSpacingParentOverlap = parseFloat(altLayerSpacingParentOverlap, 10);
+      lay.alternateLayerSpacingParentOverlap = altLayerSpacingParentOverlap;
+
+      var altSorting = document.getElementById('altSorting').value;
+      if (altSorting === 'Forwards') lay.alternateSorting = go.TreeSorting.Forwards;
+      else if (altSorting === 'Reverse') lay.alternateSorting = go.TreeSorting.Reverse;
+      else if (altSorting === 'Ascending') lay.alternateSorting = go.TreeSorting.Ascending;
+      else if (altSorting === 'Descending') lay.alternateSorting = go.TreeSorting.Descending;
+
+      var altCompaction = getRadioValue('altCompaction');
+      if (altCompaction === 'Block') lay.alternateCompaction = go.TreeCompaction.Block;
+      else if (altCompaction === 'None') lay.alternateCompaction = go.TreeCompaction.None;
+
+      var altBreadthLimit = document.getElementById('altBreadthLimit').value;
+      altBreadthLimit = parseFloat(altBreadthLimit, 10);
+      lay.alternateBreadthLimit = altBreadthLimit;
+
+      var altRowSpacing = document.getElementById('altRowSpacing').value;
+      altRowSpacing = parseFloat(altRowSpacing, 10);
+      lay.alternateRowSpacing = altRowSpacing;
+
+      var altRowIndent = document.getElementById('altRowIndent').value;
+      altRowIndent = parseFloat(altRowIndent, 10);
+      lay.alternateRowIndent = altRowIndent;
+
+      var altSetsPortSpot = document.getElementById('altSetsPortSpot').checked;
+      lay.alternateSetsPortSpot = altSetsPortSpot;
+
+      var altSetsChildPortSpot = document.getElementById('altSetsChildPortSpot').checked;
+      lay.alternateSetsChildPortSpot = altSetsChildPortSpot;
+    }
+
+    myDiagram.commitTransaction('change Layout');
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++) if (radio[i].checked) return radio[i].value;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
@@ -363,98 +434,144 @@
     <span style="display: inline-block; vertical-align: top; padding: 5px">
       <b>Default Properties</b><br />
       Angle:
-        <input type="radio" name="angle" onclick="layout()" value="0" checked="checked" />Right
-        <input type="radio" name="angle" onclick="layout()" value="90" />Down
-        <input type="radio" name="angle" onclick="layout()" value="180" />Left
-        <input type="radio" name="angle" onclick="layout()" value="270" />Up<br />
+      <input type="radio" name="angle" onclick="layout()" value="0" checked="checked" />Right
+      <input type="radio" name="angle" onclick="layout()" value="90" />Down <input type="radio" name="angle" onclick="layout()" value="180" />Left
+      <input type="radio" name="angle" onclick="layout()" value="270" />Up<br />
       Alignment:
-        <select name="align" id="align" onchange="layout()">
-          <option value="CenterChildren" selected="selected">CenterChildren</option>
-          <option value="CenterSubtrees">CenterSubtrees</option>
-          <option value="Start">Start</option>
-          <option value="End">End</option>
-          <option value="Bus">Bus</option>
-          <option value="BusBranching">BusBranching</option>
-          <option value="TopLeftBus">TopLeftBus</option>
-          <option value="BottomRightBus">BottomRightBus</option>
-        </select>
-        <br />
+      <select name="align" id="align" onchange="layout()">
+        <option value="CenterChildren" selected="selected">CenterChildren</option>
+        <option value="CenterSubtrees">CenterSubtrees</option>
+        <option value="Start">Start</option>
+        <option value="End">End</option>
+        <option value="Bus">Bus</option>
+        <option value="BusBranching">BusBranching</option>
+        <option value="TopLeftBus">TopLeftBus</option>
+        <option value="BottomRightBus">BottomRightBus</option>
+      </select>
+      <br />
       NodeSpacing: <input type="number" size="2" id="nodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
       NodeIndent: <input type="number" size="2" id="nodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
       NodeIndentPastParent: <input type="number" size="2" id="nodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       LayerSpacing: <input type="number" size="2" id="layerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
       LayerSpacingParentOverlap: <input type="number" size="2" id="layerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       Sorting:
-        <select name="sorting" id="sorting" onchange="layout()">
-          <option value="Forwards" selected="selected">Forwards</option>
-          <option value="Reverse">Reverse</option>
-          <option value="Ascending">Ascending</option>
-          <option value="Descending">Descending</option>
-        </select>
-        <br />
+      <select name="sorting" id="sorting" onchange="layout()">
+        <option value="Forwards" selected="selected">Forwards</option>
+        <option value="Reverse">Reverse</option>
+        <option value="Ascending">Ascending</option>
+        <option value="Descending">Descending</option>
+      </select>
+      <br />
       Compaction:
-        <input type="radio" name="compaction" onclick="layout()" value="Block" checked="checked" /> Block
-        <input type="radio" name="compaction" onclick="layout()" value="None" /> None<br />
+      <input type="radio" name="compaction" onclick="layout()" value="Block" checked="checked" /> Block
+      <input type="radio" name="compaction" onclick="layout()" value="None" /> None<br />
       BreadthLimit: <input type="number" size="2" id="breadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
       RowSpacing: <input type="number" size="2" id="rowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
       RowIndent: <input type="number" size="2" id="rowIndent" value="10" onchange="layout()" /> (>= 0)<br />
-      SetsPortSpot: <input type="checkbox" id="setsPortSpot" checked="checked" onclick="layout()" />
-      SetsChildPortSpot: <input type="checkbox" id="setsChildPortSpot" checked="checked" onclick="layout()" /><br />
+      SetsPortSpot: <input type="checkbox" id="setsPortSpot" checked="checked" onclick="layout()" /> SetsChildPortSpot:
+      <input type="checkbox" id="setsChildPortSpot" checked="checked" onclick="layout()" /><br />
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 5px">
       <b>Alternates</b>
       (only when TreeStyle is not Layered)
       <br />
       Angle:
-        <input type="radio" name="altAngle" onclick="layout()" value="0" checked="checked" />Right
-        <input type="radio" name="altAngle" onclick="layout()" value="90" />Down
-        <input type="radio" name="altAngle" onclick="layout()" value="180" />Left
-        <input type="radio" name="altAngle" onclick="layout()" value="270" />Up<br />
+      <input type="radio" name="altAngle" onclick="layout()" value="0" checked="checked" />Right
+      <input type="radio" name="altAngle" onclick="layout()" value="90" />Down <input type="radio" name="altAngle" onclick="layout()" value="180" />Left
+      <input type="radio" name="altAngle" onclick="layout()" value="270" />Up<br />
       Alignment:
-        <select name="altAlign" id="altAlign" onchange="layout()">
-          <option value="CenterChildren" selected="selected">CenterChildren</option>
-          <option value="CenterSubtrees">CenterSubtrees</option>
-          <option value="Start">Start</option>
-          <option value="End">End</option>
-          <option value="Bus">Bus</option>
-          <option value="BusBranching">BusBranching</option>
-          <option value="TopLeftBus">TopLeftBus</option>
-          <option value="BottomRightBus">BottomRightBus</option>
-        </select>
-        <br />
+      <select name="altAlign" id="altAlign" onchange="layout()">
+        <option value="CenterChildren" selected="selected">CenterChildren</option>
+        <option value="CenterSubtrees">CenterSubtrees</option>
+        <option value="Start">Start</option>
+        <option value="End">End</option>
+        <option value="Bus">Bus</option>
+        <option value="BusBranching">BusBranching</option>
+        <option value="TopLeftBus">TopLeftBus</option>
+        <option value="BottomRightBus">BottomRightBus</option>
+      </select>
+      <br />
       NodeSpacing: <input type="number" size="2" id="altNodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
       NodeIndent: <input type="number" size="2" id="altNodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
       NodeIndentPastParent: <input type="number" size="2" id="altNodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       LayerSpacing: <input type="number" size="2" id="altLayerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
       LayerSpacingParentOverlap: <input type="number" size="2" id="altLayerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
       Sorting:
-        <select name="altSorting" id="altSorting" onchange="layout()">
-          <option value="Forwards" selected="selected">Forwards</option>
-          <option value="Reverse">Reverse</option>
-          <option value="Ascending">Ascending</option>
-          <option value="Descending">Descending</option>
-        </select>
-        <br />
+      <select name="altSorting" id="altSorting" onchange="layout()">
+        <option value="Forwards" selected="selected">Forwards</option>
+        <option value="Reverse">Reverse</option>
+        <option value="Ascending">Ascending</option>
+        <option value="Descending">Descending</option>
+      </select>
+      <br />
       Compaction:
-        <input type="radio" name="altCompaction" onclick="layout()" value="Block" checked="checked" /> Block
-        <input type="radio" name="altCompaction" onclick="layout()" value="None" /> None<br />
+      <input type="radio" name="altCompaction" onclick="layout()" value="Block" checked="checked" /> Block
+      <input type="radio" name="altCompaction" onclick="layout()" value="None" /> None<br />
       BreadthLimit: <input type="number" size="2" id="altBreadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
       RowSpacing: <input type="number" size="2" id="altRowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
       RowIndent: <input type="number" size="2" id="altRowIndent" value="10" onchange="layout()" /> (>= 0)<br />
-      SetsPortSpot: <input type="checkbox" id="altSetsPortSpot" checked="checked" onclick="layout()" />
-      SetsChildPortSpot: <input type="checkbox" id="altSetsChildPortSpot" checked="checked" onclick="layout()" /><br />
+      SetsPortSpot: <input type="checkbox" id="altSetsPortSpot" checked="checked" onclick="layout()" /> SetsChildPortSpot:
+      <input type="checkbox" id="altSetsChildPortSpot" checked="checked" onclick="layout()" /><br />
     </span>
   </div>
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
-  <p>
-    For information on <b>TreeLayout</b> and its properties, see the <a>TreeLayout</a> documentation page.
-  </p>
+  <p>For information on <b>TreeLayout</b> and its properties, see the <a>TreeLayout</a> documentation page.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

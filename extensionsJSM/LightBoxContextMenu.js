@@ -1,14 +1,14 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 // HTML + JavaScript context menu, made with HTMLInfo
 // This file exposes one instance of HTMLInfo, window.myHTMLLightBox
 // see also LightBoxContextMenu.css and /samples/htmlLightBoxContextMenu.html
@@ -33,72 +33,118 @@ import * as go from '../release/go-module.js';
     const cxMenuButtons = [
         {
             text: 'Copy',
-            command: (diagram) => { diagram.commandHandler.copySelection(); },
+            command: (diagram) => {
+                diagram.commandHandler.copySelection();
+            },
             isVisible: (diagram) => diagram.commandHandler.canCopySelection()
-        }, {
+        },
+        {
             text: 'Cut',
-            command: (diagram) => { diagram.commandHandler.cutSelection(); },
+            command: (diagram) => {
+                diagram.commandHandler.cutSelection();
+            },
             isVisible: (diagram) => diagram.commandHandler.canCutSelection()
-        }, {
+        },
+        {
             text: 'Delete',
-            command: (diagram) => { diagram.commandHandler.deleteSelection(); },
+            command: (diagram) => {
+                diagram.commandHandler.deleteSelection();
+            },
             isVisible: (diagram) => diagram.commandHandler.canDeleteSelection()
-        }, {
+        },
+        {
             text: 'Paste',
-            command: (diagram) => { diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); },
+            command: (diagram) => {
+                diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint);
+            },
             isVisible: (diagram) => diagram.commandHandler.canPasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint)
-        }, {
+        },
+        {
             text: 'Select All',
-            command: (diagram) => { diagram.commandHandler.selectAll(); },
+            command: (diagram) => {
+                diagram.commandHandler.selectAll();
+            },
             isVisible: (diagram) => diagram.commandHandler.canSelectAll()
-        }, {
+        },
+        {
             text: 'Undo',
-            command: (diagram) => { diagram.commandHandler.undo(); },
+            command: (diagram) => {
+                diagram.commandHandler.undo();
+            },
             isVisible: (diagram) => diagram.commandHandler.canUndo()
-        }, {
+        },
+        {
             text: 'Redo',
-            command: (diagram) => { diagram.commandHandler.redo(); },
+            command: (diagram) => {
+                diagram.commandHandler.redo();
+            },
             isVisible: (diagram) => diagram.commandHandler.canRedo()
-        }, {
+        },
+        {
             text: 'Scroll To Part',
-            command: (diagram) => { diagram.commandHandler.scrollToPart(); },
+            command: (diagram) => {
+                diagram.commandHandler.scrollToPart();
+            },
             isVisible: (diagram) => diagram.commandHandler.canScrollToPart()
-        }, {
+        },
+        {
             text: 'Zoom To Fit',
-            command: (diagram) => { diagram.commandHandler.zoomToFit(); },
+            command: (diagram) => {
+                diagram.commandHandler.zoomToFit();
+            },
             isVisible: (diagram) => diagram.commandHandler.canZoomToFit()
-        }, {
+        },
+        {
             text: 'Reset Zoom',
-            command: (diagram) => { diagram.commandHandler.resetZoom(); },
+            command: (diagram) => {
+                diagram.commandHandler.resetZoom();
+            },
             isVisible: (diagram) => diagram.commandHandler.canResetZoom()
-        }, {
+        },
+        {
             text: 'Group Selection',
-            command: (diagram) => { diagram.commandHandler.groupSelection(); },
+            command: (diagram) => {
+                diagram.commandHandler.groupSelection();
+            },
             isVisible: (diagram) => diagram.commandHandler.canGroupSelection()
-        }, {
+        },
+        {
             text: 'Ungroup Selection',
-            command: (diagram) => { diagram.commandHandler.ungroupSelection(); },
+            command: (diagram) => {
+                diagram.commandHandler.ungroupSelection();
+            },
             isVisible: (diagram) => diagram.commandHandler.canUngroupSelection()
-        }, {
+        },
+        {
             text: 'Edit Text',
-            command: (diagram) => { diagram.commandHandler.editTextBlock(); },
+            command: (diagram) => {
+                diagram.commandHandler.editTextBlock();
+            },
             isVisible: (diagram) => diagram.commandHandler.canEditTextBlock()
         }
     ];
-    const $ = go.GraphObject.make;
-    const myContextMenu = $(go.HTMLInfo, {
-        show: showContextMenu,
-        hide: hideContextMenu
-    });
+    const myContextMenu = new go.HTMLInfo({ show: showContextMenu, hide: hideContextMenu });
     let firstTime = true;
     function showContextMenu(obj, diagram, tool) {
         if (firstTime) {
             // We don't want the div acting as a context menu to have a (browser) context menu!
-            cmLight.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; }, false);
-            cmLight.addEventListener('selectstart', (e) => { e.preventDefault(); return false; }, false);
-            contextMenuDIV.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; }, false);
+            cmLight.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            }, false);
+            cmLight.addEventListener('selectstart', (e) => {
+                e.preventDefault();
+                return false;
+            }, false);
+            contextMenuDIV.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            }, false);
             // Stop the context menu tool if you click on the dark part:
-            contextMenuDIV.addEventListener('click', (e) => { diagram.currentTool.stopTool(); return false; }, false);
+            contextMenuDIV.addEventListener('click', (e) => {
+                diagram.currentTool.stopTool();
+                return false;
+            }, false);
             firstTime = false;
         }
         // Empty the context menu and only show buttons that are relevant

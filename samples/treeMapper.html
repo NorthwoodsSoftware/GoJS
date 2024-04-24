@@ -1,56 +1,129 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A data mapping diagram to show and edit the relationships between items in two different trees."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>GoJS Tree Mapper</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A data mapping diagram to show and edit the relationships between items in two different trees." />
+<meta itemprop="description" content="A data mapping diagram to show and edit the relationships between items in two different trees." />
+<meta property="og:description" content="A data mapping diagram to show and edit the relationships between items in two different trees." />
+<meta name="twitter:description" content="A data mapping diagram to show and edit the relationships between items in two different trees." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Tree Mapper />
+<meta property="og:title" content=Tree Mapper />
+<meta name="twitter:title" content=Tree Mapper />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/treeMapper.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/treeMapper.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/treeMapper.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/treeMapper.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/treeMapper.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Tree Mapper | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
   // Use a TreeNode so that when a node is not visible because a parent is collapsed,
   // connected links seem to be connected with the lowest visible parent node.
   class TreeNode extends go.Node {
@@ -71,28 +144,28 @@
   //     rather than going all the way to the connected nodes
   // - "ToNode": so that they go all the way to the connected nodes
   //     but only bend at the edge of the group
-  var ROUTINGSTYLE = "ToGroup";
+  var ROUTINGSTYLE = 'ToGroup';
 
   // If you want the regular routing where the Link.[from/to]EndSegmentLength controls
   // the length of the horizontal segment adjacent to the port, don't use this class.
   // Replace MappingLink with a go.Link in the "Mapping" link template.
   class MappingLink extends go.Link {
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
-      if (ROUTINGSTYLE !== "ToGroup") {
+      if (ROUTINGSTYLE !== 'ToGroup') {
         return super.getLinkPoint(node, port, spot, from, ortho, othernode, otherport);
       } else {
         var r = port.getDocumentBounds();
         var group = node.containingGroup;
-        var b = (group !== null) ? group.actualBounds : node.actualBounds;
+        var b = group !== null ? group.actualBounds : node.actualBounds;
         var op = othernode.getDocumentPoint(go.Spot.Center);
-        var x = (op.x > r.centerX) ? b.right : b.left;
+        var x = op.x > r.centerX ? b.right : b.left;
         return new go.Point(x, r.centerY);
       }
     }
 
     computePoints() {
       var result = super.computePoints();
-      if (result && ROUTINGSTYLE === "ToNode") {
+      if (result && ROUTINGSTYLE === 'ToNode') {
         var fn = this.fromNode;
         var tn = this.toNode;
         if (fn && tn) {
@@ -101,9 +174,9 @@
           var fpt = this.getPoint(0);
           var tg = tn.containingGroup;
           var tb = tg ? tg.actualBounds : tn.actualBounds;
-          var tpt = this.getPoint(this.pointsCount-1);
-          this.setPoint(1, new go.Point((fpt.x < tpt.x) ? fb.right : fb.left, fpt.y));
-          this.setPoint(this.pointsCount-2, new go.Point((fpt.x < tpt.x) ? tb.left : tb.right, tpt.y));
+          var tpt = this.getPoint(this.pointsCount - 1);
+          this.setPoint(1, new go.Point(fpt.x < tpt.x ? fb.right : fb.left, fpt.y));
+          this.setPoint(this.pointsCount - 2, new go.Point(fpt.x < tpt.x ? tb.left : tb.right, tpt.y));
         }
       }
       return result;
@@ -111,276 +184,336 @@
   }
   // end MappingLink
 
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      function handleTreeCollapseExpand(e) {
-        e.subject.each(n => {
-          n.findExternalTreeLinksConnected().each(l => l.invalidateRoute());
-        });
-      }
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            "commandHandler.copiesTree": true,
-            "commandHandler.deletesTree": true,
-            "TreeCollapsed": handleTreeCollapseExpand,
-            "TreeExpanded": handleTreeCollapseExpand,
-            // newly drawn links always map a node in one tree to a node in another tree
-            "linkingTool.archetypeLinkData": { category: "Mapping" },
-            "linkingTool.linkValidation": checkLink,
-            "relinkingTool.linkValidation": checkLink,
-            "undoManager.isEnabled": true,
-            "ModelChanged": e => {
-              if (e.isTransactionFinished) {  // show the model data in the page's TextArea
-                document.getElementById("mySavedModel").textContent = e.model.toJson();
-              }
-            }
-          });
-
-      // All links must go from a node inside the "Left Side" Group to a node inside the "Right Side" Group.
-      function checkLink(fn, fp, tn, tp, link) {
-        // make sure the nodes are inside different Groups
-        if (fn.containingGroup === null || fn.containingGroup.data.key !== -1) return false;
-        if (tn.containingGroup === null || tn.containingGroup.data.key !== -2) return false;
-        //// optional limit to a single mapping link per node
-        //if (fn.linksConnected.any(l => l.category === "Mapping")) return false;
-        //if (tn.linksConnected.any(l => l.category === "Mapping")) return false;
-        return true;
-      }
-
-      // Each node in a tree is defined using the default nodeTemplate.
-      myDiagram.nodeTemplate =
-        $(TreeNode,
-          { movable: false, copyable: false, deletable: false },  // user cannot move an individual node
-          // no Adornment: instead change panel background color by binding to Node.isSelected
-          {
-            selectionAdorned: false,
-            background: "white",
-            mouseEnter: (e, node) => node.background = "aquamarine",
-            mouseLeave: (e, node) => node.background = node.isSelected ? "skyblue" : "white"
-          },
-          new go.Binding("background", "isSelected", s => s ? "skyblue" : "white").ofObject(),
-          // whether the user can start drawing a link from or to this node depends on which group it's in
-          new go.Binding("fromLinkable", "group", k => k === -1),
-          new go.Binding("toLinkable", "group", k => k === -2),
-          $("TreeExpanderButton",  // support expanding/collapsing subtrees
-            {
-              width: 14, height: 14,
-              "ButtonIcon.stroke": "white",
-              "ButtonIcon.strokeWidth": 2,
-              "ButtonBorder.fill": "goldenrod",
-              "ButtonBorder.stroke": null,
-              "ButtonBorder.figure": "Rectangle",
-              "_buttonFillOver": "darkgoldenrod",
-              "_buttonStrokeOver": null,
-              "_buttonFillPressed": null
-            }),
-          $(go.Panel, "Horizontal",
-            { position: new go.Point(16, 0) },
-            //// optional icon for each tree node
-            //$(go.Picture,
-            //  { width: 14, height: 14,
-            //    margin: new go.Margin(0, 4, 0, 0),
-            //    imageStretch: go.GraphObject.Uniform,
-            //    source: "images/defaultIcon.png" },
-            //  new go.Binding("source", "src")),
-            $(go.TextBlock,
-              new go.Binding("text", "key", s => "item " + s))
-          )  // end Horizontal Panel
-        );  // end Node
-
-      // These are the links connecting tree nodes within each group.
-
-      myDiagram.linkTemplate = $(go.Link);  // without lines
-
-      myDiagram.linkTemplate =  // with lines
-        $(go.Link,
-          {
-            selectable: false,
-            routing: go.Link.Orthogonal,
-            fromEndSegmentLength: 4,
-            toEndSegmentLength: 4,
-            fromSpot: new go.Spot(0.001, 1, 7, 0),
-            toSpot: go.Spot.Left
-          },
-          $(go.Shape,
-            { stroke: "lightgray" }));
-
-      // These are the blue links connecting a tree node on the left side with one on the right side.
-      myDiagram.linkTemplateMap.add("Mapping",
-        $(MappingLink,
-          { isTreeLink: false, isLayoutPositioned: false, layerName: "Foreground" },
-          { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
-          { relinkableFrom: true, relinkableTo: true },
-          $(go.Shape, { stroke: "blue", strokeWidth: 2 })
-        ));
-
-      myDiagram.groupTemplate =
-        $(go.Group, "Auto",
-          { deletable: false, layout: makeGroupLayout() },
-          new go.Binding("position", "xy", go.Point.parse).makeTwoWay(go.Point.stringify),
-          new go.Binding("layout", "width", makeGroupLayout),
-          $(go.Shape, { fill: "white", stroke: "lightgray" }),
-          $(go.Panel, "Vertical",
-            { defaultAlignment: go.Spot.Left },
-            $(go.TextBlock,
-              { font: "bold 14pt sans-serif", margin: new go.Margin(5, 5, 0, 5) },
-              new go.Binding("text")),
-            $(go.Placeholder, { padding: 5 })
-          )
-        );
-
-      function makeGroupLayout() {
-        return $(go.TreeLayout,  // taken from samples/treeView.html
-          {
-            alignment: go.TreeLayout.AlignmentStart,
-            angle: 0,
-            compaction: go.TreeLayout.CompactionNone,
-            layerSpacing: 16,
-            layerSpacingParentOverlap: 1,
-            nodeIndentPastParent: 1.0,
-            nodeSpacing: 0,
-            setsPortSpot: false,
-            setsChildPortSpot: false,
-            // after the tree layout, change the width of each node so that all
-            // of the nodes have widths such that the collection has a given width
-            commitNodes: function() {  // method override must be function, not =>
-              go.TreeLayout.prototype.commitNodes.call(this);
-              if (ROUTINGSTYLE === "ToGroup") {
-                updateNodeWidths(this.group, this.group.data.width || 100);
-              }
-            }
-          });
-      }
-
-      // Create some random trees in each group
-      var nodeDataArray = [
-        { isGroup: true, key: -1, text: "Left Side", xy: "0 0", width: 150 },
-        { isGroup: true, key: -2, text: "Right Side", xy: "300 0", width: 150 }
-      ];
-      var linkDataArray = [
-        { from: 6, to: 1012, category: "Mapping" },
-        { from: 4, to: 1006, category: "Mapping" },
-        { from: 9, to: 1004, category: "Mapping" },
-        { from: 1, to: 1009, category: "Mapping" },
-        { from: 14, to: 1010, category: "Mapping" }
-      ];
-
-      // initialize tree on left side
-      var root = { key: 0, group: -1 };
-      nodeDataArray.push(root);
-      for (var i = 0; i < 11;) {
-        i = makeTree(3, i, 17, nodeDataArray, linkDataArray, root, -1, root.key);
-      }
-
-      // initialize tree on right side
-      root = { key: 1000, group: -2 };
-      nodeDataArray.push(root);
-      for (var i = 0; i < 15;) {
-        i = makeTree(3, i, 15, nodeDataArray, linkDataArray, root, -2, root.key);
-      }
-      myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    function handleTreeCollapseExpand(e) {
+      e.subject.each((n) => {
+        n.findExternalTreeLinksConnected().each((l) => l.invalidateRoute());
+      });
     }
 
-    // help create a random tree structure
-    function makeTree(level, count, max, nodeDataArray, linkDataArray, parentdata, groupkey, rootkey) {
-      var numchildren = Math.floor(Math.random() * 10);
-      for (var i = 0; i < numchildren; i++) {
-        if (count >= max) return count;
-        count++;
-        var childdata = { key: rootkey + count, group: groupkey };
-        nodeDataArray.push(childdata);
-        linkDataArray.push({ from: parentdata.key, to: childdata.key });
-        if (level > 0 && Math.random() > 0.5) {
-          count = makeTree(level - 1, count, max, nodeDataArray, linkDataArray, childdata, groupkey, rootkey);
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'commandHandler.copiesTree': true,
+      'commandHandler.deletesTree': true,
+      TreeCollapsed: handleTreeCollapseExpand,
+      TreeExpanded: handleTreeCollapseExpand,
+      // newly drawn links always map a node in one tree to a node in another tree
+      'linkingTool.archetypeLinkData': { category: 'Mapping' },
+      'linkingTool.linkValidation': checkLink,
+      'relinkingTool.linkValidation': checkLink,
+      'undoManager.isEnabled': true,
+      ModelChanged: (e) => {
+        if (e.isTransactionFinished) {
+          // show the model data in the page's TextArea
+          document.getElementById('mySavedModel').textContent = e.model.toJson();
         }
-      }
-      return count;
-    }
-    window.addEventListener('DOMContentLoaded', init);
+      },
+    });
 
-
-    function updateNodeWidths(group, width) {
-      if (isNaN(width)) {
-        group.memberParts.each(n => {
-          if (n instanceof go.Node) n.width = NaN;  // back to natural width
-        });
-      } else {
-        var minx = Infinity;  // figure out minimum group width
-        group.memberParts.each(n => {
-          if (n instanceof go.Node) {
-            minx = Math.min(minx, n.actualBounds.x);
-          }
-        });
-        if (minx === Infinity) return;
-        var right = minx + width;
-        group.memberParts.each(n => {
-          if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
-        });
-      }
+    // All links must go from a node inside the "Left Side" Group to a node inside the "Right Side" Group.
+    function checkLink(fn, fp, tn, tp, link) {
+      // make sure the nodes are inside different Groups
+      if (fn.containingGroup === null || fn.containingGroup.data.key !== -1) return false;
+      if (tn.containingGroup === null || tn.containingGroup.data.key !== -2) return false;
+      //// optional limit to a single mapping link per node
+      //if (fn.linksConnected.any(l => l.category === "Mapping")) return false;
+      //if (tn.linksConnected.any(l => l.category === "Mapping")) return false;
+      return true;
     }
 
-    // this function is only needed when changing the value of ROUTINGSTYLE dynamically
-    function changeStyle() {
-      // find user-chosen style name
-      var stylename = "ToGroup";
-      var radio = document.getElementsByName("MyRoutingStyle");
-      for (var i = 0; i < radio.length; i++) {
-        if (radio[i].checked) {
-          stylename = radio[i].value; break;
+    // Each node in a tree is defined using the default nodeTemplate.
+    myDiagram.nodeTemplate = $(TreeNode,
+      { movable: false, copyable: false, deletable: false }, // user cannot move an individual node
+      // no Adornment: instead change panel background color by binding to Node.isSelected
+      {
+        selectionAdorned: false,
+        background: 'white',
+        mouseEnter: (e, node) => (node.background = 'aquamarine'),
+        mouseLeave: (e, node) => (node.background = node.isSelected ? 'skyblue' : 'white'),
+      },
+      new go.Binding('background', 'isSelected', (s) => (s ? 'skyblue' : 'white')).ofObject(),
+      // whether the user can start drawing a link from or to this node depends on which group it's in
+      new go.Binding('fromLinkable', 'group', (k) => k === -1),
+      new go.Binding('toLinkable', 'group', (k) => k === -2),
+      $('TreeExpanderButton', // support expanding/collapsing subtrees
+        {
+          width: 14,
+          height: 14,
+          'ButtonIcon.stroke': 'white',
+          'ButtonIcon.strokeWidth': 2,
+          'ButtonBorder.fill': 'goldenrod',
+          'ButtonBorder.stroke': null,
+          'ButtonBorder.figure': 'Rectangle',
+          _buttonFillOver: 'darkgoldenrod',
+          _buttonStrokeOver: null,
+          _buttonFillPressed: null,
         }
-      }
-      if (stylename !== ROUTINGSTYLE) {
-        myDiagram.commit(diag => {
-          ROUTINGSTYLE = stylename;
-          diag.findTopLevelGroups().each(g => updateNodeWidths(g, NaN));
-          diag.layoutDiagram(true);  // force layouts to happen again
-          diag.links.each(l => l.invalidateRoute());
-        });
+      ),
+      $(go.Panel,
+        'Horizontal',
+        { position: new go.Point(16, 0) },
+        //// optional icon for each tree node
+        //$(go.Picture,
+        //  { width: 14, height: 14,
+        //    margin: new go.Margin(0, 4, 0, 0),
+        //    imageStretch: go.ImageStretch.Uniform,
+        //    source: "images/defaultIcon.png" },
+        //  new go.Binding("source", "src")),
+        $(go.TextBlock, new go.Binding('text', 'key', (s) => 'item ' + s))
+      ) // end Horizontal Panel
+    ); // end Node
+
+    // These are the links connecting tree nodes within each group.
+
+    myDiagram.linkTemplate = $(go.Link); // without lines
+
+    myDiagram.linkTemplate = // with lines
+      $(go.Link,
+        {
+          selectable: false,
+          routing: go.Routing.Orthogonal,
+          fromEndSegmentLength: 4,
+          toEndSegmentLength: 4,
+          fromSpot: new go.Spot(0.001, 1, 7, 0),
+          toSpot: go.Spot.Left,
+        },
+        $(go.Shape, { stroke: 'lightgray' })
+      );
+
+    // These are the blue links connecting a tree node on the left side with one on the right side.
+    myDiagram.linkTemplateMap.add(
+      'Mapping',
+      $(MappingLink,
+        { isTreeLink: false, isLayoutPositioned: false, layerName: 'Foreground' },
+        { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
+        { relinkableFrom: true, relinkableTo: true },
+        $(go.Shape, { stroke: 'blue', strokeWidth: 2 })
+      )
+    );
+
+    myDiagram.groupTemplate = $(go.Group,
+      'Auto',
+      { deletable: false, layout: makeGroupLayout() },
+      new go.Binding('position', 'xy', go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding('layout', 'width', makeGroupLayout),
+      $(go.Shape, { fill: 'white', stroke: 'lightgray' }),
+      $(go.Panel,
+        'Vertical',
+        { defaultAlignment: go.Spot.Left },
+        $(go.TextBlock, { font: 'bold 14pt sans-serif', margin: new go.Margin(5, 5, 0, 5) }, new go.Binding('text')),
+        $(go.Placeholder, { padding: 5 })
+      )
+    );
+
+    function makeGroupLayout() {
+      return $(go.TreeLayout, // taken from samples/treeView.html
+        {
+          alignment: go.TreeAlignment.Start,
+          angle: 0,
+          compaction: go.TreeCompaction.None,
+          layerSpacing: 16,
+          layerSpacingParentOverlap: 1,
+          nodeIndentPastParent: 1.0,
+          nodeSpacing: 0,
+          setsPortSpot: false,
+          setsChildPortSpot: false,
+          // after the tree layout, change the width of each node so that all
+          // of the nodes have widths such that the collection has a given width
+          commitNodes: function () {
+            // method override must be function, not =>
+            go.TreeLayout.prototype.commitNodes.call(this);
+            if (ROUTINGSTYLE === 'ToGroup') {
+              updateNodeWidths(this.group, this.group.data.width || 100);
+            }
+          },
+        }
+      );
+    }
+
+    // Create some random trees in each group
+    var nodeDataArray = [
+      { isGroup: true, key: -1, text: 'Left Side', xy: '0 0', width: 150 },
+      { isGroup: true, key: -2, text: 'Right Side', xy: '300 0', width: 150 },
+    ];
+    var linkDataArray = [
+      { from: 6, to: 1012, category: 'Mapping' },
+      { from: 4, to: 1006, category: 'Mapping' },
+      { from: 9, to: 1004, category: 'Mapping' },
+      { from: 1, to: 1009, category: 'Mapping' },
+      { from: 14, to: 1010, category: 'Mapping' },
+    ];
+
+    // initialize tree on left side
+    var root = { key: 0, group: -1 };
+    nodeDataArray.push(root);
+    for (var i = 0; i < 11; ) {
+      i = makeTree(3, i, 17, nodeDataArray, linkDataArray, root, -1, root.key);
+    }
+
+    // initialize tree on right side
+    root = { key: 1000, group: -2 };
+    nodeDataArray.push(root);
+    for (var i = 0; i < 15; ) {
+      i = makeTree(3, i, 15, nodeDataArray, linkDataArray, root, -2, root.key);
+    }
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+
+  // help create a random tree structure
+  function makeTree(level, count, max, nodeDataArray, linkDataArray, parentdata, groupkey, rootkey) {
+    var numchildren = Math.floor(Math.random() * 10);
+    for (var i = 0; i < numchildren; i++) {
+      if (count >= max) return count;
+      count++;
+      var childdata = { key: rootkey + count, group: groupkey };
+      nodeDataArray.push(childdata);
+      linkDataArray.push({ from: parentdata.key, to: childdata.key });
+      if (level > 0 && Math.random() > 0.5) {
+        count = makeTree(level - 1, count, max, nodeDataArray, linkDataArray, childdata, groupkey, rootkey);
       }
     }
-  </script>
+    return count;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+
+  function updateNodeWidths(group, width) {
+    if (isNaN(width)) {
+      group.memberParts.each((n) => {
+        if (n instanceof go.Node) n.width = NaN; // back to natural width
+      });
+    } else {
+      var minx = Infinity; // figure out minimum group width
+      group.memberParts.each((n) => {
+        if (n instanceof go.Node) {
+          minx = Math.min(minx, n.actualBounds.x);
+        }
+      });
+      if (minx === Infinity) return;
+      var right = minx + width;
+      group.memberParts.each((n) => {
+        if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
+      });
+    }
+  }
+
+  // this function is only needed when changing the value of ROUTINGSTYLE dynamically
+  function changeStyle() {
+    // find user-chosen style name
+    var stylename = 'ToGroup';
+    var radio = document.getElementsByName('MyRoutingStyle');
+    for (var i = 0; i < radio.length; i++) {
+      if (radio[i].checked) {
+        stylename = radio[i].value;
+        break;
+      }
+    }
+    if (stylename !== ROUTINGSTYLE) {
+      myDiagram.commit((diag) => {
+        ROUTINGSTYLE = stylename;
+        diag.findTopLevelGroups().each((g) => updateNodeWidths(g, NaN));
+        diag.layoutDiagram(true); // force layouts to happen again
+        diag.links.each((l) => l.invalidateRoute());
+      });
+    }
+  }
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: 1px solid black; width: 700px; height: 350px"></div>
   <p>
-    This sample is like the <a href="records.html">Mapping Fields of Records</a> sample,
-    but it has a collapsible tree of nodes on each side, rather than a simple list of items.
-    The implementation of the trees comes from the <a href="treeView.html">Tree View</a> sample.
+    This sample is like the <a href="records.html">Mapping Fields of Records</a> sample, but it has a collapsible tree of nodes on each side, rather than a
+    simple list of items. The implementation of the trees comes from the <a href="treeView.html">Tree View</a> sample.
   </p>
   <p>
-    Draw new links by dragging from any field (i.e. any tree node).
-    Reconnect a selected link by dragging its diamond-shaped handle.
-    A minor enhancement to this diagram supports operator nodes that transform data from various fields on the left
-    to provide values for fields on the right.
+    Draw new links by dragging from any field (i.e. any tree node). Reconnect a selected link by dragging its diamond-shaped handle. A minor enhancement to this
+    diagram supports operator nodes that transform data from various fields on the left to provide values for fields on the right.
   </p>
   <p>
-    This sample supports three different routing styles:<br>
+    This sample supports three different routing styles:<br />
     <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="Normal" />
-    "Normal"<br>
-    <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="ToGroup" checked="checked"/>
-    "ToGroup", where the links stop at the border of the group<br>
+    "Normal"<br />
+    <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="ToGroup" checked="checked" />
+    "ToGroup", where the links stop at the border of the group<br />
     <input type="radio" name="MyRoutingStyle" onclick="changeStyle()" value="ToNode" />
-    "ToNode", where the links bend at the border of the group but go all the way to the node, as normal<br>
+    "ToNode", where the links bend at the border of the group but go all the way to the node, as normal<br />
   </p>
-  <p>
-    There is a variation of this sample where the tree on the right is mirrored,
-    so that the links naturally connect closer to the nodes in the tree.
-  </p>
+  <p>There is a variation of this sample where the tree on the right is mirrored, so that the links naturally connect closer to the nodes in the tree.</p>
   <p>The model data, automatically updated after each change or undo or redo:</p>
-  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+  <textarea id="mySavedModel" style="width: 100%; height: 300px"></textarea>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Groups</h4>
+<p>
+The <a href="../api/symbols/Group.html" target="api">Group</a> class is used to treat a collection of <a href="../api/symbols/Node.html" target="api">Node</a>s and <a href="../api/symbols/Link.html" target="api">Link</a>s as if they were a single <a href="../api/symbols/Node.html" target="api">Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+<p>
+A subgraph is <em>not</em> another <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
+All of the <a href="../api/symbols/Part.html" target="api">Part</a>s that are members of a <a href="../api/symbols/Group.html" target="api">Group</a> belong to the same Diagram as the Group.
+There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
+There can even be links between member nodes and the containing group itself.
+</p>
+<p>
+More information can be found in the <a href="../intro/groups.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#groups">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

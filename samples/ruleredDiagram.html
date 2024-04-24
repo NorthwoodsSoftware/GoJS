@@ -1,173 +1,227 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A diagram with Graduated panels at the edges acting as rulers"/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Diagram with Rulers</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A diagram with Graduated panels at the edges acting as rulers" />
+<meta itemprop="description" content="A diagram with Graduated panels at the edges acting as rulers" />
+<meta property="og:description" content="A diagram with Graduated panels at the edges acting as rulers" />
+<meta name="twitter:description" content="A diagram with Graduated panels at the edges acting as rulers" />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Rulered Diagram />
+<meta property="og:title" content=Rulered Diagram />
+<meta name="twitter:title" content=Rulered Diagram />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ruleredDiagram.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/ruleredDiagram.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ruleredDiagram.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/ruleredDiagram.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/ruleredDiagram.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Rulered Diagram | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+  <script id="code">
     function init() {
-
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
       myDiagram =
         new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
           {
             "undoManager.isEnabled": true,  // enable undo & redo
-            scrollMode: go.Diagram.InfiniteScroll,  // allow the diagram to be scrolled beyond content
-            padding: 0,  // scales should be allowed right up against the edges of the viewport
+            scrollMode: go.ScrollMode.Infinite,  // allow the diagram to be scrolled beyond content
             "grid.visible": true  // show that the ticks of the rulers always line up with the grid lines
           });
 
+      // the templates don't really matter for this sample
       myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, "RoundedRectangle",
-            { strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 8 },
-            new go.Binding("text", "key"))
+        new go.Node("Auto").add(
+          new go.Shape("RoundedRectangle",
+              { strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true })
+            .bind("fill", "color"),
+          new go.TextBlock({ margin: 8 })
+            .bind("text")
         );
 
       myDiagram.model = new go.GraphLinksModel(
         [
-          { key: "Alpha", color: "lightblue" },
-          { key: "Beta", color: "orange" },
-          { key: "Gamma", color: "lightgreen" },
-          { key: "Delta", color: "pink" }
+          { key: 1, text: "Alpha", color: "lightblue" },
+          { key: 2, text: "Beta", color: "orange" },
+          { key: 3, text: "Gamma", color: "lightgreen" },
+          { key: 4, text: "Delta", color: "pink" }
         ],
         [
-          { from: "Alpha", to: "Beta" },
-          { from: "Alpha", to: "Gamma" },
-          { from: "Beta", to: "Beta" },
-          { from: "Gamma", to: "Delta" },
-          { from: "Delta", to: "Alpha" }
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 2, to: 2 },
+          { from: 3, to: 4 },
+          { from: 4, to: 1 }
         ]);
 
       // Keep references to the scales and indicators to easily update them
-      var gradScaleHoriz =
-        $(go.Part, "Graduated",
-          { graduatedTickUnit: 10, pickable: false, layerName: "Grid", isAnimated: false },
-          $(go.Shape, { geometryString: "M0 0 H400" }),
-          $(go.Shape, { geometryString: "M0 0 V3", interval: 1 }),
-          $(go.Shape, { geometryString: "M0 0 V15", interval: 5 }),
-          $(go.TextBlock,
-            {
-              font: "10px sans-serif",
-              interval: 5,
-              alignmentFocus: go.Spot.TopLeft,
-              segmentOffset: new go.Point(0, 7)
-            }
-          )
-        );
+      const gradScaleHoriz =
+        new go.Part("Graduated",
+            { graduatedTickUnit: 10, layerName: "ViewportBackground", alignment: go.Spot.TopLeft, isAnimated: false })
+          .add(
+            new go.Shape({ geometryString: "M0 0 H400" }),
+            new go.Shape({ geometryString: "M0 0 V4", interval: 1 }),
+            new go.Shape({ geometryString: "M0 0 V7", interval: 5 }),
+            new go.Shape({ geometryString: "M0 0 V15", interval: 10 }),
+            new go.TextBlock(
+              {
+                font: "10px sans-serif",
+                interval: 10,
+                alignmentFocus: go.Spot.TopLeft,
+                segmentOffset: new go.Point(0, 7)
+              })
+          );
 
-      var gradScaleVert =
-        $(go.Part, "Graduated",
-          { graduatedTickUnit: 10, pickable: false, layerName: "Grid", isAnimated: false },
-          $(go.Shape, { geometryString: "M0 0 V400" }),
-          $(go.Shape, { geometryString: "M0 0 V3", interval: 1, alignmentFocus: go.Spot.Bottom }),
-          $(go.Shape, { geometryString: "M0 0 V15", interval: 5, alignmentFocus: go.Spot.Bottom }),
-          $(go.TextBlock,
-            {
-              font: "10px sans-serif",
-              segmentOrientation: go.Link.OrientOpposite,
-              interval: 5,
-              alignmentFocus: go.Spot.BottomLeft,
-              segmentOffset: new go.Point(0, -7)
-            }
-          )
-        );
+      const gradScaleVert =
+        new go.Part("Graduated",
+            { graduatedTickUnit: 10, layerName: "ViewportBackground", alignment: go.Spot.TopLeft, isAnimated: false })
+          .add(
+            new go.Shape({ geometryString: "M0 0 V400" }),
+            new go.Shape({ geometryString: "M0 0 V4", interval: 1, alignmentFocus: go.Spot.Bottom }),
+            new go.Shape({ geometryString: "M0 0 V7", interval: 5, alignmentFocus: go.Spot.Bottom }),
+            new go.Shape({ geometryString: "M0 0 V15", interval: 10, alignmentFocus: go.Spot.Bottom }),
+            new go.TextBlock(
+              {
+                font: "10px sans-serif",
+                segmentOrientation: go.Orientation.Opposite,
+                interval: 10,
+                alignmentFocus: go.Spot.BottomLeft,
+                segmentOffset: new go.Point(0, -7)
+              })
+          );
 
-      var gradIndicatorHoriz =
-        $(go.Part,
+      const gradIndicatorHoriz =
+        new go.Part(
           {
             pickable: false, layerName: "Grid", visible: false,
             isAnimated: false, locationSpot: go.Spot.Top
-          },
-          $(go.Shape, { geometryString: "M0 0 V15", strokeWidth: 2, stroke: "red" })
+          }).add(
+          new go.Shape({ geometryString: "M0 0 V20", strokeWidth: 2, stroke: "red" })
         );
 
-      var gradIndicatorVert =
-        $(go.Part,
+      const gradIndicatorVert =
+        new go.Part(
           {
             pickable: false, layerName: "Grid", visible: false,
             isAnimated: false, locationSpot: go.Spot.Left
-          },
-          $(go.Shape, { geometryString: "M0 0 H15", strokeWidth: 2, stroke: "red" })
+          }).add(
+          new go.Shape({ geometryString: "M0 0 H20", strokeWidth: 2, stroke: "red" })
         );
 
       // Add listeners to keep the scales/indicators in sync with the viewport
       myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
+      myDiagram.addDiagramListener("ViewportBoundsChanged", e => { updateScales(); updateIndicators(); });
       myDiagram.mouseEnter = () => showIndicators(true);
       myDiagram.mouseLeave = () => showIndicators(false);
-      myDiagram.addDiagramListener("ViewportBoundsChanged", e => { updateScales(); updateIndicators(); });
-
-      // Override mousemove Tools such that doMouseMove will keep indicators in sync
-      myDiagram.toolManager.doMouseMove = function() {  // method override must be function, not =>
-        go.ToolManager.prototype.doMouseMove.call(this);
+      // Override doMouseMove to keep indicators in sync
+      myDiagram.doMouseMove = function() {  // method override must be function, not =>
+        go.Diagram.prototype.doMouseMove.call(this);
         updateIndicators();
       }
-      myDiagram.toolManager.linkingTool.doMouseMove = function() {  // method override must be function, not =>
-        go.LinkingTool.prototype.doMouseMove.call(this);
-        updateIndicators();
-      }
-      myDiagram.toolManager.draggingTool.doMouseMove = function() {  // method override must be function, not =>
-        go.DraggingTool.prototype.doMouseMove.call(this);
-        updateIndicators();
-      }
-      myDiagram.toolManager.dragSelectingTool.doMouseMove = function() {  // method override must be function, not =>
-        go.DragSelectingTool.prototype.doMouseMove.call(this);
-        updateIndicators();
-      }
-      // No need to override PanningTool since the ViewportBoundsChanged listener will fire
 
       function setupScalesAndIndicators() {
         myDiagram.commit(d => {
@@ -187,24 +241,20 @@
         myDiagram.commit(diag => {
           // Update properties of horizontal scale to reflect viewport
           gradScaleHoriz.elt(0).width = vb.width * diag.scale;
-          gradScaleHoriz.location = new go.Point(vb.x, vb.y);
           gradScaleHoriz.graduatedMin = vb.x;
           gradScaleHoriz.graduatedMax = vb.right;
-          gradScaleHoriz.scale = 1 / diag.scale;
           // Update properties of vertical scale to reflect viewport
           gradScaleVert.elt(0).height = vb.height * diag.scale;
-          gradScaleVert.location = new go.Point(vb.x, vb.y);
           gradScaleVert.graduatedMin = vb.y;
           gradScaleVert.graduatedMax = vb.bottom;
-          gradScaleVert.scale = 1 / diag.scale;
         }, null);
       }
 
       function updateIndicators() {
-        var vb = myDiagram.viewportBounds;
+        const vb = myDiagram.viewportBounds;
         if (!vb.isReal()) return;
         myDiagram.commit(diag => {
-          var mouseCoords = diag.lastInput.documentPoint;
+          const mouseCoords = diag.lastInput.documentPoint;
           // Keep the indicators in line with the mouse as viewport changes or mouse moves
           gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
           gradIndicatorHoriz.scale = 1 / diag.scale;
@@ -221,19 +271,20 @@
         }, null);
       }
 
+
       // print the diagram by opening a new window holding SVG images of the diagram contents for each page
       function printDiagram() {
-        var svgWindow = window.open();
+        const svgWindow = window.open();
         if (!svgWindow) return;  // failure to open a new Window
-        var printSize = new go.Size(700, 960);
-        var bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
-        var x = bnds.x;
-        var y = bnds.y;
+        const printSize = new go.Size(700, 960);
+        const bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
+        let x = bnds.x;
+        let y = bnds.y;
         while (y < bnds.bottom) {
           while (x < bnds.right) {
-            var pagerect = new go.Rect(x, y, printSize.width, printSize.height);
+            const pagerect = new go.Rect(x, y, printSize.width, printSize.height);
             updateScales(pagerect);
-            var svg = myDiagram.makeSvg({
+            const svg = myDiagram.makeSvg({
               scale: 1.0,
               position: new go.Point(x, y),
               size: printSize,
@@ -298,11 +349,61 @@
   </p>
   <button id="myPrintButton">Print</button>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Grid Patterns</h4>
+<p>
+<b>GoJS</b> provides functionality to display a grid of lines drawn at regular intervals.
+Grid Panels can also force dragged parts to be aligned on grid points, and resize parts to be multiples of the grid cell size.
+</p>
+<p>
+Grids are implemented using a type of <a href="../api/symbols/Panel.html" target="api">Panel</a>, <a href="../api/symbols/PanelLayout.html#Grid" target="api">Panel.Grid</a>.
+Grid Panels, like most other types of Panels, can be used within <a href="../api/symbols/Node.html" target="api">Node</a>s or any other kind of <a href="../api/symbols/Part.html" target="api">Part</a>.
+However when they are used as the <a href="../api/symbols/Diagram.html#grid" target="api">Diagram.grid</a>, they are effectively infinite in extent.
+</p>
+<p>
+More information can be found in the <a href="../intro/grids.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#grid">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

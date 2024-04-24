@@ -1,44 +1,46 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * The PolylineLinkingTool class the user to draw a new {@link Link} by clicking where the route should go,
+ * The PolylineLinkingTool class the user to draw a new {@link go.Link} by clicking where the route should go,
  * until clicking on a valid target port.
  *
  * This tool supports routing both orthogonal and straight links.
- * You can customize the {@link LinkingBaseTool#temporaryLink} as needed to affect the
+ * You can customize the {@link go.LinkingBaseTool.temporaryLink} as needed to affect the
  * appearance and behavior of the temporary link that is shown during the linking operation.
- * You can customize the {@link LinkingTool#archetypeLinkData} to specify property values
+ * You can customize the {@link go.LinkingTool.archetypeLinkData} to specify property values
  * that can be data-bound by your link template for the Links that are actually created.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/PolylineLinking.html">Polyline Linking</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/PolylineLinking.html">Polyline Linking</a> sample.
  * @category Tool Extension
  */
 export class PolylineLinkingTool extends go.LinkingTool {
     /**
-     * Constructs an PolylineLinkingTool, sets {@link #portGravity} to 0, and sets the name for the tool.
+     * Constructs an PolylineLinkingTool, sets {@link portGravity} to 0, and sets the name for the tool.
      */
-    constructor() {
+    constructor(init) {
         super();
-        this._firstMouseDown = false;
-        this._horizontal = false;
         this.portGravity = 0; // must click on a target port in order to complete the link
         this.name = 'PolylineLinking';
+        this._firstMouseDown = false;
+        this._horizontal = false;
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * @hidden @internal
      * This internal method adds a point to the route.
      * During the operation of this tool, the very last point changes to follow the mouse point.
-     * This method is called by {@link #doMouseDown} in order to add a new "last" point.
-     * @param {Point} p
+     * This method is called by {@link doMouseDown} in order to add a new "last" point.
+     * @param p
      */
     addPoint(p) {
         if (this._firstMouseDown)
@@ -51,8 +53,8 @@ export class PolylineLinkingTool extends go.LinkingTool {
     /**
      * @hidden @internal
      * This internal method moves the last point of the temporary Link's route.
-     * This is called by {@link #doMouseMove} and other methods that want to adjust the end of the route.
-     * @param {Point} p
+     * This is called by {@link doMouseMove} and other methods that want to adjust the end of the route.
+     * @param p
      */
     moveLastPoint(p) {
         if (this._firstMouseDown)
@@ -74,8 +76,8 @@ export class PolylineLinkingTool extends go.LinkingTool {
     /**
      * @hidden @internal
      * This internal method removes the last point of the temporary Link's route.
-     * This is called by the "Z" command in {@link #doKeyDown}
-     * and by {@link #doMouseUp} when a valid target port is found and we want to
+     * This is called by the "Z" command in {@link doKeyDown}
+     * and by {@link doMouseUp} when a valid target port is found and we want to
      * discard the current mouse point from the route.
      */
     removeLastPoint() {
@@ -118,12 +120,13 @@ export class PolylineLinkingTool extends go.LinkingTool {
                 const pts = this.temporaryLink.points;
                 const ult = pts.elt(pts.length - 1);
                 const penult = pts.elt(pts.length - 2);
-                this._horizontal = (ult.x === penult.x);
+                this._horizontal = ult.x === penult.x;
             }
             // a new temporary end point, the previous one is now "accepted"
             this.addPoint(this.diagram.lastInput.documentPoint);
         }
-        else { // e.g. right mouse down
+        else {
+            // e.g. right mouse down
             this.doCancel();
         }
     }
@@ -137,9 +140,9 @@ export class PolylineLinkingTool extends go.LinkingTool {
         }
     }
     /**
-     * If this event happens on a valid target port (as determined by {@link LinkingBaseTool#findTargetPort}),
-     * we complete the link drawing operation.  {@link #insertLink} is overridden to transfer the accumulated
-     * route drawn by user clicks to the new {@link Link} that was created.
+     * If this event happens on a valid target port (as determined by {@link go.LinkingBaseTool.findTargetPort}),
+     * we complete the link drawing operation.  {@link insertLink} is overridden to transfer the accumulated
+     * route drawn by user clicks to the new {@link go.Link} that was created.
      *
      * If this event happens elsewhere in the diagram, this tool is not stopped: the drawing of the route continues.
      */
@@ -221,7 +224,9 @@ export class PolylineLinkingTool extends go.LinkingTool {
         if (!this.isActive)
             return;
         const e = this.diagram.lastInput;
-        if (e.key === 'Z' && this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) { // undo
+        if (e.key === 'Z' &&
+            this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) {
+            // undo
             // remove a point, and then treat the last one as a temporary one
             this.removeLastPoint();
             this.moveLastPoint(e.documentPoint);

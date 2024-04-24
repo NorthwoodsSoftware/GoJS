@@ -1,62 +1,135 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Drag and drop items between nodes."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Dragging Fields Between Records</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Drag and drop items between nodes." />
+<meta itemprop="description" content="Drag and drop items between nodes." />
+<meta property="og:description" content="Drag and drop items between nodes." />
+<meta name="twitter:description" content="Drag and drop items between nodes." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Drag and Drop Fields />
+<meta property="og:title" content=Drag and Drop Fields />
+<meta name="twitter:title" content=Drag and Drop Fields />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/records.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/records.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/records.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/dragDropFields.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/dragDropFields.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Drag and Drop Fields | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script id="code">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
   // Custom DraggingTool for dragging fields instead of whole Parts.
   // FieldDraggingTool.fieldTemplate needs to be set to a template of the field that you want shown while dragging.
   class FieldDraggingTool extends go.DraggingTool {
     constructor() {
       super();
-      this.fieldTemplate = null;  // THIS NEEDS TO BE SET before a drag starts
+      this.fieldTemplate = null; // THIS NEEDS TO BE SET before a drag starts
       this.temporaryPart = null;
     }
 
@@ -65,18 +138,15 @@
       const diagram = this.diagram;
       let obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
       while (obj !== null && obj.type !== go.Panel.TableRow) obj = obj.panel;
-      if (obj !== null && obj.type === go.Panel.TableRow &&
-        this.fieldTemplate !== null && this.temporaryPart === null) {
-        const tempPart =
-          go.GraphObject.make(go.Node, "Table",
-            { layerName: "Tool", locationSpot: go.Spot.Center },
-            this.fieldTemplate.copy());  // copy the template!
+      if (obj !== null && obj.type === go.Panel.TableRow && this.fieldTemplate !== null && this.temporaryPart === null) {
+        const tempPart = new go.Part('Table', { layerName: 'Tool', locationSpot: go.Spot.Center })
+          .add(this.fieldTemplate.copy()); // copy the template!
         this.temporaryPart = tempPart;
         // assume OBJ is now a Panel representing a field, bound to field data
         // update the temporary Part via data binding
-        tempPart.location = diagram.lastInput.documentPoint;  // need to set location explicitly
-        diagram.add(tempPart);  // add to Diagram before setting data
-        tempPart.data = obj.data;  // bind to the same field data as being dragged
+        tempPart.location = diagram.lastInput.documentPoint; // need to set location explicitly
+        diagram.add(tempPart); // add to Diagram before setting data
+        tempPart.data = obj.data; // bind to the same field data as being dragged
         return tempPart;
       }
       return super.findDraggablePart();
@@ -91,7 +161,7 @@
       const map = new go.Map(/*go.Part, go.DraggingInfo*/);
       map.set(this.temporaryPart, new go.DraggingInfo(diagram.lastInput.documentPoint.copy()));
       this.draggedParts = map;
-      this.startTransaction("Drag Field");
+      this.startTransaction('Drag Field');
       diagram.isMouseCaptured = true;
     }
 
@@ -123,10 +193,9 @@
       const data = this.temporaryPart.data;
       const dest = diagram.findPartAt(diagram.lastInput.documentPoint, false);
       if (dest !== null && dest.data && dest.data.fields) {
-        const panel = dest.findObject("TABLE");
+        const panel = dest.findObject('TABLE');
         const idx = panel.findRowForLocalY(panel.getLocalPoint(diagram.lastInput.documentPoint).y);
-        diagram.model.insertArrayItem(dest.data.fields, idx + 1,
-          { name: data.name, info: data.info, color: data.color, figure: data.figure });
+        diagram.model.insertArrayItem(dest.data.fields, idx + 1, { name: data.name, info: data.info, color: data.color, figure: data.figure });
       }
       const src = this.currentPart;
       // whether or not there was a destination node, delete the original field
@@ -136,150 +205,214 @@
           diagram.model.removeArrayItem(src.data.fields, sidx);
         }
       }
-      this.transactionResult = "Inserted Field";
+      this.transactionResult = 'Dragged Field';
       this.stopTool();
     }
   }
   // end of FieldDraggingTool
 
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      validCycle: go.CycleMode.NotDirected, // don't allow loops
+      draggingTool: $(FieldDraggingTool), // use custom DraggingTool
+      // automatically update the model that is shown on this page
+      ModelChanged: (e) => {
+        if (e.isTransactionFinished) showModel();
+      },
+      'undoManager.isEnabled': true,
+    });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
+    // This template is a Panel that is used to represent each item in a Panel.itemArray.
+    // The Panel is data bound to the item object.
+    // This template needs to be used by the FieldDraggingTool as well as the Diagram.nodeTemplate.
+    const fieldTemplate = $(go.Panel,
+      'TableRow', // this Panel is a row in the containing Table
+      new go.Binding('portId', 'name'), // this Panel is a "port"
+      {
+        background: 'transparent', // so this port's background can be picked by the mouse
+        fromSpot: go.Spot.Right, // links only go from the right side to the left side
+        toSpot: go.Spot.Left,
+      }, // allow drawing links from or to this port
+      $(go.Shape, { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 }, new go.Binding('figure', 'figure'), new go.Binding('fill', 'color')),
+      $(go.TextBlock, { margin: new go.Margin(0, 2), column: 1, font: 'bold 13px sans-serif' }, new go.Binding('text', 'name')),
+      $(go.TextBlock, { margin: new go.Margin(0, 2), column: 2, font: '13px sans-serif' }, new go.Binding('text', 'info'))
+    );
 
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            validCycle: go.Diagram.CycleNotDirected,  // don't allow loops
-            draggingTool: $(FieldDraggingTool),  // use custom DraggingTool
-            // automatically update the model that is shown on this page
-            "ModelChanged": e => { if (e.isTransactionFinished) showModel(); },
-            "undoManager.isEnabled": true
-          });
+    // the FieldDraggingTool needs a template for what to show while dragging
+    myDiagram.toolManager.draggingTool.fieldTemplate = fieldTemplate;
 
-      // This template is a Panel that is used to represent each item in a Panel.itemArray.
-      // The Panel is data bound to the item object.
-      // This template needs to be used by the FieldDraggingTool as well as the Diagram.nodeTemplate.
-      const fieldTemplate =
-        $(go.Panel, "TableRow",  // this Panel is a row in the containing Table
-          new go.Binding("portId", "name"),  // this Panel is a "port"
-          {
-            background: "transparent",  // so this port's background can be picked by the mouse
-            fromSpot: go.Spot.Right,  // links only go from the right side to the left side
-            toSpot: go.Spot.Left
-          },  // allow drawing links from or to this port
-          $(go.Shape,
-            { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 },
-            new go.Binding("figure", "figure"),
-            new go.Binding("fill", "color")),
+    // This template represents a whole "record".
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      {
+        movable: false,
+        copyable: false,
+        deletable: false,
+        locationSpot: go.Spot.Center,
+      },
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      // this rectangular shape surrounds the content of the node
+      $(go.Shape, { fill: '#EEEEEE' }),
+      // the content consists of a header and a list of items
+      $(go.Panel,
+        'Vertical',
+        // this is the header for the whole node
+        $(go.Panel,
+          'Auto',
+          { stretch: go.Stretch.Horizontal }, // as wide as the whole node
+          $(go.Shape, { fill: '#1570A6', stroke: null }),
           $(go.TextBlock,
-            { margin: new go.Margin(0, 2), column: 1, font: "bold 13px sans-serif" },
-            new go.Binding("text", "name")),
-          $(go.TextBlock,
-            { margin: new go.Margin(0, 2), column: 2, font: "13px sans-serif" },
-            new go.Binding("text", "info"))
-        );
-
-      // the FieldDraggingTool needs a template for what to show while dragging
-      myDiagram.toolManager.draggingTool.fieldTemplate = fieldTemplate;
-
-      // This template represents a whole "record".
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
+            {
+              alignment: go.Spot.Center,
+              margin: 3,
+              stroke: 'white',
+              textAlign: 'center',
+              font: 'bold 12pt sans-serif',
+            },
+            new go.Binding('text', 'title')
+          )
+        ),
+        // this Panel holds a Panel for each item object in the itemArray;
+        // each item Panel is defined by the itemTemplate to be a TableRow in this Table
+        $(go.Panel,
+          'Table',
           {
-            movable: false,
-            copyable: false,
-            deletable: false,
-            locationSpot: go.Spot.Center
+            name: 'TABLE',
+            padding: 2,
+            minSize: new go.Size(100, 10),
+            defaultStretch: go.Stretch.Horizontal,
+            itemTemplate: fieldTemplate,
           },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          // this rectangular shape surrounds the content of the node
-          $(go.Shape,
-            { fill: "#EEEEEE" }),
-          // the content consists of a header and a list of items
-          $(go.Panel, "Vertical",
-            // this is the header for the whole node
-            $(go.Panel, "Auto",
-              { stretch: go.GraphObject.Horizontal },  // as wide as the whole node
-              $(go.Shape,
-                { fill: "#1570A6", stroke: null }),
-              $(go.TextBlock,
-                {
-                  alignment: go.Spot.Center,
-                  margin: 3,
-                  stroke: "white",
-                  textAlign: "center",
-                  font: "bold 12pt sans-serif"
-                },
-                new go.Binding("text", "title"))),
-            // this Panel holds a Panel for each item object in the itemArray;
-            // each item Panel is defined by the itemTemplate to be a TableRow in this Table
-            $(go.Panel, "Table",
-              {
-                name: "TABLE",
-                padding: 2,
-                minSize: new go.Size(100, 10),
-                defaultStretch: go.GraphObject.Horizontal,
-                itemTemplate: fieldTemplate
-              },
-              new go.Binding("itemArray", "fields")
-            )  // end Table Panel of items
-          )  // end Vertical Panel
-        );  // end Node
+          new go.Binding('itemArray', 'fields')
+        ) // end Table Panel of items
+      ) // end Vertical Panel
+    ); // end Node
 
-      myDiagram.model =
-        new go.GraphLinksModel(
-          {
-            linkFromPortIdProperty: "fromPort",
-            linkToPortIdProperty: "toPort",
-            copiesArrays: true,
-            copiesArrayObjects: true,
-            nodeDataArray: [
-              {
-                key: 1,
-                title: "Record1",
-                fields: [
-                  { name: "field1", info: "", color: "#F7B84B", figure: "Ellipse" },
-                  { name: "field2", info: "the second one", color: "#F25022", figure: "Ellipse" },
-                  { name: "fieldThree", info: "3rd", color: "#00BCF2" }
-                ],
-                loc: "0 0"
-              },
-              {
-                key: 2,
-                title: "Record2",
-                fields: [
-                  { name: "fieldA", info: "", color: "#FFB900", figure: "Diamond" }
-                ],
-                loc: "250 0"
-              }
-            ]
-          });
+    myDiagram.model = new go.GraphLinksModel({
+      linkFromPortIdProperty: 'fromPort',
+      linkToPortIdProperty: 'toPort',
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: [
+        {
+          key: 1,
+          title: 'Record1',
+          fields: [
+            { name: 'field1', info: '', color: '#F7B84B', figure: 'Ellipse' },
+            { name: 'field2', info: 'the second one', color: '#F25022', figure: 'Ellipse' },
+            { name: 'fieldThree', info: '3rd', color: '#00BCF2' },
+          ],
+          loc: '0 0',
+        },
+        {
+          key: 2,
+          title: 'Record2',
+          fields: [{ name: 'fieldA', info: '', color: '#FFB900', figure: 'Diamond' }],
+          loc: '250 0',
+        },
+      ],
+    });
 
-      showModel();  // show the diagram's initial model
+    showModel(); // show the diagram's initial model
 
-      function showModel() {
-        document.getElementById("mySavedModel").textContent = myDiagram.model.toJson();
-      }
+    function showModel() {
+      document.getElementById('mySavedModel').textContent = myDiagram.model.toJson();
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:300px"></div>
-  <p>Drag fields between records to move them; dragging within the same node can reorder them.
-     Fields can be copied when holding down the control key; they are deleted when dropped in the diagram's background.
-     The "record" Nodes are not movable or copyable or deletable.</p>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 300px"></div>
+  <p>
+    Drag fields between records to move them; dragging within the same node can reorder them. Fields can be copied when holding down the control key; they are
+    deleted when dropped in the diagram's background. The "record" Nodes are not movable or copyable or deletable.
+  </p>
   <p>The model data, automatically updated after each change or undo or redo:</p>
-  <textarea id="mySavedModel" style="width:100%;height:300px"></textarea>
+  <textarea id="mySavedModel" style="width: 100%; height: 300px"></textarea>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

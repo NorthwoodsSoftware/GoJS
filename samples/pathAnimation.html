@@ -1,269 +1,397 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Animating diagram parts to travel along link paths from one node to another."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Concept Map with animation along paths</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Animating diagram parts to travel along link paths from one node to another." />
+<meta itemprop="description" content="Animating diagram parts to travel along link paths from one node to another." />
+<meta property="og:description" content="Animating diagram parts to travel along link paths from one node to another." />
+<meta name="twitter:description" content="Animating diagram parts to travel along link paths from one node to another." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Path Animation />
+<meta property="og:title" content=Path Animation />
+<meta name="twitter:title" content=Path Animation />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pathAnimation.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/pathAnimation.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pathAnimation.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/pathAnimation.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/pathAnimation.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Path Animation | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // must name or refer to the DIV HTML element
-          {
-            initialAutoScale: go.Diagram.Uniform,  // an initial automatic zoom-to-fit
-            contentAlignment: go.Spot.Center,  // align document to the center of the viewport
-            layout:
-              $(go.ForceDirectedLayout,  // automatically spread nodes apart
-                { defaultSpringLength: 30, defaultElectricalCharge: 100 }),
-            "undoManager.isEnabled": true
-          });
-
-      // define each Node's appearance
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",  // the whole node panel
-          { locationSpot: go.Spot.Center },
-          // define the node's outer shape, which will surround the TextBlock
-          $(go.Shape, "Rectangle",
-            { fill: $(go.Brush, "Linear", { 0: "rgb(254, 201, 0)", 1: "rgb(254, 162, 0)" }), stroke: "black" }),
-          $(go.TextBlock,
-            { font: "bold 10pt helvetica, bold arial, sans-serif", margin: new go.Margin(4, 4, 3, 20) },
-            new go.Binding("text", "text"))
-        );
-
-      // replace the default Link template in the linkTemplateMap
-      myDiagram.linkTemplate =
-        $(go.Link,  // the whole link panel
-          // path animation works with these kinds of links too:
-          //{ routing: go.Link.AvoidsNodes },
-          //{ curve: go.Link.Bezier },
-          $(go.Shape,  // the link shape
-            { stroke: "black" }),
-          $(go.Shape,  // the arrowhead
-            { toArrow: "standard", stroke: null }),
-          $(go.Panel, "Auto",
-            $(go.Shape,  // the label background, which becomes transparent around the edges
-              {
-                fill: $(go.Brush, "Radial", { 0: "rgb(240, 240, 240)", 0.3: "rgb(240, 240, 240)", 1: "rgba(240, 240, 240, 0)" }),
-                stroke: null
-              }),
-            $(go.TextBlock,  // the label text
-              {
-                textAlign: "center",
-                font: "10pt helvetica, arial, sans-serif",
-                stroke: "#555555",
-                margin: 4
-              },
-              new go.Binding("text", "text"))
-          )
-        );
-
-      myDiagram.nodeTemplateMap.add("token",
-        $(go.Part,
-          { locationSpot: go.Spot.Center, layerName: "Foreground" },
-          $(go.Shape, "Circle",
-            { width: 12, height: 12, fill: "green", strokeWidth: 0 },
-            new go.Binding("fill", "color"))
-        ));
-
-      // create the model for the concept map
-      var nodeDataArray = [
-        { key: 1, text: "Concept Maps" },
-        { key: 2, text: "Organized Knowledge" },
-        { key: 3, text: "Context Dependent" },
-        { key: 4, text: "Concepts" },
-        { key: 5, text: "Propositions" },
-        { key: 6, text: "Associated Feelings or Affect" },
-        { key: 7, text: "Perceived Regularities" },
-        { key: 8, text: "Labeled" },
-        { key: 9, text: "Hierarchically Structured" },
-        { key: 10, text: "Effective Teaching" },
-        { key: 11, text: "Crosslinks" },
-        { key: 12, text: "Effective Learning" },
-        { key: 13, text: "Events (Happenings)" },
-        { key: 14, text: "Objects (Things)" },
-        { key: 15, text: "Symbols" },
-        { key: 16, text: "Words" },
-        { key: 17, text: "Creativity" },
-        { key: 18, text: "Interrelationships" },
-        { key: 19, text: "Infants" },
-        { key: 20, text: "Different Map Segments" }
-      ];
-      var linkDataArray = [
-        { from: 1, to: 2, text: "represent" },
-        { from: 2, to: 3, text: "is" },
-        { from: 2, to: 4, text: "is" },
-        { from: 2, to: 5, text: "is" },
-        { from: 2, to: 6, text: "includes" },
-        { from: 2, to: 10, text: "necessary\nfor" },
-        { from: 2, to: 12, text: "necessary\nfor" },
-        { from: 4, to: 5, text: "combine\nto form" },
-        { from: 4, to: 6, text: "include" },
-        { from: 4, to: 7, text: "are" },
-        { from: 4, to: 8, text: "are" },
-        { from: 4, to: 9, text: "are" },
-        { from: 5, to: 9, text: "are" },
-        { from: 5, to: 11, text: "may be" },
-        { from: 7, to: 13, text: "in" },
-        { from: 7, to: 14, text: "in" },
-        { from: 7, to: 19, text: "begin\nwith" },
-        { from: 8, to: 15, text: "with" },
-        { from: 8, to: 16, text: "with" },
-        { from: 9, to: 17, text: "aids" },
-        { from: 11, to: 18, text: "show" },
-        { from: 12, to: 19, text: "begins\nwith" },
-        { from: 17, to: 18, text: "needed\nto see" },
-        { from: 18, to: 20, text: "between" }
-      ];
-      myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-
-      initTokens();
-    }
-
-    function initTokens() {
-      var oldskips = myDiagram.skipsUndoManager;
-      myDiagram.skipsUndoManager = true;
-      myDiagram.model.addNodeDataCollection([
-        { category: "token", at: 1, color: "green" },
-        { category: "token", at: 2, color: "blue" },
-        { category: "token", at: 4, color: "yellow" },
-        { category: "token", at: 5, color: "purple" },
-        { category: "token", at: 7, color: "red" },
-        { category: "token", at: 8, color: "black" },
-        { category: "token", at: 9, color: "green" },
-        { category: "token", at: 11, color: "blue" },
-        { category: "token", at: 12, color: "yellow" },
-        { category: "token", at: 17, color: "purple" },
-        { category: "token", at: 18, color: "red" }
-      ]);
-      myDiagram.skipsUndoManager = oldskips;
-      window.requestAnimationFrame(updateTokens);
-    }
-
-    function updateTokens() {
-      var oldskips = myDiagram.skipsUndoManager;
-      myDiagram.skipsUndoManager = true;  // don't record these changes in the UndoManager!
-      var temp = new go.Point();
-      myDiagram.parts.each(token => {
-        var data = token.data;
-        if (!data) return;
-        var at = data.at;
-        if (at === undefined) return;
-        var from = myDiagram.findNodeForKey(at);
-        if (from === null) return;
-        var frac = data.frac;
-        if (frac === undefined) frac = 0.0;
-        var next = data.next;
-        var to = myDiagram.findNodeForKey(next);
-        if (to === null) {  // nowhere to go?
-          positionTokenAtNode(token, from);  // temporarily stay at the current node
-          data.next = chooseDestination(token, from);  // and decide where to go next
-        } else {  // proceed toward the "to" port
-          var link = from.findLinksTo(to).first();
-          if (link !== null) {
-            token.location = link.path.getDocumentPoint(link.path.geometry.getPointAlongPath(frac, temp));
-          } else {  // stay at the current node
-            positionTokenAtNode(token, from);
-          }
-          if (frac >= 1.0) {  // if beyond the end, it's "AT" the NEXT node
-            data.frac = 0.0;
-            data.at = next;
-            data.next = undefined;  // don't know where to go next
-          } else {  // otherwise, move fractionally closer to the NEXT node
-            data.frac = frac + 0.01;
-          }
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
-      myDiagram.skipsUndoManager = oldskips;
-      window.requestAnimationFrame(updateTokens);
-    }
 
-    // determine where to position a token when it is resting at a node
-    function positionTokenAtNode(token, node) {
-      // these details depend on the node template
-      token.location = node.position.copy().offset(4 + 6, 5 + 6);
-    }
-
-    function chooseDestination(token, node) {
-      var dests = new go.List().addAll(node.findNodesOutOf());
-      if (dests.count > 0) {
-        var dest = dests.elt(Math.floor(Math.random() * dests.count));
-        return dest.data.key;
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
-      var arr = myDiagram.model.nodeDataArray;
-      // choose a random next data object that is not a token and is not the current Node
-      var data = null;
-      while (data = arr[Math.floor(Math.random() * arr.length)],
-        data.category === "token" || data === node.data) { }
-      return data.key;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must name or refer to the DIV HTML element
+      {
+        initialAutoScale: go.AutoScale.Uniform, // an initial automatic zoom-to-fit
+        contentAlignment: go.Spot.Center, // align document to the center of the viewport
+        layout: $(go.ForceDirectedLayout, // automatically spread nodes apart
+          { defaultElectricalCharge: 300, defaultSpringLength: 150 }
+        ),
+        'undoManager.isEnabled': true,
+      }
+    );
+
+    // define each Node's appearance
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto', // the whole node panel
+      { locationSpot: go.Spot.Center },
+      // define the node's outer shape, which will surround the TextBlock
+      $(go.Shape, 'Rectangle', { fill: $(go.Brush, 'Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }), stroke: 'black' }),
+      $(go.TextBlock, { font: 'bold 10pt helvetica, bold arial, sans-serif', margin: new go.Margin(4, 4, 3, 20) }, new go.Binding('text', 'text'))
+    );
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate = $(go.Link, // the whole link panel
+      // path animation works with these kinds of links too:
+      //{ routing: go.Routing.AvoidsNodes },
+      //{ curve: go.Curve.Bezier },
+      $(go.Shape, // the link shape
+        { stroke: 'black' }
+      ),
+      $(go.Shape, // the arrowhead
+        { toArrow: 'standard', stroke: null }
+      ),
+      $(go.Panel,
+        'Auto',
+        $(go.Shape, // the label background, which becomes transparent around the edges
+          {
+            fill: $(go.Brush, 'Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+            stroke: null,
+          }
+        ),
+        $(go.TextBlock, // the label text
+          {
+            textAlign: 'center',
+            font: '10pt helvetica, arial, sans-serif',
+            stroke: '#555555',
+            margin: 4,
+          },
+          new go.Binding('text', 'text')
+        )
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'token',
+      $(go.Part,
+        { locationSpot: go.Spot.Center, layerName: 'Foreground' },
+        $(go.Shape, 'Circle', { width: 12, height: 12, fill: 'green', strokeWidth: 0 }, new go.Binding('fill', 'color'))
+      )
+    );
+
+    // create the model for the concept map
+    var nodeDataArray = [
+      { key: 1, text: 'Concept Maps' },
+      { key: 2, text: 'Organized Knowledge' },
+      { key: 3, text: 'Context Dependent' },
+      { key: 4, text: 'Concepts' },
+      { key: 5, text: 'Propositions' },
+      { key: 6, text: 'Associated Feelings or Affect' },
+      { key: 7, text: 'Perceived Regularities' },
+      { key: 8, text: 'Labeled' },
+      { key: 9, text: 'Hierarchically Structured' },
+      { key: 10, text: 'Effective Teaching' },
+      { key: 11, text: 'Crosslinks' },
+      { key: 12, text: 'Effective Learning' },
+      { key: 13, text: 'Events (Happenings)' },
+      { key: 14, text: 'Objects (Things)' },
+      { key: 15, text: 'Symbols' },
+      { key: 16, text: 'Words' },
+      { key: 17, text: 'Creativity' },
+      { key: 18, text: 'Interrelationships' },
+      { key: 19, text: 'Infants' },
+      { key: 20, text: 'Different Map Segments' },
+    ];
+    var linkDataArray = [
+      { from: 1, to: 2, text: 'represent' },
+      { from: 2, to: 3, text: 'is' },
+      { from: 2, to: 4, text: 'is' },
+      { from: 2, to: 5, text: 'is' },
+      { from: 2, to: 6, text: 'includes' },
+      { from: 2, to: 10, text: 'necessary\nfor' },
+      { from: 2, to: 12, text: 'necessary\nfor' },
+      { from: 4, to: 5, text: 'combine\nto form' },
+      { from: 4, to: 6, text: 'include' },
+      { from: 4, to: 7, text: 'are' },
+      { from: 4, to: 8, text: 'are' },
+      { from: 4, to: 9, text: 'are' },
+      { from: 5, to: 9, text: 'are' },
+      { from: 5, to: 11, text: 'may be' },
+      { from: 7, to: 13, text: 'in' },
+      { from: 7, to: 14, text: 'in' },
+      { from: 7, to: 19, text: 'begin\nwith' },
+      { from: 8, to: 15, text: 'with' },
+      { from: 8, to: 16, text: 'with' },
+      { from: 9, to: 17, text: 'aids' },
+      { from: 11, to: 18, text: 'show' },
+      { from: 12, to: 19, text: 'begins\nwith' },
+      { from: 17, to: 18, text: 'needed\nto see' },
+      { from: 18, to: 20, text: 'between' },
+    ];
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+    initTokens();
+  }
+
+  function initTokens() {
+    var oldskips = myDiagram.skipsUndoManager;
+    myDiagram.skipsUndoManager = true;
+    myDiagram.model.addNodeDataCollection([
+      { category: 'token', at: 1, color: 'green' },
+      { category: 'token', at: 2, color: 'blue' },
+      { category: 'token', at: 4, color: 'yellow' },
+      { category: 'token', at: 5, color: 'purple' },
+      { category: 'token', at: 7, color: 'red' },
+      { category: 'token', at: 8, color: 'black' },
+      { category: 'token', at: 9, color: 'green' },
+      { category: 'token', at: 11, color: 'blue' },
+      { category: 'token', at: 12, color: 'yellow' },
+      { category: 'token', at: 17, color: 'purple' },
+      { category: 'token', at: 18, color: 'red' },
+    ]);
+    myDiagram.skipsUndoManager = oldskips;
+    window.requestAnimationFrame(updateTokens);
+  }
+
+  function updateTokens() {
+    var oldskips = myDiagram.skipsUndoManager;
+    myDiagram.skipsUndoManager = true; // don't record these changes in the UndoManager!
+    var temp = new go.Point();
+    myDiagram.parts.each((token) => {
+      var data = token.data;
+      if (!data) return;
+      var at = data.at;
+      if (at === undefined) return;
+      var from = myDiagram.findNodeForKey(at);
+      if (from === null) return;
+      var frac = data.frac;
+      if (frac === undefined) frac = 0.0;
+      var next = data.next;
+      var to = myDiagram.findNodeForKey(next);
+      if (to === null) {
+        // nowhere to go?
+        positionTokenAtNode(token, from); // temporarily stay at the current node
+        data.next = chooseDestination(token, from); // and decide where to go next
+      } else {
+        // proceed toward the "to" port
+        var link = from.findLinksTo(to).first();
+        if (link !== null) {
+          token.location = link.path.getDocumentPoint(link.path.geometry.getPointAlongPath(frac, temp));
+        } else {
+          // stay at the current node
+          positionTokenAtNode(token, from);
+        }
+        if (frac >= 1.0) {
+          // if beyond the end, it's "AT" the NEXT node
+          data.frac = 0.0;
+          data.at = next;
+          data.next = undefined; // don't know where to go next
+        } else {
+          // otherwise, move fractionally closer to the NEXT node
+          data.frac = frac + 0.01;
+        }
+      }
+    });
+    myDiagram.skipsUndoManager = oldskips;
+    window.requestAnimationFrame(updateTokens);
+  }
+
+  // determine where to position a token when it is resting at a node
+  function positionTokenAtNode(token, node) {
+    // these details depend on the node template
+    token.location = node.position.copy().offset(4 + 6, 5 + 6);
+  }
+
+  function chooseDestination(token, node) {
+    var dests = new go.List().addAll(node.findNodesOutOf());
+    if (dests.count > 0) {
+      var dest = dests.elt(Math.floor(Math.random() * dests.count));
+      return dest.data.key;
+    }
+    var arr = myDiagram.model.nodeDataArray;
+    // choose a random next data object that is not a token and is not the current Node
+    var data = null;
+    while (((data = arr[Math.floor(Math.random() * arr.length)]), data.category === 'token' || data === node.data)) {}
+    return data.key;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 700px"></div>
   <p>
-    This sample is copied from the <a href="conceptMap.html">Concept Map</a> sample and
-    augmented with tokens that traverse the graph, stopping at nodes and travelling along links.
+    This sample is copied from the <a href="conceptMap.html">Concept Map</a> sample and augmented with tokens that traverse the graph, stopping at nodes and
+    travelling along links.
   </p>
-  <p>
-    Note that the creation and movement of the tokens is <i>not</i> recorded by the <a>UndoManager</a>.
-  </p>
+  <p>Note that the creation and movement of the tokens is <i>not</i> recorded by the <a>UndoManager</a>.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Force Directed Layout</h4>
+<p>
+This predefined layout treats the graph as if it were a system of physical bodies with forces acting on and between them.
+The layout iteratively moves nodes and links to minimize the total sum of forces on each node. The resulting layout will normally not contain
+overlapping Nodes, excluding cases where the graph is densely interconnected.
+More information can be found in the <a href="../intro/layouts.html#ForceDirectedLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#force-directed">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Animation</h4>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
+  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,302 +1,417 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool"/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Selection Adornment Buttons</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool" />
+<meta itemprop="description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool" />
+<meta property="og:description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool" />
+<meta name="twitter:description" content="When a diagram node is selected show a selection Adornment holding buttons on which a click invokes a command or a drag starts a tool" />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Adornment Buttons />
+<meta property="og:title" content=Adornment Buttons />
+<meta name="twitter:title" content=Adornment Buttons />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/adornmentButtons.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/adornmentButtons.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/adornmentButtons.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/adornmentButtons.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/adornmentButtons.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Adornment Buttons | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-      // As of 2.2, you can also author concise templates with method chaining
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // As of 2.2, you can also author concise templates with method chaining
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        'linkingTool.isEnabled': false, // invoked explicitly by drawLink function, below
+        'linkingTool.direction': go.LinkingDirection.ForwardsOnly, // only draw "from" towards "to"
+        'undoManager.isEnabled': true, // enable undo & redo
+      }
+    );
+
+    myDiagram.linkTemplate = $(go.Link,
+      { routing: go.Routing.AvoidsNodes, corner: 5 },
+      $(go.Shape, { strokeWidth: 1.5 }),
+      $(go.Shape, { toArrow: 'OpenTriangle' })
+    );
+
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      {
+        desiredSize: new go.Size(80, 80),
+        // rearrange the link points evenly along the sides of the nodes as links are
+        // drawn or reconnected -- these event handlers only make sense when the fromSpot
+        // and toSpot are Spot.xxxSides
+        linkConnected: (node, link, port) => {
+          if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+          if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
+        },
+        linkDisconnected: (node, link, port) => {
+          if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+          if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
+        },
+        locationSpot: go.Spot.Center,
+      },
+      new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Shape,
         {
-          "linkingTool.isEnabled": false,  // invoked explicitly by drawLink function, below
-          "linkingTool.direction": go.LinkingTool.ForwardsOnly,  // only draw "from" towards "to"
-          "undoManager.isEnabled": true  // enable undo & redo
-        });
+          name: 'SHAPE', // named so that changeColor can modify it
+          strokeWidth: 0, // no border
+          fill: 'lightgray', // default fill color
+          portId: '',
+          // use the following property if you want users to draw new links
+          // interactively by dragging from the Shape, and re-enable the LinkingTool
+          // in the initialization of the Diagram
+          //cursor: "pointer",
+          fromSpot: go.Spot.AllSides,
+          fromLinkable: true,
+          fromLinkableDuplicates: true,
+          fromLinkableSelfNode: true,
+          toSpot: go.Spot.AllSides,
+          toLinkable: true,
+          toLinkableDuplicates: true,
+          toLinkableSelfNode: true,
+        },
+        new go.Binding('fill', 'color').makeTwoWay()
+      ),
+      $(go.TextBlock,
+        {
+          name: 'TEXTBLOCK', // named so that editText can start editing it
+          margin: 3,
+          // use the following property if you want users to interactively start
+          // editing the text by clicking on it or by F2 if the node is selected:
+          //editable: true,
+          overflow: go.TextOverflow.Ellipsis,
+          maxLines: 5,
+        },
+        new go.Binding('text').makeTwoWay()
+      )
+    );
 
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { routing: go.Link.AvoidsNodes, corner: 5 },
-          $(go.Shape, { strokeWidth: 1.5 }),
-          $(go.Shape, { toArrow: "OpenTriangle" })
-        );
-
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
+    // a selected node shows an Adornment that includes both a blue border
+    // and a row of Buttons above the node
+    myDiagram.nodeTemplate.selectionAdornmentTemplate = $(go.Adornment,
+      'Spot',
+      $(go.Panel, 'Auto', $(go.Shape, { stroke: 'dodgerblue', strokeWidth: 2, fill: null }), $(go.Placeholder)),
+      $(go.Panel,
+        'Horizontal',
+        { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom },
+        $('Button',
+          { click: editText }, // defined below, to support editing the text of the node
+          $(go.TextBlock, 't', { font: 'bold 10pt sans-serif', desiredSize: new go.Size(15, 15), textAlign: 'center' })
+        ),
+        $('Button',
+          { click: changeColor, _buttonFillOver: 'transparent' }, // defined below, to support changing the color of the node
+          new go.Binding('ButtonBorder.fill', 'color', nextColor),
+          $(go.Shape, { fill: null, stroke: null, desiredSize: new go.Size(14, 14) })
+        ),
+        $('Button',
           {
-            desiredSize: new go.Size(80, 80),
-            // rearrange the link points evenly along the sides of the nodes as links are
-            // drawn or reconnected -- these event handlers only make sense when the fromSpot
-            // and toSpot are Spot.xxxSides
-            linkConnected: (node, link, port) => {
-              if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-              if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-            },
-            linkDisconnected: (node, link, port) => {
-              if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-              if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-            },
-            locationSpot: go.Spot.Center
+            // drawLink is defined below, to support interactively drawing new links
+            click: drawLink, // click on Button and then click on target node
+            actionMove: drawLink, // drag from Button to the target node
           },
-          new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Shape,
-            {
-              name: "SHAPE",  // named so that changeColor can modify it
-              strokeWidth: 0,  // no border
-              fill: "lightgray",  // default fill color
-              portId: "",
-              // use the following property if you want users to draw new links
-              // interactively by dragging from the Shape, and re-enable the LinkingTool
-              // in the initialization of the Diagram
-              //cursor: "pointer",
-              fromSpot: go.Spot.AllSides, fromLinkable: true,
-              fromLinkableDuplicates: true, fromLinkableSelfNode: true,
-              toSpot: go.Spot.AllSides, toLinkable: true,
-              toLinkableDuplicates: true, toLinkableSelfNode: true
-            },
-            new go.Binding("fill", "color").makeTwoWay()),
-          $(go.TextBlock,
-            {
-              name: "TEXTBLOCK",  // named so that editText can start editing it
-              margin: 3,
-              // use the following property if you want users to interactively start
-              // editing the text by clicking on it or by F2 if the node is selected:
-              //editable: true,
-              overflow: go.TextBlock.OverflowEllipsis,
-              maxLines: 5
-            },
-            new go.Binding("text").makeTwoWay())
-        );
+          $(go.Shape, { geometryString: 'M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14' })
+        ),
+        $('Button',
+          {
+            actionMove: dragNewNode, // defined below, to support dragging from the button
+            _dragData: { text: 'a Node', color: 'lightgray' }, // node data to copy
+            click: clickNewNode, // defined below, to support a click on the button
+          },
+          $(go.Shape, { geometryString: 'M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z', fill: 'gray' })
+        )
+      )
+    );
 
-      // a selected node shows an Adornment that includes both a blue border
-      // and a row of Buttons above the node
-      myDiagram.nodeTemplate.selectionAdornmentTemplate =
-        $(go.Adornment, "Spot",
-          $(go.Panel, "Auto",
-            $(go.Shape, { stroke: "dodgerblue", strokeWidth: 2, fill: null }),
-            $(go.Placeholder)
-          ),
-          $(go.Panel, "Horizontal",
-            { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom },
-            $("Button",
-              { click: editText },  // defined below, to support editing the text of the node
-              $(go.TextBlock, "t",
-                { font: "bold 10pt sans-serif", desiredSize: new go.Size(15, 15), textAlign: "center" })
-            ),
-            $("Button",
-              { click: changeColor, "_buttonFillOver": "transparent" },  // defined below, to support changing the color of the node
-              new go.Binding("ButtonBorder.fill", "color", nextColor),
-              $(go.Shape,
-                { fill: null, stroke: null, desiredSize: new go.Size(14, 14) })
-            ),
-            $("Button",
-              { // drawLink is defined below, to support interactively drawing new links
-                click: drawLink,  // click on Button and then click on target node
-                actionMove: drawLink  // drag from Button to the target node
-              },
-              $(go.Shape,
-                { geometryString: "M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14" })
-            ),
-            $("Button",
-              {
-                actionMove: dragNewNode,  // defined below, to support dragging from the button
-                _dragData: { text: "a Node", color: "lightgray" },  // node data to copy
-                click: clickNewNode  // defined below, to support a click on the button
-              },
-              $(go.Shape,
-                { geometryString: "M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z", fill: "gray" })
-            )
-          )
-        );
+    function editText(e, button) {
+      var node = button.part.adornedPart;
+      e.diagram.commandHandler.editTextBlock(node.findObject('TEXTBLOCK'));
+    }
 
-      function editText(e, button) {
-        var node = button.part.adornedPart;
-        e.diagram.commandHandler.editTextBlock(node.findObject("TEXTBLOCK"));
-      }
+    // used by nextColor as the list of colors through which we rotate
+    var myColors = ['lightgray', 'lightblue', 'lightgreen', 'yellow', 'orange', 'pink'];
 
-      // used by nextColor as the list of colors through which we rotate
-      var myColors = ["lightgray", "lightblue", "lightgreen", "yellow", "orange", "pink"];
+    // used by both the Button Binding and by the changeColor click function
+    function nextColor(c) {
+      var idx = myColors.indexOf(c);
+      if (idx < 0) return 'lightgray';
+      if (idx >= myColors.length - 1) idx = 0;
+      return myColors[idx + 1];
+    }
 
-      // used by both the Button Binding and by the changeColor click function
-      function nextColor(c) {
-        var idx = myColors.indexOf(c);
-        if (idx < 0) return "lightgray";
-        if (idx >= myColors.length - 1) idx = 0;
-        return myColors[idx + 1];
-      }
+    function changeColor(e, button) {
+      var node = button.part.adornedPart;
+      var shape = node.findObject('SHAPE');
+      if (shape === null) return;
+      node.diagram.startTransaction('Change color');
+      shape.fill = nextColor(shape.fill);
+      button['_buttonFillNormal'] = nextColor(shape.fill); // update the button too
+      node.diagram.commitTransaction('Change color');
+    }
 
-      function changeColor(e, button) {
-        var node = button.part.adornedPart;
-        var shape = node.findObject("SHAPE");
-        if (shape === null) return;
-        node.diagram.startTransaction("Change color");
-        shape.fill = nextColor(shape.fill);
-        button["_buttonFillNormal"] = nextColor(shape.fill);  // update the button too
-        node.diagram.commitTransaction("Change color");
-      }
+    function drawLink(e, button) {
+      var node = button.part.adornedPart;
+      var tool = e.diagram.toolManager.linkingTool;
+      tool.startObject = node.port;
+      e.diagram.currentTool = tool;
+      tool.doActivate();
+    }
 
-      function drawLink(e, button) {
-        var node = button.part.adornedPart;
-        var tool = e.diagram.toolManager.linkingTool;
-        tool.startObject = node.port;
+    // used by both clickNewNode and dragNewNode to create a node and a link
+    // from a given node to the new node
+    function createNodeAndLink(data, fromnode) {
+      var diagram = fromnode.diagram;
+      var model = diagram.model;
+      var nodedata = model.copyNodeData(data);
+      model.addNodeData(nodedata);
+      var newnode = diagram.findNodeForData(nodedata);
+      var linkdata = model.copyLinkData({});
+      model.setFromKeyForLinkData(linkdata, model.getKeyForNodeData(fromnode.data));
+      model.setToKeyForLinkData(linkdata, model.getKeyForNodeData(newnode.data));
+      model.addLinkData(linkdata);
+      diagram.select(newnode);
+      return newnode;
+    }
+
+    // the Button.click event handler, called when the user clicks the "N" button
+    function clickNewNode(e, button) {
+      var data = button._dragData;
+      if (!data) return;
+      e.diagram.startTransaction('Create Node and Link');
+      var fromnode = button.part.adornedPart;
+      var newnode = createNodeAndLink(button._dragData, fromnode);
+      newnode.location = new go.Point(fromnode.location.x + 200, fromnode.location.y);
+      e.diagram.commitTransaction('Create Node and Link');
+    }
+
+    // the Button.actionMove event handler, called when the user drags within the "N" button
+    function dragNewNode(e, button) {
+      var tool = e.diagram.toolManager.draggingTool;
+      if (tool.isBeyondDragSize()) {
+        var data = button._dragData;
+        if (!data) return;
+        e.diagram.startTransaction('button drag'); // see doDeactivate, below
+        var newnode = createNodeAndLink(data, button.part.adornedPart);
+        newnode.location = e.diagram.lastInput.documentPoint;
+        // don't commitTransaction here, but in tool.doDeactivate, after drag operation finished
+        // set tool.currentPart to a selected movable Part and then activate the DraggingTool
+        tool.currentPart = newnode;
         e.diagram.currentTool = tool;
         tool.doActivate();
       }
-
-      // used by both clickNewNode and dragNewNode to create a node and a link
-      // from a given node to the new node
-      function createNodeAndLink(data, fromnode) {
-        var diagram = fromnode.diagram;
-        var model = diagram.model;
-        var nodedata = model.copyNodeData(data);
-        model.addNodeData(nodedata);
-        var newnode = diagram.findNodeForData(nodedata);
-        var linkdata = model.copyLinkData({});
-        model.setFromKeyForLinkData(linkdata, model.getKeyForNodeData(fromnode.data));
-        model.setToKeyForLinkData(linkdata, model.getKeyForNodeData(newnode.data));
-        model.addLinkData(linkdata);
-        diagram.select(newnode);
-        return newnode;
-      }
-
-      // the Button.click event handler, called when the user clicks the "N" button
-      function clickNewNode(e, button) {
-        var data = button._dragData;
-        if (!data) return;
-        e.diagram.startTransaction("Create Node and Link");
-        var fromnode = button.part.adornedPart;
-        var newnode = createNodeAndLink(button._dragData, fromnode);
-        newnode.location = new go.Point(fromnode.location.x + 200, fromnode.location.y);
-        e.diagram.commitTransaction("Create Node and Link");
-      }
-
-      // the Button.actionMove event handler, called when the user drags within the "N" button
-      function dragNewNode(e, button) {
-        var tool = e.diagram.toolManager.draggingTool;
-        if (tool.isBeyondDragSize()) {
-          var data = button._dragData;
-          if (!data) return;
-          e.diagram.startTransaction("button drag");  // see doDeactivate, below
-          var newnode = createNodeAndLink(data, button.part.adornedPart);
-          newnode.location = e.diagram.lastInput.documentPoint;
-          // don't commitTransaction here, but in tool.doDeactivate, after drag operation finished
-          // set tool.currentPart to a selected movable Part and then activate the DraggingTool
-          tool.currentPart = newnode;
-          e.diagram.currentTool = tool;
-          tool.doActivate();
-        }
-      }
-
-      // using dragNewNode also requires modifying the standard DraggingTool so that it
-      // only calls commitTransaction when dragNewNode started a "button drag" transaction;
-      // do this by overriding DraggingTool.doDeactivate:
-      myDiagram.toolManager.draggingTool.doDeactivate = function() {  // method override must be function, not =>
-        // commit "button drag" transaction, if it is ongoing; see dragNewNode, above
-        if (this.diagram.undoManager.nestedTransactionNames.elt(0) === "button drag") {
-          this.diagram.commitTransaction();
-        }
-        go.DraggingTool.prototype.doDeactivate.call(this);  // call the base method
-      };
-
-
-      myDiagram.model = new go.GraphLinksModel(
-        [
-          { key: 1, text: "Alpha", color: "lightblue", location: "0 0" },
-          { key: 2, text: "Beta", color: "orange", location: "140 0" },
-          { key: 3, text: "Gamma", color: "lightgreen", location: "0 140" },
-          { key: 4, text: "Delta", color: "pink", location: "140 140" }
-        ],
-        [
-          { from: 1, to: 2 }
-        ]);
-
-      myDiagram.findNodeForKey(4).isSelected = true;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+
+    // using dragNewNode also requires modifying the standard DraggingTool so that it
+    // only calls commitTransaction when dragNewNode started a "button drag" transaction;
+    // do this by overriding DraggingTool.doDeactivate:
+    myDiagram.toolManager.draggingTool.doDeactivate = function () {
+      // method override must be function, not =>
+      // commit "button drag" transaction, if it is ongoing; see dragNewNode, above
+      if (this.diagram.undoManager.nestedTransactionNames.elt(0) === 'button drag') {
+        this.diagram.commitTransaction();
+      }
+      go.DraggingTool.prototype.doDeactivate.call(this); // call the base method
+    };
+
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue', location: '0 0' },
+        { key: 2, text: 'Beta', color: 'orange', location: '140 0' },
+        { key: 3, text: 'Gamma', color: 'lightgreen', location: '0 140' },
+        { key: 4, text: 'Delta', color: 'pink', location: '140 140' },
+      ],
+      [{ from: 1, to: 2 }]
+    );
+
+    myDiagram.findNodeForKey(4).isSelected = true;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    The node template uses a custom <a>Part.selectionAdornmentTemplate</a> to
-    add a row of Buttons when the node is selected.
-    Select a node and you will see the Buttons for the node.
+    The node template uses a custom <a>Part.selectionAdornmentTemplate</a> to add a row of Buttons when the node is selected. Select a node and you will see the
+    Buttons for the node.
   </p>
+  <p>The first button, "T", when clicked, starts in-place editing of the text.</p>
+  <p>The second button, "C", when clicked, changes the color of the node, rotating through a list of colors.</p>
+  <p>The third button, "L", when clicked or dragged, starts the <a>LinkingTool</a>, drawing a new link starting at the selected node.</p>
   <p>
-    The first button, "T", when clicked, starts in-place editing of the text.
-  </p>
-  <p>
-    The second button, "C", when clicked, changes the color of the node,
-    rotating through a list of colors.
-  </p>
-  <p>
-    The third button, "L", when clicked or dragged, starts the <a>LinkingTool</a>,
-    drawing a new link starting at the selected node.
-  </p>
-  <p>
-    The fourth button, "N", when clicked, adds a new node and creates a link from
-    the selected node to the new node.
-    Dragging from the fourth button does the same thing as a click but also activates
-    the <a>DraggingTool</a>, allowing the user to drag the new node where they like.
+    The fourth button, "N", when clicked, adds a new node and creates a link from the selected node to the new node. Dragging from the fourth button does the
+    same thing as a click but also activates the <a>DraggingTool</a>, allowing the user to drag the new node where they like.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,71 +1,159 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-<meta charset="utf-8"/>
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
- 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->    <title> GoJS Building GraphObjects -- Northwoods Software </title>
-    <link rel="stylesheet" href="../assets/css/prism.css"  />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Building GraphObjects />
+<meta property="og:title" content=Building GraphObjects />
+<meta name="twitter:title" content=Building GraphObjects />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/intro/buildingObjects.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/intro/buildingObjects.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Building GraphObjects | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
   </head>
   <script>
-    
     window.diagrams = [];
-    window.goCode = function(pre, w, h, parentid, animation) {
-      window.diagrams.push([pre, w, h, parentid, animation]);
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
     }
   </script>
   <body>
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
     
-    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
-    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
-      <div class="flex-shrink-0 px-8 py-4">
-        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
-          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
   <a href="index.html">Basics</a>
   <a href="buildingObjects.html">Building Parts</a>
   <a href="usingModels.html">Using Models</a>
   <a href="dataBinding.html">Data Binding</a>
   <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
   <a href="angular.html">GoJS with Angular</a>
   <a href="textBlocks.html">TextBlocks</a>
   <a href="shapes.html">Shapes</a>
@@ -95,6 +183,8 @@
   <a href="sizedGroups.html">Sized Groups</a>
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="routers.html">Routers</a>
   <a href="animation.html">Animation</a>
   <a href="toolTips.html">ToolTips</a>
   <a href="contextmenus.html">Context Menus</a>
@@ -107,7 +197,6 @@
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
-  <a href="resizing.html">Resizing Diagrams</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
   <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
@@ -116,154 +205,186 @@
   <a href="geometry.html">Geometry Strings</a>
   <a href="grids.html">Grid Patterns</a>
   <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGcontext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
   <a href="makingImages.html">Diagram Images</a>
-  <a href="makingSVG.html">Diagram SVG</a>
   <a href="printing.html">Printing</a>
   <a href="serverSideImages.html">Server-side Images</a>
   <a href="nodeScript.html">GoJS in Node.js</a>
   <a href="testing.html">Testing</a>
-  <a href="storage.html">Storage</a>
   <a href="performance.html">Performance</a>
-  <a href="source.html">Building from Source</a>
   <a href="platforms.html">Platforms</a>
   <a href="deployment.html">Deployment</a>
-      </nav>
-    </div>      
-      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
-
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
 <h1>Building Parts with GraphObjects</h1>
 <p>
-The following pages will discuss the basic kinds of objects you can use to build Parts.
-These pages build up a diagram by explicitly creating and adding nodes and links.
-Later pages will show how to build diagrams using models rather than adding Parts directly.
+  The following pages will discuss the basic kinds of objects you can use to build Parts. These pages build up a diagram by explicitly creating and adding nodes
+  and links. Later pages will show how to build diagrams using models rather than adding Parts directly.
 </p>
 
 <h2 id="BuildingBlocks">The Building Blocks of GoJS</h2>
+<p>GoJS Diagrams display top-level <b>Parts</b> and <b>Part</b> subclasses: <b>Nodes</b>, <b>Links</b>, and <b>Groups</b>.</p>
 <p>
-  GoJS Diagrams display top-level <b>Parts</b> and <b>Part</b> subclasses: <b>Nodes</b>, <b>Links</b>, and <b>Groups</b>.
+  <b>Parts</b> are <b>Panels</b>, which can hold any number of <b>Shapes</b>, <b>Pictures</b>, <b>TextBlocks</b>, or other, nested <b>Panels</b>. All together,
+  these are subclasses of <b>GraphObject</b>.
 </p>
-<p>
-  <b>Parts</b> are <b>Panels</b>, which can hold any number of <b>Shapes</b>, <b>Pictures</b>, <b>TextBlocks</b>, or other, nested <b>Panels</b>.
-  All together, these are subclasses of <b>GraphObject</b>.
-</p>
-<pre class="lang-js" id="BuildingBlocksDiagram" style="display:none"><code>
-  diagram.layout = new go.GridLayout({ spacing: new go.Size(25,25) });
-  function sh(color) { return new go.Shape({ strokeWidth: 2, margin: 4, width: 20, height: 20, fill: color }) };
-  diagram.allowHorizontalScroll = false;
-  diagram.allowVerticalScroll = false;
+<pre class="lang-js" id="BuildingBlocksDiagram" style="display: none"><code>
+diagram.layout = new go.GridLayout({ spacing: new go.Size(25,25) });
+function sh(color) { return new go.Shape({ strokeWidth: 2, margin: 4, width: 20, height: 20, fill: color }) };
+diagram.allowHorizontalScroll = false;
+diagram.allowVerticalScroll = false;
 
-  var panelBackgroundColor = 'palegreen';
-  function makepanel(type, desc) {
-    return new go.Node("Vertical")
-      .add(new go.TextBlock("go.Panel(\""+ type + "\")", { margin: 4, font: "13px monospace" }))
-      .add(new go.Panel(type, { background: panelBackgroundColor })
-        .add(sh('lightpink').set({ figure: 'RoundedRectangle' }))
-        .add(sh('lightsalmon').set({ figure: 'Triangle', row: 1, width: 15, height: 15 }))
-        .add(sh('lightcoral').set({ figure: 'Ellipse', column: 3, width: 25, height: 25 }))
-        .add(sh('red').set({ column: 1, row: 2 }))
-      )
-  }
-
-  function makepanelAuto() {
-    return new go.Node("Vertical")
-      .add(new go.TextBlock('go.Panel("Auto")', { margin: 4, font: "13px monospace" }))
-      .add(new go.Panel("Auto", { background: panelBackgroundColor })
-        .add(new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', fill: 'lightpink' }))
-        .add(new go.TextBlock('Auto Panel\'s first element\nexpands dynamically to\n fit all other elements.\nIn this case, a single TextBlock\nwith a long string.',
-        { margin: 8, textAlign: 'center' }))
-      )
-  }
-
-  function makepanelSpot() {
-    return new go.Node("Vertical")
-      .add(new go.TextBlock('go.Panel("Spot")', { margin: 4, font: "13px monospace" }))
-      .add(new go.Panel("Spot", { background: panelBackgroundColor })
-        .add(new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', width: 50, height: 50, fill: 'lightpink' }))
-        .add(sh('lightsalmon').set({ figure: 'Triangle', alignment: go.Spot.Left }))
-        .add(sh('lightcoral').set({ figure: 'Ellipse', alignment: go.Spot.Right }))
-        .add(sh('red').set({ alignment: go.Spot.Top }))
-      )
-  }
-
-  diagram.nodeTemplateMap.add('Horizontal', makepanel("Horizontal"));
-  diagram.nodeTemplateMap.add('Vertical', makepanel("Vertical"));
-  diagram.nodeTemplateMap.add('Table', makepanel("Table"));
-  diagram.nodeTemplateMap.add('Auto', makepanelAuto());
-  diagram.nodeTemplateMap.add('Spot', makepanelSpot());
-  diagram.nodeTemplateMap.add('Info',
-  new go.Node("Spot")
-    .add(new go.Shape("RoundedRectangle", { strokeWidth: 1.5, fill: 'pink', width: 90, height: 30 }))
-    .add(new go.TextBlock({ font: "16px san-serif" }).bind('text', 'key'))
+const panelBackgroundColor = 'palegreen';
+function makepanel(type, desc) {
+  return new go.Node("Vertical").add(
+    new go.TextBlock("go.Panel(\""+ type + "\")", { margin: 4, font: "13px monospace" }),
+    new go.Panel(type, { background: panelBackgroundColor }).add(
+      sh('lightpink').set({ figure: 'RoundedRectangle' }),
+      sh('lightsalmon').set({ figure: 'Triangle', row: 1, width: 15, height: 15 }),
+      sh('lightcoral').set({ figure: 'Ellipse', column: 3, width: 25, height: 25 }),
+      sh('red').set({ column: 1, row: 2 })
+    )
   )
+}
 
+function makepanelAuto() {
+  return new go.Node("Vertical").add(
+    new go.TextBlock('go.Panel("Auto")', { margin: 4, font: "13px monospace" }),
+    new go.Panel("Auto", { background: panelBackgroundColor, width: 150 }).add(
+      new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', fill: 'lightpink' }),
+      new go.TextBlock('Auto Panel\'s first element expands dynamically to fit all other elements, like a border. In this case, the contents are a single TextBlock with a long string.',
+          { margin: 8, textAlign: 'center' })
+    )
+  )
+}
+
+function makepanelSpot() {
+  return new go.Node("Vertical").add(
+    new go.TextBlock('go.Panel("Spot")', { margin: 4, font: "13px monospace" }),
+    new go.Panel("Spot", { background: panelBackgroundColor }).add(
+      new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', width: 50, height: 50, fill: 'lightpink' }),
+      sh('lightsalmon').set({ figure: 'Triangle', alignment: go.Spot.Left }),
+      sh('lightcoral').set({ figure: 'Ellipse', alignment: go.Spot.Right }),
+      sh('red').set({ alignment: go.Spot.Top })
+    )
+  )
+}
+
+diagram.nodeTemplateMap.add('Horizontal', makepanel("Horizontal"));
+diagram.nodeTemplateMap.add('Vertical', makepanel("Vertical"));
+diagram.nodeTemplateMap.add('Table', makepanel("Table"));
+diagram.nodeTemplateMap.add('Auto', makepanelAuto());
+diagram.nodeTemplateMap.add('Spot', makepanelSpot());
+diagram.nodeTemplateMap.add('Info',
+new go.Node("Spot")
+  .add(new go.Shape("RoundedRectangle", { strokeWidth: 1.5, fill: 'pink', width: 90, height: 30 }))
+  .add(new go.TextBlock({ font: "16px san-serif" }).bind('text', 'key'))
+)
 
 diagram.nodeTemplateMap.add('TextBlock',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.TextBlock("Some Text")',
-    { spacingBelow: 4, font: "13px monospace" }))
-    .add(new go.TextBlock("Some Text", { font: "26px serif" }))
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.TextBlock("Some Text")',
+        { spacingBelow: 4, font: "13px monospace" }),
+    new go.TextBlock("Some Text", { font: "26px serif" })
   )
+);
 
-  diagram.nodeTemplateMap.add('Picture',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.Picture("images/55x55.png")',
-    { spacingBelow: 4, font: "13px monospace" }))
-    .add(new go.Picture("images/55x55.png", { width: 50, height: 50 }))
+diagram.nodeTemplateMap.add('Picture',
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.Picture("images/55x55.png")',
+        { spacingBelow: 4, font: "13px monospace" }),
+    new go.Picture("images/55x55.png", { width: 50, height: 50 })
   )
+);
 
-  diagram.nodeTemplateMap.add('Shape',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.Shape("Triangle")',
-    { spacingBelow: 4, font: "13px monospace" }))
-    .add(new go.Shape("Triangle", { width: 50, height: 50, fill: '#00FAFA' }))
+diagram.nodeTemplateMap.add('Shape',
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.Shape("Triangle")',
+        { spacingBelow: 4, font: "13px monospace" }),
+    new go.Shape("Triangle", { width: 50, height: 50, fill: '#00FAFA' })
   )
+);
 
-  diagram.nodeTemplateMap.add('Panel',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.Panel("[PanelType]")',
-    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
-    .add(new go.TextBlock("Panels have no visual unless\na background is specified.\nThey hold other GraphObjects,\nand can be nested.",{
-      textAlign: 'center'
-    }))
+diagram.nodeTemplateMap.add('Panel',
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.Panel("[PanelType]")',
+        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+    new go.TextBlock("Panels have no visual unless\na background is specified.\nThey hold other GraphObjects,\nand can be nested.",
+        { textAlign: 'center' })
   )
+);
 
-  diagram.nodeTemplateMap.add('Node',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.Node("[PanelType]")',
-    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
-    .add(new go.TextBlock("Nodes can connect with links\n and be members of a Group.",{
-      textAlign: 'center'
-    }))
+diagram.nodeTemplateMap.add('Node',
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.Node("[PanelType]")',
+        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+    new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
+        { textAlign: 'center' })
   )
+);
 
-  diagram.nodeTemplateMap.add('Link',
-  new go.Node("Vertical")
-    .add(new go.TextBlock('go.Link()',
-    { spacingBelow: 4, font: "13px monospace", margin: 2 }))
-    .add(new go.TextBlock("Nodes can connect with links\n and be members of a Group.",{
-      textAlign: 'center'
-    }))
+diagram.nodeTemplateMap.add('Link',
+  new go.Node("Vertical").add(
+    new go.TextBlock('go.Link()',
+        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+    new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
+        { textAlign: 'center' })
   )
+);
 
-  diagram.groupTemplate = new go.Group("Vertical", {
-    locationSpot: go.Spot.Center,
-    layout: new go.GridLayout({ wrappingColumn: 2 })})
+diagram.groupTemplate =
+  new go.Group("Vertical",
+      {
+        locationSpot: go.Spot.Center,
+        layout: new go.GridLayout({ wrappingColumn: 2 })
+      })
     .bind("layout")
     .bind("location", "loc")
-    .add(new go.TextBlock({ margin: 4, font: '13pt sans-serif' }).bind("text"))
-    .add(new go.Panel("Auto")
-      .add(new go.Shape("RoundedRectangle", { fill: 'whitesmoke', stroke: 'darkgray' }))
-      .add(new go.Placeholder({ padding: 5 }))
-    )
+    .add(
+      new go.TextBlock({ margin: 4, font: '13pt sans-serif' }).bind("text"),
+      new go.Panel("Auto").add(
+        new go.Shape("RoundedRectangle", { fill: 'whitesmoke', stroke: 'darkgray' }),
+        new go.Placeholder({ padding: 5 })
+      )
+    );
 
-    diagram.linkTemplate = new go.Link(
-      {
-        routing: go.Link.Orthogonal,
-        toShortLength: 2
-      })
-      .add(new go.Shape({strokeWidth: 2}))
-      .add(new go.Shape({ toArrow: 'Standard' }))
+diagram.linkTemplate = new go.Link(
+  {
+    routing: go.Routing.Orthogonal,
+    toShortLength: 2
+  }).add(
+    new go.Shape({strokeWidth: 2}),
+    new go.Shape({ toArrow: 'Standard' })
+  );
 
 diagram.model = new go.GraphLinksModel([
   { group: 'Panels', category: 'Horizontal' },
@@ -273,7 +394,6 @@ diagram.model = new go.GraphLinksModel([
   { group: 'Panels', category: 'Spot' },
   { key: 'GraphObjects', isGroup: true, text: "GraphObjects are the building blocks of GoJS", layout: new go.TreeLayout() },
   { key: 'Panels', isGroup: true, text: "Common Panel Types" },
-
 
   { group: 'GraphObjects', category: 'Info', key: 'GraphObject' },
   { group: 'GraphObjects', category: 'Info', key: 'TextBlock' },
@@ -306,86 +426,72 @@ diagram.model = new go.GraphLinksModel([
   { from: 'Part', to: 'Node' },
   { from: 'Part', to: 'Link' },
   { from: 'Node', to: 'Group' },
-
-
 ]);
 </code></pre>
-<script>goCode("BuildingBlocksDiagram", 750, 750)</script>
+<script>
+  goCode('BuildingBlocksDiagram', 750, 750);
+</script>
 
-<p>
-<b>Nodes</b> and <b>Links</b> are usually composed of many GraphObjects, including several <a>Panel</a>s that may be nested.
-</p>
+<p><b>Nodes</b> and <b>Links</b> are usually composed of many GraphObjects, including several <a>Panel</a>s that may be nested.</p>
 
 <h2 id="BuildingWithCode">Building with Code</h2>
 <p>
-A very simple Node might consist of a Shape and a TextBlock.
-You can build such a visual tree of GraphObjects using code such as:
+  A very simple Node might consist of a Shape and a TextBlock. You could build such a visual tree of GraphObjects using code. The following code produces the
+  following "live" diagram, so you can click on the node to select it and then drag it around.
 </p>
 <pre class="lang-js" id="simpleCode"><code>
-  var node = new go.Node("Auto");
-  var shape = new go.Shape();
+  const node = new go.Node("Auto");
+  const shape = new go.Shape();
   shape.figure = "RoundedRectangle";
   shape.fill = "lightblue";
   shape.strokeWidth = 3;
   node.add(shape);
-  var textblock = new go.TextBlock();
+  const textblock = new go.TextBlock();
   textblock.text = "Hello!";
   textblock.margin = 5;
   node.add(textblock);
   diagram.add(node);
 </code></pre>
+<script>
+  goCode('simpleCode', 250, 150);
+</script>
 <p>
-This code produces the following diagram.  It is a "live" diagram,
-so you can click on the node to select it and then drag it around.
-</p>
-<script>goCode("simpleCode", 250, 150)</script>
-<p>
-Although building a node in this manner will work, as the nodes get more complicated
-the code will become more complicated to read and to maintain.
-Fortunately <b>GoJS</b> has a better way to make Parts out of GraphObjects.
+  Although building a node in this manner will work, as the nodes get more complicated the code will become more complicated to read and to maintain.
+  Fortunately <b>GoJS</b> has a better way to make Parts out of GraphObjects.
 </p>
 <p>
-Furthermore, later sections will discuss how Nodes and Links should be created automatically using models, templates, and data-binding.
-Until that time, these pages will create Nodes explicitly and add them to Diagrams directly.
+  Furthermore, later sections will discuss how Nodes and Links should be created automatically using models, templates, and data-binding.
+  Until that time, these pages will create Nodes explicitly and add them to Diagrams directly.
 </p>
 
 <h2 id="BuildingWithChainingFunctions">Building with Chaining Functions</h2>
 
 <p>
-Starting in GoJS 2.2, many GraphObject and Diagram methods return the object instance, such as
-<a>Panel.add</a> and <a>GraphObject.bind</a>. These methods can be chained to build Parts.
+  Starting in GoJS 2.2, many GraphObject and Diagram methods return the object instance, such as
+  <a>Panel.add</a> and <a>GraphObject.bind</a>. These methods can be chained to build Parts.
 </p>
 
-<p>
-  Every GraphObject constructor optionally takes a common setting as its first argument. These are:
-</p>
+<p>Every GraphObject constructor optionally takes a common setting as its first argument. These are:</p>
 <ul>
+  <li>TextBlock: The <a>TextBlock.text</a> - for example, <code>new go.TextBlock("Hello")</code></li>
+  <li>Picture: The <a>Picture.source</a> - for example, <code>new go.Picture("https://example.com/image1.jpg")</code></li>
+  <li>Shape: The <a>Shape.figure</a> - for example, <code>new go.Shape("RoundedRectangle")</code></li>
   <li>
-    TextBlock: The <a>TextBlock.text</a> - for example, <code>new go.TextBlock("Hello")</code>
+    Panel: The <a>panel.type</a> as a string - for example, <code>new go.Panel("Auto")</code>.
+    Possible values are "Position", "Vertical", "Horizontal", "Auto",
+    "Spot", "Table", and a few specialty panels. See the page on <a href="panels.html">Panels</a> for more.
   </li>
-  <li>
-    Picture: The <a>Picture.source</a> - for example, <code>new go.Picture("https://example.com/image1.png")</code>
-  </li>
-  <li>
-    Shape: The <a>Shape.figure</a> - for example, <code>new go.Shape("RoundedRectangle")</code>
-  </li>
-  <li>
-    Panel: The <a>panel.type</a> as a string  - for example, <code>new go.Panel("Auto")</code>. Possible values are "Position", "Vertical", "Horizontal", "Auto", "Spot", "Table", and a few specialty panels. See the page on <a href="panels.html">Panels</a> for more.
-  </li>
-  <li>
-    Nodes, Parts, and Groups all inherit from Panel, and take the same constructor argument.
-  </li>
-  <li>
-    Links are a special type of Panel that are always of the "Link" type.
-  </li>
+  <li>Nodes, Parts, and Groups all inherit from Panel, and take the same constructor argument.</li>
+  <li>Links are a special type of Panel that are always of the "Link" type.</li>
 </ul>
 
 <p>
-  Every GraphObject additionally takes an optional constructor argument that is a JavaScript object, which can be used to set any object properties. For example, instead of writing:
+  Every GraphObject additionally takes an optional constructor argument that is a JavaScript object, which can be used to set any object properties.
+  For example, instead of writing:
 </p>
 
 <pre class="lang-js"><code>
-var shape = new go.Shape();
+const shape = new go.Shape();
 shape.figure = "RoundedRectangle";
 shape.fill = "lightblue";
 shape.strokeWidth = 3;
@@ -394,156 +500,145 @@ shape.strokeWidth = 3;
 <p>We could write this:</p>
 
 <pre class="lang-js"><code>
-var shape = new go.Shape("RoundedRectangle", {
-  fill: "lightblue",
-  strokeWidth: 3
-});
+const shape = new go.Shape("RoundedRectangle", {
+    fill: "lightblue",
+    strokeWidth: 3
+  });
 </code></pre>
 <p>
-The first argument is the Shape.figure, the second argument is an object setting other Shape properties.
-If you use TypeScript and the npm gojs package, this code will also be type-checked for you.
+  The first argument is the Shape.figure, the second argument is an object for setting other Shape properties.
+  If you use TypeScript and the npm gojs package, this code will also be type-checked for you.
 </p>
-<p>
-To rewrite the code block in the previous section, that had a Node with one Shape and one TextBlock added, we would write this:
-</p>
+<p>To rewrite the code block in the previous section, that had a Node with one Shape and one TextBlock added, we would write this:</p>
 
 <pre class="lang-js"><code>
 // Create a node and .add a Shape and TextBlock to it
 myDiagram.add(
-  new go.Node("Auto")
-  .add(new go.Shape("RoundedRectangle", {
-    fill: "lightblue",
-    strokeWidth: 3
-  }))
-  .add(new go.TextBlock("Hello!", {
-    margin: 5
-  }))
+  new go.Node("Auto").add(
+    new go.Shape("RoundedRectangle",
+        { fill: "lightblue", strokeWidth: 3 }),
+    new go.TextBlock("Hello!",
+        { margin: 5 })
+  )
 );
 </code></pre>
-<p>
-Unlike the GraphObject.make methodology below, this code is typed at compile time or in your IDE, if using TypeScript.
-</p>
+<p>Unlike the GraphObject.make methodology below, this code is typed at compile time or in your IDE, if using TypeScript.</p>
 
 <h2 id="BuildingWithMake">Building with <b>GraphObject.make</b></h2>
 
-<p><em>Unlike building with .add, GraphObject.make is not well type-checked when using TypeScript definitions. However, it is more flexible, and many of our samples use it.</em></p>
+<p>
+  <em>
+    Unlike building with <b>.add</b>, <b>GraphObject.make</b> is not well type-checked when using TypeScript definitions.
+    However, it is more flexible, and many of our samples use it.
+  </em>
+</p>
 
 <p>
-<b>GoJS</b> defines a static function, <a>GraphObject,make</a>, that is very useful in
-constructing GraphObjects without having to think of and keep track of temporary variable names.
-This static function also supports building objects in a nested fashion,
-where the indentation gives you a clue about depth in the visual tree,
-unlike the simple linear code shown above.
+  <b>GoJS</b> defines a static function, <a>GraphObject.make</a>, that is very useful in constructing GraphObjects without having to think of and keep track of
+  temporary variable names. This static function also supports building objects in a nested fashion, where the indentation gives you a clue about depth in the
+  visual tree, unlike the simple linear code shown initially on this page.
 </p>
-<p>
-<a>GraphObject,make</a> is a function whose first argument must be a class type,
-typically a subclass of <a>GraphObject</a>.
-</p>
-<p>
-Additional arguments to <a>GraphObject,make</a> may be of several types:
-</p>
+<p><a>GraphObject.make</a> is a function whose first argument must be a class type, typically a subclass of <a>GraphObject</a>.</p>
+<p>Additional arguments to <a>GraphObject.make</a> may be of several types:</p>
 <ul>
-<li>a plain JavaScript object with property/value pairs -- these property values are set on the object being constructed</li>
-<li>a <a>GraphObject</a>, which is added as an element to the <a>Panel</a> that is being constructed</li>
-<li>a <b>GoJS</b> enumerated value constant, which is used as the value of the unique property of the object being constructed that can accept such a value</li>
-<li>a string, which sets the <a>TextBlock.text</a>, <a>Shape.figure</a>, <a>Picture.source</a>, or <a>Panel.type</a> property of the object that is being constructed</li>
-<li>a <a>RowColumnDefinition</a>, for describing rows or columns in Table <a>Panel</a>s</li>
-<li>a JavaScript Array, holding arguments to <a>GraphObject,make</a>, useful when returning more than one argument from a function</li>
-<li>other specialized objects that are used in the appropriate manner for the object being constructed</li>
+  <li>a plain JavaScript object with property/value pairs -- these property values are set on the object being constructed</li>
+  <li>a <a>GraphObject</a>, which is added as an element to the <a>Panel</a> that is being constructed</li>
+  <li>
+    a string, which sets the <a>TextBlock.text</a>, <a>Shape.figure</a>, <a>Picture.source</a>, or <a>Panel.type</a> property of the object that is being
+    constructed
+  </li>
+  <li>a <a>RowColumnDefinition</a>, for describing rows or columns in Table <a>Panel</a>s</li>
+  <li>a JavaScript Array, holding arguments to <a>GraphObject.make</a>, useful when returning more than one argument from a function</li>
+  <li>other specialized objects that are used in the appropriate manner for the object being constructed</li>
 </ul>
-<p>
-We can rewrite the code above with <b>go.GraphObject.make</b> to produce exactly the same results:
-</p>
-<pre class="lang-js" id="simpleJSAML"><code>
-  var $ = go.GraphObject.make;
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape,
-        { figure: "RoundedRectangle",
-          fill: "lightblue" }),
-      $(go.TextBlock,
-        { text: "Hello!",
-          margin: 5 })
-    ));
-</code></pre>
-<script>goCode("simpleJSAML", 250, 150)</script>
-<p>
-This can be simplified a bit by using string arguments:
-</p>
-<pre class="lang-js" id="simpleJSAML2"><code>
-  var $ = go.GraphObject.make;
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle", { fill: "lightblue" }),
-      $(go.TextBlock, "Hello!", { margin: 5 })
-    ));
-</code></pre>
-<script>goCode("simpleJSAML2", 250, 150)</script>
-<p>
-Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.
-</p>
-<p>
-The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy
-that we will assume its use from now on.
-Having the call to <b>go.GraphObject.make</b> be minimized into a single character
-helps remove clutter from the code and lets the indentation match the nesting of
-<a>GraphObject</a>s in the visual tree that is being constructed.
-</p>
-<p>
-Some other JavaScript libraries automatically define "$" to be a handy-to-type function name,
-assuming that they are the only library that matters.
-But you cannot have the same symbol have two different meanings at the same time in the same scope, of course.
-So you may want to choose to use a different short name, such as "$$" or "GO" when using <b>GoJS</b>.
-The <b>GoJS</b> documentation and samples make use of "$" because it makes the resulting code most clear.
-</p>
-<p class="box bg-info">
-  Another advantage of using <a>GraphObject,make</a> is that it will make sure that any
-  properties that you set are defined properties on the class.
-  If you have a typo in the name of the property, it will throw an error, for which you can see a message in the console log.
-</p>
-<p>
-<a>GraphObject,make</a> also works to build <b>GoJS</b> classes other than ones inheriting from <a>GraphObject</a>.
-Here is an example of using <b>go.GraphObject.make</b> to build a <a>Brush</a>
-rather than a <a>GraphObject</a> subclass.
-</p>
-<pre class="lang-js" id="gradientJSAML"><code>
+<p>We can rewrite the code above with <b>go.GraphObject.make</b> to produce exactly the same results:</p>
+<pre class="lang-js"><code>
+  const $ = go.GraphObject.make;
   diagram.add(
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
-        { fill: $(go.Brush, "Linear",
-                  { 0.0: "Violet", 1.0: "Lavender" }) }),
+        { fill: "lightblue", strokeWidth: 3 }),
       $(go.TextBlock, "Hello!",
         { margin: 5 })
     ));
 </code></pre>
-<script>goCode("gradientJSAML", 250, 150)</script>
+<pre class="lang-js" id="simpleJSAML" style="display: none"><code>
+  var $ = go.GraphObject.make;  // can't eval const $ when there's a binding of $ in call to eval
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle",
+        { fill: "lightblue", strokeWidth: 3 }),
+      $(go.TextBlock, "Hello!",
+        { margin: 5 })
+    ));
+</code></pre>
+<script>
+  goCode('simpleJSAML', 250, 150);
+</script>
+<p>Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.</p>
 <p>
-It is also common to use <a>GraphObject,make</a> to build a <a>Diagram</a>.
-In such a use a string argument, which if provided must be the second argument, will name the DIV HTML element that the Diagram should use.
-Equivalently you can pass a direct reference to the DIV element as the second argument.
+  The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy that we will assume its use from now on.
+  Having the call to <b>go.GraphObject.make</b> be minimized into a single character helps remove clutter from the code and
+  lets the indentation match the nesting of <a>GraphObject</a>s in the visual tree that is being constructed.
 </p>
 <p>
-Also, when setting properties on a Diagram, you can use property names that are strings consisting of two identifiers separated by a period.
-The name before the period is used as the name of a property on the Diagram or on the <a>Diagram.toolManager</a> that returns an object whose property is to be set.
-The name after the period is the name of the property that is set.
-Note that because there is an embedded period, JavaScript property syntax requires that you use quotes.
+  Some other JavaScript libraries automatically define "$" to be a handy-to-type function name, assuming that they are the only library that matters.
+  But you cannot have the same symbol have two different meanings at the same time in the same scope.
+  So you may want to choose to use a different short name, such as "$$" or "GO" when using <b>GoJS</b>.
+  The <b>GoJS</b> documentation and samples make use of "$" because it makes the resulting code most clear and compact.
+</p>
+<p class="box bg-info">
+  Another advantage of using <a>GraphObject.make</a> is that it will make sure at run-time that any properties
+  that you set are defined properties on the class.
+  If you have a typo in the name of the property, it will throw an error,
+  for which you can see a message in the console log.
+</p>
+
+<p>All of this initialization using <a>GraphObject.make</a> is still JavaScript code, so we can call functions and easily share objects such as brushes:</p>
+<pre class="lang-js" id="codeJSAML"><code>
+  const violetbrush = $(go.Brush, "Linear", { 0.0: "Violet", 1.0: "Lavender" });
+
+  diagram.add(
+    $(go.Node, "Auto",
+      $(go.Shape, "RoundedRectangle", { fill: violetbrush }),
+      $(go.TextBlock, "Hello!", { margin: 5 })
+    ));
+
+  diagram.add(
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Ellipse", { fill: violetbrush }),
+        new go.TextBlock("Goodbye!", { margin: 5 })
+      ));
+</code></pre>
+<script>
+  goCode('codeJSAML', 250, 150);
+</script>
+<p><a>Brush</a>es and <a>Geometry</a> objects may be shared, but <a>GraphObject</a>s may not be shared.</p>
+
+<h3 id="TheDiagramConstructor">The <b>Diagram</b> Constructor</h3>
+<p>
+  The Diagram constructor uses <a>Diagram.setProperties</a> to process the initialization object to a <a>Diagram</a> constructor.
+  You can use property names that are strings consisting of two identifiers separated by a period.
+  The name before the period is used as the name of a property on the Diagram or on the <a>Diagram.toolManager</a>
+  that returns an object whose property is to be set.
+  The name after the period is the name of the property that is set.
+  Note that because there is an embedded period, JavaScript property syntax requires that you use quotes.
 </p>
 <p>
-You can also declare <a>DiagramEvent</a> listeners, as if calling <a>Diagram.addDiagramListener</a>,
-by pretending to set a Diagram property that is actually the name of a DiagramEvent.
-Because all DiagramEvents have names that are capitalized, the names will not conflict with any Diagram property names.
-</p>
-<p>
-The Diagram constructor automatically uses GraphObject.make in its constructor:
+  You can also declare <a>DiagramEvent</a> listeners, as if calling <a>Diagram.addDiagramListener</a>,
+  by pretending to set a Diagram property that is actually the name of a DiagramEvent.
+  Because all DiagramEvents have names that are capitalized,
+  the names will not conflict with any Diagram property names.
 </p>
 <pre class="lang-js"><code>
-  var myDiagram = new go.Diagram("myDiagramDiv",  // must name or refer to the DIV HTML element
+  const myDiagram = new go.Diagram("myDiagramDiv",  // must name or refer to the DIV HTML element
       {
         // don't initialize some properties until after a new model has been loaded
         "InitialLayoutCompleted": loadDiagramProperties,  // a DiagramEvent listener
 
         // have mouse wheel events zoom in and out instead of scroll up and down
-        "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+        "toolManager.mouseWheelBehavior": go.WheelMode.Zoom,
 
         // specify a data object to copy for each new Node that is created by clicking
         "clickCreatingTool.archetypeNodeData": { text: "new node" }
@@ -553,358 +648,326 @@ The Diagram constructor automatically uses GraphObject.make in its constructor:
   function loadDiagramProperties(e) { . . . }
 </code></pre>
 
-<p>
-All of this initialization using <a>GraphObject,make</a> is still JavaScript code, so we can call functions
-and easily share objects such as brushes:
-</p>
-<pre class="lang-js" id="codeJSAML"><code>
-  var violetbrush = $(go.Brush, "Linear", { 0.0: "Violet", 1.0: "Lavender" });
-
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: violetbrush }),
-      $(go.TextBlock, "Hello!",
-        { margin: 5 })
-    ));
-
-  diagram.add(
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse",
-        { fill: violetbrush }),
-      $(go.TextBlock, "Goodbye!",
-        { margin: 5 })
-    ));
-</code></pre>
-<script>goCode("codeJSAML", 250, 150)</script>
-<p>
-<a>Brush</a>es and <a>Geometry</a> objects may be shared, but <a>GraphObject</a>s may not be shared.
-</p>
-
 <h2 id="VisualStructureOfNodesAndLinks">The Visual Structure of Nodes and Links</h2>
 <p>
-Here is a diagram that includes comments about the GraphObjects used to build some example nodes and links, using a number of GoJS concepts:
+  Here is a diagram that includes comments about the GraphObjects used to build some example nodes and links,
+  using a number of GoJS concepts:
 </p>
-<pre class="lang-js" id="commented" style="display:none"><code>
+<pre class="lang-js" id="commented" style="display: none"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { scale: 2 },  // make it easier to see
-      new go.Binding("location", "loc", go.Point.parse),
-      { locationSpot: go.Spot.Center, portId: "Node" },
-      $(go.Shape, "RoundedRectangle",
-        { fill: "white", portId: "Shape" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 4, stroke: "blue", portId: "TextBlock" },
-        new go.Binding("text"))
-    );
+    new go.Node("Auto", {
+        scale: 2,  // make it easier to see
+        locationSpot: go.Spot.Center, portId: "Node"
+      })
+      .bind("location", "loc", go.Point.parse)
+      .add(
+        new go.Shape("RoundedRectangle", { fill: "white", portId: "Shape" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 4, stroke: "blue", portId: "TextBlock" })
+          .bind("text")
+      );
 
   diagram.linkTemplate =
-    $(go.Link,  // make it easier to see
-      $(go.Shape, { strokeWidth: 3 }),
-      $(go.Shape, { scale: 2, toArrow: "Standard" })
-    );
+    new go.Link()  // make it easier to see
+      .add(
+        new go.Shape({ strokeWidth: 3 }),
+        new go.Shape({ scale: 2, toArrow: "Standard" })
+      );
 
   // define several shared Brushes
-  var bluegrad = $(go.Brush, "Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
-  var yellowgrad = $(go.Brush, "Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
-  var lightgrad = $(go.Brush, "Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
+  const bluegrad = new go.Brush("Linear", { 0: "rgb(150, 150, 250)", 0.5: "rgb(86, 86, 186)", 1: "rgb(86, 86, 186)" });
+  const yellowgrad = new go.Brush("Linear", { 0: "rgb(254, 221, 50)", 1: "rgb(254, 182, 50)" });
+  const lightgrad = new go.Brush("Linear", { 1: "#E6E6FA", 0: "#FFFAF0" });
 
   // the template for each attribute in a node's array of item data
-  var itemTempl =
-    $(go.Panel, "TableRow",
-      new go.Binding("portId", "name", n => n + "ITEMPANEL"),
-      new go.Binding("background", "row", i => (i === 2) ? "lightgreen" : "transparent").ofObject(),
-      $(go.Shape,
-        new go.Binding("portId", "name", n => n + "SHAPE"),
-        { column: 0, desiredSize: new go.Size(10, 10) },
-        new go.Binding("figure", "figure"),
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        {
-          shadowVisible:false,
-          column: 1,
-          stroke: "#333333",
-          font: "bold 14px sans-serif"
-        },
-        new go.Binding("text", "name"),
-        new go.Binding("portId", "name", n => n + "TEXTBLOCK"))
-    );
+  const itemTempl =
+    new go.Panel("TableRow")
+      .bind("portId", "name", n => n + "ITEMPANEL")
+      .bindObject("background", "row", i => (i === 2) ? "lightgreen" : "transparent")
+      .add(
+        new go.Shape({ column: 0, desiredSize: new go.Size(10, 10) })
+          .bind("portId", "name", n => n + "SHAPE")
+          .bind("figure", "figure")
+          .bind("fill", "color"),
+        new go.TextBlock({
+            shadowVisible:false,
+            column: 1,
+            stroke: "#333333",
+            font: "bold 14px sans-serif"
+          })
+          .bind("text", "name")
+          .bind("portId", "name", n => n + "TEXTBLOCK")
+      );
 
-  // define the Node template, representing an entity
-  diagram.nodeTemplateMap.add("Complex",
-    $(go.Node, "Auto",  // the whole node panel
-      {
-        locationSpot: go.Spot.Center,
-        scale: 1.5,
-        selectionAdorned: true,
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides,
-        isShadowed: true,
-        shadowColor: "#C5C1AA"
-      },
-      new go.Binding("location", "loc", go.Point.parse),
-      // define the node's outer shape, which will surround the Table
-      $(go.Shape, "Rectangle",
-        { portId: "RECTANGLE" },
-        { fill: lightgrad, stroke: "#756875", strokeWidth: 3 }),
-      $(go.Panel, "Table",
-        { margin: 8, stretch: go.GraphObject.Fill },
-        $(go.RowColumnDefinition, { row: 0, sizing: go.RowColumnDefinition.None }),
-        // the table header
-        $(go.TextBlock,
-          { portId: "HEADER" },
+    // define the Node template, representing an entity
+    diagram.nodeTemplateMap.add("Complex",
+      new go.Node("Auto",  // the whole node panel
           {
-            row: 0, alignment: go.Spot.Center,
-            margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
-            font: "bold 16px sans-serif"
-          },
-          new go.Binding("text", "key")),
-        // the collapse/expand button
-        $("Button",
-          { portId: "BUTTON" },
-          {
-            row: 0, alignment: go.Spot.TopRight,
-            "ButtonBorder.stroke": null,
-            click: (e, but) => {
-              var list = but.part.findObject("LIST");
-              if (list !== null) {
-                list.diagram.startTransaction("collapse/expand");
-                list.visible = !list.visible;
-                var shape = but.findObject("SHAPE");
-                if (shape !== null) shape.figure = (list.visible ? "TriangleUp" : "TriangleDown");
-                list.diagram.commitTransaction("collapse/expand");
-              }
-            }
-          },
-          $(go.Shape, "TriangleUp",
-            { name: "SHAPE", width: 6, height: 4 })),
-        // the list of Panels, each showing an attribute
-        $(go.Panel, "Table",
-          {
-            name: "LIST", background: "pink", portId: "LIST",
-            row: 1,
-            padding: 3,
-            alignment: go.Spot.TopLeft,
-            defaultAlignment: go.Spot.Left,
-            itemTemplate: itemTempl
-          },
-          new go.Binding("itemArray", "items"))
-      )  // end Table Panel
-    ));  // end Node
-
+            locationSpot: go.Spot.Center,
+            scale: 1.5,
+            selectionAdorned: true,
+            fromSpot: go.Spot.AllSides,
+            toSpot: go.Spot.AllSides,
+            isShadowed: true,
+            shadowColor: "#C5C1AA"
+          })
+        .bind("location", "loc", go.Point.parse)
+        .add(
+          // define the node's outer shape, which will surround the Table
+          new go.Shape("Rectangle", {
+            portId: "RECTANGLE",
+            fill: lightgrad, stroke: "#756875", strokeWidth: 3
+          }),
+          new go.Panel("Table", { margin: 8, stretch: go.Stretch.Fill })
+            .addRowDefinition(0, { sizing: go.Sizing.None })
+            .add(
+              // the table header
+              new go.TextBlock({
+                  portId: "HEADER",
+                  row: 0, alignment: go.Spot.Center,
+                  margin: new go.Margin(0, 14, 0, 2),  // leave room for Button
+                  font: "bold 16px sans-serif"
+                })
+                .bind("text", "key"),
+              // the collapse/expand button
+              go.GraphObject.build("Button", {
+                  portId: "BUTTON",
+                  row: 0, alignment: go.Spot.TopRight,
+                  "ButtonBorder.stroke": null,
+                  click: (e, but) => {
+                    const list = but.part.findObject("LIST");
+                    if (list !== null) {
+                      list.diagram.startTransaction("collapse/expand");
+                      list.visible = !list.visible;
+                      const shape = but.findObject("SHAPE");
+                      if (shape !== null) shape.figure = (list.visible ? "TriangleUp" : "TriangleDown");
+                      list.diagram.commitTransaction("collapse/expand");
+                    }
+                  }
+                })
+                .add(
+                  new go.Shape("TriangleUp", { name: "SHAPE", width: 6, height: 4 })
+                ),
+              // the list of Panels, each showing an attribute
+              new go.Panel("Table", {
+                name: "LIST", background: "pink", portId: "LIST",
+                row: 1,
+                padding: 3,
+                alignment: go.Spot.TopLeft,
+                defaultAlignment: go.Spot.Left,
+                itemTemplate: itemTempl
+              })
+              .bind("itemArray", "items")
+            )  // end Table Panel
+        )  // end Node
+      );
+  
   // annotations -- brown text
   diagram.nodeTemplateMap.add("Comment",
-    $(go.Node,
-      new go.Binding("location", "loc", go.Point.parse),
-      { locationSpot: go.Spot.Center },
-      $(go.TextBlock,
-        { stroke: "brown", textAlign: "center" },
-        new go.Binding("text"),
-        new go.Binding("font", "bold", b => b ? "bold 10pt sans-serif" : "10pt sans-serif"))
-    ));
+    new go.Node({ locationSpot: go.Spot.Center })
+      .bind("location", "loc", go.Point.parse)
+      .add(
+        new go.TextBlock({ stroke: "brown", textAlign: "center" })
+          .bind("text")
+          .bind("font", "bold", b => b ? "bold 10pt sans-serif" : "10pt sans-serif")
+      )
+  );
 
   // so that comments can point at any named GraphObject in a Link
   diagram.nodeTemplateMap.add("LinkLabel",
-    $(go.Node,
-      new go.Binding("segmentIndex"),
-      new go.Binding("segmentOffset")
-    ));
+    new go.Node()
+      .bind("segmentIndex")
+      .bind("segmentOffset")
+  );
 
   // brown curved links connecting with a Comment node
   diagram.linkTemplateMap.add("Comment",
-    $(go.Link,
-      { curve: go.Link.Bezier },
-      new go.Binding("curviness"),
-      $(go.Shape, { stroke: "brown" }),
-      $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
-    ));
+    new go.Link({ curve: go.Curve.Bezier })
+      .bind("curviness")
+      .add(
+        new go.Shape({ stroke: "brown" }),
+        new go.Shape({ toArrow: "OpenTriangle", stroke: "brown" })
+      )
+  );
 
-  var model = new go.GraphLinksModel();
-  model.linkToPortIdProperty = "pid";
-  model.linkLabelKeysProperty = "labs";
-  model.nodeDataArray = [
-    { key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },
-    { key: 2, text: "Beta", color: "lightgreen", loc: "200 0" },
-    { key: -1, text: "two Nodes", category: "Comment", bold: true, loc: "100 -60" },
-    { key: -2, text: "a Shape of figure\n'RoundedRectangle',\nwith black stroke\nand lightblue fill", category: "Comment", loc: "-140 0" },
-    { key: -3, text: "a TextBlock with blue stroke\nand no background\nshowing the string 'Alpha'", category: "Comment", loc: "-50 70" },
-    { key: -4, text: "a Link's\nmain path\nShape", category: "Comment", loc: "100 40" },
-    { key: -41, category: "LinkLabel" },
-    { key: -5, text: "a Link's\narrowhead\nShape", category: "Comment", loc: "170 80" },
-    { key: -51, category: "LinkLabel", segmentIndex: -1, segmentOffset: new go.Point(-8, 4) },
-    { key: -6, text: "a Link", category: "Comment", bold: true, loc: "100 -30" },
-    { key: -7, text: "this Node Panel\nalso acts as the\nNode's only port", category: "Comment", loc: "320 0" },
+  diagram.model = new go.GraphLinksModel({
+    linkToPortIdProperty: "pid",
+    linkLabelKeysProperty: "labs",
+    nodeDataArray: [
+{ key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },
+{ key: 2, text: "Beta", color: "lightgreen", loc: "200 0" },
+{ key: -1, text: "two Nodes", category: "Comment", bold: true, loc: "100 -60" },
+{ key: -2, text: "a Shape of figure\n'RoundedRectangle',\nwith black stroke\nand lightblue fill", category: "Comment", loc: "-140 0" },
+{ key: -3, text: "a TextBlock with blue stroke\nand no background\nshowing the string 'Alpha'", category: "Comment", loc: "-50 70" },
+{ key: -4, text: "a Link's\nmain path\nShape", category: "Comment", loc: "100 40" },
+{ key: -41, category: "LinkLabel" },
+{ key: -5, text: "a Link's\narrowhead\nShape", category: "Comment", loc: "170 80" },
+{ key: -51, category: "LinkLabel", segmentIndex: -1, segmentOffset: new go.Point(-8, 4) },
+{ key: -6, text: "a Link", category: "Comment", bold: true, loc: "100 -30" },
+{ key: -7, text: "this Node Panel\nalso acts as the\nNode's only port", category: "Comment", loc: "320 0" },
 
-    { key: 11, category: "Complex", loc: "0 230",
-        items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: yellowgrad },
-                { name: "CompanyName", iskey: false, figure: "Cube1", color: bluegrad },
-                { name: "ContactName", iskey: false, figure: "Cube1", color: bluegrad },
-                { name: "Address", iskey: false, figure: "Cube1", color: bluegrad }]
-    },
-    { key: -11, text: "a Rectangle Shape", category: "Comment", loc: "-70 120" },
-    { key: -12, text: "a TextBlock\nacting as a header", category: "Comment", loc: "70 120" },
-    { key: -13, text: "a Button Panel consisting\nof two Shapes", category: "Comment", loc: "200 150" },
-    { key: -14, text: "a Vertical items Panel\nwith pink background,\nholding 4 Panels,\none per item", category: "Comment", loc: "200 220" },
-    { key: -15, text: "a TextBlock\nin a Panel for item #3", category: "Comment", loc: "50 340" },
-    { key: -16, text: "a Shape\nin a Panel for item #3", category: "Comment", loc: "-140 320" },
-    { key: -17, text: "a TableRow Panel\nfor item #2\nwith lightgreen\nbackground", category: "Comment", loc: "-200 250" }
-  ];
-  model.linkDataArray = [
-    { from: 1, to: 2, labs: [-41, -51] },
-    { from: -1, category: "Comment", to: 1, pid: "Node", curviness: -10 },
-    { from: -1, category: "Comment", to: 2, pid: "Node" },
-    { from: -2, category: "Comment", to: 1, pid: "Shape" },
-    { from: -3, category: "Comment", to: 1, pid: "TextBlock", curviness: -10 },
-    { from: -4, category: "Comment", to: -41, curviness: 0 },
-    { from: -5, category: "Comment", to: -51, curviness: 5 },
-    { from: -6, category: "Comment", to: -41, curviness: -5 },
-    { from: -7, category: "Comment", to: 2, pic: "Node", curviness: -10 },
+{ key: 11, category: "Complex", loc: "0 230",
+    items: [{ name: "SupplierID", iskey: true, figure: "Decision", color: yellowgrad },
+            { name: "CompanyName", iskey: false, figure: "Cube1", color: bluegrad },
+            { name: "ContactName", iskey: false, figure: "Cube1", color: bluegrad },
+            { name: "Address", iskey: false, figure: "Cube1", color: bluegrad }]
+},
+{ key: -11, text: "a Rectangle Shape", category: "Comment", loc: "-70 120" },
+{ key: -12, text: "a TextBlock\nacting as a header", category: "Comment", loc: "70 120" },
+{ key: -13, text: "a Button Panel consisting\nof two Shapes", category: "Comment", loc: "200 150" },
+{ key: -14, text: "a Vertical items Panel\nwith pink background,\nholding 4 Panels,\none per item", category: "Comment", loc: "200 220" },
+{ key: -15, text: "a TextBlock\nin a Panel for item #3", category: "Comment", loc: "50 340" },
+{ key: -16, text: "a Shape\nin a Panel for item #3", category: "Comment", loc: "-140 320" },
+{ key: -17, text: "a TableRow Panel\nfor item #2\nwith lightgreen\nbackground", category: "Comment", loc: "-200 250" }
+    ],
+    linkDataArray: [
+{ from: 1, to: 2, labs: [-41, -51] },
+{ from: -1, category: "Comment", to: 1, pid: "Node", curviness: -10 },
+{ from: -1, category: "Comment", to: 2, pid: "Node" },
+{ from: -2, category: "Comment", to: 1, pid: "Shape" },
+{ from: -3, category: "Comment", to: 1, pid: "TextBlock", curviness: -10 },
+{ from: -4, category: "Comment", to: -41, curviness: 0 },
+{ from: -5, category: "Comment", to: -51, curviness: 5 },
+{ from: -6, category: "Comment", to: -41, curviness: -5 },
+{ from: -7, category: "Comment", to: 2, pic: "Node", curviness: -10 },
 
-    { from: -11, category: "Comment", to: 11, pid: "RECTANGLE", curviness: 0 },
-    { from: -12, category: "Comment", to: 11, pid: "HEADER" },
-    { from: -13, category: "Comment", to: 11, pid: "BUTTON" },
-    { from: -14, category: "Comment", to: 11, pid: "LIST" },
-    { from: -15, category: "Comment", to: 11, pid: "AddressTEXTBLOCK" },
-    { from: -16, category: "Comment", to: 11, pid: "AddressSHAPE" },
-    { from: -17, category: "Comment", to: 11, pid: "ContactNameITEMPANEL" }
-  ];
-  diagram.model = model;
+{ from: -11, category: "Comment", to: 11, pid: "RECTANGLE", curviness: 0 },
+{ from: -12, category: "Comment", to: 11, pid: "HEADER" },
+{ from: -13, category: "Comment", to: 11, pid: "BUTTON" },
+{ from: -14, category: "Comment", to: 11, pid: "LIST" },
+{ from: -15, category: "Comment", to: 11, pid: "AddressTEXTBLOCK" },
+{ from: -16, category: "Comment", to: 11, pid: "AddressSHAPE" },
+{ from: -17, category: "Comment", to: 11, pid: "ContactNameITEMPANEL" }
+    ]
+  });
 </code></pre>
-<script>goCode("commented", 650, 450)</script>
+<script>
+  goCode('commented', 650, 450);
+</script>
 
 <p>
-The following pages will provide more details about the basic building block classes,
-<a>TextBlock</a>, <a>Shape</a>, and <a>Picture</a>, and about ways of aggregating them with the <a>Panel</a> class.
+  The following pages will provide more details about the basic building block classes,
+  <a>TextBlock</a>, <a>Shape</a>, and <a>Picture</a>,
+  and about ways of aggregating them with the <a>Panel</a> class.
 </p>
-
-
 
       </div>
     </div>
-  
-  <div class="bg-nwoods-primary">
-    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
-      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
-    </section>
-  </div><footer class="bg-nwoods-primary text-white">
-  <div class="container max-w-screen-lg mx-auto  px-8">
-    <div class="w-full py-6">
-
-        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8">
-          <ul class="text-sm font-medium pb-6 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="../samples/index.html">Samples</a>
-                </li>
-                <li>
-                  <a href="../learn/index.html">Learn</a>
-                </li>
-                <li>
-                  <a href="../intro/index.html">Intro</a>
-                </li>
-                <li>
-                  <a href="../api/index.html">API</a>
-                </li>
-                <li>
-                  <a href="../changelog.html">Changelog</a>
-                </li>
-                <li>
-                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Support</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="https://www.nwoods.com/contact.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
-                </li>
-                <li>
-                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/sales/index.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
-                </li>
-                <li>
-                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Company</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com">Northwoods</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/about.html">About Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/contact.html">Contact Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/consulting.html">Consulting</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://twitter.com/northwoodsgo">Twitter</a>
-                </li>
-
-              </ul>
-            </li>
-          </ul>
-
-
-      <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2023 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
-      </p>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="api/index.html">API</a>
+          </li>
+          <li>
+            <a href="changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://www.nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://www.nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2024 <a href="https://www.nwoods.com">Northwoods Software</a>
+    </p>
   </div>
-</footer>  </body>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script> 
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-S5QK8VSK84');
-  var getOutboundLink = function(url, label) {
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
     gtag('event', 'click', {
       'event_category': 'outbound',
       'event_label': label,
       'transport_type': 'beacon'
     });
   }
-
-  // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
-  topButton.addEventListener("click", function() {
-    this.classList.toggle("active");
-    topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
-  });
 </script>
   <script src="../assets/js/prism.js"></script>
   <script src="../release/go.js"></script>
-<script src="../extensions/Figures.js"></script>  <script src="../assets/js/goDoc.js"></script>
+  
+    <script src="../extensions/Figures.js"></script>
+  
+  <script src="../assets/js/goDoc.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
-      if (window.goDoc) window.goDoc();
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
       var d = window.diagrams;
       for (var i = 0; i < d.length; i++) {
         var dargs = d[i];
         goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
       }
-      if (window.extra) window.extra();
-    });
+      if (window.extra)
+        window.extra();
+      }
+    );
   </script>
 </html>

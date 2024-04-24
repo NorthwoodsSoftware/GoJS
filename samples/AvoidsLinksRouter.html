@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="A custom Router that moves Link segments to parallelize and avoid overlaps." />
+<meta itemprop="description" content="A custom Router that moves Link segments to parallelize and avoid overlaps." />
+<meta property="og:description" content="A custom Router that moves Link segments to parallelize and avoid overlaps." />
+<meta name="twitter:description" content="A custom Router that moves Link segments to parallelize and avoid overlaps." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Avoids Links Router />
+<meta property="og:title" content=Avoids Links Router />
+<meta name="twitter:title" content=Avoids Links Router />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/avoidsLinksRouter.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/avoidsLinksRouter.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/avoidsLinksRouter.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/AvoidsLinksRouter.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/AvoidsLinksRouter.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Avoids Links Router | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<script src="../extensions/AvoidsLinksRouter.js"></script>
+<script id="code">
+  var myRouter = new AvoidsLinksRouter();
+  var myDiagram;
+
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      'undoManager.isEnabled': true,
+    });
+
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bind('position', 'pos', go.Point.parse)
+      .add(
+        new go.Shape({
+          fill: 'white', portId: '',
+          fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+        }).bind('fill', 'color'),
+        new go.TextBlock({ font: '15px serif', margin: 8 }).bind('text')
+      );
+    myRouter.epsilonDistance = 2; // increase
+    myDiagram.routers.push(myRouter);
+
+    myDiagram.nodeTemplateMap.add(
+      'Block',
+      new go.Node({
+        layerName: 'Background', background: '#6e6e6e'
+      })
+        .bind('desiredSize', 'size', go.Size.parse)
+        .bind('position', 'pos', go.Point.parse)
+    );
+
+    myDiagram.linkTemplate = new go.Link({ routing: go.Link.AvoidsNodes, corner: 10 })
+      .bind('fromSpot')
+      .bind('toSpot')
+      .add(
+        // use a binding to create a different color for each node
+        new go.Shape({ strokeWidth: 1 }).bind('stroke', '', linkStroke),
+        new go.Shape({ toArrow: 'Triangle', scale: 0.4 }));
+
+    let lastColor = 'red';
+    let colors = 0;
+    function linkStroke() {
+      lastColor = go.Brush.lightenBy(lastColor, 0.05)
+      colors++;
+      if (colors > 10) {
+        colors = 0;
+        lastColor = 'blue';
+      }
+      return lastColor;//go.Brush.randomColor();
+    }
+
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: go.Brush.lightenBy('red', .7), pos: '-100 0' },
+        { key: 2, text: 'Beta', color: go.Brush.lightenBy('red', .6), pos: '100 0' },
+        { key: 3, text: 'Gamma', color: go.Brush.lightenBy('red', .5), pos: '-100 60' },
+        { key: 4, text: 'Delta', color: go.Brush.lightenBy('red', .4), pos: '182 60' },
+        { key: 5, text: 'Epsilon', color: go.Brush.lightenBy('red', .3), pos: '100 260' },
+        { key: 6, text: 'Zeta', color: go.Brush.lightenBy('red', 0.2), pos: '210 260' },
+        { category: 'Block', pos: '0 60', size: '40 140' },
+        { category: 'Block', pos: '20 140', size: '140 40' },
+        { category: 'Block', pos: '180 140', size: '140 40' },
+        { key: 11, text: 'S1', pos: '-100 -80' },
+        { key: 21, text: 'S2', pos: '120 -80' },
+        { key: 12, text: 'S3', pos: '-100 -190' },
+        { key: 22, text: 'S4', pos: '120 -190' },
+        { category: 'Block', pos: '0 -100', size: '40 140' },
+        { category: 'Block', pos: '0 -280', size: '40 140' },
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 2 },
+        { from: 2, to: 1 },
+        { from: 3, to: 4 },
+        { from: 4, to: 3 },
+        { from: 2, to: 5 },
+        { from: 2, to: 5 },
+        { from: 5, to: 2 },
+        { from: 4, to: 6 },
+        { from: 6, to: 4 },
+        { from: 11, to: 21, fromSpot: go.Spot.TopSide, toSpot: go.Spot.TopSide },
+        { from: 11, to: 21, fromSpot: go.Spot.TopSide, toSpot: go.Spot.TopSide },
+        { from: 11, to: 21, fromSpot: go.Spot.LeftSide, toSpot: go.Spot.RightSide },
+        { from: 11, to: 21, fromSpot: go.Spot.LeftSide, toSpot: go.Spot.RightSide },
+        { from: 11, to: 21, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
+        { from: 11, to: 21, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
+        { from: 11, to: 21, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
+        { from: 11, to: 21, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
+        { from: 12, to: 22, fromSpot: go.Spot.TopSide, toSpot: go.Spot.TopSide },
+        { from: 12, to: 22, fromSpot: go.Spot.TopSide, toSpot: go.Spot.TopSide },
+        { from: 12, to: 22, fromSpot: go.Spot.LeftSide, toSpot: go.Spot.RightSide },
+        { from: 12, to: 22, fromSpot: go.Spot.LeftSide, toSpot: go.Spot.RightSide },
+        { from: 12, to: 22, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
+        { from: 12, to: 22, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
+        { from: 12, to: 22, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
+        { from: 12, to: 22, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
+      ]
+    );
+  }
+
+  function toggleRouter() {
+    myDiagram.startTransaction('change link routes');
+    if (myDiagram.routers.count > 1) {
+      myDiagram.routers.pop();
+    } else {
+      myDiagram.routers.push(myRouter);
+    }
+
+    for (const link of myDiagram.links) {
+      link.invalidateRoute();
+    }
+    myDiagram.commitTransaction('change link routes');
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 500px; height: 600px"></div>
+  <p>The AvoidsLinksRouter attempts to reduce overlapping links. To see its function more clearly, try disabling it:</p>
+  <button onclick="toggleRouter()">Toggle AvoidsLinksRouter</button>
+  <p>The <a>Diagram.router</a> is an instance of the <a>AvoidsLinksRouter</a> extension router, defined in
+    <a href="../extensions/AvoidsLinksRouter.js">extensions/AvoidsLinksRouter.js</a>.
+  </p>
+  <p>
+    The TypeScript source is at
+    <a href="../extensionsJSM/AvoidsLinksRouter.ts">extensionsJSM/AvoidsLinksRouter.ts</a>.
+  </p>
+</div>
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Link Routing</h4>
+<p>
+  Each Link performs a very fast default computation of its desired path, its "route",
+  based only on the properties of the Link and the properties of the port objects that it is connected with.
+  GoJS 3.0 provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  <a>Router</a> class.
+</p>
+<p>
+  Routers work by defining a method, <a>Router.routeLinks</a>, which takes a collection of
+  recently recomputed link routes, plus a collection context that is either a Group or the Diagram.
+  This method is called by the Diagram during the update phase after layouts are performed.
+</p>
+<p>
+More information can be found in the <a href="../intro/routers.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#routers">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

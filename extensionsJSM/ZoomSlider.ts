@@ -1,16 +1,16 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * This class implements a zoom slider for GoJS diagrams.
@@ -19,12 +19,12 @@ import * as go from '../release/go-module.js';
  *   - `options` ***Object*** an optional JS Object describing options for the slider
  *
  * Options:
- *   - `alignment` ***Spot*** see {@link #alignment}
- *   - `alignmentFocus` ***Spot*** see {@link #alignmentFocus}
- *   - `size` ***number*** see {@link #size}
- *   - `buttonSize` ***number*** see {@link #buttonSize}
- *   - `orientation` ***string*** see {@link #orientation}
- *   - `opacity` ***number*** see {@link #opacity}
+ *   - `alignment` ***Spot*** see {@link alignment}
+ *   - `alignmentFocus` ***Spot*** see {@link alignmentFocus}
+ *   - `size` ***number*** see {@link size}
+ *   - `buttonSize` ***number*** see {@link buttonSize}
+ *   - `orientation` ***string*** see {@link orientation}
+ *   - `opacity` ***number*** see {@link opacity}
  *
  * Example usage of ZoomSlider:
  * ```js
@@ -49,7 +49,7 @@ import * as go from '../release/go-module.js';
  * <p class="box">
  * The diagram div's parent element should use `position: relative` to ensure the slider gets positioned properly.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ZoomSlider.html">Zoom Slider</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/ZoomSlider.html">Zoom Slider</a> sample.
  * @category Extension
  */
 export class ZoomSlider {
@@ -68,18 +68,18 @@ export class ZoomSlider {
   private _alignment: go.Spot = go.Spot.BottomRight;
   private _alignmentFocus: go.Spot = go.Spot.BottomRight;
   private _orientation = 'vertical';
-  private _opacity = .75;
+  private _opacity = 0.75;
 
   // Function used to keep the slider up to date
-  private updateOnViewportBoundsChanged: ((e: go.DiagramEvent) => void);
+  private updateOnViewportBoundsChanged: (e: go.DiagramEvent) => void;
 
   /**
    * Constructs a ZoomSlider and sets up properties based on the options provided.
    * Also sets up change listeners on the Diagram so the ZoomSlider stays up-to-date.
-   * @param {Diagram} diagram a reference to a GoJS Diagram
-   * @param {Object=} options an optional JS Object describing options for the slider
+   * @param diagram - a reference to a GoJS Diagram
+   * @param options - an optional JS Object describing options for the slider
    */
-  constructor(diagram: go.Diagram, options?: { [index: string]: any}) {
+  constructor(diagram: go.Diagram, options?: { [index: string]: any }) {
     this._diagram = diagram;
     this._initialScale = diagram.scale;
     this._diagramDiv = diagram.div;
@@ -102,7 +102,9 @@ export class ZoomSlider {
 
     // Prepare change listeners
     const self = this;
-    this.updateOnViewportBoundsChanged = (e: go.DiagramEvent) => { self.scaleToValue(); };
+    this.updateOnViewportBoundsChanged = (e: go.DiagramEvent) => {
+      self.scaleToValue();
+    };
 
     this.init();
   }
@@ -110,13 +112,17 @@ export class ZoomSlider {
   /**
    * This read-only property returns the diagram for which the slider is handling zoom.
    */
-  get diagram(): go.Diagram { return this._diagram; }
+  get diagram(): go.Diagram {
+    return this._diagram;
+  }
 
   /**
    * Gets or sets the overall length, in pixels, that the slider will occupy.
    * The default value is 125.
    */
-  get size(): number { return this._size; }
+  get size(): number {
+    return this._size;
+  }
   set size(val: number) {
     const old = this._size;
     if (old !== val) {
@@ -129,7 +135,9 @@ export class ZoomSlider {
    * Gets or sets the height/width of the buttons at each end of the slider.
    * The default value is 25.
    */
-  get buttonSize(): number { return this._buttonSize; }
+  get buttonSize(): number {
+    return this._buttonSize;
+  }
   set buttonSize(val: number) {
     const old = this._buttonSize;
     if (old !== val) {
@@ -142,7 +150,9 @@ export class ZoomSlider {
    * Gets or sets the alignment Spot of this slider to determine where it should be placed relative to the diagram.
    * The default value is Spot.BottomRight.
    */
-  get alignment(): go.Spot { return this._alignment; }
+  get alignment(): go.Spot {
+    return this._alignment;
+  }
   set alignment(val: go.Spot) {
     const old = this._alignment;
     if (old !== val) {
@@ -155,7 +165,9 @@ export class ZoomSlider {
    * Gets or sets the Spot on this slider to be used as the alignment point when placing it relative to the diagram.
    * The default value is Spot.BottomRight.
    */
-  get alignmentFocus(): go.Spot { return this._alignmentFocus; }
+  get alignmentFocus(): go.Spot {
+    return this._alignmentFocus;
+  }
   set alignmentFocus(val: go.Spot) {
     const old = this._alignmentFocus;
     if (old !== val) {
@@ -169,7 +181,9 @@ export class ZoomSlider {
    * Must be either "horizontal" or "vertical" and is case-sensitive.
    * The default value is `"vertical"`.
    */
-  get orientation(): string { return this._orientation; }
+  get orientation(): string {
+    return this._orientation;
+  }
   set orientation(val: string) {
     if (val !== 'horizontal' && val !== 'vertical') {
       throw new Error('Orientation must be "horizontal" or "vertical"');
@@ -185,7 +199,9 @@ export class ZoomSlider {
    * Gets or sets the opacity of the slider.
    * The default value is 0.75.
    */
-  get opacity(): number { return this._opacity; }
+  get opacity(): number {
+    return this._opacity;
+  }
   set opacity(val: number) {
     const old = this._opacity;
     if (old !== val) {
@@ -197,7 +213,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Initialize the slider.
    */
   private init() {
@@ -210,7 +225,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Create the necessary divs for the slider and add the slider as a sibling of the diagram.
    */
   private sliderDivSetup() {
@@ -256,7 +270,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Add listeners to the buttons and range input.
    * Add a diagram listener.
    */
@@ -290,9 +303,8 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Resize the slider.
-   * @param {boolean=} reorient whether or not to reorient the slider/buttons
+   * @param reorient - whether or not to reorient the slider/buttons
    */
   private resize(reorient?: boolean) {
     let sliderWidth = 0;
@@ -303,8 +315,11 @@ export class ZoomSlider {
     const zoomRangeContainer = this._zoomSliderRangeCtn;
     const zoomRangeInput = this._zoomSliderRange;
 
-    if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null ||
-        zoomRangeContainer === null || zoomRangeInput === null) return;
+    if (this._sliderDiv === null ||
+        zoomOutBtn === null ||
+        zoomInBtn === null ||
+        zoomRangeContainer === null ||
+        zoomRangeInput === null) return;
 
     if (this.orientation === 'horizontal') {
       sliderWidth = this.size;
@@ -354,7 +369,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Reorient the slider, changing the transform and the order of the buttons within the div.
    */
   private reorient() {
@@ -362,7 +376,10 @@ export class ZoomSlider {
     const zoomInBtn = this._zoomSliderIn;
     const zoomRangeInput = this._zoomSliderRange;
 
-    if (this._sliderDiv === null || zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
+    if (this._sliderDiv === null ||
+        zoomOutBtn === null ||
+        zoomInBtn === null ||
+        zoomRangeInput === null) return;
 
     // Need to set the transform of the range input and move the buttons to the correct sides
     if (this.orientation === 'horizontal') {
@@ -377,7 +394,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Realigns to slider relative to the diagram.
    */
   private realign() {
@@ -399,13 +415,21 @@ export class ZoomSlider {
     if (diagramParent !== null) {
       const parentLoc = diagramParent.getBoundingClientRect();
 
-      const top = diagramLoc.top - parentLoc.top +
-        this.alignment.y * this._diagramDiv.clientHeight + this.alignment.offsetY -
-        this.alignmentFocus.y * sliderHeight + this.alignmentFocus.offsetY;
+      const top =
+        diagramLoc.top -
+        parentLoc.top +
+        this.alignment.y * this._diagramDiv.clientHeight +
+        this.alignment.offsetY -
+        this.alignmentFocus.y * sliderHeight +
+        this.alignmentFocus.offsetY;
 
-      const left = diagramLoc.left - parentLoc.left +
-        this.alignment.x * this._diagramDiv.clientWidth + this.alignment.offsetX -
-        this.alignmentFocus.x * sliderWidth + this.alignmentFocus.offsetX;
+      const left =
+        diagramLoc.left -
+        parentLoc.left +
+        this.alignment.x * this._diagramDiv.clientWidth +
+        this.alignment.offsetX -
+        this.alignmentFocus.x * sliderWidth +
+        this.alignmentFocus.offsetX;
 
       this._sliderDiv.style.top = top + 'px';
       this._sliderDiv.style.left = left + 'px';
@@ -413,7 +437,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Update the value of the slider input to match the diagram's scale.
    */
   private scaleToValue() {
@@ -427,7 +450,6 @@ export class ZoomSlider {
   }
 
   /**
-   * @ignore
    * Update the diagram's scale to match the value of the slider input.
    */
   private valueToScale() {
@@ -443,7 +465,7 @@ export class ZoomSlider {
   /**
    * Remove the slider from the page.
    */
-  public remove() {
+  remove() {
     // Remove the listener attached to diagram
     this.diagram.removeDiagramListener('ViewportBoundsChanged', this.updateOnViewportBoundsChanged);
 

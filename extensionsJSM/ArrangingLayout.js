@@ -1,65 +1,64 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
-* A custom Layout that provides one way to have a layout of layouts.
-* It partitions nodes and links into separate subnetworks, applies a primary
-* layout to each subnetwork, and then arranges those results by an
-* arranging layout.  Any disconnected nodes are laid out later by a
-* side layout, by default in a grid underneath the main body of subnetworks.
-*
-* If you want to experiment with this extension, try the <a href="../../extensionsJSM/Arranging.html">Arranging Layout</a> sample.
-*
-* This layout uses three separate Layouts.
-*
-* One is used for laying out nodes and links that are connected together: {@link #primaryLayout}.
-* This defaults to null and must be set to an instance of a {@link Layout},
-* such as a {@link TreeLayout} or a {@link ForceDirectedLayout} or a custom Layout.
-*
-* One is used to arrange separate subnetworks of the main graph: {@link #arrangingLayout}.
-* This defaults to an instance of {@link GridLayout}.
-*
-* One is used for laying out the additional nodes along one of the sides of the main graph: {@link #sideLayout}.
-* This also defaults to an instance of  {@link GridLayout}.
-* A filter predicate, {@link #filter}, splits up the collection of nodes and links into two subsets,
-* one for the main layout and one for the side layout.
-* By default, when there is no filter, it puts all nodes that have no link connections into the
-* subset to be processed by the side layout.
-*
-* If all pairs of nodes in the main graph can be reached by some path of undirected links,
-* there are no separate subnetworks, so the {@link #arrangingLayout} need not be used and
-* the {@link #primaryLayout} would apply to all of those nodes and links.
-*
-* But if there are disconnected subnetworks, the {@link #primaryLayout} is applied to each subnetwork,
-* and then all of those results are arranged by the {@link #arrangingLayout}.
-* If you don't want to use an {@link #arrangingLayout} and you want to force the {@link #primaryLayout} to
-* operate on all of the subnetworks, set {@link #arrangingLayout} to null.
-*
-* In either case if there are any nodes in the side graph, those are arranged by the {@link #sideLayout}
-* to be on the side of the arrangement of the main graph of nodes and links.
-* The {@link #side} property controls which side they will be placed -- the default is BottomSide.
-*
-* Note: if you do not want to have singleton nodes be arranged by {@link #sideLayout},
-* set {@link #filter} to <code>part => true</code>.
-* That will cause all singleton nodes to be arranged by {@link #arrangingLayout} as if they
-* were each their own subnetwork.
-*
-* If you both don't want to use {@link #sideLayout} and you don't want to use {@link #arrangingLayout}
-* to lay out connected subnetworks, don't use this ArrangingLayout at all --
-* just use whatever Layout you would have assigned to {@link #primaryLayout}.
-*
-* @category Layout Extension
-*/
+ * A custom Layout that provides one way to have a layout of layouts.
+ * It partitions nodes and links into separate subnetworks, applies a primary
+ * layout to each subnetwork, and then arranges those results by an
+ * arranging layout.  Any disconnected nodes are laid out later by a
+ * side layout, by default in a grid underneath the main body of subnetworks.
+ *
+ * This layout uses three separate Layouts.
+ *
+ * One is used for laying out nodes and links that are connected together: {@link primaryLayout}.
+ * This defaults to null and must be set to an instance of a {@link go.Layout},
+ * such as a {@link go.TreeLayout} or a {@link go.ForceDirectedLayout} or a custom Layout.
+ *
+ * One is used to arrange separate subnetworks of the main graph: {@link arrangingLayout}.
+ * This defaults to an instance of {@link go.GridLayout}.
+ *
+ * One is used for laying out the additional nodes along one of the sides of the main graph: {@link sideLayout}.
+ * This also defaults to an instance of  {@link go.GridLayout}.
+ * A filter predicate, {@link filter}, splits up the collection of nodes and links into two subsets,
+ * one for the main layout and one for the side layout.
+ * By default, when there is no filter, it puts all nodes that have no link connections into the
+ * subset to be processed by the side layout.
+ *
+ * If all pairs of nodes in the main graph can be reached by some path of undirected links,
+ * there are no separate subnetworks, so the {@link arrangingLayout} need not be used and
+ * the {@link primaryLayout} would apply to all of those nodes and links.
+ *
+ * But if there are disconnected subnetworks, the {@link primaryLayout} is applied to each subnetwork,
+ * and then all of those results are arranged by the {@link arrangingLayout}.
+ * If you don't want to use an {@link arrangingLayout} and you want to force the {@link primaryLayout} to
+ * operate on all of the subnetworks, set {@link arrangingLayout} to null.
+ *
+ * In either case if there are any nodes in the side graph, those are arranged by the {@link sideLayout}
+ * to be on the side of the arrangement of the main graph of nodes and links.
+ * The {@link side} property controls which side they will be placed -- the default is BottomSide.
+ *
+ * Note: if you do not want to have singleton nodes be arranged by {@link sideLayout},
+ * set {@link filter} to <code>part => true</code>.
+ * That will cause all singleton nodes to be arranged by {@link arrangingLayout} as if they
+ * were each their own subnetwork.
+ *
+ * If you both don't want to use {@link sideLayout} and you don't want to use {@link arrangingLayout}
+ * to lay out connected subnetworks, don't use this ArrangingLayout at all --
+ * just use whatever Layout you would have assigned to {@link primaryLayout}.
+ *
+ * If you want to experiment with this extension, try the <a href="../../samples/Arranging.html">Arranging Layout</a> sample.
+ * @category Layout Extension
+ */
 export class ArrangingLayout extends go.Layout {
-    constructor() {
+    constructor(init) {
         super();
         this._filter = null;
         const play = new go.GridLayout();
@@ -73,11 +72,13 @@ export class ArrangingLayout extends go.Layout {
         this._sideLayout = slay;
         this._side = go.Spot.BottomSide;
         this._spacing = new go.Size(20, 20);
+        if (init)
+            Object.assign(this, init);
     }
     /**
-    * @ignore @hidden @internal
-    * Copies properties to a cloned Layout.
-    */
+     * @hidden @internal
+     * Copies properties to a cloned Layout.
+     */
     cloneProtected(copy) {
         super.cloneProtected(copy);
         copy._filter = this._filter;
@@ -90,11 +91,10 @@ export class ArrangingLayout extends go.Layout {
         copy._side = this._side.copy();
         copy._spacing = this._spacing.copy();
     }
-    ;
     /**
-    * @hidden @internal
-    * @param {Diagram|Group|Iterable} coll the collection of Parts to layout.
-    */
+     * @hidden @internal
+     * @param coll - the collection of Parts to layout.
+     */
     doLayout(coll) {
         const coll2 = this.collectParts(coll);
         if (coll2.count === 0)
@@ -106,7 +106,7 @@ export class ArrangingLayout extends go.Layout {
             return;
         // implementations of doLayout that do not make use of a LayoutNetwork
         // need to perform their own transactions
-        diagram.startTransaction("Arranging Layout");
+        diagram.startTransaction('Arranging Layout');
         const maincoll = new go.Set();
         const sidecoll = new go.Set();
         this.splitParts(coll2, maincoll, sidecoll);
@@ -118,7 +118,10 @@ export class ArrangingLayout extends go.Layout {
             subnets = mainnet.splitIntoSubNetworks();
         }
         let bounds = null;
-        if (this.arrangingLayout !== null && mainnet !== null && subnets !== null && subnets.count > 1) {
+        if (this.arrangingLayout !== null &&
+            mainnet !== null &&
+            subnets !== null &&
+            subnets.count > 1) {
             const groups = new go.Map();
             const it = subnets.iterator;
             while (it.next()) {
@@ -150,7 +153,8 @@ export class ArrangingLayout extends go.Layout {
             }
             bounds = diagram.computePartsBounds(groups.toKeySet()); // not maincoll due to links without real bounds
         }
-        else { // no this.arrangingLayout
+        else {
+            // no this.arrangingLayout
             this.primaryLayout.diagram = diagram;
             this.preparePrimaryLayout(this.primaryLayout, maincoll);
             this.primaryLayout.doLayout(maincoll);
@@ -167,12 +171,11 @@ export class ArrangingLayout extends go.Layout {
                 sidebounds = new go.Rect(0, 0, 0, 0);
             this.moveSideCollection(sidecoll, bounds, sidebounds);
         }
-        diagram.commitTransaction("Arranging Layout");
+        diagram.commitTransaction('Arranging Layout');
     }
-    ;
     /**
      * @hidden @internal
-     * @param {*} subcoll
+     * @param subcoll
      */
     _addMainNode(groups, subcoll, diagram) {
         const grp = new go.Node();
@@ -187,29 +190,29 @@ export class ArrangingLayout extends go.Layout {
      * set of Nodes and Links for the main graph or the set of Nodes and Links
      * for the side graph.
      *
-     * By default this just calls the {@link #filter} on each non-Link to decide,
+     * By default this just calls the {@link filter} on each non-Link to decide,
      * and then looks at each Link's connected Nodes to decide.
      *
      * A null filter assigns all Nodes that have connected Links to the main graph, and
      * all Links will be assigned to the main graph, and the side graph will only contain
      * Parts with no connected Links.
-     * @param {Set} coll
-     * @param {Set} maincoll
-     * @param {Set} sidecoll
+     * @param coll
+     * @param maincoll
+     * @param sidecoll
      */
     splitParts(coll, maincoll, sidecoll) {
         // first consider all Nodes
         const pred = this.filter;
-        coll.each(p => {
+        coll.each((p) => {
             if (p instanceof go.Link)
                 return;
             let main;
             if (pred)
                 main = pred(p);
             else if (p instanceof go.Node)
-                main = (p.linksConnected.count > 0);
+                main = p.linksConnected.count > 0;
             else
-                main = (p instanceof go.Link);
+                main = p instanceof go.Link;
             if (main) {
                 maincoll.add(p);
             }
@@ -218,7 +221,7 @@ export class ArrangingLayout extends go.Layout {
             }
         });
         // now assign Links based on which Nodes they connect with
-        coll.each(p => {
+        coll.each((p) => {
             if (p instanceof go.Link) {
                 if (!p.fromNode || !p.toNode)
                     return;
@@ -235,17 +238,17 @@ export class ArrangingLayout extends go.Layout {
      * This method is called just before the primaryLayout is performed so that
      * there can be adjustments made to the primaryLayout, if desired.
      * By default this method makes no adjustments to the primaryLayout.
-     * @param {Layout} primaryLayout the sideLayout that may be modified for the results of the primaryLayout
-     * @param {Set} mainColl the Nodes and Links to be laid out by primaryLayout after being separated into subnetworks
+     * @param primaryLayout - the sideLayout that may be modified for the results of the primaryLayout
+     * @param mainColl - the Nodes and Links to be laid out by primaryLayout after being separated into subnetworks
      */
     preparePrimaryLayout(primaryLayout, mainColl) {
         // by default this is a no-op
     }
     /**
      * Move a Set of Nodes and Links to the given area.
-     * @param {Set} subColl the Set of Nodes and Links that form a separate connected subnetwork
-     * @param {Rect} subbounds the area occupied by the subColl
-     * @param {Rect} bounds the area where they should be moved according to the arrangingLayout
+     * @param subColl - the Set of Nodes and Links that form a separate connected subnetwork
+     * @param subbounds - the area occupied by the subColl
+     * @param bounds - the area where they should be moved according to the arrangingLayout
      */
     moveSubgraph(subColl, subbounds, bounds) {
         const diagram = this.diagram;
@@ -258,9 +261,9 @@ export class ArrangingLayout extends go.Layout {
      * have been performed and just before the sideLayout is performed so that there can be
      * adjustments made to the sideLayout, if desired.
      * By default this method makes no adjustments to the sideLayout.
-     * @param {Layout} sideLayout the sideLayout that may be modified for the results of the main layouts
-     * @param {Set} sideColl the Nodes and Links filtered out to be laid out by sideLayout
-     * @param {Rect} mainBounds the area occupied by the nodes and links of the main layout, after it was performed
+     * @param sideLayout - the sideLayout that may be modified for the results of the main layouts
+     * @param sideColl - the Nodes and Links filtered out to be laid out by sideLayout
+     * @param mainBounds - the area occupied by the nodes and links of the main layout, after it was performed
      */
     prepareSideLayout(sideLayout, sideColl, mainBounds) {
         // by default this is a no-op
@@ -268,11 +271,11 @@ export class ArrangingLayout extends go.Layout {
     /**
      * This method is called just after the sideLayout has been performed in order to move
      * its parts to the desired area relative to the results of the main layouts.
-     * By default this calls {@link Diagram#moveParts} on the sidecoll collection to the {@link #side} of the mainbounds.
+     * By default this calls {@link go.Diagram.moveParts} on the sidecoll collection to the {@link side} of the mainbounds.
      * This won't get called if there are no Parts in the sidecoll collection.
-     * @param {Set} sidecoll a collection of Parts that were laid out by the sideLayout
-     * @param {Rect} mainbounds the area occupied by the results of the main layouts
-     * @param {Rect} sidebounds the area occupied by the results of the sideLayout
+     * @param sidecoll - a collection of Parts that were laid out by the sideLayout
+     * @param mainbounds - the area occupied by the results of the main layouts
+     * @param sidebounds - the area occupied by the results of the sideLayout
      */
     moveSideCollection(sidecoll, mainbounds, sidebounds) {
         const diagram = this.diagram;
@@ -309,38 +312,44 @@ export class ArrangingLayout extends go.Layout {
     }
     // Public properties
     /**
-    * Gets or sets the predicate function to call on each non-Link.
-    * If the predicate returns true, the part will be laid out by the main layouts,
-    * the primaryLayouts and the arrangingLayout, otherwise by the sideLayout.
-    * The default value is a function that is true when there are any links connecting with the node.
-    * Such default behavior will have the sideLayout position all of the singleton nodes.
-    */
-    get filter() { return this._filter; }
+     * Gets or sets the predicate function to call on each non-Link.
+     * If the predicate returns true, the part will be laid out by the main layouts,
+     * the primaryLayouts and the arrangingLayout, otherwise by the sideLayout.
+     * The default value is a function that is true when there are any links connecting with the node.
+     * Such default behavior will have the sideLayout position all of the singleton nodes.
+     */
+    get filter() {
+        return this._filter;
+    }
     set filter(val) {
         if (val && typeof val !== 'function')
-            throw new Error("new value for ArrangingLayout.filter must be a function, not: " + val);
+            throw new Error('new value for ArrangingLayout.filter must be a function, not: ' + val);
         if (this._filter !== val) {
             this._filter = val;
             this.invalidateLayout();
         }
     }
     /**
-    * Gets or sets the side {@link Spot} where the side nodes and links should be laid out,
-    * relative to the results of the main Layout.
-    * The default value is Spot.BottomSide.
-    *
-    * If the value is Spot.Bottom, Spot.Top, Spot.Right, or Spot.Left,
-    * the side nodes will be centered along that side.
-    *
-    * Currently only handles a single side.
-    * @name ArrangingLayout#side
-    * @return {Spot}
-    */
-    get side() { return this._side; }
+     * Gets or sets the side {@link go.Spot} where the side nodes and links should be laid out,
+     * relative to the results of the main Layout.
+     * The default value is Spot.BottomSide.
+     *
+     * If the value is Spot.Bottom, Spot.Top, Spot.Right, or Spot.Left,
+     * the side nodes will be centered along that side.
+     *
+     * Currently only handles a single side.
+     */
+    get side() {
+        return this._side;
+    }
     set side(val) {
         if (!(val instanceof go.Spot) ||
-            !(val.isSide() || val.equals(go.Spot.Top) || val.equals(go.Spot.Right) || val.equals(go.Spot.Bottom) || val.equals(go.Spot.Left))) {
-            throw new Error("new value for ArrangingLayout.side must be a side or middle-side Spot, not: " + val);
+            !(val.isSide() ||
+                val.equals(go.Spot.Top) ||
+                val.equals(go.Spot.Right) ||
+                val.equals(go.Spot.Bottom) ||
+                val.equals(go.Spot.Left))) {
+            throw new Error('new value for ArrangingLayout.side must be a side or middle-side Spot, not: ' + val);
         }
         if (!this._side.equals(val)) {
             this._side = val.copy();
@@ -348,54 +357,60 @@ export class ArrangingLayout extends go.Layout {
         }
     }
     /**
-    * Gets or sets the space between the main layout and the side layout.
-    * The default value is Size(20, 20).
-    * @name ArrangingLayout#spacing
-    * @return {Size}
-    */
-    get spacing() { return this._spacing; }
+     * Gets or sets the space between the main layout and the side layout.
+     * The default value is Size(20, 20).
+     */
+    get spacing() {
+        return this._spacing;
+    }
     set spacing(val) {
         if (!(val instanceof go.Size))
-            throw new Error("new value for ArrangingLayout.spacing must be a Size, not: " + val);
+            throw new Error('new value for ArrangingLayout.spacing must be a Size, not: ' + val);
         if (!this._spacing.equals(val)) {
             this._spacing = val.copy();
             this.invalidateLayout();
         }
     }
     /**
-    * Gets or sets the Layout used for the main part of the diagram.
-    * The default value is an instance of GridLayout.
-    * Any new value must not be null.
-    */
-    get primaryLayout() { return this._primaryLayout; }
+     * Gets or sets the Layout used for the main part of the diagram.
+     * The default value is an instance of GridLayout.
+     * Any new value must not be null.
+     */
+    get primaryLayout() {
+        return this._primaryLayout;
+    }
     set primaryLayout(val) {
         if (!(val instanceof go.Layout))
-            throw new Error("layout does not inherit from go.Layout: " + val);
+            throw new Error('layout does not inherit from go.Layout: ' + val);
         this._primaryLayout = val;
         this.invalidateLayout();
     }
     /**
-    * Gets or sets the Layout used to arrange multiple separate connected subnetworks of the main graph.
-    * The default value is an instance of GridLayout.
-    * Set this property to null in order to get the @{link #primaryLayout} to operate on all
-    * connected graphs as a whole.
-    */
-    get arrangingLayout() { return this._arrangingLayout; }
+     * Gets or sets the Layout used to arrange multiple separate connected subnetworks of the main graph.
+     * The default value is an instance of GridLayout.
+     * Set this property to null in order to get the {@link primaryLayout} to operate on all
+     * connected graphs as a whole.
+     */
+    get arrangingLayout() {
+        return this._arrangingLayout;
+    }
     set arrangingLayout(val) {
         if (val && !(val instanceof go.Layout))
-            throw new Error("layout does not inherit from go.Layout: " + val);
+            throw new Error('layout does not inherit from go.Layout: ' + val);
         this._arrangingLayout = val;
         this.invalidateLayout();
     }
     /**
-    * Gets or sets the Layout used to arrange the "side" nodes and links -- those outside of the main layout.
-    * The default value is an instance of GridLayout.
-    * Any new value must not be null.
-    */
-    get sideLayout() { return this._sideLayout; }
+     * Gets or sets the Layout used to arrange the 'side' nodes and links -- those outside of the main layout.
+     * The default value is an instance of GridLayout.
+     * Any new value must not be null.
+     */
+    get sideLayout() {
+        return this._sideLayout;
+    }
     set sideLayout(val) {
         if (!(val instanceof go.Layout))
-            throw new Error("layout does not inherit from go.Layout: " + val);
+            throw new Error('layout does not inherit from go.Layout: ' + val);
         this._sideLayout = val;
         this.invalidateLayout();
     }

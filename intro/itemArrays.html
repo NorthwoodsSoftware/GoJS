@@ -1,71 +1,159 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-<meta charset="utf-8"/>
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
- 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->    <title> GoJS Item Arrays-- Northwoods Software </title>
-    <link rel="stylesheet" href="../assets/css/prism.css"  />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Item Arrays />
+<meta property="og:title" content=Item Arrays />
+<meta name="twitter:title" content=Item Arrays />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/intro/itemArrays.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/intro/itemArrays.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Item Arrays | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
   </head>
   <script>
-    
     window.diagrams = [];
-    window.goCode = function(pre, w, h, parentid, animation) {
-      window.diagrams.push([pre, w, h, parentid, animation]);
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
     }
   </script>
   <body>
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
     
-    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
-    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
-      <div class="flex-shrink-0 px-8 py-4">
-        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
-          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
   <a href="index.html">Basics</a>
   <a href="buildingObjects.html">Building Parts</a>
   <a href="usingModels.html">Using Models</a>
   <a href="dataBinding.html">Data Binding</a>
   <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
   <a href="angular.html">GoJS with Angular</a>
   <a href="textBlocks.html">TextBlocks</a>
   <a href="shapes.html">Shapes</a>
@@ -95,6 +183,8 @@
   <a href="sizedGroups.html">Sized Groups</a>
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="routers.html">Routers</a>
   <a href="animation.html">Animation</a>
   <a href="toolTips.html">ToolTips</a>
   <a href="contextmenus.html">Context Menus</a>
@@ -107,7 +197,6 @@
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
-  <a href="resizing.html">Resizing Diagrams</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
   <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
@@ -116,35 +205,55 @@
   <a href="geometry.html">Geometry Strings</a>
   <a href="grids.html">Grid Patterns</a>
   <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGcontext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
   <a href="makingImages.html">Diagram Images</a>
-  <a href="makingSVG.html">Diagram SVG</a>
   <a href="printing.html">Printing</a>
   <a href="serverSideImages.html">Server-side Images</a>
   <a href="nodeScript.html">GoJS in Node.js</a>
   <a href="testing.html">Testing</a>
-  <a href="storage.html">Storage</a>
   <a href="performance.html">Performance</a>
-  <a href="source.html">Building from Source</a>
   <a href="platforms.html">Platforms</a>
   <a href="deployment.html">Deployment</a>
-      </nav>
-    </div>      
-      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
 <h1>Panel Item Arrays</h1>
 <p>
-How does one display a variable number of elements in a node by data binding to a JavaScript Array?
-The answer is simple: just bind (or set) <a>Panel.itemArray</a>.
-The <a>Panel</a> will create an element in the panel for each value in the Array.
+  How does one display a variable number of elements in a node by data binding to a JavaScript Array? The answer is simple: just bind (or set)
+  <a>Panel.itemArray</a>. The <a>Panel</a> will create an element in the panel for each value in the Array.
 </p>
-<p>
-See samples that make use of item Arrays in the <a href="../samples/index.html#itemarrays">samples index</a>.
-</p>
+<p>See samples that make use of item Arrays in the <a href="../samples/index.html#itemarrays">samples index</a>.</p>
 
 <h2 id="SimpleItemLists">Simple item lists</h2>
-<p>
-Here is a very simple example demonstrating the standard way of binding <a>Panel.itemArray</a> to a data property whose value is an Array.
-</p>
+<p>Here is a very simple example demonstrating the standard way of binding <a>Panel.itemArray</a> to a data property whose value is an Array.</p>
 <pre class="lang-js" id="simple"><code>
   diagram.nodeTemplate =
     $(go.Node, "Vertical",
@@ -162,40 +271,38 @@ Here is a very simple example demonstrating the standard way of binding <a>Panel
         ]
       });
 </code></pre>
-<script>goCode("simple", 450, 200)</script>
+<script>
+  goCode('simple', 450, 200);
+</script>
 <p>
-Note that the <a>Panel.itemArray</a> property is almost always bound to some data property that always has an Array as its value.
-One does not use a literal or constructed Array as the initial value for the Panel.itemArray property in a template,
-unless you expect all parts copied from the template will always have exactly the same unchanging list of items.
+  Note that the <a>Panel.itemArray</a> property is almost always bound to some data property that always has an Array as its value. One does not use a literal
+  or constructed Array as the initial value for the Panel.itemArray property in a template, unless you expect all parts copied from the template will always
+  have exactly the same unchanging list of items.
 </p>
 <p>
-As with most data bindings, the name of the data property does not really matter.
-In this example, the property name is "items", but you can use whatever name seems appropriate to your app.
-You can also have more than one item array in a node or link.
+  As with most data bindings, the name of the data property does not really matter. In this example, the property name is "items", but you can use whatever name
+  seems appropriate to your app. You can also have more than one item array in a node or link.
 </p>
 
 <h2 id="ItemTemplates">Item templates</h2>
 <p>
-You can customize the elements created for each array item by specifying the <a>Panel.itemTemplate</a>.
-The template must be an instance of <a>Panel</a>.
-Each item in the bound Array will get a copy of this Panel that is added to the Panel with the <a>Panel.itemArray</a>.
-The <a>Panel.data</a> will be the item in the Array, so all of the normal data binding functionality is available to customize each item Panel.
+  You can customize the elements created for each array item by specifying the <a>Panel.itemTemplate</a>. The template must be an instance of <a>Panel</a>. Each
+  item in the bound Array will get a copy of this Panel that is added to the Panel with the <a>Panel.itemArray</a>. The <a>Panel.data</a> will be the item in
+  the Array, so all of the normal data binding functionality is available to customize each item Panel.
 </p>
 <p>
-This use of templates and data binding is similar to the way <a>Node</a>s are created automatically in a <a>Diagram</a> based on an Array of node data in the model.
-The value of <a>Diagram.nodeTemplate</a> must always be a <a>Node</a> or a simple <a>Part</a>;
-the value of <a>Panel.itemTemplate</a> must always be a <a>Panel</a> and cannot be a <a>Part</a>.
+  This use of templates and data binding is similar to the way <a>Node</a>s are created automatically in a <a>Diagram</a> based on an Array of node data in the
+  model. The value of <a>Diagram.nodeTemplate</a> must always be a <a>Node</a> or a simple <a>Part</a>; the value of <a>Panel.itemTemplate</a> must always be a
+  <a>Panel</a> and cannot be a <a>Part</a>.
 </p>
 <p>
-Note that each item in the <a>Panel.itemArray</a> can be any JavaScript value, including strings and numbers.
-This is different than the values held by the <a>Model.nodeDataArray</a>, which must all be JavaScript Objects.
-The item <a>Panel.data</a> value may be a string, as it is in this example;
-the <a>Part.data</a> value will always be an Object.
+  Note that each item in the <a>Panel.itemArray</a> can be any JavaScript value, including strings and numbers. This is different than the values held by the
+  <a>Model.nodeDataArray</a>, which must all be JavaScript Objects. The item <a>Panel.data</a> value may be a string, as it is in this example; the
+  <a>Part.data</a> value will always be an Object.
 </p>
 <p>
-Here is a simple customization of the <a>Panel.itemTemplate</a>, working with the same model as above.
-Note that the second argument to the <a>Binding</a> constructor in this case is the empty string,
-because strings (and numbers) do not have many useful properties.
+  Here is a simple customization of the <a>Panel.itemTemplate</a>, working with the same model as above. Note that the second argument to the
+  <a>Binding</a> constructor in this case is the empty string, because strings (and numbers) do not have many useful properties.
 </p>
 <pre class="lang-js" id="vertical"><code>
   diagram.nodeTemplate =
@@ -230,15 +337,15 @@ because strings (and numbers) do not have many useful properties.
     );
 
 </code></pre>
-<script>goCode("vertical", 450, 200)</script>
-<p>
-However even when binding to strings or numbers one could make the use of converters to get the desired binding values.
-</p>
+<script>
+  goCode('vertical', 450, 200);
+</script>
+<p>However even when binding to strings or numbers one could make the use of converters to get the desired binding values.</p>
 
 <p>
-Of course if the array items are Objects, you can refer to their properties just as you can in a <a>Diagram.nodeTemplate</a>.
-As with node data, you can have as many properties on your item data as your app demands, using whatever property names you prefer.
-Use data binding to automatically use those property values to customize the appearance and behavior of your item Panels.
+  Of course if the array items are Objects, you can refer to their properties just as you can in a <a>Diagram.nodeTemplate</a>. As with node data, you can have
+  as many properties on your item data as your app demands, using whatever property names you prefer. Use data binding to automatically use those property
+  values to customize the appearance and behavior of your item Panels.
 </p>
 <pre class="lang-js" id="verticalobjects"><code>
   diagram.nodeTemplate =
@@ -289,23 +396,21 @@ Use data binding to automatically use those property values to customize the app
     );
 
 </code></pre>
-<script>goCode("verticalobjects", 450, 200)</script>
+<script>
+  goCode('verticalobjects', 450, 200);
+</script>
 
 <h2 id="DifferentPanelTypes">Different Panel types</h2>
 <p>
-Although <a>Panel</a>s that have an item array are often of type <a>Panel,Vertical</a>,
-you can use other panel types that support a variable number of elements.
-The most common types are <a>Panel,Vertical</a>, <a>Panel,Horizontal</a>, <a>Panel,Table</a>, and <a>Panel,Position</a>.
-It does not make sense to use a <a>Panel,Viewbox</a> panel, because that panel type only supports a single element.
+  Although <a>Panel</a>s that have an item array are often of type <a>Panel.Vertical</a>, you can use other panel types that support a variable number of
+  elements. The most common types are <a>Panel.Vertical</a>, <a>Panel.Horizontal</a>, <a>Panel.Table</a>, and <a>Panel.Position</a>. It does not make sense to
+  use a <a>Panel.Viewbox</a> panel, because that panel type only supports a single element.
 </p>
 <p>
-If the panel type is <a>Panel,Spot</a>, <a>Panel,Auto</a>, or <a>Panel,Link</a>,
-the first child element of the Panel is assumed to be the "main" object and is kept as the first child
-in addition to all of the nested panels created for the values in the <a>Panel.itemArray</a>.
+  If the panel type is <a>Panel.Spot</a>, <a>Panel.Auto</a>, or <a>Panel.Link</a>, the first child element of the Panel is assumed to be the "main" object and
+  is kept as the first child in addition to all of the nested panels created for the values in the <a>Panel.itemArray</a>.
 </p>
-<p>
-Here is an example of a horizontal Panel:
-</p>
+<p>Here is an example of a horizontal Panel:</p>
 <pre class="lang-js" id="horizontal"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -340,12 +445,13 @@ Here is an example of a horizontal Panel:
     );
 
 </code></pre>
-<script>goCode("horizontal", 450, 200)</script>
+<script>
+  goCode('horizontal', 450, 200);
+</script>
 
 <p>
-When using a <a>Panel</a> of type <a>Panel,Table</a> as the container, it is commonplace
-to use an item template that is of type <a>Panel,TableRow</a> or <a>Panel,TableColumn</a>.
-This is the only way to specify the individual column or row indexes for the elements inside the template.
+  When using a <a>Panel</a> of type <a>Panel.Table</a> as the container, it is commonplace to use an item template that is of type <a>Panel.TableRow</a> or
+  <a>Panel.TableColumn</a>. This is the only way to specify the individual column or row indexes for the elements inside the template.
 </p>
 <pre class="lang-js" id="table"><code>
   diagram.nodeTemplate =
@@ -392,23 +498,21 @@ This is the only way to specify the individual column or row indexes for the ele
     );
 
 </code></pre>
-<script>goCode("table", 450, 200)</script>
-<p>
-Note in this case the item template has a data binding of the TableRow Panel's <a>Panel.background</a> property
-to the item data's "back" property.
-</p>
+<script>
+  goCode('table', 450, 200);
+</script>
+<p>Note in this case the item template has a data binding of the TableRow Panel's <a>Panel.background</a> property to the item data's "back" property.</p>
 
 <p>
-Sometimes one wants to get the row for a particular item, or one wants to have a property value depend on the row index.
-You can always depend on the value of <a>Panel.itemIndex</a> to get that property.
-If the item Panel is of type <a>Panel,TableRow</a>, the item Panel's <a>GraphObject.row</a> property will also be set to the zero-based row number,
-so you can access it in code by finding that Panel.
-The same is true for <a>GraphObject.column</a> if the itemTemplate is a <a>Panel,TableColumn</a> Panel.
+  Sometimes one wants to get the row for a particular item, or one wants to have a property value depend on the row index. You can always depend on the value of
+  <a>Panel.itemIndex</a> to get that property. If the item Panel is of type <a>Panel.TableRow</a>, the item Panel's <a>GraphObject.row</a> property will also be
+  set to the zero-based row number, so you can access it in code by finding that Panel. The same is true for <a>GraphObject.column</a> if the itemTemplate is a
+  <a>Panel.TableColumn</a> Panel.
 </p>
 <p>
-Because that property is set when the item panels are created for Array item data, you can create <a>Binding</a>s where the source
-is that "row" property: <code>new go.Binding("targetProperty", "row", i => ...).ofObject()</code>.
-The following example demonstrates binding the Panel.background property to be light green if the row is even.
+  Because that property is set when the item panels are created for Array item data, you can create <a>Binding</a>s where the source is that "row" property:
+  <code>new go.Binding("targetProperty", "row", i => ...).ofObject()</code>. The following example demonstrates binding the Panel.background property to be
+  light green if the row is even.
 </p>
 <pre class="lang-js" id="alternating"><code>
   diagram.nodeTemplate =
@@ -465,20 +569,18 @@ The following example demonstrates binding the Panel.background property to be l
     );
 
 </code></pre>
-<script>goCode("alternating", 450, 200)</script>
-<p>
-The "Button" Panel in the item template also demonstrates how one can get the particular row index
-as well as the data to which the item panel is bound.
-</p>
+<script>
+  goCode('alternating', 450, 200);
+</script>
+<p>The "Button" Panel in the item template also demonstrates how one can get the particular row index as well as the data to which the item panel is bound.</p>
 
 <p>
-The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item)
-hold the data for the header, but have it be styled differently.
-If you want such a behavior, you will want to use multiple templates -- see the example in <a href="templateMaps.html">Template Maps</a>.
+  The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item) hold the data for the header, but have it be styled
+  differently. If you want such a behavior, you will want to use multiple templates -- see the example in <a href="templateMaps.html">Template Maps</a>.
 </p>
 <p>
-If instead you want to have a table header that is "fixed" and not dependent on item Array data,
-you can have a single "TableRow" (or "TableColumn") Panel in the "Table" Panel that is kept if <a>Panel.isPanelMain</a> is true.
+  If instead you want to have a table header that is "fixed" and not dependent on item Array data, you can have a single "TableRow" (or "TableColumn") Panel in
+  the "Table" Panel that is kept if <a>Panel.isPanelMain</a> is true.
 </p>
 <pre class="lang-js" id="header"><code>
   diagram.nodeTemplate =
@@ -535,173 +637,159 @@ you can have a single "TableRow" (or "TableColumn") Panel in the "Table" Panel t
     );
 
 </code></pre>
-<script>goCode("header", 450, 200)</script>
+<script>
+  goCode('header', 450, 200);
+</script>
 <p>
-In such cases the constant header element, the literal "TableRow" Panel in the node template,
-will have a <a>GraphObject.row</a> == 0 and a <a>Panel.itemIndex</a> that is NaN.
-The "TableRow" Panel corresponding to the first item data, <code>panel.itemArray[0]</code>,
-will have a <a>GraphObject.row</a> == 1, matching its position in the list of <a>Panel.elements</a>.
-But it will have a <a>Panel.itemIndex</a> == 0, matching its position in the itemArray.
+  In such cases the constant header element, the literal "TableRow" Panel in the node template, will have a <a>GraphObject.row</a> == 0 and a
+  <a>Panel.itemIndex</a> that is NaN. The "TableRow" Panel corresponding to the first item data, <code>panel.itemArray[0]</code>, will have a
+  <a>GraphObject.row</a> == 1, matching its position in the list of <a>Panel.elements</a>. But it will have a <a>Panel.itemIndex</a> == 0, matching its position
+  in the itemArray.
 </p>
 
 <h2 id="ArraysInModels">Arrays in Models</h2>
 <p>
-When a data-bound Part is copied, the Part's <a>Part.data</a>, which must be a JavaScript Object, is copied too.
-The normal copying method, <a>Model.copyNodeData</a>, makes a shallow copy of the original data object.
+  When a data-bound Part is copied, the Part's <a>Part.data</a>, which must be a JavaScript Object, is copied too. The normal copying method,
+  <a>Model.copyNodeData</a>, makes a shallow copy of the original data object.
 </p>
 <p>
-However that is probably not the desired behavior for Arrays.
-When you use item Arrays, you normally do <em>not</em> want to share those Arrays between copies of the Node.
-If your node data is not copied correctly, unexpected behavior may occur.
-So when you are using item Arrays and permit users to copy nodes, you will need to make sure such Arrays and their objects are copied.
-For the simplest cases, it may be sufficient to set <a>Model.copiesArrays</a> and <a>Model.copiesArrayObjects</a> to true.
-More generally you may want to implement your own node data copier function
-and assign it to <a>Model.copyNodeDataFunction</a>.
+  However that is probably not the desired behavior for Arrays. When you use item Arrays, you normally do <em>not</em> want to share those Arrays between copies
+  of the Node. If your node data is not copied correctly, unexpected behavior may occur. So when you are using item Arrays and permit users to copy nodes, you
+  will need to make sure such Arrays and their objects are copied. For the simplest cases, it may be sufficient to set <a>Model.copiesArrays</a> and
+  <a>Model.copiesArrayObjects</a> to true. More generally you may want to implement your own node data copier function and assign it to
+  <a>Model.copyNodeDataFunction</a>.
 </p>
 <p>
-This is demonstrated by the <a href="../samples/dynamicPorts.html">Dynamic Ports</a> sample,
-which not only needs to copy the four item Arrays that each node data holds,
-but also each Object that is in each of those Arrays.
-In that sample the <a>Model.copiesArrays</a> and <a>Model.copiesArrayObjects</a> properties
-are set to true in the JSON-formatted representation of the model that is loaded into the diagram.
+  This is demonstrated by the <a href="../samples/dynamicPorts.html">Dynamic Ports</a> sample, which not only needs to copy the four item Arrays that each node
+  data holds, but also each Object that is in each of those Arrays. In that sample the <a>Model.copiesArrays</a> and <a>Model.copiesArrayObjects</a> properties
+  are set to true in the JSON-formatted representation of the model that is loaded into the diagram.
 </p>
 <p>
-For <a>GraphLinksModel</a>s, there is also a similar members for link data:
-the <a>GraphLinksModel.copyLinkData</a> method and <a>GraphLinksModel.copyLinkDataFunction</a> property.
+  For <a>GraphLinksModel</a>s, there is also a similar members for link data: the <a>GraphLinksModel.copyLinkData</a> method and
+  <a>GraphLinksModel.copyLinkDataFunction</a> property.
 </p>
 <p>
-If you need to dynamically modify the value of a property of an item data, call <a>Model.setDataProperty</a>,
-just as you would for node data or link data.
+  If you need to dynamically modify the value of a property of an item data, call <a>Model.setDataProperty</a>, just as you would for node data or link data.
 </p>
-<p>
-If you need to add or remove items from an item Array, call the <a>Model.insertArrayItem</a> or <a>Model.removeArrayItem</a> methods.
-</p>
+<p>If you need to add or remove items from an item Array, call the <a>Model.insertArrayItem</a> or <a>Model.removeArrayItem</a> methods.</p>
 
       </div>
     </div>
-  
-  <div class="bg-nwoods-primary">
-    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
-      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
-    </section>
-  </div><footer class="bg-nwoods-primary text-white">
-  <div class="container max-w-screen-lg mx-auto  px-8">
-    <div class="w-full py-6">
-
-        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8">
-          <ul class="text-sm font-medium pb-6 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="../samples/index.html">Samples</a>
-                </li>
-                <li>
-                  <a href="../learn/index.html">Learn</a>
-                </li>
-                <li>
-                  <a href="../intro/index.html">Intro</a>
-                </li>
-                <li>
-                  <a href="../api/index.html">API</a>
-                </li>
-                <li>
-                  <a href="../changelog.html">Changelog</a>
-                </li>
-                <li>
-                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Support</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="https://www.nwoods.com/contact.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
-                </li>
-                <li>
-                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/sales/index.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
-                </li>
-                <li>
-                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Company</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com">Northwoods</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/about.html">About Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/contact.html">Contact Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/consulting.html">Consulting</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://twitter.com/northwoodsgo">Twitter</a>
-                </li>
-
-              </ul>
-            </li>
-          </ul>
-
-
-      <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2023 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
-      </p>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="api/index.html">API</a>
+          </li>
+          <li>
+            <a href="changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://www.nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://www.nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2024 <a href="https://www.nwoods.com">Northwoods Software</a>
+    </p>
   </div>
-</footer>  </body>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script> 
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-S5QK8VSK84');
-  var getOutboundLink = function(url, label) {
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
     gtag('event', 'click', {
       'event_category': 'outbound',
       'event_label': label,
       'transport_type': 'beacon'
     });
   }
-
-  // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
-  topButton.addEventListener("click", function() {
-    this.classList.toggle("active");
-    topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
-  });
 </script>
   <script src="../assets/js/prism.js"></script>
   <script src="../release/go.js"></script>
-<script src="../extensions/Figures.js"></script>  <script src="../assets/js/goDoc.js"></script>
+  
+    <script src="../extensions/Figures.js"></script>
+  
+  <script src="../assets/js/goDoc.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
-      if (window.goDoc) window.goDoc();
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
       var d = window.diagrams;
       for (var i = 0; i < d.length; i++) {
         var dargs = d[i];
         goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
       }
-      if (window.extra) window.extra();
-    });
+      if (window.extra)
+        window.extra();
+      }
+    );
   </script>
 </html>

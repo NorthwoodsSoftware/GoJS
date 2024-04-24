@@ -1,0 +1,712 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="SCADA industrial monitoring diagram with updating data." />
+<meta itemprop="description" content="SCADA industrial monitoring diagram with updating data." />
+<meta property="og:description" content="SCADA industrial monitoring diagram with updating data." />
+<meta name="twitter:description" content="SCADA industrial monitoring diagram with updating data." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Industrial Monitor />
+<meta property="og:title" content=Industrial Monitor />
+<meta name="twitter:title" content=Industrial Monitor />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/industrialMonitor.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/industrialMonitor.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/industrialMonitor.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/industrialMonitor.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/industrialMonitor.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Industrial Monitor | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; background-color: #151c26; width: 1000px; height: 700px">
+  </div>
+  <p>
+    This SCADA industrial diagram displays a mock water treatment setup.
+    Some nodes act as monitoring panels, and simulated data is updated periodically.
+  </p>
+  <p>
+    Although this sample is meant to demonstrate monitoring, users can rotate valves, and move nodes to see
+    the link's built-in <a href="https://gojs.net/beta/intro/links.html#Routing">AvoidsNodes routing</a>.
+  </p>
+</div>
+
+<script id="code">
+  function init() {
+    var $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the HTML Div element
+      {
+        'animationManager.isEnabled': false,
+        'undoManager.isEnabled': true,
+        "rotatingTool.snapAngleMultiple": 90,
+        "rotatingTool.snapAngleEpsilon": 45
+      }
+    );
+
+    // This sample defines several custom Shape geometries
+    const tank1 = 'F M 0 0 L 0 75 25 100 50 75 50 0z' // 50x100 sized-shape
+    const tank2 = 'F M 0 0 L 0 100 10 100 10 90 40 90 40 100 50 100 50 0z' // 50x100 sized-shape
+    const tank3 = 'F M 0 100 L 0 25 A 25 25 0 0 1 50 25 L 50 100 z' // 50x100 sized-shape
+
+    const labelLeft = 'F M 0 20 L 30 40 100 40 100 0 30 0 z'
+    const labelRight = 'F M 0 0 L 70 0 100 20 70 40 0 40 z'
+
+    const valve = 'F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30';
+    const pump = 'F M 8 10 A 2 2 0 1 1 6 8 L 9 8 L 9 10 Z M 5 11 A 1 1 0 0 1 7 9';
+    const sensor = 'F M 0 0 L 15 15 L 15 20 L 5 20 L 5 15 L 0 15 L 0 10 L -2 10 L -2 4 L 0 4 Z';
+
+    const colors = {
+      black: '#151c26',
+      white: '#ffffff',
+      gray: '#151c26',
+      green: '#7ba961',
+      blue: '#00a9b0',
+      pink: '#e483a2',
+      yellow: '#f9c66a',
+      orange: '#e48042',
+      red: '#ed2d44'
+    }
+
+    const textDefaults = { font: '10px Inter, sans-serif', stroke: colors.white };
+
+    // Tanks have a variable number of connection ports.
+    // Each port must specify its location on the tank (alignment spot)
+    // And potentially its fromSpot or toSpot
+    const tankPort = new go.Panel()
+      .bind('alignment', 'a')
+      .bind('portId', 'p')
+      .bind('fromSpot', 'fs')
+      .bind('toSpot', 'ts')
+      .add(new go.Shape("Diamond", { width: 10, height: 10, fill: colors.green }));
+
+    // Base template is a shape with a label
+    myDiagram.nodeTemplateMap.add('',
+      // Outer spot panel holding inner spot panel (main element) and ports
+      new go.Node('Spot', {
+        itemTemplate: tankPort
+      }).bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bind('itemArray', 'ports')
+        .add(
+          // Inner spot panel holding Shape and Text label
+          new go.Panel('Spot')
+            .add(
+              new go.Shape({
+                geometryString: tank1,
+                strokeWidth: 1,
+                stroke: 'gray',
+                width: 75, height: 140,
+                fill: new go.Brush("Linear", {
+                  0.3: colors.gray,
+                  0.5: go.Brush.lightenBy(colors.gray, 0.5),
+                  1.0: colors.gray,
+                  start: go.Spot.Left, end: go.Spot.Right
+                }),
+
+              })
+
+                .bind('width').bind('height')
+                .bind('geometryString', 'tankType')
+                // .bind('stroke', 'color')
+                .bind('fill', 'color', (c) => new go.Brush("Linear", {
+                  0.0: c,
+                  0.5: go.Brush.lightenBy(c, 0.8),
+                  1.0: c,
+                  start: go.Spot.Left, end: go.Spot.Right
+                })),
+              new go.TextBlock({ font: 'bold 13px Inter, sans-serif', stroke: colors.black }).bind(
+                'text',
+                'key'
+              )
+            )));
+
+    myDiagram.nodeTemplateMap.add('label',
+      new go.Node('Auto', {}).bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({
+            portId: '',
+            fromSpot: go.Spot.Right, toSpot: go.Spot.LeftRightSides,
+            geometryString: labelRight,
+            strokeWidth: 4,
+            // width: 100, height: 40,
+            fill: colors.gray
+          }).bind('width').bind('height')
+            .bind('geometryString', 'direction', (d) => d === 'right' ? labelRight : labelLeft)
+            .bind('stroke', 'color'),
+          new go.TextBlock({
+            margin: new go.Margin(8, 40, 8, 8),
+            textAlign: 'center',
+            font: '12px sans-serif',
+            stroke: colors.white,
+            alignment: new go.Spot(0.1, 0.5)
+          })
+            .bind('margin', 'direction', (d) => d === 'right' ? new go.Margin(8, 40, 8, 8) : new go.Margin(8, 8, 8, 40))
+            .bind('alignment', 'direction', (d) => d === 'right' ? new go.Spot(0.3, 0.5) : new go.Spot(0.7, 0.5))
+            .bind('text')
+        ));
+
+    myDiagram.nodeTemplateMap.add("valve",
+      new go.Node("Vertical",
+        {
+          locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+          selectionObjectName: "SHAPE", rotatable: true
+        })
+        .bindTwoWay("angle")
+        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .add(
+          new go.TextBlock(
+            { background: colors.gray, alignment: go.Spot.Center, textAlign: "center", margin: 2, editable: true })
+            .set(textDefaults)
+            .bind("text", 'key')
+            // keep the text upright, even when the whole node has been rotated upside down
+            .bindObject("angle", "angle", a => a === 180 ? 180 : 0),
+          new go.Shape(
+            {
+              name: "SHAPE",
+              geometryString: valve,
+              strokeWidth: 2,
+              portId: "", fromSpot: new go.Spot(1, 0.35), toSpot: new go.Spot(0, 0.35)
+            }).bind('fill', 'color').bind('stroke', 'color', (c) => go.Brush.darkenBy(c, 0.3))
+        )
+    );
+
+    myDiagram.nodeTemplateMap.add("pump",
+      new go.Node("Vertical",
+        {
+          locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+          selectionObjectName: "SHAPE", rotatable: true
+        })
+        .bindTwoWay("angle")
+        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .add(
+          new go.TextBlock(
+            { background: colors.gray, alignment: go.Spot.Center, textAlign: "center", margin: 2, editable: true })
+            .set(textDefaults)
+            .bind("text", 'key')
+            // keep the text upright, even when the whole node has been rotated upside down
+            .bindObject("angle", "angle", a => a === 180 ? 180 : 0),
+          new go.Shape(
+            {
+              name: "SHAPE",
+              geometryString: pump,
+              width: 45, height: 40,
+              strokeWidth: 2,
+              portId: "", fromSpot: new go.Spot(1, 0.25), toSpot: new go.Spot(0, 0.5)
+            }).bind('fill', 'color').bind('stroke', 'color', (c) => Brush.darkenBy(c, 0.3))
+        )
+    );
+
+    // This is a component of the "monitor" node template
+    const valuesTableItem = new go.Panel('TableRow')
+      .add(
+        new go.TextBlock("").set(textDefaults).bind('text', 'label'),
+        new go.Panel("Spot", { column: 1 })
+          .add(
+            new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
+            new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
+          ),
+        new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit'),
+      )
+    const valuesTable = new go.Panel("Table",
+      { strech: go.Stretch.Horizontal, itemTemplate: valuesTableItem })
+      .bind('itemArray', 'values');
+
+    // This is a component of the "monitor" node template, showing a dynamic number of status blocks
+    const statusPanelTemplate = new go.Panel('Spot')
+      .add(
+        new go.Shape({ width: 18, height: 18, fill: colors.white }).bind('fill'),
+        new go.TextBlock().set(textDefaults).bind('text')
+      )
+    const statusPanel = new go.Panel("Horizontal", {
+      width: 90, height: 20,
+      itemTemplate: statusPanelTemplate
+    }).bind('itemArray', 'statuses')
+
+
+    // Monitor node for monitoring values, linked to a pump or valve
+    myDiagram.nodeTemplateMap.add("monitor",
+      new go.Node("Auto")
+        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2 }),
+          new go.Panel("Vertical", { margin: 4 })
+            // Title
+            .add(new go.TextBlock("Title", { strech: go.Stretch.Horizontal }).set(textDefaults).bind('text', 'title'))
+            // Notifications
+            .add(statusPanel)
+            // Values
+            .add(valuesTable)
+        )
+    );
+
+    // Sensor node, linked to a tank
+    myDiagram.nodeTemplateMap.add("sensor",
+      new go.Node("Vertical")
+        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel("Horizontal", { margin: 4 })
+            .add(
+              new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2, geometryString: sensor, portId: '', fromSpot: new go.Spot(0, 0.4, 0, 0), }),
+              new go.TextBlock({ margin: 2 }).set(textDefaults).bind('text', 'key')
+            ),
+          new go.Panel("Horizontal")
+            .add(
+              new go.Panel("Spot", { column: 1 })
+                .add(
+                  new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
+                  new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
+                ),
+              new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit'),
+            )
+        )
+    );
+
+
+    myDiagram.linkTemplateMap.add('',
+      new go.Link({
+        routing: go.Routing.AvoidsNodes, corner: 12, layerName: 'Background',
+        toShortLength: 3,
+      })
+        .bind('fromEndSegmentLength', 'fromEndSeg')
+        .bind('toEndSegmentLength', 'toEndSeg')
+        .add(new go.Shape({ strokeWidth: 7, stroke: colors.gray, isPanelMain: true }))
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: colors.green, isPanelMain: true })
+            .bind('stroke', 'color')
+        )
+        .add(new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' }).bind('stroke', 'color').bind('fill', 'color'))
+        .add(new go.TextBlock({ segmentOffset: new go.Point(0, -10), background: colors.gray }).set(textDefaults).bind('text'))
+    )
+
+    myDiagram.linkTemplateMap.add('monitor',
+      new go.Link({
+        curve: go.Curve.Bezier, layerName: 'Background',
+        fromSpot: go.Spot.Top, fromEndSegmentLength: 30
+      })
+        .bind('fromSpot', 'fs')
+        .bind('toSpot', 'ts')
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: colors.white, strokeDashArray: [3, 4], isPanelMain: true })
+            .bind('stroke', 'color')
+        )
+    )
+
+    myDiagram.linkTemplateMap.add('sensor',
+      new go.Link({
+        layerName: 'Background',
+      })
+        .add(
+          new go.Shape({ strokeWidth: 1.5, stroke: colors.red, strokeDashArray: [2, 2] })
+        )
+    )
+
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      linkFromPortIdProperty: 'fromPort',
+      linkToPortIdProperty: 'toPort',
+      nodeDataArray:
+        [
+          // LABELS
+          { key: '1', category: 'label', text: 'Steam Condensate\nHeader', color: colors.red, direction: 'left', pos: "0 -20" },
+          { key: '2', category: 'label', text: 'From LP Steam\nHeader', color: colors.red, pos: "0 160" },
+          { key: '3', category: 'label', text: 'Soft Water', color: colors.green, pos: "80 240" },
+          { key: '4', category: 'label', text: 'From ME-01A', color: colors.yellow, pos: "0 299.5" },
+          { key: '5', category: 'label', text: 'To MRF-02', color: colors.yellow, direction: 'left', pos: "0 360.5" },
+          { key: '6', category: 'label', text: 'CPO+PFAO\nFrom Storage Tank', color: colors.yellow, pos: "0 423" },
+          { key: '7', category: 'label', text: 'To MCOT', color: colors.yellow, direction: 'left', pos: "0 541" },
+          { key: '8', category: 'label', text: 'To MPHE-02', color: colors.yellow, direction: 'left', pos: "0 615" },
+          // TANKS
+          {
+            key: 'MHWT', tankType: tank3, color: colors.gray, pos: "287 19", ports: [
+              { p: 'BL1', a: new go.Spot(0, 1, 0, -50) },
+              { p: 'BL2', a: new go.Spot(0, 1, 0, -30) },
+              { p: 'BL3', a: new go.Spot(0, 1, 0, -10) },
+              { p: 'BR', fs: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) },
+              { p: 'SensorR', type: 'sensor', ts: go.Spot.RightSide, a: new go.Spot(1, 0.5, 0, 0) }
+            ]
+          },
+          {
+            key: 'MSF', color: colors.gray, pos: "244 418", ports: [
+              { p: 'TL', a: new go.Spot(0, 0, 0, 30) },
+              { p: 'BR', a: new go.Spot(1, 1, 0, -50), fs: go.Spot.Right },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0) }
+            ]
+          },
+          {
+            key: 'ME-01', color: colors.gray, tankType: tank2, pos: "297 261", width: 70, height: 120, ports: [
+              { p: 'TL', a: new go.Spot(0, 0, 0, 30) },
+              { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
+              { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30) },
+              { p: 'BR', ts: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) },
+            ]
+          },
+          {
+            key: 'MRM', color: colors.gray, pos: "529 370", width: 60, height: 80, ports: [
+              { p: 'T1', a: new go.Spot(0, 0, 10, 0), ts: go.Spot.Top },
+              { p: 'T2', a: new go.Spot(0, 0, 30, 0), ts: go.Spot.Top },
+              { p: 'T3', a: new go.Spot(0, 0, 50, 0), ts: go.Spot.Top },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom },
+            ]
+          },
+          {
+            key: 'MZM', color: colors.gray, pos: "680 440", width: 50, height: 80, ports: [
+              { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), ts: go.Spot.Bottom },
+            ]
+          },
+          {
+            key: 'MPAT', color: colors.gray, pos: "865 30", ports: [
+              { p: 'L', a: new go.Spot(0, 0.5, 0, 0), fs: go.Spot.Left },
+            ]
+          },
+          {
+            key: 'MPHE-01', color: colors.gray, tankType: tank2, pos: "860 282", width: 70, height: 120, ports: [
+              { p: 'TL', a: new go.Spot(0, 0, 0, 30), fs: go.Spot.LeftSide },
+              { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
+              { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30), ts: go.Spot.RightSide },
+              { p: 'BR', fs: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) },
+            ]
+          },
+          {
+            key: 'MHT', color: colors.gray, pos: "769 440", ports: [
+              { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom },
+              { p: 'SensorB', a: new go.Spot(1, 0.7, 0, 0), type: 'sensor', ts: go.Spot.RightSide, },
+            ]
+          },
+          // VALVES
+          { key: 'TCV102', category: 'valve', color: colors.red, pos: "197 130" },
+          { key: 'FCV101', category: 'valve', color: colors.red, pos: "477 585" },
+          { key: 'LCV101', category: 'valve', color: colors.red, pos: "620 615.88", angle: 180 },
+          { key: 'FM102', category: 'valve', color: colors.white, pos: "508 167" },
+          { key: 'FM103', category: 'valve', color: colors.white, pos: "706 184", angle: 180 },
+          { key: 'FIC101', category: 'valve', color: colors.white, pos: "396 585" },
+          { key: 'P03', category: 'pump', color: colors.pink, pos: "429 178" },
+          { key: 'P04', category: 'pump', color: colors.pink, pos: "800 173.5", angle: 180 },
+          { key: 'P102', category: 'pump', color: colors.pink, pos: "720 605.3", angle: 180 },
+          // MONITOR PANELS
+          {
+            key: 'cTCV102', title: 'Monitor TCV102', category: 'monitor', pos: "32 35",
+            values: [
+              { label: 'SV', unit: '°C', value: '12.0' },
+              { label: 'PV', unit: '°C', value: '12.0' },
+              { label: 'OP', unit: '%', value: '25.0' }
+            ],
+            statuses: [
+              { fill: colors.green },
+              { fill: colors.green },
+              { fill: colors.green }
+            ]
+          },
+          {
+            key: 'cFCV101', title: 'Monitor FCV101', category: 'monitor', pos: "360 413", values: [
+              { label: 'SV', unit: 'KG/hr', value: '0.0' },
+              { label: 'PV', unit: 'KG/hr', value: '0.0' },
+              { label: 'OP', unit: '%', value: '25.0' }
+            ],
+            statuses: [
+              { fill: colors.green },
+              { fill: colors.white },
+              { fill: colors.white }
+            ]
+          },
+          {
+            key: 'cFM102', title: 'Monitor FM102', category: 'monitor', pos: "465 18", values: [
+              { label: 'SV', unit: 'KG/hr', value: '0.0' },
+              { label: 'PV', unit: 'KG/hr', value: '0.0' },
+              { label: 'OP', unit: '%', value: '25.0' }
+            ],
+            statuses: [
+              { fill: colors.white },
+              { fill: colors.white },
+            ]
+          },
+          {
+            key: 'cFM103', title: 'Monitor FM103', category: 'monitor', pos: "594 28", values: [
+              { label: 'SV', unit: 'KG/hr', value: '0.0' },
+              { label: 'PV', unit: 'KG/hr', value: '0.0' },
+              { label: 'OP', unit: '%', value: '25.0' }
+            ],
+            statuses: [
+              { fill: colors.green },
+              { fill: colors.white },
+              { fill: colors.white }
+            ]
+          },
+          // SENSORS:
+          { key: 'S1', category: 'sensor', value: '12.0', pos: "385 68", unit: '°C' },
+          { key: 'S2', category: 'sensor', value: '12.0', pos: "870 515", unit: '°C' },
+        ],
+      linkDataArray:
+        [
+          { from: 'MHWT', to: '1', text: 'LPS', color: colors.red, fromPort: 'BL1' },
+          { from: 'MPHE-01', to: '1', text: 'SCH', color: colors.red, fromPort: 'BR', fromEndSeg: 25 },
+          { from: '2', to: 'TCV102', text: 'SC', color: colors.red },
+          { from: 'TCV102', to: 'MHWT', color: colors.red, toPort: 'BL2' },
+          { from: '2', to: 'MPHE-01', color: colors.red, toPort: 'TR' },
+          { from: '3', to: 'MHWT', toPort: 'BL3' },
+
+          { from: '4', to: 'ME-01', text: 'DO', toPort: 'TL', color: colors.yellow },
+          { from: '5', to: 'ME-01', text: 'DO', toPort: 'BL', color: colors.yellow },
+          { from: '6', to: 'MSF', text: 'CPO', color: colors.yellow, toPort: 'TL' },
+          { from: 'MSF', to: '7', text: 'CPO', color: colors.yellow, fromPort: 'B' },
+          { from: 'LCV101', to: '8', text: 'CPO', color: colors.yellow },
+
+          { from: 'MSF', to: 'FIC101', fromPort: 'BR' },
+          { from: 'FIC101', to: 'FCV101' },
+          { from: 'FCV101', to: 'ME-01', toPort: 'BR' },
+          { from: 'ME-01', to: 'MRM', color: colors.green, fromPort: 'TR', toPort: 'T2' },
+
+          { from: 'MHWT', to: 'P03', color: colors.green, fromPort: 'BR' },
+          { from: 'P03', to: 'FM102', color: colors.green },
+          { from: 'FM102', to: 'MRM', color: colors.green, toPort: 'T1' },
+          { from: 'MPAT', to: 'P04', color: colors.yellow, fromPort: 'L' },
+          { from: 'P04', to: 'FM103', color: colors.yellow },
+          { from: 'FM103', to: 'MRM', color: colors.yellow, toPort: 'T3' },
+          { from: 'MRM', to: 'MZM', fromPort: 'B', toPort: 'B', toEndSeg: 15 },
+          { from: 'MZM', to: 'MPHE-01', fromPort: 'T', toPort: 'BL' },
+          { from: 'MPHE-01', to: 'MHT', fromPort: 'TL', toPort: 'T' },
+          { from: 'P102', to: 'LCV101' },
+          { from: 'MHT', to: 'P102', fromPort: 'B' },
+
+          { category: 'monitor', from: 'TCV102', to: 'cTCV102', ts: go.Spot.Right },
+          { category: 'monitor', from: 'FCV101', to: 'cFCV101', ts: go.Spot.Right },
+          { category: 'monitor', from: 'FCV101', to: 'FIC101', ts: go.Spot.Top },
+          { category: 'monitor', from: 'FM102', to: 'cFM102', ts: go.Spot.Bottom },
+          { category: 'monitor', from: 'FM103', to: 'cFM103', fs: go.Spot.Bottom, ts: go.Spot.Bottom },
+          // sensor links (same category)
+          { category: 'sensor', from: 'S1', to: 'MHWT', toPort: 'SensorR' },
+          { category: 'sensor', from: 'S2', to: 'MHT', toPort: 'SensorB' },
+        ]
+    }
+    ); // end model assignment
+
+    // Simulate data coming in to the monitor
+    // This randomly assigns new data to the itemArrays in the monitor nodes
+    // and the data in the sensor nodes
+    setInterval(() => {
+      myDiagram.commit(() => {
+        const sensorKeys = ['S1', 'S2'].map(k => myDiagram.findNodeForKey(k))
+        for (const n of sensorKeys) {
+          const d = n.data;
+          myDiagram.model.set(d, 'value', roundAndFloor(parseFloat(d.value) + random(-0.5, 0.55), 1));
+        }
+      }, null); // null tells the Diagram to skip the undo manager
+
+      if (+new Date % 2 === 0) return; // do the updates below half as often
+      myDiagram.commit(() => {
+        const controlNodes = ['cTCV102', 'cFCV101', 'cFM102', 'cFM103'].map(k => myDiagram.findNodeForKey(k))
+        for (const n of controlNodes) {
+          const vals = n.data.values;
+          myDiagram.model.set(vals[0], 'value', roundAndFloor(parseFloat(vals[0].value) + random(-0.5, 0.55), 1));
+          myDiagram.model.set(vals[1], 'value', roundAndFloor(parseFloat(vals[1].value) + random(-0.3, 0.35), 1));
+          myDiagram.model.set(vals[2], 'value', roundAndFloor(parseFloat(vals[2].value) + random(-0.2, 0.2), 1));
+        }
+      }, null); // null tells the Diagram to skip the undo manager
+
+      // rarely, randomly change a monitor color block
+      if (+new Date % 15 === 0) return;
+      myDiagram.commit(() => {
+        const controlNodes = ['cTCV102', 'cFCV101', 'cFM102', 'cFM103'].map(k => myDiagram.findNodeForKey(k))
+        for (const n of controlNodes) {
+          const vals = n.data.statuses;
+          myDiagram.model.set(vals[0], 'fill', Math.random() > 0.5 ? colors.green : colors.white)
+          myDiagram.model.set(vals[1], 'fill', Math.random() > 0.5 ? colors.yellow : colors.white);
+        }
+      }, null); // null tells the Diagram to skip the undo manager
+    }, 550);
+
+
+  } // end init
+
+  function roundAndFloor(num, decimalPlaces = 0) {
+    num = Math.round(num + "e" + decimalPlaces);
+    return Math.max(Number(num + "e" + -decimalPlaces), 0);
+  }
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+  window.click = function () {
+
+  };
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

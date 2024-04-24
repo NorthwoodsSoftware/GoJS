@@ -1,49 +1,52 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
- * The PortShiftingTool class lets a user move a port on a {@link Node}.
+ * The PortShiftingTool class lets a user move a port on a {@link go.Node}.
  *
  * This tool only works when the Node has a port (any GraphObject) marked with
  * a non-null and non-empty portId that is positioned in a Spot Panel,
  * and the user holds down the Shift key.
- * It works by modifying that port's {@link GraphObject#alignment} property.
+ * It works by modifying that port's {@link go.GraphObject.alignment} property.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/PortShifting.html">Port Shifting</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/PortShifting.html">Port Shifting</a> sample.
  * @category Tool Extension
  */
 export class PortShiftingTool extends go.Tool {
   /**
    * The port being shifted.
    */
-  public port: go.GraphObject | null = null;
-  private _originalAlignment: go.Spot = go.Spot.Default;
+  port: go.GraphObject | null;
+  private _originalAlignment: go.Spot;
 
   /**
    * Constructs a PortShiftingTool and sets the name for the tool.
    */
-  constructor() {
+  constructor(init?: Partial<PortShiftingTool>) {
     super();
     this.name = 'PortShifting';
+    this.port = null;
+    this._originalAlignment = go.Spot.Default;
+    if (init) Object.assign(this, init);
   }
 
   /**
    * This tool can only start if the mouse has moved enough so that it is not a click,
    * and if the mouse down point is on a GraphObject "port" in a Spot Panel,
-   * as determined by {@link #findPort}.
+   * as determined by {@link findPort}.
    */
-  public override canStart(): boolean {
+  override canStart(): boolean {
     const diagram = this.diagram;
     if (!super.canStart()) return false;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
@@ -55,30 +58,32 @@ export class PortShiftingTool extends go.Tool {
   }
 
   /**
-   * From the {@link GraphObject} at the mouse point, search up the visual tree until we get to
-   * an object that has the {@link GraphObject#portId} property set to a non-empty string, that is in a Spot Panel,
+   * From the {@link go.GraphObject} at the mouse point, search up the visual tree until we get to
+   * an object that has the {@link go.GraphObject.portId} property set to a non-empty string, that is in a Spot Panel,
    * and that is not the main element of the panel (typically the first element).
-   * @return {GraphObject} This returns null if no such port is at the mouse down point.
+   * @returns This returns null if no such port is at the mouse down point.
    */
-  public findPort(): go.GraphObject | null {
+  findPort(): go.GraphObject | null {
     const diagram = this.diagram;
     const e = diagram.firstInput;
     let elt = diagram.findObjectAt(e.documentPoint, null, null);
     if (elt === null || !(elt.part instanceof go.Node)) return null;
 
     while (elt !== null && elt.panel !== null) {
-      if (elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt &&
-        elt.portId !== null && elt.portId !== '') return elt;
+      if (elt.panel.type === go.Panel.Spot &&
+          elt.panel.findMainElement() !== elt &&
+          elt.portId !== null &&
+          elt.portId !== '') return elt;
       elt = elt.panel;
     }
     return null;
   }
 
   /**
-   * Start a transaction, call {@link #findPort} and remember it as the "port" property,
-   * and remember the original value for the port's {@link GraphObject#alignment} property.
+   * Start a transaction, call {@link findPort} and remember it as the "port" property,
+   * and remember the original value for the port's {@link go.GraphObject.alignment} property.
    */
-  public override doActivate(): void {
+  override doActivate(): void {
     this.startTransaction('Shifted Label');
     this.port = this.findPort();
     if (this.port !== null) {
@@ -90,7 +95,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Stop any ongoing transaction.
    */
-  public override doDeactivate(): void {
+  override doDeactivate(): void {
     super.doDeactivate();
     this.stopTransaction();
   }
@@ -98,7 +103,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Clear any reference to a port element.
    */
-  public override doStop(): void {
+  override doStop(): void {
     this.port = null;
     super.doStop();
   }
@@ -106,7 +111,7 @@ export class PortShiftingTool extends go.Tool {
   /**
    * Restore the port's original value for GraphObject.alignment.
    */
-  public override doCancel(): void {
+  override doCancel(): void {
     if (this.port !== null) {
       this.port.alignment = this._originalAlignment;
     }
@@ -114,9 +119,9 @@ export class PortShiftingTool extends go.Tool {
   }
 
   /**
-   * During the drag, call {@link #updateAlignment} in order to set the {@link GraphObject#alignment} of the port.
+   * During the drag, call {@link updateAlignment} in order to set the {@link go.GraphObject.alignment} of the port.
    */
-  public override doMouseMove(): void {
+  override doMouseMove(): void {
     if (!this.isActive) return;
     this.updateAlignment();
   }
@@ -125,7 +130,7 @@ export class PortShiftingTool extends go.Tool {
    * At the end of the drag, update the alignment of the port and finish the tool,
    * completing a transaction.
    */
-  public override doMouseUp(): void {
+  override doMouseUp(): void {
     if (!this.isActive) return;
     this.updateAlignment();
     this.transactionResult = 'Shifted Label';
@@ -133,13 +138,13 @@ export class PortShiftingTool extends go.Tool {
   }
 
   /**
-   * Save the port's {@link GraphObject#alignment} as a fractional Spot in the Spot Panel
+   * Save the port's {@link go.GraphObject.alignment} as a fractional Spot in the Spot Panel
    * that the port is in. Thus if the main element changes size, the relative positions
    * of the ports will be maintained. But that does assume that the port must remain
    * inside the main element -- it cannot wander away from the node.
-   * This does not modify the port's {@link GraphObject#alignmentFocus} property.
+   * This does not modify the port's {@link go.GraphObject.alignmentFocus} property.
    */
-  public updateAlignment(): void {
+  updateAlignment(): void {
     if (this.port === null || this.port.panel === null) return;
     const last = this.diagram.lastInput.documentPoint;
     const main = this.port.panel.findMainElement();

@@ -1,16 +1,16 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * This custom {@link Link} class customizes its {@link Shape} to surround the comment node (the from node).
+ * This custom {@link go.Link} class customizes its {@link go.Shape} to surround the comment node (the from node).
  * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
  * Thus the default layer for BalloonLinks is "Background".
  *
@@ -18,19 +18,21 @@ import * as go from '../release/go-module.js';
  * rather than the curve at corners along the route, which is always straight.
  * The default value is 10.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/BalloonLink.html">Balloon Links</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/BalloonLink.html">Balloon Links</a> sample.
  * @category Part Extension
  */
 export class BalloonLink extends go.Link {
     /**
-     * Constructs a BalloonLink and sets the {@link Part#layerName} property to "Background".
+     * Constructs a BalloonLink and sets the {@link go.Part.layerName} property to "Background".
      */
-    constructor() {
+    constructor(init) {
         super();
         this._base = 15;
         this.layerName = 'Background';
         this.corner = 10;
         this.defaultToPoint = new go.Point(0, 0);
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * Copies properties to a cloned BalloonLink.
@@ -40,14 +42,18 @@ export class BalloonLink extends go.Link {
         copy._base = this._base;
     }
     /**
-     * Gets or sets width of the base of the triangle at the center point of the {@link Link#fromNode}.
+     * Gets or sets width of the base of the triangle at the center point of the {@link go.Link.fromNode}.
      *
      * The default value is 15.
      */
-    get base() { return this._base; }
-    set base(value) { this._base = value; }
+    get base() {
+        return this._base;
+    }
+    set base(value) {
+        this._base = value;
+    }
     /**
-     * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link Link#fromNode}
+     * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link go.Link.fromNode}
      * and has a triangular shape with the base at the fromNode and the top at the toNode.
      */
     makeGeometry() {
@@ -74,27 +80,31 @@ export class BalloonLink extends go.Link {
             fig.startY = prevy = y;
         }
         function point(x, y, v, w) {
-            fig.add(new go.PathSegment(go.PathSegment.Line, x, y));
-            fig.add(new go.PathSegment(go.PathSegment.Line, v, w));
+            fig.add(new go.PathSegment(go.SegmentType.Line, x, y));
+            fig.add(new go.PathSegment(go.SegmentType.Line, v, w));
             prevx = v;
             prevy = w;
         }
         function turn(x, y) {
-            if (prevx === x && prevy > y) { // top left
-                fig.add(new go.PathSegment(go.PathSegment.Line, x, y + corner));
-                fig.add(new go.PathSegment(go.PathSegment.Arc, 180, 90, x + corner, y + corner, corner, corner));
+            if (prevx === x && prevy > y) {
+                // top left
+                fig.add(new go.PathSegment(go.SegmentType.Line, x, y + corner));
+                fig.add(new go.PathSegment(go.SegmentType.Arc, 180, 90, x + corner, y + corner, corner, corner));
             }
-            else if (prevx < x && prevy === y) { // top right
-                fig.add(new go.PathSegment(go.PathSegment.Line, x - corner, y));
-                fig.add(new go.PathSegment(go.PathSegment.Arc, 270, 90, x - corner, y + corner, corner, corner));
+            else if (prevx < x && prevy === y) {
+                // top right
+                fig.add(new go.PathSegment(go.SegmentType.Line, x - corner, y));
+                fig.add(new go.PathSegment(go.SegmentType.Arc, 270, 90, x - corner, y + corner, corner, corner));
             }
-            else if (prevx === x && prevy < y) { // bottom right
-                fig.add(new go.PathSegment(go.PathSegment.Line, x, y - corner));
-                fig.add(new go.PathSegment(go.PathSegment.Arc, 0, 90, x - corner, y - corner, corner, corner));
+            else if (prevx === x && prevy < y) {
+                // bottom right
+                fig.add(new go.PathSegment(go.SegmentType.Line, x, y - corner));
+                fig.add(new go.PathSegment(go.SegmentType.Arc, 0, 90, x - corner, y - corner, corner, corner));
             }
-            else if (prevx > x && prevy === y) { // bottom left
-                fig.add(new go.PathSegment(go.PathSegment.Line, x + corner, y));
-                fig.add(new go.PathSegment(go.PathSegment.Arc, 90, 90, x + corner, y - corner, corner, corner));
+            else if (prevx > x && prevy === y) {
+                // bottom left
+                fig.add(new go.PathSegment(go.SegmentType.Line, x + corner, y));
+                fig.add(new go.PathSegment(go.SegmentType.Arc, 90, 90, x + corner, y - corner, corner, corner));
             } // else if prevx === x && prevy === y, no-op
             prevx = x;
             prevy = y;
@@ -114,7 +124,8 @@ export class BalloonLink extends go.Link {
                 turn(bb.right, bb.top);
                 turn(bb.right, bb.bottom);
             }
-            else { // pn.y >= bb.top && pn.y <= bb.bottom
+            else {
+                // pn.y >= bb.top && pn.y <= bb.bottom
                 const y = Math.min(Math.max(pn.y + base / 3, bb.top + corner + base), bb.bottom - corner);
                 start(bb.left, y);
                 point(pn.x, pn.y, bb.left, Math.max(y - base, bb.top + corner));
@@ -139,7 +150,8 @@ export class BalloonLink extends go.Link {
                 turn(bb.left, bb.top);
                 turn(bb.right, bb.top);
             }
-            else { // pn.y >= bb.top && pn.y <= bb.bottom
+            else {
+                // pn.y >= bb.top && pn.y <= bb.bottom
                 const y = Math.min(Math.max(pn.y + base / 3, bb.top + corner + base), bb.bottom - corner);
                 start(bb.right, Math.max(y - base, bb.top + corner));
                 point(pn.x, pn.y, bb.right, y);
@@ -149,7 +161,8 @@ export class BalloonLink extends go.Link {
                 turn(bb.right, bb.top);
             }
         }
-        else { // pn.x >= bb.left && pn.x <= bb.right
+        else {
+            // pn.x >= bb.left && pn.x <= bb.right
             const x = Math.min(Math.max(pn.x + base / 3, bb.left + corner + base), bb.right - corner);
             if (pn.y < bb.top) {
                 start(Math.max(x - base, bb.left + corner), bb.top);
@@ -167,7 +180,8 @@ export class BalloonLink extends go.Link {
                 turn(bb.right, bb.top);
                 turn(bb.right, bb.bottom);
             }
-            else { // inside
+            else {
+                // inside
                 start(bb.left, bb.top + bb.height / 2);
                 // no "point", just corners
                 turn(bb.left, bb.top);

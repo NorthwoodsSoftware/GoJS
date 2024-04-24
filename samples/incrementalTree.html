@@ -1,247 +1,348 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Incrementally grow a tree as each node is expanded for the first time."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Incremental Tree</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Incrementally grow a tree as each node is expanded for the first time." />
+<meta itemprop="description" content="Incrementally grow a tree as each node is expanded for the first time." />
+<meta property="og:description" content="Incrementally grow a tree as each node is expanded for the first time." />
+<meta name="twitter:description" content="Incrementally grow a tree as each node is expanded for the first time." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Incremental Tree />
+<meta property="og:title" content=Incremental Tree />
+<meta name="twitter:title" content=Incremental Tree />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/incrementalTree.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/incrementalTree.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/incrementalTree.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/incrementalTree.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/incrementalTree.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Incremental Tree | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      var blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // must name or refer to the DIV HTML element
-          {
-            initialContentAlignment: go.Spot.Center,
-            layout: $(go.ForceDirectedLayout),
-            // moving and copying nodes also moves and copies their subtrees
-            "commandHandler.copiesTree": true,  // for the copy command
-            "commandHandler.deletesTree": true, // for the delete command
-            "draggingTool.dragsTree": true,  // dragging for both move and copy
-            "undoManager.isEnabled": true
-          });
-
-      // Define the Node template.
-      // This uses a Spot Panel to position a button relative
-      // to the ellipse surrounding the text.
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-          {
-            selectionObjectName: "PANEL",
-            isTreeExpanded: false,
-            isTreeLeaf: false
-          },
-          // the node's outer shape, which will surround the text
-          $(go.Panel, "Auto",
-            { name: "PANEL" },
-            $(go.Shape, "Circle",
-              { fill: "whitesmoke", stroke: "black" },
-              new go.Binding("fill", "rootdistance", dist => {
-                dist = Math.min(blues.length - 1, dist);
-                return blues[dist];
-              })),
-            $(go.TextBlock,
-              { font: "12pt sans-serif", margin: 5 },
-              new go.Binding("text", "key"))
-          ),
-          // the expand/collapse button, at the top-right corner
-          $("TreeExpanderButton",
-            {
-              name: 'TREEBUTTON',
-              width: 20, height: 20,
-              alignment: go.Spot.TopRight,
-              alignmentFocus: go.Spot.Center,
-              // customize the expander behavior to
-              // create children if the node has never been expanded
-              click: (e, obj) => {  // OBJ is the Button
-                var node = obj.part;  // get the Node containing this Button
-                if (node === null) return;
-                e.handled = true;
-                expandNode(node);
-              }
-            }
-          )  // end TreeExpanderButton
-        );  // end Node
-
-      // create the model with a root node data
-      myDiagram.model = new go.TreeModel([
-        { key: 0, color: blues[0], everExpanded: false }
-      ]);
-
-
-      document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.zoomToFit());
-
-      document.getElementById('expandAtRandom').addEventListener('click', () => expandAtRandom());
-    }
-
-    function expandNode(node) {
-      var diagram = node.diagram;
-      diagram.startTransaction("CollapseExpandTree");
-      // this behavior is specific to this incrementalTree sample:
-      var data = node.data;
-      if (!data.everExpanded) {
-        // only create children once per node
-        diagram.model.setDataProperty(data, "everExpanded", true);
-        var numchildren = createSubTree(data);
-        if (numchildren === 0) {  // now known no children: don't need Button!
-          node.findObject('TREEBUTTON').visible = false;
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
-      // this behavior is generic for most expand/collapse tree buttons:
-      if (node.isTreeExpanded) {
-        diagram.commandHandler.collapseTree(node);
-      } else {
-        diagram.commandHandler.expandTree(node);
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    var blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must name or refer to the DIV HTML element
+      {
+        initialContentAlignment: go.Spot.Center,
+        layout: $(go.ForceDirectedLayout),
+        // moving and copying nodes also moves and copies their subtrees
+        'commandHandler.copiesTree': true, // for the copy command
+        'commandHandler.deletesTree': true, // for the delete command
+        'draggingTool.dragsTree': true, // dragging for both move and copy
+        'undoManager.isEnabled': true,
       }
-      diagram.commitTransaction("CollapseExpandTree");
-      myDiagram.zoomToFit();
+    );
+
+    // Define the Node template.
+    // This uses a Spot Panel to position a button relative
+    // to the ellipse surrounding the text.
+    myDiagram.nodeTemplate = $(go.Node,
+      'Spot',
+      {
+        selectionObjectName: 'PANEL',
+        isTreeExpanded: false,
+        isTreeLeaf: false,
+      },
+      // the node's outer shape, which will surround the text
+      $(go.Panel,
+        'Auto',
+        { name: 'PANEL' },
+        $(go.Shape,
+          'Circle',
+          { fill: 'whitesmoke', stroke: 'black' },
+          new go.Binding('fill', 'rootdistance', (dist) => {
+            dist = Math.min(blues.length - 1, dist);
+            return blues[dist];
+          })
+        ),
+        $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))
+      ),
+      // the expand/collapse button, at the top-right corner
+      $('TreeExpanderButton', {
+        name: 'TREEBUTTON',
+        width: 20,
+        height: 20,
+        alignment: go.Spot.TopRight,
+        alignmentFocus: go.Spot.Center,
+        // customize the expander behavior to
+        // create children if the node has never been expanded
+        click: (e, obj) => {
+          // OBJ is the Button
+          var node = obj.part; // get the Node containing this Button
+          if (node === null) return;
+          e.handled = true;
+          expandNode(node);
+        },
+      }) // end TreeExpanderButton
+    ); // end Node
+
+    // create the model with a root node data
+    myDiagram.model = new go.TreeModel([{ key: 0, color: blues[0], everExpanded: false }]);
+
+    document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.zoomToFit());
+
+    document.getElementById('expandAtRandom').addEventListener('click', () => expandAtRandom());
+  }
+
+  function expandNode(node) {
+    var diagram = node.diagram;
+    diagram.startTransaction('CollapseExpandTree');
+    // this behavior is specific to this incrementalTree sample:
+    var data = node.data;
+    if (!data.everExpanded) {
+      // only create children once per node
+      diagram.model.setDataProperty(data, 'everExpanded', true);
+      var numchildren = createSubTree(data);
+      if (numchildren === 0) {
+        // now known no children: don't need Button!
+        node.findObject('TREEBUTTON').visible = false;
+      }
+    }
+    // this behavior is generic for most expand/collapse tree buttons:
+    if (node.isTreeExpanded) {
+      diagram.commandHandler.collapseTree(node);
+    } else {
+      diagram.commandHandler.expandTree(node);
+    }
+    diagram.commitTransaction('CollapseExpandTree');
+    myDiagram.zoomToFit();
+  }
+
+  // This dynamically creates the immediate children for a node.
+  // The sample assumes that we have no idea of whether there are any children
+  // for a node until we look for them the first time, which happens
+  // upon the first tree-expand of a node.
+  function createSubTree(parentdata) {
+    var numchildren = Math.floor(Math.random() * 10);
+    if (myDiagram.nodes.count <= 1) {
+      numchildren += 1; // make sure the root node has at least one child
+    }
+    // create several node data objects and add them to the model
+    var model = myDiagram.model;
+    var parent = myDiagram.findNodeForData(parentdata);
+
+    var degrees = 1;
+    var grandparent = parent.findTreeParentNode();
+    while (grandparent) {
+      degrees++;
+      grandparent = grandparent.findTreeParentNode();
     }
 
-    // This dynamically creates the immediate children for a node.
-    // The sample assumes that we have no idea of whether there are any children
-    // for a node until we look for them the first time, which happens
-    // upon the first tree-expand of a node.
-    function createSubTree(parentdata) {
-      var numchildren = Math.floor(Math.random() * 10);
-      if (myDiagram.nodes.count <= 1) {
-        numchildren += 1;  // make sure the root node has at least one child
-      }
-      // create several node data objects and add them to the model
-      var model = myDiagram.model;
-      var parent = myDiagram.findNodeForData(parentdata);
-
-      var degrees = 1;
-      var grandparent = parent.findTreeParentNode();
-      while (grandparent) {
-        degrees++;
-        grandparent = grandparent.findTreeParentNode();
-      }
-
-      for (var i = 0; i < numchildren; i++) {
-        var childdata = {
-          key: model.nodeDataArray.length,
-          parent: parentdata.key,
-          rootdistance: degrees
-        };
-        // add to model.nodeDataArray and create a Node
-        model.addNodeData(childdata);
-        // position the new child node close to the parent
-        var child = myDiagram.findNodeForData(childdata);
-        child.location = parent.location;
-      }
-      return numchildren;
+    for (var i = 0; i < numchildren; i++) {
+      var childdata = {
+        key: model.nodeDataArray.length,
+        parent: parentdata.key,
+        rootdistance: degrees,
+      };
+      // add to model.nodeDataArray and create a Node
+      model.addNodeData(childdata);
+      // position the new child node close to the parent
+      var child = myDiagram.findNodeForData(childdata);
+      child.location = parent.location;
     }
+    return numchildren;
+  }
 
-    function expandAtRandom() {
-      var eligibleNodes = [];
-      myDiagram.nodes.each(n => {
-        if (!n.isTreeExpanded) eligibleNodes.push(n);
-      });
-      var node = eligibleNodes[Math.floor(Math.random() * (eligibleNodes.length))];
-      expandNode(node);
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  function expandAtRandom() {
+    var eligibleNodes = [];
+    myDiagram.nodes.each((n) => {
+      if (!n.isTreeExpanded) eligibleNodes.push(n);
+    });
+    var node = eligibleNodes[Math.floor(Math.random() * eligibleNodes.length)];
+    expandNode(node);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
   <p><button id="zoomToFit">Zoom to Fit</button><button id="expandAtRandom">Expand random Node</button></p>
   <p>
-  This diagram demonstrates the expansion of a tree where nodes are only created "on-demand",
-  when the user clicks on the "expand" Button.
-  As you expand the tree, it automatically performs a force-directed layout,
-  which will make some room for the additional nodes.
+    This diagram demonstrates the expansion of a tree where nodes are only created "on-demand", when the user clicks on the "expand" Button. As you expand the
+    tree, it automatically performs a force-directed layout, which will make some room for the additional nodes.
   </p>
   <p>
-  The data for each node is implemented by a JavaScript object held by the Diagram's model.
-  Each node data has an <b>everExpanded</b> property that indicates whether we have already
-  created all of its "child" data and added them to the model.
-  The <b>everExpanded</b> property defaults to false,
-  to match the initial value of <a>Node.isTreeExpanded</a> in the node template,
-  which specifies that the nodes start collapsed.
+    The data for each node is implemented by a JavaScript object held by the Diagram's model. Each node data has an <b>everExpanded</b> property that indicates
+    whether we have already created all of its "child" data and added them to the model. The <b>everExpanded</b> property defaults to false, to match the
+    initial value of <a>Node.isTreeExpanded</a> in the node template, which specifies that the nodes start collapsed.
   </p>
   <p>
-  When the user clicks on the "expand" Button, the button click event handler finds the corresponding
-  data object by going up the visual tree to find the Node via the <a>GraphObject.part</a> property
-  and then getting the node data that the Node is bound to via <a>Part.data</a>.
-  If <b>everExpanded</b> is false, the code creates a random number of
-  child data for that node, each with a random <b>color</b> property.
-  Then the button click event handler changes the value of <b>Node.isExpandedTree</b>,
-  thereby expanding or collapsing the node.
+    When the user clicks on the "expand" Button, the button click event handler finds the corresponding data object by going up the visual tree to find the Node
+    via the <a>GraphObject.part</a> property and then getting the node data that the Node is bound to via <a>Part.data</a>. If <b>everExpanded</b> is false, the
+    code creates a random number of child data for that node, each with a random <b>color</b> property. Then the button click event handler changes the value of
+    <b>Node.isExpandedTree</b>, thereby expanding or collapsing the node.
+  </p>
+  <p>Some initial node expansions result in there being no children at all. In this case the Button is made invisible.</p>
+  <p>
+    All changes are performed within a transaction. You should always surround your code with calls to <a>Model.startTransaction</a> and
+    <a>Model.commitTransaction</a>, or the same methods on <a>Diagram</a>.
   </p>
   <p>
-  Some initial node expansions result in there being no children at all.
-  In this case the Button is made invisible.
-  </p>
-  <p>
-  All changes are performed within a transaction.
-  You should always surround your code with calls to <a>Model.startTransaction</a> and <a>Model.commitTransaction</a>,
-  or the same methods on <a>Diagram</a>.
-  </p>
-  <p>
-  The diagram's <a>Diagram.layout</a> is an instance of <a>ForceDirectedLayout</a>.
-  The standard conditions under which the layout will be performed include
-  when nodes or links or group-memberships are added or removed from the model,
-  or when they change visibility.
-  In this case that means that when the user expands or collapses a node,
-  another force-directed layout occurs again, even upon repeated expansions or collapses.
+    The diagram's <a>Diagram.layout</a> is an instance of <a>ForceDirectedLayout</a>. The standard conditions under which the layout will be performed include
+    when nodes or links or group-memberships are added or removed from the model, or when they change visibility. In this case that means that when the user
+    expands or collapses a node, another force-directed layout occurs again, even upon repeated expansions or collapses.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Force Directed Layout</h4>
+<p>
+This predefined layout treats the graph as if it were a system of physical bodies with forces acting on and between them.
+The layout iteratively moves nodes and links to minimize the total sum of forces on each node. The resulting layout will normally not contain
+overlapping Nodes, excluding cases where the graph is densely interconnected.
+More information can be found in the <a href="../intro/layouts.html#ForceDirectedLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#force-directed">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

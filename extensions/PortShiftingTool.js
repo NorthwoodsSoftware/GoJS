@@ -1,158 +1,148 @@
-"use strict";
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
-
-// A custom Tool for moving a port on a Node
-
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
 /**
-* @constructor
-* @extends Tool
-* @class
-* This tool only works when the Node has a port (any GraphObject) marked with
-* a non-null and non-empty portId that is positioned in a Spot Panel,
-* and the user holds down the Shift key.
-* It works by modifying that port's GraphObject.alignment property.
-*/
-function PortShiftingTool() {
-  go.Tool.call(this);
-  this.name = "PortShifting";
-
-  /** @type {GraphObject} */
-  this.port = null;
-  /** @type {Point} */
-  this._originalAlignment = null;
-}
-go.Diagram.inherit(PortShiftingTool, go.Tool);
-
-/**
-* This tool can only start if the mouse has moved enough so that it is not a click,
-* and if the mouse down point is on a GraphObject "port" in a Spot Panel,
-* as determined by findPort().
-* @this {PortShiftingTool}
-* @return {boolean}
-*/
-PortShiftingTool.prototype.canStart = function() {
-  if (!go.Tool.prototype.canStart.call(this)) return false;
-  var diagram = this.diagram;
-  if (diagram === null) return false;
-  // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-  var e = diagram.lastInput;
-  if (!e.left || !e.shift) return false;
-  if (!this.isBeyondDragSize()) return false;
-
-  return this.findPort() !== null;
-}
-
-/**
-* From the GraphObject at the mouse point, search up the visual tree until we get to
-* an object that has the portId property set to a non-empty string, that is in a Spot Panel,
-* and that is not the main element of the panel (typically the first element).
-* @this {PortShiftingTool}
-* @return {GraphObject} This returns null if no such port is at the mouse down point.
-*/
-PortShiftingTool.prototype.findPort = function() {
-  var diagram = this.diagram;
-  var e = diagram.firstInput;
-  var elt = diagram.findObjectAt(e.documentPoint, null, null);
-  if (elt === null || !(elt.part instanceof go.Node)) return null;
-
-  while (elt !== null && elt.panel !== null) {
-    if (elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt &&
-        elt.portId !== null && elt.portId !== "") return elt;
-    elt = elt.panel;
-  }
-  return null;
-};
-
-/**
-* Start a transaction, call findPort and remember it as the "port" property,
-* and remember the original value for the port's alignment property.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doActivate = function() {
-  this.startTransaction("Shifted Label");
-  this.port = this.findPort();
-  if (this.port !== null) {
-    this._originalAlignment = this.port.alignment.copy();
-    var main = this.port.panel.findMainElement();
-  }
-  go.Tool.prototype.doActivate.call(this);
-}
-
-/**
-* Stop any ongoing transaction.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doDeactivate = function() {
-  go.Tool.prototype.doDeactivate.call(this);
-  this.stopTransaction();
-}
-
-/**
-* Clear any reference to a port element.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doStop = function() {
-  this.port = null;
-  go.Tool.prototype.doStop.call(this);
-}
-
-/**
-* Restore the port's original value for GraphObject.alignment.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doCancel = function() {
-  if (this.port !== null) {
-    this.port.alignment = this._originalAlignment;
-  }
-  go.Tool.prototype.doCancel.call(this);
-}
-
-/**
-* During the drag, call updateAlignment in order to set the GraphObject.alignment of the port.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doMouseMove = function() {
-  if (!this.isActive) return;
-  this.updateAlignment();
-}
-
-/**
-* At the end of the drag, update the alignment of the port and finish the tool,
-* completing a transaction.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.doMouseUp = function() {
-  if (!this.isActive) return;
-  this.updateAlignment();
-  this.transactionResult = "Shifted Label";
-  this.stopTool();
-}
-
-/**
-* Save the port's GraphObject.alignment as a fractional Spot in the Spot Panel
-* that the port is in.  Thus if the main element changes size, the relative positions
-* of the ports will be maintained.  But that does assume that the port must remain
-* inside the main element -- it cannot wander away from the node.
-* This does not modify the port's GraphObject.alignmentFocus property.
-* @this {PortShiftingTool}
-*/
-PortShiftingTool.prototype.updateAlignment = function() {
-  if (this.port === null) return;
-  var last = this.diagram.lastInput.documentPoint;
-  var main = this.port.panel.findMainElement();
-  var tl = main.getDocumentPoint(go.Spot.TopLeft);
-  var br = main.getDocumentPoint(go.Spot.BottomRight);
-  var x = Math.max(0, Math.min((last.x - tl.x) / (br.x - tl.x), 1));
-  var y = Math.max(0, Math.min((last.y - tl.y) / (br.y - tl.y), 1));
-  this.port.alignment = new go.Spot(x, y);
+ * The PortShiftingTool class lets a user move a port on a {@link go.Node}.
+ *
+ * This tool only works when the Node has a port (any GraphObject) marked with
+ * a non-null and non-empty portId that is positioned in a Spot Panel,
+ * and the user holds down the Shift key.
+ * It works by modifying that port's {@link go.GraphObject.alignment} property.
+ *
+ * If you want to experiment with this extension, try the <a href="../../samples/PortShifting.html">Port Shifting</a> sample.
+ * @category Tool Extension
+ */
+class PortShiftingTool extends go.Tool {
+    /**
+     * Constructs a PortShiftingTool and sets the name for the tool.
+     */
+    constructor(init) {
+        super();
+        this.name = 'PortShifting';
+        this.port = null;
+        this._originalAlignment = go.Spot.Default;
+        if (init)
+            Object.assign(this, init);
+    }
+    /**
+     * This tool can only start if the mouse has moved enough so that it is not a click,
+     * and if the mouse down point is on a GraphObject "port" in a Spot Panel,
+     * as determined by {@link findPort}.
+     */
+    canStart() {
+        const diagram = this.diagram;
+        if (!super.canStart())
+            return false;
+        // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
+        const e = diagram.lastInput;
+        if (!e.left || !e.shift)
+            return false;
+        if (!this.isBeyondDragSize())
+            return false;
+        return this.findPort() !== null;
+    }
+    /**
+     * From the {@link go.GraphObject} at the mouse point, search up the visual tree until we get to
+     * an object that has the {@link go.GraphObject.portId} property set to a non-empty string, that is in a Spot Panel,
+     * and that is not the main element of the panel (typically the first element).
+     * @returns This returns null if no such port is at the mouse down point.
+     */
+    findPort() {
+        const diagram = this.diagram;
+        const e = diagram.firstInput;
+        let elt = diagram.findObjectAt(e.documentPoint, null, null);
+        if (elt === null || !(elt.part instanceof go.Node))
+            return null;
+        while (elt !== null && elt.panel !== null) {
+            if (elt.panel.type === go.Panel.Spot &&
+                elt.panel.findMainElement() !== elt &&
+                elt.portId !== null &&
+                elt.portId !== '')
+                return elt;
+            elt = elt.panel;
+        }
+        return null;
+    }
+    /**
+     * Start a transaction, call {@link findPort} and remember it as the "port" property,
+     * and remember the original value for the port's {@link go.GraphObject.alignment} property.
+     */
+    doActivate() {
+        this.startTransaction('Shifted Label');
+        this.port = this.findPort();
+        if (this.port !== null) {
+            this._originalAlignment = this.port.alignment.copy();
+        }
+        super.doActivate();
+    }
+    /**
+     * Stop any ongoing transaction.
+     */
+    doDeactivate() {
+        super.doDeactivate();
+        this.stopTransaction();
+    }
+    /**
+     * Clear any reference to a port element.
+     */
+    doStop() {
+        this.port = null;
+        super.doStop();
+    }
+    /**
+     * Restore the port's original value for GraphObject.alignment.
+     */
+    doCancel() {
+        if (this.port !== null) {
+            this.port.alignment = this._originalAlignment;
+        }
+        super.doCancel();
+    }
+    /**
+     * During the drag, call {@link updateAlignment} in order to set the {@link go.GraphObject.alignment} of the port.
+     */
+    doMouseMove() {
+        if (!this.isActive)
+            return;
+        this.updateAlignment();
+    }
+    /**
+     * At the end of the drag, update the alignment of the port and finish the tool,
+     * completing a transaction.
+     */
+    doMouseUp() {
+        if (!this.isActive)
+            return;
+        this.updateAlignment();
+        this.transactionResult = 'Shifted Label';
+        this.stopTool();
+    }
+    /**
+     * Save the port's {@link go.GraphObject.alignment} as a fractional Spot in the Spot Panel
+     * that the port is in. Thus if the main element changes size, the relative positions
+     * of the ports will be maintained. But that does assume that the port must remain
+     * inside the main element -- it cannot wander away from the node.
+     * This does not modify the port's {@link go.GraphObject.alignmentFocus} property.
+     */
+    updateAlignment() {
+        if (this.port === null || this.port.panel === null)
+            return;
+        const last = this.diagram.lastInput.documentPoint;
+        const main = this.port.panel.findMainElement();
+        if (main === null)
+            return;
+        const tl = main.getDocumentPoint(go.Spot.TopLeft);
+        const br = main.getDocumentPoint(go.Spot.BottomRight);
+        const x = Math.max(0, Math.min((last.x - tl.x) / (br.x - tl.x), 1));
+        const y = Math.max(0, Math.min((last.y - tl.y) / (br.y - tl.y), 1));
+        this.port.alignment = new go.Spot(x, y);
+    }
 }

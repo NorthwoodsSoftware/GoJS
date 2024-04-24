@@ -1,196 +1,328 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A diagram holding groups that incrementally grow the diagram as groups are expanded."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Grouping</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A diagram holding groups that incrementally grow the diagram as groups are expanded." />
+<meta itemprop="description" content="A diagram holding groups that incrementally grow the diagram as groups are expanded." />
+<meta property="og:description" content="A diagram holding groups that incrementally grow the diagram as groups are expanded." />
+<meta name="twitter:description" content="A diagram holding groups that incrementally grow the diagram as groups are expanded." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Grouping />
+<meta property="og:title" content=Grouping />
+<meta name="twitter:title" content=Grouping />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/grouping.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/grouping.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/grouping.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/grouping.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/grouping.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Grouping | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // Diagram refers to its DIV HTML element by id
-          {
-            layout: $(go.TreeLayout,  // the layout for the entire diagram
-              {
-                angle: 90,
-                arrangement: go.TreeLayout.ArrangementHorizontal,
-                isRealtime: false
-              })
-          });
-
-      // define the node template for non-groups
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, "Rectangle",
-            { stroke: null, strokeWidth: 0 },
-            new go.Binding("fill", "key")),
-          $(go.TextBlock,
-            { margin: 7, font: "Bold 14px Sans-Serif" },
-            //the text, color, and key are all bound to the same property in the node data
-            new go.Binding("text", "key"))
-        );
-
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { routing: go.Link.Orthogonal, corner: 10 },
-          $(go.Shape, { strokeWidth: 2 }),
-          $(go.Shape, { toArrow: "OpenTriangle" })
-        );
-
-      // define the group template
-      myDiagram.groupTemplate =
-        $(go.Group, "Auto",
-          { // define the group's internal layout
-            layout: $(go.TreeLayout,
-              { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
-            // the group begins unexpanded;
-            // upon expansion, a Diagram Listener will generate contents for the group
-            isSubGraphExpanded: false,
-            // when a group is expanded, if it contains no parts, generate a subGraph inside of it
-            subGraphExpandedChanged: group => {
-              if (group.memberParts.count === 0) {
-                randomGroup(group.data.key);
-              }
-            }
-          },
-          $(go.Shape, "Rectangle",
-            { fill: null, stroke: "gray", strokeWidth: 2 }),
-          $(go.Panel, "Vertical",
-            { defaultAlignment: go.Spot.Left, margin: 4 },
-            $(go.Panel, "Horizontal",
-              { defaultAlignment: go.Spot.Top },
-              // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
-              $("SubGraphExpanderButton"),
-              $(go.TextBlock,
-                { font: "Bold 18px Sans-Serif", margin: 4 },
-                new go.Binding("text", "key"))
-            ),
-            // create a placeholder to represent the area where the contents of the group are
-            $(go.Placeholder,
-              { padding: new go.Margin(0, 10) })
-          )  // end Vertical Panel
-        );  // end Group
-
-      // generate the initial model
-      randomGroup();
-    }
-
-    // Generate a random number of nodes, including groups.
-    // If a group's key is given as a parameter, put these nodes inside it
-    function randomGroup(group) {
-      // all modification to the diagram is within this transaction
-      myDiagram.startTransaction("addGroupContents");
-      var addedKeys = [];  // this will contain the keys of all nodes created
-      var groupCount = 0;  // the number of groups in the diagram, to determine the numbers in the keys of new groups
-      myDiagram.nodes.each(node => {
-        if (node instanceof go.Group) groupCount++;
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
       });
-      // create a random number of groups
-      // ensure there are at least 10 groups in the diagram
-      var groups = Math.floor(Math.random() * 2);
-      if (groupCount < 10) groups += 1;
-      for (var i = 0; i < groups; i++) {
-        var name = "group" + (i + groupCount);
-        myDiagram.model.addNodeData({ key: name, isGroup: true, group: group });
-        addedKeys.push(name);
-      }
-      var nodes = Math.floor(Math.random() * 3) + 2;
-      // create a random number of non-group nodes
-      for (var i = 0; i < nodes; i++) {
-        var color = go.Brush.randomColor();
-        // make sure the color, which will be the node's key, is unique in the diagram before adding the new node
-        if (myDiagram.findPartForKey(color) === null) {
-          myDiagram.model.addNodeData({ key: color, group: group });
-          addedKeys.push(color);
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
-      // add at least one link from each node to another
-      // this could result in clusters of nodes unreachable from each other, but no lone nodes
-      var arr = [];
-      for (var x in addedKeys) arr.push(addedKeys[x]);
-      arr.sort((x, y) => Math.random(2) - 1);
-      for (var i = 0; i < arr.length; i++) {
-        var from = Math.floor(Math.random() * (arr.length - i)) + i;
-        if (from !== i) {
-          myDiagram.model.addLinkData({ from: arr[from], to: arr[i] });
-        }
-      }
-      myDiagram.commitTransaction("addGroupContents");
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // Diagram refers to its DIV HTML element by id
+      {
+        layout: $(go.TreeLayout, // the layout for the entire diagram
+          {
+            angle: 90,
+            arrangement: go.TreeArrangement.Horizontal,
+            isRealtime: false,
+          }
+        ),
+      }
+    );
+
+    // define the node template for non-groups
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      $(go.Shape, 'Rectangle', { stroke: null, strokeWidth: 0 }, new go.Binding('fill', 'key')),
+      $(go.TextBlock,
+        { margin: 7, font: 'Bold 14px Sans-Serif' },
+        //the text, color, and key are all bound to the same property in the node data
+        new go.Binding('text', 'key')
+      )
+    );
+
+    myDiagram.linkTemplate = $(go.Link,
+      { routing: go.Routing.Orthogonal, corner: 10 },
+      $(go.Shape, { strokeWidth: 2 }),
+      $(go.Shape, { toArrow: 'OpenTriangle' })
+    );
+
+    // define the group template
+    myDiagram.groupTemplate = $(go.Group,
+      'Auto',
+      {
+        // define the group's internal layout
+        layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeArrangement.Horizontal, isRealtime: false }),
+        // the group begins unexpanded;
+        // upon expansion, a Diagram Listener will generate contents for the group
+        isSubGraphExpanded: false,
+        // when a group is expanded, if it contains no parts, generate a subGraph inside of it
+        subGraphExpandedChanged: (group) => {
+          if (group.memberParts.count === 0) {
+            randomGroup(group.data.key);
+          }
+        },
+      },
+      $(go.Shape, 'Rectangle', { fill: null, stroke: 'gray', strokeWidth: 2 }),
+      $(go.Panel,
+        'Vertical',
+        { defaultAlignment: go.Spot.Left, margin: 4 },
+        $(go.Panel,
+          'Horizontal',
+          { defaultAlignment: go.Spot.Top },
+          // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
+          $('SubGraphExpanderButton'),
+          $(go.TextBlock, { font: 'Bold 18px Sans-Serif', margin: 4 }, new go.Binding('text', 'key'))
+        ),
+        // create a placeholder to represent the area where the contents of the group are
+        $(go.Placeholder, { padding: new go.Margin(0, 10) })
+      ) // end Vertical Panel
+    ); // end Group
+
+    // generate the initial model
+    randomGroup();
+  }
+
+  // Generate a random number of nodes, including groups.
+  // If a group's key is given as a parameter, put these nodes inside it
+  function randomGroup(group) {
+    // all modification to the diagram is within this transaction
+    myDiagram.startTransaction('addGroupContents');
+    var addedKeys = []; // this will contain the keys of all nodes created
+    var groupCount = 0; // the number of groups in the diagram, to determine the numbers in the keys of new groups
+    myDiagram.nodes.each((node) => {
+      if (node instanceof go.Group) groupCount++;
+    });
+    // create a random number of groups
+    // ensure there are at least 10 groups in the diagram
+    var groups = Math.floor(Math.random() * 2);
+    if (groupCount < 10) groups += 1;
+    for (var i = 0; i < groups; i++) {
+      var name = 'group' + (i + groupCount);
+      myDiagram.model.addNodeData({ key: name, isGroup: true, group: group });
+      addedKeys.push(name);
+    }
+    var nodes = Math.floor(Math.random() * 3) + 2;
+    // create a random number of non-group nodes
+    for (var i = 0; i < nodes; i++) {
+      var color = go.Brush.randomColor();
+      // make sure the color, which will be the node's key, is unique in the diagram before adding the new node
+      if (myDiagram.findPartForKey(color) === null) {
+        myDiagram.model.addNodeData({ key: color, group: group });
+        addedKeys.push(color);
+      }
+    }
+    // add at least one link from each node to another
+    // this could result in clusters of nodes unreachable from each other, but no lone nodes
+    var arr = [];
+    for (var x in addedKeys) arr.push(addedKeys[x]);
+    arr.sort((x, y) => Math.random(2) - 1);
+    for (var i = 0; i < arr.length; i++) {
+      var from = Math.floor(Math.random() * (arr.length - i)) + i;
+      if (from !== i) {
+        myDiagram.model.addLinkData({ from: arr[from], to: arr[i] });
+      }
+    }
+    myDiagram.commitTransaction('addGroupContents');
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="height:600px;width:100%;border:1px solid black"></div>
+  <div id="myDiagramDiv" style="height: 600px; width: 100%; border: 1px solid black"></div>
+  <p>This sample demonstrates subgraphs that are created only as groups are expanded.</p>
   <p>
-  This sample demonstrates subgraphs that are created only as groups are expanded.
+    The model is initially a random number of nodes, including some groups, in a tree layout. When a group is expanded, the
+    <a>Group.subGraphExpandedChanged</a> event handler calls a function to generate a random number of nodes in a tree layout inside the group if it did not
+    contain none any. Each non-group node added has a unique random color, and links are added by giving each node one link to another node.
   </p>
   <p>
-  The model is initially a random number of nodes, including some groups, in a tree layout.
-  When a group is expanded, the <a>Group.subGraphExpandedChanged</a> event handler calls a function to generate a random number of nodes
-  in a tree layout inside the group if it did not contain none any.
-  Each non-group node added has a unique random color, and links are added by giving each node one link to another node.
-  </p>
-  <p>
-  The addition of nodes and links is performed within a transaction to ensure that the diagram updates itself properly.
-  The diagram's tree layout and the tree layouts within each group are performed again when a sub-graph is expanded or collapsed.
+    The addition of nodes and links is performed within a transaction to ensure that the diagram updates itself properly. The diagram's tree layout and the tree
+    layouts within each group are performed again when a sub-graph is expanded or collapsed.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Groups</h4>
+<p>
+The <a href="../api/symbols/Group.html" target="api">Group</a> class is used to treat a collection of <a href="../api/symbols/Node.html" target="api">Node</a>s and <a href="../api/symbols/Link.html" target="api">Link</a>s as if they were a single <a href="../api/symbols/Node.html" target="api">Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+<p>
+A subgraph is <em>not</em> another <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
+All of the <a href="../api/symbols/Part.html" target="api">Part</a>s that are members of a <a href="../api/symbols/Group.html" target="api">Group</a> belong to the same Diagram as the Group.
+There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
+There can even be links between member nodes and the containing group itself.
+</p>
+<p>
+More information can be found in the <a href="../intro/groups.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#groups">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

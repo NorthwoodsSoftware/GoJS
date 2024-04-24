@@ -1,394 +1,589 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A GoJS pie chart that updates dynamically as counts change."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Dynamic Pie Chart</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A GoJS pie chart that updates dynamically as counts change." />
+<meta itemprop="description" content="A GoJS pie chart that updates dynamically as counts change." />
+<meta property="og:description" content="A GoJS pie chart that updates dynamically as counts change." />
+<meta name="twitter:description" content="A GoJS pie chart that updates dynamically as counts change." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Dynamic Pie Chart />
+<meta property="og:title" content=Dynamic Pie Chart />
+<meta name="twitter:title" content=Dynamic Pie Chart />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPieChart.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPieChart.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPieChart.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/dynamicPieChart.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/dynamicPieChart.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Dynamic Pie Chart | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-      var pieRadius = 100;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            "textEditingTool.starting": go.TextEditingTool.SingleClick,
-            "ModelChanged": onModelChanged,
-            "undoManager.isEnabled": true
-          }
-        );
-
-      // When a count changes in our model, ensure we trigger a redrawing of each slice in the pie
-      function onModelChanged(e) {
-        if (e.change === go.ChangedEvent.Property && e.propertyName === "count") {
-          var slicedata = e.object;
-          var nodedata = findNodeDataForSlice(slicedata);
-          if (nodedata) {
-            // Update the count binding to force makeGeo/positionSlice
-            myDiagram.model.updateTargetBindings(nodedata, "count");
-            // If the count went to 0, hide the slice
-            var sliceindex = nodedata.slices.indexOf(slicedata);
-            var slice = myDiagram.findNodeForKey(nodedata.key).findObject("PIE").elt(sliceindex);
-            var sliceshape = slice.findObject("SLICE");
-            if (slicedata.count === 0)
-              sliceshape.visible = false;
-            else
-              sliceshape.visible = true;
-          }
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
-      }
+      });
 
-      var sliceTemplate =
-        $(go.Panel,
-          $(go.Shape,
-            {
-              name: "SLICE",
-              strokeWidth: 2, stroke: "transparent",
-              isGeometryPositioned: true
-            },
-            new go.Binding("fill", "color"),
-            new go.Binding("geometry", "", makeGeo)
-          ),
-          new go.Binding("position", "", positionSlice),
-          { // Allow the user to "select" slices when clicking them
-            click: (e, slice) => {
-              var sliceShape = slice.findObject("SLICE");
-              var oldskips = slice.diagram.skipsUndoManager;
-              slice.diagram.skipsUndoManager = true;
-              if (sliceShape.stroke === "transparent") {
-                sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
-                // Move the slice out from the pie when selected
-                var nodedata = findNodeDataForSlice(slice.data);
-                if (nodedata) {
-                  var sliceindex = nodedata.slices.indexOf(slice.data);
-                  var angles = getAngles(nodedata, sliceindex);
-                  if (angles.sweep !== 360) {
-                    var angle = angles.start + angles.sweep / 2;
-                    var offsetPoint = new go.Point(pieRadius / 10, 0);
-                    slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
-                  }
-                }
-              } else {
-                sliceShape.stroke = "transparent";
-                slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
-              }
-              slice.diagram.skipsUndoManager = oldskips;
-            }
-          },
-          {
-            toolTip:
-              $("ToolTip",
-                { "Border.fill": "lightgray" },
-                $(go.TextBlock,
-                  { font: "10pt Verdana, sans-serif", margin: 4 },
-                  new go.Binding("text", "", data => {
-                    // Display text and percentage rounded to 2 decimals
-                    var nodedata = findNodeDataForSlice(data);
-                    if (nodedata) {
-                      var percent = Math.round((data.count / getTotalCount(nodedata) * 100) * 100) / 100;
-                      return data.text + ": " + percent + "%";
-                    }
-                    return "";
-                  }))
-              )
-          }
-        );
-
-      var optionTemplate =
-        $(go.Panel, "TableRow",
-          $(go.TextBlock,
-            {
-              column: 0,
-              font: "10pt Verdana, sans-serif", alignment: go.Spot.Left,
-              margin: 5
-            },
-            new go.Binding("text")
-          ),
-          $(go.Panel, "Auto",
-            { column: 1 },
-            $(go.Shape, { fill: "#F2F2F2" }),
-            $(go.TextBlock,
-              {
-                font: "10pt Verdana, sans-serif",
-                textAlign: "right", margin: 2,
-                wrap: go.TextBlock.None, width: 40,
-                editable: true, isMultiline: false,
-                textValidation: isValidCount
-              },
-              new go.Binding("text", "count").makeTwoWay(count => parseInt(count, 10))
-            )
-          ),
-          $(go.Panel, "Horizontal",
-            { column: 2 },
-            $("Button",
-              {
-                click: incrementCount
-              },
-              $(go.Shape, "PlusLine", { margin: 3, desiredSize: new go.Size(7, 7) })
-            ),
-            $("Button",
-              {
-                click: decrementCount
-              },
-              $(go.Shape, "MinusLine", { margin: 3, desiredSize: new go.Size(7, 7) })
-            )
-          )
-        );
-
-      myDiagram.nodeTemplate =
-        $(go.Node, "Vertical",
-          { deletable: false },
-          $(go.TextBlock,
-            { font: "11pt Verdana, sans-serif", margin: 5 },
-            new go.Binding("text")
-          ),
-          $(go.Panel, "Horizontal",
-            $(go.Panel, "Position",
-              {
-                name: "PIE",
-                // account for slices offsetting when selected so the node won't change size
-                desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
-                itemTemplate: sliceTemplate
-              },
-              new go.Binding("itemArray", "slices")
-            ),
-            $(go.Panel, "Table",
-              {
-                margin: 5,
-                itemTemplate: optionTemplate
-              },
-              new go.Binding("itemArray", "slices")
-            )
-          )
-        );
-
-      myDiagram.model = new go.Model(
-        {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          nodeDataArray:
-            [
-              {
-                key: 0,
-                text: "Sample Poll",
-                slices: [
-                  { text: "Option 1", count: 21, color: "#B378C1" },
-                  { text: "Option 2", count: 11, color: "#F25F5C" },
-                  { text: "Option 3", count: 5, color: "#FFE066" },
-                  { text: "Option 4", count: 2, color: "#2B98C5" },
-                  { text: "Option 5", count: 1, color: "#70C1B3" }
-                ]
-              }
-            ]
-        });
-
-      // Validation function for editing text
-      function isValidCount(textblock, oldstr, newstr) {
-        if (newstr === "") return false;
-        var num = +newstr; // quick way to convert a string to a number
-        return !isNaN(num) && Number.isInteger(num) && num >= 0;
-      }
-
-      // Given some slice data, find the corresponding node data
-      function findNodeDataForSlice(slice) {
-        var arr = myDiagram.model.nodeDataArray;
-        for (var i = 0; i < arr.length; i++) {
-          var data = arr[i];
-          if (data.slices.indexOf(slice) >= 0) {
-            return data;
-          }
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
-      }
-
-      function makeGeo(data) {
-        var nodedata = findNodeDataForSlice(data);
-        var sliceindex = nodedata.slices.indexOf(data);
-        var angles = getAngles(nodedata, sliceindex);
-
-        // Constructing the Geomtery this way is much more efficient than calling go.GraphObject.make:
-        return new go.Geometry()
-          .add(new go.PathFigure(pieRadius, pieRadius)  // start point
-            .add(new go.PathSegment(go.PathSegment.Arc,
-              angles.start, angles.sweep,  // angles
-              pieRadius, pieRadius,  // center
-              pieRadius, pieRadius)  // radius
-              .close()));
-      }
-
-      // Ensure slices get the proper positioning after we update any counts
-      function positionSlice(data, obj) {
-        var nodedata = findNodeDataForSlice(data);
-        var sliceindex = nodedata.slices.indexOf(data);
-        var angles = getAngles(nodedata, sliceindex);
-
-        var selected = obj.findObject("SLICE").stroke !== "transparent";
-        if (selected && angles.sweep !== 360) {
-          var offsetPoint = new go.Point(pieRadius / 10, 0); // offset by 1/10 the radius
-          offsetPoint = offsetPoint.rotate(angles.start + angles.sweep / 2); // rotate to the correct angle
-          offsetPoint = offsetPoint.offset(pieRadius / 10, pieRadius / 10); // translate center toward middle of pie panel
-          return offsetPoint;
-        }
-        return new go.Point(pieRadius / 10, pieRadius / 10);
-      }
-
-      // This is a bit inefficient, but should be OK for normal-sized graphs with reasonable numbers of slices per node
-      function findAllSelectedItems() {
-        var slices = [];
-        for (var nit = myDiagram.nodes; nit.next();) {
-          var node = nit.value;
-          var pie = node.findObject("PIE");
-          if (pie) {
-            for (var sit = pie.elements; sit.next();) {
-              var slicepanel = sit.value;
-              if (slicepanel.findObject("SLICE").stroke !== "transparent") slices.push(slicepanel);
-            }
-          }
-        }
-        return slices;
-      }
-
-      // Override the standard CommandHandler deleteSelection behavior.
-      // If there are any selected slices, delete them instead of deleting any selected nodes or links.
-      myDiagram.commandHandler.canDeleteSelection = function() {  // method override must be function, not =>
-        // True if there are any selected deletable nodes or links,
-        // or if there are any selected slices within nodes
-        return go.CommandHandler.prototype.canDeleteSelection.call(this) ||
-               findAllSelectedItems().length > 0;
-      };
-
-      myDiagram.commandHandler.deleteSelection = function() {  // method override must be function, not =>
-        var slices = findAllSelectedItems();
-        if (slices.length > 0) {  // if there are any selected slices, delete them
-          myDiagram.startTransaction("delete slices");
-          var nodeset = new go.Set();
-          for (var i = 0; i < slices.length; i++) {
-            var panel = slices[i];
-            var nodedata = panel.part.data;
-            var slicearray = nodedata.slices;
-            var slicedata = panel.data;
-            var sliceindex = slicearray.indexOf(slicedata);
-            // Remove the slice from the model
-            myDiagram.model.removeArrayItem(slicearray, sliceindex);
-            nodeset.add(nodedata);
-          }
-          // Force geometries to be redrawn on any node that had slices deleted
-          nodeset.each(data => {
-            myDiagram.model.updateTargetBindings(data, "count");
-          });
-          myDiagram.commitTransaction("delete slices");
-        } else {  // otherwise just delete nodes and/or links, as usual
-          go.CommandHandler.prototype.deleteSelection.call(this);
-        }
-      };
-
-      // Return total count of a given node
-      function getTotalCount(nodedata) {
-        var totCount = 0;
-        for (var i = 0; i < nodedata.slices.length; i++) {
-          totCount += nodedata.slices[i].count;
-        }
-        return totCount;
-      }
-
-      // Determine start and sweep angles given some node data and the index of the slice
-      function getAngles(nodedata, index) {
-        var totCount = getTotalCount(nodedata);
-        var startAngle = -90;
-        for (var i = 0; i < index; i++) {
-          startAngle += 360 * nodedata.slices[i].count / totCount;
-        }
-        return { "start": startAngle, "sweep": 360 * nodedata.slices[index].count / totCount };
-      }
-
-      // When user hits + button, increment count on that option
-      function incrementCount(e, obj) {
-        myDiagram.model.startTransaction("increment count");
-        var slicedata = obj.panel.panel.data;
-        myDiagram.model.setDataProperty(slicedata, "count", slicedata.count + 1);
-        myDiagram.model.commitTransaction("increment count");
-      }
-
-      // When user hits - button, decrement count on that option
-      function decrementCount(e, obj) {
-        myDiagram.model.startTransaction("decrement count");
-        var slicedata = obj.panel.panel.data;
-        if (slicedata.count > 0)
-          myDiagram.model.setDataProperty(slicedata, "count", slicedata.count - 1);
-        myDiagram.model.commitTransaction("decrement count");
       }
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+    var pieRadius = 100;
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'textEditingTool.starting': go.TextEditingStarting.SingleClick,
+      ModelChanged: onModelChanged,
+      'undoManager.isEnabled': true,
+    });
+
+    // When a count changes in our model, ensure we trigger a redrawing of each slice in the pie
+    function onModelChanged(e) {
+      if (e.change === go.ChangeType.Property && e.propertyName === 'count') {
+        var slicedata = e.object;
+        var nodedata = findNodeDataForSlice(slicedata);
+        if (nodedata) {
+          // Update the count binding to force makeGeo/positionSlice
+          myDiagram.model.updateTargetBindings(nodedata, 'count');
+          // If the count went to 0, hide the slice
+          var sliceindex = nodedata.slices.indexOf(slicedata);
+          var slice = myDiagram.findNodeForKey(nodedata.key).findObject('PIE').elt(sliceindex);
+          var sliceshape = slice.findObject('SLICE');
+          if (slicedata.count === 0) sliceshape.visible = false;
+          else sliceshape.visible = true;
+        }
+      }
+    }
+
+    var sliceTemplate = $(go.Panel,
+      $(go.Shape,
+        {
+          name: 'SLICE',
+          strokeWidth: 2,
+          stroke: 'transparent',
+          isGeometryPositioned: true,
+        },
+        new go.Binding('fill', 'color'),
+        new go.Binding('geometry', '', makeGeo)
+      ),
+      new go.Binding('position', '', positionSlice),
+      {
+        // Allow the user to "select" slices when clicking them
+        click: (e, slice) => {
+          var sliceShape = slice.findObject('SLICE');
+          var oldskips = slice.diagram.skipsUndoManager;
+          slice.diagram.skipsUndoManager = true;
+          if (sliceShape.stroke === 'transparent') {
+            sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
+            // Move the slice out from the pie when selected
+            var nodedata = findNodeDataForSlice(slice.data);
+            if (nodedata) {
+              var sliceindex = nodedata.slices.indexOf(slice.data);
+              var angles = getAngles(nodedata, sliceindex);
+              if (angles.sweep !== 360) {
+                var angle = angles.start + angles.sweep / 2;
+                var offsetPoint = new go.Point(pieRadius / 10, 0);
+                slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
+              }
+            }
+          } else {
+            sliceShape.stroke = 'transparent';
+            slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
+          }
+          slice.diagram.skipsUndoManager = oldskips;
+        },
+      },
+      {
+        toolTip: $('ToolTip',
+          { 'Border.fill': 'lightgray' },
+          $(go.TextBlock,
+            { font: '10pt Verdana, sans-serif', margin: 4 },
+            new go.Binding('text', '', (data) => {
+              // Display text and percentage rounded to 2 decimals
+              var nodedata = findNodeDataForSlice(data);
+              if (nodedata) {
+                var percent = Math.round((data.count / getTotalCount(nodedata)) * 100 * 100) / 100;
+                return data.text + ': ' + percent + '%';
+              }
+              return '';
+            })
+          )
+        ),
+      }
+    );
+
+    var optionTemplate = $(go.Panel,
+      'TableRow',
+      $(go.TextBlock,
+        {
+          column: 0,
+          font: '10pt Verdana, sans-serif',
+          alignment: go.Spot.Left,
+          margin: 5,
+        },
+        new go.Binding('text')
+      ),
+      $(go.Panel,
+        'Auto',
+        { column: 1 },
+        $(go.Shape, { fill: '#F2F2F2' }),
+        $(go.TextBlock,
+          {
+            font: '10pt Verdana, sans-serif',
+            textAlign: 'right',
+            margin: 2,
+            wrap: go.Wrap.None,
+            width: 40,
+            editable: true,
+            isMultiline: false,
+            textValidation: isValidCount,
+          },
+          new go.Binding('text', 'count').makeTwoWay((count) => parseInt(count, 10))
+        )
+      ),
+      $(go.Panel,
+        'Horizontal',
+        { column: 2 },
+        $('Button',
+          {
+            click: incrementCount,
+          },
+          $(go.Shape, 'PlusLine', { margin: 3, desiredSize: new go.Size(7, 7) })
+        ),
+        $('Button',
+          {
+            click: decrementCount,
+          },
+          $(go.Shape, 'MinusLine', { margin: 3, desiredSize: new go.Size(7, 7) })
+        )
+      )
+    );
+
+    myDiagram.nodeTemplate = $(go.Node,
+      'Vertical',
+      { deletable: false },
+      $(go.TextBlock, { font: '11pt Verdana, sans-serif', margin: 5 }, new go.Binding('text')),
+      $(go.Panel,
+        'Horizontal',
+        $(go.Panel,
+          'Position',
+          {
+            name: 'PIE',
+            // account for slices offsetting when selected so the node won't change size
+            desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
+            itemTemplate: sliceTemplate,
+          },
+          new go.Binding('itemArray', 'slices')
+        ),
+        $(go.Panel,
+          'Table',
+          {
+            margin: 5,
+            itemTemplate: optionTemplate,
+          },
+          new go.Binding('itemArray', 'slices')
+        )
+      )
+    );
+
+    myDiagram.model = new go.Model({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: [
+        {
+          key: 0,
+          text: 'Sample Poll',
+          slices: [
+            { text: 'Option 1', count: 21, color: '#B378C1' },
+            { text: 'Option 2', count: 11, color: '#F25F5C' },
+            { text: 'Option 3', count: 5, color: '#FFE066' },
+            { text: 'Option 4', count: 2, color: '#2B98C5' },
+            { text: 'Option 5', count: 1, color: '#70C1B3' },
+          ],
+        },
+      ],
+    });
+
+    // Validation function for editing text
+    function isValidCount(textblock, oldstr, newstr) {
+      if (newstr === '') return false;
+      var num = +newstr; // quick way to convert a string to a number
+      return !isNaN(num) && Number.isInteger(num) && num >= 0;
+    }
+
+    // Given some slice data, find the corresponding node data
+    function findNodeDataForSlice(slice) {
+      var arr = myDiagram.model.nodeDataArray;
+      for (var i = 0; i < arr.length; i++) {
+        var data = arr[i];
+        if (data.slices.indexOf(slice) >= 0) {
+          return data;
+        }
+      }
+    }
+
+    function makeGeo(data) {
+      var nodedata = findNodeDataForSlice(data);
+      var sliceindex = nodedata.slices.indexOf(data);
+      var angles = getAngles(nodedata, sliceindex);
+
+      // Constructing the Geomtery this way is much more efficient than calling go.GraphObject.make:
+      return new go.Geometry().add(
+        new go.PathFigure(pieRadius, pieRadius) // start point
+          .add(
+            new go.PathSegment(
+              go.SegmentType.Arc,
+              angles.start,
+              angles.sweep, // angles
+              pieRadius,
+              pieRadius, // center
+              pieRadius,
+              pieRadius
+            ) // radius
+              .close()
+          )
+      );
+    }
+
+    // Ensure slices get the proper positioning after we update any counts
+    function positionSlice(data, obj) {
+      var nodedata = findNodeDataForSlice(data);
+      var sliceindex = nodedata.slices.indexOf(data);
+      var angles = getAngles(nodedata, sliceindex);
+
+      var selected = obj.findObject('SLICE').stroke !== 'transparent';
+      if (selected && angles.sweep !== 360) {
+        var offsetPoint = new go.Point(pieRadius / 10, 0); // offset by 1/10 the radius
+        offsetPoint = offsetPoint.rotate(angles.start + angles.sweep / 2); // rotate to the correct angle
+        offsetPoint = offsetPoint.offset(pieRadius / 10, pieRadius / 10); // translate center toward middle of pie panel
+        return offsetPoint;
+      }
+      return new go.Point(pieRadius / 10, pieRadius / 10);
+    }
+
+    // This is a bit inefficient, but should be OK for normal-sized graphs with reasonable numbers of slices per node
+    function findAllSelectedItems() {
+      var slices = [];
+      for (var nit = myDiagram.nodes; nit.next(); ) {
+        var node = nit.value;
+        var pie = node.findObject('PIE');
+        if (pie) {
+          for (var sit = pie.elements; sit.next(); ) {
+            var slicepanel = sit.value;
+            if (slicepanel.findObject('SLICE').stroke !== 'transparent') slices.push(slicepanel);
+          }
+        }
+      }
+      return slices;
+    }
+
+    // Override the standard CommandHandler deleteSelection behavior.
+    // If there are any selected slices, delete them instead of deleting any selected nodes or links.
+    myDiagram.commandHandler.canDeleteSelection = function () {
+      // method override must be function, not =>
+      // True if there are any selected deletable nodes or links,
+      // or if there are any selected slices within nodes
+      return go.CommandHandler.prototype.canDeleteSelection.call(this) || findAllSelectedItems().length > 0;
+    };
+
+    myDiagram.commandHandler.deleteSelection = function () {
+      // method override must be function, not =>
+      var slices = findAllSelectedItems();
+      if (slices.length > 0) {
+        // if there are any selected slices, delete them
+        myDiagram.startTransaction('delete slices');
+        var nodeset = new go.Set();
+        for (var i = 0; i < slices.length; i++) {
+          var panel = slices[i];
+          var nodedata = panel.part.data;
+          var slicearray = nodedata.slices;
+          var slicedata = panel.data;
+          var sliceindex = slicearray.indexOf(slicedata);
+          // Remove the slice from the model
+          myDiagram.model.removeArrayItem(slicearray, sliceindex);
+          nodeset.add(nodedata);
+        }
+        // Force geometries to be redrawn on any node that had slices deleted
+        nodeset.each((data) => {
+          myDiagram.model.updateTargetBindings(data, 'count');
+        });
+        myDiagram.commitTransaction('delete slices');
+      } else {
+        // otherwise just delete nodes and/or links, as usual
+        go.CommandHandler.prototype.deleteSelection.call(this);
+      }
+    };
+
+    // Return total count of a given node
+    function getTotalCount(nodedata) {
+      var totCount = 0;
+      for (var i = 0; i < nodedata.slices.length; i++) {
+        totCount += nodedata.slices[i].count;
+      }
+      return totCount;
+    }
+
+    // Determine start and sweep angles given some node data and the index of the slice
+    function getAngles(nodedata, index) {
+      var totCount = getTotalCount(nodedata);
+      var startAngle = -90;
+      for (var i = 0; i < index; i++) {
+        startAngle += (360 * nodedata.slices[i].count) / totCount;
+      }
+      return { start: startAngle, sweep: (360 * nodedata.slices[index].count) / totCount };
+    }
+
+    // When user hits + button, increment count on that option
+    function incrementCount(e, obj) {
+      myDiagram.model.startTransaction('increment count');
+      var slicedata = obj.panel.panel.data;
+      myDiagram.model.setDataProperty(slicedata, 'count', slicedata.count + 1);
+      myDiagram.model.commitTransaction('increment count');
+    }
+
+    // When user hits - button, decrement count on that option
+    function decrementCount(e, obj) {
+      myDiagram.model.startTransaction('decrement count');
+      var slicedata = obj.panel.panel.data;
+      if (slicedata.count > 0) myDiagram.model.setDataProperty(slicedata, 'count', slicedata.count - 1);
+      myDiagram.model.commitTransaction('decrement count');
+    }
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px;"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
   <p>
-    This sample demonstrates the ability to build an updateable pie chart with selectable slices.
-    The Geometry for each slice is built using a <a>PathFigure</a> with a <a>PathSegment,Arc</a>.
-    Slices use a custom <b>click</b> function, which sets a stroke and offsets slices as they are selected.
-    Functionality for "selection" and deletion of these slices is similar to the <a href="selectableFields.html">Selectable Fields sample</a>,
-    using some overridden <a>CommandHandler</a> functions.
-    Each slice also has a tooltip showing the text and percentage of votes.
+    This sample demonstrates the ability to build an updateable pie chart with selectable slices. The Geometry for each slice is built using a
+    <a>PathFigure</a> with a <a>SegmentType.Arc</a>. Slices use a custom <b>click</b> function, which sets a stroke and offsets slices as they are selected.
+    Functionality for "selection" and deletion of these slices is similar to the <a href="selectableFields.html">Selectable Fields sample</a>, using some
+    overridden <a>CommandHandler</a> functions. Each slice also has a tooltip showing the text and percentage of votes.
   </p>
   <p>
-    Poll results can be adjusted and the pie chart will automatically update to reflect any changes.
-    This includes deleting selected slices, updating the count using a TextBlock, or using the +/- buttons.
+    Poll results can be adjusted and the pie chart will automatically update to reflect any changes. This includes deleting selected slices, updating the count
+    using a TextBlock, or using the +/- buttons.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>ToolTips</h4>
+<p>
+A tooltip is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the mouse hovers over an object that has its <a href="../api/symbols/GraphObject.html#toolTip" target="api">GraphObject.toolTip</a> set.
+The tooltip part is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a tooltip as a "ToolTip" Panel holding a <a href="../api/symbols/TextBlock.html" target="api">TextBlock</a> or a Panel of TextBlocks and other objects.
+Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed, and where the border is a rectangular <a href="../api/symbols/Shape.html" target="api">Shape</a> with a light gray fill.
+However you can implement the tooltip as any arbitrarily complicated Adornment.
+</p>
+<p>
+More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tooltips">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

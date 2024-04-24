@@ -1,138 +1,310 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Demonstrate context menus implemented in HTML covering the whole window."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>LightBox Style HTML Custom Context Menu</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Demonstrate context menus implemented in HTML covering the whole window." />
+<meta itemprop="description" content="Demonstrate context menus implemented in HTML covering the whole window." />
+<meta property="og:description" content="Demonstrate context menus implemented in HTML covering the whole window." />
+<meta name="twitter:description" content="Demonstrate context menus implemented in HTML covering the whole window." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=HTML LightBox Context Menu />
+<meta property="og:title" content=HTML LightBox Context Menu />
+<meta name="twitter:title" content=HTML LightBox Context Menu />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlLightBoxContextMenu.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlLightBoxContextMenu.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlLightBoxContextMenu.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/htmlLightBoxContextMenu.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/htmlLightBoxContextMenu.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      HTML LightBox Context Menu | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
-      </div>
-    </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-
-  <link rel='stylesheet' href='../extensions/LightBoxContextMenu.css' />
-  <script src="../extensions/LightBoxContextMenu.js"></script>
-
-
-  <script id="code">
-
-    var myDiagram = null;
-
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      // Initialize the Diagram
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-          { "undoManager.isEnabled": true });
-      // define a simple Node template (but use the default Link template)
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          { contextMenu: window.myHTMLLightBox }, // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
-          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
-            // Shape.fill is bound to Node.data.color
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 8 },  // some room around the text
-            // TextBlock.text is bound to Node.data.key
-            new go.Binding("text", "key"))
-        );
-
-      // create the model data that will be represented by Nodes and Links
-      myDiagram.model = new go.GraphLinksModel(
-        [
-          { key: "Alpha", color: "lightblue" },
-          { key: "Beta", color: "orange" },
-          { key: "Gamma", color: "lightgreen" },
-          { key: "Delta", color: "pink" }
-        ],
-        [
-          { from: "Alpha", to: "Beta" },
-          { from: "Alpha", to: "Gamma" },
-          { from: "Beta", to: "Beta" },
-          { from: "Gamma", to: "Delta" },
-          { from: "Delta", to: "Alpha" }
-        ]);
-
-      myDiagram.contextMenu = window.myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
-
-    } // end init
-
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-
-  <div id="sample">
-    <div style="display: inline-block;">
-      <div style="position: relative">
-        <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
-      </div>
-      <div id="description">
-        <p>
-          This demonstrates the implementation of a custom HTML context menu using <a>HTMLInfo</a>.
-          This sample is also a re-implementation of the built-in <a>ContextMenuTool.defaultTouchContextMenu</a>.
-        </p>
-
-        <p>The implementation is contained in the files <a href="../extensions/LightBoxContextMenu.js">LightBoxContextMenu.js</a> and <a href="../extensions/LightBoxContextMenu.css">LightBoxContextMenu.css</a>. The JavaScript file exposes <code>window.myHTMLLightBox</code>, which is used in this file as the value of <code>myDiagram.contextMenu</code>.
-
-        <p>For a more regular HTML context menu implementation, see the <a href="customContextMenu.html">Custom Context Menu</a> sample.</p>
-        <p>Right-click or tap-hold (mobile) on a Node to bring up a context menu.
-           If you have a selection copied in the clipboard,
-           you can bring up a context menu anywhere to paste.</p>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
   </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
 
+<style>
+  /* CSS for the lightbox context menu */
 
+  #cmLight {
+    top: 0px;
+    z-index: 10002;
+    position: fixed;
+    text-align: center;
+    left: 25%;
+    width: 50%;
+    background-color: #f5f5f5;
+    padding: 16px;
+    border: 16px solid #444;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  #cmDark {
+    z-index: 10001;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.8;
+  }
+
+  #cmLight ul {
+    list-style: none;
+  }
+
+  #cmLight li {
+    font: 700 1.5em Helvetica, Arial, sans-serif;
+    position: relative;
+    min-width: 60px;
+  }
+
+  #cmLight a {
+    color: #444;
+    display: inline-block;
+    padding: 4px;
+    text-decoration: none;
+    margin: 2px;
+    border: 1px solid gray;
+    border-radius: 10px;
+  }
+</style>
+<script src="../extensions/LightBoxContextMenu.js"></script>
+
+<script id="code">
+  var myDiagram = null;
+
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    // Initialize the Diagram
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      { 'undoManager.isEnabled': true }
+    );
+    // define a simple Node template (but use the default Link template)
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      { contextMenu: window.myHTMLLightBox }, // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
+      $(go.Shape,
+        'RoundedRectangle',
+        { strokeWidth: 0 },
+        // Shape.fill is bound to Node.data.color
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock,
+        { margin: 8 }, // some room around the text
+        // TextBlock.text is bound to Node.data.text
+        new go.Binding('text')
+      )
+    );
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue' },
+        { key: 2, text: 'Beta', color: 'orange' },
+        { key: 3, text: 'Gamma', color: 'lightgreen' },
+        { key: 4, text: 'Delta', color: 'pink' },
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 },
+      ]
+    );
+
+    myDiagram.contextMenu = window.myHTMLLightBox; // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
+  } // end init
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div style="display: inline-block">
+    <div style="position: relative">
+      <div id="myDiagramDiv" style="border: solid 1px black; width: 400px; height: 400px"></div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
+    <div id="description">
+      <p>
+        This demonstrates the implementation of a custom HTML context menu using <a>HTMLInfo</a>. This sample is also a re-implementation of the built-in
+        <a>ContextMenuTool.defaultTouchContextMenu</a>.
+      </p>
+
+      <p>
+        The implementation is contained in the files <a href="../extensions/LightBoxContextMenu.js">LightBoxContextMenu.js</a> and
+        <a href="../extensions/LightBoxContextMenu.css">LightBoxContextMenu.css</a>. The JavaScript file exposes <code>window.myHTMLLightBox</code>, which is
+        used in this file as the value of <code>myDiagram.contextMenu</code>.
+      </p>
+
+      <p>For a more regular HTML context menu implementation, see the <a href="customContextMenu.html">Custom Context Menu</a> sample.</p>
+      <p>
+        Right-click or tap-hold (mobile) on a Node to bring up a context menu. If you have a selection copied in the clipboard, you can bring up a context menu
+        anywhere to paste.
+      </p>
+    </div>
   </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Context Menus</h4>
+<p>
+A GoJS context menu is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+an object that has its <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> set.
+The context menu is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
+as you can see in the code below in the assignment of the Node's <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> and <a href="../api/symbols/Diagram.html#contextMenu" target="api">Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed.
+Each "ContextMenuButton" is a Panel on which you can set the <a href="../api/symbols/GraphObject.html#click" target="api">GraphObject.click</a> event handler.
+In the event handler <code>obj.part</code> will be the whole context menu Adornment.
+<code>obj.part.adornedPart</code> will be the adorned Node or Link.
+The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
+</p>
+<p>
+More information can be found in the <a href="../intro/contextmenus.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#contextmenus">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

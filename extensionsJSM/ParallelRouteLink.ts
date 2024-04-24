@@ -1,32 +1,37 @@
 ﻿/*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
- * This custom {@link Link} class customizes its route to go parallel to other links connecting the same ports,
+ * This custom {@link go.Link} class customizes its route to go parallel to other links connecting the same ports,
  * if the link is not orthogonal and is not Bezier curved.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/ParallelRoute.html">Parallel Route Links</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/ParallelRoute.html">Parallel Route Links</a> sample.
  * @category Part Extension
  */
 export class ParallelRouteLink extends go.Link {
+  constructor(init?: Partial<ParallelRouteLink>) {
+    super();
+    if (init) Object.assign(this, init);
+  }
+
   /**
-   * Constructs the link's route by modifying {@link #points}.
-   * @return {boolean} true if it computed a route of points
+   * Constructs the link's route by modifying {@link points}.
+   * @returns true if it computed a route of points
    */
-  public override computePoints(): boolean {
+  override computePoints(): boolean {
     const result = super.computePoints();
-    if (!this.isOrthogonal && this.curve !== go.Link.Bezier && this.hasCurviness()) {
+    if (!this.isOrthogonal && this.curve !== go.Curve.Bezier && this.hasCurviness()) {
       const curv = this.computeCurviness();
       if (curv !== 0) {
         const num = this.pointsCount;
@@ -42,29 +47,31 @@ export class ParallelRouteLink extends go.Link {
         const dx = topt.x - frompt.x;
         const dy = topt.y - frompt.y;
 
-        let mx = frompt.x + dx * 1 / 8;
-        let my = frompt.y + dy * 1 / 8;
+        let mx = frompt.x + (dx * 1) / 8;
+        let my = frompt.y + (dy * 1) / 8;
         let px = mx;
         let py = my;
         if (-0.01 < dy && dy < 0.01) {
-          if (dx > 0) py -= curv; else py += curv;
+          if (dx > 0) py -= curv;
+          else py += curv;
         } else {
           const slope = -dx / dy;
-          let e = Math.sqrt(curv * curv / (slope * slope + 1));
+          let e = Math.sqrt((curv * curv) / (slope * slope + 1));
           if (curv < 0) e = -e;
           px = (dy < 0 ? -1 : 1) * e + mx;
           py = slope * (px - mx) + my;
         }
 
-        mx = frompt.x + dx * 7 / 8;
-        my = frompt.y + dy * 7 / 8;
+        mx = frompt.x + (dx * 7) / 8;
+        my = frompt.y + (dy * 7) / 8;
         let qx = mx;
         let qy = my;
         if (-0.01 < dy && dy < 0.01) {
-          if (dx > 0) qy -= curv; else qy += curv;
+          if (dx > 0) qy -= curv;
+          else qy += curv;
         } else {
           const slope = -dx / dy;
-          let e = Math.sqrt(curv * curv / (slope * slope + 1));
+          let e = Math.sqrt((curv * curv) / (slope * slope + 1));
           if (curv < 0) e = -e;
           qx = (dy < 0 ? -1 : 1) * e + mx;
           qy = slope * (qx - mx) + my;

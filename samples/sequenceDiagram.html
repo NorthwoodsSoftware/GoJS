@@ -1,255 +1,333 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A sequence diagram editor."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Sequence Diagram</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A sequence diagram editor." />
+<meta itemprop="description" content="A sequence diagram editor." />
+<meta property="og:description" content="A sequence diagram editor." />
+<meta name="twitter:description" content="A sequence diagram editor." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Sequence Diagram />
+<meta property="og:title" content=Sequence Diagram />
+<meta name="twitter:title" content=Sequence Diagram />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/sequenceDiagram.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/sequenceDiagram.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/sequenceDiagram.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/sequenceDiagram.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/sequenceDiagram.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Sequence Diagram | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv", // must be the ID or reference to an HTML DIV
-          {
-            allowCopy: false,
-            linkingTool: $(MessagingTool),  // defined below
-            "resizingTool.isGridSnapEnabled": true,
-            draggingTool: $(MessageDraggingTool),  // defined below
-            "draggingTool.gridSnapCellSize": new go.Size(1, MessageSpacing / 4),
-            "draggingTool.isGridSnapEnabled": true,
-            // automatically extend Lifelines as Activities are moved or resized
-            "SelectionMoved": ensureLifelineHeights,
-            "PartResized": ensureLifelineHeights,
-            "undoManager.isEnabled": true
-          });
-
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        const button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        const idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.slice(0, idx);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
 
-      // define the Lifeline Node template.
-      myDiagram.groupTemplate =
-        $(go.Group, "Vertical",
-          {
-            locationSpot: go.Spot.Bottom,
-            locationObjectName: "HEADER",
-            minLocation: new go.Point(0, 0),
-            maxLocation: new go.Point(9999, 0),
-            selectionObjectName: "HEADER"
-          },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Panel, "Auto",
-            { name: "HEADER" },
-            $(go.Shape, "Rectangle",
-              {
-                fill: $(go.Brush, "Linear", { 0: "#bbdefb", 1: go.Brush.darkenBy("#bbdefb", 0.1) }),
-                stroke: null
-              }),
-            $(go.TextBlock,
-              {
-                margin: 5,
-                font: "400 10pt Source Sans Pro, sans-serif"
-              },
-              new go.Binding("text", "text"))
-          ),
-          $(go.Shape,
-            {
-              figure: "LineV",
-              fill: null,
-              stroke: "gray",
-              strokeDashArray: [3, 3],
-              width: 1,
-              alignment: go.Spot.Center,
-              portId: "",
-              fromLinkable: true,
-              fromLinkableDuplicates: true,
-              toLinkable: true,
-              toLinkableDuplicates: true,
-              cursor: "pointer"
-            },
-            new go.Binding("height", "duration", computeLifelineHeight))
-        );
-
-      // define the Activity Node template
-      myDiagram.nodeTemplate =
-        $(go.Node,
-          {
-            locationSpot: go.Spot.Top,
-            locationObjectName: "SHAPE",
-            minLocation: new go.Point(NaN, LinePrefix - ActivityStart),
-            maxLocation: new go.Point(NaN, 19999),
-            selectionObjectName: "SHAPE",
-            resizable: true,
-            resizeObjectName: "SHAPE",
-            resizeAdornmentTemplate:
-              $(go.Adornment, "Spot",
-                $(go.Placeholder),
-                $(go.Shape,  // only a bottom resize handle
-                  {
-                    alignment: go.Spot.Bottom, cursor: "col-resize",
-                    desiredSize: new go.Size(6, 6), fill: "yellow"
-                  })
-              )
-          },
-          new go.Binding("location", "", computeActivityLocation).makeTwoWay(backComputeActivityLocation),
-          $(go.Shape, "Rectangle",
-            {
-              name: "SHAPE",
-              fill: "white", stroke: "black",
-              width: ActivityWidth,
-              // allow Activities to be resized down to 1/4 of a time unit
-              minSize: new go.Size(ActivityWidth, computeActivityHeight(0.25))
-            },
-            new go.Binding("height", "duration", computeActivityHeight).makeTwoWay(backComputeActivityHeight))
-        );
-
-      // define the Message Link template.
-      myDiagram.linkTemplate =
-        $(MessageLink,  // defined below
-          { selectionAdorned: true, curviness: 0 },
-          $(go.Shape, "Rectangle",
-            { stroke: "black" }),
-          $(go.Shape,
-            { toArrow: "OpenTriangle", stroke: "black" }),
-          $(go.TextBlock,
-            {
-              font: "400 9pt Source Sans Pro, sans-serif",
-              segmentIndex: 0,
-              segmentOffset: new go.Point(NaN, NaN),
-              isMultiline: false,
-              editable: true
-            },
-            new go.Binding("text", "text").makeTwoWay())
-        );
-
-      // create the graph by reading the JSON data saved in "mySavedModel" textarea element
-      load();
-    }
-
-    function ensureLifelineHeights(e) {
-      // iterate over all Activities (ignore Groups)
-      const arr = myDiagram.model.nodeDataArray;
-      let max = -1;
-      for (let i = 0; i < arr.length; i++) {
-        const act = arr[i];
-        if (act.isGroup) continue;
-        max = Math.max(max, act.start + act.duration);
-      }
-      if (max > 0) {
-        // now iterate over only Groups
-        for (let i = 0; i < arr.length; i++) {
-          const gr = arr[i];
-          if (!gr.isGroup) continue;
-          if (max > gr.duration) {  // this only extends, never shrinks
-            myDiagram.model.setDataProperty(gr, "duration", max);
-          }
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-    // some parameters
-    const LinePrefix = 20;  // vertical starting point in document for all Messages and Activations
-    const LineSuffix = 30;  // vertical length beyond the last message time
-    const MessageSpacing = 20;  // vertical distance between Messages at different steps
-    const ActivityWidth = 10;  // width of each vertical activity bar
-    const ActivityStart = 5;  // height before start message time
-    const ActivityEnd = 5;  // height beyond end message time
+        
 
-    function computeLifelineHeight(duration) {
-      return LinePrefix + duration * MessageSpacing + LineSuffix;
-    }
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-    function computeActivityLocation(act) {
-      const groupdata = myDiagram.model.findNodeDataForKey(act.group);
-      if (groupdata === null) return new go.Point();
-      // get location of Lifeline's starting point
-      const grouploc = go.Point.parse(groupdata.loc);
-      return new go.Point(grouploc.x, convertTimeToY(act.start) - ActivityStart);
-    }
-    function backComputeActivityLocation(loc, act) {
-      myDiagram.model.setDataProperty(act, "start", convertYToTime(loc.y + ActivityStart));
-    }
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" type="text/css" />
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
 
-    function computeActivityHeight(duration) {
-      return ActivityStart + duration * MessageSpacing + ActivityEnd;
-    }
-    function backComputeActivityHeight(height) {
-      return (height - ActivityStart - ActivityEnd) / MessageSpacing;
-    }
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must be the ID or reference to an HTML DIV
+      {
+        allowCopy: false,
+        linkingTool: $(MessagingTool), // defined below
+        'resizingTool.isGridSnapEnabled': true,
+        draggingTool: $(MessageDraggingTool), // defined below
+        'draggingTool.gridSnapCellSize': new go.Size(1, MessageSpacing / 4),
+        'draggingTool.isGridSnapEnabled': true,
+        // automatically extend Lifelines as Activities are moved or resized
+        SelectionMoved: ensureLifelineHeights,
+        PartResized: ensureLifelineHeights,
+        'undoManager.isEnabled': true,
+      }
+    );
 
-    // time is just an abstract small non-negative integer
-    // here we map between an abstract time and a vertical position
-    function convertTimeToY(t) {
-      return t * MessageSpacing + LinePrefix;
-    }
-    function convertYToTime(y) {
-      return (y - LinePrefix) / MessageSpacing;
-    }
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      const button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
 
+    // define the Lifeline Node template.
+    myDiagram.groupTemplate = $(go.Group,
+      'Vertical',
+      {
+        locationSpot: go.Spot.Bottom,
+        locationObjectName: 'HEADER',
+        minLocation: new go.Point(0, 0),
+        maxLocation: new go.Point(9999, 0),
+        selectionObjectName: 'HEADER',
+      },
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Panel,
+        'Auto',
+        { name: 'HEADER' },
+        $(go.Shape, 'Rectangle', {
+          fill: $(go.Brush, 'Linear', { 0: '#bbdefb', 1: go.Brush.darkenBy('#bbdefb', 0.1) }),
+          stroke: null,
+        }),
+        $(go.TextBlock,
+          {
+            margin: 5,
+            font: '400 10pt Source Sans Pro, sans-serif',
+          },
+          new go.Binding('text', 'text')
+        )
+      ),
+      $(go.Shape,
+        {
+          figure: 'LineV',
+          fill: null,
+          stroke: 'gray',
+          strokeDashArray: [3, 3],
+          width: 1,
+          alignment: go.Spot.Center,
+          portId: '',
+          fromLinkable: true,
+          fromLinkableDuplicates: true,
+          toLinkable: true,
+          toLinkableDuplicates: true,
+          cursor: 'pointer',
+        },
+        new go.Binding('height', 'duration', computeLifelineHeight)
+      )
+    );
+
+    // define the Activity Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      {
+        locationSpot: go.Spot.Top,
+        locationObjectName: 'SHAPE',
+        minLocation: new go.Point(NaN, LinePrefix - ActivityStart),
+        maxLocation: new go.Point(NaN, 19999),
+        selectionObjectName: 'SHAPE',
+        resizable: true,
+        resizeObjectName: 'SHAPE',
+        resizeAdornmentTemplate: $(go.Adornment,
+          'Spot',
+          $(go.Placeholder),
+          $(go.Shape, // only a bottom resize handle
+            {
+              alignment: go.Spot.Bottom,
+              cursor: 'col-resize',
+              desiredSize: new go.Size(6, 6),
+              fill: 'yellow',
+            }
+          )
+        ),
+      },
+      new go.Binding('location', '', computeActivityLocation).makeTwoWay(backComputeActivityLocation),
+      $(go.Shape,
+        'Rectangle',
+        {
+          name: 'SHAPE',
+          fill: 'white',
+          stroke: 'black',
+          width: ActivityWidth,
+          // allow Activities to be resized down to 1/4 of a time unit
+          minSize: new go.Size(ActivityWidth, computeActivityHeight(0.25)),
+        },
+        new go.Binding('height', 'duration', computeActivityHeight).makeTwoWay(backComputeActivityHeight)
+      )
+    );
+
+    // define the Message Link template.
+    myDiagram.linkTemplate = $(MessageLink, // defined below
+      { selectionAdorned: true, curviness: 0 },
+      $(go.Shape, 'Rectangle', { stroke: 'black' }),
+      $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'black' }),
+      $(go.TextBlock,
+        {
+          font: '400 9pt Source Sans Pro, sans-serif',
+          segmentIndex: 0,
+          segmentOffset: new go.Point(NaN, NaN),
+          isMultiline: false,
+          editable: true,
+        },
+        new go.Binding('text', 'text').makeTwoWay()
+      )
+    );
+
+    // create the graph by reading the JSON data saved in "mySavedModel" textarea element
+    load();
+  }
+
+  function ensureLifelineHeights(e) {
+    // iterate over all Activities (ignore Groups)
+    const arr = myDiagram.model.nodeDataArray;
+    let max = -1;
+    for (let i = 0; i < arr.length; i++) {
+      const act = arr[i];
+      if (act.isGroup) continue;
+      max = Math.max(max, act.start + act.duration);
+    }
+    if (max > 0) {
+      // now iterate over only Groups
+      for (let i = 0; i < arr.length; i++) {
+        const gr = arr[i];
+        if (!gr.isGroup) continue;
+        if (max > gr.duration) {
+          // this only extends, never shrinks
+          myDiagram.model.setDataProperty(gr, 'duration', max);
+        }
+      }
+    }
+  }
+
+  // some parameters
+  const LinePrefix = 20; // vertical starting point in document for all Messages and Activations
+  const LineSuffix = 30; // vertical length beyond the last message time
+  const MessageSpacing = 20; // vertical distance between Messages at different steps
+  const ActivityWidth = 10; // width of each vertical activity bar
+  const ActivityStart = 5; // height before start message time
+  const ActivityEnd = 5; // height beyond end message time
+
+  function computeLifelineHeight(duration) {
+    return LinePrefix + duration * MessageSpacing + LineSuffix;
+  }
+
+  function computeActivityLocation(act) {
+    const groupdata = myDiagram.model.findNodeDataForKey(act.group);
+    if (groupdata === null) return new go.Point();
+    // get location of Lifeline's starting point
+    const grouploc = go.Point.parse(groupdata.loc);
+    return new go.Point(grouploc.x, convertTimeToY(act.start) - ActivityStart);
+  }
+  function backComputeActivityLocation(loc, act) {
+    myDiagram.model.setDataProperty(act, 'start', convertYToTime(loc.y + ActivityStart));
+  }
+
+  function computeActivityHeight(duration) {
+    return ActivityStart + duration * MessageSpacing + ActivityEnd;
+  }
+  function backComputeActivityHeight(height) {
+    return (height - ActivityStart - ActivityEnd) / MessageSpacing;
+  }
+
+  // time is just an abstract small non-negative integer
+  // here we map between an abstract time and a vertical position
+  function convertTimeToY(t) {
+    return t * MessageSpacing + LinePrefix;
+  }
+  function convertYToTime(y) {
+    return (y - LinePrefix) / MessageSpacing;
+  }
 
   // a custom routed Link
   class MessageLink extends go.Link {
     constructor() {
       super();
-      this.time = 0;  // use this "time" value when this is the temporaryLink
+      this.time = 0; // use this "time" value when this is the temporaryLink
     }
 
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
@@ -258,10 +336,10 @@
       const op = otherport.getDocumentPoint(go.Spot.Center);
 
       const data = this.data;
-      const time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
+      const time = data !== null ? data.time : this.time; // if not bound, assume this has its own "time" property
 
       const aw = this.findActivityWidth(node, time);
-      const x = (op.x > p.x ? p.x + aw / 2 : p.x - aw / 2);
+      const x = op.x > p.x ? p.x + aw / 2 : p.x - aw / 2;
       const y = convertTimeToY(time);
       return new go.Point(x, y);
     }
@@ -270,10 +348,12 @@
       let aw = ActivityWidth;
       if (node instanceof go.Group) {
         // see if there is an Activity Node at this point -- if not, connect the link directly with the Group's lifeline
-        if (!node.memberParts.any(mem => {
-          const act = mem.data;
-          return (act !== null && act.start <= time && time <= act.start + act.duration);
-        })) {
+        if (
+          !node.memberParts.any((mem) => {
+            const act = mem.data;
+            return act !== null && act.start <= time && time <= act.start + act.duration;
+          })
+        ) {
           aw = 0;
         }
       }
@@ -288,9 +368,10 @@
     }
 
     computePoints() {
-      if (this.fromNode === this.toNode) {  // also handle a reflexive link as a simple orthogonal loop
+      if (this.fromNode === this.toNode) {
+        // also handle a reflexive link as a simple orthogonal loop
         const data = this.data;
-        const time = data !== null ? data.time : this.time;  // if not bound, assume this has its own "time" property
+        const time = data !== null ? data.time : this.time; // if not bound, assume this has its own "time" property
         const p = this.fromNode.port.getDocumentPoint(go.Spot.Center);
         const aw = this.findActivityWidth(this.fromNode, time);
 
@@ -309,7 +390,6 @@
   }
   // end MessageLink
 
-
   // A custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
   // for both the temporaryLink and the actual newly created Link
   class MessagingTool extends go.LinkingTool {
@@ -319,18 +399,16 @@
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
       const $ = go.GraphObject.make;
-      this.temporaryLink =
-        $(MessageLink,
-          $(go.Shape, "Rectangle",
-            { stroke: "magenta", strokeWidth: 2 }),
-          $(go.Shape,
-            { toArrow: "OpenTriangle", stroke: "magenta" }));
+      this.temporaryLink = $(MessageLink,
+        $(go.Shape, 'Rectangle', { stroke: 'magenta', strokeWidth: 2 }),
+        $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'magenta' })
+      );
     }
 
     doActivate() {
       super.doActivate();
       const time = convertYToTime(this.diagram.firstInput.documentPoint.y);
-      this.temporaryLink.time = Math.ceil(time);  // round up to an integer value
+      this.temporaryLink.time = Math.ceil(time); // round up to an integer value
     }
 
     insertLink(fromnode, fromport, tonode, toport) {
@@ -341,12 +419,12 @@
         const start = this.temporaryLink.time;
         const duration = 1;
         newlink.data.time = start;
-        model.setDataProperty(newlink.data, "text", "msg");
+        model.setDataProperty(newlink.data, 'text', 'msg');
         // and create a new Activity node data in the "to" group data
         const newact = {
           group: newlink.data.to,
           start: start,
-          duration: duration
+          duration: duration,
         };
         model.addNodeData(newact);
         // now make sure all Lifelines are long enough
@@ -356,7 +434,6 @@
     }
   }
   // end MessagingTool
-
 
   // A custom DraggingTool that supports dragging any number of MessageLinks up and down --
   // changing their data.time value.
@@ -369,11 +446,11 @@
       result.add(new go.Node(), new go.DraggingInfo(new go.Point()));
       // normally this method removes any links not connected to selected nodes;
       // we have to add them back so that they are included in the "parts" argument to moveParts
-      parts.each(part => {
+      parts.each((part) => {
         if (part instanceof go.Link) {
           result.add(part, new go.DraggingInfo(part.getPoint(0).copy()));
         }
-      })
+      });
       return result;
     }
 
@@ -391,12 +468,12 @@
       while (it.next()) {
         if (it.key instanceof go.Link) {
           const link = it.key;
-          const startY = it.value.point.y;  // DraggingInfo.point.y
-          let y = startY + offset.y;  // determine new Y coordinate value for this link
+          const startY = it.value.point.y; // DraggingInfo.point.y
+          let y = startY + offset.y; // determine new Y coordinate value for this link
           const cellY = this.gridSnapCellSize.height;
-          y = Math.round(y / cellY) * cellY;  // snap to multiple of gridSnapCellSize.height
+          y = Math.round(y / cellY) * cellY; // snap to multiple of gridSnapCellSize.height
           const t = Math.max(0, convertYToTime(y));
-          link.diagram.model.set(link.data, "time", t);
+          link.diagram.model.set(link.data, 'time', t);
           link.invalidateRoute();
         }
       }
@@ -404,30 +481,27 @@
   }
   // end MessageDraggingTool
 
-
-    // Show the diagram's model in JSON format
-    function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  // Show the diagram's model in JSON format
+  function save() {
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px"></div>
   <p>
-    A <em>sequence diagram</em> is an interaction diagram that shows how entities operate with one another and in what order.
-    In this sample, we show the interaction between different people in a restaurant.
+    A <em>sequence diagram</em> is an interaction diagram that shows how entities operate with one another and in what order. In this sample, we show the
+    interaction between different people in a restaurant.
   </p>
   <p>
-    The diagram uses the <a>Diagram.groupTemplate</a> for "lifelines,"
-    <a>Diagram.nodeTemplate</a> for "activities," and <a>Diagram.linkTemplate</a> for "messages" between the entities.
-    Also featured are a custom Link class and custom <a>LinkingTool</a> to draw links
-    between lifelines and create activities at the end of the new link. Nodes use a binding function on the location
-    property to ensure they are anchored to their lifeline.
+    The diagram uses the <a>Diagram.groupTemplate</a> for "lifelines," <a>Diagram.nodeTemplate</a> for "activities," and <a>Diagram.linkTemplate</a> for
+    "messages" between the entities. Also featured are a custom Link class and custom <a>LinkingTool</a> to draw links between lifelines and create activities
+    at the end of the new link. Nodes use a binding function on the location property to ensure they are anchored to their lifeline.
   </p>
   <div>
     <div>
@@ -435,7 +509,7 @@
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
-    <textarea id="mySavedModel" style="width:100%;height:240px">
+    <textarea id="mySavedModel" style="width: 100%; height: 240px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {"key":"Fred", "text":"Fred: Patron", "isGroup":true, "loc":"0 0", "duration":9},
@@ -460,11 +534,101 @@
     </textarea>
   </div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Groups</h4>
+<p>
+The <a href="../api/symbols/Group.html" target="api">Group</a> class is used to treat a collection of <a href="../api/symbols/Node.html" target="api">Node</a>s and <a href="../api/symbols/Link.html" target="api">Link</a>s as if they were a single <a href="../api/symbols/Node.html" target="api">Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+<p>
+A subgraph is <em>not</em> another <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
+All of the <a href="../api/symbols/Part.html" target="api">Part</a>s that are members of a <a href="../api/symbols/Group.html" target="api">Group</a> belong to the same Diagram as the Group.
+There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
+There can even be links between member nodes and the containing group itself.
+</p>
+<p>
+More information can be found in the <a href="../intro/groups.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#groups">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Grid Patterns</h4>
+<p>
+<b>GoJS</b> provides functionality to display a grid of lines drawn at regular intervals.
+Grid Panels can also force dragged parts to be aligned on grid points, and resize parts to be multiples of the grid cell size.
+</p>
+<p>
+Grids are implemented using a type of <a href="../api/symbols/Panel.html" target="api">Panel</a>, <a href="../api/symbols/PanelLayout.html#Grid" target="api">Panel.Grid</a>.
+Grid Panels, like most other types of Panels, can be used within <a href="../api/symbols/Node.html" target="api">Node</a>s or any other kind of <a href="../api/symbols/Part.html" target="api">Part</a>.
+However when they are used as the <a href="../api/symbols/Diagram.html#grid" target="api">Diagram.grid</a>, they are effectively infinite in extent.
+</p>
+<p>
+More information can be found in the <a href="../intro/grids.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#grid">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

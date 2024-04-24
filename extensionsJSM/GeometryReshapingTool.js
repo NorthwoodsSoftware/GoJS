@@ -1,38 +1,33 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * The GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user
  * via the dragging of tool handles.
  * This does not handle Links, whose routes should be reshaped by the LinkReshapingTool.
- * The {@link #reshapeObjectName} needs to identify the named {@link Shape} within the
- * selected {@link Part}.
- * If the shape cannot be found or if its {@link Shape#geometry} is not of type {@link Geometry.Path},
- * this will not show any GeometryReshaping {@link Adornment}.
- * At the current time this tool does not support adding or removing {@link PathSegment}s to the Geometry.
+ * The {@link reshapeObjectName} needs to identify the named {@link go.Shape} within the
+ * selected {@link go.Part}.
+ * If the shape cannot be found or if its {@link go.Shape.geometry} is not of type {@link go.GeometryType.Path},
+ * this will not show any GeometryReshaping {@link go.Adornment}.
+ * At the current time this tool does not support adding or removing {@link go.PathSegment}s to the Geometry.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/GeometryReshaping.html">Geometry Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href='../../samples/GeometryReshaping.html'>Geometry Reshaping</a> sample.
  * @category Tool Extension
  */
 export class GeometryReshapingTool extends go.Tool {
     /**
      * Constructs a GeometryReshapingTool and sets the handle and name of the tool.
      */
-    constructor() {
+    constructor(init) {
         super();
-        // there's no Part.reshapeAdornmentTemplate either
-        // internal state
-        this._handle = null;
-        this._adornedShape = null;
-        this._originalGeometry = null; // in case the tool is cancelled and the UndoManager is not enabled
         this.name = 'GeometryReshaping';
         let h = new go.Shape();
         h.figure = 'Diamond';
@@ -51,74 +46,111 @@ export class GeometryReshapingTool extends go.Tool {
         this._isResegmenting = false;
         this._resegmentingDistance = 3;
         this._reshapeObjectName = 'SHAPE';
+        this._handle = null;
+        this._adornedShape = null;
+        this._originalGeometry = null;
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * A small GraphObject used as a reshape handle for each segment.
      * The default GraphObject is a small blue diamond.
      */
-    get handleArchetype() { return this._handleArchetype; }
-    set handleArchetype(value) { this._handleArchetype = value; }
+    get handleArchetype() {
+        return this._handleArchetype;
+    }
+    set handleArchetype(value) {
+        this._handleArchetype = value;
+    }
     /**
      * A small GraphObject used as a reshape handle at the middle of each segment for inserting a new segment.
      * The default GraphObject is a small blue circle.
      */
-    get midHandleArchetype() { return this._midHandleArchetype; }
-    set midHandleArchetype(value) { this._midHandleArchetype = value; }
+    get midHandleArchetype() {
+        return this._midHandleArchetype;
+    }
+    set midHandleArchetype(value) {
+        this._midHandleArchetype = value;
+    }
     /**
-    * Gets or sets whether this tool supports the user's addition or removal of segments in the geometry.
-    * The default value is false.
-    * When the value is true, copies of the {@link #midHandleArchetype} will appear in the middle of each segment.
-    * At the current time, resegmenting is limited to straight segments, not curved ones.
-    */
-    get isResegmenting() { return this._isResegmenting; }
-    set isResegmenting(val) { this._isResegmenting = val; }
+     * Gets or sets whether this tool supports the user's addition or removal of segments in the geometry.
+     * The default value is false.
+     * When the value is true, copies of the {@link midHandleArchetype} will appear in the middle of each segment.
+     * At the current time, resegmenting is limited to straight segments, not curved ones.
+     */
+    get isResegmenting() {
+        return this._isResegmenting;
+    }
+    set isResegmenting(val) {
+        this._isResegmenting = val;
+    }
     /**
-    * The maximum distance at which a resegmenting handle being positioned on a straight line
-    * between the adjacent points will cause one of the segments to be removed from the geometry.
-    * The default value is 3.
-    */
-    get resegmentingDistance() { return this._resegmentingDistance; }
-    set resegmentingDistance(val) { this._resegmentingDistance = val; }
+     * The maximum distance at which a resegmenting handle being positioned on a straight line
+     * between the adjacent points will cause one of the segments to be removed from the geometry.
+     * The default value is 3.
+     */
+    get resegmentingDistance() {
+        return this._resegmentingDistance;
+    }
+    set resegmentingDistance(val) {
+        this._resegmentingDistance = val;
+    }
     /**
      * The name of the GraphObject to be reshaped.
-     * The default name is "SHAPE".
+     * The default name is 'SHAPE'.
      */
-    get reshapeObjectName() { return this._reshapeObjectName; }
-    set reshapeObjectName(value) { this._reshapeObjectName = value; }
+    get reshapeObjectName() {
+        return this._reshapeObjectName;
+    }
+    set reshapeObjectName(value) {
+        this._reshapeObjectName = value;
+    }
     /**
-     * This read-only property returns the {@link GraphObject} that is the tool handle being dragged by the user.
-     * This will be contained by an {@link Adornment} whose category is "GeometryReshaping".
-     * Its {@link Adornment#adornedObject} is the same as the {@link #adornedShape}.
+     * This read-only property returns the {@link go.GraphObject} that is the tool handle being dragged by the user.
+     * This will be contained by an {@link go.Adornment} whose category is 'GeometryReshaping'.
+     * Its {@link go.Adornment.adornedObject} is the same as the {@link adornedShape}.
      */
-    get handle() { return this._handle; }
-    set handle(val) { this._handle = val; }
+    get handle() {
+        return this._handle;
+    }
+    set handle(val) {
+        this._handle = val;
+    }
     /**
-     * Gets the {@link Shape} that is being reshaped.
+     * Gets the {@link go.Shape} that is being reshaped.
      * This must be contained within the selected Part.
      */
-    get adornedShape() { return this._adornedShape; }
+    get adornedShape() {
+        return this._adornedShape;
+    }
     /**
-     * This read-only property remembers the original value for {@link Shape#geometry},
+     * This read-only property remembers the original value for {@link go.Shape.geometry},
      * so that it can be restored if this tool is cancelled.
      */
-    get originalGeometry() { return this._originalGeometry; }
+    get originalGeometry() {
+        return this._originalGeometry;
+    }
     /**
-     * Show an {@link Adornment} with a reshape handle at each point of the geometry.
-     * Don't show anything if {@link #reshapeObjectName} doesn't return a {@link Shape}
-     * that has a {@link Shape#geometry} of type {@link Geometry.Path}.
+     * Show an {@link go.Adornment} with a reshape handle at each point of the geometry.
+     * Don't show anything if {@link reshapeObjectName} doesn't return a {@link go.Shape}
+     * that has a {@link go.Shape.geometry} of type {@link go.GeometryType.Path}.
      */
     updateAdornments(part) {
         if (part === null || part instanceof go.Link)
             return; // this tool never applies to Links
         if (part.isSelected && !this.diagram.isReadOnly) {
             const selelt = part.findObject(this.reshapeObjectName);
-            if (selelt instanceof go.Shape && selelt.geometry !== null &&
-                selelt.actualBounds.isReal() && selelt.isVisibleObject() &&
-                part.canReshape() && part.actualBounds.isReal() && part.isVisible() &&
-                selelt.geometry.type === go.Geometry.Path) {
+            if (selelt instanceof go.Shape &&
+                selelt.geometry !== null &&
+                selelt.actualBounds.isReal() &&
+                selelt.isVisibleObject() &&
+                part.canReshape() &&
+                part.actualBounds.isReal() &&
+                part.isVisible() &&
+                selelt.geometry.type === go.GeometryType.Path) {
                 const geo = selelt.geometry;
                 let adornment = part.findAdornment(this.name);
-                if (adornment === null || (this._countHandles(geo) !== adornment.elements.count - 1)) {
+                if (adornment === null || this._countHandles(geo) !== adornment.elements.count - 1) {
                     adornment = this.makeAdornment(selelt);
                 }
                 if (adornment !== null) {
@@ -132,10 +164,10 @@ export class GeometryReshapingTool extends go.Tool {
                     const elts = adornment.elements;
                     for (let i = 0; i < elts.count; i++) {
                         const h = adornment.elt(i);
-                        if (typeof h._typ !== "number")
+                        if (typeof h._typ !== 'number')
                             continue;
                         const typ = h._typ;
-                        if (typeof h._fig !== "number")
+                        if (typeof h._fig !== 'number')
                             continue;
                         const figi = h._fig;
                         if (figi >= geo.figures.count) {
@@ -144,8 +176,8 @@ export class GeometryReshapingTool extends go.Tool {
                             unneeded.push(h);
                             continue;
                         }
-                        var fig = geo.figures.elt(figi);
-                        if (typeof h._seg !== "number")
+                        const fig = geo.figures.elt(figi);
+                        if (typeof h._seg !== 'number')
                             continue;
                         const segi = h._seg;
                         if (segi >= fig.segments.count) {
@@ -154,9 +186,9 @@ export class GeometryReshapingTool extends go.Tool {
                             unneeded.push(h);
                             continue;
                         }
-                        var seg = fig.segments.elt(segi);
-                        var x = 0;
-                        var y = 0;
+                        const seg = fig.segments.elt(segi);
+                        let x = 0;
+                        let y = 0;
                         switch (typ) {
                             case 0:
                                 x = fig.startX;
@@ -186,13 +218,16 @@ export class GeometryReshapingTool extends go.Tool {
                                 x = (fig.startX + seg.endX) / 2;
                                 y = (fig.startY + seg.endY) / 2;
                                 break;
-                            default: throw new Error('unexpected handle type');
+                            default:
+                                throw new Error('unexpected handle type');
                         }
                         h.alignment = new go.Spot(0, 0, x - b.x, y - b.y);
                     }
                     if (unneeded !== null) {
-                        unneeded.forEach(h => { if (adornment)
-                            adornment.remove(h); });
+                        unneeded.forEach((h) => {
+                            if (adornment)
+                                adornment.remove(h);
+                        });
                     }
                     part.addAdornment(this.name, adornment);
                     adornment.location = selelt.getDocumentPoint(go.Spot.TopLeft);
@@ -207,27 +242,26 @@ export class GeometryReshapingTool extends go.Tool {
      * @hidden @internal
      */
     _countHandles(geo) {
-        var reseg = this.isResegmenting;
-        var c = 0;
-        geo.figures.each(fig => {
+        const reseg = this.isResegmenting;
+        let c = 0;
+        geo.figures.each((fig) => {
             c++;
-            fig.segments.each(seg => {
+            fig.segments.each((seg) => {
                 if (reseg) {
-                    if (seg.type === go.PathSegment.Line)
+                    if (seg.type === go.SegmentType.Line)
                         c++;
                     if (seg.isClosed)
                         c++;
                 }
                 c++;
-                if (seg.type === go.PathSegment.QuadraticBezier)
+                if (seg.type === go.SegmentType.QuadraticBezier)
                     c++;
-                else if (seg.type === go.PathSegment.Bezier)
+                else if (seg.type === go.SegmentType.Bezier)
                     c += 2;
             });
         });
         return c;
     }
-    ;
     /**
      * @hidden @internal
      */
@@ -249,23 +283,23 @@ export class GeometryReshapingTool extends go.Tool {
                     const fig = geo.figures.elt(f);
                     for (let g = 0; g < fig.segments.count; g++) {
                         const seg = fig.segments.elt(g);
-                        let h;
-                        if (seg.type === go.PathSegment.Line) {
-                            h = this.makeResegmentHandle(selelt, fig, seg);
-                            if (h !== null) {
-                                h._typ = (g === 0) ? 4 : 5;
-                                h._fig = f;
-                                h._seg = g;
-                                adornment.add(h);
+                        let hnd;
+                        if (seg.type === go.SegmentType.Line) {
+                            hnd = this.makeResegmentHandle(selelt, fig, seg);
+                            if (hnd !== null) {
+                                hnd._typ = g === 0 ? 4 : 5;
+                                hnd._fig = f;
+                                hnd._seg = g;
+                                adornment.add(hnd);
                             }
                         }
                         if (seg.isClosed) {
-                            h = this.makeResegmentHandle(selelt, fig, seg);
-                            if (h !== null) {
-                                h._typ = 6;
-                                h._fig = f;
-                                h._seg = g;
-                                adornment.add(h);
+                            hnd = this.makeResegmentHandle(selelt, fig, seg);
+                            if (hnd !== null) {
+                                hnd._typ = 6;
+                                hnd._fig = f;
+                                hnd._seg = g;
+                                adornment.add(hnd);
                             }
                         }
                     }
@@ -292,7 +326,7 @@ export class GeometryReshapingTool extends go.Tool {
                         h._seg = g;
                         adornment.add(h);
                     }
-                    if (seg.type === go.PathSegment.QuadraticBezier || seg.type === go.PathSegment.Bezier) {
+                    if (seg.type === go.SegmentType.QuadraticBezier || seg.type === go.SegmentType.Bezier) {
                         h = this.makeHandle(selelt, fig, seg);
                         if (h !== null) {
                             h._typ = 2;
@@ -300,7 +334,7 @@ export class GeometryReshapingTool extends go.Tool {
                             h._seg = g;
                             adornment.add(h);
                         }
-                        if (seg.type === go.PathSegment.Bezier) {
+                        if (seg.type === go.SegmentType.Bezier) {
                             h = this.makeHandle(selelt, fig, seg);
                             if (h !== null) {
                                 h._typ = 3;
@@ -330,7 +364,7 @@ export class GeometryReshapingTool extends go.Tool {
      * @hidden @internal
      */
     makeResegmentHandle(pathshape, fig, seg) {
-        var h = this.midHandleArchetype;
+        const h = this.midHandleArchetype;
         if (h === null)
             return null;
         return h.copy();
@@ -349,13 +383,13 @@ export class GeometryReshapingTool extends go.Tool {
         if (!diagram.lastInput.left)
             return false;
         const h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
-        return (h !== null);
+        return h !== null;
     }
     /**
-     * Start reshaping, if {@link #findToolHandleAt} finds a reshape handle at the mouse down point.
+     * Start reshaping, if {@link findToolHandleAt} finds a reshape handle at the mouse down point.
      *
-     * If successful this sets {@link #handle} to be the reshape handle that it finds
-     * and {@link #adornedShape} to be the {@link Shape} being reshaped.
+     * If successful this sets {@link handle} to be the reshape handle that it finds
+     * and {@link adornedShape} to be the {@link go.Shape} being reshaped.
      * It also remembers the original geometry in case this tool is cancelled.
      * And it starts a transaction.
      */
@@ -407,7 +441,7 @@ export class GeometryReshapingTool extends go.Tool {
                 }
             }
             shape.geometry = geo; // modify the Shape
-            var part = shape.part;
+            const part = shape.part;
             part.ensureBounds();
             this.updateAdornments(part); // update any Adornments of the Part
             this._handle = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
@@ -443,8 +477,8 @@ export class GeometryReshapingTool extends go.Tool {
         this.stopTool();
     }
     /**
-     * Call {@link #reshape} with a new point determined by the mouse
-     * to change the geometry of the {@link #adornedShape}.
+     * Call {@link reshape} with a new point determined by the mouse
+     * to change the geometry of the {@link adornedShape}.
      */
     doMouseMove() {
         const diagram = this.diagram;
@@ -454,7 +488,7 @@ export class GeometryReshapingTool extends go.Tool {
         }
     }
     /**
-     * Reshape the Shape's geometry with a point based on the most recent mouse point by calling {@link #reshape},
+     * Reshape the Shape's geometry with a point based on the most recent mouse point by calling {@link reshape},
      * and then stop this tool.
      */
     doMouseUp() {
@@ -468,8 +502,14 @@ export class GeometryReshapingTool extends go.Tool {
                 const figi = this.handle._fig;
                 const segi = this.handle._seg;
                 const fig = shape.geometry.figures.elt(figi);
-                if (fig && fig.segments.count > 2) { // avoid making a degenerate polygon
-                    let ax, ay, bx, by, cx, cy;
+                if (fig && fig.segments.count > 2) {
+                    // avoid making a degenerate polygon
+                    let ax;
+                    let ay;
+                    let bx;
+                    let by;
+                    let cx;
+                    let cy;
                     if (typ === 0) {
                         const lastseg = fig.segments.length - 1;
                         ax = fig.segments.elt(lastseg).endX;
@@ -506,20 +546,20 @@ export class GeometryReshapingTool extends go.Tool {
                     const dist = q.distanceSquaredPoint(new go.Point(bx, by));
                     if (dist < this.resegmentingDistance * this.resegmentingDistance) {
                         const geo = shape.geometry.copy();
-                        const fig = geo.figures.elt(figi);
+                        const fg = geo.figures.elt(figi);
                         if (typ === 0) {
-                            const first = fig.segments.first();
+                            const first = fg.segments.first();
                             if (first) {
-                                fig.startX = first.endX;
-                                fig.startY = first.endY;
+                                fg.startX = first.endX;
+                                fg.startY = first.endY;
                             }
                         }
                         if (segi > 0) {
-                            const prev = fig.segments.elt(segi - 1);
-                            const seg = fig.segments.elt(segi);
+                            const prev = fg.segments.elt(segi - 1);
+                            const seg = fg.segments.elt(segi);
                             prev.isClosed = seg.isClosed;
                         }
-                        fig.segments.removeAt(segi);
+                        fg.segments.removeAt(segi);
                         shape.geometry = geo;
                         shape.part.removeAdornment(this.name);
                         this.updateAdornments(shape.part);
@@ -531,11 +571,11 @@ export class GeometryReshapingTool extends go.Tool {
         this.stopTool();
     }
     /**
-     * Change the geometry of the {@link #adornedShape} by moving the point corresponding to the current
-     * {@link #handle} to be at the given {@link Point}.
-     * This is called by {@link #doMouseMove} and {@link #doMouseUp} with the result of calling
-     * {@link #computeReshape} to constrain the input point.
-     * @param {Point} newPoint the value of the call to {@link #computeReshape}.
+     * Change the geometry of the {@link adornedShape} by moving the point corresponding to the current
+     * {@link handle} to be at the given {@link go.Point}.
+     * This is called by {@link doMouseMove} and {@link doMouseUp} with the result of calling
+     * {@link computeReshape} to constrain the input point.
+     * @param newPoint - the value of the call to {@link computeReshape}.
      */
     reshape(newPoint) {
         const shape = this.adornedShape;
@@ -580,7 +620,8 @@ export class GeometryReshapingTool extends go.Tool {
         if (part === null)
             return;
         part.ensureBounds();
-        if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) { // but only if the locationSpot isn't Center
+        if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) {
+            // but only if the locationSpot isn't Center
             // support the whole Node being rotated
             part.move(part.position.copy().subtract(offset.rotate(part.angle)));
         }
@@ -588,11 +629,10 @@ export class GeometryReshapingTool extends go.Tool {
         this.diagram.maybeUpdate(); // force more frequent drawing for smoother looking behavior
     }
     /**
-     * This is called by {@link #doMouseMove} and {@link #doMouseUp} to limit the input point
-     * before calling {@link #reshape}.
+     * This is called by {@link doMouseMove} and {@link doMouseUp} to limit the input point
+     * before calling {@link reshape}.
      * By default, this doesn't limit the input point.
-     * @param {Point} p the point where the handle is being dragged.
-     * @return {Point}
+     * @param p - the point where the handle is being dragged.
      */
     computeReshape(p) {
         return p; // no constraints on the points

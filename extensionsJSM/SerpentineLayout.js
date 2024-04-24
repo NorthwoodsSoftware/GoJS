@@ -1,48 +1,52 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * A custom {@link Layout} that lays out a chain of nodes in a snake-like fashion.
+ * A custom {@link go.Layout} that lays out a chain of nodes in a snake-like fashion.
  *
  * This layout assumes the graph is a chain of Nodes,
  * positioning nodes in horizontal rows back and forth, alternating between left-to-right
- * and right-to-left within the {@link #wrap} limit.
- * {@link #spacing} controls the distance between nodes.
- * {@link #leftSpot} and {@link #rightSpot} determine the Spots to use for the {@link Link#fromSpot} and {@link Link#toSpot}.
+ * and right-to-left within the {@link wrap} limit.
+ * {@link spacing} controls the distance between nodes.
+ * {@link leftSpot} and {@link rightSpot} determine the Spots to use for the {@link go.Link.fromSpot} and {@link go.Link.toSpot}.
  *
  * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Serpentine.html">Serpentine Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/Serpentine.html">Serpentine Layout</a> sample.
  * @category Layout Extension
  */
 export class SerpentineLayout extends go.Layout {
     /**
-     * Constructs a SerpentineLayout and sets the {@link #isViewportSized} property to true.
+     * Constructs a SerpentineLayout and sets the {@link isViewportSized} property to true.
      */
-    constructor() {
+    constructor(init) {
         super();
+        this.isViewportSized = true;
         this._spacing = new go.Size(30, 30);
         this._wrap = NaN;
         this._root = null;
         this._leftSpot = go.Spot.Left;
         this._rightSpot = go.Spot.Right;
-        this.isViewportSized = true;
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Gets or sets the {@link Size} whose width specifies the horizontal space between nodes
+     * Gets or sets the {@link go.Size} whose width specifies the horizontal space between nodes
      * and whose height specifies the minimum vertical space between nodes.
      *
      * The default value is 30x30.
      */
-    get spacing() { return this._spacing; }
+    get spacing() {
+        return this._spacing;
+    }
     set spacing(val) {
         if (!(val instanceof go.Size))
             throw new Error('new value for SerpentineLayout.spacing must be a Size, not: ' + val);
@@ -54,10 +58,12 @@ export class SerpentineLayout extends go.Layout {
     /**
      * Gets or sets the total width of the layout.
      *
-     * The default value is NaN, which for {@link Diagram#layout}s means that it uses
-     * the {@link Diagram#viewportBounds}.
+     * The default value is NaN, which for {@link go.Diagram.layout}s means that it uses
+     * the {@link go.Diagram.viewportBounds}.
      */
-    get wrap() { return this._wrap; }
+    get wrap() {
+        return this._wrap;
+    }
     set wrap(val) {
         if (this._wrap !== val) {
             this._wrap = val;
@@ -69,7 +75,9 @@ export class SerpentineLayout extends go.Layout {
      *
      * The default value is null, which causes the layout to look for a node without any incoming links.
      */
-    get root() { return this._root; }
+    get root() {
+        return this._root;
+    }
     set root(val) {
         if (this._root !== val) {
             this._root = val;
@@ -79,9 +87,11 @@ export class SerpentineLayout extends go.Layout {
     /**
      * Gets or sets the Spot to use on the left side of a Node.
      *
-     * The default value is {@link Spot.Left}.
+     * The default value is {@link go.Spot.Left}.
      */
-    get leftSpot() { return this._leftSpot; }
+    get leftSpot() {
+        return this._leftSpot;
+    }
     set leftSpot(val) {
         if (this._leftSpot !== val) {
             this._leftSpot = val;
@@ -91,9 +101,11 @@ export class SerpentineLayout extends go.Layout {
     /**
      * Gets or sets the Spot to use on the right side of a Node.
      *
-     * The default value is {@link Spot.Right}.
+     * The default value is {@link go.Spot.Right}.
      */
-    get rightSpot() { return this._rightSpot; }
+    get rightSpot() {
+        return this._rightSpot;
+    }
     set rightSpot(val) {
         if (this._rightSpot !== val) {
             this._rightSpot = val;
@@ -114,8 +126,8 @@ export class SerpentineLayout extends go.Layout {
     /**
      * This method actually positions all of the Nodes, assuming that the ordering of the nodes
      * is given by a single link from one node to the next.
-     * This respects the {@link #spacing} and {@link #wrap} properties to affect the layout.
-     * @param {Iterable.<Part>} coll A collection of {@link Part}s.
+     * This respects the {@link spacing} and {@link wrap} properties to affect the layout.
+     * @param coll - A collection of {@link go.Part}s.
      */
     doLayout(collection) {
         const diagram = this.diagram;
@@ -143,7 +155,8 @@ export class SerpentineLayout extends go.Layout {
         // calculate the width at which we should start a new row
         let wrap = this.wrap;
         if (diagram !== null && isNaN(wrap)) {
-            if (this.group === null) { // for a top-level layout, use the Diagram.viewportBounds
+            if (this.group === null) {
+                // for a top-level layout, use the Diagram.viewportBounds
                 const pad = diagram.padding;
                 wrap = Math.max(spacing.width * 2, diagram.viewportBounds.width - 24 - pad.left - pad.right);
             }
@@ -175,11 +188,11 @@ export class SerpentineLayout extends go.Layout {
                     break;
                 }
             }
-            let nextnode = (nextlink !== null ? nextlink.toNode : null);
+            let nextnode = nextlink !== null ? nextlink.toNode : null;
             const orignextnode = nextnode;
             if (nextnode !== null && nextnode.containingGroup !== null)
                 nextnode = nextnode.containingGroup;
-            const nb = (nextnode !== null ? this.getLayoutBounds(nextnode) : new go.Rect());
+            const nb = nextnode !== null ? this.getLayoutBounds(nextnode) : new go.Rect();
             if (increasing) {
                 node.move(new go.Point(x, y));
                 x += b.width;

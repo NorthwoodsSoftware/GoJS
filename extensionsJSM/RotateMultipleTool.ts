@@ -1,8 +1,8 @@
 ﻿/*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * The RotateMultipleTool class lets the user rotate multiple objects at a time.
@@ -11,36 +11,40 @@ import * as go from '../release/go-module.js';
  *
  * Caution: this only works for Groups that do *not* have a Placeholder.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RotateMultiple.html">Rotate Multiple</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/RotateMultiple.html">Rotate Multiple</a> sample.
  * @category Tool Extension
  */
 export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Holds references to all selected non-Link Parts and their offset & angles
    */
-  private _initialInfo: go.Map<go.Part, PartInfo> | null = null;
+  private _initialInfo: go.Map<go.Part, PartInfo> | null;
   /**
    * Initial angle when rotating as a whole
    */
-  private _initialAngle: number = 0;
+  private _initialAngle: number;
   /**
    * Rotation point of selection
    */
-  private _centerPoint: go.Point = new go.Point();
+  private _centerPoint: go.Point;
 
   /**
    * Constructs a RotateMultipleTool and sets the name for the tool.
    */
-  constructor() {
+  constructor(init?: Partial<RotateMultipleTool>) {
     super();
     this.name = 'RotateMultiple';
+    this._initialInfo = null;
+    this._initialAngle = 0;
+    this._centerPoint = new go.Point();
+    if (init) Object.assign(this, init);
   }
 
   /**
-   * Calls {@link RotatingTool#doActivate}, and then remembers the center point of the collection,
+   * Calls {@link go.RotatingTool.doActivate}, and then remembers the center point of the collection,
    * and the initial distances and angles of selected parts to the center.
    */
-  public override doActivate(): void {
+  override doActivate(): void {
     super.doActivate();
     const diagram = this.diagram;
     // center point of the collection
@@ -52,7 +56,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     // remember initial angle and distance for each Part
     const infos = new go.Map<go.Part, PartInfo>();
     const tool = this;
-    diagram.selection.each(part => {
+    diagram.selection.each((part) => {
       tool.walkTree(part, infos);
     });
     this._initialInfo = infos;
@@ -82,7 +86,7 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Clean up any references to Parts.
    */
-  public override doDeactivate(): void {
+  override doDeactivate(): void {
     this._initialInfo = null;
     super.doDeactivate();
   }
@@ -91,7 +95,7 @@ export class RotateMultipleTool extends go.RotatingTool {
    * Rotate all selected objects about their collective center.
    * When the control key is held down while rotating, all selected objects are rotated individually.
    */
-  public override rotate(newangle: number): void {
+  override rotate(newangle: number): void {
     const diagram = this.diagram;
     if (this._initialInfo === null) return;
     const node = this.adornedObject !== null ? this.adornedObject.part : null;
@@ -100,7 +104,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     // when rotating individual parts, remember the original angle difference
     const angleDiff = newangle - node.rotateObject.angle;
     const tool = this;
-    this._initialInfo.each(kvp => {
+    this._initialInfo.each((kvp) => {
       const part = kvp.key;
       if (part instanceof go.Link) return; // only Nodes and simple Parts
       const partInfo = kvp.value;
@@ -128,20 +132,22 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Calculate the desired angle with different rotation points,
    * depending on whether we are rotating the whole selection as one, or Parts individually.
-   * @param {Point} newPoint in document coordinates
+   * @param newPoint - in document coordinates
    */
-  public override computeRotate(newPoint: go.Point): number {
+  override computeRotate(newPoint: go.Point): number {
     const diagram = this.diagram;
     if (this.adornedObject === null) return 0.0;
     let angle = 0.0;
     const e = diagram.lastInput;
-    if (e.control || e.meta) {  // relative to the center of the Node whose handle we are rotating
+    if (e.control || e.meta) {
+      // relative to the center of the Node whose handle we are rotating
       const part = this.adornedObject.part;
       if (part !== null) {
         const rotationPoint = part.getDocumentPoint(part.locationSpot);
         angle = rotationPoint.directionPoint(newPoint);
       }
-    } else {  // relative to the center of the whole selection
+    } else {
+      // relative to the center of the whole selection
       angle = this._centerPoint.directionPoint(newPoint) - this._initialAngle;
     }
     if (angle >= 360) angle -= 360;
@@ -160,19 +166,18 @@ export class RotateMultipleTool extends go.RotatingTool {
     }
     return angle;
   }
-
 }
 
 /**
  * Internal class to remember a Part's offset and angle.
  */
 class PartInfo {
-  public placementAngle: number;
-  public distance: number;
-  public rotationAngle: number;
+  placementAngle: number;
+  distance: number;
+  rotationAngle: number;
   constructor(placementAngle: number, distance: number, rotationAngle: number) {
-    this.placementAngle = placementAngle * (Math.PI / 180);  // in radians
+    this.placementAngle = placementAngle * (Math.PI / 180); // in radians
     this.distance = distance;
-    this.rotationAngle = rotationAngle;  // in degrees
+    this.rotationAngle = rotationAngle; // in degrees
   }
 }

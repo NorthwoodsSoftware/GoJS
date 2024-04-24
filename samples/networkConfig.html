@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="A CISCO-style network configuration diagram, with a Palette to create new machines and the ability to group nodes into subnetworks." />
+<meta itemprop="description" content="A CISCO-style network configuration diagram, with a Palette to create new machines and the ability to group nodes into subnetworks." />
+<meta property="og:description" content="A CISCO-style network configuration diagram, with a Palette to create new machines and the ability to group nodes into subnetworks." />
+<meta name="twitter:description" content="A CISCO-style network configuration diagram, with a Palette to create new machines and the ability to group nodes into subnetworks." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Network Configuration />
+<meta property="og:title" content=Network Configuration />
+<meta name="twitter:title" content=Network Configuration />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/networkConfig.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/networkConfig.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/networkConfig.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/networkConfig.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/networkConfig.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Network Configuration | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<div id="sample">
+  <div style="width: 100%; display: flex; justify-content: space-between">
+    <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       This also adds a border to help see the edges of the viewport. -->
+    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; border: solid 1px black"></div>
+    <div id="myDiagramDiv" style="border: solid 1px black; flex-grow: 1; height: 450px"></div>
+  </div>
+  <p>This sample consists of a CISCO-style network configuration diagram.</p>
+  <p>Icons in this sample are open-licensed from <a href="https://www.svgrepo.com/collection/servers-isometric-icons/">here</a>.</p>
+
+  <button onclick="save()">Save</button>
+  <button onclick="load()">Load</button>
+  Diagram Model saved in JSON format:
+  <pre><div id="modelJson" style="width:100%;height:600px">{
+  "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+    { "key": 0, "type": "Cloud", "loc": "0 0", "text": "Internet" },
+    { "key": 1, "type": "Firewall", "loc": "100 0" },
+    { "key": 2, "type": "Router", "loc": "200 0" },
+    { "key": 3, "type": "Server", "loc": "300 0" },
+    { "key": 4, "type": "Switch", "loc": "200 100" },
+    { "key": 5, "type": "Firewall", "loc": "25 100" },
+    { "key": 6, "type": "Router", "loc": "25 200" },
+    { "key": 7, "type": "Switch", "loc": "400 100" },
+
+    { "key": 10, "isGroup": true, "text": "Intranet 1" },
+    { "key": 11, "type": "PC", "loc": "150 220", "group": 10 },
+    { "key": 12, "type": "PC", "loc": "250 220", "group": 10 },
+    { "key": 13, "type": "PC", "loc": "150 270", "group": 10 },
+    { "key": 14, "type": "PC", "loc": "250 270", "group": 10 },
+
+    { "key": 20, "isGroup": true, "text": "Intranet 2" },
+    { "key": 21, "type": "PC", "loc": "350 220", "group": 20 },
+    { "key": 22, "type": "PC", "loc": "450 220", "group": 20 },
+    { "key": 23, "type": "PC", "loc": "350 270", "group": 20 },
+    { "key": 24, "type": "PC", "loc": "450 270", "group": 20 },
+
+    { "key": 30, "isGroup": true, "text": "Isolation test" },
+    { "key": 31, "type": "PC", "loc": "-100 172", "group": 30 },
+    { "key": 32, "type": "PC", "loc": "-100 242", "group": 30 }
+  ],
+  "linkDataArray": [
+    { "from": 0, "to": 1 },
+    { "from": 1, "to": 2 },
+    { "from": 2, "to": 3 },
+    { "from": 2, "to": 4 },
+    { "from": 5, "to": 4 },
+    { "from": 5, "to": 6 },
+    { "from": 4, "to": 7 },
+    { "from": 4, "to": 10 },
+    { "from": 7, "to": 20 },
+    { "from": 6, "to": 30 }
+  ]
+}</div></pre>
+</div>
+
+<script id="code">
+  var myDiagram;
+  var myPalette;
+
+  function init() {
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the HTML Div element
+      {
+        'commandHandler.archetypeGroupData': { isGroup: true, text: 'Subnet' },
+        'undoManager.isEnabled': true,
+      }
+    ); // enable undo & redo
+
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      locationSpot: go.Spot.Center,
+      locationObjectName: 'BODY',
+      selectionObjectName: 'BODY',
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Picture({
+          name: 'BODY',
+          width: 50,
+          height: 50,
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true,
+          cursor: 'pointer',
+        }).bind('source', 'type', (t) => `images/network/${t.toLowerCase()}.svg`),
+        new go.Shape({
+          width: 25,
+          height: 25,
+          fill: 'transparent',
+          strokeWidth: 0,
+        })
+      );
+
+    myDiagram.groupTemplate = new go.Group('Vertical', {
+      locationSpot: go.Spot.Center,
+      padding: 5, // to push the port out
+    }).add(
+      new go.TextBlock({
+        alignment: go.Spot.Left,
+        font: '12px georgia',
+        editable: true,
+      }).bindTwoWay('text'),
+      new go.Panel('Auto').add(
+        new go.Shape('RoundedRectangle', {
+          strokeDashArray: [2, 6],
+          stroke: '#333',
+          fill: 'rgba(0,0,0,0)',
+        }),
+        new go.Placeholder({ padding: 5 })
+      )
+    );
+
+    myPalette = new go.Palette('myPaletteDiv', {
+      nodeTemplateMap: myDiagram.nodeTemplateMap,
+      layout: new go.GridLayout({
+        cellSize: new go.Size(2, 2),
+        isViewportSized: true,
+      }),
+    });
+
+    myPalette.model.nodeDataArray = [{ type: 'Cloud' }, { type: 'Firewall' }, { type: 'Switch' }, { type: 'Server' }, { type: 'Router' }, { type: 'PC' }];
+
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      fromSpot: go.Spot.AllSides,
+      toSpot: go.Spot.AllSides,
+      relinkableFrom: true,
+      relinkableTo: true,
+    })
+      .add(new go.Shape({ strokeWidth: 1.5, stroke: 'red' }))
+      .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, fromArrow: 'circle' }))
+      .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, toArrow: 'circle' }));
+
+    load();
+  }
+
+  function save() {
+    const json = document.getElementById('modelJson');
+    json.textContent = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+
+  function load() {
+    const json = document.getElementById('modelJson');
+    myDiagram.model = go.Model.fromJson(json.textContent);
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Palette</h4>
+<p>
+A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#palette">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

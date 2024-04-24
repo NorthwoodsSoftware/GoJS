@@ -1,16 +1,16 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * The LinkShiftingTool class lets the user shift the end of a link to be anywhere along the edges of the port;
@@ -19,7 +19,7 @@ import * as go from '../release/go-module.js';
  * myDiagram.toolManager.mouseDownTools.add(new LinkShiftingTool());
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/LinkShifting.html">Link Shifting</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/LinkShifting.html">Link Shifting</a> sample.
  * @category Tool Extension
  */
 export class LinkShiftingTool extends go.Tool {
@@ -28,14 +28,15 @@ export class LinkShiftingTool extends go.Tool {
   private _toHandleArchetype: go.GraphObject | null;
 
   // transient state
-  private _handle: go.GraphObject | null = null;
+  private _handle: go.GraphObject | null;
   private _originalPoints: go.List<go.Point> | null;
 
   /**
    * Constructs a LinkShiftingTool and sets the handles and name of the tool.
    */
-  constructor() {
+  constructor(init?: Partial<LinkShiftingTool>) {
     super();
+    this.name = 'LinkShifting';
     const h: go.Shape = new go.Shape();
     h.geometryString = 'F1 M0 0 L8 0 M8 4 L0 4';
     h.fill = null;
@@ -44,7 +45,7 @@ export class LinkShiftingTool extends go.Tool {
     h.cursor = 'pointer';
     h.segmentIndex = 0;
     h.segmentFraction = 1;
-    h.segmentOrientation = go.Link.OrientAlong;
+    h.segmentOrientation = go.Orientation.Along;
     const g: go.Shape = new go.Shape();
     g.geometryString = 'F1 M0 0 L8 0 M8 4 L0 4';
     g.fill = null;
@@ -53,39 +54,53 @@ export class LinkShiftingTool extends go.Tool {
     g.cursor = 'pointer';
     g.segmentIndex = -1;
     g.segmentFraction = 1;
-    g.segmentOrientation = go.Link.OrientAlong;
-
+    g.segmentOrientation = go.Orientation.Along;
     this._fromHandleArchetype = h;
     this._toHandleArchetype = g;
     this._originalPoints = null;
-    this.name = 'LinkShifting';
+    this._handle = null;
+    this._originalPoints = null;
+    if (init) Object.assign(this, init);
   }
 
   /**
    * A small GraphObject used as a shifting handle.
    */
-  get fromHandleArchetype(): go.GraphObject | null { return this._fromHandleArchetype; }
-  set fromHandleArchetype(value: go.GraphObject | null) { this._fromHandleArchetype = value; }
+  get fromHandleArchetype(): go.GraphObject | null {
+    return this._fromHandleArchetype;
+  }
+  set fromHandleArchetype(value: go.GraphObject | null) {
+    this._fromHandleArchetype = value;
+  }
 
   /**
    * A small GraphObject used as a shifting handle.
    */
-  get toHandleArchetype(): go.GraphObject | null { return this._toHandleArchetype; }
-  set toHandleArchetype(value: go.GraphObject | null) { this._toHandleArchetype = value; }
+  get toHandleArchetype(): go.GraphObject | null {
+    return this._toHandleArchetype;
+  }
+  set toHandleArchetype(value: go.GraphObject | null) {
+    this._toHandleArchetype = value;
+  }
 
   /**
-   * Show an {@link Adornment} with a reshape handle at each end of the link which allows for shifting of the end points.
+   * Show an {@link go.Adornment} with a reshape handle at each end of the link which allows for shifting of the end points.
    */
-  public override updateAdornments(part: go.Part): void {
-    if (part === null || !(part instanceof go.Link)) return;  // this tool only applies to Links
+  override updateAdornments(part: go.Part): void {
+    if (part === null || !(part instanceof go.Link)) return; // this tool only applies to Links
     const link: go.Link = part;
     // show handles if link is selected, remove them if no longer selected
     let category = 'LinkShiftingFrom';
     let adornment = null;
     if (link.isSelected && !this.diagram.isReadOnly && link.fromPort) {
       const selelt = link.selectionObject;
-      if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
-        selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
+      if (
+        selelt !== null &&
+        link.actualBounds.isReal() &&
+        link.isVisible() &&
+        selelt.actualBounds.isReal() &&
+        selelt.isVisibleObject()
+      ) {
         const spot = (link as any).computeSpot(true);
         if (spot.isSide() || spot.isSpot()) {
           adornment = link.findAdornment(category);
@@ -106,8 +121,13 @@ export class LinkShiftingTool extends go.Tool {
     adornment = null;
     if (link.isSelected && !this.diagram.isReadOnly && link.toPort) {
       const selelt = link.selectionObject;
-      if (selelt !== null && link.actualBounds.isReal() && link.isVisible() &&
-        selelt.actualBounds.isReal() && selelt.isVisibleObject()) {
+      if (
+        selelt !== null &&
+        link.actualBounds.isReal() &&
+        link.isVisible() &&
+        selelt.actualBounds.isReal() &&
+        selelt.isVisibleObject()
+      ) {
         const spot = (link as any).computeSpot(false);
         if (spot.isSide() || spot.isSpot()) {
           adornment = link.findAdornment(category);
@@ -127,14 +147,13 @@ export class LinkShiftingTool extends go.Tool {
 
   /**
    * @hidden @internal
-   * @param {GraphObject} selelt the {@link GraphObject} of the {@link Link} being shifted.
-   * @param {boolean} toend
-   * @return {Adornment}
+   * @param selelt - the {@link go.GraphObject} of the {@link go.Link} being shifted.
+   * @param toend
    */
-  public makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment {
+  makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment {
     const adornment = new go.Adornment();
     adornment.type = go.Panel.Link;
-    const h = (toend ? this.toHandleArchetype : this.fromHandleArchetype);
+    const h = toend ? this.toHandleArchetype : this.fromHandleArchetype;
     if (h !== null) {
       // add a single handle for shifting at one end
       adornment.add(h.copy());
@@ -146,24 +165,24 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * This tool may run when there is a mouse-down event on a reshaping handle.
    */
-  public override canStart(): boolean {
+  override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
     if (!diagram.lastInput.left) return false;
     let h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingFrom');
     if (h === null) h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingTo');
-    return (h !== null);
+    return h !== null;
   }
 
   /**
-   * Start shifting, if {@link #findToolHandleAt} finds a reshaping handle at the mouse down point.
+   * Start shifting, if {@link findToolHandleAt} finds a reshaping handle at the mouse down point.
    *
    * If successful this sets the handle to be the reshape handle that it finds.
    * It also remembers the original points in case this tool is cancelled.
    * And it starts a transaction.
    */
-  public override doActivate(): void {
+  override doActivate(): void {
     const diagram = this.diagram;
     let h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingFrom');
     if (h === null) h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingTo');
@@ -184,7 +203,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * This stops the current shifting operation with the link as it is.
    */
-  public override doDeactivate(): void {
+  override doDeactivate(): void {
     this.isActive = false;
     const diagram = this.diagram;
     diagram.isMouseCaptured = false;
@@ -195,7 +214,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Perform cleanup of tool state.
    */
-  public override doStop(): void {
+  override doStop(): void {
     this._handle = null;
     this._originalPoints = null;
   }
@@ -203,7 +222,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Restore the link route to be the original points and stop this tool.
    */
-  public override doCancel(): void {
+  override doCancel(): void {
     if (this._handle !== null) {
       const ad = this._handle.part as go.Adornment;
       if (ad.adornedObject === null) return;
@@ -214,20 +233,20 @@ export class LinkShiftingTool extends go.Tool {
   }
 
   /**
-   * Call {@link #doReshape} with a new point determined by the mouse
+   * Call {@link doReshape} with a new point determined by the mouse
    * to change the end point of the link.
    */
-  public override doMouseMove(): void {
+  override doMouseMove(): void {
     if (this.isActive) {
       this.doReshape(this.diagram.lastInput.documentPoint);
     }
   }
 
   /**
-   * Reshape the link's end with a point based on the most recent mouse point by calling {@link #doReshape},
+   * Reshape the link's end with a point based on the most recent mouse point by calling {@link doReshape},
    * and then stop this tool.
    */
-  public override doMouseUp(): void {
+  override doMouseUp(): void {
     if (this.isActive) {
       this.doReshape(this.diagram.lastInput.documentPoint);
       this.transactionResult = this.name;
@@ -238,7 +257,7 @@ export class LinkShiftingTool extends go.Tool {
   /**
    * Find the closest point along the edge of the link's port and shift the end of the link to that point.
    */
-  public doReshape(pt: go.Point): void {
+  doReshape(pt: go.Point): void {
     if (this._handle === null) return;
     const ad = this._handle.part as go.Adornment;
     if (ad.adornedObject === null) return;
@@ -254,13 +273,17 @@ export class LinkShiftingTool extends go.Tool {
     // support rotated ports
     const portang = port.getDocumentAngle();
     const center = port.getDocumentPoint(go.Spot.Center);
-    const farpt = pt.copy().offset((pt.x-center.x) * 1000, (pt.y-center.y) * 1000);
-    const portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center),
-                              port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
+    const farpt = pt.copy().offset((pt.x - center.x) * 1000, (pt.y - center.y) * 1000);
+    const portb = new go.Rect(
+      port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center),
+      port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center)
+    );
     let lp = link.getLinkPointFromPoint(port.part as go.Node, port, center, farpt, fromend);
     lp = lp.copy().subtract(center).rotate(-portang).add(center);
-    const spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))),
-                             Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));
+    const spot = new go.Spot(
+      Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))),
+      Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1)))
+    );
     if (fromend) {
       link.fromSpot = spot;
     } else {

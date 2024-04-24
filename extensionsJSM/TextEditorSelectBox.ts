@@ -1,39 +1,39 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 // HTML + JavaScript text editor using an HTML Select Element and HTMLInfo.
 // This file exposes one instance of HTMLInfo, window.TextEditorSelectBox
 // Typical usage is:
-// <pre>
+// ```js
 //   new go.Diagram(...,
 //      {
 //        "textEditingTool.defaultTextEditor": window.TextEditorSelectBox,
 //        . . .
 //      })
-// </pre>
+// ```
 // or:
-// <pre>
+// ```js
 //    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditorSelectBox;
-// </pre>
+// ```
 // or:
-// <pre>
+// ```js
 //   $(go.Node, . . .,
 //     . . .
 //       $(go.TextBlock, { textEditor: window.TextEditorSelectBox, . . . })
 //     . . .
 //   )
-// </pre>
+// ```
 // see /samples/customTextEditingTool.html
 // see also textEditorRadioButton.js for another custom editor
 // see also textEditor.html for a re-implementation of the default text editor
@@ -66,26 +66,31 @@ import * as go from '../release/go-module.js';
     customSelectBox.value = textBlock.text;
 
     // Do a few different things when a user presses a key
-    customSelectBox.addEventListener('keydown', (e) => {
-      if (e.isComposing) return;
-      const key = e.key;
-      if (key === "Enter") { // Accept on Enter
-        (tool as any).acceptText(go.TextEditingTool.Enter);
-        return;
-      } else if (key === "Tab") { // Accept on Tab
-        (tool as any).acceptText(go.TextEditingTool.Tab);
-        e.preventDefault();
-        return false;
-      } else if (key === "Escape") { // Cancel on Esc
-        tool.doCancel();
-        if (tool.diagram) tool.diagram.focus();
-      }
-    }, false);
+    customSelectBox.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.isComposing) return;
+        const key = e.key;
+        if (key === 'Enter') {
+          // Accept on Enter
+          (tool as any).acceptText(go.TextEditingAccept.Enter);
+        } else if (key === 'Tab') {
+          // Accept on Tab
+          (tool as any).acceptText(go.TextEditingAccept.Tab);
+          e.preventDefault();
+        } else if (key === 'Escape') {
+          // Cancel on Esc
+          tool.doCancel();
+          if (tool.diagram) tool.diagram.focus();
+        }
+      },
+      false
+    );
 
     const loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
     const pos = diagram.transformDocToView(loc);
     customSelectBox.style.left = pos.x + 'px';
-    customSelectBox.style.top  = pos.y + 'px';
+    customSelectBox.style.top = pos.y + 'px';
     customSelectBox.style.position = 'absolute';
     customSelectBox.style.zIndex = (100).toString(); // place it in front of the Diagram
 

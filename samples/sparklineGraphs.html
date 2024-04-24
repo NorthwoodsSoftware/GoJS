@@ -1,227 +1,346 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Sparkline charts in a Diagram."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Sparkline Graphs GoJS Sample</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Sparkline charts in a Diagram." />
+<meta itemprop="description" content="Sparkline charts in a Diagram." />
+<meta property="og:description" content="Sparkline charts in a Diagram." />
+<meta name="twitter:description" content="Sparkline charts in a Diagram." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Sparkline Graphs />
+<meta property="og:title" content=Sparkline Graphs />
+<meta name="twitter:title" content=Sparkline Graphs />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/sparklineGraphs.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/sparklineGraphs.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/sparklineGraphs.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/sparklineGraphs.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/sparklineGraphs.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Sparkline Graphs | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          layout: $(go.GridLayout, { wrappingColumn: 2, isOngoing: false }),
-          "undoManager.isEnabled": true  // enable undo & redo
-        });
-
-      var SPARK_STROKEWIDTH = 1;
-      var SPARK_INTERVAL = 3;
-      var BASELINE_LENGTH = 75;
-
-      function makeStringFromValues(values) {
-        if (values.length < 1) return "M 0 " + values + " L " + BASELINE_LENGTH + " 0";
-        // if only one value, make a line BASELINE_LENGTHpx long at that value
-        var str = "M 0 " + Math.round(-values[0] * SPARK_INTERVAL);
-        if (values.length < 2) str += " L " + BASELINE_LENGTH * SPARK_INTERVAL + " " + Math.round(-values[0] * SPARK_INTERVAL);
-
-
-        for (var i = 0; i < values.length; i++) {
-          str += "L " + Math.round((i + 1) * SPARK_INTERVAL) + " " + Math.round(-values[i] * SPARK_INTERVAL);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
-        return str;
-      };
+      });
 
-      // determine y offset
-      function makeAlignmentFromValues(values) {
-        var min = Infinity;
-        for (var i = 0; i < values.length; i++) {
-          min = Math.min(min, values[i]);
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
-        var y = (-min * SPARK_INTERVAL);
-        if (min > 0) { y = -SPARK_STROKEWIDTH; }; // add the strokeWidth
-
-        return new go.Spot(0, 1, 0, -y);
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      var sparkLine = $(go.Panel, "Horizontal",
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        layout: $(go.GridLayout, { wrappingColumn: 2, isOngoing: false }),
+        'undoManager.isEnabled': true, // enable undo & redo
+      }
+    );
+
+    var SPARK_STROKEWIDTH = 1;
+    var SPARK_INTERVAL = 3;
+    var BASELINE_LENGTH = 75;
+
+    function makeStringFromValues(values) {
+      if (values.length < 1) return 'M 0 ' + values + ' L ' + BASELINE_LENGTH + ' 0';
+      // if only one value, make a line BASELINE_LENGTHpx long at that value
+      var str = 'M 0 ' + Math.round(-values[0] * SPARK_INTERVAL);
+      if (values.length < 2) str += ' L ' + BASELINE_LENGTH * SPARK_INTERVAL + ' ' + Math.round(-values[0] * SPARK_INTERVAL);
+
+      for (var i = 0; i < values.length; i++) {
+        str += 'L ' + Math.round((i + 1) * SPARK_INTERVAL) + ' ' + Math.round(-values[i] * SPARK_INTERVAL);
+      }
+      return str;
+    }
+
+    // determine y offset
+    function makeAlignmentFromValues(values) {
+      var min = Infinity;
+      for (var i = 0; i < values.length; i++) {
+        min = Math.min(min, values[i]);
+      }
+      var y = -min * SPARK_INTERVAL;
+      if (min > 0) {
+        y = -SPARK_STROKEWIDTH;
+      } // add the strokeWidth
+
+      return new go.Spot(0, 1, 0, -y);
+    }
+
+    var sparkLine = $(go.Panel,
+      'Horizontal',
+      {
+        alignment: go.Spot.Left,
+        alignmentFocusName: 'spark',
+      },
+      new go.Binding('alignmentFocus', 'values', makeAlignmentFromValues),
+
+      $(go.TextBlock,
+        { visible: false, margin: 1, font: '11px sans-serif', background: 'white' },
+        new go.Binding('alignment', 'values', (values) => {
+          var min = Infinity;
+          var max = -Infinity;
+          for (var i = 0; i < values.length; i++) {
+            min = Math.min(min, values[i]);
+            max = Math.max(max, values[i]);
+          }
+          if (max - min === 0) return go.Spot.Center;
+          return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
+        }),
+        new go.Binding('stroke', 'color'),
+        new go.Binding('text', 'label'),
+        new go.Binding('visible', 'label', (l) => true)
+      ),
+
+      $(go.Shape,
         {
-          alignment: go.Spot.Left,
-          alignmentFocusName: 'spark'
-        },
-        new go.Binding('alignmentFocus', 'values', makeAlignmentFromValues),
-
-        $(go.TextBlock,
-          { visible: false, margin: 1, font: '11px sans-serif', background: 'white' },
-          new go.Binding('alignment', 'values', values => {
-            var min = Infinity;
-            var max = -Infinity;
-            for (var i = 0; i < values.length; i++) {
-              min = Math.min(min, values[i]);
-              max = Math.max(max, values[i]);
-            }
-            if (max - min === 0) return go.Spot.Center;
-            return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
-          }),
-          new go.Binding('stroke', 'color'),
-          new go.Binding('text', 'label'),
-          new go.Binding('visible', 'label', l => true)
-        ),
-
-        $(go.Shape, {
           fill: null,
           strokeWidth: SPARK_STROKEWIDTH,
           stroke: 'gray',
-          name: 'spark'
+          name: 'spark',
         },
-          new go.Binding('stroke', 'color'),
-          new go.Binding('geometryString', 'values', makeStringFromValues)
-        )
+        new go.Binding('stroke', 'color'),
+        new go.Binding('geometryString', 'values', makeStringFromValues)
+      )
+    ); // end sparkLine itemTemplate
 
-      ) // end sparkLine itemTemplate
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      $(go.Shape, { fill: 'rgba(200,200,255,.3)', strokeWidth: 0 }),
+      $(go.Panel,
+        'Spot',
+        { itemTemplate: sparkLine },
+        new go.Binding('itemArray', 'items'),
+        $(go.Shape, { width: 1, height: 200, fill: 'red', stroke: null, strokeWidth: 0 })
+      )
+    );
 
-
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, { fill: 'rgba(200,200,255,.3)', strokeWidth: 0 }),
-          $(go.Panel, "Spot",
-            { itemTemplate: sparkLine },
-            new go.Binding("itemArray", "items"),
-            $(go.Shape, { width: 1, height: 200, fill: 'red', stroke: null, strokeWidth: 0 })
-          )
-        );
-
-      function rand(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-
-      // startValue optional
-      function makeRandomValues(numberOfValues, /* optional! */ startValue) {
-        var values = [];
-        var last = startValue || rand(-30, 30);
-        for (var i = 0; i < numberOfValues; i++) {
-          var newval = last + rand(-3, 3);
-          values.push(newval);
-          last = newval;
-        }
-        return values;
-      }
-
-      myDiagram.model = new go.GraphLinksModel(
-        {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          nodeDataArray:
-            [
-              {
-                key: "Alpha", items: [
-                  { color: '#FF69B4', values: makeRandomValues(50, 20) },
-                  { color: '#FFB6C1', values: makeRandomValues(50) },
-                  { color: '#FF69B4', values: makeRandomValues(50) },
-                  { color: '#C71585', values: makeRandomValues(50, -20) },
-                  { color: 'gray', values: [0] }
-                ]
-              },
-
-              {
-                key: "Beta", items: [
-                  { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50), label: 'label A' },
-                  { color: 'rgba(0,0,255,.6)', values: makeRandomValues(50), label: 'long label B' },
-                  { color: 'darkgray', values: makeRandomValues(50), label: 'label C' },
-                  { color: 'lime', values: makeRandomValues(50), label: 'label D' },
-                  { color: 'gray', values: [0] }
-                ]
-              },
-
-              {
-                key: "Gamma", items: [
-                  { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50, -10), label: 'Important\nYear' },
-                  { color: 'gray', values: makeRandomValues(20, 30) },
-                  { color: 'gray', values: makeRandomValues(40, 30) },
-                  { color: 'gray', values: makeRandomValues(50, 30) },
-                  { color: 'gray', values: [0] }
-                ]
-              }
-
-            ],
-        });
+    function rand(min, max) {
+      return Math.random() * (max - min) + min;
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+
+    // startValue optional
+    function makeRandomValues(numberOfValues, /* optional! */ startValue) {
+      var values = [];
+      var last = startValue || rand(-30, 30);
+      for (var i = 0; i < numberOfValues; i++) {
+        var newval = last + rand(-3, 3);
+        values.push(newval);
+        last = newval;
+      }
+      return values;
+    }
+
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: [
+        {
+          key: 'Alpha',
+          items: [
+            { color: '#FF69B4', values: makeRandomValues(50, 20) },
+            { color: '#FFB6C1', values: makeRandomValues(50) },
+            { color: '#FF69B4', values: makeRandomValues(50) },
+            { color: '#C71585', values: makeRandomValues(50, -20) },
+            { color: 'gray', values: [0] },
+          ],
+        },
+
+        {
+          key: 'Beta',
+          items: [
+            { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50), label: 'label A' },
+            { color: 'rgba(0,0,255,.6)', values: makeRandomValues(50), label: 'long label B' },
+            { color: 'darkgray', values: makeRandomValues(50), label: 'label C' },
+            { color: 'lime', values: makeRandomValues(50), label: 'label D' },
+            { color: 'gray', values: [0] },
+          ],
+        },
+
+        {
+          key: 'Gamma',
+          items: [
+            { color: 'rgba(255,0,0,.6)', values: makeRandomValues(50, -10), label: 'Important\nYear' },
+            { color: 'gray', values: makeRandomValues(20, 30) },
+            { color: 'gray', values: makeRandomValues(40, 30) },
+            { color: 'gray', values: makeRandomValues(50, 30) },
+            { color: 'gray', values: [0] },
+          ],
+        },
+      ],
+    });
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        This also adds a border to help see the edges of the viewport. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width:700px; height:500px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 700px; height: 500px"></div>
+  <p>This sample shows how to create and align sparkline style charts in a Node, using Spot Panel and <code>Panel.alignmentFocusName</code>.</p>
   <p>
-    This sample shows how to create and align sparkline style charts in a Node, using Spot Panel and <code>Panel.alignmentFocusName</code>.
-  </p>
-  <p>
-    The Spot Panel's main element is a red vertical line, and its other elements are items in an item array. Instead of aligning to these item array items, which are Horizontal Panels, we want to align to the Shape that represents the sparkline, inside of the Panel.
-
-    To do this we set <code>Panel.alignmentFocusName</code> to <code>"spark"</code>, and then set the <code>alignmentFocus</code> in
+    The Spot Panel's main element is a red vertical line, and its other elements are items in an item array. Instead of aligning to these item array items,
+    which are Horizontal Panels, we want to align to the Shape that represents the sparkline, inside of the Panel. To do this we set
+    <code>Panel.alignmentFocusName</code> to <code>"spark"</code>, and then set the <code>alignmentFocus</code> in
     <code>function makeAlignmentFromValues()</code> to the top left point, plus some offset to normalize the y-axis of the sparklines.
   </p>
 
   <p>
-    The Sparklines exist in a horizontal panel with optional labels at the front, and these sparkline labels also have their alignment computed within the horizontal panel, based on the fractional height of the starting value of the sparkline.
+    The Sparklines exist in a horizontal panel with optional labels at the front, and these sparkline labels also have their alignment computed within the
+    horizontal panel, based on the fractional height of the starting value of the sparkline.
   </p>
-
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

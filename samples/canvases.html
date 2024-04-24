@@ -1,256 +1,389 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A diagram where each node contains a chart rendered by Chart.js."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Various Charts in GoJS Nodes</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A diagram where each node contains a chart rendered by Chart.js." />
+<meta itemprop="description" content="A diagram where each node contains a chart rendered by Chart.js." />
+<meta property="og:description" content="A diagram where each node contains a chart rendered by Chart.js." />
+<meta name="twitter:description" content="A diagram where each node contains a chart rendered by Chart.js." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Charts in Nodes />
+<meta property="og:title" content=Charts in Nodes />
+<meta name="twitter:title" content=Charts in Nodes />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/canvases.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/canvases.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/canvases.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/canvases.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/canvases.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Charts in Nodes | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
-  <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
+        
 
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            layout: $(go.TreeLayout)
-          });
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-      myDiagram.nodeTemplate =
-        $(go.Node, "Vertical",
-          $(go.Panel, "Auto",
-            $(go.Shape, { fill: "transparent" },
-              new go.Binding("stroke", "color")),
-            $(go.Picture,
-              { width: 300, height: 150, portId: "" },
-              new go.Binding("element", "datasets", makeLineChart))
-          ),
-          $(go.TextBlock,
-            { margin: 8 },
-            new go.Binding("text"))
-        );
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
 
-      // This Binding conversion function creates a Canvas element for a Picture
-      // that has a rendering of a line chart drawn by Chart.js.
-      function makeLineChart(datasets, picture) {
-        var canvases = document.getElementById("myCanvases");
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: $(go.TreeLayout),
+    });
 
-        canv = document.createElement("canvas");
-        canv.width = canv.style.width = "600px";
-        canv.height = canv.style.height = "300px";
+    myDiagram.nodeTemplate = $(go.Node,
+      'Vertical',
+      $(go.Panel,
+        'Auto',
+        $(go.Shape, { fill: 'transparent' }, new go.Binding('stroke', 'color')),
+        $(go.Picture, { width: 300, height: 150, portId: '' }, new go.Binding('element', 'datasets', makeLineChart))
+      ),
+      $(go.TextBlock, { margin: 8 }, new go.Binding('text'))
+    );
 
-        // apparently Chart.js expects the Canvas to be in a DIV
-        var div = document.createElement("div");
-        div.style.position = "absolute";
-        div.appendChild(canv);
-        // add the DIV/Canvas to the DOM, temporarily
-        canvases.appendChild(div);
+    // This Binding conversion function creates a Canvas element for a Picture
+    // that has a rendering of a line chart drawn by Chart.js.
+    function makeLineChart(datasets, picture) {
+      var canvases = document.getElementById('myCanvases');
 
-        var config = {  // Chart.js configuration, including the DATASETS data from the model data
-          type: "line",
-          data: {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: datasets
+      canv = document.createElement('canvas');
+      canv.width = canv.style.width = '600px';
+      canv.height = canv.style.height = '300px';
+
+      // apparently Chart.js expects the Canvas to be in a DIV
+      var div = document.createElement('div');
+      div.style.position = 'absolute';
+      div.appendChild(canv);
+      // add the DIV/Canvas to the DOM, temporarily
+      canvases.appendChild(div);
+
+      var config = {
+        // Chart.js configuration, including the DATASETS data from the model data
+        type: 'line',
+        data: {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+          datasets: datasets,
+        },
+        options: {
+          animation: {
+            onProgress: () => picture.redraw(),
+            onComplete: () => {
+              var canvases = document.getElementById('myCanvases');
+              if (canvases) {
+                // remove the Canvas that was in the DOM for rendering
+                canvases.removeChild(div);
+              }
+              picture.redraw();
+            },
           },
-          options: {
-            animation: {
-              onProgress: () => picture.redraw(),
-              onComplete: () => {
-                var canvases = document.getElementById("myCanvases");
-                if (canvases) {  // remove the Canvas that was in the DOM for rendering
-                  canvases.removeChild(div);
-                }
-                picture.redraw();
-              }
-            }
-          }
-        };
+        },
+      };
 
-        new Chart(canv, config);
+      new Chart(canv, config);
 
-        return canv;
-      }
+      return canv;
+    }
 
-      myDiagram.model = new go.GraphLinksModel(
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: [
         {
-          copiesArrays: true,
-          copiesArrayObjects: true,
-          nodeDataArray:
-            [
-              {
-                key: 1, text: "Alpha",
-                datasets: [{
-                  label: "Random data",
-                  borderColor: "black",
-                  data: makeRandomPoints(8, 10)
-                }]
-              },
-              {
-                key: 2, text: "Beta",
-                datasets: [{
-                  label: "First dataset",
-                  fill: false,
-                  backgroundColor: "red",
-                  borderColor: "red",
-                  data: makeRandomPoints(8)
-                }, {
-                  label: "Second dataset",
-                  fill: false,
-                  backgroundColor: "blue",
-                  borderColor: "blue",
-                  data: makeRandomPoints(8)
-                }]
-              },
-              {
-                key: 3, text: "Gamma", color: "green",
-                datasets: [{
-                  label: "some data",
-                  fill: false,
-                  backgroundColor: "green",
-                  borderColor: "green",
-                  data: makeRandomPoints()
-                }]
-              }
-            ],
-          linkDataArray: [
-            { from: 1, to: 2 },
-            { from: 1, to: 3 }
-          ]
-        });
-    }
+          key: 1,
+          text: 'Alpha',
+          datasets: [
+            {
+              label: 'Random data',
+              borderColor: 'black',
+              data: makeRandomPoints(8, 10),
+            },
+          ],
+        },
+        {
+          key: 2,
+          text: 'Beta',
+          datasets: [
+            {
+              label: 'First dataset',
+              fill: false,
+              backgroundColor: 'red',
+              borderColor: 'red',
+              data: makeRandomPoints(8),
+            },
+            {
+              label: 'Second dataset',
+              fill: false,
+              backgroundColor: 'blue',
+              borderColor: 'blue',
+              data: makeRandomPoints(8),
+            },
+          ],
+        },
+        {
+          key: 3,
+          text: 'Gamma',
+          color: 'green',
+          datasets: [
+            {
+              label: 'some data',
+              fill: false,
+              backgroundColor: 'green',
+              borderColor: 'green',
+              data: makeRandomPoints(),
+            },
+          ],
+        },
+      ],
+      linkDataArray: [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+      ],
+    });
+  }
 
-    function makeRandomPoints(num, range) {
-      if (!num) num = 20;
-      if (!range) range = 100;
-      var pts = [];
-      for (var i = 0; i < num; i++) {
-        pts.push(Math.random() * range);
-      }
-      return pts;
+  function makeRandomPoints(num, range) {
+    if (!num) num = 20;
+    if (!range) range = 100;
+    var pts = [];
+    for (var i = 0; i < num; i++) {
+      pts.push(Math.random() * range);
     }
+    return pts;
+  }
 
-    function addNode() {
-      myDiagram.model.commit(m => {
-        var firstnode = myDiagram.nodes.first();
-        var color = go.Brush.darken(go.Brush.randomColor());
-        var data = {
-          text: "Node " + (myDiagram.nodes.count + 1),
-          color: color,
-          datasets: [{
-            label: "some data",
+  function addNode() {
+    myDiagram.model.commit((m) => {
+      var firstnode = myDiagram.nodes.first();
+      var color = go.Brush.darken(go.Brush.randomColor());
+      var data = {
+        text: 'Node ' + (myDiagram.nodes.count + 1),
+        color: color,
+        datasets: [
+          {
+            label: 'some data',
             fill: false,
             backgroundColor: color,
             borderColor: color,
-            data: makeRandomPoints()
-          }]
-        };
-        m.addNodeData(data);
-        if (firstnode) {
-          m.addLinkData({ from: firstnode.key, to: m.getKeyForNodeData(data) });
-          // new node starts off at same location as the parent node
-          var newnode = myDiagram.findNodeForData(data);
-          if (newnode) newnode.location = firstnode.location;
-        }
-      }, "added chart node");
-    }
+            data: makeRandomPoints(),
+          },
+        ],
+      };
+      m.addNodeData(data);
+      if (firstnode) {
+        m.addLinkData({ from: firstnode.key, to: m.getKeyForNodeData(data) });
+        // new node starts off at same location as the parent node
+        var newnode = myDiagram.findNodeForData(data);
+        if (newnode) newnode.location = firstnode.location;
+      }
+    }, 'added chart node');
+  }
 
-    function modifyNodes() {
-      myDiagram.commit(diag => {
-        diag.selection.each(node => {
-          var oldset = node.data.datasets;
-          if (!oldset) return;  // if it's a link, there's no datasets property
-          diag.model.set(node.data, "datasets",
-            [{
-              label: oldset[0].label,
-              fill: false,
-              backgroundColor: oldset[0].backgroundColor,
-              borderColor: oldset[0].borderColor,
-              data: makeRandomPoints()
-            }]);
-        });
-      }, "modified selected nodes");
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  function modifyNodes() {
+    myDiagram.commit((diag) => {
+      diag.selection.each((node) => {
+        var oldset = node.data.datasets;
+        if (!oldset) return; // if it's a link, there's no datasets property
+        diag.model.set(node.data, 'datasets', [
+          {
+            label: oldset[0].label,
+            fill: false,
+            backgroundColor: oldset[0].backgroundColor,
+            borderColor: oldset[0].borderColor,
+            data: makeRandomPoints(),
+          },
+        ]);
+      });
+    }, 'modified selected nodes');
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <button onclick="addNode()">Add Chart</button>
   <button onclick="modifyNodes()">Modify Charts of Selected Nodes</button>
+  <p>This app demonstrates using a popular charting library, <a href="https://chartjs.org">Chart.js</a>, for rendering charts within nodes.</p>
   <p>
-    This app demonstrates using a popular charting library, <a href="https://chartjs.org">Chart.js</a>,
-    for rendering charts within nodes.
+    The data for each chart is stored on the node data in the model. In this case the <code>datasets</code>
+    property value has the same properties that are expected by the Chart.js configuration, but you could organize the data however you want.
   </p>
   <p>
-    The data for each chart is stored on the node data in the model.  In this case the <code>datasets</code>
-    property value has the same properties that are expected by the Chart.js configuration, but you could
-    organize the data however you want.
-  </p>
-  <p>
-    The <code>makeLineChart</code> conversion function is used by a <a>Binding</a> on <a>Picture.element</a>
-    to generate a Canvas element that can be shown in the node.  Most of the implementation of that function
-    is specific to Chart.js.  The rendering requires the Canvas to be in the HTML DOM.  To avoid accumulating
-    resources, the configuration of the chart defines an <code>onComplete</code> event handler to
-    remove the Canvas element from the DOM.  That allows any future removal of the Node from the Diagram not
-    to leave an unused Canvas element behind.
+    The <code>makeLineChart</code> conversion function is used by a <a>Binding</a> on <a>Picture.element</a> to generate a Canvas element that can be shown in
+    the node. Most of the implementation of that function is specific to Chart.js. The rendering requires the Canvas to be in the HTML DOM. To avoid
+    accumulating resources, the configuration of the chart defines an <code>onComplete</code> event handler to remove the Canvas element from the DOM. That
+    allows any future removal of the Node from the Diagram not to leave an unused Canvas element behind.
   </p>
   <!-- myCanvases is used by makeLineChart, but need not be seen by the user -->
-  <div id="myCanvases" style="position:absolute; top:0px; left:0px; width:0px; height:0px; opacity:0"></div>
+  <div id="myCanvases" style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px; opacity: 0"></div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS on Different Platforms</h4>
+<p>
+  GoJS is intended to run in any environment that executes JavaScript.
+  This includes on browsers and within browser frameworks, and also in headless contexts such as Node.js.
+</p>
+<p>
+  We maintain examples for common frameworks:
+</p>
+<ul>
+  <li>
+    <strong>React:</strong> We provide a <a href="https://github.com/NorthwoodsSoftware/gojs-react" target="_blank" rel="noopener">React Component</a>
+    as an <a href="https://npmjs.com/gojs-react" target="_blank" rel="noopener">NPM package</a> and
+    a usage <a href="https://github.com/NorthwoodsSoftware/gojs-react-basic" target="_blank" rel="noopener">sample</a>.
+    See the intro page <a href="../intro/react.html">Using GoJS with React</a> for more information on React integration.
+  </li>
+  <li>
+    <strong>Angular:</strong> We provide an <a href="https://github.com/NorthwoodsSoftware/gojs-angular" target="_blank" rel="noopener">Angular Component</a>
+    as an <a href="https://npmjs.com/gojs-angular" target="_blank" rel="noopener">NPM package</a> and
+    a usage <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic" target="_blank" rel="noopener">sample</a>.
+    See the intro page <a href="../intro/angular.html">Using GoJS with Angular</a> for more information on Angular integration.
+  </li>
+  <li>
+    <strong>Vue:</strong> We provide a <a href="../samples/vue.html">Vue.js Sample</a>.
+  </li>
+</ul>
+<p>
+More information, including usage on frameworks including Electron, Blazor, and node.js, can be found at the <a href="../intro/platforms.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#frameworks">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

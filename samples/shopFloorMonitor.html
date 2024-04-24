@@ -1,206 +1,301 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A state monitoring diagram."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Shop Floor Monitor</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A state monitoring diagram." />
+<meta itemprop="description" content="A state monitoring diagram." />
+<meta property="og:description" content="A state monitoring diagram." />
+<meta name="twitter:description" content="A state monitoring diagram." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Shop Floor Monitor />
+<meta property="og:title" content=Shop Floor Monitor />
+<meta name="twitter:title" content=Shop Floor Monitor />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/shopFloorMonitor.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/shopFloorMonitor.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/shopFloorMonitor.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/shopFloorMonitor.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/shopFloorMonitor.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Shop Floor Monitor | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv");
-
-      // conversion functions for Bindings in the Node template:
-
-      function nodeTypeImage(type) {
-        switch (type) {                                         // Image sizes
-          case "S2": return "images/voice atm switch.jpg";      // 55x55
-          case "S3": return "images/server switch.jpg";         // 55x55
-          case "P1": return "images/general processor.jpg";     // 60x85
-          case "P2": return "images/storage array.jpg";         // 55x80
-          case "M4": return "images/iptv broadcast server.jpg"; // 80x50
-          case "M5": return "images/content engine.jpg";        // 90x65
-          case "I1": return "images/pc.jpg";                    // 80x70
-          default: return "images/pc.jpg";                      // 80x70
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      function nodeTypeSize(type) {
-        switch (type) {
-          case "S2": return new go.Size(55, 55);
-          case "S3": return new go.Size(55, 55);
-          case "P1": return new go.Size(60, 85);
-          case "P2": return new go.Size(55, 80);
-          case "M4": return new go.Size(80, 50);
-          case "M5": return new go.Size(90, 65);
-          case "I1": return new go.Size(80, 70);
-          default: return new go.Size(80, 70);
-        }
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram('myDiagramDiv');
+
+    // conversion functions for Bindings in the Node template:
+
+    function nodeTypeImage(type) {
+      switch (
+        type // Image sizes
+      ) {
+        case 'S2':
+          return 'images/voice atm switch.jpg'; // 55x55
+        case 'S3':
+          return 'images/server switch.jpg'; // 55x55
+        case 'P1':
+          return 'images/general processor.jpg'; // 60x85
+        case 'P2':
+          return 'images/storage array.jpg'; // 55x80
+        case 'M4':
+          return 'images/iptv broadcast server.jpg'; // 80x50
+        case 'M5':
+          return 'images/content engine.jpg'; // 90x65
+        case 'I1':
+          return 'images/pc.jpg'; // 80x70
+        default:
+          return 'images/pc.jpg'; // 80x70
       }
+    }
 
-      function nodeProblemConverter(msg) {
-        if (msg) return "red";
-        return 'rgba(0,0,0,0)';
+    function nodeTypeSize(type) {
+      switch (type) {
+        case 'S2':
+          return new go.Size(55, 55);
+        case 'S3':
+          return new go.Size(55, 55);
+        case 'P1':
+          return new go.Size(60, 85);
+        case 'P2':
+          return new go.Size(55, 80);
+        case 'M4':
+          return new go.Size(80, 50);
+        case 'M5':
+          return new go.Size(90, 65);
+        case 'I1':
+          return new go.Size(80, 70);
+        default:
+          return new go.Size(80, 70);
       }
+    }
 
-      function nodeOperationConverter(s) {
-        if (s >= 2) return "TriangleDown";
-        if (s >= 1) return "Rectangle";
-        return "Circle";
-      }
+    function nodeProblemConverter(msg) {
+      if (msg) return 'red';
+      return 'rgba(0,0,0,0)';
+    }
 
-      function nodeStatusConverter(s) {
-        if (s >= 2) return "red";
-        if (s >= 1) return "yellow";
-        return "green";
-      }
+    function nodeOperationConverter(s) {
+      if (s >= 2) return 'TriangleDown';
+      if (s >= 1) return 'Rectangle';
+      return 'Circle';
+    }
 
-      myDiagram.nodeTemplate =
-        $(go.Node, "Vertical",
-          { locationObjectName: "ICON", locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Panel, "Spot",
-            $(go.Panel, "Auto",
-              { name: "ICON" },
-              $(go.Shape,
-                { fill: null, stroke: null, background: 'rgba(0,0,0,0)' },
-                new go.Binding("background", "problem", nodeProblemConverter),
-                new go.AnimationTrigger('background')),
-              $(go.Picture,
-                { margin: 5 },
-                new go.Binding("source", "type", nodeTypeImage),
-                new go.Binding("desiredSize", "type", nodeTypeSize))
-            ),  // end Auto Panel
-            $(go.Shape, "Circle",
-              {
-                alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.TopLeft,
-                width: 12, height: 12, fill: "orange"
-              },
-              new go.Binding("figure", "operation", nodeOperationConverter)),
-            $(go.Shape, "Triangle",
-              {
-                alignment: go.Spot.TopRight, alignmentFocus: go.Spot.TopRight,
-                width: 12, height: 12, fill: "blue"
-              },
-              new go.Binding("fill", "status", nodeStatusConverter),
-              new go.AnimationTrigger('fill'))
-          ),  // end Spot Panel
-          $(go.TextBlock,
-            new go.Binding("text"))
-        );  // end Node
+    function nodeStatusConverter(s) {
+      if (s >= 2) return 'red';
+      if (s >= 1) return 'yellow';
+      return 'green';
+    }
 
-
-      // conversion function for Bindings in the Link template:
-
-      function linkProblemConverter(msg) {
-        if (msg) return "red";
-        return "gray";
-      }
-
-      myDiagram.linkTemplate =
-        $(go.Link, go.Link.AvoidsNodes,
-          { corner: 3 },
+    myDiagram.nodeTemplate = $(go.Node,
+      'Vertical',
+      { locationObjectName: 'ICON', locationSpot: go.Spot.Center },
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Panel,
+        'Spot',
+        $(go.Panel,
+          'Auto',
+          { name: 'ICON' },
           $(go.Shape,
-            { strokeWidth: 2, stroke: "gray" },
-            new go.Binding("stroke", "problem", linkProblemConverter),
-            new go.AnimationTrigger('stroke'))
-        );
+            { fill: null, stroke: null, background: 'rgba(0,0,0,0)' },
+            new go.Binding('background', 'problem', nodeProblemConverter),
+            new go.AnimationTrigger('background')
+          ),
+          $(go.Picture, { margin: 5 }, new go.Binding('source', 'type', nodeTypeImage), new go.Binding('desiredSize', 'type', nodeTypeSize))
+        ), // end Auto Panel
+        $(go.Shape,
+          'Circle',
+          {
+            alignment: go.Spot.TopLeft,
+            alignmentFocus: go.Spot.TopLeft,
+            width: 12,
+            height: 12,
+            fill: 'orange',
+          },
+          new go.Binding('figure', 'operation', nodeOperationConverter)
+        ),
+        $(go.Shape,
+          'Triangle',
+          {
+            alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.TopRight,
+            width: 12,
+            height: 12,
+            fill: 'blue',
+          },
+          new go.Binding('fill', 'status', nodeStatusConverter),
+          new go.AnimationTrigger('fill')
+        )
+      ), // end Spot Panel
+      $(go.TextBlock, new go.Binding('text'))
+    ); // end Node
 
-      load();
+    // conversion function for Bindings in the Link template:
 
-      // simulate some real-time problem monitoring, once every two seconds:
-      function randomProblems() {
-        var model = myDiagram.model;
-        model.commit(m => {
-          // update all nodes
-          var arr = m.nodeDataArray;
-          for (var i = 0; i < arr.length; i++) {
-            data = arr[i];
-            m.set(data, "problem", (Math.random() < 0.8) ? "" : "Power loss due to ...");
-            m.set(data, "status", Math.random() * 3);
-            m.set(data, "operation", Math.random() * 3);
-          }
-          // and update all links
-          arr = m.linkDataArray;
-          for (i = 0; i < arr.length; i++) {
-            data = arr[i];
-            m.set(data, "problem", (Math.random() < 0.7) ? "" : "No Power");
-          }
-        }, null);  // null temporarily sets skipsUndoManager to true, to avoid recording these changes
-      }
-
-      function loop() {
-        setTimeout(() => { randomProblems(); loop(); }, 2000);
-      }
-      loop();  // start the simulation
+    function linkProblemConverter(msg) {
+      if (msg) return 'red';
+      return 'gray';
     }
 
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    myDiagram.linkTemplate = $(go.Link,
+      { routing: go.Routing.AvoidsNodes, corner: 3 },
+      $(go.Shape, { strokeWidth: 2, stroke: 'gray' }, new go.Binding('stroke', 'problem', linkProblemConverter), new go.AnimationTrigger('stroke'))
+    );
+
+    load();
+
+    // simulate some real-time problem monitoring, once every two seconds:
+    function randomProblems() {
+      var model = myDiagram.model;
+      model.commit((m) => {
+        // update all nodes
+        var arr = m.nodeDataArray;
+        for (var i = 0; i < arr.length; i++) {
+          data = arr[i];
+          m.set(data, 'problem', Math.random() < 0.8 ? '' : 'Power loss due to ...');
+          m.set(data, 'status', Math.random() * 3);
+          m.set(data, 'operation', Math.random() * 3);
+        }
+        // and update all links
+        arr = m.linkDataArray;
+        for (i = 0; i < arr.length; i++) {
+          data = arr[i];
+          m.set(data, 'problem', Math.random() < 0.7 ? '' : 'No Power');
+        }
+      }, null); // null temporarily sets skipsUndoManager to true, to avoid recording these changes
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+
+    function loop() {
+      setTimeout(() => {
+        randomProblems();
+        loop();
+      }, 2000);
+    }
+    loop(); // start the simulation
+  }
+
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:80%; height:400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 80%; height: 400px"></div>
   <p>
-    This monitoring diagram continuously shows the state of a number of stations on an imaginary shop floor.
-    Every two seconds it updates the display, showing some random problems via highlighting.
-    You can add nodes and links by adding data to the model text below and then clicking "Load".
+    This monitoring diagram continuously shows the state of a number of stations on an imaginary shop floor. Every two seconds it updates the display, showing
+    some random problems via highlighting. You can add nodes and links by adding data to the model text below and then clicking "Load".
   </p>
   <button onclick="load()">Load</button>
   <br />
-  <textarea id="mySavedModel" style="width:100%;height:300px">
+  <textarea id="mySavedModel" style="width: 100%; height: 300px">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {"key":"1", "text":"Switch 23", "type":"S2", "loc":"195 218"},
@@ -219,16 +314,42 @@
 {"from":"7", "to":"2"},
 {"from":"7", "to":"3"}
  ]}
- </textarea>
-    <p>
-        For another monitoring example, see the <a href="kittenMonitor.html">Kitten Monitor</a> sample.
-    </p>
+ </textarea
+  >
+  <p>For another monitoring example, see the <a href="kittenMonitor.html">Kitten Monitor</a> sample.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Animation</h4>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
+  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

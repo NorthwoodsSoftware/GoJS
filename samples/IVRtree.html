@@ -1,364 +1,502 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>IVR Tree</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
+<meta itemprop="description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
+<meta property="og:description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
+<meta name="twitter:description" content="An IVR (Interactive Voice Response) diagram showing a call-menu tree with various prompts and responses." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=IVR Tree />
+<meta property="og:title" content=IVR Tree />
+<meta name="twitter:title" content=IVR Tree />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ivrTree.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/ivrTree.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ivrTree.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/IVRtree.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/IVRtree.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      IVR Tree | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script src="../extensions/Figures.js"></script>
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-// Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-// For details, see https://gojs.net/latest/intro/buildingObjects.html
-const $ = go.GraphObject.make;  // for conciseness in defining templates
-myDiagram =
-  new go.Diagram("myDiagramDiv",
-    {
-      allowCopy: false,
-      "draggingTool.dragsTree": true,
-      "commandHandler.deletesTree": true,
-      layout:
-        $(go.TreeLayout,
-          { angle: 90, arrangement: go.TreeLayout.ArrangementFixedRoots }),
-      "undoManager.isEnabled": true
-    });
-  var icons = {
-    "van":
-    "M37.409,18.905l-4.946-7.924c-0.548-0.878-1.51-1.411-2.545-1.411H3c-1.657,0-3,1.343-3,3v16.86c0,1.657,1.343,3,3,3h0.787 c0.758,1.618,2.391,2.75,4.293,2.75s3.534-1.132,4.292-2.75h20.007c0.758,1.618,2.391,2.75,4.293,2.75 c1.9,0,3.534-1.132,4.291-2.75h0.787c1.656,0,3-1.343,3-3v-2.496C44.75,22.737,41.516,19.272,37.409,18.905z M8.087,32.395 c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964s1.963,0.88,1.963,1.964S9.171,32.395,8.087,32.395z M26.042,21.001 V15.57v-2.999h3.876l5.264,8.43H26.042z M36.671,32.395c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964 s1.963,0.88,1.963,1.964S37.755,32.395,36.671,32.395z",
-  
-    "heart":
-    "M32 11.192c0 2.699-1.163 5.126-3.015 6.808h0.015l-10 10c-1 1-2 2-3 2s-2-1-3-2l-9.985-10c-1.852-1.682-3.015-4.109-3.015-6.808 0-5.077 4.116-9.192 9.192-9.192 2.699 0 5.126 1.163 6.808 3.015 1.682-1.852 4.109-3.015 6.808-3.015 5.077 0 9.192 4.116 9.192 9.192z",
-
-    "suv":
-    "M246,90.011V59.995c0-5.523-4.48-9.995-10-9.995h-50L156.97,6.416C155.11,3.634,152.34,2,149,2H28 c-5.52,0-10,4.446-10,9.969V30h-8c-4.42,0-8,3.56-8,7.983v40.022C2,82.427,5.58,86,10,86h8v20h16.458 c2.8-15.959,16.702-28.066,33.462-28.066c16.75,0,30.708,12.107,33.518,28.066h72.958c2.8-15.959,16.764-28.066,33.524-28.066 c16.75,0,30.624,12.107,33.434,28.066H250c4.42,0,8-3.563,8-7.985v-8.004H246z M86,50H30V13.97h56V50z M98,50V13.97h48L170,50H98z M68,138c-14.336,0-26.083-11.706-26.083-26.051s11.664-26.014,26-26.014s26,11.669,26,26.014S82.336,138,68,138z M67.917,99.943 c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006C79.917,105.329,74.534,99.943,67.917,99.943z M208,138c-14.337,0-26.083-11.706-26.083-26.051s11.663-26.014,26-26.014s26,11.669,26,26.014S222.337,138,208,138z M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006 C219.917,105.329,214.534,99.943,207.917,99.943z",
-
-    "hammer":
-    "M6810 12124 c-350 -23 -757 -98 -1190 -219 -131 -37 -130 -37 -80 -47 34 -8 58 -6 101 6 218 60 539 38 874 -60 318 -94 689 -275 953 -465 491 -354 767 -739 812 -1130 18 -163 -3 -283 -80 -449 -51 -111 -64 -180 -56 -300 9 -134 42 -244 97 -321 l22 -31 -1061 -1061 -1061 -1061 -58 55 c-149 139 -599 564 -693 654 -58 55 -222 210 -365 345 -454 428 -490 464 -489 485 2 22 1 18 74 340 29 127 57 250 62 275 15 68 21 97 78 345 29 127 56 246 60 265 8 36 68 297 121 530 17 74 32 140 33 147 0 6 -165 119 -369 250 -483 312 -1813 1178 -1935 1260 l-95 63 -347 -347 -348 -348 704 -705 c687 -688 703 -706 695 -735 -9 -36 -26 -97 -40 -142 -19 -67 -29 -104 -37 -135 -5 -18 -48 -171 -97 -339 l-87 -307 -477 -136 -476 -136 -705 705 -705 705 -317 -317 c-174 -175 -318 -325 -320 -334 -2 -9 72 -122 163 -250 91 -129 294 -414 451 -634 156 -220 443 -629 638 -910 194 -280 357 -514 361 -519 6 -7 187 23 524 89 39 8 144 28 235 45 91 17 185 35 210 40 25 5 119 23 210 40 91 17 185 35 210 40 25 5 119 23 210 40 91 17 197 38 237 46 40 7 74 14 76 14 2 0 62 -62 132 -137 71 -76 226 -241 345 -368 608 -646 700 -745 700 -754 0 -5 -154 -156 -342 -337 -189 -181 -406 -389 -483 -464 -77 -74 -297 -286 -490 -470 -192 -184 -413 -396 -490 -470 -77 -74 -300 -288 -495 -475 -575 -551 -836 -801 -990 -950 -80 -77 -338 -325 -575 -552 -236 -226 -446 -434 -466 -461 -104 -138 -134 -283 -88 -423 52 -158 84 -196 618 -732 526 -529 578 -574 739 -636 114 -44 165 -54 272 -53 135 0 244 42 343 131 40 36 461 478 2551 2681 144 151 394 414 556 585 609 642 817 861 859 908 24 26 47 47 51 47 5 0 107 -105 227 -232 120 -128 286 -305 369 -393 83 -88 262 -279 399 -425 267 -284 1376 -1465 1640 -1745 88 -94 405 -431 703 -750 299 -319 579 -615 623 -657 138 -134 247 -209 391 -267 131 -53 201 -66 358 -66 135 0 174 7 295 47 361 122 643 456 711 842 47 270 -38 555 -230 762 -57 62 -479 465 -1051 1004 -49 46 -135 127 -190 180 -55 53 -219 208 -365 345 -146 137 -312 295 -370 350 -58 55 -222 210 -365 345 -143 135 -307 290 -365 345 -58 55 -222 210 -365 345 -143 135 -307 290 -365 345 -58 55 -224 212 -370 350 -146 137 -285 270 -310 295 -25 25 -147 141 -272 258 -125 117 -230 217 -234 223 -4 7 424 442 1042 1060 l1048 1048 26 -23 c37 -34 118 -89 181 -125 178 -99 363 -116 639 -55 51 11 102 15 160 11 238 -13 404 -136 726 -538 l142 -176 -92 -94 c-136 -142 -184 -256 -173 -414 16 -223 148 -410 359 -510 178 -84 380 -69 526 39 26 19 259 248 518 508 411 413 475 481 502 536 42 85 56 159 49 262 -9 141 -60 251 -168 365 -119 125 -252 185 -408 185 -98 0 -162 -15 -241 -55 l-54 -28 -39 44 c-70 81 -203 263 -258 354 -29 49 -97 187 -150 306 -110 245 -158 334 -270 499 -162 239 -251 340 -773 875 -1051 1076 -1168 1194 -1313 1311 -440 360 -931 578 -1488 663 -38 6 -101 16 -140 21 -70 11 -580 21 -685 14z m4263 -10685 c133 -20 266 -104 332 -209 90 -144 94 -341 9 -486 -133 -228 -448 -296 -667 -146 -62 43 -84 77 -107 168 -64 249 32 566 194 640 29 13 76 28 106 33 30 5 56 9 58 10 2 0 36 -4 75 -10z"
-};
-function geoFunc(geoname) {
-  var geo = icons[geoname];
-  if (geo === undefined) geo = icons["heart"];  // use this for an unknown icon name
-  if (typeof geo === "string") {
-    geo = icons[geoname] = go.Geometry.parse(geo, true);  // fill each geometry
-  }
-  return geo;
-}
-// when the document is modified, add a "*" to the title and enable the "Save" button
-myDiagram.addDiagramListener("Modified", e => {
-  var button = document.getElementById("SaveButton");
-  if (button) button.disabled = !myDiagram.isModified;
-  var idx = document.title.indexOf("*");
-  if (myDiagram.isModified) {
-    if (idx < 0) document.title += "*";
-  } else {
-    if (idx >= 0) document.title = document.title.slice(0, idx);
-  }
-});
-
-var bluegrad = $(go.Brush, "Linear", { 0: "#6d5c9c", 1: "#3a2570" });
-var greengrad= $(go.Brush, "Linear", { 0: "#7a368f", 1: "#431452" });
-var dropdown = $(go.Brush, "Linear", { 0: "#58458A", 1: "#3a2570" });
-
-
-go.Shape.defineFigureGenerator("Van", function (shape, w, h) {
-return geoFunc("van");
-});
-
-go.Shape.defineFigureGenerator("SUV", function (shape, w, h) {
-return geoFunc("suv");
-});
-go.Shape.defineFigureGenerator("Hammer", function (shape, w, h) {
-return geoFunc("hammer");
-});
-// each action is represented by a shape and some text
-var actionTemplate =
-  $(go.Panel, "Position",
-    $(go.Shape,
-      
-      new go.Binding("position", "offset", n => new go.Point(0, n)),
-      new go.Binding("figure", "figure"),
-      new go.Binding("strokeWidth", "stroke"),
-      new go.Binding("fill"),
-      new go.Binding("scale")
-    ),
-    $(go.TextBlock, {position: new go.Point(21,5)},
-      { font: "11pt Verdana, sans-serif", stroke: "white" },
-      new go.Binding("text")
-    ),
-    $(go.TextBlock, {position: new go.Point(160,5)},
-      { font: "11pt Verdana, sans-serif", stroke: "white" },
-      new go.Binding("text" , "number")
-    )
-  );
-
-// each regular Node has body consisting of a title followed by a collapsible list of actions,
-// controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
-myDiagram.nodeTemplate =  // the default node template
-  $(go.Node, "Vertical", {isShadowed: false, shadowOffset: new go.Point(3, 3)}, new go.Binding("shadowColor", "shadowColor").ofModel(),
-    new go.Binding("isTreeExpanded").makeTwoWay(),  // remember the expansion state for
-    new go.Binding("wasTreeExpanded").makeTwoWay(), //   when the model is re-loaded
-    { selectionObjectName: "BODY" },
-    // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
-    $(go.Panel, "Auto",
-      { name: "BODY" },
-      $(go.Shape, "RoundedRectangle",
-        { fill: bluegrad, stroke: null }
-      ),
-      $(go.Panel, "Vertical",
-        { margin: 3 },
-        // the title
-        $(go.TextBlock,
-          {
-            stretch: go.GraphObject.Horizontal,
-            font: "bold 12pt Verdana, sans-serif",
-            stroke: "white"
-          },
-          new go.Binding("text", "question")
-        ),
-        // the optional list of actions
-        $(go.Panel, "Vertical",
-          { stretch: go.GraphObject.Horizontal, visible: false },  // not visible unless there is more than one action
-          new go.Binding("visible", "actions", acts => (Array.isArray(acts) && acts.length > 0)),
-          // headered by a label and a PanelExpanderButton inside a Table
-          $(go.Panel, "Table",
-            { stretch: go.GraphObject.Horizontal },
-            $(go.TextBlock, "Choices",
-              {
-                alignment: go.Spot.Left,
-                font: "10pt Verdana, sans-serif",
-                stroke: "white"
-              }
-            ),
-            $("PanelExpanderButton", "COLLAPSIBLE", // name of the object to make visible or invisible
-              {
-                column: 1, alignment: go.Spot.Right, 
-                "ButtonIcon.stroke": "white",
-
-              }
-            )
-          ), // end Table panel
-          // with the list data bound in the Vertical Panel
-          $(go.Panel, "Vertical",
-            {
-              name: "COLLAPSIBLE",  // identify to the PanelExpanderButton
-              padding: 2,
-              stretch: go.GraphObject.Horizontal,  // take up whole available width
-              background: dropdown,  // to distinguish from the node's body
-              defaultAlignment: go.Spot.Left,  // thus no need to specify alignment on each element
-              itemTemplate: actionTemplate  // the Panel created for each item in Panel.itemArray
-            },
-            new go.Binding("itemArray", "actions"),
-              // bind Panel.itemArray to nodedata.actions
-          )  // end action list Vertical Panel
-        )  // end optional Vertical Panel
-      )  // end outer Vertical Panel
-    ),  // end "BODY"  Auto Panel
-    $(go.Panel,  // this is underneath the "BODY"
-      {height: 17 },  // always this height, even if the TreeExpanderButton is not visible
-      $("TreeExpanderButton") 
-    )
-  );
-
-// define a second kind of Node:
-myDiagram.nodeTemplateMap.add("Terminal", 
-  $(go.Node, "Spot", {isShadowed: true, shadowOffset: new go.Point(3, 3) }, new go.Binding("shadowColor", "shadowColor").ofModel(), 
-    $(go.Shape, "Circle",
-      { width: 55, height: 55, fill: greengrad, stroke: null }
-    ),
-    $(go.TextBlock,
-      { font: "10pt Verdana, sans-serif", stroke: "white" },
-      new go.Binding("text")
-    )
-  )
-);
-
-myDiagram.linkTemplate =
-  $(go.Link, go.Link.Orthogonal,
-    { deletable: false, corner: 10},
-    $(go.Shape,
-      { strokeWidth: 2 }, new go.Binding("stroke", "linkColor").ofModel()
-    ),
-    $(go.Shape,   // the arrowhead
-      { toArrow: "Standard", fill: null, strokeWidth: 3}, new go.Binding("stroke", "linkColor").ofModel()),
-    
-  );
-
-var nodeDataArray = [
-  {
-    key: 1, question: "Greeting",
-    actions: [
-      { text: "Sales", color: "white", figure: "BpmnEventConditional", fill: "white", number: "[1]", offset: 3, scale: .18 },
-      { text: "Parts and Services", figure: "Gear", fill: "white", number: "[2]", offset: 3, scale: .18, stroke: 4},
-      { text: "Representative", figure: "BpmnTaskUser", fill: "white", number: "[3]", offset: 1, scale: .18, stroke: 4}
-    ]
-  },
-  {
-    key: 2, question: "Sales",
-    actions: [
-      { text: "Compact", figure: "RailShipment", fill: "white", number: "[1]", offset: 0, scale: .18, stroke: 4},
-      { text: "Mid-Size", figure: "Forklift", fill: "white", number: "[2]", offset: 1, scale: .18, stroke: 4},
-      { text: "Large", figure: "TruckShipment", fill: "white", number: "[3]", offset: 3, scale: .18, stroke: 4}
-    ]
-  },
-  {
-    key: 3, question: "Parts and Services",
-    actions: [
-      { text: "Maintenance", figure: "Hammer", fill: "white", number: "[1]", offset: 3, scale: .0015, stroke: 700},
-      { text: "Repairs", figure: "Caution", fill: "white", number: "[2]", offset: 2, scale: .18, stroke: 4},
-      { text: "State Inspection", figure: "BpmnTaskMessage", fill: "white", number: "[3]", offset: 5, scale: .18, stroke: 4}
-    ]
-  },
-  { key: 4, question: "Representative", },
-  { key: 5, question: "Compact",  },
-  { key: 6, question: "Mid-Size",  },
-  {
-    key: 7, question: "Large", 
-    actions: [
-      { text: "SUV", figure: "SUV", fill: "white", number: "[1]", offset: 5, scale: .08, stroke: 8},
-      { text: "Van", figure: "Van", fill: "white", number: "[2]", offset: 1.5, scale: .5, stroke: 2 }
-    ]
-  },
-  { key: 8, question: "Maintenance", },
-  { key: 9, question: "Repairs",  },
-  { key: 10, question: "State Inspection",  },
-  { key: 11, question: "SUV",  },
-  { key: 12, question: "Van",  },
-  { key: 13, category: "Terminal", text: "Susan",  },
-  { key: 14, category: "Terminal", text: "Eric",  },
-  { key: 15, category: "Terminal", text: "Steven",  },
-  { key: 16, category: "Terminal", text: "Tom",  },
-  { key: 17, category: "Terminal", text: "Emily",  },
-  { key: 18, category: "Terminal", text: "Tony",  },
-  { key: 19, category: "Terminal", text: "Ken",  },
-  { key: 20, category: "Terminal", text: "Rachel",  },
-  { key: 21, category: "Terminal", text: "John",  },
-  { key: 22, category: "Terminal", text: "Jake",  }
-];
-var linkDataArray = [
-  { from: 1, to: 2, answer: 1},
-  { from: 1, to: 3, answer: 2},
-  { from: 1, to: 4, answer: 3},
-  { from: 2, to: 5, answer: 1},
-  { from: 2, to: 6, answer: 2},
-  { from: 2, to: 7, answer: 3},
-  { from: 3, to: 8, answer: 1},
-  { from: 3, to: 9, answer: 2},
-  { from: 3, to: 10, answer: 3},
-  { from: 7, to: 11, answer: 1},
-  { from: 7, to: 12, answer: 2},
-  { from: 5, to: 13},
-  { from: 6, to: 14},
-  { from: 11, to: 15},
-  { from: 12, to: 16},
-  { from: 8, to: 17},
-  { from: 9, to: 18},
-  { from: 10, to: 19},
-  { from: 4, to: 20},
-  { from: 4, to: 21},
-  { from: 8, to: 22}
-];
-
-// create the Model with the above data, and assign to the Diagram
-myDiagram.model = new go.GraphLinksModel(
-  {
-    copiesArrays: true,
-    copiesArrayObjects: true,
-    nodeDataArray: nodeDataArray,
-    linkDataArray: linkDataArray,
-    linkColor: "#000000",
-    shadowColor: "#bababa"
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
   });
-  
-  
-  }
-  function buttonClick()
-      {
-          var myDiagramDiv = document.getElementById("myDiagramDiv");
-          var button = document.getElementById("darkMode");
-          myDiagramDiv.style["background-color"] = (button.innerHTML === "Dark Mode") ? "#242424" : "#ffffff";
-          button.innerHTML = (button.innerHTML === "Dark Mode") ? "Light Mode" : "Dark Mode";
-          colorSwitch();
-      }
-  function colorSwitch()
-      {
-          
-          myDiagram.model.commit((m) => {  
-              
-            m.set(m.modelData, "linkColor", (m.modelData.linkColor === "#eeeeee") ? "#000000" : "#eeeeee");
-            m.set(m.modelData, "shadowColor", (m.modelData.shadowColor === "#eeeeee") ? "#bababa" : "#2e2e2e");
-          }, null
-          );
-      }
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-window.addEventListener('DOMContentLoaded', init);
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/Figures.js"></script>
+<script src="../extensions/Themes.js"></script>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      'draggingTool.dragsTree': true,
+      'commandHandler.deletesTree': true,
+      layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeArrangement.FixedRoots }),
+      'undoManager.isEnabled': true,
+      // use "Modern" themes from extensions/Themes
+      'themeManager.themeMap': new go.Map([
+        { key: 'light', value: Modern },
+        { key: 'dark', value: ModernDark },
+      ]),
+      'themeManager.changesDivBackground': true,
+      'themeManager.currentTheme': document.getElementById('theme').value,
+    });
+
+    myDiagram.themeManager.set('', {
+      colors: {
+        primary: '#155e75',
+        terminal: '#047857',
+      },
+    });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      var button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    go.Shape.defineFigureGenerator('Van', function (shape, w, h) {
+      var geo = go.Geometry.parse(
+        'M37.409,18.905l-4.946-7.924c-0.548-0.878-1.51-1.411-2.545-1.411H3c-1.657,0-3,1.343-3,3v16.86c0,1.657,1.343,3,3,3h0.787 c0.758,1.618,2.391,2.75,4.293,2.75s3.534-1.132,4.292-2.75h20.007c0.758,1.618,2.391,2.75,4.293,2.75 c1.9,0,3.534-1.132,4.291-2.75h0.787c1.656,0,3-1.343,3-3v-2.496C44.75,22.737,41.516,19.272,37.409,18.905z M8.087,32.395 c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964s1.963,0.88,1.963,1.964S9.171,32.395,8.087,32.395z M26.042,21.001 V15.57v-2.999h3.876l5.264,8.43H26.042z M36.671,32.395c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964 s1.963,0.88,1.963,1.964S37.755,32.395,36.671,32.395z'
+      );
+      return geo.scale(w / geo.bounds.width, h / geo.bounds.height);
+    });
+    go.Shape.defineFigureGenerator('SUV', function (shape, w, h) {
+      var geo = go.Geometry.parse(
+        'M246,90.011V59.995c0-5.523-4.48-9.995-10-9.995h-50L156.97,6.416C155.11,3.634,152.34,2,149,2H28 c-5.52,0-10,4.446-10,9.969V30h-8c-4.42,0-8,3.56-8,7.983v40.022C2,82.427,5.58,86,10,86h8v20h16.458 c2.8-15.959,16.702-28.066,33.462-28.066c16.75,0,30.708,12.107,33.518,28.066h72.958c2.8-15.959,16.764-28.066,33.524-28.066 c16.75,0,30.624,12.107,33.434,28.066H250c4.42,0,8-3.563,8-7.985v-8.004H246z M86,50H30V13.97h56V50z M98,50V13.97h48L170,50H98z M68,138c-14.336,0-26.083-11.706-26.083-26.051s11.664-26.014,26-26.014s26,11.669,26,26.014S82.336,138,68,138z M67.917,99.943 c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006C79.917,105.329,74.534,99.943,67.917,99.943z M208,138c-14.337,0-26.083-11.706-26.083-26.051s11.663-26.014,26-26.014s26,11.669,26,26.014S222.337,138,208,138z M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006 C219.917,105.329,214.534,99.943,207.917,99.943z'
+      );
+      return geo.scale(w / geo.bounds.width, h / geo.bounds.height);
+    });
+    go.Shape.defineFigureGenerator('Hammer', function (shape, w, h) {
+      var geo = go.Geometry.parse(
+        'M19 5.5a4.5 4.5 0 01-4.791 4.49c-.873-.055-1.808.128-2.368.8l-6.024 7.23a2.724 2.724 0 11-3.837-3.837L9.21 8.16c.672-.56.855-1.495.8-2.368a4.5 4.5 0 015.873-4.575c.324.105.39.51.15.752L13.34 4.66a.455.455 0 00-.11.494 3.01 3.01 0 001.617 1.617c.17.07.363.02.493-.111l2.692-2.692c.241-.241.647-.174.752.15.14.435.216.9.216 1.382zM4 17a1 1 0 100-2 1 1 0 000 2z'
+      );
+      return geo.scale(w / geo.bounds.width, h / geo.bounds.height);
+    });
+
+    // each action is represented by a shape and some text
+    var actionTemplate = $(go.Panel,
+      'TableRow',
+      $(go.Shape, { column: 0, width: 20, height: 20, fill: null }, new go.Binding('figure'), new go.ThemeBinding('stroke', 'text')),
+      $(go.TextBlock, { column: 1 }, { font: '11pt Verdana, sans-serif' }, new go.Binding('text'), new go.ThemeBinding('stroke', 'text')),
+      $(go.TextBlock,
+        { column: 2 },
+        { font: '11pt Verdana, sans-serif' },
+        new go.Binding('text', 'itemIndex', (i) => `[${i}]`).ofObject(),
+        new go.ThemeBinding('stroke', 'text')
+      )
+    );
+
+    // each regular Node has body consisting of a title followed by a collapsible list of actions,
+    // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
+    myDiagram.nodeTemplate = // the default node template
+      $(go.Node,
+        'Vertical',
+        new go.Binding('isTreeExpanded').makeTwoWay(), // remember the expansion state for
+        new go.Binding('wasTreeExpanded').makeTwoWay(), //   when the model is re-loaded
+        { selectionObjectName: 'BODY' },
+        // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
+        $(go.Panel,
+          'Auto',
+          { name: 'BODY' },
+          $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, new go.ThemeBinding('fill', 'primary')),
+          $(go.Panel,
+            'Vertical',
+            { margin: 3 },
+            // the title
+            $(go.TextBlock,
+              {
+                stretch: go.Stretch.Horizontal,
+                font: 'bold 12pt Verdana, sans-serif',
+                stroke: 'white',
+              },
+              new go.Binding('text', 'question')
+            ),
+            // the optional list of actions
+            $(go.Panel,
+              'Vertical',
+              { stretch: go.Stretch.Horizontal, visible: false }, // not visible unless there is at least one action
+              new go.Binding('visible', 'actions', (acts) => Array.isArray(acts) && acts.length > 0),
+              // headered by a label and a PanelExpanderButton inside a Table
+              $(go.Panel,
+                'Table',
+                { stretch: go.Stretch.Horizontal },
+                $(go.TextBlock, 'Choices', {
+                  alignment: go.Spot.Left,
+                  font: '10pt Verdana, sans-serif',
+                  stroke: 'white',
+                }),
+                $('PanelExpanderButton',
+                  'COLLAPSIBLE', // name of the object to make visible or invisible
+                  {
+                    column: 1,
+                    alignment: go.Spot.Right,
+                    'ButtonIcon.stroke': 'white',
+                  }
+                )
+              ), // end Table panel
+              // with the list data bound in the Table Panel
+              $(go.Panel,
+                'Table',
+                {
+                  name: 'COLLAPSIBLE', // identify to the PanelExpanderButton
+                  padding: 2,
+                  stretch: go.Stretch.Horizontal, // take up whole available width
+                  defaultAlignment: go.Spot.Left, // thus no need to specify alignment on each element
+                  defaultSeparatorPadding: 3,
+                  itemTemplate: actionTemplate, // the Panel created for each item in Panel.itemArray
+                },
+                new go.ThemeBinding('background', 'div'),
+                new go.Binding('itemArray', 'actions')
+                // bind Panel.itemArray to nodedata.actions
+              ) // end action list Table Panel
+            ) // end optional Vertical Panel
+          ) // end outer Vertical Panel
+        ), // end "BODY"  Auto Panel
+        $(go.Panel, // this is underneath the "BODY"
+          { height: 17 }, // always this height, even if the TreeExpanderButton is not visible
+          $('TreeExpanderButton')
+        )
+      );
+
+    // define a second kind of Node:
+    myDiagram.nodeTemplateMap.add(
+      'Terminal',
+      $(go.Node,
+        'Spot',
+        $(go.Shape, 'Circle', { width: 55, height: 55, strokeWidth: 0 }, new go.ThemeBinding('fill', 'terminal')),
+        $(go.TextBlock, { font: '10pt Verdana, sans-serif', stroke: 'white' }, new go.Binding('text'))
+      )
+    );
+
+    myDiagram.linkTemplate = $(go.Link,
+      { routing: go.Routing.Orthogonal, deletable: false, corner: 10, toShortLength: 4 },
+      $(go.Shape, { strokeWidth: 2 }, new go.ThemeBinding('stroke', 'link')),
+      $(go.Shape, // the arrowhead
+        { toArrow: 'Standard', strokeWidth: 0 },
+        new go.ThemeBinding('fill', 'link')
+      )
+    );
+
+    var nodeDataArray = [
+      {
+        key: 1,
+        question: 'Greeting',
+        actions: [
+          { text: 'Sales', figure: 'BpmnEventConditional' },
+          { text: 'Parts and Services', figure: 'Gear' },
+          { text: 'Representative', figure: 'BpmnTaskUser' },
+        ],
+      },
+      {
+        key: 2,
+        question: 'Sales',
+        actions: [
+          { text: 'Compact', figure: 'RailShipment' },
+          { text: 'Mid-Size', figure: 'Forklift' },
+          { text: 'Large', figure: 'TruckShipment' },
+        ],
+      },
+      {
+        key: 3,
+        question: 'Parts and Services',
+        actions: [
+          { text: 'Maintenance', figure: 'Hammer' },
+          { text: 'Repairs', figure: 'Caution' },
+          { text: 'State Inspection', figure: 'BpmnTaskMessage' },
+        ],
+      },
+      { key: 4, question: 'Representative' },
+      { key: 5, question: 'Compact' },
+      { key: 6, question: 'Mid-Size' },
+      {
+        key: 7,
+        question: 'Large',
+        actions: [
+          { text: 'SUV', figure: 'SUV' },
+          { text: 'Van', figure: 'Van' },
+        ],
+      },
+      { key: 8, question: 'Maintenance' },
+      { key: 9, question: 'Repairs' },
+      { key: 10, question: 'State Inspection' },
+      { key: 11, question: 'SUV' },
+      { key: 12, question: 'Van' },
+      { key: 13, category: 'Terminal', text: 'Susan' },
+      { key: 14, category: 'Terminal', text: 'Eric' },
+      { key: 15, category: 'Terminal', text: 'Steven' },
+      { key: 16, category: 'Terminal', text: 'Tom' },
+      { key: 17, category: 'Terminal', text: 'Emily' },
+      { key: 18, category: 'Terminal', text: 'Tony' },
+      { key: 19, category: 'Terminal', text: 'Ken' },
+      { key: 20, category: 'Terminal', text: 'Rachel' },
+      { key: 21, category: 'Terminal', text: 'John' },
+      { key: 22, category: 'Terminal', text: 'Jake' },
+    ];
+    var linkDataArray = [
+      { from: 1, to: 2, answer: 1 },
+      { from: 1, to: 3, answer: 2 },
+      { from: 1, to: 4, answer: 3 },
+      { from: 2, to: 5, answer: 1 },
+      { from: 2, to: 6, answer: 2 },
+      { from: 2, to: 7, answer: 3 },
+      { from: 3, to: 8, answer: 1 },
+      { from: 3, to: 9, answer: 2 },
+      { from: 3, to: 10, answer: 3 },
+      { from: 7, to: 11, answer: 1 },
+      { from: 7, to: 12, answer: 2 },
+      { from: 5, to: 13 },
+      { from: 6, to: 14 },
+      { from: 11, to: 15 },
+      { from: 12, to: 16 },
+      { from: 8, to: 17 },
+      { from: 9, to: 18 },
+      { from: 10, to: 19 },
+      { from: 4, to: 20 },
+      { from: 4, to: 21 },
+      { from: 8, to: 22 },
+    ];
+
+    // create the Model with the above data, and assign to the Diagram
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      nodeDataArray: nodeDataArray,
+      linkDataArray: linkDataArray,
+    });
+  }
+
+  const changeTheme = () => {
+    const myDiagram = go.Diagram.fromDiv('myDiagramDiv');
+    if (myDiagram) {
+      myDiagram.themeManager.currentTheme = document.getElementById('theme').value;
+    }
+  };
+
+  window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
-  <button id="darkMode" onclick="buttonClick()">Dark Mode</button>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
+  Theme:
+  <select id="theme" onchange="changeTheme()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
   <p>
-    An <em>IVR tree</em>, or Interactive Voice Response Tree, is typically used by
-    automated answering systems to direct calls to the correct party. This particular example
-    is for a car dealership to route calls.
+    An <em>IVR tree</em>, or Interactive Voice Response Tree, is typically used by automated answering systems to direct calls to the correct party. This
+    particular example is for a car dealership to route calls.
   </p>
   <p>
-    This Interactive Voice Response Tree (IVR tree) has nodes that contain a collapsible list of actions, controlled by a <b>PanelExpanderButton</b>,
-    with a <b>TreeExpanderButton</b> underneath the body. See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
+    This Interactive Voice Response Tree (IVR tree) has nodes that contain a collapsible list of actions, controlled by a <b>PanelExpanderButton</b>, with a
+    <b>TreeExpanderButton</b> underneath the body. See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
   </p>
-  <p> The dark and light modes are controlled by using an <b>.ofModel</b> binding on the fill of nodes,
-    and a model property for each color. See the <a href="../api/symbols/Binding.html">API page on Binding</a> for more model binding explination.</p>
+  <p>The dark and light themes are controlled using the <a>ThemeManager</a>.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Theming</h4>
+<p>
+  <b>GoJS</b> allows diagrams to be themed. This is commonly used to provide a light and dark mode for diagrams.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#themeManager" target="api">Diagram.themeManager</a> handles themes within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/ThemeManager.html" target="api">ThemeManager</a> can by shared by multiple diagrams,
+  and is responsible to managing the current theme and default theme, along with any theme updates.
+  More information can be found in the <a href="../intro/theming.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#theme">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+      
+        <!-- You do not need this import map in your own code if you are installing gojs via a package manager -->
+        <script type="importmap">
+          {
+            "imports": {
+              "gojs": "../release/go-module.js"
+            }
+          }
+        </script>
+      
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="The JavaScript class hierarchy defined by the GoJS library, arranged in nested circles." />
+<meta itemprop="description" content="The JavaScript class hierarchy defined by the GoJS library, arranged in nested circles." />
+<meta property="og:description" content="The JavaScript class hierarchy defined by the GoJS library, arranged in nested circles." />
+<meta name="twitter:description" content="The JavaScript class hierarchy defined by the GoJS library, arranged in nested circles." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Packed Hierarchy />
+<meta property="og:title" content=Packed Hierarchy />
+<meta name="twitter:title" content=Packed Hierarchy />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedHierarchy.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedHierarchy.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedHierarchy.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/PackedHierarchy.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/PackedHierarchy.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Packed Hierarchy | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 700px"></div>
+  <p>
+    Circle packing can be a useful way to visualize hierarchical data, as demonstrated here with a visualization of the class hierarchy of the GoJS library.
+    This layout is performed automatically by the <a href="../samples/PackedLayout.html">PackedLayout</a> extension. Nodes are sized according to how many
+    properties their corresponding class has, or has inherited. As a result, larger nodes generally represent more complex classes. Mouse over nodes to see
+    their full name and the number of properties on their corresponding class.
+  </p>
+  <p>
+    This sample is very similar to the <a href="../samples/classHierarchy.html" target="_blank">Class Hierarchy</a>
+    sample, except that instead of showing the class hierarchy as a tree, it is displayed using nested circles. Opening the API page is achieved by
+    double-clicking on a node, rather than using a "HyperlinkText".
+  </p>
+</div>
+
+<script type="module" id="code">
+  import * as go from 'gojs';
+  import { PackedLayout, PackShape, SortMode } from '../extensionsJSM/PackedLayout.js';
+
+  if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+  const $ = go.GraphObject.make; // for conciseness in defining templates
+
+  // subclass PackedLayout to change default properties and override commitLayout function
+  class HierarchyLayout extends PackedLayout {
+    constructor(init /*?: Partial<HierarchyLayout>*/) {
+      super();
+      this.packShape = PackShape.Spiral;
+      this.hasCircularNodes = true;
+      (this.sortMode = SortMode.Area),
+        (this.comparer = (na, nb) => {
+          // ensure label is placed last
+          if (na.data.isLabel) return 1;
+          if (nb.data.isLabel) return -1;
+          // otherwise sort in ascending order by size (all nodes are circular, so using width or height here doesn't matter)
+          return na.actualBounds.width - nb.actualBounds.width;
+        });
+      if (init) Object.assign(this, init);
+    }
+
+    /* after each group has had its layout applied, size and position it according
+     * to the smallest enclosing circle which goes around all of its nodes */
+    commitLayout() {
+      if (this.group !== null) {
+        const groupData = keyToNodeDataMap.get(this.group.key);
+
+        const enclosingCircle = this.enclosingCircle;
+        const actualBounds = this.actualBounds;
+
+        const size = new go.Size(enclosingCircle.width, enclosingCircle.width);
+        this.diagram.model.setDataProperty(groupData, 'size', size);
+
+        const dx = enclosingCircle.centerX - actualBounds.centerX;
+        const dy = enclosingCircle.centerY - actualBounds.centerY;
+        const position = new go.Point((actualBounds.width - enclosingCircle.width) / 2 + dx, (actualBounds.height - enclosingCircle.height) / 2 + dy);
+        this.diagram.model.setDataProperty(groupData, 'position', position);
+      }
+    }
+  } // end HierarchyLayout
+
+  const myDiagram = new go.Diagram(
+    'myDiagramDiv', // must be the ID or reference to div
+    {
+      layout: $(HierarchyLayout), // defined above
+      'animationManager.isEnabled': false,
+      isReadOnly: true,
+      initialAutoScale: go.AutoScale.Uniform,
+    }
+  );
+
+  // common definitions for both Nodes and Groups
+  const toolTipTemplate = $(go.Adornment, 'Auto', $(go.Shape, { fill: 'white' }), $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'tooltip')));
+
+  const selectionAdornmentTemplate = $(go.Adornment,
+    'Auto',
+    $(go.Shape, 'Circle', {
+      fill: null,
+      stroke: 'dodgerblue',
+      strokeWidth: 3,
+      spot1: go.Spot.TopLeft,
+      spot2: go.Spot.BottomRight,
+    }),
+    new go.Placeholder()
+  );
+
+  function commonStyle() {
+    return [
+      {
+        toolTip: toolTipTemplate,
+        selectionAdornmentTemplate: selectionAdornmentTemplate,
+        doubleClick: (e, node) => {
+          const url = '../../api/symbols/' + node.data.key + '.html';
+          window.open(url, '_blank');
+        },
+      },
+    ];
+  }
+
+  myDiagram.nodeTemplate = $(go.Node,
+    'Auto',
+    commonStyle(),
+    new go.Binding('width', 'diameter'),
+    new go.Binding('height', 'diameter'),
+    $(go.Shape, { figure: 'Circle', fill: '#1F4963', strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }, new go.Binding('fill')),
+    $(go.TextBlock,
+      { font: '10px Helvetica, Arial, sans-serif', stroke: 'white', maxLines: 1 },
+      new go.Binding('text'),
+      new go.Binding('font'),
+      new go.Binding('stroke', 'fill', (f) => (go.Brush.isDark(f) ? 'white' : 'black'))
+    )
+  );
+
+  myDiagram.groupTemplate = $(go.Group,
+    commonStyle(),
+    { layout: $(HierarchyLayout) }, // defined above
+    $(go.Shape, 'Circle', { fill: 'rgba(128,128,128,0.33)' }, new go.Binding('desiredSize', 'size'), new go.Binding('position')),
+    new go.Placeholder() // represents area for all member parts
+  );
+
+  // Collect all of the data for the model of the class hierarchy
+  const nodeDataArray = [
+    { key: 'GoJS', text: 'GoJS', children: [] },
+    // large label to be placed at the very end
+    {
+      key: 'GoJS label',
+      group: 'GoJS',
+      text: 'GoJS',
+      tooltip: 'GoJS',
+      fill: null,
+      font: '64px Helvetica, bold Arial, sans-serif',
+      isLabel: true,
+      children: [],
+    },
+  ];
+
+  const keyToNodeDataMap = new go.Map();
+  keyToNodeDataMap.add('GoJS', nodeDataArray[0]);
+
+  // Iterate over all of the classes in "go"
+  for (const k in go) {
+    var cls = go[k];
+    // ignore enums and other stuff
+    if (typeof cls !== 'function') continue;
+
+    let propCount = Object.getOwnPropertyNames(cls.prototype).length;
+
+    const data = { key: k, text: k, propCount: propCount, children: [] };
+    if (keyToNodeDataMap.has(k)) {
+      data.children = keyToNodeDataMap.get(k).children;
+    }
+    keyToNodeDataMap.add(k, data); // will replace existing key if there is one
+
+    // find base class constructor
+    const base = Object.getPrototypeOf(cls);
+    if (base === Object) {
+      // "root" node?
+      data.group = 'GoJS';
+      keyToNodeDataMap.get('GoJS').children.push(data);
+      nodeDataArray.push(data);
+    } else {
+      // add a node for this class and set its group to its parent
+      data.group = base.name;
+      if (keyToNodeDataMap.has(base.name)) {
+        keyToNodeDataMap.get(base.name).children.push(data);
+      } else {
+        keyToNodeDataMap.add(base.name, { children: [data] });
+      }
+
+      nodeDataArray.push(data);
+    }
+  }
+
+  // create groups and add labels to groups with only 1 child
+  for (let i = nodeDataArray.length - 1; i >= 0; i--) {
+    const n = nodeDataArray[i];
+    if (n.children.length > 0) {
+      n.isGroup = true;
+    }
+
+    // add tooltip and/or size node using the total number of properties it has and has inherited
+    let totalCount = n.propCount;
+    let parentKey = n.group;
+    let parentData;
+    while ((parentData = keyToNodeDataMap.get(parentKey)) !== null && parentData.propCount !== undefined) {
+      totalCount += parentData.propCount;
+      parentKey = parentData.group;
+    }
+
+    if (totalCount === undefined) {
+      // applies to the root GoJS group only
+      n.tooltip = n.text;
+    } else {
+      n.tooltip = n.text + ': ' + totalCount; // add tooltip
+    }
+    if (!n.isGroup && !n.isLabel) {
+      // only set size of node if it is not a group
+      // calculate size by scaling totalCount logarithmically to produce more visually appealing results
+      n.diameter = 20 * Math.log(0.5 * (totalCount + 5.5));
+    }
+
+    // add label to groups that only have one child
+    if (n.children.length === 1) {
+      nodeDataArray.push({
+        text: n.text,
+        tooltip: n.tooltip,
+        group: n.key,
+        fill: null,
+        font: '20px Helvetica, bold Arial, sans-serif',
+      });
+    }
+
+    delete n.children;
+  }
+
+  myDiagram.model = new go.GraphLinksModel(nodeDataArray);
+</script>
+<script>
+  if (window.location.protocol === 'file:') alert('For security reasons this page must be served from a web server.');
+</script>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

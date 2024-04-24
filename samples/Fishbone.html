@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="Cause-and-effect diagrams using FishboneLayout, also known as Ishikawa or herringbone diagrams." />
+<meta itemprop="description" content="Cause-and-effect diagrams using FishboneLayout, also known as Ishikawa or herringbone diagrams." />
+<meta property="og:description" content="Cause-and-effect diagrams using FishboneLayout, also known as Ishikawa or herringbone diagrams." />
+<meta name="twitter:description" content="Cause-and-effect diagrams using FishboneLayout, also known as Ishikawa or herringbone diagrams." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Fishbone Layout />
+<meta property="og:title" content=Fishbone Layout />
+<meta name="twitter:title" content=Fishbone Layout />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/Fishbone.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/Fishbone.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/Fishbone.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/Fishbone.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/Fishbone.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Fishbone Layout | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/FishboneLayout.js"></script>
+
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // refers to its DIV HTML element by id
+      { isReadOnly: true }
+    ); // do not allow the user to modify the diagram
+
+    // define the normal node template, just some text
+    myDiagram.nodeTemplate = $(go.Node, $(go.TextBlock, new go.Binding('text'), new go.Binding('font', '', convertFont)));
+
+    function convertFont(data) {
+      var size = data.size;
+      if (size === undefined) size = 13;
+      var weight = data.weight;
+      if (weight === undefined) weight = '';
+      return weight + ' ' + size + 'px sans-serif';
+    }
+
+    // This demo switches the Diagram.linkTemplate between the "normal" and the "fishbone" templates.
+    // If you are only doing a FishboneLayout, you could just set Diagram.linkTemplate
+    // to the template named "fishbone" here, and not switch templates dynamically.
+
+    // define the non-fishbone link template
+    myDiagram.linkTemplateMap.add('normal', $(go.Link, { routing: go.Routing.Orthogonal, corner: 4 }, $(go.Shape)));
+
+    // use this link template for fishbone layouts
+    myDiagram.linkTemplateMap.add(
+      'fishbone',
+      $(FishboneLink, // defined above
+        $(go.Shape)
+      )
+    );
+
+    // here is the structured data used to build the model
+    var json = {
+      text: 'Incorrect Deliveries',
+      size: 18,
+      weight: 'Bold',
+      causes: [
+        {
+          text: 'Skills',
+          size: 14,
+          weight: 'Bold',
+          causes: [
+            {
+              text: 'knowledge',
+              weight: 'Bold',
+              causes: [
+                {
+                  text: 'procedures',
+                  causes: [{ text: 'documentation' }],
+                },
+                { text: 'products' },
+              ],
+            },
+            { text: 'literacy', weight: 'Bold' },
+          ],
+        },
+        {
+          text: 'Procedures',
+          size: 14,
+          weight: 'Bold',
+          causes: [
+            {
+              text: 'manual',
+              weight: 'Bold',
+              causes: [{ text: 'consistency' }],
+            },
+            {
+              text: 'automated',
+              weight: 'Bold',
+              causes: [{ text: 'correctness' }, { text: 'reliability' }],
+            },
+          ],
+        },
+        {
+          text: 'Communication',
+          size: 14,
+          weight: 'Bold',
+          causes: [
+            { text: 'ambiguity', weight: 'Bold' },
+            {
+              text: 'sales staff',
+              weight: 'Bold',
+              causes: [
+                {
+                  text: 'order details',
+                  causes: [{ text: 'lack of knowledge' }],
+                },
+              ],
+            },
+            {
+              text: 'telephone orders',
+              weight: 'Bold',
+              causes: [{ text: 'lack of information' }],
+            },
+            {
+              text: 'picking slips',
+              weight: 'Bold',
+              causes: [{ text: 'details' }, { text: 'legibility' }],
+            },
+          ],
+        },
+        {
+          text: 'Transport',
+          size: 14,
+          weight: 'Bold',
+          causes: [
+            {
+              text: 'information',
+              weight: 'Bold',
+              causes: [
+                { text: 'incorrect person' },
+                {
+                  text: 'incorrect addresses',
+                  causes: [
+                    {
+                      text: 'customer data base',
+                      causes: [{ text: 'not up-to-date' }, { text: 'incorrect program' }],
+                    },
+                  ],
+                },
+                { text: 'incorrect dept' },
+              ],
+            },
+            {
+              text: 'carriers',
+              weight: 'Bold',
+              causes: [{ text: 'efficiency' }, { text: 'methods' }],
+            },
+          ],
+        },
+      ],
+    };
+
+    function walkJson(obj, arr) {
+      var key = arr.length;
+      obj.key = key;
+      arr.push(obj);
+
+      var children = obj.causes;
+      if (children) {
+        for (var i = 0; i < children.length; i++) {
+          var o = children[i];
+          o.parent = key; // reference to parent node data
+          walkJson(o, arr);
+        }
+      }
+    }
+
+    // build the tree model
+    var nodeDataArray = [];
+    walkJson(json, nodeDataArray);
+    myDiagram.model = new go.TreeModel(nodeDataArray);
+
+    layoutFishbone();
+  }
+
+  // use FishboneLayout and FishboneLink
+  function layoutFishbone() {
+    myDiagram.startTransaction('fishbone layout');
+    myDiagram.linkTemplate = myDiagram.linkTemplateMap.get('fishbone');
+    myDiagram.layout = new FishboneLayout({
+      // defined above
+      angle: 180,
+      layerSpacing: 10,
+      nodeSpacing: 20,
+      rowSpacing: 10,
+    });
+    myDiagram.commitTransaction('fishbone layout');
+  }
+
+  // make the layout a branching tree layout and use a normal link template
+  function layoutBranching() {
+    myDiagram.startTransaction('branching layout');
+    myDiagram.linkTemplate = myDiagram.linkTemplateMap.get('normal');
+    myDiagram.layout = new go.TreeLayout({
+      angle: 180,
+      layerSpacing: 20,
+      alignment: go.TreeAlignment.BusBranching,
+    });
+    myDiagram.commitTransaction('branching layout');
+  }
+
+  // make the layout a basic tree layout and use a normal link template
+  function layoutNormal() {
+    myDiagram.startTransaction('normal layout');
+    myDiagram.linkTemplate = myDiagram.linkTemplateMap.get('normal');
+    myDiagram.layout = new go.TreeLayout({
+      angle: 180,
+      breadthLimit: 1000,
+      alignment: go.TreeAlignment.Start,
+    });
+    myDiagram.commitTransaction('normal layout');
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+<div id="sample">
+  <div id="myDiagramDiv" style="height: 550px; width: 100%; border: 1px solid black"></div>
+  <div id="buttons">
+    <label>Layout:</label>
+    <button onclick="layoutFishbone()">Fishbone</button>
+    <button onclick="layoutBranching()">Branching</button>
+    <button onclick="layoutNormal()">Normal</button>
+  </div>
+  <br />
+  <div id="description">
+    <p>
+      This sample shows a "fishbone" layout of a tree model of cause-and-effect relationships. This type of layout is often seen in root cause analysis, or RCA.
+      The layout is defined in its own file, as <a href="FishboneLayout.js">FishboneLayout.js</a>. When using FishboneLayout the diagram uses FishboneLink in
+      order to get custom routing for the links.
+    </p>
+    <p>The buttons each set the <a>Diagram.layout</a> within a transaction.</p>
+  </div>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

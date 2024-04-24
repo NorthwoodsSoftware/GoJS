@@ -16,15 +16,43 @@ GoJS, a JavaScript Library for HTML Diagrams
 [Get Started with GoJS](https://gojs.net/latest/learn)
 
 
-GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams, including data visualizations, drawing tools, and graph editors. There are samples for [flowchart](https://gojs.net/latest/samples/flowchart.html), [org chart](https://gojs.net/latest/samples/orgChartEditor.html), [business process BPMN](https://gojs.net/latest/projects/bpmn/BPMN.html), [swimlanes](https://gojs.net/latest/samples/swimlanes.html), [timelines](https://gojs.net/latest/samples/timeline.html), [state charts](https://gojs.net/latest/samples/statechart.html), [kanban](https://gojs.net/latest/samples/kanban.html), [network](https://gojs.net/latest/samples/network.html), [mindmap](https://gojs.net/latest/samples/mindMap.html), [sankey](https://gojs.net/latest/samples/sankey.html), [family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html), [fishbone diagrams](https://gojs.net/latest/extensions/Fishbone.html), [floor plans](https://gojs.net/latest/projects/floorplanner/FloorPlanner.html), [UML](https://gojs.net/latest/samples/umlClass.html), [decision trees](https://gojs.net/latest/samples/decisionTree.html), [pert charts](https://gojs.net/latest/samples/PERT.html), [Gantt](https://gojs.net/latest/samples/gantt.html), and [hundreds more](https://gojs.net/latest/samples/index.html). GoJS includes a number of built in layouts including tree layout, force directed, radial, and layered digraph layout, and a number of custom layout examples.
+GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams,
+including data visualizations, drawing tools, and graph editors.
+There are samples for
+[flowchart](https://gojs.net/latest/samples/flowchart.html),
+[org chart](https://gojs.net/latest/samples/orgChartEditor.html),
+[business process BPMN](https://gojs.net/latest/samples/bpmn/BPMN.html),
+[swimlanes](https://gojs.net/latest/samples/swimlanes.html),
+[timelines](https://gojs.net/latest/samples/timeline.html),
+[state charts](https://gojs.net/latest/samples/statechart.html),
+[kanban](https://gojs.net/latest/samples/kanban.html),
+[network](https://gojs.net/latest/samples/network.html),
+[mindmap](https://gojs.net/latest/samples/mindMap.html),
+[sankey](https://gojs.net/latest/samples/sankey.html),
+[family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html),
+[fishbone diagrams](https://gojs.net/latest/samples/Fishbone.html),
+[floor plans](https://gojs.net/latest/samples/floorplannerTS/index.html),
+[UML](https://gojs.net/latest/samples/umlClass.html),
+[decision trees](https://gojs.net/latest/samples/decisionTree.html),
+[PERT charts](https://gojs.net/latest/samples/PERT.html),
+[Gantt](https://gojs.net/latest/samples/gantt.html), and
+[hundreds more](https://gojs.net/latest/samples/index.html).
+GoJS includes a number of built in layouts including tree layout, force directed, circular, and layered digraph layout,
+and many custom layout extensions and examples.
 
-GoJS is rendered with an HTML Canvas element (with export to SVG or image formats). GoJS can run in a web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer). GoJS Diagrams are backed by Models, with saving and loading typically via JSON.
+GoJS is renders either to an HTML Canvas element (with export to SVG or image formats) or directly as SVG DOM.
+GoJS can run in a web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer).
+GoJS Diagrams are backed by Models, with saving and loading typically via JSON-formatted text.
 
 [<img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/github-970x354.png">](https://gojs.net/latest/samples/index.html)
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
-This repository contains both the library and the sources for all samples, extensions, and documentation.
+This repository contains only the library.
+The sources for all samples, extensions, and documentation can be installed by running:
+```html
+$ npm create gojs-kit
+```
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 
 <h2>Minimal Sample</h2>
@@ -81,7 +109,7 @@ The user can now click on nodes or links to select them, copy-and-paste them, dr
 
 <h2>Support</h2>
 
-Northwoods Software offers a month of free developer-to-developer support for GoJS to help you get started on your project.
+Northwoods Software offers a month of free developer-to-developer support for GoJS to prospective customers so you can finish your project faster.
 
 Read and search the official <a href="https://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.
 

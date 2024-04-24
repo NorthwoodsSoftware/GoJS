@@ -1,0 +1,97 @@
+<h1>GoJS, a JavaScript Library for HTML Diagrams</h1>
+<img align="right" height="150" src="https://www.nwoods.com/images/go.png">
+<p><a href="https://gojs.net">GoJS</a> is a JavaScript and TypeScript library for creating and manipulating diagrams, charts, and graphs.</p>
+<p><a href="https://www.npmjs.com/package/gojs"><img src="https://img.shields.io/github/release/NorthwoodsSoftware/GoJS.svg" alt="npm"></a>
+<a href="https://github.com/NorthwoodsSoftware/GoJS/issues"><img src="https://img.shields.io/github/issues-raw/NorthwoodsSoftware/GoJS.svg" alt="open issues"></a>
+<a href="https://github.com/NorthwoodsSoftware/GoJS/commits/master"><img src="https://img.shields.io/github/last-commit/NorthwoodsSoftware/GoJS.svg" alt="last commit"></a>
+<a href="https://www.npmjs.com/package/gojs"><img src="https://img.shields.io/npm/dw/gojs.svg" alt="downloads"></a>
+<a href="https://twitter.com/NorthwoodsGo"><img src="https://img.shields.io/twitter/follow/NorthwoodsGo.svg?style=social&amp;label=Follow" alt="Twitter Follow"></a></p>
+<p><a href="https://gojs.net/latest/samples">See GoJS Samples</a></p>
+<p><a href="https://gojs.net/latest/learn">Get Started with GoJS</a></p>
+<p>GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams,
+including data visualizations, drawing tools, and graph editors.
+There are samples for
+<a href="https://gojs.net/latest/samples/flowchart.html">flowchart</a>,
+<a href="https://gojs.net/latest/samples/orgChartEditor.html">org chart</a>,
+<a href="https://gojs.net/latest/samples/bpmn/BPMN.html">business process BPMN</a>,
+<a href="https://gojs.net/latest/samples/swimlanes.html">swimlanes</a>,
+<a href="https://gojs.net/latest/samples/timeline.html">timelines</a>,
+<a href="https://gojs.net/latest/samples/statechart.html">state charts</a>,
+<a href="https://gojs.net/latest/samples/kanban.html">kanban</a>,
+<a href="https://gojs.net/latest/samples/network.html">network</a>,
+<a href="https://gojs.net/latest/samples/mindMap.html">mindmap</a>,
+<a href="https://gojs.net/latest/samples/sankey.html">sankey</a>,
+<a href="https://gojs.net/latest/samples/familyTree.html">family trees</a> and <a href="https://gojs.net/latest/samples/genogram.html">genogram charts</a>,
+<a href="https://gojs.net/latest/samples/Fishbone.html">fishbone diagrams</a>,
+<a href="https://gojs.net/latest/samples/floorplannerTS/index.html">floor plans</a>,
+<a href="https://gojs.net/latest/samples/umlClass.html">UML</a>,
+<a href="https://gojs.net/latest/samples/decisionTree.html">decision trees</a>,
+<a href="https://gojs.net/latest/samples/PERT.html">PERT charts</a>,
+<a href="https://gojs.net/latest/samples/gantt.html">Gantt</a>, and
+<a href="https://gojs.net/latest/samples/index.html">hundreds more</a>.
+GoJS includes a number of built in layouts including tree layout, force directed, circular, and layered digraph layout,
+and many custom layout extensions and examples.</p>
+<p>GoJS is renders either to an HTML Canvas element (with export to SVG or image formats) or directly as SVG DOM.
+GoJS can run in a web browser, or server side in <a href="https://nodejs.org/en/">Node</a> or <a href="https://github.com/GoogleChrome/puppeteer">Puppeteer</a>.
+GoJS Diagrams are backed by Models, with saving and loading typically via JSON-formatted text.</p>
+<p><a href="https://gojs.net/latest/samples/index.html"><img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/github-970x354.png"></a></p>
+<p>Read more about GoJS at <a href="https://gojs.net">gojs.net</a></p>
+<p>This repository contains only the library.
+The sources for all samples, extensions, and documentation can be installed by running:</p>
+<pre><code class="language-html">$ npm create gojs-kit
+</code></pre>
+<p>You can use the GitHub repository to quickly <a href="https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&amp;type=Code">search through all of the sources</a>.</p>
+<h2>Minimal Sample</h2>
+<p>Graphs are constructed by creating one or more templates, with desired properties data-bound, and adding model data.</p>
+<pre><code class="language-html">&lt;div id=&quot;myDiagramDiv&quot; style=&quot;width:400px; height:150px;&quot;&gt;&lt;/div&gt;
+
+&lt;script src=&quot;https://unpkg.com/gojs&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+const myDiagram =
+  new go.Diagram(&quot;myDiagramDiv&quot;,  // create a Diagram for the HTML Div element
+    { &quot;undoManager.isEnabled&quot;: true });  // enable undo &amp; redo
+
+// define a simple Node template
+myDiagram.nodeTemplate =
+  new go.Node(&quot;Auto&quot;)  // the Shape will automatically surround the TextBlock
+    // add a Shape and a TextBlock to this &quot;Auto&quot; Panel
+    .add(new go.Shape(&quot;RoundedRectangle&quot;,
+        { strokeWidth: 0, fill: &quot;white&quot; })  // no border; default fill is white
+        .bind(&quot;fill&quot;, &quot;color&quot;))  // Shape.fill is bound to Node.data.color
+    .add(new go.TextBlock({ margin: 8, stroke: &quot;#333&quot; })  // some room around the text
+        .bind(&quot;text&quot;, &quot;key&quot;));  // TextBlock.text is bound to Node.data.key
+
+// but use the default Link template, by not setting Diagram.linkTemplate
+
+// create the model data that will be represented by Nodes and Links
+myDiagram.model = new go.GraphLinksModel(
+  [
+    { key: &quot;Alpha&quot;, color: &quot;lightblue&quot; },
+    { key: &quot;Beta&quot;, color: &quot;orange&quot; },
+    { key: &quot;Gamma&quot;, color: &quot;lightgreen&quot; },
+    { key: &quot;Delta&quot;, color: &quot;pink&quot; }
+  ],
+  [
+    { from: &quot;Alpha&quot;, to: &quot;Beta&quot; },
+    { from: &quot;Alpha&quot;, to: &quot;Gamma&quot; },
+    { from: &quot;Beta&quot;, to: &quot;Beta&quot; },
+    { from: &quot;Gamma&quot;, to: &quot;Delta&quot; },
+    { from: &quot;Delta&quot;, to: &quot;Alpha&quot; }
+  ]);
+&lt;/script&gt;
+</code></pre>
+<p>The above diagram and model code creates the following graph.
+The user can now click on nodes or links to select them, copy-and-paste them, drag them, delete them, scroll, pan, and zoom, with a mouse or with fingers.</p>
+<p><a href="https://gojs.net/latest/samples/minimal.html"><img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png"></a></p>
+<p><em>Click the image to see the interactive GoJS Diagram</em></p>
+<h2>Support</h2>
+<p>Northwoods Software offers a month of free developer-to-developer support for GoJS to prospective customers so you can finish your project faster.</p>
+<p>Read and search the official <a href="https://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.</p>
+<p>Posting in the forum is the fastest and most effective way of obtaining support for any GoJS related inquiries.
+Please register for support at Northwoods Software's <a href="https://www.nwoods.com/register.html">registration form</a> before posting in the forum.</p>
+<p>For any nontechnical questions about GoJS, such as about sales or licensing,
+please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html">contact form</a>.</p>
+<h2>License</h2>
+<p>The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.</p>
+<p>Copyright (c) Northwoods Software Corporation</p>

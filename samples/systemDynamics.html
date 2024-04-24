@@ -1,353 +1,460 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A simple implementation of a system dynamics editor."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>System Dynamics</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A simple implementation of a system dynamics editor." />
+<meta itemprop="description" content="A simple implementation of a system dynamics editor." />
+<meta property="og:description" content="A simple implementation of a system dynamics editor." />
+<meta name="twitter:description" content="A simple implementation of a system dynamics editor." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=System Dynamics />
+<meta property="og:title" content=System Dynamics />
+<meta name="twitter:title" content=System Dynamics />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/systemDynamics.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/systemDynamics.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/systemDynamics.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/systemDynamics.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/systemDynamics.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      System Dynamics | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script src="../extensions/Figures.js"></script>
-  <script src="../extensions/NodeLabelDraggingTool.js"></script>
-    <script id="code">
-    // SD is a global variable, to avoid polluting global namespace and to make the global
-    // nature of the individual variables obvious.
-    var SD = {
-      mode: "pointer",   // Set to default mode.  Alternatives are "node" and "link", for
-      // adding a new node or a new link respectively.
-      itemType: "pointer",    // Set when user clicks on a node or link button.
-      nodeCounter: { stock: 0, cloud: 0, variable: 0, valve: 0 }
-    };
-    var myDiagram;   // Declared as global
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-    function init() {
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
+        
 
-      myDiagram = new go.Diagram("myDiagram",
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+<style>
+  .pointer_normal {
+    font-weight: normal;
+    background: #f0f0f0;
+  }
+
+  .pointer_selected {
+    font-weight: bold;
+    background: yellow;
+  }
+
+  .node_normal {
+    font-weight: normal;
+    background: #fff0f0;
+  }
+
+  .node_selected {
+    font-weight: bold;
+    background: #ff8080;
+  }
+
+  .link_normal {
+    font-weight: normal;
+    background: #f0fff0;
+  }
+
+  .link_selected {
+    font-weight: bold;
+    background: #80ff80;
+  }
+</style>
+
+
+<script src="../extensions/Figures.js"></script>
+<script src="../extensions/NodeLabelDraggingTool.js"></script>
+<script id="code">
+  // SD is a global variable, to avoid polluting global namespace and to make the global
+  // nature of the individual variables obvious.
+  var SD = {
+    mode: "pointer",   // Set to default mode.  Alternatives are "node" and "link", for
+    // adding a new node or a new link respectively.
+    itemType: "pointer",    // Set when user clicks on a node or link button.
+    nodeCounter: { stock: 0, cloud: 0, variable: 0, valve: 0 }
+  };
+  var myDiagram;   // Declared as global
+
+  function init() {
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    myDiagram = new go.Diagram("myDiagram",
+      {
+        "undoManager.isEnabled": true,
+        allowLink: false,  // linking is only started via buttons, not modelessly
+        "animationManager.isEnabled": false,
+
+        "linkingTool.portGravity": 0,  // no snapping while drawing new links
+        "linkingTool.doActivate": function () {  // an override must be function, not using an arrow
+          // change the curve of the LinkingTool.temporaryLink
+          this.temporaryLink.curve = (SD.itemType === "flow") ? go.Curve.None : go.Curve.Bezier;
+          this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "blue" : "green";
+          this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
+          go.LinkingTool.prototype.doActivate.call(this);
+        },
+        // override the link creation process
+        "linkingTool.insertLink": function (fromnode, fromport, tonode, toport) {  // method override must be function, not =>
+          // to control what kind of Link is created,
+          // change the LinkingTool.archetypeLinkData's category
+          myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
+          // Whenever a new Link is drawn by the LinkingTool, it also adds a node data object
+          // that acts as the label node for the link, to allow links to be drawn to/from the link.
+          this.archetypeLabelNodeData = (SD.itemType === "flow") ? { category: "valve" } : null;
+          // also change the text indicating the condition, which the user can edit
+          this.archetypeLinkData.text = SD.itemType;
+          return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+        },
+
+        "clickCreatingTool.archetypeNodeData": {},  // enable ClickCreatingTool
+        "clickCreatingTool.isDoubleClick": false,   // operates on a single click in background
+        // but only in "node" creation mode
+        "clickCreatingTool.canStart": function () {  // method override must be function, not =>
+          return SD.mode === "node" && go.ClickCreatingTool.prototype.canStart.call(this);
+        },
+        // customize the data for the new node
+        "clickCreatingTool.insertPart": function (loc) {  // method override must be function, not =>
+          SD.nodeCounter[SD.itemType] += 1;
+          var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
+          this.archetypeNodeData = {
+            key: newNodeId,
+            category: SD.itemType,
+            label: newNodeId
+          };
+          return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+        }
+      });
+
+    // install the NodeLabelDraggingTool as a "mouse move" tool
+    myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener("Modified", e => {
+      var button = document.getElementById("SaveButton");
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf("*");
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += "*";
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    // generate unique label for valve on newly-created flow link
+    myDiagram.addDiagramListener("LinkDrawn", e => {
+      var link = e.subject;
+      if (link.category === "flow") {
+        myDiagram.startTransaction("updateNode");
+        SD.nodeCounter.valve += 1;
+        var newNodeId = "flow" + SD.nodeCounter.valve;
+        var labelNode = link.labelNodes.first();
+        myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
+        myDiagram.commitTransaction("updateNode");
+      }
+    });
+
+    buildTemplates();
+
+    load();
+  }
+
+  function buildTemplates() {
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    // helper functions for the templates
+    function nodeStyle() {
+      return [
         {
-          "undoManager.isEnabled": true,
-          allowLink: false,  // linking is only started via buttons, not modelessly
-          "animationManager.isEnabled": false,
-
-          "linkingTool.portGravity": 0,  // no snapping while drawing new links
-          "linkingTool.doActivate": function() {  // an override must be function, not using an arrow
-            // change the curve of the LinkingTool.temporaryLink
-            this.temporaryLink.curve = (SD.itemType === "flow") ? go.Link.None : go.Link.Bezier;
-            this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "blue" : "green";
-            this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
-            go.LinkingTool.prototype.doActivate.call(this);
-          },
-          // override the link creation process
-          "linkingTool.insertLink": function(fromnode, fromport, tonode, toport) {  // method override must be function, not =>
-            // to control what kind of Link is created,
-            // change the LinkingTool.archetypeLinkData's category
-            myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
-            // Whenever a new Link is drawn by the LinkingTool, it also adds a node data object
-            // that acts as the label node for the link, to allow links to be drawn to/from the link.
-            this.archetypeLabelNodeData = (SD.itemType === "flow") ? { category: "valve" } : null;
-            // also change the text indicating the condition, which the user can edit
-            this.archetypeLinkData.text = SD.itemType;
-            return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
-          },
-
-          "clickCreatingTool.archetypeNodeData": {},  // enable ClickCreatingTool
-          "clickCreatingTool.isDoubleClick": false,   // operates on a single click in background
-                                                      // but only in "node" creation mode
-          "clickCreatingTool.canStart": function() {  // method override must be function, not =>
-            return SD.mode === "node" && go.ClickCreatingTool.prototype.canStart.call(this);
-          },
-          // customize the data for the new node
-          "clickCreatingTool.insertPart": function(loc) {  // method override must be function, not =>
-            SD.nodeCounter[SD.itemType] += 1;
-            var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
-            this.archetypeNodeData = {
-              key: newNodeId,
-              category: SD.itemType,
-              label: newNodeId
-            };
-            return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
-          }
-        });
-
-      // install the NodeLabelDraggingTool as a "mouse move" tool
-      myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
-
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        var button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.slice(0, idx);
-        }
-      });
-
-      // generate unique label for valve on newly-created flow link
-      myDiagram.addDiagramListener("LinkDrawn", e => {
-        var link = e.subject;
-        if (link.category === "flow") {
-          myDiagram.startTransaction("updateNode");
-          SD.nodeCounter.valve += 1;
-          var newNodeId = "flow" + SD.nodeCounter.valve;
-          var labelNode = link.labelNodes.first();
-          myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
-          myDiagram.commitTransaction("updateNode");
-        }
-      });
-
-      buildTemplates();
-
-      load();
+          type: go.Panel.Spot,
+          layerName: "Background",
+          locationObjectName: "SHAPE",
+          selectionObjectName: "SHAPE",
+          locationSpot: go.Spot.Center
+        },
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
+      ];
     }
 
-    function buildTemplates() {
+    function shapeStyle() {
+      return {
+        name: "SHAPE",
+        stroke: "black",
+        fill: "#f0f0f0",
+        portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
+        fromLinkable: true,
+        toLinkable: true
+      };
+    }
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
+    function textStyle() {
+      return [
+        {
+          font: "bold 11pt helvetica, bold arial, sans-serif",
+          margin: 2,
+          editable: true
+        },
+        new go.Binding("text", "label").makeTwoWay()
+      ];
+    }
 
-      // helper functions for the templates
-      function nodeStyle() {
-        return [
+    // Node templates
+    myDiagram.nodeTemplateMap.add("stock",
+      $(go.Node, nodeStyle(),
+        $(go.Shape, shapeStyle(),
+          { desiredSize: new go.Size(50, 30) }),
+        $(go.TextBlock, textStyle(),
           {
-            type: go.Panel.Spot,
-            layerName: "Background",
-            locationObjectName: "SHAPE",
-            selectionObjectName: "SHAPE",
-            locationSpot: go.Spot.Center
+            _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
+            alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
           },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
-        ];
-      }
+          new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
+      ));
 
-      function shapeStyle() {
-        return {
-          name: "SHAPE",
-          stroke: "black",
-          fill: "#f0f0f0",
-          portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
-          fromLinkable: true,
-          toLinkable: true
-        };
-      }
-
-      function textStyle() {
-        return [
+    myDiagram.nodeTemplateMap.add("cloud",
+      $(go.Node, nodeStyle(),
+        $(go.Shape, shapeStyle(),
           {
-            font: "bold 11pt helvetica, bold arial, sans-serif",
-            margin: 2,
-            editable: true
-          },
-          new go.Binding("text", "label").makeTwoWay()
-        ];
-      }
+            figure: "Cloud",
+            desiredSize: new go.Size(35, 35)
+          })
+      ));
 
-      // Node templates
-      myDiagram.nodeTemplateMap.add("stock",
-        $(go.Node, nodeStyle(),
-          $(go.Shape, shapeStyle(),
-            { desiredSize: new go.Size(50, 30) }),
-          $(go.TextBlock, textStyle(),
-            {
-              _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-              alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
-            },
-            new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-        ));
-
-      myDiagram.nodeTemplateMap.add("cloud",
-        $(go.Node, nodeStyle(),
-          $(go.Shape, shapeStyle(),
-            {
-              figure: "Cloud",
-              desiredSize: new go.Size(35, 35)
-            })
-        ));
-
-      myDiagram.nodeTemplateMap.add("valve",
-        $(go.Node, nodeStyle(),
+    myDiagram.nodeTemplateMap.add("valve",
+      $(go.Node, nodeStyle(),
+        {
+          movable: false,
+          layerName: "Foreground",
+          alignmentFocus: go.Spot.None
+        },
+        $(go.Shape, shapeStyle(),
           {
-            movable: false,
-            layerName: "Foreground",
-            alignmentFocus: go.Spot.None
+            figure: "Ellipse",
+            desiredSize: new go.Size(20, 20)
+          }),
+        $(go.TextBlock, textStyle(),
+          {
+            _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
+            alignment: new go.Spot(0.5, 0.5, 0, 20)    // initial value
           },
-          $(go.Shape, shapeStyle(),
-            {
-              figure: "Ellipse",
-              desiredSize: new go.Size(20, 20)
-            }),
-          $(go.TextBlock, textStyle(),
-            {
-              _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-              alignment: new go.Spot(0.5, 0.5, 0, 20)    // initial value
-            },
-            new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-        ));
+          new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
+      ));
 
-      myDiagram.nodeTemplateMap.add("variable",
-        $(go.Node, nodeStyle(),
-          { type: go.Panel.Auto },
-          $(go.TextBlock, textStyle(),
-            { isMultiline: false }),
-          $(go.Shape, shapeStyle(),
-            // the port is in front and transparent, even though it goes around the text;
-            // in "link" mode will support drawing a new link
-            { isPanelMain: true, stroke: null, fill: "transparent" })
-        ));
+    myDiagram.nodeTemplateMap.add("variable",
+      $(go.Node, nodeStyle(),
+        { type: go.Panel.Auto },
+        $(go.TextBlock, textStyle(),
+          { isMultiline: false }),
+        $(go.Shape, shapeStyle(),
+          // the port is in front and transparent, even though it goes around the text;
+          // in "link" mode will support drawing a new link
+          { isPanelMain: true, stroke: null, fill: "transparent" })
+      ));
 
-      // Link templates
-      myDiagram.linkTemplateMap.add("flow",
-        $(go.Link,
-          { toShortLength: 8 },
-          $(go.Shape,
-            { stroke: "blue", strokeWidth: 5 }),
-          $(go.Shape,
-            {
-              fill: "blue",
-              stroke: null,
-              toArrow: "Standard",
-              scale: 2.5
-            })
-        ));
+    // Link templates
+    myDiagram.linkTemplateMap.add("flow",
+      $(go.Link,
+        { toShortLength: 8 },
+        $(go.Shape,
+          { stroke: "blue", strokeWidth: 5 }),
+        $(go.Shape,
+          {
+            fill: "blue",
+            stroke: null,
+            toArrow: "Standard",
+            scale: 2.5
+          })
+      ));
 
-      myDiagram.linkTemplateMap.add("influence",
-        $(go.Link,
-          { curve: go.Link.Bezier, toShortLength: 8 },
-          $(go.Shape,
-            { stroke: "green", strokeWidth: 1.5 }),
-          $(go.Shape,
-            {
-              fill: "green",
-              stroke: null,
-              toArrow: "Standard",
-              scale: 1.5
-            })
-        ));
+    myDiagram.linkTemplateMap.add("influence",
+      $(go.Link,
+        { curve: go.Curve.Bezier, toShortLength: 8 },
+        $(go.Shape,
+          { stroke: "green", strokeWidth: 1.5 }),
+        $(go.Shape,
+          {
+            fill: "green",
+            stroke: null,
+            toArrow: "Standard",
+            scale: 1.5
+          })
+      ));
+  }
+
+  function setMode(mode, itemType) {
+    myDiagram.startTransaction();
+    document.getElementById(SD.itemType + "_button").className = SD.mode + "_normal";
+    document.getElementById(itemType + "_button").className = mode + "_selected";
+    SD.mode = mode;
+    SD.itemType = itemType;
+    if (mode === "pointer") {
+      myDiagram.allowLink = false;
+      myDiagram.nodes.each(n => n.port.cursor = "");
+    } else if (mode === "node") {
+      myDiagram.allowLink = false;
+      myDiagram.nodes.each(n => n.port.cursor = "");
+    } else if (mode === "link") {
+      myDiagram.allowLink = true;
+      myDiagram.nodes.each(n => n.port.cursor = "pointer");
     }
+    myDiagram.commitTransaction("mode changed");
+  }
 
-    function setMode(mode, itemType) {
-      myDiagram.startTransaction();
-      document.getElementById(SD.itemType + "_button").className = SD.mode + "_normal";
-      document.getElementById(itemType + "_button").className = mode + "_selected";
-      SD.mode = mode;
-      SD.itemType = itemType;
-      if (mode === "pointer") {
-        myDiagram.allowLink = false;
-        myDiagram.nodes.each(n => n.port.cursor = "");
-      } else if (mode === "node") {
-        myDiagram.allowLink = false;
-        myDiagram.nodes.each(n => n.port.cursor = "");
-      } else if (mode === "link") {
-        myDiagram.allowLink = true;
-        myDiagram.nodes.each(n => n.port.cursor = "pointer");
-      }
-      myDiagram.commitTransaction("mode changed");
-    }
+  // Show the diagram's model in JSON format that the user may edit
+  function save() {
+    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
-    // Show the diagram's model in JSON format that the user may edit
-    function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-
-  <div id="sample">
-    <div id="myDiagram" style="width:600px; height:500px; border:solid 1px black"></div>
-    <button id="pointer_button" class="pointer_selected" onclick="setMode('pointer','pointer');">Pointer</button>
-    <button id="stock_button" class="node_normal" onclick="setMode('node','stock');" style="margin-left:20px;">Stock</button>
-    <button id="cloud_button" class="node_normal" onclick="setMode('node','cloud');">Cloud</button>
-    <button id="variable_button" class="node_normal" onclick="setMode('node','variable');">Variable</button>
-    <button id="flow_button" class="link_normal" onclick="setMode('link','flow');" style="margin-left:20px;">Flow</button>
-    <button id="influence_button" class="link_normal" onclick="setMode('link','influence');">Influence</button>
-    <p>
-      A <em>system dynamics diagram</em> shows the storages (stocks) and flows of material in some system,
-      and the factors that influence the rates of flow.
-      It is usually a cosmetic interface for building mathematical models --
-      you provide values and equations for the stocks and flows,
-      and appropriate software can then simulate the system's behaiour.
-    </p>
-    <p>
-      The diagram has two types of link: flow links and influence links.
-      In additon to the node attached to each flow, there are 3 types of node:
-      <ul>
-        <li><b>stocks</b>, the amount of some substance</li>
-        <li><b>clouds</b>, like stocks, but outside the system of interest</li>
-        <li><b>variables</b>, either numeric constants or calculated from other elements</li>
-      </ul>
-    </p>
-    <p>
-      The conventional user interface for building system dynamics diagrams is modal --
-      you select a tool in the toolbar, then either click in an empty part of the diagram to add a node
-      or drag from one node to another to add a link.
-      That is the approach used in this example, accomplished with the <a>clickCreatingTool</a> and <a>linkingTool</a>.
-      Note that you need to click on the Pointer tool to revert to the normal mode.
-    </p>
-    <p>
-      In addition to the above, the diagram also installs the <a href="../extensions/NodeLabelDragging.html">NodeLabelDraggingTool</a>
-      extension into <a>ToolManager.mouseMoveTools</a>.
-    </p>
-    <p>
-      This sample is based on a prototype developed by Robert Muetzelfeldt.
-    </p>
+<div id="sample">
+  <div id="myDiagram" style="width:600px; height:500px; border:solid 1px black"></div>
+  <button id="pointer_button" class="pointer_selected" onclick="setMode('pointer','pointer');">Pointer</button>
+  <button id="stock_button" class="node_normal" onclick="setMode('node','stock');"
+    style="margin-left:20px;">Stock</button>
+  <button id="cloud_button" class="node_normal" onclick="setMode('node','cloud');">Cloud</button>
+  <button id="variable_button" class="node_normal" onclick="setMode('node','variable');">Variable</button>
+  <button id="flow_button" class="link_normal" onclick="setMode('link','flow');" style="margin-left:20px;">Flow</button>
+  <button id="influence_button" class="link_normal" onclick="setMode('link','influence');">Influence</button>
+  <p>
+    A <em>system dynamics diagram</em> shows the storages (stocks) and flows of material in some system,
+    and the factors that influence the rates of flow.
+    It is usually a cosmetic interface for building mathematical models --
+    you provide values and equations for the stocks and flows,
+    and appropriate software can then simulate the system's behaiour.
+  </p>
+  <p>
+    The diagram has two types of link: flow links and influence links.
+    In additon to the node attached to each flow, there are 3 types of node:
+  <ul>
+    <li><b>stocks</b>, the amount of some substance</li>
+    <li><b>clouds</b>, like stocks, but outside the system of interest</li>
+    <li><b>variables</b>, either numeric constants or calculated from other elements</li>
+  </ul>
+  </p>
+  <p>
+    The conventional user interface for building system dynamics diagrams is modal --
+    you select a tool in the toolbar, then either click in an empty part of the diagram to add a node
+    or drag from one node to another to add a link.
+    That is the approach used in this example, accomplished with the <a>clickCreatingTool</a> and <a>linkingTool</a>.
+    Note that you need to click on the Pointer tool to revert to the normal mode.
+  </p>
+  <p>
+    In addition to the above, the diagram also installs the <a
+      href="../samples/NodeLabelDragging.html">NodeLabelDraggingTool</a>
+    extension into <a>ToolManager.mouseMoveTools</a>.
+  </p>
+  <p>
+    This sample is based on a prototype developed by Robert Muetzelfeldt.
+  </p>
+  <div>
     <div>
-      <div>
-        <button id="SaveButton" onclick="save()">Save</button>
-        <button onclick="load()">Load</button>
-        Diagram Model saved in JSON format:
-      </div>
-      <textarea id="mySavedModel" style="width:100%; height:400px">
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+    <textarea id="mySavedModel" style="width:100%; height:400px">
 { "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [
@@ -381,13 +488,23 @@
   ]
 }
       </textarea>
-    </div>
   </div>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

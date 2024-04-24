@@ -1,7 +1,7 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
-import * as go from '../release/go-module.js';
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
+import * as go from 'gojs';
 /**
  * The RotateMultipleTool class lets the user rotate multiple objects at a time.
  * When more than one part is selected, rotates all parts, revolving them about their collective center.
@@ -9,31 +9,24 @@ import * as go from '../release/go-module.js';
  *
  * Caution: this only works for Groups that do *not* have a Placeholder.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/RotateMultiple.html">Rotate Multiple</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/RotateMultiple.html">Rotate Multiple</a> sample.
  * @category Tool Extension
  */
 export class RotateMultipleTool extends go.RotatingTool {
     /**
      * Constructs a RotateMultipleTool and sets the name for the tool.
      */
-    constructor() {
+    constructor(init) {
         super();
-        /**
-         * Holds references to all selected non-Link Parts and their offset & angles
-         */
-        this._initialInfo = null;
-        /**
-         * Initial angle when rotating as a whole
-         */
-        this._initialAngle = 0;
-        /**
-         * Rotation point of selection
-         */
-        this._centerPoint = new go.Point();
         this.name = 'RotateMultiple';
+        this._initialInfo = null;
+        this._initialAngle = 0;
+        this._centerPoint = new go.Point();
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Calls {@link RotatingTool#doActivate}, and then remembers the center point of the collection,
+     * Calls {@link go.RotatingTool.doActivate}, and then remembers the center point of the collection,
      * and the initial distances and angles of selected parts to the center.
      */
     doActivate() {
@@ -46,7 +39,7 @@ export class RotateMultipleTool extends go.RotatingTool {
         // remember initial angle and distance for each Part
         const infos = new go.Map();
         const tool = this;
-        diagram.selection.each(part => {
+        diagram.selection.each((part) => {
             tool.walkTree(part, infos);
         });
         this._initialInfo = infos;
@@ -94,7 +87,7 @@ export class RotateMultipleTool extends go.RotatingTool {
         // when rotating individual parts, remember the original angle difference
         const angleDiff = newangle - node.rotateObject.angle;
         const tool = this;
-        this._initialInfo.each(kvp => {
+        this._initialInfo.each((kvp) => {
             const part = kvp.key;
             if (part instanceof go.Link)
                 return; // only Nodes and simple Parts
@@ -124,7 +117,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     /**
      * Calculate the desired angle with different rotation points,
      * depending on whether we are rotating the whole selection as one, or Parts individually.
-     * @param {Point} newPoint in document coordinates
+     * @param newPoint - in document coordinates
      */
     computeRotate(newPoint) {
         const diagram = this.diagram;
@@ -132,14 +125,16 @@ export class RotateMultipleTool extends go.RotatingTool {
             return 0.0;
         let angle = 0.0;
         const e = diagram.lastInput;
-        if (e.control || e.meta) { // relative to the center of the Node whose handle we are rotating
+        if (e.control || e.meta) {
+            // relative to the center of the Node whose handle we are rotating
             const part = this.adornedObject.part;
             if (part !== null) {
                 const rotationPoint = part.getDocumentPoint(part.locationSpot);
                 angle = rotationPoint.directionPoint(newPoint);
             }
         }
-        else { // relative to the center of the whole selection
+        else {
+            // relative to the center of the whole selection
             angle = this._centerPoint.directionPoint(newPoint) - this._initialAngle;
         }
         if (angle >= 360)

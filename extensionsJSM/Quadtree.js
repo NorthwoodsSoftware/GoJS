@@ -1,7 +1,7 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
-import * as go from '../release/go-module.js';
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
+import * as go from 'gojs';
 /**
  * @hidden @internal
  */
@@ -39,9 +39,9 @@ class QuadNode {
     }
 }
 /**
- * @internal @hidden
+ * @hidden @internal
  * Object to be contained by the {@link Quadtree} class. This object needs
- * to have rectangular bounds (described by an {@link Rect} object), as well
+ * to have rectangular bounds (described by an {@link go.Rect} object), as well
  * as something (of any type) associated with it.
  */
 class QuadObj {
@@ -51,13 +51,13 @@ class QuadObj {
     }
 }
 /**
- * Implementation of the quadtree data structure using the {@link Rect} class.
- * Each Quadtree has defined bounds found at {@link #bounds}, an array
+ * Implementation of the quadtree data structure using the {@link go.Rect} class.
+ * Each Quadtree has defined bounds found at {@link bounds}, an array
  * of member rectangles, and an array of child nodes
  * (Quadtrees themselves). If the Quadtree has no
  * children, the nodes array will have four nulls. To construct a Quadtree, you
  * can call its constructor with no arguments. Then, to insert a rectangle, call
- * {@link #add}. This tree supports adding points (rectangles with 0
+ * {@link add}. This tree supports adding points (rectangles with 0
  * width and height), segments (rectangles with either 0 width or 0 height), and
  * rectangles with nonzero widths and heights.
  *
@@ -65,7 +65,7 @@ class QuadObj {
  * given rectangle and all of the rectangles in the quadtree. Use of this data
  * structure prevents having to do precise intersection calculations for every
  * rectangle in the tree. To calculate all of the rectangular intersections for
- * a given rectangle, use {@link #intersecting}.
+ * a given rectangle, use {@link intersecting}.
  *
  * Other common operations are detailed below.
  * @category Layout Extension
@@ -74,25 +74,32 @@ export class Quadtree {
     /**
      * Gets the node capacity of this quadtree. This is the number of objects a node can contain before it splits.
      */
-    get nodeCapacity() { return this._nodeCapacity; }
+    get nodeCapacity() {
+        return this._nodeCapacity;
+    }
     /**
      * Gets the maximum depth the Quadtree will allow before it will no longer split..
      */
-    get maxLevels() { return this._maxLevels; }
+    get maxLevels() {
+        return this._maxLevels;
+    }
     /**
      * Gets the boundaries of the node. All nodes should be square.
      */
-    get bounds() { return this._root.bounds; }
+    get bounds() {
+        return this._root.bounds;
+    }
     /**
      * Gets the root node of the tree
      */
-    get root() { return this._root; }
+    get root() {
+        return this._root;
+    }
     /**
      * In most cases, simply calling this constructor with no arguments will produce the desired behaviour.
-     * @constructor
-     * @param {number=} nodeCapacity The node capacity of this quadtree. This is the number of objects a node can contain before it splits. Defaults to 1.
-     * @param {number=} maxLevel The maximum depth the Quadtree will allow before it will no longer split. Defaults to Infinity (no maximum depth).
-     * @param {Rect=} bounds The bounding box surrounding the entire Quadtree. If the bounds are unset or a node is inserted outside of the bounds, the tree will automatically grow.
+     * @param nodeCapacity - The node capacity of this quadtree. This is the number of objects a node can contain before it splits. Defaults to 1.
+     * @param maxLevel - The maximum depth the Quadtree will allow before it will no longer split. Defaults to Infinity (no maximum depth).
+     * @param bounds - The bounding box surrounding the entire Quadtree. If the bounds are unset or a node is inserted outside of the bounds, the tree will automatically grow.
      */
     constructor(nodeCapacity, maxLevel, bounds) {
         /** @hidden @internal */ this._nodeCapacity = 1;
@@ -116,8 +123,6 @@ export class Quadtree {
     }
     /**
      * Clears the Quadtree, removing all objects and children nodes. Keeps the current bounds of the root node.
-     * @this {Quadtree}
-     * @return {void}
      */
     clear() {
         this._root.clear();
@@ -126,14 +131,12 @@ export class Quadtree {
     /**
      * @hidden @internal
      * Returns a list of possible quadrants that the given rect could be in
-     * @this {Quadtree}
-     * @param {Rect} rect the rectangle to test
-     * @return {Array<number>}
+     * @param rect - the rectangle to test
      */
     _getQuadrants(rect, node) {
         const quadrants = [];
-        const horizontalMidpoint = node.bounds.x + (node.bounds.width / 2);
-        const verticalMidpoint = node.bounds.y + (node.bounds.height / 2);
+        const horizontalMidpoint = node.bounds.x + node.bounds.width / 2;
+        const verticalMidpoint = node.bounds.y + node.bounds.height / 2;
         const topQuadrant = rect.y <= verticalMidpoint;
         const bottomQuadrant = rect.y + rect.height >= verticalMidpoint;
         if (rect.x <= horizontalMidpoint) {
@@ -161,17 +164,16 @@ export class Quadtree {
      * the parent node. This function avoids some additional
      * calculations by assuming that the rect is contained entirely
      * within the parent node's bounds.
-     * @this {Quadtree}
-     * @param {Rect} rect the rect to test
-     * @return {number}
+     * @param rect - the rect to test
      */
     _getIndex(rect, node) {
         let index = -1;
-        if (node.bounds === undefined) { // the quadtree is empty
+        if (node.bounds === undefined) {
+            // the quadtree is empty
             return index;
         }
-        const horizontalMidpoint = node.bounds.x + (node.bounds.width / 2);
-        const verticalMidpoint = node.bounds.y + (node.bounds.height / 2);
+        const horizontalMidpoint = node.bounds.x + node.bounds.width / 2;
+        const verticalMidpoint = node.bounds.y + node.bounds.height / 2;
         const topQuadrant = rect.y <= verticalMidpoint && rect.y + rect.height <= verticalMidpoint;
         const bottomQuadrant = rect.y >= verticalMidpoint;
         if (rect.x + rect.width <= horizontalMidpoint) {
@@ -200,16 +202,14 @@ export class Quadtree {
      * will grow to accomodate it. Possibly restructures the
      * tree if a more efficient configuration can be found with
      * the new dimensions. Bounds can be given either as a
-     * single {@link Rect} or as any combination of arguments
-     * which is valid for the {@link Rect} constructor.
-     * @this {Quadtree}
-     * @param {T} obj the object to insert
-     * @param {Rect|Point|number} x The Rect bounds of the object, or top-left Point, or x value.
-     * @param {Point|Size|number} y Bottom-right Point or Size or y value.
-     * @param {number} w Width to be used if x,y are specified;
+     * single {@link go.Rect} or as any combination of arguments
+     * which is valid for the {@link go.Rect} constructor.
+     * @param obj - the object to insert
+     * @param x - The Rect bounds of the object, or top-left Point, or x value.
+     * @param y - Bottom-right Point or Size or y value.
+     * @param w - Width to be used if x,y are specified;
      * must be non-negative.
-     * @param {number} h Height to be used if x,y are specified;
-     * @return {void}
+     * @param h - Height to be used if x,y are specified;
      */
     add(obj, x, y, w, h) {
         let bounds;
@@ -231,10 +231,14 @@ export class Quadtree {
         else {
             treeObj = new QuadObj(bounds, obj);
         }
-        if (isNaN(bounds.x) || bounds.x === Infinity ||
-            isNaN(bounds.y) || bounds.y === Infinity ||
-            isNaN(bounds.width) || bounds.width === Infinity ||
-            isNaN(bounds.height) || bounds.height === Infinity) {
+        if (isNaN(bounds.x) ||
+            bounds.x === Infinity ||
+            isNaN(bounds.y) ||
+            bounds.y === Infinity ||
+            isNaN(bounds.width) ||
+            bounds.width === Infinity ||
+            isNaN(bounds.height) ||
+            bounds.height === Infinity) {
             throw new Error('Invalid rectangle, contains NaN or Infinity properties');
         }
         this._hasZeroWidthObject = this._hasZeroWidthObject || bounds.width === 0;
@@ -246,7 +250,8 @@ export class Quadtree {
         }
         // fixes quadtree having a width and height of 0 if the first object added is a point
         // this will only be called after a second object is added, the new width/height is the maximum distance between them
-        if (this._root.bounds !== undefined && (this._root.bounds.width === 0 || this._root.bounds.height === 0)) {
+        if (this._root.bounds !== undefined &&
+            (this._root.bounds.width === 0 || this._root.bounds.height === 0)) {
             const len = Math.max(Math.abs(bounds.x - this._root.bounds.x), Math.abs(bounds.y - this._root.bounds.y));
             this._root.bounds = new go.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
         }
@@ -255,12 +260,13 @@ export class Quadtree {
         // grow as many times as necessary to fit the new object
         while (!this._root.bounds.containsRect(bounds)) {
             const old = this._root;
-            this.walk(n => n.level++, old);
+            this.walk((n) => n.level++, old);
             const intersectsTopBound = bounds.y < this._root.bounds.y;
             const intersectsBottomBound = bounds.y + bounds.height > this._root.bounds.y + this._root.bounds.height;
             const intersectsRightBound = bounds.x + bounds.width > this._root.bounds.x + this._root.bounds.width;
             const intersectsLeftBound = bounds.x < this._root.bounds.x;
-            if ((intersectsTopBound && intersectsRightBound) || (intersectsTopBound && !intersectsLeftBound)) {
+            if ((intersectsTopBound && intersectsRightBound) ||
+                (intersectsTopBound && !intersectsLeftBound)) {
                 /*  _______
                  * | 1 | 0 |
                  * |___|___|
@@ -301,7 +307,8 @@ export class Quadtree {
                     this._fixTopObjectPlacement(old);
                 }
             }
-            else if ((intersectsBottomBound && intersectsRightBound) || ((intersectsRightBound || intersectsBottomBound) && !intersectsLeftBound)) {
+            else if ((intersectsBottomBound && intersectsRightBound) ||
+                ((intersectsRightBound || intersectsBottomBound) && !intersectsLeftBound)) {
                 /*  _______
                  * |old| 0 |
                  * |___|___|
@@ -344,10 +351,8 @@ export class Quadtree {
      * @hidden @internal
      * Helper function to recursively perform the add operation
      * on the tree.
-     * @this {Quadtree}
-     * @param {QuadNode<T>} root the current node being operated on
-     * @param {QuadObj<T>} treeObj the object being added
-     * @return {void}
+     * @param root - the current node being operated on
+     * @param treeObj - the object being added
      */
     _addHelper(root, treeObj) {
         root.totalObjects++;
@@ -370,7 +375,8 @@ export class Quadtree {
             let i = 0;
             while (i < root.treeObjects.length) {
                 const index = this._getIndex(root.treeObjects[i].bounds, root);
-                if (index !== -1 && !(root.treeObjects[i].bounds.width === 0 || root.treeObjects[i].bounds.height === 0)) {
+                if (index !== -1 &&
+                    !(root.treeObjects[i].bounds.width === 0 || root.treeObjects[i].bounds.height === 0)) {
                     root.objects.splice(i, 1);
                     const selected = root.nodes[index];
                     if (selected !== null) {
@@ -387,16 +393,15 @@ export class Quadtree {
      * @hidden @internal
      * Recursively moves objects placed on the right side of a vertical border
      * between two nodes to the left side of the vertical border. This allows
-     * them to be located by {@link #_getIndex}. This function is called
-     * after an {@link #add} call grows the Quadtree, but only if there
+     * them to be located by {@link _getIndex}. This function is called
+     * after an {@link add} call grows the Quadtree, but only if there
      * are 0 width objects in the tree.
-     * @this {Quadtree}
-     * @param {QuadNode<T>} root the current root node being operated on
-     * @return {void}
+     * @param root - the current root node being operated on
      */
     _fixLeftObjectPlacement(root) {
         const nw = root.nodes[1];
-        if (nw !== null) { // if root is split
+        if (nw !== null) {
+            // if root is split
             this._fixLeftObjectPlacement(nw); // NW
             const sw = root.nodes[2];
             if (sw !== null) {
@@ -421,16 +426,15 @@ export class Quadtree {
      * @hidden @internal
      * Recursively moves objects placed on the bottom side of a horizontal border
      * between two nodes to the top side of the vertical border. This allows
-     * them to be located by {@link #_getIndex}. This function is called
-     * after an {@link #add} call grows the Quadtree, but only if there
+     * them to be located by {@link _getIndex}. This function is called
+     * after an {@link add} call grows the Quadtree, but only if there
      * are 0 height objects in the tree.
-     * @this {Quadtree}
-     * @param {QuadNode<T>} root the current root node being operated on
-     * @return {void}
+     * @param root - the current root node being operated on
      */
     _fixTopObjectPlacement(root) {
         const ne = root.nodes[0];
-        if (ne !== null) { // if root is split
+        if (ne !== null) {
+            // if root is split
             this._fixTopObjectPlacement(ne); // NE
             const nw = root.nodes[1];
             if (nw !== null) {
@@ -455,9 +459,7 @@ export class Quadtree {
      * @hidden @internal
      * Moves all objects from a leaf node to its parent and unsplits.
      * Used after growing the tree when level>max level.
-     * @this {Quadtree}
-     * @param {QuadNode<T>} node the leaf node to restructure
-     * @return {void}
+     * @param node - the leaf node to restructure
      */
     _restructureLevels(node) {
         if (node && this._maxLevels < Infinity && node.nodes[0] !== null) {
@@ -465,8 +467,8 @@ export class Quadtree {
                 for (let i = 0; i < node.nodes.length; i++) {
                     const selected = node.nodes[i];
                     if (selected !== null) {
-                        node.objects.push.apply(node.objects, selected.objects);
-                        node.treeObjects.push.apply(node.treeObjects, selected.treeObjects);
+                        node.objects.push(...selected.objects);
+                        node.treeObjects.push(...selected.treeObjects);
                         selected.clear();
                         node.nodes[i] = null;
                     }
@@ -484,9 +486,8 @@ export class Quadtree {
     }
     /**
      * Return the node that contains the given object.
-     * @this {Quadtree}
-     * @param {T} obj the object to find
-     * @return {QuadNode<T>} the node containing the given object, null if the object is not found
+     * @param obj - the object to find
+     * @returns the node containing the given object, null if the object is not found
      */
     find(obj) {
         const treeObj = this._treeObjectMap.get(obj);
@@ -512,20 +513,18 @@ export class Quadtree {
         return null;
     }
     /**
-     * Convenience method, calls {@link #find} and returns a boolean
+     * Convenience method, calls {@link find} and returns a boolean
      * indicating whether or not the tree contains the given object
-     * @this {Quadtree}
-     * @param {T} obj the object to check for
-     * @return {boolean} whether or not the given object is present in the tree
+     * @param obj - the object to check for
+     * @returns whether or not the given object is present in the tree
      */
     has(obj) {
         return !!this.find(obj);
     }
     /**
      * Checks if any of the objects in the tree have the given boundaries
-     * @this {Quadtree}
-     * @param {Rect} bounds the rectangle to check for
-     * @return {Rect} the actual bounds object stored in the tree
+     * @param bounds - the rectangle to check for
+     * @returns the actual bounds object stored in the tree
      */
     findBounds(bounds) {
         if (bounds) {
@@ -549,9 +548,8 @@ export class Quadtree {
     /**
      * Remove the given object from the tree, restructuring to
      * get rid of empty nodes that are unneeded.
-     * @this {Quadtree}
-     * @param {T} obj the object to remove
-     * @return {boolean} whether or not the deletion was successful. False when the object is not in the tree.
+     * @param obj - the object to remove
+     * @returns whether or not the deletion was successful. False when the object is not in the tree.
      */
     remove(obj) {
         const treeObj = this._treeObjectMap.get(obj);
@@ -587,9 +585,8 @@ export class Quadtree {
      * Removes multiple objects at the given indices from the given owner. Similar
      * to the normal remove function, but much faster when the owner and indices are
      * already known.
-     * @this {Quadtree}
-     * @param {QuadNode<T>} owner the node to remove objects from
-     * @param {Array<number>} indexes the indices to remove. Should be given in ascending order.
+     * @param owner - the node to remove objects from
+     * @param indexes - the indices to remove. Should be given in ascending order.
      */
     _removeFromOwner(owner, indexes) {
         if (indexes.length === 0) {
@@ -622,16 +619,14 @@ export class Quadtree {
      * @hidden @internal
      * Recursively adds all objects from children of the given
      * root tree to the given owner tree
-     * Used internally by {@link #remove}
-     * @this {Quadtree}
-     * @param {Quadtree} owner the tree to add objects to
-     * @return {void}
+     * Used internally by {@link remove}
+     * @param owner - the tree to add objects to
      */
     _addChildObjectsToNode(owner, root) {
         for (const node of root.nodes) {
             if (node) {
-                owner.treeObjects.push.apply(owner.treeObjects, node.treeObjects);
-                owner.objects.push.apply(owner.objects, node.objects);
+                owner.treeObjects.push(...node.treeObjects);
+                owner.objects.push(...node.objects);
                 this._addChildObjectsToNode(owner, node);
             }
         }
@@ -640,8 +635,6 @@ export class Quadtree {
      * @hidden @internal
      * Recursively combines parent nodes that should be split, all the way
      * up the tree. Starts from the given node.
-     * @this {Quadtree}
-     * @return {void}
      */
     _restructure(root) {
         const parent = root.parent;
@@ -659,8 +652,8 @@ export class Quadtree {
                 for (let i = 0; i < parent.nodes.length; i++) {
                     const selected = parent.nodes[i];
                     if (selected !== null) {
-                        parent.objects.push.apply(parent.objects, selected.objects);
-                        parent.treeObjects.push.apply(parent.treeObjects, selected.treeObjects);
+                        parent.objects.push(...selected.objects);
+                        parent.treeObjects.push(...selected.treeObjects);
                         selected.clear();
                         parent.nodes[i] = null;
                     }
@@ -671,12 +664,11 @@ export class Quadtree {
     }
     /**
      * Can be called as either (obj, x, y) or (obj, point). Translate
-     * the given object to given x and y coordinates or to a given {@link Point}.
-     * @this {Quadtree}
-     * @param {T} obj the object to move
-     * @param {number|Point} x the x coordinate or Point to move the object to
-     * @param {number} y the y coordinate to move the object to
-     * @return {boolean} whether or not the move was successful. False if the object was not in the tree.
+     * the given object to given x and y coordinates or to a given {@link go.Point}.
+     * @param obj - the object to move
+     * @param x - the x coordinate or Point to move the object to
+     * @param y - the y coordinate to move the object to
+     * @returns whether or not the move was successful. False if the object was not in the tree.
      */
     move(obj, x, y) {
         const treeObj = this._treeObjectMap.get(obj);
@@ -699,12 +691,11 @@ export class Quadtree {
     }
     /**
      * Can be called as either (obj, width, height) or (obj, size). Resize
-     * the given object to given width and height or to a given {@link Size}.
-     * @this {Quadtree}
-     * @param {T} obj the object to resize
-     * @param {number|Size} width the width or Size to resize the object to
-     * @param {number} height the height to resize the object to
-     * @return {boolean} whether or not the resize was successful. False if the object was not in the tree.
+     * the given object to given width and height or to a given {@link go.Size}.
+     * @param obj - the object to resize
+     * @param width - the width or Size to resize the object to
+     * @param height - the height to resize the object to
+     * @returns whether or not the resize was successful. False if the object was not in the tree.
      */
     resize(obj, width, height) {
         const treeObj = this._treeObjectMap.get(obj);
@@ -727,13 +718,12 @@ export class Quadtree {
     }
     /**
      * Updates the given object to have the bounds given, provided as either a
-     * {@link Rect} or x, y, width, and height.
-     * @this {Quadtree}
-     * @param obj the object to change the bounds of
-     * @param x the x-coordinate or Rect to set the object to
-     * @param y the y-coordinate to set the object to, unnecessary if a Rect was given
-     * @param width the width to set the object to, unnecessary if a Rect was given
-     * @param height the height to set the object to, unnecessary if a Rect was given
+     * {@link go.Rect} or x, y, width, and height.
+     * @param obj - the object to change the bounds of
+     * @param x - the x-coordinate or Rect to set the object to
+     * @param y - the y-coordinate to set the object to, unnecessary if a Rect was given
+     * @param width - the width to set the object to, unnecessary if a Rect was given
+     * @param height - the height to set the object to, unnecessary if a Rect was given
      */
     setTo(obj, x, y, width, height) {
         const treeObj = this._treeObjectMap.get(obj);
@@ -754,12 +744,11 @@ export class Quadtree {
     }
     /**
      * Return all objects that intersect (wholly or partially) with
-     * the given {@link Rect} or {@link Point}. Touching edges and
+     * the given {@link go.Rect} or {@link go.Point}. Touching edges and
      * objects overlapping by 1e-7 or less (to account for floating
      * point error) are both not considered intersections.
-     * @this {Quadtree}
-     * @param {Rect|Point} rect the Rect or Point to check intersections for. If a point is given, a Rect with size (0, 0) is created for intersection calculations.
-     * @return {Array<T>} array containing all intersecting objects
+     * @param rect - the Rect or Point to check intersections for. If a point is given, a Rect with size (0, 0) is created for intersection calculations.
+     * @returns array containing all intersecting objects
      */
     intersecting(rect) {
         if (rect instanceof go.Point) {
@@ -792,22 +781,23 @@ export class Quadtree {
     }
     /**
      * @hidden @internal
-     * Similar as {@link Rect.intersectsRect}, but doesn't count edges as intersections.
+     * Similar as {@link go.Rect.intersectsRect}, but doesn't count edges as intersections.
      * Also accounts for floating error (by returning false more often) up to an error of 1e-7.
-     * Used by {@link #intersecting}.
-     * @this {Quadtree}
-     * @param {Rect} r1 first rectangle
-     * @param {Rect} r2 second rectangle
-     * @return {boolean} whether or not the two rectangles intersect
+     * Used by {@link intersecting}.
+     * @param r1 - first rectangle
+     * @param r2 - second rectangle
+     * @returns whether or not the two rectangles intersect
      */
     static _rectsIntersect(r1, r2) {
-        return !(r2.left + 1e-7 >= r1.right || r2.right - 1e-7 <= r1.left || r2.top + 1e-7 >= r1.bottom || r2.bottom - 1e-7 <= r1.top);
+        return !(r2.left + 1e-7 >= r1.right ||
+            r2.right - 1e-7 <= r1.left ||
+            r2.top + 1e-7 >= r1.bottom ||
+            r2.bottom - 1e-7 <= r1.top);
     }
     /**
-     * Return all objects that fully contain the given {@link Rect} or {@link Point}.
-     * @this {Quadtree}
-     * @param {Rect|Point} rect the Rect or Point to check containing for. If a point is given, a Rect with size (0, 0) is created for containment calculations.
-     * @return {Array<T>} array containing all containing objects
+     * Return all objects that fully contain the given {@link go.Rect} or {@link go.Point}.
+     * @param rect - the Rect or Point to check containing for. If a point is given, a Rect with size (0, 0) is created for containment calculations.
+     * @returns array containing all containing objects
      */
     containing(rect) {
         if (rect instanceof go.Point) {
@@ -840,10 +830,9 @@ export class Quadtree {
     }
     /**
      * Returns the square of the distance from the centers of the given objects
-     * @this {Quadtree}
-     * @param {T} obj1
-     * @param {T} obj2
-     * @return {number} square of the distance between the centers of obj1 and obj2
+     * @param obj1
+     * @param obj2
+     * @returns square of the distance between the centers of obj1 and obj2
      */
     distanceSquared(obj1, obj2) {
         const owner1 = this.find(obj1);
@@ -860,10 +849,8 @@ export class Quadtree {
     /**
      * Recursively traverses the tree (depth first) and executes the
      * given callback on each node.
-     * @this {Quadtree}
-     * @param {function} callback the callback to execute on each node. Takes the form of (n: Quadtree) => void
-     * @param {boolean} root whether or not to execute the callback on the root node as well. Defaults to true
-     * @return {void}
+     * @param callback - the callback to execute on each node. Takes the form of (n: Quadtree) => void
+     * @param root - whether or not to execute the callback on the root node as well. Defaults to true
      */
     walk(callback, node = this._root, root = true) {
         if (root) {
@@ -879,9 +866,7 @@ export class Quadtree {
     }
     /**
      * Visits every object stored in the tree (depth first)
-     * @this {Quadtree}
-     * @param {function} callback the callback to execute on each object.
-     * @return {void}
+     * @param callback - the callback to execute on each object.
      */
     forEach(callback) {
         this.walk((n) => {
@@ -893,8 +878,7 @@ export class Quadtree {
     /**
      * Finds the most furthest object in each direction stored in the tree.
      * Bounds are tested using the center x and y coordinate.
-     * @this {Quadtree}
-     * @return {Array<T>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
+     * @returns maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
      */
     findExtremeObjects() {
         const [extremes0, extremes1, extremes2, extremes3] = this._findExtremeObjectsHelper();
@@ -907,30 +891,34 @@ export class Quadtree {
     }
     /**
      * @hidden @internal
-     * Recursive helper function for {@link #findExtremeObjects}
-     * @this {Quadtree}
-     * @param {QuadNode<T>} root the current root node being searched
-     * @return {Array<QuadObj<T>>} maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
+     * Recursive helper function for {@link findExtremeObjects}
+     * @param root - the current root node being searched
+     * @returns maximum and minimum objects in the tree, in the format [min x, max x, min y, max y].
      */
     _findExtremeObjectsHelper(root = this._root) {
         let minX = null;
         let maxX = null;
         let minY = null;
         let maxY = null;
-        if (root.nodes[0]) { // if root is split
+        if (root.nodes[0]) {
+            // if root is split
             for (const node of root.nodes) {
                 if (node !== null) {
                     const [extremes0, extremes1, extremes2, extremes3] = this._findExtremeObjectsHelper(node);
-                    if (minX == null || (extremes0 !== null && extremes0.bounds.centerX < minX.bounds.centerX)) {
+                    if (minX == null ||
+                        (extremes0 !== null && extremes0.bounds.centerX < minX.bounds.centerX)) {
                         minX = extremes0;
                     }
-                    if (maxX === null || (extremes1 !== null && extremes1.bounds.centerX > maxX.bounds.centerX)) {
+                    if (maxX === null ||
+                        (extremes1 !== null && extremes1.bounds.centerX > maxX.bounds.centerX)) {
                         maxX = extremes1;
                     }
-                    if (minY === null || (extremes2 !== null && extremes2.bounds.centerY < minY.bounds.centerY)) {
+                    if (minY === null ||
+                        (extremes2 !== null && extremes2.bounds.centerY < minY.bounds.centerY)) {
                         minY = extremes2;
                     }
-                    if (maxY === null || (extremes3 !== null && extremes3.bounds.centerY > maxY.bounds.centerY)) {
+                    if (maxY === null ||
+                        (extremes3 !== null && extremes3.bounds.centerY > maxY.bounds.centerY)) {
                         maxY = extremes3;
                     }
                 }

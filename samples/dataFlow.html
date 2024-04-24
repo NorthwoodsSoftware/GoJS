@@ -1,249 +1,313 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Data flow or workflow graph of nodes with varying input and output ports with labels, oriented horizontally."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Data Flow Diagram</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Data flow or workflow graph of nodes with varying input and output ports with labels, oriented horizontally." />
+<meta itemprop="description" content="Data flow or workflow graph of nodes with varying input and output ports with labels, oriented horizontally." />
+<meta property="og:description" content="Data flow or workflow graph of nodes with varying input and output ports with labels, oriented horizontally." />
+<meta name="twitter:description" content="Data flow or workflow graph of nodes with varying input and output ports with labels, oriented horizontally." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Data Flow />
+<meta property="og:title" content=Data Flow />
+<meta name="twitter:title" content=Data Flow />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dataFlow.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/dataFlow.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dataFlow.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/dataFlow.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/dataFlow.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Data Flow | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            initialContentAlignment: go.Spot.Left,
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.LayeredDigraphLayout,
-              { direction: 0, alignOption: go.LayeredDigraphLayout.AlignAll }),
-            "undoManager.isEnabled": true
-          }
-        );
-
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        var button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.slice(0, idx);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
 
-      function makePort(name, leftside) {
-        var port = $(go.Shape, "Rectangle",
-          {
-            fill: "gray", stroke: null,
-            desiredSize: new go.Size(8, 8),
-            portId: name,  // declare this object to be a "port"
-            toMaxLinks: 1,  // don't allow more than one link into a port
-            cursor: "pointer"  // show a different cursor to indicate potential link point
-          });
-
-        var lab = $(go.TextBlock, name,  // the name of the port
-          { font: "7pt sans-serif" });
-
-        var panel = $(go.Panel, "Horizontal",
-          { margin: new go.Margin(2, 0) });
-
-        // set up the port/panel based on which side of the node it will be on
-        if (leftside) {
-          port.toSpot = go.Spot.Left;
-          port.toLinkable = true;
-          lab.margin = new go.Margin(1, 0, 0, 1);
-          panel.alignment = go.Spot.TopLeft;
-          panel.add(port);
-          panel.add(lab);
-        } else {
-          port.fromSpot = go.Spot.Right;
-          port.fromLinkable = true;
-          lab.margin = new go.Margin(1, 1, 0, 0);
-          panel.alignment = go.Spot.TopRight;
-          panel.add(lab);
-          panel.add(port);
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
-        return panel;
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      function makeTemplate(typename, icon, background, inports, outports) {
-        var node = $(go.Node, "Spot",
-          $(go.Panel, "Auto",
-            { width: 100, height: 120 },
-            $(go.Shape, "Rectangle",
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialContentAlignment: go.Spot.Left,
+      initialAutoScale: go.AutoScale.UniformToFill,
+      layout: $(go.LayeredDigraphLayout, { direction: 0 }),
+      'undoManager.isEnabled': true,
+    });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      var button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      var idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    function makePort(name, leftside) {
+      var port = $(go.Shape, 'Rectangle', {
+        fill: 'gray',
+        stroke: null,
+        desiredSize: new go.Size(8, 8),
+        portId: name, // declare this object to be a "port"
+        toMaxLinks: 1, // don't allow more than one link into a port
+        cursor: 'pointer', // show a different cursor to indicate potential link point
+      });
+
+      var lab = $(go.TextBlock,
+        name, // the name of the port
+        { font: '7pt sans-serif' }
+      );
+
+      var panel = $(go.Panel, 'Horizontal', { margin: new go.Margin(2, 0) });
+
+      // set up the port/panel based on which side of the node it will be on
+      if (leftside) {
+        port.toSpot = go.Spot.Left;
+        port.toLinkable = true;
+        lab.margin = new go.Margin(1, 0, 0, 1);
+        panel.alignment = go.Spot.TopLeft;
+        panel.add(port);
+        panel.add(lab);
+      } else {
+        port.fromSpot = go.Spot.Right;
+        port.fromLinkable = true;
+        lab.margin = new go.Margin(1, 1, 0, 0);
+        panel.alignment = go.Spot.TopRight;
+        panel.add(lab);
+        panel.add(port);
+      }
+      return panel;
+    }
+
+    function makeTemplate(typename, icon, background, inports, outports) {
+      var node = $(go.Node,
+        'Spot',
+        $(go.Panel,
+          'Auto',
+          { width: 100, height: 120 },
+          $(go.Shape, 'Rectangle', {
+            fill: background,
+            stroke: null,
+            strokeWidth: 0,
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight,
+          }),
+          $(go.Panel,
+            'Table',
+            $(go.TextBlock, typename, {
+              row: 0,
+              margin: 3,
+              maxSize: new go.Size(80, NaN),
+              stroke: 'black',
+              font: 'bold 12pt sans-serif',
+            }),
+            $(go.Picture, icon, { row: 1, width: 16, height: 16, scale: 3.0 }),
+            $(go.TextBlock,
               {
-                fill: background, stroke: null, strokeWidth: 0,
-                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
-              }),
-            $(go.Panel, "Table",
-              $(go.TextBlock, typename,
-                {
-                  row: 0,
-                  margin: 3,
-                  maxSize: new go.Size(80, NaN),
-                  stroke: "black",
-                  font: "bold 12pt sans-serif"
-                }),
-              $(go.Picture, icon,
-                { row: 1, width: 16, height: 16, scale: 3.0 }),
-              $(go.TextBlock,
-                {
-                  row: 2,
-                  margin: 3,
-                  editable: true,
-                  maxSize: new go.Size(80, 40),
-                  stroke: "white",
-                  font: "bold 9pt sans-serif"
-                },
-                new go.Binding("text", "name").makeTwoWay())
+                row: 2,
+                margin: 3,
+                editable: true,
+                maxSize: new go.Size(80, 40),
+                stroke: 'white',
+                font: 'bold 9pt sans-serif',
+              },
+              new go.Binding('text', 'name').makeTwoWay()
             )
-          ),
-          $(go.Panel, "Vertical",
-            {
-              alignment: go.Spot.Left,
-              alignmentFocus: new go.Spot(0, 0.5, 8, 0)
-            },
-            inports),
-          $(go.Panel, "Vertical",
-            {
-              alignment: go.Spot.Right,
-              alignmentFocus: new go.Spot(1, 0.5, -8, 0)
-            },
-            outports)
-        );
-        myDiagram.nodeTemplateMap.set(typename, node);
-      }
-
-      makeTemplate("Table", "images/table.svg", "forestgreen",
-        [],
-        [makePort("OUT", false)]);
-
-      makeTemplate("Join", "images/join.svg", "mediumorchid",
-        [makePort("L", true), makePort("R", true)],
-        [makePort("UL", false), makePort("ML", false), makePort("M", false), makePort("MR", false), makePort("UR", false)]);
-
-      makeTemplate("Project", "images/project.svg", "darkcyan",
-        [makePort("", true)],
-        [makePort("OUT", false)]);
-
-      makeTemplate("Filter", "images/filter.svg", "cornflowerblue",
-        [makePort("", true)],
-        [makePort("OUT", false), makePort("INV", false)]);
-
-      makeTemplate("Group", "images/group.svg", "mediumpurple",
-        [makePort("", true)],
-        [makePort("OUT", false)]);
-
-      makeTemplate("Sort", "images/sort.svg", "sienna",
-        [makePort("", true)],
-        [makePort("OUT", false)]);
-
-      makeTemplate("Export", "images/upload.svg", "darkred",
-        [makePort("", true)],
-        []);
-
-      myDiagram.linkTemplate =
-        $(go.Link,
+          )
+        ),
+        $(go.Panel,
+          'Vertical',
           {
-            routing: go.Link.Orthogonal, corner: 25,
-            relinkableFrom: true, relinkableTo: true
+            alignment: go.Spot.Left,
+            alignmentFocus: new go.Spot(0, 0.5, 8, 0),
           },
-          $(go.Shape, { stroke: "gray", strokeWidth: 2 }),
-          $(go.Shape, { stroke: "gray", fill: "gray", toArrow: "Standard" })
-        );
-
-      load();
+          inports
+        ),
+        $(go.Panel,
+          'Vertical',
+          {
+            alignment: go.Spot.Right,
+            alignmentFocus: new go.Spot(1, 0.5, -8, 0),
+          },
+          outports
+        )
+      );
+      myDiagram.nodeTemplateMap.set(typename, node);
     }
 
-    // Show the diagram's model in JSON format that the user may edit
-    function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+    makeTemplate('Table', 'images/table.svg', 'forestgreen', [], [makePort('OUT', false)]);
+
+    makeTemplate(
+      'Join',
+      'images/join.svg',
+      'mediumorchid',
+      [makePort('L', true), makePort('R', true)],
+      [makePort('UL', false), makePort('ML', false), makePort('M', false), makePort('MR', false), makePort('UR', false)]
+    );
+
+    makeTemplate('Project', 'images/project.svg', 'darkcyan', [makePort('', true)], [makePort('OUT', false)]);
+
+    makeTemplate('Filter', 'images/filter.svg', 'cornflowerblue', [makePort('', true)], [makePort('OUT', false), makePort('INV', false)]);
+
+    makeTemplate('Group', 'images/group.svg', 'mediumpurple', [makePort('', true)], [makePort('OUT', false)]);
+
+    makeTemplate('Sort', 'images/sort.svg', 'sienna', [makePort('', true)], [makePort('OUT', false)]);
+
+    makeTemplate('Export', 'images/upload.svg', 'darkred', [makePort('', true)], []);
+
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        routing: go.Routing.Orthogonal,
+        corner: 25,
+        relinkableFrom: true,
+        relinkableTo: true,
+      },
+      $(go.Shape, { stroke: 'gray', strokeWidth: 2 }),
+      $(go.Shape, { stroke: 'gray', fill: 'gray', toArrow: 'Standard' })
+    );
+
+    load();
+  }
+
+  // Show the diagram's model in JSON format that the user may edit
+  function save() {
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    This sample demonstrates a data flow or workflow graph with labeled ports on nodes.
-    A real application would provide the ability to edit the details (properties) of each node
-    so that the actual database operation could be executed.
+    This sample demonstrates a data flow or workflow graph with labeled ports on nodes. A real application would provide the ability to edit the details
+    (properties) of each node so that the actual database operation could be executed.
   </p>
   <p>
-    The ports of each node are set up as panels, created within the <b>makePort</b> function.
-    This function sets various properties of the <a>Shape</a> and
-    <a>TextBlock</a> that make up the panel, and properties of the panel itself. Most notable are
-    <a>GraphObject.portId</a> to declare the shape as a port, and <a>GraphObject.fromLinkable</a> and
-    <a>GraphObject.toLinkable</a> to set the way the ports can be linked.
+    The ports of each node are set up as panels, created within the <b>makePort</b> function. This function sets various properties of the <a>Shape</a> and
+    <a>TextBlock</a> that make up the panel, and properties of the panel itself. Most notable are <a>GraphObject.portId</a> to declare the shape as a port, and
+    <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a> to set the way the ports can be linked.
   </p>
   <p>
-    The diagram also uses the <b>makeTemplate</b> function to create the node templates with shared features.
-    This function takes a type, an image, a background color, and arrays of ports to create the node
-    to be added to the <a>Diagram.nodeTemplateMap</a>.
+    The diagram also uses the <b>makeTemplate</b> function to create the node templates with shared features. This function takes a type, an image, a background
+    color, and arrays of ports to create the node to be added to the <a>Diagram.nodeTemplateMap</a>.
   </p>
-  <p>
-    For the same data model rendered somewhat differently, see the <a href="dataFlowVertical.html">Data Flow (vertical)</a> sample.
-  </p>
+  <p>For the same data model rendered somewhat differently, see the <a href="dataFlowVertical.html">Data Flow (vertical)</a> sample.</p>
   <div>
     <div>
       <button id="SaveButton" onclick="save()">Save</button>
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
-    <textarea id="mySavedModel" style="width:100%;height:300px">
+    <textarea id="mySavedModel" style="width: 100%; height: 300px">
 { "class": "go.GraphLinksModel",
   "nodeCategoryProperty": "type",
   "linkFromPortIdProperty": "frompid",
@@ -285,11 +349,65 @@
     </textarea>
   </div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Layered Digraph Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a general directed graph in layers (rows or columns). This is more general than <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+as it does not require that the graph be tree-structured.
+More information can be found in the <a href="../intro/layouts.html#LayeredDigraphLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#layered-digraph">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Ports in Nodes</h4>
+<p>
+Specific elements of a Node at which links may connect are called <i>ports</i>. 
+There may be any number of ports in a node. By default there is just one port, the whole node,
+which results in the effect of having the whole node act as the port.
+Port-like GraphObjects can only be in <a href="../api/symbols/Node.html" target="api">Node</a>s or <a href="../api/symbols/Group.html" target="api">Group</a>s, not in <a href="../api/symbols/Link.html" target="api">Link</a>s or <a href="../api/symbols/Adornment.html" target="api">Adornment</a>s or simple <a href="../api/symbols/Part.html" target="api">Part</a>s.
+</p>
+<p>
+More information can be found in the <a href="../intro/ports.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#ports">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

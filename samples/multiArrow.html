@@ -1,144 +1,215 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Multi-Arrow Links</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links." />
+<meta itemprop="description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links." />
+<meta property="og:description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links." />
+<meta name="twitter:description" content="A custom Link geometry that draws arrowheads at the end of each segment of orthogonally routed links." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Multiple Arrowheads />
+<meta property="og:title" content=Multiple Arrowheads />
+<meta name="twitter:title" content=Multiple Arrowheads />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/multiArrow.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/multiArrow.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/multiArrow.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/multiArrow.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/multiArrow.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Multiple Arrowheads | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv", // the ID of the DIV HTML element
-          {
-            layout: $(go.ForceDirectedLayout),
-            "undoManager.isEnabled": true
-          });
-
-      myDiagram.nodeTemplate =
-        $(go.Node, go.Panel.Auto,
-          { locationSpot: go.Spot.Center },
-          $(go.Shape,
-            {
-              figure: "RoundedRectangle",
-              parameter1: 10,
-              fill: "orange",  // default fill color
-              portId: "",
-              fromLinkable: true,
-              fromSpot: go.Spot.AllSides,
-              toLinkable: true,
-              toSpot: go.Spot.AllSides,
-              cursor: "pointer"
-            },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 10, font: "bold 12pt sans-serif" },
-            new go.Binding("text"))
-        );
-
-      myDiagram.linkTemplate =
-        $(MultiArrowLink,  // subclass of Link, defined below
-          {
-            relinkableFrom: true,
-            relinkableTo: true,
-            reshapable: true,
-            resegmentable: true
-          },
-          $(go.Shape,
-            { isPanelMain: true },
-            new go.Binding("fill", "color"))
-          // no arrowhead is defined here -- they are hard-coded in MultiArrowLink.makeGeometry
-        );
-
-      // create a few nodes and links
-      myDiagram.model = new go.GraphLinksModel([
-        { key: 1, text: "one", color: "lightyellow" },
-        { key: 2, text: "two", color: "brown" },
-        { key: 3, text: "three", color: "green" },
-        { key: 4, text: "four", color: "slateblue" },
-        { key: 5, text: "five", color: "aquamarine" },
-        { key: 6, text: "six", color: "lightgreen" },
-        { key: 7, text: "seven" }
-      ], [
-          { from: 5, to: 6, color: "orange" },
-          { from: 1, to: 2, color: "red" },
-          { from: 1, to: 3, color: "blue" },
-          { from: 1, to: 4, color: "goldenrod" },
-          { from: 2, to: 5, color: "fuchsia" },
-          { from: 3, to: 5, color: "green" },
-          { from: 4, to: 5, color: "black" },
-          { from: 6, to: 7 }
-        ]);
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // the ID of the DIV HTML element
+      {
+        layout: $(go.ForceDirectedLayout),
+        'undoManager.isEnabled': true,
+      }
+    );
+
+    myDiagram.nodeTemplate = $(go.Node,
+      go.Panel.Auto,
+      { locationSpot: go.Spot.Center },
+      $(go.Shape,
+        {
+          figure: 'RoundedRectangle',
+          parameter1: 10,
+          fill: 'orange', // default fill color
+          portId: '',
+          fromLinkable: true,
+          fromSpot: go.Spot.AllSides,
+          toLinkable: true,
+          toSpot: go.Spot.AllSides,
+          cursor: 'pointer',
+        },
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock, { margin: 10, font: 'bold 12pt sans-serif' }, new go.Binding('text'))
+    );
+
+    myDiagram.linkTemplate = $(MultiArrowLink, // subclass of Link, defined below
+      {
+        relinkableFrom: true,
+        relinkableTo: true,
+        reshapable: true,
+        resegmentable: true,
+      },
+      $(go.Shape, { isPanelMain: true }, new go.Binding('fill', 'color'))
+      // no arrowhead is defined here -- they are hard-coded in MultiArrowLink.makeGeometry
+    );
+
+    // create a few nodes and links
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'one', color: 'lightyellow' },
+        { key: 2, text: 'two', color: 'brown' },
+        { key: 3, text: 'three', color: 'green' },
+        { key: 4, text: 'four', color: 'slateblue' },
+        { key: 5, text: 'five', color: 'aquamarine' },
+        { key: 6, text: 'six', color: 'lightgreen' },
+        { key: 7, text: 'seven' },
+      ],
+      [
+        { from: 5, to: 6, color: 'orange' },
+        { from: 1, to: 2, color: 'red' },
+        { from: 1, to: 3, color: 'blue' },
+        { from: 1, to: 4, color: 'goldenrod' },
+        { from: 2, to: 5, color: 'fuchsia' },
+        { from: 3, to: 5, color: 'green' },
+        { from: 4, to: 5, color: 'black' },
+        { from: 6, to: 7 },
+      ]
+    );
+  }
 
   // Produce a Geometry that includes an arrowhead at the end of each segment.
   // This only works with orthogonal non-Bezier routing.
   class MultiArrowLink extends go.Link {
     constructor() {
       super();
-      this.routing = go.Link.Orthogonal;
+      this.routing = go.Routing.Orthogonal;
     }
 
     // produce a Geometry from the Link's route
     makeGeometry() {
       // get the Geometry created by the standard behavior
       const geo = super.makeGeometry();
-      if (geo.type !== go.Geometry.Path || geo.figures.length === 0) return geo;
-      const mainfig = geo.figures.elt(0);  // assume there's just one PathFigure
+      if (geo.type !== go.GeometryType.Path || geo.figures.length === 0) return geo;
+      const mainfig = geo.figures.elt(0); // assume there's just one PathFigure
       const mainsegs = mainfig.segments;
 
-      const arrowLen = 8;  // length for each arrowhead
-      const arrowWid = 3;  // actually half-width of each arrowhead
+      const arrowLen = 8; // length for each arrowhead
+      const arrowWid = 3; // actually half-width of each arrowhead
       let fx = mainfig.startX;
       let fy = mainfig.startY;
       for (let i = 0; i < mainsegs.length; i++) {
@@ -151,21 +222,29 @@
         let cx = ax;
         let cy = ay;
         if (fx < ax - arrowLen) {
-          bx -= arrowLen; by += arrowWid;
-          cx -= arrowLen; cy -= arrowWid;
+          bx -= arrowLen;
+          by += arrowWid;
+          cx -= arrowLen;
+          cy -= arrowWid;
         } else if (fx > ax + arrowLen) {
-          bx += arrowLen; by += arrowWid;
-          cx += arrowLen; cy -= arrowWid;
+          bx += arrowLen;
+          by += arrowWid;
+          cx += arrowLen;
+          cy -= arrowWid;
         } else if (fy < ay - arrowLen) {
-          bx -= arrowWid; by -= arrowLen;
-          cx += arrowWid; cy -= arrowLen;
+          bx -= arrowWid;
+          by -= arrowLen;
+          cx += arrowWid;
+          cy -= arrowLen;
         } else if (fy > ay + arrowLen) {
-          bx -= arrowWid; by += arrowLen;
-          cx += arrowWid; cy += arrowLen;
+          bx -= arrowWid;
+          by += arrowLen;
+          cx += arrowWid;
+          cy += arrowLen;
         }
-        geo.add(new go.PathFigure(ax, ay, true)
-          .add(new go.PathSegment(go.PathSegment.Line, bx, by))
-          .add(new go.PathSegment(go.PathSegment.Line, cx, cy).close()));
+        geo.add(
+          new go.PathFigure(ax, ay, true).add(new go.PathSegment(go.SegmentType.Line, bx, by)).add(new go.PathSegment(go.SegmentType.Line, cx, cy).close())
+        );
         fx = ax;
         fy = ay;
       }
@@ -175,24 +254,81 @@
   }
   // end of MultiArrowLink class
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:700px; min-width: 200px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 700px; min-width: 200px"></div>
+  <p>This sample demonstrates customization of the <a>Link</a> <a>Shape</a>'s <a>Geometry</a>.</p>
   <p>
-  This sample demonstrates customization of the <a>Link</a> <a>Shape</a>'s <a>Geometry</a>.
-  </p>
-  <p>
-  The MultiArrowLink class in this sample inherits from Link and overrides the <a>Link.makeGeometry</a> method
-  to add arrowheads at the end of each interior segment, assuming that the route is orthogonal.
+    The MultiArrowLink class in this sample inherits from Link and overrides the <a>Link.makeGeometry</a> method to add arrowheads at the end of each interior
+    segment, assuming that the route is orthogonal.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Force Directed Layout</h4>
+<p>
+This predefined layout treats the graph as if it were a system of physical bodies with forces acting on and between them.
+The layout iteratively moves nodes and links to minimize the total sum of forces on each node. The resulting layout will normally not contain
+overlapping Nodes, excluding cases where the graph is densely interconnected.
+More information can be found in the <a href="../intro/layouts.html#ForceDirectedLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#force-directed">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,81 +1,102 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
- * This {@link Layout} positions non-Link Parts into a table according to the values of
- * {@link GraphObject#row}, {@link GraphObject#column}, {@link GraphObject#rowSpan}, {@link GraphObject#columnSpan},
- * {@link GraphObject#alignment}, {@link GraphObject#stretch}.
- * If the value of GraphObject.stretch is not {@link GraphObject.None}, the Part will be sized
+ * This {@link go.Layout} positions non-Link Parts into a table according to the values of
+ * {@link go.GraphObject.row}, {@link go.GraphObject.column}, {@link go.GraphObject.rowSpan}, {@link go.GraphObject.columnSpan},
+ * {@link go.GraphObject.alignment}, {@link go.GraphObject.stretch}.
+ * If the value of GraphObject.stretch is not {@link go.Stretch.None}, the Part will be sized
  * according to the available space in the cell(s).
  *
  * You can specify constraints for whole rows or columns by calling
- * {@link #getRowDefinition} or {@link #getColumnDefinition} and setting one of the following properties:
- * {@link RowColumnDefinition#alignment}, {@link RowColumnDefinition#height}, {@link RowColumnDefinition#width},
- * {@link RowColumnDefinition#maximum}, {@link RowColumnDefinition#minimum}, {@link RowColumnDefinition#stretch}.
+ * {@link getRowDefinition} or {@link getColumnDefinition} and setting one of the following properties:
+ * {@link go.RowColumnDefinition.alignment}, {@link go.RowColumnDefinition.height}, {@link go.RowColumnDefinition.width},
+ * {@link go.RowColumnDefinition.maximum}, {@link go.RowColumnDefinition.minimum}, {@link go.RowColumnDefinition.stretch}.
  *
- * The {@link #defaultAlignment} and {@link #defaultStretch} properties apply to all parts if not specified
+ * The {@link defaultAlignment} and {@link defaultStretch} properties apply to all parts if not specified
  * on the individual Part or in the corresponding row or column definition.
  *
  * At the current time, there is no support for separator lines
- * ({@link RowColumnDefinition#separatorStroke}, {@link RowColumnDefinition#separatorStrokeWidth},
- * and {@link RowColumnDefinition#separatorDashArray} properties)
- * nor background ({@link RowColumnDefinition#background} and {@link RowColumnDefinition#coversSeparators} properties).
- * There is no support for {@link RowColumnDefinition#sizing}, either.
+ * ({@link go.RowColumnDefinition.separatorStroke}, {@link go.RowColumnDefinition.separatorStrokeWidth},
+ * and {@link go.RowColumnDefinition.separatorDashArray} properties)
+ * nor background ({@link go.RowColumnDefinition.background} and {@link go.RowColumnDefinition.coversSeparators} properties).
+ * There is no support for {@link go.RowColumnDefinition.sizing}, either.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Table.html">Table Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/Table.html">Table Layout</a> sample.
  * @category Layout Extension
  */
 export class TableLayout extends go.Layout {
-  private _defaultAlignment: go.Spot = go.Spot.Default;
-  private _defaultStretch: go.EnumValue = go.GraphObject.Default;
-  private _rowDefs: any = [];
-  private _colDefs: any = [];
+  private _defaultAlignment: go.Spot;
+  private _defaultStretch: go.Stretch;
+  private _rowDefs: any;
+  private _colDefs: any;
+
+  constructor(init?: Partial<TableLayout>) {
+    super();
+    this._defaultAlignment = go.Spot.Default;
+    this._defaultStretch = go.Stretch.Default;
+    this._rowDefs = [];
+    this._colDefs = [];
+    if (init) Object.assign(this, init);
+  }
 
   /**
    * Gets or sets the alignment to use by default for Parts in rows (vertically) and in columns (horizontally).
    *
-   * The default value is {@link Spot.Default}.
+   * The default value is {@link go.Spot.Default}.
    * Setting this property does not raise any events.
    */
-  get defaultAlignment(): go.Spot { return this._defaultAlignment; }
-  set defaultAlignment(val: go.Spot) { this._defaultAlignment = val; }
+  get defaultAlignment(): go.Spot {
+    return this._defaultAlignment;
+  }
+  set defaultAlignment(val: go.Spot) {
+    this._defaultAlignment = val;
+  }
 
   /**
    * Gets or sets whether Parts should be stretched in rows (vertically) and in columns (horizontally).
    *
-   * The default value is {@link GraphObject.Default}.
+   * The default value is {@link go.Stretch.Default}.
    * Setting this property does not raise any events.
    */
-  get defaultStretch(): go.EnumValue { return this._defaultStretch; }
-  set defaultStretch(val: go.EnumValue) { this._defaultStretch = val; }
+  get defaultStretch(): go.Stretch {
+    return this._defaultStretch;
+  }
+  set defaultStretch(val: go.Stretch) {
+    this._defaultStretch = val;
+  }
 
   /**
    * This read-only property returns the number of rows in this TableLayout.
    * This value is only valid after the layout has been performed.
    */
-  get rowCount(): number { return this._rowDefs.length; }
+  get rowCount(): number {
+    return this._rowDefs.length;
+  }
 
   /**
    * This read-only property returns the number of columns in this TableLayout.
    * This value is only valid after the layout has been performed.
    */
-  get columnCount(): number { return this._colDefs.length; }
+  get columnCount(): number {
+    return this._colDefs.length;
+  }
 
   /**
    * Copies properties to a cloned Layout.
    */
-  public override cloneProtected(copy: this): void {
+  override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._defaultAlignment = this._defaultAlignment;
     copy._defaultStretch = this._defaultStretch;
@@ -90,13 +111,26 @@ export class TableLayout extends go.Layout {
   }
 
   /**
-   * Gets the {@link RowColumnDefinition} for a particular row in this TableLayout.
-   * If you ask for the definition of a row at or beyond the {@link #rowCount},
-   * it will automatically create one and return it.
-   * @param {number} idx the non-negative zero-based integer row index.
-   * @return {RowColumnDefinition}
+   * Interpret {@link go.Part.margin} differently than normal.
    */
-  public getRowDefinition(idx: number): go.RowColumnDefinition {
+  override getLayoutBounds(part: go.Part, rect?: go.Rect): go.Rect {
+    const func = this.boundsComputation;
+    if (func !== null) {
+      if (!rect) rect = new go.Rect();
+      return func(part, this, rect);
+    }
+    if (!rect) return part.actualBounds;
+    rect.set(part.actualBounds);
+    return rect;
+  }
+
+  /**
+   * Gets the {@link go.RowColumnDefinition} for a particular row in this TableLayout.
+   * If you ask for the definition of a row at or beyond the {@link rowCount},
+   * it will automatically create one and return it.
+   * @param idx - the non-negative zero-based integer row index.
+   */
+  getRowDefinition(idx: number): go.RowColumnDefinition {
     if (idx < 0) throw new Error('Row index must be non-negative, not: ' + idx);
     idx = Math.round(idx);
     const defs = this._rowDefs;
@@ -114,15 +148,15 @@ export class TableLayout extends go.Layout {
 
   /**
    * Returns the row at a given y-coordinate in document coordinates.
-   * This information is only valid when this layout has been performed and {@link Layout#isValidLayout} is true.
+   * This information is only valid when this layout has been performed and {@link go.Layout.isValidLayout} is true.
    *
    * If the point is above row 0, this method returns -1.
    * If the point below the last row, this returns the last row + 1.
-   * @param {number} y
-   * @return {number} a zero-based integer
-   * @see {@link #findColumnForDocumentX}
+   * @param y
+   * @returns a zero-based integer
+   * @see {@link findColumnForDocumentX}
    */
-  public findRowForDocumentY(y: number): number {
+  findRowForDocumentY(y: number): number {
     y -= this.arrangementOrigin.y;
     if (y < 0) return -1;
     let total = 0.0;
@@ -140,13 +174,12 @@ export class TableLayout extends go.Layout {
   }
 
   /**
-   * Gets the {@link RowColumnDefinition} for a particular column in this TableLayout.
-   * If you ask for the definition of a column at or beyond the {@link #columnCount},
+   * Gets the {@link go.RowColumnDefinition} for a particular column in this TableLayout.
+   * If you ask for the definition of a column at or beyond the {@link columnCount},
    * it will automatically create one and return it.
-   * @param {number} idx the non-negative zero-based integer column index.
-   * @return {RowColumnDefinition}
+   * @param idx - the non-negative zero-based integer column index.
    */
-  public getColumnDefinition(idx: number): go.RowColumnDefinition {
+  getColumnDefinition(idx: number): go.RowColumnDefinition {
     if (idx < 0) throw new Error('Column index must be non-negative, not: ' + idx);
     idx = Math.round(idx);
     const defs = this._colDefs;
@@ -164,15 +197,15 @@ export class TableLayout extends go.Layout {
 
   /**
    * Returns the cell at a given x-coordinate in document coordinates.
-   * This information is only valid when this layout has been performed and {@link Layout#isValidLayout} is true.
+   * This information is only valid when this layout has been performed and {@link go.Layout.isValidLayout} is true.
    *
    * If the point is to left of the column 0, this method returns -1.
    * If the point to to the right of the last column, this returns the last column + 1.
-   * @param {number} x
-   * @return {number} a zero-based integer
-   * @see {@link #findRowForDocumentY}
+   * @param x
+   * @returns a zero-based integer
+   * @see {@link findRowForDocumentY}
    */
-  public findColumnForDocumentX(x: number): number {
+  findColumnForDocumentX(x: number): number {
     x -= this.arrangementOrigin.x;
     if (x < 0) return -1;
     let total = 0.0;
@@ -193,48 +226,62 @@ export class TableLayout extends go.Layout {
    * @hidden @internal
    * Only ever called from TableLayout's measure and arrange
    */
-  private getEffectiveTableStretch(child: go.Part, row: go.RowColumnDefinition, col: go.RowColumnDefinition): go.EnumValue {
+  private getEffectiveTableStretch(
+    child: go.Part,
+    row: go.RowColumnDefinition,
+    col: go.RowColumnDefinition
+  ): go.Stretch {
     const effectivestretch = child.stretch;
-    if (effectivestretch !== go.GraphObject.Default) return effectivestretch;
+    if (effectivestretch !== go.Stretch.Default) return effectivestretch;
     // which directions are we stretching?
     // undefined = default
     let horizontal;
     let vertical;
     switch (row.stretch) {
-      case go.GraphObject.Default:
-      case go.GraphObject.Horizontal: break;
-      case go.GraphObject.Vertical: vertical = true; break;
-      case go.GraphObject.Fill: vertical = true; break;
+      case go.Stretch.Default:
+      case go.Stretch.Horizontal:
+        break;
+      case go.Stretch.Vertical:
+        vertical = true;
+        break;
+      case go.Stretch.Fill:
+        vertical = true;
+        break;
     }
     switch (col.stretch) {
-      case go.GraphObject.Default:
-      case go.GraphObject.Vertical: break;
-      case go.GraphObject.Horizontal: horizontal = true; break;
-      case go.GraphObject.Fill: horizontal = true; break;
+      case go.Stretch.Default:
+      case go.Stretch.Vertical:
+        break;
+      case go.Stretch.Horizontal:
+        horizontal = true;
+        break;
+      case go.Stretch.Fill:
+        horizontal = true;
+        break;
     }
 
     const str = this.defaultStretch;
-    if (horizontal === undefined && (str === go.GraphObject.Horizontal || str === go.GraphObject.Fill)) {
+    if (horizontal === undefined && (str === go.Stretch.Horizontal || str === go.Stretch.Fill)) {
       horizontal = true;
     } else {
       horizontal = false;
     }
-    if (vertical === undefined && (str === go.GraphObject.Vertical || str === go.GraphObject.Fill)) {
+    if (vertical === undefined && (str === go.Stretch.Vertical || str === go.Stretch.Fill)) {
       vertical = true;
     } else {
       vertical = false;
     }
-    if (horizontal === true && vertical === true) return go.GraphObject.Fill;
-    if (horizontal === true) return go.GraphObject.Horizontal;
-    if (vertical === true) return go.GraphObject.Vertical;
-    return go.GraphObject.None; // Everything else is none by default
+    if (horizontal === true && vertical === true) return go.Stretch.Fill;
+    if (horizontal === true) return go.Stretch.Horizontal;
+    if (vertical === true) return go.Stretch.Vertical;
+    return go.Stretch.None; // Everything else is none by default
   }
 
   /**
    * This method performs the measuring and arranging of the table, assiging positions to each part.
-   * @param {Iterable.<Part>} coll A collection of {@link Part}s.
+   * @param coll - A collection of {@link go.Part}s.
    */
-  public override doLayout(coll: go.Iterable<go.Part>): void {
+  override doLayout(coll: go.Iterable<go.Part>): void {
     this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
     // put all eligible Parts that are not Links into an Array
     const parts = new go.List<go.Part>();
@@ -258,21 +305,28 @@ export class TableLayout extends go.Layout {
   /**
    * Override this method in order to perform some operations before measuring.
    * By default this method does nothing.
-   * @expose
+   * @virtual
    */
-  protected beforeMeasure(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void { }
+  protected beforeMeasure(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void {}
 
   /**
    * Override this method in order to perform some operations after arranging.
    * By default this method does nothing.
-   * @expose
+   * @virtual
    */
-  protected afterArrange(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void { }
+  protected afterArrange(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void {}
 
   /**
    * @hidden @internal
    */
-  public measureTable(width: number, height: number, children: go.List<go.Part>, union: go.Size, minw: number, minh: number): Array<Array<any>> {
+  measureTable(
+    width: number,
+    height: number,
+    children: go.List<go.Part>,
+    union: go.Size,
+    minw: number,
+    minh: number
+  ): Array<Array<any>> {
     let l = children.length;
     // Make the array that holds [rows][cols] of the table
     const rowcol: Array<Array<any>> = []; // saved (so no temp array) starts as an array of rows, will end up [row][col][cell]
@@ -290,7 +344,7 @@ export class TableLayout extends go.Layout {
     this.beforeMeasure(children, rowcol);
 
     // Reset the row/col definitions because the ones from last measure are irrelevant
-    const resetCols = [];  // keep track of which columns we've already reset
+    const resetCols = []; // keep track of which columns we've already reset
 
     // Objects that span multiple columns and
     const spanners = [];
@@ -335,7 +389,8 @@ export class TableLayout extends go.Layout {
         // foreach column j in row i...
         if (!rowcol[i][j]) continue;
         const colHerald = this.getColumnDefinition(j);
-        if (resetCols[j] === undefined) { // make sure we only reset these once
+        if (resetCols[j] === undefined) {
+          // make sure we only reset these once
           colHerald.measured = 0;
           resetCols[j] = true;
         }
@@ -347,7 +402,7 @@ export class TableLayout extends go.Layout {
           const child: go.Part = cell[k];
 
           // Skip children that span more than one row or column or do not have a set size
-          const spanner = (child.rowSpan > 1 || child.columnSpan > 1);
+          const spanner = child.rowSpan > 1 || child.columnSpan > 1;
           if (spanner) {
             spanners.push(child);
             // We used to not measure spanners twice, but now we do
@@ -363,23 +418,31 @@ export class TableLayout extends go.Layout {
 
           const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
           const dsize = child.resizeObject.desiredSize;
-          const realwidth = !(isNaN(dsize.width));
-          const realheight = !(isNaN(dsize.height));
+          const realwidth = !isNaN(dsize.width);
+          const realheight = !isNaN(dsize.height);
           const realsize = realwidth && realheight;
-          if (!spanner && stretch !== go.GraphObject.None && !realsize) {
-            if ((nosizeCols as any)[j] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal)) {
-              (nosizeCols as any)[j] = -1; nosizeCols.count++;
+          if (!spanner && stretch !== go.Stretch.None && !realsize) {
+            if (
+              (nosizeCols as any)[j] === undefined &&
+              (stretch === go.Stretch.Fill || stretch === go.Stretch.Horizontal)
+            ) {
+              (nosizeCols as any)[j] = -1;
+              nosizeCols.count++;
             }
-            if ((nosizeRows as any)[i] === undefined && (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
-              (nosizeRows as any)[i] = -1; nosizeRows.count++;
+            if (
+              (nosizeRows as any)[i] === undefined &&
+              (stretch === go.Stretch.Fill || stretch === go.Stretch.Vertical)
+            ) {
+              (nosizeRows as any)[i] = -1;
+              nosizeRows.count++;
             }
             nosize.push(child);
           }
 
-          if (stretch !== go.GraphObject.None) {
+          if (stretch !== go.Stretch.None) {
             const unrestrictedSize = new go.Size(NaN, NaN);
-            // if (stretch !== go.GraphObject.Horizontal) unrestrictedSize.height = rowHerald.minimum;
-            // if (stretch !== go.GraphObject.Vertical) unrestrictedSize.width = colHerald.minimum;
+            // if (stretch !== go.Stretch.Horizontal) unrestrictedSize.height = rowHerald.minimum;
+            // if (stretch !== go.Stretch.Vertical) unrestrictedSize.width = colHerald.minimum;
             // ??? allow resizing during measure phase
             child.resizeObject.desiredSize = unrestrictedSize;
             child.ensureBounds();
@@ -392,7 +455,10 @@ export class TableLayout extends go.Layout {
           //  Make sure the heralds have the right layout size
           //    the row/column should use the largest measured size of any
           //    GraphObject contained, constrained by mins and maxes
-          if (child.rowSpan === 1 && (realheight || stretch === go.GraphObject.None || stretch === go.GraphObject.Horizontal)) {
+          if (
+            child.rowSpan === 1 &&
+            (realheight || stretch === go.Stretch.None || stretch === go.Stretch.Horizontal)
+          ) {
             const def = this.getRowDefinition(i);
             amt = Math.max(mheight - def.actual, 0);
             if (amt > rowleft) amt = rowleft;
@@ -401,7 +467,10 @@ export class TableLayout extends go.Layout {
             rowleft = Math.max(rowleft - amt, 0);
           }
 
-          if (child.columnSpan === 1 && (realwidth || stretch === go.GraphObject.None || stretch === go.GraphObject.Vertical)) {
+          if (
+            child.columnSpan === 1 &&
+            (realwidth || stretch === go.Stretch.None || stretch === go.Stretch.Vertical)
+          ) {
             const def = this.getColumnDefinition(j);
             amt = Math.max(mwidth - def.actual, 0);
             if (amt > colleft) amt = colleft;
@@ -409,7 +478,6 @@ export class TableLayout extends go.Layout {
             def.actual = def.actual + amt;
             colleft = Math.max(colleft - amt, 0);
           }
-
         } // end cell
       } // end col
     } // end row
@@ -446,12 +514,18 @@ export class TableLayout extends go.Layout {
       const margh = marg.top + marg.bottom;
 
       if (colHerald.measured === 0 && (nosizeCols as any)[child.column] !== undefined) {
-        (nosizeCols as any)[child.column] = Math.max(mb.width + margw, (nosizeCols as any)[child.column]);
+        (nosizeCols as any)[child.column] = Math.max(
+          mb.width + margw,
+          (nosizeCols as any)[child.column]
+        );
       } else {
         (nosizeCols as any)[child.column] = null; // obey the column herald
       }
       if (rowHerald.measured === 0 && (nosizeRows as any)[child.row] !== undefined) {
-        (nosizeRows as any)[child.row] = Math.max(mb.height + margh, (nosizeRows as any)[child.row]);
+        (nosizeRows as any)[child.row] = Math.max(
+          mb.height + margh,
+          (nosizeRows as any)[child.row]
+        );
       } else {
         (nosizeRows as any)[child.row] = null; // obey the row herald
       }
@@ -460,8 +534,12 @@ export class TableLayout extends go.Layout {
     // we also have the amount left over
     let desiredRowTotal = 0.0;
     let desiredColTotal = 0.0;
-    for (const i in nosizeRows) { if (i !== 'count') desiredRowTotal += (nosizeRows as any)[i]; }
-    for (const i in nosizeCols) { if (i !== 'count') desiredColTotal += (nosizeCols as any)[i]; }
+    for (const i in nosizeRows) {
+      if (i !== 'count') desiredRowTotal += (nosizeRows as any)[i];
+    }
+    for (const i in nosizeCols) {
+      if (i !== 'count') desiredColTotal += (nosizeCols as any)[i];
+    }
 
     const allowedSize = new go.Size(); // used in stretch and span loops
 
@@ -477,7 +555,11 @@ export class TableLayout extends go.Layout {
       } else {
         if (isFinite(colleft) && (nosizeCols as any)[child.column] !== null) {
           if (desiredColTotal === 0) w = colHerald.actual + colleft;
-          else w = /*colHerald.actual +*/ (((nosizeCols as any)[child.column] / desiredColTotal) * originalcolleft);
+          else {
+            w =
+              /*colHerald.actual +*/ ((nosizeCols as any)[child.column] / desiredColTotal) *
+              originalcolleft;
+          }
         } else {
           // Only use colHerald.actual if it was nonzero before this loop
           if ((nosizeCols as any)[child.column] !== null) w = colleft;
@@ -492,7 +574,11 @@ export class TableLayout extends go.Layout {
       } else {
         if (isFinite(rowleft) && (nosizeRows as any)[child.row] !== null) {
           if (desiredRowTotal === 0) h = rowHerald.actual + rowleft;
-          else h = /*rowHerald.actual +*/ (((nosizeRows as any)[child.row] / desiredRowTotal) * originalrowleft);
+          else {
+            h =
+              /*rowHerald.actual +*/ ((nosizeRows as any)[child.row] / desiredRowTotal) *
+              originalrowleft;
+          }
         } else {
           // Only use rowHerald.actual if it was nonzero before this loop
           if ((nosizeRows as any)[child.row] !== null) h = rowleft;
@@ -504,17 +590,18 @@ export class TableLayout extends go.Layout {
 
       allowedSize.setTo(
         Math.max(colHerald.minimum, Math.min(w, colHerald.maximum)),
-        Math.max(rowHerald.minimum, Math.min(h, rowHerald.maximum)));
+        Math.max(rowHerald.minimum, Math.min(h, rowHerald.maximum))
+      );
 
       // Which way do we care about fill:
       const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
       // This used to set allowedSize height/width to Infinity,
       // but we can only set it to the current row/column space, plus rowleft/colleft values, at most.
       switch (stretch) {
-        case go.GraphObject.Horizontal: // H stretch means it can be as large as its wants vertically
+        case go.Stretch.Horizontal: // H stretch means it can be as large as its wants vertically
           allowedSize.height = Math.max(allowedSize.height, rowHerald.actual + rowleft);
           break;
-        case go.GraphObject.Vertical: // vice versa
+        case go.Stretch.Vertical: // vice versa
           allowedSize.width = Math.max(allowedSize.width, colHerald.actual + colleft);
           break;
       }
@@ -573,20 +660,29 @@ export class TableLayout extends go.Layout {
       // If there's a set column width/height we don't care about the given width/height
       allowedSize.setTo(
         Math.max(colHerald.minimum, Math.min(width, colHerald.maximum)),
-        Math.max(rowHerald.minimum, Math.min(height, rowHerald.maximum)));
+        Math.max(rowHerald.minimum, Math.min(height, rowHerald.maximum))
+      );
 
       // If it is a spanner and has a fill:
       const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
       switch (stretch) {
-        case go.GraphObject.Fill:
-          if (actualSizeColumns[colHerald.index] !== 0) allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
-          if (actualSizeRows[rowHerald.index] !== 0) allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+        case go.Stretch.Fill:
+          if (actualSizeColumns[colHerald.index] !== 0) {
+            allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+          }
+          if (actualSizeRows[rowHerald.index] !== 0) {
+            allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+          }
           break;
-        case go.GraphObject.Horizontal:
-          if (actualSizeColumns[colHerald.index] !== 0) allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+        case go.Stretch.Horizontal:
+          if (actualSizeColumns[colHerald.index] !== 0) {
+            allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+          }
           break;
-        case go.GraphObject.Vertical:
-          if (actualSizeRows[rowHerald.index] !== 0) allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+        case go.Stretch.Vertical:
+          if (actualSizeRows[rowHerald.index] !== 0) {
+            allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+          }
           break;
       }
       // If there's a set column width/height we don't care about any of the above:
@@ -600,10 +696,18 @@ export class TableLayout extends go.Layout {
         if (child.row + n >= this.rowCount) break; // if the row exists at all
         def = this.getRowDefinition(child.row + n);
         amt = 0;
-        if (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical) {
-          amt = Math.max(def.minimum, (actualSizeRows[child.row + n] === 0) ? def.maximum : Math.min(actualSizeRows[child.row + n], def.maximum));
+        if (stretch === go.Stretch.Fill || stretch === go.Stretch.Vertical) {
+          amt = Math.max(
+            def.minimum,
+            actualSizeRows[child.row + n] === 0
+              ? def.maximum
+              : Math.min(actualSizeRows[child.row + n], def.maximum)
+          );
         } else {
-          amt = Math.max(def.minimum, isNaN(def.height) ? def.maximum : Math.min(def.height, def.maximum));
+          amt = Math.max(
+            def.minimum,
+            isNaN(def.height) ? def.maximum : Math.min(def.height, def.maximum)
+          );
         }
         additionalSpan.height += amt;
       }
@@ -611,10 +715,18 @@ export class TableLayout extends go.Layout {
         if (child.column + n >= this.columnCount) break; // if the col exists at all
         def = this.getColumnDefinition(child.column + n);
         amt = 0;
-        if (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal) {
-          amt = Math.max(def.minimum, (actualSizeColumns[child.column + n] === 0) ? def.maximum : Math.min(actualSizeColumns[child.column + n], def.maximum));
+        if (stretch === go.Stretch.Fill || stretch === go.Stretch.Horizontal) {
+          amt = Math.max(
+            def.minimum,
+            actualSizeColumns[child.column + n] === 0
+              ? def.maximum
+              : Math.min(actualSizeColumns[child.column + n], def.maximum)
+          );
         } else {
-          amt = Math.max(def.minimum, isNaN(def.width) ? def.maximum : Math.min(def.width, def.maximum));
+          amt = Math.max(
+            def.minimum,
+            isNaN(def.width) ? def.maximum : Math.min(def.width, def.maximum)
+          );
         }
         additionalSpan.width += amt;
       }
@@ -637,7 +749,8 @@ export class TableLayout extends go.Layout {
       // def is the last row definition
       if (totalRow < mheight) {
         let roomLeft = mheight - totalRow;
-        while (roomLeft > 0) { // Add the extra to the first row that allows us to
+        while (roomLeft > 0) {
+          // Add the extra to the first row that allows us to
           const act = def.actual || 0;
           if (isNaN(def.height) && def.maximum > act) {
             def.actual = Math.min(def.maximum, act + roomLeft);
@@ -657,7 +770,8 @@ export class TableLayout extends go.Layout {
       // def is the last col definition
       if (totalCol < mwidth) {
         let roomLeft = mwidth - totalCol;
-        while (roomLeft > 0) { // Add the extra to the first row that allows us to
+        while (roomLeft > 0) {
+          // Add the extra to the first row that allows us to
           const act = def.actual || 0;
           if (isNaN(def.width) && def.maximum > act) {
             def.actual = Math.min(def.maximum, act + roomLeft);
@@ -695,11 +809,10 @@ export class TableLayout extends go.Layout {
     return rowcol;
   } // end measureTable
 
-
   /**
    * @hidden @internal
    */
-  public arrangeTable(children: go.List<go.Part>, union: go.Size, rowcol: Array<Array<any>>): void {
+  arrangeTable(children: go.List<go.Part>, union: go.Size, rowcol: Array<Array<any>>): void {
     const originx = this.arrangementOrigin.x;
     const originy = this.arrangementOrigin.y;
     let x = 0.0;
@@ -716,12 +829,14 @@ export class TableLayout extends go.Layout {
     let ll = this.columnCount;
     for (let i = 0; i < ll; i++) {
       if (this._colDefs[i] === undefined) continue;
-      firstColumn = i; break;
+      firstColumn = i;
+      break;
     }
     ll = this.rowCount;
     for (let i = 0; i < ll; i++) {
       if (this._rowDefs[i] === undefined) continue;
-      firstRow = i; break;
+      firstRow = i;
+      break;
     }
 
     const additionalSpan = new go.Size();
@@ -818,12 +933,18 @@ export class TableLayout extends go.Layout {
           const margw = marg.left + marg.right;
           const margh = marg.top + marg.bottom;
           const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
-          if (/* isNaN(child.resizeObject.desiredSize.width) && */ (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Horizontal)) {
+          if (
+            /* isNaN(child.resizeObject.desiredSize.width) && */ stretch === go.Stretch.Fill ||
+            stretch === go.Stretch.Horizontal
+          ) {
             width = Math.max(colwidth - margw, 0);
           } else {
             width = this.getLayoutBounds(child).width;
           }
-          if (/* isNaN(child.resizeObject.desiredSize.height) && */ (stretch === go.GraphObject.Fill || stretch === go.GraphObject.Vertical)) {
+          if (
+            /* isNaN(child.resizeObject.desiredSize.height) && */ stretch === go.Stretch.Fill ||
+            stretch === go.Stretch.Vertical
+          ) {
             height = Math.max(rowheight - margh, 0);
           } else {
             height = this.getLayoutBounds(child).height;
@@ -840,18 +961,15 @@ export class TableLayout extends go.Layout {
           const widthmarg = width + margw;
           const heightmarg = height + margh;
 
-          ar.x += (ar.width * alignx) - (widthmarg * alignx) + alignoffsetX + marg.left;
-          ar.y += (ar.height * aligny) - (heightmarg * aligny) + alignoffsetY + marg.top;
+          ar.x += ar.width * alignx - widthmarg * alignx + alignoffsetX + marg.left;
+          ar.y += ar.height * aligny - heightmarg * aligny + alignoffsetY + marg.top;
 
           child.moveTo(ar.x, ar.y);
-          if (stretch !== go.GraphObject.None) {
+          if (stretch !== go.Stretch.None) {
             child.resizeObject.desiredSize = new go.Size(width, height);
           }
-
         } // end cell
       } // end col
     } // end row
   } // end arrangeTable
-
 } // end TableLayout class
-

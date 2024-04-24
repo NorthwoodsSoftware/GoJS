@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Theming />
+<meta property="og:title" content=Theming />
+<meta name="twitter:title" content=Theming />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/intro/theming.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/intro/theming.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Theming | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
+  </head>
+  <script>
+    window.diagrams = [];
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
+    
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="typings.html">Typings</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="routers.html">Routers</a>
+  <a href="animation.html">Animation</a>
+  <a href="toolTips.html">ToolTips</a>
+  <a href="contextmenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGcontext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="testing.html">Testing</a>
+  <a href="performance.html">Performance</a>
+  <a href="platforms.html">Platforms</a>
+  <a href="deployment.html">Deployment</a>
+
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
+<h1>Theming</h1>
+<p>
+  Many applications aim to provide multiple themes, especially light and dark modes to support user preferences.
+  GoJS provides functionality to define and manage themes to achieve this goal.
+</p>
+
+<h2 id="GettingStartedWithThemes">Getting Started with Themes</h2>
+<p>
+  Various GoJS templates are themed, such as the default node, group and link template, tool adornments, background grid, and more.
+  This makes it easy to quickly change the way certain objects appear.
+  For example, you can change the selection adornment color/thickness without providing a <a>Part.selectionAdornmentTemplate</a>,
+  or change the temporary link color when drawing a new link without providing a <a>LinkingBaseTool.temporaryLink</a>.
+</p>
+<pre class="lang-js" id="theme0"><code>
+  // The ThemeManager.currentTheme defaults to 'light'
+
+  diagram.themeManager.set('light', {  // modify some property values of the "light" Theme
+    colors: {
+      selection: '#ec4899',  // pink selection adornment
+      tempLink: '#14b8a6'  // teal temporary link while linking
+    },
+    numbers: {
+      selection: 6  // increased selection adornment thickness
+    }
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto')
+      .add(new go.Shape('RoundedRectangle',
+        { fill: 'white', strokeWidth: 0,
+          portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' })
+      )
+      .add(new go.TextBlock({ margin: 8 })
+        .bind('text')
+      );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ]);
+
+  diagram.select(diagram.nodes.first());
+</code></pre>
+<script>
+  goCode('theme0', 400, 150);
+</script>
+
+<p>
+  For a complete list of themed properties on predefined templates, see <a href="../extensionsJSM/Templates.js">Templates.js</a> in the Extensions directory.
+</p>
+
+<h2 id="BasicTheming">Basic Theming</h2>
+<p>
+  The simplest way to theme your diagram is to use the predefined <a>Themes</a> available and call <a>GraphObject.theme</a> or create a new
+  <a>ThemeBinding</a> when constructing templates.
+  By default, a light and dark theme are provided in the <a>ThemeManager</a>.
+  These are the <a>Themes.Light</a> and <a>Themes.Dark</a> objects, respectively.
+</p>
+
+<p>
+  To change themes, simply set <a>ThemeManager.currentTheme</a> to a theme name.
+  Note that the special value <code>'system'</code> will pick either the
+  <code>'light'</code> or <code>'dark'</code> theme depending on the end user's browser preference.
+</p>
+<pre class="lang-js" id="theme1"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value
+
+  // Update the div background color when theme changes;
+  // in most applications, the div background will be transparent,
+  // and the page background should be updated.
+  diagram.themeManager.changesDivBackground = true;
+
+  diagram.nodeTemplate =
+    new go.Node('Auto')
+      .add(new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+        .theme('fill', 'group')  // fill color is a semi-transparent gray
+      )
+      .add(new go.TextBlock({ margin: 8 })
+        .bind('text')
+        .theme('stroke', 'text')  // stroke color is a dark or light gray
+      );
+
+  // the default link template changes color based on the theme's 'link' color
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme1 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value;
+  };
+</code></pre>
+<script>
+  goCode('theme1', 400, 150);
+</script>
+<div>
+  <select id="themeSelect1" class="mt-1 p-1" onchange="changeTheme1()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<h2 id="ModifyingThemes">Creating or modifying themes</h2>
+<p>
+  In most scenarios, you'll want custom themes, either by modifying the predefined themes or creating your own.
+  This can be done by calling <a>ThemeManager.set</a>, passing a theme name and a partial (or complete) <a>Theme</a> object.
+  Passing an empty string as the theme name will modify the
+  <a>ThemeManager.defaultTheme</a>, which is initially <code>'light'</code>.
+</p>
+<p>
+  If the theme name exists in the <a>ThemeManger.themeMap</a>, that theme will be updated by merging the partial theme object into it.
+  If the theme name does not exist, the theme will be added to the theme map.
+</p>
+
+<pre class="lang-js" id="theme2"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value
+  diagram.themeManager.changesDivBackground = true;
+
+  // update the light theme and dark theme with some additional colors
+  diagram.themeManager.set('light', {
+    colors: {
+      primary: '#a5b4fc',
+      border: '#4f46e5'
+    }
+  });
+  diagram.themeManager.set('dark', {
+    colors: {
+      primary: '#4338ca'
+      // border comes from default theme
+    }
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto').add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 2 })
+        .theme('fill', 'primary')  // Shape.fill is set to the current theme's colors.primary
+        .theme('stroke', 'border'),  // Shape.stroke is set to the current theme's colors.border
+      new go.TextBlock({ margin: 8 })
+        .bind('text')
+        .theme('stroke', 'text')  // stroke color is a dark or light gray
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme2 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value;
+  };
+</code></pre>
+<script>
+  goCode('theme2', 400, 150);
+</script>
+<div>
+  <select id="themeSelect2" class="mt-1 p-1" onchange="changeTheme2()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<h2 id="ThemeSources">Theme binding sources</h2>
+<p>
+  The typical case for theming a GraphObject will be getting a value directly from a Theme.
+  It is also possible to use values from other sources, such as a bound data object,
+  a GraphObject in the binding Panel, or the shared model data object.
+</p>
+<p>
+  These different sources are specified by calling <a>GraphObject.themeData</a>, <a>GraphObject.themeObject</a>, or <a>GraphObject.themeModel</a>.
+  In addition to specifying the source, the <a>Binding.converter</a> function can be used to convert from some value to a theme property name.
+</p>
+
+<pre class="lang-js" id="theme3"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value
+  diagram.themeManager.changesDivBackground = true;
+  diagram.themeManager.set('', {
+    colors: {
+      red: '#dc2626',
+      blue: '#2563eb',
+      selected: '#0ea5e9'
+    }
+  });
+
+  // converted from Part.isSelected to a theme property name
+  const convertSelectedToThemeProp = s => s ? 'selected' : 'text';
+
+  diagram.nodeTemplate =
+    new go.Node('Auto').add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+        .themeData('fill', 'color'),  // from data
+      new go.TextBlock({ margin: 8 })
+        .bind('text')
+        .themeObject('stroke', 'isSelected', null, convertSelectedToThemeProp)  // from object
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha', color: 'red' },
+    { key: 2, text: 'Beta', color: 'blue' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme3 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value;
+  };
+</code></pre>
+<script>
+  goCode('theme3', 400, 150);
+</script>
+<div>
+  <select id="themeSelect3" class="mt-1 p-1" onchange="changeTheme3()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<h2 id="ConvertingThemeValues">Converting theme values</h2>
+<p>
+  In addition to a converter function to determine the theme property name,
+  a <a>Binding.themeConverter</a> can be provided to perform a conversion on the
+  resulting theme value before assigning it to the target property.
+</p>
+
+<pre class="lang-js" id="theme4"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value
+  diagram.themeManager.changesDivBackground = true;
+  diagram.themeManager.set('', {
+    colors: {
+      red: '#dc2626',
+      blue: '#2563eb'
+    }
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto').add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 2 })
+        .themeData('fill', 'color')  // from data
+        .themeData('stroke', 'color', null, null, go.Brush.darken),  // from data, converted to a darker color
+      new go.TextBlock({ margin: 8 })
+        .bind('text')
+        .theme('stroke', 'text')
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha', color: 'red' },
+    { key: 2, text: 'Beta', color: 'blue' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme4 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value;
+  };
+</code></pre>
+<script>
+  goCode('theme4', 400, 150);
+</script>
+<div>
+  <select id="themeSelect4" class="mt-1 p-1" onchange="changeTheme4()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<h2 id="OtherThemeableProperties">Other themable types</h2>
+<p>
+  Discussion on this page has focused on colors, but theming can also be used for fonts, stroke widths, sizes, or any other property type.
+  You must ensure that the returned theme value matches the type of the target property.
+</p>
+<p>
+  To access an arbitrary property value in your theme, you can use a '.' separated path,
+  like <code>'colors.primary'</code> or <code>'icons.mode'</code>.
+</p>
+
+<pre class="lang-js" id="theme5"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value
+  diagram.themeManager.changesDivBackground = true;
+  diagram.themeManager.set('', {
+    colors: {
+      primary: '#a5b4fc'
+    },
+    icons: {
+      mode: 'M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z'
+    }
+  });
+  diagram.themeManager.set('dark', {
+    icons: {
+      mode: 'M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z'
+    }
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto').add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+        .theme('fill', 'primary'),  // colors.primary
+      new go.Panel('Horizontal', { margin: 8 }).add(
+        new go.TextBlock({ margin: new go.Margin(0, 8, 0, 0), stretch: go.Stretch.Vertical, verticalAlignment: go.Spot.Center })
+          .bind('text')
+          .theme('stroke', 'text')  // colors.text
+          .theme('font', 'bold'),  // fonts.bold
+        new go.Shape({ width: 16, height: 16, strokeWidth: 2 })
+          .theme('geometryString', 'icons.mode')  // looks in the theme's 'icons' object
+          .theme('stroke', 'text')  // colors.text
+      )
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme5 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value;
+  };
+</code></pre>
+<script>
+  goCode('theme5', 400, 150);
+</script>
+<div>
+  <select id="themeSelect5" class="mt-1 mb-4 p-1" onchange="changeTheme5()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<h2 id="BuilderObjects">Theming builder objects</h2>
+<p>To keep the builder objects ("Button", "ToolTip", "ContextMenu", etc) simple, they are not themed by default.</p>
+<p>
+  Creating themed versions of these objects is relatively simple given the predefined definitions available at
+  <a href="../extensions/Buttons.js">Buttons.js</a>. Here we demonstrate theming the "Button" and "ToolTip" builders.
+</p>
+<p>
+  See the intro pages on <a href="./buttons.html">Buttons</a>, <a href="./tooltips.html">ToolTips</a>, and <a href="./contextMenus.html">Context Menus</a> to
+  change appearances without theming.
+</p>
+
+<pre class="lang-js" id="theme6"><code>
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value
+  diagram.themeManager.changesDivBackground = true;
+
+  // update the light theme and dark theme with some additional colors
+  diagram.themeManager.set('light', {
+    colors: {
+      primary: '#a5b4fc',
+      button: '#f9a8d4',
+      buttonHover: '#f472b6',
+      toolTip: '#fafafa'
+    }
+  });
+  diagram.themeManager.set('dark', {
+    colors: {
+      primary: '#4338ca',
+      button: '#be185d',
+      buttonHover: '#db2777',
+      toolTip: '#262626'
+    }
+  });
+
+  // theme the predefined "Button", modifying the initial fill and _button properties via theming
+  go.GraphObject.defineBuilder('ThemedButton', (args) => {
+    return go.GraphObject.build('Button', { 'ButtonBorder.strokeWidth': 0 })
+      .theme('ButtonBorder.fill', 'button')
+      .theme('_buttonFillOver', 'buttonHover');
+  });
+
+  // theme the predefined "ToolTip", modifying the fill via theming
+  go.GraphObject.defineBuilder('ThemedToolTip', (args) => {
+    return go.GraphObject.build('ToolTip').theme('Border.fill', 'toolTip');
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto', {
+      toolTip:
+        go.GraphObject.build('ThemedToolTip').add(
+          new go.TextBlock('tooltip', { margin: 5 })
+            .bind('text', 'text', k => `${k}'s tooltip`)
+            .theme('stroke', 'text')
+        )
+    }).add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+        .theme('fill', 'primary'),
+      new go.Panel('Vertical', { margin: 8 }).add(
+        new go.TextBlock({ margin: new go.Margin(0, 0, 8, 0) })
+          .bind('text', 'key')
+          .theme('stroke', 'text')
+          .theme('font', 'bold'),
+        go.GraphObject.build('ThemedButton').add(
+          new go.TextBlock('Button', { margin: 5 }).theme('stroke', 'text')
+        )
+      )
+    );
+
+  diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+  changeTheme6 = () => {
+    diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value;
+  };
+</code></pre>
+<script>
+  goCode('theme6', 400, 150);
+</script>
+<div>
+  <select id="themeSelect6" class="mt-1 mb-4 p-1" onchange="changeTheme6()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+      </div>
+    </div>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="api/index.html">API</a>
+          </li>
+          <li>
+            <a href="changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://www.nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://www.nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2024 <a href="https://www.nwoods.com">Northwoods Software</a>
+    </p>
+  </div>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra)
+        window.extra();
+      }
+    );
+  </script>
+</html>

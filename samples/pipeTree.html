@@ -1,219 +1,307 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A tree structure that does not use links."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Pipe Tree</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A tree structure that does not use links." />
+<meta itemprop="description" content="A tree structure that does not use links." />
+<meta property="og:description" content="A tree structure that does not use links." />
+<meta name="twitter:description" content="A tree structure that does not use links." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Pipe Tree />
+<meta property="og:title" content=Pipe Tree />
+<meta name="twitter:title" content=Pipe Tree />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipeTree.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipeTree.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipeTree.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/pipeTree.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/pipeTree.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Pipe Tree | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // Diagram refers to its DIV HTML element by id
-          {
-            isReadOnly: true,
-            // define a TreeLayout where alternating layers of nodes grow in different directions
-            // child and parent nodes have no space between them.
-            layout:
-              $(go.TreeLayout,
-                {
-                  treeStyle: go.TreeLayout.StyleAlternating,
-                  angle: 90,
-                  layerSpacing: 0,
-                  alternateAngle: 0,
-                  alternateLayerSpacing: 0
-                })
-          });
-
-      // the node template
-      // the shape will be resized appropriately when the model is set up
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, "Rectangle",
-            { name: "SHAPE", width: 30, height: 30 },
-            new go.Binding("fill", "color"),
-            new go.Binding("stroke", "color")),
-          $(go.TextBlock, { name: "TEXTBLOCK", margin: 5 },
-            new go.Binding("text", "flow", flow => getText(flow)))
-        );
-
-      // the Links should have no graphical representation
-      myDiagram.linkTemplate =
-        $(go.Link);
-
-      myDiagram.model = new go.TreeModel([
-        { key: 1, flow: 92, color: "#808080" },
-        { key: 2, "parent": 1, flow: 47, color: "#808080" },
-        { key: 3, "parent": 1, flow: 45, color: "#808080" },
-        { key: 4, "parent": 2, flow: 15, color: "#808080" },
-        { key: 5, "parent": 2, flow: 17, color: "#808080" },
-        { key: 6, "parent": 2, flow: 15, color: "#808080" },
-        { key: 7, "parent": 5, flow: 8, color: "#FFFF00" },
-        { key: 8, "parent": 5, flow: 9, color: "#FF0000" },
-        { key: 9, "parent": 6, flow: 5, color: "#808080" },
-        { key: 10, "parent": 6, flow: 5, color: "#808080" },
-        { key: 11, "parent": 6, flow: 5, color: "#808080" }
-      ]);
-
-      myDiagram.delayInitialization(updatePipes);
-    }
-
-    // return the text for the TextBlock, using the current number to determine its name
-    function getText(flow) {
-      if (flow < 10) return "SubLateral -- Current: " + flow + " gpm";
-      if (flow < 25) return "Lateral -- Current: " + flow + " gpm";
-      if (flow < 50) return "SubMain -- Current: " + flow + " gpm";
-      return "Main -- Max: 100 gpm  Current: " + flow + " gpm";
-    }
-
-    // give all shapes the appropriate dimensions and text color, size, and orientation.
-    function updatePipes(diagram) {
-      var updated = 1;  // when this is 0, no more nodes are in need of updating
-      while (updated !== 0) {
-        // have layout determine node positions first
-        diagram.layoutDiagram();
-        updated = 0;
-        var nodes = diagram.nodes.iterator;
-        while (nodes.next()) {
-          var node = nodes.value;
-          var shape = node.findObject("SHAPE");
-          if (!areChildrenUpdated(node) || !(shape.width === shape.height)) continue;
-          // update the node if all of its children have been updated and it has not
-          // this allows its size to be determined based on its childrens' positions once they have been updated and repositioned
-          else updated++;
-          // depending on the lightness of the node's color, make the text black or white
-          var colorBrightness = parseInt(shape.fill.substring(1, 3), 16) +
-            parseInt(shape.fill.substring(3, 5), 16) +
-            parseInt(shape.fill.substring(5, 7), 16);
-          if (colorBrightness <= 384) { node.findObject("TEXTBLOCK").stroke = "white"; }
-          var horiz;
-          var linkIn = node.findTreeParentLink();
-          if (linkIn === null) horiz = true;
-          // the root node grows horizontally from the left, as do any nodes with links entering their left side
-          else horiz = linkIn.toSpot.x === 0;
-          var long = 70;
-          // the length of the longer side of the shape
-          if (node.findTreeChildrenLinks().count === 0) long = 170;
-          var short = 20;
-          // the length of the shorter side of the shape
-          var flow = node.data.flow;
-          // size of the shape depends on the node's "current"
-          if (flow > 20) { short = 50; long += 30; }
-          if (flow > 50) short = 100;
-          // font size also depends on current
-          node.findObject("TEXTBLOCK").font = Math.floor(10 + flow / 11) + "px sans-serif";
-          var chl = node.findTreeChildrenNodes();
-          if (horiz) {
-            var min = node.location.x;
-            var max = min;
-            while (chl.next()) {
-              if (min === max) if (chl.value.location.x < min) min = chl.value.location.x;
-              if (chl.value.location.x > max) max = chl.value.location.x;
-            }
-            long += max - min;
-            // make sure the shape is large enough to reach all children
-            if (long < 160) long = 160;
-            // a minimum shape size
-            shape.height = short;
-            shape.width = long;
-            // the horizontal side is longer
-            // set the shape's size
-          } else {
-            var min = node.location.y;
-            var max = min;
-            while (chl.next()) {
-              if (min === max) if (chl.value.location.y < min) min = chl.value.location.y;
-              if (chl.value.location.y > max) max = chl.value.location.y;
-            }
-            long += max - min;
-            if (long < 160) long = 160;
-            shape.height = long;
-            shape.width = short;
-            // the longer size is the vertical one in this case
-            node.findObject("TEXTBLOCK").angle = 90;
-            // rotate the TextBlock if the shape is longer vertically
-          }
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-    // check if the children of this node have all had their sizes changed from the initial one
-    // if they have been updated, their widths and heights cannot be equal
-    function areChildrenUpdated(node) {
-      return node.findTreeChildrenNodes().all(child => child.findObject("SHAPE").width !== child.findObject("SHAPE").height);
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // Diagram refers to its DIV HTML element by id
+      {
+        isReadOnly: true,
+        // define a TreeLayout where alternating layers of nodes grow in different directions
+        // child and parent nodes have no space between them.
+        layout: $(go.TreeLayout, {
+          treeStyle: go.TreeStyle.Alternating,
+          angle: 90,
+          layerSpacing: 0,
+          alternateAngle: 0,
+          alternateLayerSpacing: 0,
+        }),
+      }
+    );
+
+    // the node template
+    // the shape will be resized appropriately when the model is set up
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      $(go.Shape, 'Rectangle', { name: 'SHAPE', width: 30, height: 30 }, new go.Binding('fill', 'color'), new go.Binding('stroke', 'color')),
+      $(go.TextBlock, { name: 'TEXTBLOCK', margin: 5 }, new go.Binding('text', 'flow', (flow) => getText(flow)))
+    );
+
+    // the Links should have no graphical representation
+    myDiagram.linkTemplate = $(go.Link);
+
+    myDiagram.model = new go.TreeModel([
+      { key: 1, flow: 92, color: '#808080' },
+      { key: 2, parent: 1, flow: 47, color: '#808080' },
+      { key: 3, parent: 1, flow: 45, color: '#808080' },
+      { key: 4, parent: 2, flow: 15, color: '#808080' },
+      { key: 5, parent: 2, flow: 17, color: '#808080' },
+      { key: 6, parent: 2, flow: 15, color: '#808080' },
+      { key: 7, parent: 5, flow: 8, color: '#FFFF00' },
+      { key: 8, parent: 5, flow: 9, color: '#FF0000' },
+      { key: 9, parent: 6, flow: 5, color: '#808080' },
+      { key: 10, parent: 6, flow: 5, color: '#808080' },
+      { key: 11, parent: 6, flow: 5, color: '#808080' },
+    ]);
+
+    myDiagram.delayInitialization(updatePipes);
+  }
+
+  // return the text for the TextBlock, using the current number to determine its name
+  function getText(flow) {
+    if (flow < 10) return 'SubLateral -- Current: ' + flow + ' gpm';
+    if (flow < 25) return 'Lateral -- Current: ' + flow + ' gpm';
+    if (flow < 50) return 'SubMain -- Current: ' + flow + ' gpm';
+    return 'Main -- Max: 100 gpm  Current: ' + flow + ' gpm';
+  }
+
+  // give all shapes the appropriate dimensions and text color, size, and orientation.
+  function updatePipes(diagram) {
+    var updated = 1; // when this is 0, no more nodes are in need of updating
+    while (updated !== 0) {
+      // have layout determine node positions first
+      diagram.layoutDiagram();
+      updated = 0;
+      var nodes = diagram.nodes.iterator;
+      while (nodes.next()) {
+        var node = nodes.value;
+        var shape = node.findObject('SHAPE');
+        if (!areChildrenUpdated(node) || !(shape.width === shape.height)) continue;
+        // update the node if all of its children have been updated and it has not
+        // this allows its size to be determined based on its childrens' positions once they have been updated and repositioned
+        else updated++;
+        // depending on the lightness of the node's color, make the text black or white
+        var colorBrightness = parseInt(shape.fill.substring(1, 3), 16) + parseInt(shape.fill.substring(3, 5), 16) + parseInt(shape.fill.substring(5, 7), 16);
+        if (colorBrightness <= 384) {
+          node.findObject('TEXTBLOCK').stroke = 'white';
+        }
+        var horiz;
+        var linkIn = node.findTreeParentLink();
+        if (linkIn === null) horiz = true;
+        // the root node grows horizontally from the left, as do any nodes with links entering their left side
+        else horiz = linkIn.toSpot.x === 0;
+        var long = 70;
+        // the length of the longer side of the shape
+        if (node.findTreeChildrenLinks().count === 0) long = 170;
+        var short = 20;
+        // the length of the shorter side of the shape
+        var flow = node.data.flow;
+        // size of the shape depends on the node's "current"
+        if (flow > 20) {
+          short = 50;
+          long += 30;
+        }
+        if (flow > 50) short = 100;
+        // font size also depends on current
+        node.findObject('TEXTBLOCK').font = Math.floor(10 + flow / 11) + 'px sans-serif';
+        var chl = node.findTreeChildrenNodes();
+        if (horiz) {
+          var min = node.location.x;
+          var max = min;
+          while (chl.next()) {
+            if (min === max) if (chl.value.location.x < min) min = chl.value.location.x;
+            if (chl.value.location.x > max) max = chl.value.location.x;
+          }
+          long += max - min;
+          // make sure the shape is large enough to reach all children
+          if (long < 160) long = 160;
+          // a minimum shape size
+          shape.height = short;
+          shape.width = long;
+          // the horizontal side is longer
+          // set the shape's size
+        } else {
+          var min = node.location.y;
+          var max = min;
+          while (chl.next()) {
+            if (min === max) if (chl.value.location.y < min) min = chl.value.location.y;
+            if (chl.value.location.y > max) max = chl.value.location.y;
+          }
+          long += max - min;
+          if (long < 160) long = 160;
+          shape.height = long;
+          shape.width = short;
+          // the longer size is the vertical one in this case
+          node.findObject('TEXTBLOCK').angle = 90;
+          // rotate the TextBlock if the shape is longer vertically
+        }
+      }
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  }
+
+  // check if the children of this node have all had their sizes changed from the initial one
+  // if they have been updated, their widths and heights cannot be equal
+  function areChildrenUpdated(node) {
+    return node.findTreeChildrenNodes().all((child) => child.findObject('SHAPE').width !== child.findObject('SHAPE').height);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="width:100%;height:600px;border:1px solid black;"></div>
+  <div id="myDiagramDiv" style="width: 100%; height: 600px; border: 1px solid black"></div>
   <p>
-  This diagram does not display <a>Link</a>s.
-  Instead the <a>TreeLayout.layerSpacing</a> is set to 0,
-  so that each node and its children have no space between them.
+    This diagram does not display <a>Link</a>s. Instead the <a>TreeLayout.layerSpacing</a> is set to 0, so that each node and its children have no space between
+    them.
   </p>
   <p>
-  The <a>TreeLayout.treeStyle</a> is set to StyleAlternating,
-  so that alternating layers of the tree grow in each of two directions.
-  Each node's <a>TextBlock</a> is angled according to the direction
-  of the layer of the tree that it is in, and the <a>Shape</a>'s
-  size is set according to direction and the position of the node's children.
+    The <a>TreeLayout.treeStyle</a> is set to StyleAlternating, so that alternating layers of the tree grow in each of two directions. Each node's
+    <a>TextBlock</a> is angled according to the direction of the layer of the tree that it is in, and the <a>Shape</a>'s size is set according to direction and
+    the position of the node's children.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

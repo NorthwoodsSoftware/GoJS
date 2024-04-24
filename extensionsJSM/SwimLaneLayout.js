@@ -1,36 +1,39 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * A custom LayeredDigraphLayout that knows about "lanes"
  * and that positions each node in its respective lane.
 
  * This assumes that each Node.data.lane property is a string that names the lane the node should be in.
- * You can set the {@link #laneProperty} property to use a different data property name.
- * It is commonplace to set this property to be the same as the {@link GraphLinksModel#nodeGroupKeyProperty},
+ * You can set the {@link laneProperty} property to use a different data property name.
+ * It is commonplace to set this property to be the same as the {@link go.GraphLinksModel.nodeGroupKeyProperty},
  * so that the one property indicates that a particular node data is a member of a particular group
  * and thus that that group represents a lane.
 
- * The lanes can be sorted by specifying the {@link #laneComparer} function.
+ * The lanes can be sorted by specifying the {@link laneComparer} function.
 
- * You can add extra space between the lanes by increasing {@link #laneSpacing} from its default of zero.
- * That number's unit is columns, {@link LayeredDigraphLayout#columnSpacing}, not in document coordinates.
+ * You can add extra space between the lanes by increasing {@link laneSpacing} from its default of zero.
+ * That number's unit is columns, {@link go.LayeredDigraphLayout.columnSpacing}, not in document coordinates.
+ *
+ * If you want to experiment with this extension, try the <a href="../../samples/SwimLaneLayout.html">SwimLaneLayout</a> sample.
  * @category Layout Extension
  */
 export class SwimLaneLayout extends go.LayeredDigraphLayout {
-    /** @hidden */
     constructor(init) {
-        super(init);
-        // settable properties
-        this._laneProperty = "lane"; // how to get lane identifier string from node data
+        super();
+        // internal state
+        this._layers = [[]];
+        this._neededSpaces = [];
+        this._laneProperty = 'lane'; // how to get lane identifier string from node data
         this._laneNames = []; // lane names, may be sorted using this.laneComparer
         this._laneComparer = null;
         this._laneSpacing = 0; // in columns
@@ -42,16 +45,19 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         // internal state
         this._layers = [[]];
         this._neededSpaces = [];
-        this.alignOption = go.LayeredDigraphLayout.AlignAll;
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * Gets or sets the name of the data property that holds the string which is the name of the lane that the node should be in.
      * The default value is "lane".
      */
-    get laneProperty() { return this._laneProperty; }
+    get laneProperty() {
+        return this._laneProperty;
+    }
     set laneProperty(val) {
         if (typeof val !== 'string' && typeof val !== 'function')
-            throw new Error("new value for SwimLaneLayout.laneProperty must be a property name, not: " + val);
+            throw new Error('new value for SwimLaneLayout.laneProperty must be a property name, not: ' + val);
         if (this._laneProperty !== val) {
             this._laneProperty = val;
             this.invalidateLayout();
@@ -65,23 +71,27 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
      * This property is reset to an empty Array at the end of each layout.
      * The default value is an empty Array.
      */
-    get laneNames() { return this._laneNames; }
+    get laneNames() {
+        return this._laneNames;
+    }
     set laneNames(val) {
         if (!Array.isArray(val))
-            throw new Error("new value for SwimLaneLayout.laneNames must be an Array, not: " + val);
+            throw new Error('new value for SwimLaneLayout.laneNames must be an Array, not: ' + val);
         if (this._laneNames !== val) {
             this._laneNames = val;
             this.invalidateLayout();
         }
     }
     /**
-     * Gets or sets a function by which to compare lane names, for ordering the lanes within the {@link #laneNames} Array.
+     * Gets or sets a function by which to compare lane names, for ordering the lanes within the {@link laneNames} Array.
      * By default the function is null -- the lanes are not sorted.
      */
-    get laneComparer() { return this._laneComparer; }
+    get laneComparer() {
+        return this._laneComparer;
+    }
     set laneComparer(val) {
         if (typeof val !== 'function')
-            throw new Error("new value for SwimLaneLayout.laneComparer must be a function, not: " + val);
+            throw new Error('new value for SwimLaneLayout.laneComparer must be a function, not: ' + val);
         if (this._laneComparer !== val) {
             this._laneComparer = val;
             this.invalidateLayout();
@@ -89,14 +99,16 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     }
     /**
      * Gets or sets the amount of additional space it allocates between the lanes.
-     * This number specifies the number of columns, with the same meaning as {@link LayeredDigraphLayout#columnSpacing}.
+     * This number specifies the number of columns, with the same meaning as {@link go.LayeredDigraphLayout.columnSpacing}.
      * The number unit is not in document coordinate or pixels.
      * The default value is zero columns.
      */
-    get laneSpacing() { return this._laneSpacing; }
+    get laneSpacing() {
+        return this._laneSpacing;
+    }
     set laneSpacing(val) {
         if (typeof val !== 'number')
-            throw new Error("new value for SwimLaneLayout.laneSpacing must be a number, not: " + val);
+            throw new Error('new value for SwimLaneLayout.laneSpacing must be a number, not: ' + val);
         if (this._laneSpacing !== val) {
             this._laneSpacing = val;
             this.invalidateLayout();
@@ -105,7 +117,9 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     /**
      * @hidden
      */
-    get router() { return this._router; }
+    get router() {
+        return this._router;
+    }
     set router(val) {
         if (this._router !== val) {
             this._router = val;
@@ -115,7 +129,9 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     /**
      * @hidden
      */
-    get reducer() { return this._reducer; }
+    get reducer() {
+        return this._reducer;
+    }
     set reducer(val) {
         if (this._reducer !== val) {
             this._reducer = val;
@@ -124,7 +140,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                 val.findLane = (v) => lay.getLane(v);
                 val.getIndex = (v) => v.index;
                 val.getBary = (v) => v.bary || 0;
-                val.setBary = (v, val) => v.bary = val;
+                val.setBary = (v, value) => (v.bary = value);
                 val.getConnectedNodesIterator = (v) => v.vertexes;
             }
             this.invalidateLayout();
@@ -132,14 +148,18 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     }
     /**
      * The computed positions of each lane,
-     * in the form of a {@link Map} mapping lane names (strings) to numbers.
+     * in the form of a {@link go.Map} mapping lane names (strings) to numbers.
      */
-    get lanePositions() { return this._lanePositions; }
+    get lanePositions() {
+        return this._lanePositions;
+    }
     /**
      * The computed breadths (widths or heights depending on the direction) of each lane,
-     * in the form of a {@link Map} mapping lane names (strings) to numbers.
+     * in the form of a {@link go.Map} mapping lane names (strings) to numbers.
      */
-    get laneBreadths() { return this._laneBreadths; }
+    get laneBreadths() {
+        return this._laneBreadths;
+    }
     /**
      * @hidden
      * @param coll
@@ -171,7 +191,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                 lay--;
         }
         const overlaps = (this._neededSpaces[lay] || 0) / 2;
-        const edges = this.countEdgesForDirection(v, (this.direction > 135) ? !topleft : topleft);
+        const edges = this.countEdgesForDirection(v, this.direction > 135 ? !topleft : topleft);
         const needed = Math.max(overlaps, edges) * this.router.linkSpacing * 1.5;
         if (this.direction === 90 || this.direction === 270) {
             if (topleft) {
@@ -193,7 +213,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     countEdgesForDirection(vertex, topleft) {
         let c = 0;
         const lay = vertex.layer;
-        vertex.edges.each(e => {
+        vertex.edges.each((e) => {
             if (topleft) {
                 if (e.getOtherVertex(vertex).layer >= lay)
                     c++;
@@ -208,7 +228,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     computeNeededLayerSpaces(net) {
         // group all edges by their connected vertexes' least layer
         const layerMinEdges = [];
-        net.edges.each(e => {
+        net.edges.each((e) => {
             // consider all edges, including dummy ones!
             const f = e.fromVertex;
             const t = e.toVertex;
@@ -282,10 +302,14 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                 while (mini < mins.length || maxi < maxs.length) {
                     if (mini < mins.length)
                         min = mins[mini];
-                    const mincol = min ? Math.min(min.fromVertex.column, min.toVertex.column) : 0;
+                    const mincol = min
+                        ? Math.min(min.fromVertex.column, min.toVertex.column)
+                        : 0;
                     if (maxi < maxs.length)
                         max = maxs[maxi];
-                    const maxcol = max ? Math.max(max.fromVertex.column, max.toVertex.column) : Infinity;
+                    const maxcol = max
+                        ? Math.max(max.fromVertex.column, max.toVertex.column)
+                        : Infinity;
                     maxoverlap = Math.max(maxoverlap, Math.abs(mini - maxi));
                     if (mincol <= maxcol && mini < mins.length) {
                         mini++;
@@ -324,7 +348,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             }
         }
         // sort laneNames and initialize laneIndexes
-        if (typeof this.laneComparer === "function")
+        if (typeof this.laneComparer === 'function')
             this.laneNames.sort(this.laneComparer);
         for (let i = 0; i < this.laneNames.length; i++) {
             laneIndexes.add(this.laneNames[i], i);
@@ -347,11 +371,11 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         if (red) {
             for (let i = 0; i < layers.length - 1; i++) {
                 red.reduceCrossings(layers[i], layers[i + 1]);
-                layers[i].forEach((v, j) => v.index = j);
+                layers[i].forEach((v, j) => (v.index = j));
             }
             for (let i = layers.length - 1; i > 0; i--) {
                 red.reduceCrossings(layers[i], layers[i - 1]);
-                layers[i].forEach((v, j) => v.index = j);
+                layers[i].forEach((v, j) => (v.index = j));
             }
         }
         this.computeLanes(); // and recompute all vertex.column values
@@ -372,7 +396,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                 for (let j = 0; j < arr.length; j++) {
                     const v = arr[j];
                     const w = this.nodeMinColumnSpace(v, true) + 1 + this.nodeMinColumnSpace(v, false);
-                    const ln = this.findLane(v) || "";
+                    const ln = this.findLane(v) || '';
                     const totw = lwidths.get(ln);
                     if (totw === null) {
                         lwidths.set(ln, w);
@@ -381,7 +405,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                         lwidths.set(ln, totw + w);
                     }
                 }
-                lwidths.each(kvp => {
+                lwidths.each((kvp) => {
                     const lane = kvp.key;
                     const colsInLayer = kvp.value;
                     const colsMax = layout.laneBreadths.get(lane) || 0;
@@ -439,7 +463,9 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
      * Return the minimum lane width, in columns
      * @param lane
      */
-    computeMinLaneWidth(lane) { return 0; }
+    computeMinLaneWidth(lane) {
+        return 0;
+    }
     /**
      * @hidden
      * Disable normal straightenAndPack behavior, which would mess up the columns.
@@ -459,22 +485,22 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             const data = node.data;
             if (data !== null) {
                 let lane = null;
-                if (typeof this.laneProperty === "function") {
+                if (typeof this.laneProperty === 'function') {
                     lane = this.laneProperty(data);
                 }
                 else {
                     lane = data[this.laneProperty];
                 }
-                if (typeof lane === "string")
+                if (typeof lane === 'string')
                     return lane;
-                return ""; // default lane
+                return ''; // default lane
             }
         }
         return null;
     }
     /**
-     * This is just like {@link #getLane} but handles dummy vertexes
-     * for which the {@link #getLane} returns null by returning the
+     * This is just like {@link getLane} but handles dummy vertexes
+     * for which the {@link getLane} returns null by returning the
      * lane of the edge's source or destination vertex.
      * This can only be called after the lanes have been set up internally.
      * @param v
@@ -521,10 +547,10 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     compareVertexes(v, w) {
         let laneV = this.findLane(v);
         if (laneV === null)
-            laneV = "";
+            laneV = '';
         let laneW = this.findLane(w);
         if (laneW === null)
-            laneW = "";
+            laneW = '';
         if (laneV < laneW)
             return -1;
         if (laneV > laneW)
@@ -535,5 +561,4 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             return 1;
         return 0;
     }
-    ;
 }

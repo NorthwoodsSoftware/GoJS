@@ -1,55 +1,60 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
- * A custom routed {@link Link} for showing the distances between a point on one node and a point on another node.
+ * A custom routed {@link go.Link} for showing the distances between a point on one node and a point on another node.
  *
- * Note that because this is a Link, the points being measured must be on {@link Node}s, not simple {@link Part}s.
- * The exact point on each Node is determined by the {@link Link#fromSpot} and {@link Link#toSpot}.
+ * Note that because this is a Link, the points being measured must be on {@link go.Node}s, not simple {@link go.Part}s.
+ * The exact point on each Node is determined by the {@link go.Link.fromSpot} and {@link go.Link.toSpot}.
  *
  * Several properties of the DimensioningLink customize the appearance of the dimensioning:
- * {@link #direction}, for orientation of the dimension line and which side it is on,
- * {@link #extension}, for how far the dimension line is from the measured points,
- * {@link #inset}, for leaving room for a text label, and
- * {@link #gap}, for distance that the extension line starts from the measured points.
+ * {@link direction}, for orientation of the dimension line and which side it is on,
+ * {@link extension}, for how far the dimension line is from the measured points,
+ * {@link inset}, for leaving room for a text label, and
+ * {@link gap}, for distance that the extension line starts from the measured points.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Dimensioning.html">Dimensioning</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/Dimensioning.html">Dimensioning</a> sample.
  * @category Part Extension
  */
 export class DimensioningLink extends go.Link {
-  private _direction: number = 0;
-  private _extension: number = 30;
-  private _inset: number = 10;
-  private _gap: number = 10;
+  private _direction: number;
+  private _extension: number;
+  private _inset: number;
+  private _gap: number;
 
   /**
    * Constructs a DimensioningLink and sets the following properties:
-   *   - {@link #isLayoutPositioned} = false
-   *   - {@link #isTreeLink} = false
-   *   - {@link #routing} = {@link Link.Orthogonal}
+   *   - {@link Part.isLayoutPositioned} = false
+   *   - {@link Link.isTreeLink} = false
+   *   - {@link Link.routing} = {@link go.Routing.Orthogonal}
    */
-  constructor() {
+  constructor(init?: Partial<DimensioningLink>) {
     super();
     this.isLayoutPositioned = false;
     this.isTreeLink = false;
-    this.routing = go.Link.Orthogonal;
+    this.routing = go.Routing.Orthogonal;
+    this._direction = 0;
+    this._extension = 30;
+    this._inset = 10;
+    this._gap = 10;
+    if (init) Object.assign(this, init);
   }
 
   /**
    * Copies properties to a cloned DimensioningLink.
    */
-  public override cloneProtected(copy: this): void {
+  override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._direction = this._direction;
     copy._extension = this._extension;
@@ -65,7 +70,9 @@ export class DimensioningLink extends go.Link {
    * New values must be one of: 0, 90, 180, 270, or NaN.
    * The value NaN indicates that the measurement is point-to-point and not orthogonal.
    */
-  get direction(): number { return this._direction; }
+  get direction(): number {
+    return this._direction;
+  }
   set direction(val: number) {
     if (isNaN(val) || val === 0 || val === 90 || val === 180 || val === 270) {
       this._direction = val;
@@ -81,8 +88,12 @@ export class DimensioningLink extends go.Link {
    * Larger values mean further away from the nodes.
    * The new value must be greater than or equal to zero.
    */
-  get extension(): number { return this._extension; }
-  set extension(val: number) { this._extension = val; }
+  get extension(): number {
+    return this._extension;
+  }
+  set extension(val: number) {
+    this._extension = val;
+  }
 
   /**
    * The distance that the dimension line should be "indented" from the ends of the
@@ -90,7 +101,9 @@ export class DimensioningLink extends go.Link {
    *
    * The default value is 10.
    */
-  get inset(): number { return this._inset; }
+  get inset(): number {
+    return this._inset;
+  }
   set inset(val: number) {
     if (val >= 0) {
       this._inset = val;
@@ -104,7 +117,9 @@ export class DimensioningLink extends go.Link {
    *
    * The default value is 10.
    */
-  get gap(): number { return this._gap; }
+  get gap(): number {
+    return this._gap;
+  }
   set gap(val: number) {
     if (val >= 0) {
       this._gap = val;
@@ -114,10 +129,10 @@ export class DimensioningLink extends go.Link {
   }
 
   /**
-   * Constructs the link's route by modifying {@link #points}.
-   * @return {boolean} true if it computed a route of points
+   * Constructs the link's route by modifying {@link points}.
+   * @returns true if it computed a route of points
    */
-  public override computePoints(): boolean {
+  override computePoints(): boolean {
     const fromnode = this.fromNode;
     if (!fromnode) return false;
     const fromport = this.fromPort;

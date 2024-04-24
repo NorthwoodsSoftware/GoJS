@@ -1,230 +1,318 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A stretchable timeline."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Timeline</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A stretchable timeline." />
+<meta itemprop="description" content="A stretchable timeline." />
+<meta property="og:description" content="A stretchable timeline." />
+<meta name="twitter:description" content="A stretchable timeline." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Timeline />
+<meta property="og:title" content=Timeline />
+<meta name="twitter:title" content=Timeline />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/timeline.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/timeline.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/timeline.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/timeline.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/timeline.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Timeline | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          "animationManager.isEnabled": false,
-          "commandHandler.decreaseZoom": function() { changeScale(1/1.05) },  // method override must be function, not =>
-          "commandHandler.increaseZoom": function() { changeScale(1.05) },  // method override must be function, not =>
-          "commandHandler.resetZoom": function() { setScale(1.0) },  // method override must be function, not =>
-          layout: $(TimelineLayout),
-          isTreePathToChildren: false  // arrows from children (events) to the parent (timeline bar)
-        });
-
-      function changeScale(factor) {
-        const oldscale = myDiagram.model.modelData.scale || 1.0;
-        const newscale = factor ? (oldscale * factor) : 1.0;
-        setScale(newscale);
-      }
-
-      function setScale(scale) {
-        const docpt = myDiagram.lastInput.documentPoint.copy();
-        let line = null;
-        myDiagram.commit(diag => {
-          diag.model.set(diag.model.modelData, "scale", scale);
-          diag.nodes.each(n => {
-            if (n.category === "Line") {
-              line = n;
-              n.updateTargetBindings();
-              return;
-            }
-          });
-        }, null);  // no UndoManager
-        if (line !== null && docpt.x > line.position.x) {
-          myDiagram.position = new go.Point(docpt.x - (docpt.x-line.position.x)/scale, myDiagram.position.y);
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      myDiagram.nodeTemplate =
-        $(go.Node, "Table",
-          { locationSpot: go.Spot.Center, movable: false },
-          $(go.Panel, "Auto",
-            $(go.Shape, "RoundedRectangle",
-              { fill: "#252526", stroke: "#519ABA", strokeWidth: 3 }
-            ),
-            $(go.Panel, "Table",
-              $(go.TextBlock,
-                {
-                  row: 0,
-                  stroke: "#CCCCCC",
-                  wrap: go.TextBlock.WrapFit,
-                  font: "bold 12pt sans-serif",
-                  textAlign: "center", margin: 4
-                },
-                new go.Binding("text", "event")
-              ),
-              $(go.TextBlock,
-                {
-                  row: 1,
-                  stroke: "#A074C4",
-                  textAlign: "center", margin: 4
-                },
-                new go.Binding("text", "date", d => d.toLocaleDateString())
-              )
-            )
-          )
-        );
+        
 
-      myDiagram.nodeTemplateMap.add("Line",
-        $(go.Node, "Graduated",
-          {
-            movable: false, copyable: false,
-            resizable: true, resizeObjectName: "MAIN",
-            background: "transparent",
-            graduatedMin: 0,
-            graduatedMax: 365,
-            graduatedTickUnit: 1,
-            resizeAdornmentTemplate:  // only resizing at right end
-              $(go.Adornment, "Spot",
-                $(go.Placeholder),
-                $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(4, 16), fill: "lightblue", stroke: "deepskyblue" })
-              )
-          },
-          new go.Binding("graduatedMax", "", timelineDays),
-          $(go.Shape, "LineH",
-            { name: "MAIN", stroke: "#519ABA", height: 1, strokeWidth: 3 },
-            new go.Binding("width", "length", (l, shape) => l * (shape.diagram.model.modelData.scale || 1.0))
-              .makeTwoWay((w, data, model) => w/(model.modelData.scale || 1.0))
-          ),
-          $(go.Shape, { geometryString: "M0 0 V10", interval: 7, stroke: "#519ABA", strokeWidth: 2 }),
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        'animationManager.isEnabled': false,
+        'commandHandler.decreaseZoom': function () {
+          changeScale(1 / 1.05);
+        }, // method override must be function, not =>
+        'commandHandler.increaseZoom': function () {
+          changeScale(1.05);
+        }, // method override must be function, not =>
+        'commandHandler.resetZoom': function () {
+          setScale(1.0);
+        }, // method override must be function, not =>
+        layout: $(TimelineLayout),
+        isTreePathToChildren: false, // arrows from children (events) to the parent (timeline bar)
+      }
+    );
+
+    function changeScale(factor) {
+      const oldscale = myDiagram.model.modelData.scale || 1.0;
+      const newscale = factor ? oldscale * factor : 1.0;
+      setScale(newscale);
+    }
+
+    function setScale(scale) {
+      const docpt = myDiagram.lastInput.documentPoint.copy();
+      let line = null;
+      myDiagram.commit((diag) => {
+        diag.model.set(diag.model.modelData, 'scale', scale);
+        diag.nodes.each((n) => {
+          if (n.category === 'Line') {
+            line = n;
+            n.updateTargetBindings();
+            return;
+          }
+        });
+      }, null); // no UndoManager
+      if (line !== null && docpt.x > line.position.x) {
+        myDiagram.position = new go.Point(docpt.x - (docpt.x - line.position.x) / scale, myDiagram.position.y);
+      }
+    }
+
+    myDiagram.nodeTemplate = $(go.Node,
+      'Table',
+      { locationSpot: go.Spot.Center, movable: false },
+      $(go.Panel,
+        'Auto',
+        $(go.Shape, 'RoundedRectangle', { fill: '#252526', stroke: '#519ABA', strokeWidth: 3 }),
+        $(go.Panel,
+          'Table',
           $(go.TextBlock,
             {
-              font: "10pt sans-serif",
-              stroke: "#CCCCCC",
-              interval: 14,
-              alignmentFocus: go.Spot.Right,
-              segmentOrientation: go.Link.OrientMinus90,
-              segmentOffset: new go.Point(0, 12),
-              graduatedFunction: valueToDate
+              row: 0,
+              stroke: '#CCCCCC',
+              wrap: go.Wrap.Fit,
+              font: 'bold 12pt sans-serif',
+              textAlign: 'center',
+              margin: 4,
             },
-            new go.Binding("interval", "length", calculateLabelInterval)
+            new go.Binding('text', 'event')
+          ),
+          $(go.TextBlock,
+            {
+              row: 1,
+              stroke: '#A074C4',
+              textAlign: 'center',
+              margin: 4,
+            },
+            new go.Binding('text', 'date', (d) => d.toLocaleDateString())
           )
         )
-      );
+      )
+    );
 
-      function calculateLabelInterval(len) {
-        if (len >= 800) return 7;
-        else if (400 <= len && len < 800) return 14;
-        else if (200 <= len && len < 400) return 21;
-        else if (140 <= len && len < 200) return 28;
-        else if (110 <= len && len < 140) return 35;
-        else return 365;
-      }
-
-      // The template for the link connecting the event node with the timeline bar node:
-      myDiagram.linkTemplate =
-        $(BarLink,  // defined below
-          { toShortLength: 2, layerName: "Background" },
-          $(go.Shape, { stroke: "#E37933", strokeWidth: 2 })
-        );
-
-      // Setup the model data -- an object describing the timeline bar node
-      // and an object for each event node:
-      const data = [
-        { // this defines the actual time "Line" bar
-          key: "timeline", category: "Line",
-          lineSpacing: 30,  // distance between timeline and event nodes
-          length: 700,  // the width of the timeline
-          start: new Date("1 Jan 2016"),
-          end: new Date("31 Dec 2016")
+    myDiagram.nodeTemplateMap.add(
+      'Line',
+      $(go.Node,
+        'Graduated',
+        {
+          movable: false,
+          copyable: false,
+          resizable: true,
+          resizeObjectName: 'MAIN',
+          background: 'transparent',
+          graduatedMin: 0,
+          graduatedMax: 365,
+          graduatedTickUnit: 1,
+          // only resizing at right end
+          resizeAdornmentTemplate: $(go.Adornment,
+            'Spot',
+            $(go.Placeholder),
+            $(go.Shape, { alignment: go.Spot.Right, cursor: 'e-resize', desiredSize: new go.Size(4, 16), fill: 'lightblue', stroke: 'deepskyblue' })
+          ),
         },
+        new go.Binding('graduatedMax', '', timelineDays),
+        $(go.Shape,
+          'LineH',
+          { name: 'MAIN', stroke: '#519ABA', height: 1, strokeWidth: 3 },
+          new go.Binding('width', 'length', (l, shape) => l * (shape.diagram.model.modelData.scale || 1.0)).makeTwoWay(
+            (w, data, model) => w / (model.modelData.scale || 1.0)
+          )
+        ),
+        $(go.Shape, { geometryString: 'M0 0 V10', interval: 7, stroke: '#519ABA', strokeWidth: 2 }),
+        $(go.TextBlock,
+          {
+            font: '10pt sans-serif',
+            stroke: '#CCCCCC',
+            interval: 14,
+            alignmentFocus: go.Spot.Right,
+            segmentOrientation: go.Orientation.Minus90,
+            segmentOffset: new go.Point(0, 12),
+            graduatedFunction: valueToDate,
+          },
+          new go.Binding('interval', 'length', calculateLabelInterval)
+        )
+      )
+    );
 
-        // the rest are just "events" --
-        // you can add as much information as you want on each and extend the
-        // default nodeTemplate to show as much information as you want
-        { event: "New Year's Day", date: new Date("1 Jan 2016") },
-        { event: "MLK Jr. Day", date: new Date("18 Jan 2016") },
-        { event: "Presidents Day", date: new Date("15 Feb 2016") },
-        { event: "Memorial Day", date: new Date("30 May 2016") },
-        { event: "Independence Day", date: new Date("4 Jul 2016") },
-        { event: "Labor Day", date: new Date("5 Sep 2016") },
-        { event: "Columbus Day", date: new Date("10 Oct 2016") },
-        { event: "Veterans Day", date: new Date("11 Nov 2016") },
-        { event: "Thanksgiving", date: new Date("24 Nov 2016") },
-        { event: "Christmas", date: new Date("25 Dec 2016") }
-      ];
-
-      // prepare the model by adding links to the Line
-      for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-        if (d.key !== "timeline") d.parent = "timeline";
-      }
-
-      myDiagram.model = new go.TreeModel( { nodeDataArray: data });
+    function calculateLabelInterval(len) {
+      if (len >= 800) return 7;
+      else if (400 <= len && len < 800) return 14;
+      else if (200 <= len && len < 400) return 21;
+      else if (140 <= len && len < 200) return 28;
+      else if (110 <= len && len < 140) return 35;
+      else return 365;
     }
 
-    function timelineDays() {
-      const timeline = myDiagram.model.findNodeDataForKey("timeline");
-      const startDate = timeline.start;
-      const endDate = timeline.end;
+    // The template for the link connecting the event node with the timeline bar node:
+    myDiagram.linkTemplate = $(BarLink, // defined below
+      { toShortLength: 2, layerName: 'Background' },
+      $(go.Shape, { stroke: '#E37933', strokeWidth: 2 })
+    );
 
-      function treatAsUTC(date) {
-        const result = new Date(date);
-        result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
-        return result;
-      }
+    // Setup the model data -- an object describing the timeline bar node
+    // and an object for each event node:
+    const data = [
+      {
+        // this defines the actual time "Line" bar
+        key: 'timeline',
+        category: 'Line',
+        lineSpacing: 30, // distance between timeline and event nodes
+        length: 700, // the width of the timeline
+        start: new Date('1 Jan 2016'),
+        end: new Date('31 Dec 2016'),
+      },
 
-      const millisecondsPerDay = 24 * 60 * 60 * 1000;
-      return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+      // the rest are just "events" --
+      // you can add as much information as you want on each and extend the
+      // default nodeTemplate to show as much information as you want
+      { event: "New Year's Day", date: new Date('1 Jan 2016') },
+      { event: 'MLK Jr. Day', date: new Date('18 Jan 2016') },
+      { event: 'Presidents Day', date: new Date('15 Feb 2016') },
+      { event: 'Memorial Day', date: new Date('30 May 2016') },
+      { event: 'Independence Day', date: new Date('4 Jul 2016') },
+      { event: 'Labor Day', date: new Date('5 Sep 2016') },
+      { event: 'Columbus Day', date: new Date('10 Oct 2016') },
+      { event: 'Veterans Day', date: new Date('11 Nov 2016') },
+      { event: 'Thanksgiving', date: new Date('24 Nov 2016') },
+      { event: 'Christmas', date: new Date('25 Dec 2016') },
+    ];
+
+    // prepare the model by adding links to the Line
+    for (let i = 0; i < data.length; i++) {
+      const d = data[i];
+      if (d.key !== 'timeline') d.parent = 'timeline';
     }
 
+    myDiagram.model = new go.TreeModel({ nodeDataArray: data });
+  }
+
+  function timelineDays() {
+    const timeline = myDiagram.model.findNodeDataForKey('timeline');
+    const startDate = timeline.start;
+    const endDate = timeline.end;
+
+    function treatAsUTC(date) {
+      const result = new Date(date);
+      result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+      return result;
+    }
+
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+  }
 
   // This custom Layout locates the timeline bar at (0,0)
   // and alternates the event Nodes above and below the bar at
@@ -234,7 +322,7 @@
       const diagram = this.diagram;
       if (diagram === null) return;
       coll = this.collectParts(coll);
-      diagram.startTransaction("TimelineLayout");
+      diagram.startTransaction('TimelineLayout');
 
       let line = null;
       const parts = [];
@@ -242,10 +330,16 @@
       while (it.next()) {
         const part = it.value;
         if (part instanceof go.Link) continue;
-        if (part.category === "Line") { line = part; continue; }
+        if (part.category === 'Line') {
+          line = part;
+          continue;
+        }
         parts.push(part);
         let d = part.data.date;
-        if (d === undefined) { d = new Date(); part.data.date = d; }
+        if (d === undefined) {
+          d = new Date();
+          part.data.date = d;
+        }
       }
       if (!line) throw Error("No node of category 'Line' for TimelineLayout");
 
@@ -283,7 +377,7 @@
         }
       }
 
-      diagram.commitTransaction("TimelineLayout");
+      diagram.commitTransaction('TimelineLayout');
     }
   }
   // end TimelineLayout class
@@ -293,10 +387,10 @@
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
       const r = port.getDocumentBounds();
       const op = otherport.getDocumentPoint(go.Spot.Center);
-      const main = node.category === "Line" ? node.findMainElement() : othernode.findMainElement();
+      const main = node.category === 'Line' ? node.findMainElement() : othernode.findMainElement();
       const mainOffY = main.actualBounds.y;
       let y = r.top;
-      if (node.category === "Line") {
+      if (node.category === 'Line') {
         y += mainOffY;
         if (op.x < r.left) return new go.Point(r.left, y);
         if (op.x > r.right) return new go.Point(r.right, y);
@@ -308,52 +402,117 @@
   }
   // end BarLink class
 
-    function valueToDate(n) {
-      const timeline = myDiagram.model.findNodeDataForKey("timeline");
-      const startDate = timeline.start;
-      const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
-      const msPerDay = 24 * 60 * 60 * 1000;
-      const date = new Date(startDateMs + n * msPerDay);
-      return date.toLocaleDateString();
-    }
+  function valueToDate(n) {
+    const timeline = myDiagram.model.findNodeDataForKey('timeline');
+    const startDate = timeline.start;
+    const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const date = new Date(startDateMs + n * msPerDay);
+    return date.toLocaleDateString();
+  }
 
-    function dateToValue(d) {
-      const timeline = myDiagram.model.findNodeDataForKey("timeline");
-      const startDate = timeline.start;
-      const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
-      const dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
-      const msSinceStart = dateInMs - startDateMs;
-      const msPerDay = 24 * 60 * 60 * 1000;
-      return msSinceStart / msPerDay;
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  function dateToValue(d) {
+    const timeline = myDiagram.model.findNodeDataForKey('timeline');
+    const startDate = timeline.start;
+    const startDateMs = startDate.getTime() + startDate.getTimezoneOffset() * 60000;
+    const dateInMs = d.getTime() + d.getTimezoneOffset() * 60000;
+    const msSinceStart = dateInMs - startDateMs;
+    const msPerDay = 24 * 60 * 60 * 1000;
+    return msSinceStart / msPerDay;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; background: #252526; width:100%; height:400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: #252526; width: 100%; height: 400px"></div>
   <p>
     This sample demonstrates an example usage of a <a href="../intro/graduatedPanels.html">Graduated Panel</a> to draw ticks and text labels along a timeline.
   </p>
+  <p>The Panel uses a <a>Panel.graduatedTickUnit</a> of 1 to represent one day, and ticks are drawn at <a>Shape.interval</a>s of 7 to represent weeks.</p>
   <p>
-    The Panel uses a <a>Panel.graduatedTickUnit</a> of 1 to represent one day, and ticks are drawn at <a>Shape.interval</a>s of 7 to represent weeks.
+    Labels are drawn at <a>TextBlock.interval</a>s of 14, or every two weeks. As the timeline is resized, the interval is updated to prevent overlaps. Text
+    strings are generated by setting the <a>TextBlock.graduatedFunction</a>to convert from values in the graduated range to date strings. Also notice that
+    labels use the <a>GraphObject.alignmentFocus</a>, <a>GraphObject.segmentOrientation</a>, and <a>GraphObject.segmentOffset</a> properties to place text below
+    the timeline bar.
   </p>
   <p>
-    Labels are drawn at <a>TextBlock.interval</a>s of 14, or every two weeks. As the timeline is resized, the interval is updated to prevent overlaps.
-    Text strings are generated by setting the <a>TextBlock.graduatedFunction</a>to convert from values in the graduated range to date strings.
-    Also notice that labels use the <a>GraphObject.alignmentFocus</a>, <a>GraphObject.segmentOrientation</a>,
-    and <a>GraphObject.segmentOffset</a> properties to place text below the timeline bar.
-  </p>
-  <p>
-    Try resizing the timeline: select the timeline and drag the resize handle that is on the right side. Event nodes
-    will automatically be laid out relative to the timeline using the <code>TimelineLayout</code>. TimelineLayout converts
-    a date to a value, then uses <a>Panel.graduatedPointForValue</a> to help determine where event nodes will be placed.
+    Try resizing the timeline: select the timeline and drag the resize handle that is on the right side. Event nodes will automatically be laid out relative to
+    the timeline using the <code>TimelineLayout</code>. TimelineLayout converts a date to a value, then uses <a>Panel.graduatedPointForValue</a> to help
+    determine where event nodes will be placed.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,71 +1,159 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-<meta charset="utf-8"/>
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
- 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->    <title> GoJS Coordinate Systems-- Northwoods Software </title>
-    <link rel="stylesheet" href="../assets/css/prism.css"  />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Coordinate Systems />
+<meta property="og:title" content=Coordinate Systems />
+<meta name="twitter:title" content=Coordinate Systems />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/intro/viewport.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/intro/viewport.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Coordinate Systems | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
   </head>
   <script>
-    
     window.diagrams = [];
-    window.goCode = function(pre, w, h, parentid, animation) {
-      window.diagrams.push([pre, w, h, parentid, animation]);
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
     }
   </script>
   <body>
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
     
-    <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
-    <div id="navSide" class="flex flex-col w-full md:w-40 lg:w-48 text-gray-700 bg-white flex-shrink-0">
-      <div class="flex-shrink-0 px-8 py-4">
-        <button id="navButton" class="rounded-lg md:hidden focus:outline-none focus:ring" aria-label="Navigation">
-          <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-            <path id="navOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-            <path id="navClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-      <nav id="navList" class="min-h-screen hidden md:block sidebar-nav flex-grow px-1 lg:px-4 pb-4 md:pb-0 md:overflow-y-auto break-words">
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
   <a href="index.html">Basics</a>
   <a href="buildingObjects.html">Building Parts</a>
   <a href="usingModels.html">Using Models</a>
   <a href="dataBinding.html">Data Binding</a>
   <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
   <a href="angular.html">GoJS with Angular</a>
   <a href="textBlocks.html">TextBlocks</a>
   <a href="shapes.html">Shapes</a>
@@ -95,6 +183,8 @@
   <a href="sizedGroups.html">Sized Groups</a>
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="routers.html">Routers</a>
   <a href="animation.html">Animation</a>
   <a href="toolTips.html">ToolTips</a>
   <a href="contextmenus.html">Context Menus</a>
@@ -107,7 +197,6 @@
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
-  <a href="resizing.html">Resizing Diagrams</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
   <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
@@ -116,35 +205,57 @@
   <a href="geometry.html">Geometry Strings</a>
   <a href="grids.html">Grid Patterns</a>
   <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGcontext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
   <a href="makingImages.html">Diagram Images</a>
-  <a href="makingSVG.html">Diagram SVG</a>
   <a href="printing.html">Printing</a>
   <a href="serverSideImages.html">Server-side Images</a>
   <a href="nodeScript.html">GoJS in Node.js</a>
   <a href="testing.html">Testing</a>
-  <a href="storage.html">Storage</a>
   <a href="performance.html">Performance</a>
-  <a href="source.html">Building from Source</a>
   <a href="platforms.html">Platforms</a>
   <a href="deployment.html">Deployment</a>
-      </nav>
-    </div>      
-      <div class="pt-4 px-2 md:px-0 lg:px-4 pb-16 w-full overflow-hidden">
 
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
 <h1>Coordinate Systems</h1>
 <p>
-A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document coordinates and view coordinates.
-Furthermore each <a>Panel</a> within a <a>Part</a> has its own coordinate system that its elements use.
+  A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document coordinates and view coordinates. Furthermore each <a>Panel</a> within
+  a <a>Part</a> has its own coordinate system that its elements use.
 </p>
-<p>
-All coordinate systems in <b>GoJS</b> have <a>Point</a>s with increasing values of X going rightwards and
-increasing values of Y going downwards.
-</p>
+<p>All coordinate systems in <b>GoJS</b> have <a>Point</a>s with increasing values of X going rightwards and increasing values of Y going downwards.</p>
 
 <h2 id="DocumentAndViewCoordinates">Document and View coordinates</h2>
 <p>
-The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
-Thus the <a>Point</a> that may be saved for a Node's location in the model's node data object are normally in document coordinates:
+  The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates. Thus the <a>Point</a> that
+  may be saved for a Node's location in the model's node data object are normally in document coordinates:
 </p>
 <pre class="lang-js"><code>
   diagram.model.nodeDataArray = [
@@ -153,50 +264,37 @@ Thus the <a>Point</a> that may be saved for a Node's location in the model's nod
   ];
 </code></pre>
 <p>
-The union of all of the Nodes and Links in a Diagram form the <a>Diagram.documentBounds</a>.
-This <a>Rect</a> has values that are in document coordinates.
-Depending on where the Nodes and Links are, the document bounds may cover a very large area.
-The range of the document bounds might be entirely positive x and y values, or that might be entirely negative,
-or more likely they may cover both negative and positive values.
+  The union of all of the Nodes and Links in a Diagram form the <a>Diagram.documentBounds</a>. This <a>Rect</a> has values that are in document coordinates.
+  Depending on where the Nodes and Links are, the document bounds may cover a very large area. The range of the document bounds might be entirely positive x and
+  y values, or that might be entirely negative, or more likely they may cover both negative and positive values.
 </p>
 <p>
-But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of
-the HTML Div element that the user sees in the page.
-When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas.
-And if the user zooms in to make the parts appear larger, the parts will be drawn at different points in the canvas.
-Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the diagram.
+  But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of the HTML Div element that the user sees
+  in the page. When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas. And if the user zooms in to make the parts appear
+  larger, the parts will be drawn at different points in the canvas. Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the
+  diagram.
 </p>
 <p>
-The <i>viewport</i> is the area of the document that is visible in the canvas.
-That area is available as the <a>Diagram.viewportBounds</a>.
-Note that the viewport bounds is in document coordinates, not in view coordinates!
-The top-left corner of the viewport is (0,0) in view coordinates but is at <a>Diagram.position</a> in document coordinates.
-The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates.
-The bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
+  The <i>viewport</i> is the area of the document that is visible in the canvas. That area is available as the <a>Diagram.viewportBounds</a>. Note that the
+  viewport bounds is in document coordinates, not in view coordinates! The top-left corner of the viewport is (0,0) in view coordinates but is at
+  <a>Diagram.position</a> in document coordinates. The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates. The
+  bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
 </p>
 <p>
-Points in the canvas are in view coordinates, which are independent of document coordinates.
-View coordinates are distances from the top-left corner of the canvas in device-independent pixels.
-The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
-<a>Diagram.position</a> and <a>Diagram.scale</a>.
-Scrolling and panning change the Diagram.position.
-Zooming in or out changes the Diagram.scale.
-You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
-However very few properties or method arguments or return values are in view coordinates -- almost everything is in document
-coordinates or in panel coordinates.
+  Points in the canvas are in view coordinates, which are independent of document coordinates. View coordinates are distances from the top-left corner of the
+  canvas in device-independent pixels. The differences between document coordinates and view coordinates are primarily controlled by two
+  <a>Diagram</a> properties: <a>Diagram.position</a> and <a>Diagram.scale</a>. Scrolling and panning change the <a>Diagram.position</a>. Zooming in or out
+  changes the <a>Diagram.scale</a>. You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and
+  <a>Diagram.transformViewToDoc</a>. However very few properties or method arguments or return values are in view coordinates -- almost everything is in
+  document coordinates or in panel coordinates.
 </p>
 <p>
-As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that.
-Take a look at the overview that is in the <a href="../samples/orgChartStatic.html">Org Chart sample</a>.
-The overview shows the whole document of the main diagram.
-The magenta box shows the main diagram's viewport within the whole document.
-As you scroll or pan the main diagram, the viewport moves.
-As you zoom out, the viewport gets larger.
+  As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that. Take a look at the overview that is in the
+  <a href="../samples/orgChartStatic.html">Org Chart sample</a>. The overview shows the whole document of the main diagram. The magenta box shows the main
+  diagram's viewport within the whole document. As you scroll or pan the main diagram, the viewport moves. As you zoom out, the viewport gets larger.
 </p>
-<p>
-To better understand the difference between document and viewport coordinates, look at this diagram:
-</p>
-<pre class="lang-js" id="diffCoordSystems" style="display:none"><code>
+<p>To better understand the difference between document and viewport coordinates, look at this diagram:</p>
+<pre class="lang-js" id="diffCoordSystems" style="display: none"><code>
   diagram.nodeTemplate =
   $(go.Node, "Auto",
     { scale : 1.3},
@@ -336,7 +434,7 @@ To better understand the difference between document and viewport coordinates, l
 
   diagram.linkTemplateMap.add("Comment", // Template for links from comments
     $(go.Link,
-      { curve: go.Link.Bezier },
+      { curve: go.Curve.Bezier },
       new go.Binding("curviness"),
       new go.Binding("fromSpot", "fromSpot"),
       new go.Binding("toSpot", "toSpot"),
@@ -424,17 +522,16 @@ To better understand the difference between document and viewport coordinates, l
     };
   }
 </code></pre>
-<script>goCode("diffCoordSystems", 750, 650)</script>
+<script>
+  goCode('diffCoordSystems', 750, 650);
+</script>
 
 <h2 id="CoordinateSystemsExample">Coordinate systems example</h2>
 <p>
-This example shows three Parts at three different locations in document coordinates.
-Pass the mouse over each of the parts to see where those locations are in view coordinates.
-Initially you will see that the only difference between document and view coordinates are a constant offset.
-That offset is due to the <a>Diagram.padding</a> that puts a little space between the edge of the canvas and
-the edge of where the diagram's objects are.
-It is also due to <a>Part.locationSpot</a> having the location be at the center of the "+" Shape,
-not at the top-left corner of the whole Part.
+  This example shows three Parts at three different locations in document coordinates. Pass the mouse over each of the parts to see where those locations are in
+  view coordinates. Initially you will see that the only difference between document and view coordinates are a constant offset. That offset is due to the
+  <a>Diagram.padding</a> that puts a little space between the edge of the canvas and the edge of where the diagram's objects are. It is also due to
+  <a>Part.locationSpot</a> having the location be at the center of the "+" Shape, not at the top-left corner of the whole Part.
 </p>
 <pre class="lang-js" id="coordsystems"><code>
   // read-only to avoid accidentally moving any Part in document coordinates
@@ -471,67 +568,56 @@ not at the top-left corner of the whole Part.
   // make accessible to the HTML buttons:
   myDiagram = diagram;
 </code></pre>
-<script>goCode("coordsystems", 300, 150)</script>
+<script>
+  goCode('coordsystems', 300, 150);
+</script>
 <textarea id="Message1" style="width: 300px; height: 70px">(move mouse over node to see points in document and in view coordinates)</textarea>
 <input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
 <input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
 <p>
-Then try scrolling or zooming in and looking at the locations of those parts in view coordinates.
-Zooming in increases the <a>Diagram.scale</a> by a small factor.
-That changes the locations in view coordinates, even though the locations in document coordinates did not change.
+  Then try scrolling or zooming in and looking at the locations of those parts in view coordinates. Zooming in increases the <a>Diagram.scale</a> by a small
+  factor. That changes the locations in view coordinates, even though the locations in document coordinates did not change.
 </p>
 <p class="box bg-info">
-  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates.
-  To "scroll" a diagram one must change the <a>Diagram.position</a>.
-  Either way will cause a node to appear at a different point in the viewport.
+  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates. To "scroll" a diagram one must change the
+  <a>Diagram.position</a>. Either way will cause a node to appear at a different point in the viewport.
 </p>
 
 <h2 id="DocumentBounds">Document bounds</h2>
 <p>
-All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates.
-The union of all of those parts' actualBounds constitutes the <a>Diagram.documentBounds</a>.
-If all of the parts are close together, the document bounds might be small.
-If some or all of the parts are far apart from each other, the document bounds might be large, even if there are only two parts
-or if there is just one really large part.
-The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>.
-The former only depends on the bounds of the parts; the latter only depends on the size of the canvas and the diagram's
-position and scale.
+  All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates. The union of all of those
+  parts' actualBounds constitutes the <a>Diagram.documentBounds</a>. If all of the parts are close together, the document bounds might be small. If some or all
+  of the parts are far apart from each other, the document bounds might be large, even if there are only two parts or if there is just one really large part.
+  The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>. The former only depends on the bounds of the parts; the latter
+  only depends on the size of the canvas and the diagram's position and scale.
 </p>
 <p>
-<a>Diagram.computeBounds</a>, which is responsible for the bounds computation,
-also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up against the edge of the diagram when scrolled to that side.
-You may want to keep some parts, particularly background decorations, from being included in the document bounds computation.
-Just set <a>Part.isInDocumentBounds</a> to false for such parts.
+  <a>Diagram.computeBounds</a>, which is responsible for the bounds computation, also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up
+  against the edge of the diagram when scrolled to that side. You may want to keep some parts, particularly background decorations, from being included in the
+  document bounds computation. Just set <a>Part.isInDocumentBounds</a> to false for such parts.
 </p>
 <p>
-The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately upon any change to any part
-or the addition or removal of a part.
-Thus the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
+  The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately upon any change to any part or the addition or removal of a part. Thus
+  the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
 </p>
 <p>
-The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not
-scrollbars are needed.
-You can set <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to
-make sure no scrollbar appears even when needed.
+  The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not scrollbars are needed. You can set
+  <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to make sure no scrollbar appears even when needed. Or set
+  <a>Diagram.scrollMode</a> to <a>ScrollMode.Infinite</a>.
 </p>
 <p>
-If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links,
-you can set the <a>Diagram.fixedBounds</a> property.
-However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to see them.
+  If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links, you can set the
+  <a>Diagram.fixedBounds</a> property. However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to
+  see them.
 </p>
-<p>
-If you want to be notified whenever the document bounds changes, you can register a "DocumentBoundsChanged" <a>DiagramEvent</a> listener.
-</p>
+<p>If you want to be notified whenever the document bounds changes, you can register a "DocumentBoundsChanged" <a>DiagramEvent</a> listener.</p>
 
 <h2 id="ViewportBounds">Viewport bounds</h2>
 <p>
-The <a>Diagram.viewportBounds</a> always has x and y values that are given by the <a>Diagram.position</a>.
-It always has width and height values that are computed from the canvas size and the <a>Diagram.scale</a>.
+  The <a>Diagram.viewportBounds</a> always has x and y values that are given by the <a>Diagram.position</a>. It always has width and height values that are
+  computed from the canvas size and the <a>Diagram.scale</a>.
 </p>
-<p>
-Users can scroll the document contents using keyboard commands, scrollbars or panning.
-Programmatically, you can scroll using several means:
-</p>
+<p>Users can scroll the document contents using keyboard commands, scrollbars or panning. Programmatically, you can scroll using several means:</p>
 <ul>
   <li>setting <a>Diagram.position</a></li>
   <li>calling <a>Diagram.scrollToRect</a> or <a>Diagram.centerRect</a> or <a>Diagram.scroll</a></li>
@@ -540,55 +626,50 @@ Programmatically, you can scroll using several means:
   <li>calling <a>CommandHandler.scrollToPart</a></li>
 </ul>
 <p>
-Furthermore, scrolling may happen automatically as nodes or links are added to or removed from or change visibility in the diagram.
-Also, zooming will typically result in scrolling as well.
+  Furthermore, scrolling may happen automatically as nodes or links are added to or removed from or change visibility in the diagram. Also, zooming will
+  typically result in scrolling as well.
 </p>
 <p>
-When scrolling, the <a>Diagram.position</a> normally will be limited to the range specified by the <a>Diagram.documentBounds</a>.
-The short or "line" scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>.
-The long or "page" scrolling distance is controlled by the size of the viewport.
-If you want to control the precise values that the <a>Diagram.position</a> may have,
-you can specify a <a>Diagram.positionComputation</a> function. See the example below.
+  When scrolling, the <a>Diagram.position</a> normally will be limited to the range specified by the <a>Diagram.documentBounds</a>. The short or "line"
+  scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>. The long or "page" scrolling
+  distance is controlled by the size of the viewport. If you want to control the precise values that the <a>Diagram.position</a> may have, you can specify a
+  <a>Diagram.positionComputation</a> function. See the example below.
 </p>
-<p>
-User can zoom in or out using keyboard commands, mouse wheel, or pinching.
-Programmatically, you can zoom using several means:
-</p>
+<p>User can zoom in or out using keyboard commands, mouse wheel, or pinching. Programmatically, you can zoom using several means:</p>
 <ul>
   <li>setting <a>Diagram.scale</a></li>
   <li>calling <a>Diagram.zoomToFit</a> or <a>Diagram.zoomToRect</a></li>
   <li>setting <a>Diagram.autoScale</a></li>
-  <li>calling <a>CommandHandler.decreaseZoom</a>, <a>CommandHandler.increaseZoom</a>, <a>CommandHandler.resetZoom</a>, or
-      <a>CommandHandler.zoomToFit</a></li>
+  <li>calling <a>CommandHandler.decreaseZoom</a>, <a>CommandHandler.increaseZoom</a>, <a>CommandHandler.resetZoom</a>, or <a>CommandHandler.zoomToFit</a></li>
 </ul>
 <p>
-When zooming in or out, the <a>Diagram.scale</a> normally will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
-If you want to control the precise values that the <a>Diagram.scale</a> may have,
-you can specify a <a>Diagram.scaleComputation</a> function. See the example below.
+  When zooming in or out, the <a>Diagram.scale</a> normally will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>. If you
+  want to control the precise values that the <a>Diagram.scale</a> may have, you can specify a <a>Diagram.scaleComputation</a> function. See the example below.
 </p>
+<p>If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.</p>
 <p>
-If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.
+  If you want a Part to always be displayed within the viewport, no matter how the user scrolls or zooms, you can add them to a Layer that has
+  <a>Layer.isViewportAligned</a> set to true. Such Parts are positioned by the <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> properties
+  rather than by the <a>GraphObject.position</a> or <a>Part.location</a> properties. Read more at <a href="legends.html#StaticParts">Static Parts</a>.
 </p>
 
 <h2 id="ScrollMargin">Scroll margin</h2>
 <p>
-  <a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport,
-  when the document bounds (including its <a>Diagram.padding</a> margin) is greater than the viewport bounds.
-  This can be useful when users need extra space at the edges of a Diagram,
-  for instance to have an area to create new nodes with the <a>ClickCreatingTool</a>.
+  <a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport, when the document bounds (including its
+  <a>Diagram.padding</a> margin) is greater than the viewport bounds. This can be useful when users need extra space at the edges of a Diagram, for instance to
+  have an area to create new nodes with the <a>ClickCreatingTool</a>.
 </p>
 <p>
-  <a>Diagram.padding</a> is added as if part of the document bounds,
-  whereas <code>scrollMargin</code> makes sure you can scroll to empty space beyond the document bounds.
-  Because of this, <code>scrollMargin</code> does not create additional scrollable empty space if none
-  is needed to scroll the margin distance beyond, such as when the document bounds are very small in the viewport.
+  <a>Diagram.padding</a> is added as if part of the document bounds, whereas <a>Diagram.scrollMargin</a> makes sure you can scroll to empty space beyond the
+  document bounds. Because of this, <a>Diagram.scrollMargin</a> does not create additional scrollable empty space if none is needed to scroll the margin
+  distance beyond, such as when the document bounds are very small in the viewport.
 </p>
 <p>
-  Below is a Diagram with <code>scrollMargin</code> set to <code>100</code>.
-  As you drag to the boundary, you will find the additional space created by the margin.
+  Below is a Diagram with <a>Diagram.scrollMargin</a> set to <code>100</code>. As you drag to the boundary, you will find the additional space created by the
+  margin.
 </p>
 
-<pre class="lang-js" id="scrollmargin" style="display: none;"><code>
+<pre class="lang-js" id="scrollmargin" style="display: none"><code>
   diagram.grid = $(go.Panel, "Grid",
           $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
           $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
@@ -613,25 +694,24 @@ for (let i = 0; i < 99; i++) {
 diagram.model = new go.GraphLinksModel(nodes,[]);
 
 </code></pre>
-<script>goCode("scrollmargin", 400, 400)</script>
-
+<script>
+  goCode('scrollmargin', 400, 400);
+</script>
 
 <h2 id="ScrollingModes">Scrolling modes</h2>
 <p>
-  <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>Diagram,DocumentScroll</a> (the default),
-  or scroll endlessly with <a>Diagram,InfiniteScroll</a>.
+  <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>ScrollMode.Document</a> (the default), or scroll endlessly with
+  <a>ScrollMode.Infinite</a>.
 </p>
 <p>
-  <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions
-  and scales are acceptable to be scrolled to.
-  For instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
+  <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions and scales are acceptable to be scrolled to. For
+  instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
 </p>
 <p>
-  The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below,
-  which lets you toggle these three properties.
+  The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below, which lets you toggle these three properties.
 </p>
 
-<pre class="lang-js" id="scrollmodes" style="display: none;"><code>
+<pre class="lang-js" id="scrollmodes" style="display: none"><code>
     diagram.minScale = 0.25;
     diagram.grid = $(go.Panel, "Grid",
             $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
@@ -670,12 +750,14 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
   // make accessible to the HTML buttons
   myDiagram2 = diagram;
 </code></pre>
-<script>goCode("scrollmodes", 400, 400)</script>
+<script>
+  goCode('scrollmodes', 400, 400);
+</script>
 <p>
   <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
 </p>
 <pre class="lang-js"><code>
-  myDiagram.scrollMode = checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll;
+  myDiagram.scrollMode = checked ? go.ScrollMode.Infinite : go.ScrollMode.Document;
 </code></pre>
 
 <p>
@@ -707,9 +789,7 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
 <script type="text/javascript">
   function positionfunc(diagram, pos) {
     var size = diagram.grid.gridCellSize;
-    return new go.Point(
-      Math.round(pos.x / size.width) * size.width,
-      Math.round(pos.y / size.height) * size.height);
+    return new go.Point(Math.round(pos.x / size.width) * size.width, Math.round(pos.y / size.height) * size.height);
   }
 
   function scalefunc(diagram, scale) {
@@ -723,47 +803,48 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
   }
 
   var infscroll = document.getElementById('infscroll');
-  infscroll.addEventListener('change', e => {
-    myDiagram2.commit(d => { d.scrollMode = infscroll.checked ? go.Diagram.InfiniteScroll : go.Diagram.DocumentScroll; });
+  infscroll.addEventListener('change', (e) => {
+    myDiagram2.commit((d) => {
+      d.scrollMode = infscroll.checked ? go.ScrollMode.Infinite : go.ScrollMode.Document;
+    });
   });
 
   var poscomp = document.getElementById('poscomp');
-  poscomp.addEventListener('change', e => {
-    myDiagram2.commit(d => { d.positionComputation = poscomp.checked ? positionfunc : null; });
+  poscomp.addEventListener('change', (e) => {
+    myDiagram2.commit((d) => {
+      d.positionComputation = poscomp.checked ? positionfunc : null;
+    });
   });
 
   var scalecomp = document.getElementById('scalecomp');
-  scalecomp.addEventListener('change', e => {
-    myDiagram2.commit(d => { d.scaleComputation = scalecomp.checked ? scalefunc : null; });
+  scalecomp.addEventListener('change', (e) => {
+    myDiagram2.commit((d) => {
+      d.scaleComputation = scalecomp.checked ? scalefunc : null;
+    });
   });
 </script>
 
 <h2 id="PanelCoordinates">Panel coordinates</h2>
 <p>
-A <a>GraphObject</a> that is not a <a>Part</a> but is an element of a <a>Panel</a> has measurements
-that are in panel coordinates, not in document coordinates.
-That means that <a>GraphObject.position</a>, <a>GraphObject.actualBounds</a>, <a>GraphObject.maxSize</a>,
-<a>GraphObject.minSize</a>, <a>GraphObject.measuredBounds</a>, <a>GraphObject.margin</a>, and
-<a>RowColumnDefinition</a> properties apply to all elements of a panel using the same coordinate system.
+  A <a>GraphObject</a> that is not a <a>Part</a> but is an element of a <a>Panel</a> has measurements that are in panel coordinates, not in document
+  coordinates. That means that <a>GraphObject.position</a>, <a>GraphObject.actualBounds</a>, <a>GraphObject.maxSize</a>, <a>GraphObject.minSize</a>,
+  <a>GraphObject.measuredBounds</a>, <a>GraphObject.margin</a>, and <a>RowColumnDefinition</a> properties apply to all elements of a panel using the same
+  coordinate system.
 </p>
 <p>
-Some <a>GraphObject</a> properties use units that have values before they are transformed for use by
-the containing <a>Panel</a>'s coordinate system.
-In particular, <a>GraphObject.desiredSize</a> (which means <a>GraphObject.width</a> and <a>GraphObject.height</a>),
-<a>GraphObject.naturalBounds</a>, <a>Shape.geometry</a>, and <a>Shape.strokeWidth</a> are in "local" coordinates,
-before the object is scaled and rotated by the value of <a>GraphObject.scale</a> and <a>GraphObject.angle</a>.
+  Some <a>GraphObject</a> properties use units that have values before they are transformed for use by the containing <a>Panel</a>'s coordinate system. In
+  particular, <a>GraphObject.desiredSize</a> (which means <a>GraphObject.width</a> and <a>GraphObject.height</a>), <a>GraphObject.naturalBounds</a>,
+  <a>Shape.geometry</a>, and <a>Shape.strokeWidth</a> are in "local" coordinates, before the object is scaled and rotated by the value of
+  <a>GraphObject.scale</a> and <a>GraphObject.angle</a>.
 </p>
 <p>
-<a>GraphObject.actualBounds</a> will tell you the position and size of an element within its panel.
-If you want to get the document position of some object that is within a Node,
-call <a>GraphObject.getDocumentPoint</a>.
+  <a>GraphObject.actualBounds</a> will tell you the position and size of an element within its panel. If you want to get the document position of some object
+  that is within a Node, call <a>GraphObject.getDocumentPoint</a>.
 </p>
-<p>
-For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.
-</p>
+<p>For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.</p>
 
 <h3 id="NestedPanelCoordinates">Nested Panel coordinates</h3>
-<pre class="lang-js" id="nestedpanelcoords" style="display: none;"><code>
+<pre class="lang-js" id="nestedpanelcoords" style="display: none"><code>
   // read-only to avoid accidentally moving any Part in document coordinates
   diagram.isReadOnly = true;
   diagram.allowSelect = false;
@@ -976,149 +1057,137 @@ For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizi
     {from: 3, to: "bn", toPortId: "bottomLabel"}
   ]);
 </code></pre>
+<p>The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.</p>
+<script>
+  goCode('nestedpanelcoords', 600, 400);
+</script>
 <p>
-  The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.
-</p>
-<script>goCode("nestedpanelcoords", 600, 400)</script>
-<p>
-  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright.
-  But that TextBlock is an element in the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30,
-  so it and its text should appear somewhat tilted.
-  However the blue "Vertical" Panel itself has an <a>GraphObject.angle</a> of 165.
-  Because each Panel has its own coordinate system and because transformations on nested elements are compounded,
-  the effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
+  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright. But that TextBlock is an element in
+  the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30, so it and its text should appear somewhat tilted. However the blue "Vertical" Panel itself
+  has an <a>GraphObject.angle</a> of 165. Because each Panel has its own coordinate system and because transformations on nested elements are compounded, the
+  effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
 </p>
 <p>
-  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel.
-  The brown "Position" <a>Panel</a> has a scale of 0.8 relative to its container.
-  But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall,
-  the product of those individual scales (0.8 x 1.5).
+  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel. The brown "Position" <a>Panel</a> has a scale of 0.8
+  relative to its container. But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall, the product of those individual scales
+  (0.8 x 1.5).
 </p>
+
       </div>
     </div>
-  
-  <div class="bg-nwoods-primary">
-    <section class="max-w-screen-lg text-white container mx-auto py-2 px-12">
-      <p id="version" class="leading-none mb-2 my-4">GoJS</p>
-    </section>
-  </div><footer class="bg-nwoods-primary text-white">
-  <div class="container max-w-screen-lg mx-auto  px-8">
-    <div class="w-full py-6">
-
-        <div class="max-w-screen-lg xl:max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8">
-          <ul class="text-sm font-medium pb-6 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">GoJS</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="../samples/index.html">Samples</a>
-                </li>
-                <li>
-                  <a href="../learn/index.html">Learn</a>
-                </li>
-                <li>
-                  <a href="../intro/index.html">Intro</a>
-                </li>
-                <li>
-                  <a href="../api/index.html">API</a>
-                </li>
-                <li>
-                  <a href="../changelog.html">Changelog</a>
-                </li>
-                <li>
-                  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Support</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a href="https://www.nwoods.com/contact.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
-                </li>
-                <li>
-                  <a href="https://forum.nwoods.com/c/gojs">Forum</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs">Activate</a>
-                </li>
-                <li>
-                  <a href="https://www.nwoods.com/sales/index.html"
-                  target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
-                </li>
-                <li>
-                  <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">Videos</a>
-                </li>
-              </ul>
-            </li>
-            <li class="list-none row-span-2">
-              <h2 class="text-base font-semibold tracking-wide">Company</h2>
-              <ul class="list-none space-y-4 md:space-y-1 px-0">
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com">Northwoods</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/about.html">About Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/contact.html">Contact Us</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://www.nwoods.com/consulting.html">Consulting</a>
-                </li>
-                <li>
-                  <a target="_blank" href="https://twitter.com/northwoodsgo">Twitter</a>
-                </li>
-
-              </ul>
-            </li>
-          </ul>
-
-
-      <p class="text-sm text-gray-100 md:mb-6">
-        Copyright 1998-2023 <a class="text-white" href="https://www.nwoods.com">Northwoods Software</a>
-      </p>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="api/index.html">API</a>
+          </li>
+          <li>
+            <a href="changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://www.nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://www.nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://www.nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://www.nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2024 <a href="https://www.nwoods.com">Northwoods Software</a>
+    </p>
   </div>
-</footer>  </body>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script> 
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-S5QK8VSK84');
-  var getOutboundLink = function(url, label) {
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
     gtag('event', 'click', {
       'event_category': 'outbound',
       'event_label': label,
       'transport_type': 'beacon'
     });
   }
-
-  // topnav
-  var topButton = document.getElementById("topnavButton");
-  var topnavList = document.getElementById("topnavList");
-  topButton.addEventListener("click", function() {
-    this.classList.toggle("active");
-    topnavList.classList.toggle("hidden");
-    document.getElementById("topnavOpen").classList.toggle("hidden");
-    document.getElementById("topnavClosed").classList.toggle("hidden");
-  });
 </script>
   <script src="../assets/js/prism.js"></script>
   <script src="../release/go.js"></script>
+  
   <script src="../assets/js/goDoc.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.go) document.getElementById('version').textContent = "GoJS version " + go.version;
-      if (window.goDoc) window.goDoc();
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
       var d = window.diagrams;
       for (var i = 0; i < d.length; i++) {
         var dargs = d[i];
         goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
       }
-      if (window.extra) window.extra();
-    });
+      if (window.extra)
+        window.extra();
+      }
+    );
   </script>
 </html>

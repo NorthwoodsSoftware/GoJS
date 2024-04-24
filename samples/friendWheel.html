@@ -1,61 +1,134 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Show the relationships between people using a friend wheel diagram, implemented using circular layout."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Friend Wheel</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Show the relationships between people using a friend wheel diagram, implemented using circular layout." />
+<meta itemprop="description" content="Show the relationships between people using a friend wheel diagram, implemented using circular layout." />
+<meta property="og:description" content="Show the relationships between people using a friend wheel diagram, implemented using circular layout." />
+<meta name="twitter:description" content="Show the relationships between people using a friend wheel diagram, implemented using circular layout." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Friend Wheel />
+<meta property="og:title" content=Friend Wheel />
+<meta name="twitter:title" content=Friend Wheel />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/friendWheel.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/friendWheel.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/friendWheel.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/friendWheel.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/friendWheel.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Friend Wheel | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <script id="code">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
   class WheelLayout extends go.CircularLayout {
     // override makeNetwork to set the diameter of each node and ignore the TextBlock label
     makeNetwork(coll) {
       const net = super.makeNetwork(coll);
-      net.vertexes.each(cv => cv.diameter = 20);  // because our desiredSize for nodes is (20, 20)
+      net.vertexes.each((cv) => (cv.diameter = 20)); // because our desiredSize for nodes is (20, 20)
       return net;
     }
 
@@ -63,13 +136,14 @@
     // and flip text if it would be upside-down
     commitNodes() {
       super.commitNodes();
-      this.network.vertexes.each(v => {
+      this.network.vertexes.each((v) => {
         const node = v.node;
         if (node === null) return;
         // get the angle of the node towards the center, and rotate it accordingly
         const a = v.actualAngle;
-        if (a > 90 && a < 270) {  // make sure the text isn't upside down
-          const textBlock = node.findObject("TEXTBLOCK");
+        if (a > 90 && a < 270) {
+          // make sure the text isn't upside down
+          const textBlock = node.findObject('TEXTBLOCK');
           textBlock.angle = 180;
         }
         node.angle = a;
@@ -81,183 +155,263 @@
     commitLinks() {
       super.commitLinks();
       if (this.network.vertexes.count > 4) {
-        this.network.vertexes.each(v => {
-          v.destinationEdges.each(de => {
+        this.network.vertexes.each((v) => {
+          v.destinationEdges.each((de) => {
             const dv = de.toVertex;
             let da = dv.actualAngle;
             let sa = v.actualAngle;
             if (da - sa > 180) da -= 360;
             else if (sa - da > 180) sa -= 360;
-            de.link.curviness = (sa > da) ? 15 : -15;
-          })
-        })
+            de.link.curviness = sa > da ? 160 : -160;
+          });
+        });
       }
     }
   }
   // end WheelLayout class
 
+  const highlightColor = 'red'; // color parameterization
 
-    const highlightColor = "red";  // color parameterization
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv", // must be the ID or reference to div
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must be the ID or reference to div
+      {
+        'animationManager.isEnabled': false,
+        initialAutoScale: go.AutoScale.Uniform,
+        padding: 10,
+        contentAlignment: go.Spot.Center,
+        layout: $(WheelLayout, // set up a custom CircularLayout
+          // set some properties appropriate for this sample
           {
-            initialAutoScale: go.Diagram.Uniform,
-            padding: 10,
-            contentAlignment: go.Spot.Center,
-            layout:
-              $(WheelLayout,  // set up a custom CircularLayout
-                // set some properties appropriate for this sample
-                {
-                  arrangement: go.CircularLayout.ConstantDistance,
-                  nodeDiameterFormula: go.CircularLayout.Circular,
-                  spacing: 10,
-                  aspectRatio: 0.7,
-                  sorting: go.CircularLayout.Optimized
-                }),
-            isReadOnly: true,
-            click: e => {  // background click clears any remaining highlighteds
-              e.diagram.startTransaction("clear");
-              e.diagram.clearHighlighteds();
-              e.diagram.commitTransaction("clear");
-            }
-          });
-
-      // define the Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Horizontal",
-          {
-            selectionAdorned: false,
-            locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
-            locationObjectName: "SHAPE",
-            mouseEnter: (e, node) => {
-              node.diagram.clearHighlighteds();
-              node.linksConnected.each(l => highlightLink(l, true));
-              node.isHighlighted = true;
-              const tb = node.findObject("TEXTBLOCK");
-              if (tb !== null) tb.stroke = highlightColor;
-            },
-            mouseLeave: (e, node) => {
-              node.diagram.clearHighlighteds();
-              const tb = node.findObject("TEXTBLOCK");
-              if (tb !== null) tb.stroke = "black";
-            }
-          },
-          new go.Binding("text", "text"),  // for sorting the nodes
-          $(go.Shape, "Ellipse",
-            {
-              name: "SHAPE",
-              fill: "lightgray",  // default value, but also data-bound
-              stroke: "transparent",  // modified by highlighting
-              strokeWidth: 2,
-              desiredSize: new go.Size(20, 20),
-              portId: ""
-            },  // so links will go to the shape, not the whole node
-            new go.Binding("fill", "color"),
-            new go.Binding("stroke", "isHighlighted",
-                           h => h ? highlightColor : "transparent")
-              .ofObject()),
-          $(go.TextBlock,
-            { name: "TEXTBLOCK" },  // for search
-            new go.Binding("text", "text"))
-        );
-
-      function highlightLink(link, show) {
-        link.isHighlighted = show;
-        link.fromNode.isHighlighted = show;
-        link.toNode.isHighlighted = show;
+            arrangement: go.CircularArrangement.ConstantDistance,
+            nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular,
+            spacing: 10,
+            aspectRatio: 0.7,
+            sorting: go.CircularSorting.Optimized,
+          }
+        ),
+        isReadOnly: true,
+        click: (e) => {
+          // background click clears any remaining highlighteds
+          e.diagram.startTransaction('clear');
+          e.diagram.clearHighlighteds();
+          e.diagram.commitTransaction('clear');
+        },
       }
+    );
 
-      // define the Link template
-      myDiagram.linkTemplate =
-        $(go.Link,
-          {
-            routing: go.Link.Normal,
-            curve: go.Link.Bezier,
-            selectionAdorned: false,
-            mouseEnter: (e, link) => highlightLink(link, true),
-            mouseLeave: (e, link) => highlightLink(link, false)
-          },
-          $(go.Shape,
-            new go.Binding("stroke", "isHighlighted",
-                           (h, shape) => h ? highlightColor : shape.part.data.color)
-              .ofObject(),
-            new go.Binding("strokeWidth", "isHighlighted",
-                           h => h ? 2 : 1)
-              .ofObject())
-          // no arrowhead -- assume directionality of relationship need not be shown
-        );
+    // define the Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      'Horizontal',
+      {
+        selectionAdorned: false,
+        locationSpot: go.Spot.Center, // Node.location is the center of the Shape
+        locationObjectName: 'SHAPE',
+        mouseEnter: (e, node) => {
+          node.diagram.clearHighlighteds();
+          node.linksConnected.each((l) => highlightLink(l, true));
+          node.isHighlighted = true;
+          const tb = node.findObject('TEXTBLOCK');
+          if (tb !== null) tb.stroke = highlightColor;
+        },
+        mouseLeave: (e, node) => {
+          node.diagram.clearHighlighteds();
+          const tb = node.findObject('TEXTBLOCK');
+          if (tb !== null) tb.stroke = 'black';
+        },
+      },
+      new go.Binding('text', 'text'), // for sorting the nodes
+      $(go.Shape,
+        'Rectangle',
+        {
+          name: 'SHAPE',
+          fill: 'lightgray', // default value, but also data-bound
+          stroke: 'transparent', // modified by highlighting
+          strokeWidth: 2,
+          desiredSize: new go.Size(25, 25),
+          portId: '',
+        }, // so links will go to the shape, not the whole node
+        new go.Binding('fill', 'color'),
+        new go.Binding('stroke', 'isHighlighted', (h) => (h ? highlightColor : 'transparent')).ofObject()
+      ),
+      $(go.TextBlock,
+        { name: 'TEXTBLOCK' }, // for search
+        new go.Binding('text', 'text')
+      )
+    );
 
-      generateGraph();
+    function highlightLink(link, show) {
+      link.isHighlighted = show;
+      link.fromNode.isHighlighted = show;
+      link.toNode.isHighlighted = show;
     }
 
-    function generateGraph() {
-      const names = [
-        "Joshua", "Daniel", "Robert", "Noah", "Anthony",
-        "Elizabeth", "Addison", "Alexis", "Ella", "Samantha",
-        "Joseph", "Scott", "James", "Ryan", "Benjamin",
-        "Walter", "Gabriel", "Christian", "Nathan", "Simon",
-        "Isabella", "Emma", "Olivia", "Sophia", "Ava",
-        "Emily", "Madison", "Tina", "Elena", "Mia",
-        "Jacob", "Ethan", "Michael", "Alexander", "William",
-        "Natalie", "Grace", "Lily", "Alyssa", "Ashley",
-        "Sarah", "Taylor", "Hannah", "Brianna", "Hailey",
-        "Christopher", "Aiden", "Matthew", "David", "Andrew",
-        "Kaylee", "Juliana", "Leah", "Anna", "Allison",
-        "John", "Samuel", "Tyler", "Dylan", "Jonathan",
-      ];
+    // define the Link template
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        // routing: go.Routing.Orthogonal,
+        curve: go.Curve.Bezier,
+        selectionAdorned: false,
+        mouseEnter: (e, link) => highlightLink(link, true),
+        mouseLeave: (e, link) => highlightLink(link, false),
+      },
+      $(go.Shape,
+        new go.Binding('stroke', 'isHighlighted', (h, shape) => (h ? highlightColor : shape.part.data.color)).ofObject(),
+        new go.Binding('strokeWidth', 'isHighlighted', (h) => (h ? 3 : 1.5)).ofObject()
+      )
+      // no arrowhead -- assume directionality of relationship need not be shown
+    );
 
-      const nodeDataArray = [];
-      for (let i = 0; i < names.length; i++) {
-        nodeDataArray.push({ key: i, text: names[i], color: go.Brush.randomColor(128, 240) });
-      }
+    generateGraph();
+  }
 
-      const linkDataArray = [];
-      const num = nodeDataArray.length;
-      for (let i = 0; i < num * 2; i++) {
-        const a = Math.floor(Math.random() * num);
-        const b = Math.floor(Math.random() * num / 4) + 1;
-        linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
-      }
+  function generateGraph() {
+    const names = [
+      'Joshua',
+      'Daniel',
+      'Robert',
+      'Noah',
+      'Anthony',
+      'Elizabeth',
+      'Addison',
+      'Alexis',
+      'Ella',
+      'Samantha',
+      'Joseph',
+      'Scott',
+      'James',
+      'Ryan',
+      'Benjamin',
+      'Walter',
+      'Gabriel',
+      'Christian',
+      'Nathan',
+      'Simon',
+      'Isabella',
+      'Emma',
+      'Olivia',
+      'Sophia',
+      'Ava',
+      'Emily',
+      'Madison',
+      'Tina',
+      'Elena',
+      'Mia',
+      'Jacob',
+      'Ethan',
+      'Michael',
+      'Alexander',
+      'William',
+      'Natalie',
+      'Grace',
+      'Lily',
+      'Alyssa',
+      'Ashley',
+      'Sarah',
+      'Taylor',
+      'Hannah',
+      'Brianna',
+      'Hailey',
+      'Christopher',
+      'Aiden',
+      'Matthew',
+      'David',
+      'Andrew',
+      'Kaylee',
+      'Juliana',
+      'Leah',
+      'Anna',
+      'Allison',
+      'John',
+      'Samuel',
+      'Tyler',
+      'Dylan',
+      'Jonathan',
+    ];
 
-      myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    const colors = ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#f7f7f7', '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061'];
+    const nodeDataArray = [];
+    for (let i = 0; i < names.length; i++) {
+      nodeDataArray.push({ key: i, text: names[i], color: colors[i % colors.length] });
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+
+    const linkDataArray = [];
+    const num = nodeDataArray.length;
+    for (let i = 0; i < num * 2; i++) {
+      const a = Math.floor(Math.random() * num);
+      const b = Math.floor((Math.random() * num) / 4) + 1;
+      linkDataArray.push({ from: a, to: (a + b) % num, color: colors[i % colors.length] });
+    }
+
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px" ></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 600px"></div>
   <p>
-  This "friend wheel" demonstrates the use of <a>CircularLayout</a>.
-  The layout has been customized to make sure each node is considered to have a fixed diameter,
-  ignoring the size of any <a>TextBlock</a>.
+    This "friend wheel" demonstrates the use of <a>CircularLayout</a>. The layout has been customized to make sure each node is considered to have a fixed
+    diameter, ignoring the size of any <a>TextBlock</a>.
   </p>
   <p>
-  The custom layout also rotates each <a>Node</a> according to the actual angle at which the node was positioned.
-  This information is available on the <a>CircularVertex</a> used by the <a>LayoutNetwork</a> that
-  the <a>CircularLayout</a> constructs from the nodes and links of the diagram.
-  Furthermore, when laying out the nodes it also flips the angle of the <a>TextBlock</a> so that the
-  text is not upside-down.
+    The custom layout also rotates each <a>Node</a> according to the actual angle at which the node was positioned. This information is available on the
+    <a>CircularVertex</a> used by the <a>LayoutNetwork</a> that the <a>CircularLayout</a> constructs from the nodes and links of the diagram. Furthermore, when
+    laying out the nodes it also flips the angle of the <a>TextBlock</a> so that the text is not upside-down.
   </p>
   <p>
-  <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers on the <a>Node</a> template
-  highlight both the Node and all of the Links that connect with the Node.
-  The same event handlers on the <a>Link</a>s highlight that Link and both connected Nodes.
-  Changes made in these event handlers automatically are not recorded in the <a>UndoManager</a>,
-  although this sample does not enable the UndoManager anyway.
+    <a>GraphObject.mouseEnter</a> and <a>GraphObject.mouseLeave</a> event handlers on the <a>Node</a> template highlight both the Node and all of the Links that
+    connect with the Node. The same event handlers on the <a>Link</a>s highlight that Link and both connected Nodes. Changes made in these event handlers
+    automatically are not recorded in the <a>UndoManager</a>, although this sample does not enable the UndoManager anyway.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Circular Layout</h4>
+<p>
+This predefined layout is used for placing Nodes in a cirular or elliptical arrangement.
+More information can be found in the <a href="../intro/layouts.html#CircularLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#circularlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

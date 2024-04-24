@@ -1,38 +1,40 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * This CurvedLinkReshapingTool class allows for a {@link Link}'s path to be modified by the user
+ * This CurvedLinkReshapingTool class allows for a {@link go.Link}'s path to be modified by the user
  * via the dragging of a single tool handle at the middle of the link.
- * Dragging the handle changes the value of {@link Link#curviness}.
+ * Dragging the handle changes the value of {@link go.Link.curviness}.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/CurvedLinkReshaping.html">Curved Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/CurvedLinkReshaping.html">Curved Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
-    constructor() {
-        super(...arguments);
+    constructor(init) {
+        super();
         this._originalCurviness = NaN;
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * @hidden @internal
      */
     makeAdornment(pathshape) {
         const link = pathshape.part;
-        if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
+        if (link !== null && link.curve === go.Curve.Bezier && link.pointsCount === 4) {
             const adornment = new go.Adornment();
             adornment.type = go.Panel.Link;
             const h = this.makeHandle(pathshape, 0);
             if (h !== null) {
-                this.setReshapingBehavior(h, go.LinkReshapingTool.All);
+                this.setReshapingBehavior(h, go.ReshapingBehavior.All);
                 h.cursor = 'move';
                 adornment.add(h);
             }
@@ -45,10 +47,10 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
         }
     }
     /**
-     * Start reshaping, if {@link #findToolHandleAt} finds a reshape handle at the mouse down point.
+     * Start reshaping, if {@link findToolHandleAt} finds a reshape handle at the mouse down point.
      *
-     * If successful this sets {@link #handle} to be the reshape handle that it finds
-     * and {@link #adornedLink} to be the {@link Link} being routed.
+     * If successful this sets {@link handle} to be the reshape handle that it finds
+     * and {@link adornedLink} to be the {@link go.Link} being routed.
      * It also remembers the original link route (a list of Points) and curviness in case this tool is cancelled.
      * And it starts a transaction.
      */
@@ -66,15 +68,15 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
         super.doCancel();
     }
     /**
-     * Change the route of the {@link #adornedLink} by moving the point corresponding to the current
-     * {@link #handle} to be at the given {@link Point}.
-     * This is called by {@link #doMouseMove} and {@link #doMouseUp} with the result of calling
-     * {@link #computeReshape} to constrain the input point.
-     * @param {Point} newpt the value of the call to {@link #computeReshape}.
+     * Change the route of the {@link adornedLink} by moving the point corresponding to the current
+     * {@link handle} to be at the given {@link go.Point}.
+     * This is called by {@link doMouseMove} and {@link doMouseUp} with the result of calling
+     * {@link computeReshape} to constrain the input point.
+     * @param newpt - the value of the call to {@link computeReshape}.
      */
     reshape(newpt) {
         const link = this.adornedLink;
-        if (link !== null && link.curve === go.Link.Bezier && link.pointsCount === 4) {
+        if (link !== null && link.curve === go.Curve.Bezier && link.pointsCount === 4) {
             const start = link.getPoint(0);
             const end = link.getPoint(3);
             const ang = start.directionPoint(end);
@@ -90,7 +92,7 @@ export class CurvedLinkReshapingTool extends go.LinkReshapingTool {
             }
             else {
                 const diff = mid.directionPoint(q) - ang;
-                if ((diff > 0 && diff < 180) || (diff < -180))
+                if ((diff > 0 && diff < 180) || diff < -180)
                     curviness = -curviness;
             }
             link.curviness = curviness;

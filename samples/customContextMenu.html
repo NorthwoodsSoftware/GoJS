@@ -1,169 +1,251 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Context menus implemented in HTML rather than as GoJS objects."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>HTML Context Menu</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Context menus implemented in HTML rather than as GoJS objects." />
+<meta itemprop="description" content="Context menus implemented in HTML rather than as GoJS objects." />
+<meta property="og:description" content="Context menus implemented in HTML rather than as GoJS objects." />
+<meta name="twitter:description" content="Context menus implemented in HTML rather than as GoJS objects." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Context Menu />
+<meta property="og:title" content=Context Menu />
+<meta name="twitter:title" content=Context Menu />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/customContextMenu.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/customContextMenu.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/customContextMenu.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/customContextMenu.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/customContextMenu.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Context Menu | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <style type="text/css">
-    /* CSS for the traditional context menu */
-    .menu {
-      display: none;
-      position: absolute;
-      opacity: 0;
-      margin: 0;
-      padding: 8px 0;
-      z-index: 999;
-      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
-      list-style: none;
-      background-color: #ffffff;
-      border-radius: 4px;
-    }
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-    .menu-item {
-      display: block;
-      position: relative;
-      min-width: 60px;
-      margin: 0;
-      padding: 6px 16px;
-      font: bold 12px sans-serif;
-      color: rgba(0, 0, 0, .87);
-      cursor: pointer;
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
     }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-    .menu-item::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      pointer-events: none;
-      content: "";
-      width: 100%;
-      height: 100%;
-      background-color: #000000;
-    }
+        
 
-    .menu-item:hover::before {
-      opacity: .04;
-    }
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-    .menu .menu {
-      top: -8px;
-      left: 100%;
-    }
+<style type="text/css">
+  /* CSS for the traditional context menu */
+  .menu {
+    display: none;
+    position: absolute;
+    opacity: 0;
+    margin: 0;
+    padding: 8px 0;
+    z-index: 999;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    list-style: none;
+    background-color: #ffffff;
+    border-radius: 4px;
+  }
 
-    .show-menu, .menu-item:hover > .menu {
-      display: block;
-      opacity: 1;
-    }
-  </style>
-  <script id="code">
+  .menu-item {
+    display: block;
+    position: relative;
+    min-width: 60px;
+    margin: 0;
+    padding: 6px 16px;
+    font: bold 12px sans-serif;
+    color: rgba(0, 0, 0, 0.87);
+    cursor: pointer;
+  }
 
+  .menu-item::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  .menu-item:hover::before {
+    opacity: 0.04;
+  }
+
+  .menu .menu {
+    top: -8px;
+    left: 100%;
+  }
+
+  .show-menu,
+  .menu-item:hover > .menu {
+    display: block;
+    opacity: 1;
+  }
+</style>
+<script id="code">
   var myDiagram = null;
 
   function init() {
-    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
 
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;  // for conciseness in defining templates
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram =
-      new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          "undoManager.isEnabled": true
-        });
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // create a Diagram for the DIV HTML element
+      {
+        'undoManager.isEnabled': true,
+      }
+    );
 
     // This is the actual HTML context menu:
-    var cxElement = document.getElementById("contextMenu");
+    var cxElement = document.getElementById('contextMenu');
 
     // an HTMLInfo object is needed to invoke the code to set up the HTML cxElement
     var myContextMenu = $(go.HTMLInfo, {
       show: showContextMenu,
-      hide: hideContextMenu
+      hide: hideContextMenu,
     });
 
     // define a simple Node template (but use the default Link template)
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        { contextMenu: myContextMenu },
-        $(go.Shape, "RoundedRectangle",
-          // Shape.fill is bound to Node.data.color
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          { margin: 3 },  // some room around the text
-          // TextBlock.text is bound to Node.data.key
-          new go.Binding("text", "key"))
-      );
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      { contextMenu: myContextMenu },
+      $(go.Shape,
+        'RoundedRectangle',
+        // Shape.fill is bound to Node.data.color
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock,
+        { margin: 3 }, // some room around the text
+        // TextBlock.text is bound to Node.data.text
+        new go.Binding('text')
+      )
+    );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: "Alpha", color: "#f38181" },
-        { key: "Beta", color: "#eaffd0" },
-        { key: "Gamma", color: "#95e1d3" },
-        { key: "Delta", color: "#fce38a" }
+        { key: 1, text: 'Alpha', color: '#f38181' },
+        { key: 2, text: 'Beta', color: '#eaffd0' },
+        { key: 3, text: 'Gamma', color: '#95e1d3' },
+        { key: 4, text: 'Delta', color: '#fce38a' },
       ],
       [
-        { from: "Alpha", to: "Beta" },
-        { from: "Alpha", to: "Gamma" },
-        { from: "Beta", to: "Beta" },
-        { from: "Gamma", to: "Delta" },
-        { from: "Delta", to: "Alpha" }
-      ]);
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 },
+      ]
+    );
 
     myDiagram.contextMenu = myContextMenu;
 
     // We don't want the div acting as a context menu to have a (browser) context menu!
-    cxElement.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      return false;
-    }, false);
+    cxElement.addEventListener(
+      'contextmenu',
+      (e) => {
+        e.preventDefault();
+        return false;
+      },
+      false
+    );
 
     function hideCX() {
       if (myDiagram.currentTool instanceof go.ContextMenuTool) {
@@ -177,37 +259,37 @@
       var hasMenuItem = false;
       function maybeShowItem(elt, pred) {
         if (pred) {
-          elt.style.display = "block";
+          elt.style.display = 'block';
           hasMenuItem = true;
         } else {
-          elt.style.display = "none";
+          elt.style.display = 'none';
         }
       }
-      maybeShowItem(document.getElementById("cut"), cmd.canCutSelection());
-      maybeShowItem(document.getElementById("copy"), cmd.canCopySelection());
-      maybeShowItem(document.getElementById("paste"), cmd.canPasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint));
-      maybeShowItem(document.getElementById("delete"), cmd.canDeleteSelection());
-      maybeShowItem(document.getElementById("color"), obj !== null);
+      maybeShowItem(document.getElementById('cut'), cmd.canCutSelection());
+      maybeShowItem(document.getElementById('copy'), cmd.canCopySelection());
+      maybeShowItem(document.getElementById('paste'), cmd.canPasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint));
+      maybeShowItem(document.getElementById('delete'), cmd.canDeleteSelection());
+      maybeShowItem(document.getElementById('color'), obj !== null);
 
       // Now show the whole context menu element
       if (hasMenuItem) {
-        cxElement.classList.add("show-menu");
+        cxElement.classList.add('show-menu');
         // we don't bother overriding positionContextMenu, we just do it here:
         var mousePt = diagram.lastInput.viewPoint;
-        cxElement.style.left = mousePt.x + 5 + "px";
-        cxElement.style.top = mousePt.y + "px";
+        cxElement.style.left = mousePt.x + 5 + 'px';
+        cxElement.style.top = mousePt.y + 'px';
       }
 
       // Optional: Use a `window` pointerdown listener with event capture to
       //           remove the context menu if the user clicks elsewhere on the page
-      window.addEventListener("pointerdown", hideCX, true);
+      window.addEventListener('pointerdown', hideCX, true);
     }
 
     function hideContextMenu() {
-      cxElement.classList.remove("show-menu");
+      cxElement.classList.remove('show-menu');
       // Optional: Use a `window` pointerdown listener with event capture to
       //           remove the context menu if the user clicks elsewhere on the page
-      window.removeEventListener("pointerdown", hideCX, true);
+      window.removeEventListener('pointerdown', hideCX, true);
     }
   }
 
@@ -216,13 +298,22 @@
     if (val === undefined) val = event.currentTarget.id;
     var diagram = myDiagram;
     switch (val) {
-      case "cut": diagram.commandHandler.cutSelection(); break;
-      case "copy": diagram.commandHandler.copySelection(); break;
-      case "paste": diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); break;
-      case "delete": diagram.commandHandler.deleteSelection(); break;
-      case "color": {
+      case 'cut':
+        diagram.commandHandler.cutSelection();
+        break;
+      case 'copy':
+        diagram.commandHandler.copySelection();
+        break;
+      case 'paste':
+        diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint);
+        break;
+      case 'delete':
+        diagram.commandHandler.deleteSelection();
+        break;
+      case 'color': {
         var color = window.getComputedStyle(event.target)['background-color'];
-        changeColor(diagram, color); break;
+        changeColor(diagram, color);
+        break;
       }
     }
     diagram.currentTool.stopTool();
@@ -231,40 +322,42 @@
   // A custom command, for changing the color of the selected node(s).
   function changeColor(diagram, color) {
     // Always make changes in a transaction, except when initializing the diagram.
-    diagram.startTransaction("change color");
-    diagram.selection.each(node => {
-      if (node instanceof go.Node) {  // ignore any selected Links and simple Parts
+    diagram.startTransaction('change color');
+    diagram.selection.each((node) => {
+      if (node instanceof go.Node) {
+        // ignore any selected Links and simple Parts
         // Examine and modify the data, not the Node directly.
         var data = node.data;
         // Call setDataProperty to support undo/redo as well as
         // automatically evaluating any relevant bindings.
-        diagram.model.setDataProperty(data, "color", color);
+        diagram.model.setDataProperty(data, 'color', color);
       }
     });
-    diagram.commitTransaction("change color");
+    diagram.commitTransaction('change color');
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div style="display: inline-block;">
+  <div style="display: inline-block">
     <!-- We make a div to contain both the Diagram div and the context menu (such that they are siblings)
          so that absolute positioning works easily.
          This DIV containing both MUST have a non-static CSS position (we use position: relative)
          so that our context menu's absolute coordinates work correctly. -->
-    <div style="position: relative;"  >
-      <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+    <div style="position: relative">
+      <div id="myDiagramDiv" style="border: solid 1px black; width: 400px; height: 400px"></div>
       <ul id="contextMenu" class="menu">
         <li id="cut" class="menu-item" onpointerdown="cxcommand(event)">Cut</li>
         <li id="copy" class="menu-item" onpointerdown="cxcommand(event)">Copy</li>
         <li id="paste" class="menu-item" onpointerdown="cxcommand(event)">Paste</li>
         <li id="delete" class="menu-item" onpointerdown="cxcommand(event)">Delete</li>
-        <li id="color" class="menu-item">Color
+        <li id="color" class="menu-item">
+          Color
           <ul class="menu">
-            <li class="menu-item" style="background-color: #f38181;" onpointerdown="cxcommand(event, 'color')">Red</li>
-            <li class="menu-item" style="background-color: #eaffd0;" onpointerdown="cxcommand(event, 'color')">Green</li>
-            <li class="menu-item" style="background-color: #95e1d3;" onpointerdown="cxcommand(event, 'color')">Blue</li>
-            <li class="menu-item" style="background-color: #fce38a;" onpointerdown="cxcommand(event, 'color')">Yellow</li>
+            <li class="menu-item" style="background-color: #f38181" onpointerdown="cxcommand(event, 'color')">Red</li>
+            <li class="menu-item" style="background-color: #eaffd0" onpointerdown="cxcommand(event, 'color')">Green</li>
+            <li class="menu-item" style="background-color: #95e1d3" onpointerdown="cxcommand(event, 'color')">Blue</li>
+            <li class="menu-item" style="background-color: #fce38a" onpointerdown="cxcommand(event, 'color')">Yellow</li>
           </ul>
         </li>
       </ul>
@@ -273,16 +366,66 @@
     <div id="description">
       <p>This demonstrates the implementation of a custom HTML context menu.</p>
       <p>For a light-box style HTML context menu implementation, see the <a href="htmlLightBoxContextMenu.html">LightBox Context Menu</a> sample.</p>
-      <p>Right-click or tap-hold on a Node to bring up a context menu.
-      If you have a selection copied in the clipboard, you can bring up a context menu anywhere to paste.</p>
+      <p>
+        Right-click or tap-hold on a Node to bring up a context menu. If you have a selection copied in the clipboard, you can bring up a context menu anywhere
+        to paste.
+      </p>
     </div>
   </div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Context Menus</h4>
+<p>
+A GoJS context menu is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+an object that has its <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> set.
+The context menu is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
+as you can see in the code below in the assignment of the Node's <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> and <a href="../api/symbols/Diagram.html#contextMenu" target="api">Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed.
+Each "ContextMenuButton" is a Panel on which you can set the <a href="../api/symbols/GraphObject.html#click" target="api">GraphObject.click</a> event handler.
+In the event handler <code>obj.part</code> will be the whole context menu Adornment.
+<code>obj.part.adornedPart</code> will be the adorned Node or Link.
+The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
+</p>
+<p>
+More information can be found in the <a href="../intro/contextmenus.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#contextmenus">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

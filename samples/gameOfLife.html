@@ -1,456 +1,533 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A cellular automation simulation in GoJS"/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Conway's Game of Life</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A cellular automation simulation in GoJS" />
+<meta itemprop="description" content="A cellular automation simulation in GoJS" />
+<meta property="og:description" content="A cellular automation simulation in GoJS" />
+<meta name="twitter:description" content="A cellular automation simulation in GoJS" />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Game of Life />
+<meta property="og:title" content=Game of Life />
+<meta name="twitter:title" content=Game of Life />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/gameOfLife.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/gameOfLife.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/gameOfLife.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/gameOfLife.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/gameOfLife.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Game of Life | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    // two dimensional array which will represent the board state
-    // this will be filled with Nodes once they are created
-    var goLGrid = [];
-
-    // the size of the board
-    var rows = 40;
-    var cols = 40;
-
-    var interval = 15; // the interval between steps in ms when the simulation is enabled
-    var initializing = true;
-    var enabled = false; // flag to turn the simulation on or off
-
-    var myDiagram;
-
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            "animationManager.isEnabled": false,
-            // disable movement/edit controls, since the myDiagram is a static grid
-            "panningTool.isEnabled": false,
-            isReadOnly: true,
-            allowZoom: false,
-            allowSelect: false,
-            hasHorizontalScrollbar: false,
-            hasVerticalScrollbar: false,
-            initialAutoScale: go.Diagram.Uniform
-          });
-
-      var nodeSize = 25;
-      var nodeDataArray = []; // array to hold Node data for the model
-      // populate data array by initializing Nodes in a grid and setting their "isAlive" state to false
-      for (var i = 0; i < rows; i++) {
-        var row = new Array(cols);
-        for (var j = 0; j < cols; j++) {
-          nodeDataArray.push({ location: new go.Point(j * nodeSize, i * nodeSize), row: i, col: j, isAlive: false });
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
-        goLGrid.push(row);
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // stroke color and width of the grid lines
-      var gridStroke = "#A2A2A2";
-      var gridStrokeWidth = 1;
+        
 
-      // define the node template, which also includes interactive functionality, such as clicking to toggle a node's state
-      myDiagram.nodeTemplate =
-        $(go.Part, {
-          isLayoutPositioned: false,
-          mouseEnter: (e, part, prev) => {  // set mouseover border
-            if (!initializing && !enabled) {
-              var shape = part.elt(0);
-              if (shape) {
-                shape.stroke = "steelblue";
-                shape.strokeWidth = 3;
-              }
-              part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-              // drag with a button down to add or erase cells
-              if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
-                select(part);
-              }
-            }
-          },
-          mouseLeave: (e, part, next) => {  // restore to original borders
+<script id="code">
+  // two dimensional array which will represent the board state
+  // this will be filled with Nodes once they are created
+  var goLGrid = [];
+
+  // the size of the board
+  var rows = 40;
+  var cols = 40;
+
+  var interval = 15; // the interval between steps in ms when the simulation is enabled
+  var initializing = true;
+  var enabled = false; // flag to turn the simulation on or off
+
+  var myDiagram;
+
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      // disable movement/edit controls, since the myDiagram is a static grid
+      'panningTool.isEnabled': false,
+      isReadOnly: true,
+      allowZoom: false,
+      allowSelect: false,
+      hasHorizontalScrollbar: false,
+      hasVerticalScrollbar: false,
+      initialAutoScale: go.AutoScale.Uniform,
+    });
+
+    var nodeSize = 25;
+    var nodeDataArray = []; // array to hold Node data for the model
+    // populate data array by initializing Nodes in a grid and setting their "isAlive" state to false
+    for (var i = 0; i < rows; i++) {
+      var row = new Array(cols);
+      for (var j = 0; j < cols; j++) {
+        nodeDataArray.push({ location: new go.Point(j * nodeSize, i * nodeSize), row: i, col: j, isAlive: false });
+      }
+      goLGrid.push(row);
+    }
+
+    // stroke color and width of the grid lines
+    var gridStroke = '#A2A2A2';
+    var gridStrokeWidth = 1;
+
+    // define the node template, which also includes interactive functionality, such as clicking to toggle a node's state
+    myDiagram.nodeTemplate = $(go.Part,
+      {
+        isLayoutPositioned: false,
+        mouseEnter: (e, part, prev) => {
+          // set mouseover border
+          if (!initializing && !enabled) {
             var shape = part.elt(0);
             if (shape) {
-              shape.stroke = gridStroke;
-              shape.strokeWidth = gridStrokeWidth
+              shape.stroke = 'steelblue';
+              shape.strokeWidth = 3;
             }
-            part.zOrder = 1;
-          },
-          click: (e, part) => { // left click to toggle cell
-            initializing = false;
-            if (!enabled) {
+            part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
+
+            // drag with a button down to add or erase cells
+            if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
               select(part);
             }
-          },
-          contextClick: (e, part) => { // right click to clear cell
-            initializing = false;
-            if (!enabled && part.data.isAlive) {
-              select(part);
-            }
-          },
-          zOrder: 1
+          }
         },
-        $(go.Shape,
-          {
-            figure: "Rectangle",
-            fill: "white",
-            stroke: gridStroke,
-            strokeWidth: gridStrokeWidth,
-            width: nodeSize,
-            height: nodeSize
-          }),
-        new go.Binding("location")
-      );
-
-      // use a simple model for our node data
-      myDiagram.model = new go.Model(nodeDataArray);
-
-      // myDiagram.parts is populated after a model is assigned;
-      // populate the internal gamestate array with the newly created nodes
-      for (var it = myDiagram.parts.iterator; it.next();) {
-        var part = it.value;
-        goLGrid[part.data.row][part.data.col] = part;
-      }
-
-      // load the default sample
-      var e = document.getElementById("samplePatterns");
-      loadSample(e.options[e.selectedIndex].value);
-    }
-
-    // toggles a given node's state, both visually and in the internal gamestate
-    function select(part) {
-      var shape = part.elt(0);
-      if (shape) {
-        if (shape.fill === "white") {
-          shape.fill = "steelblue";
-        } else {
-          shape.fill = "white";
-        }
-      };
-      part.data.isAlive = !part.data.isAlive;
-    }
-
-    // toggles the state of the simulation, changing the button text from "Start" to "Pause" or back again
-    function toggleSimulation() {
-      initializing = false;
-      var button = document.getElementById("start");
-      if (!enabled) {
-        button.value = "Pause";
-        enabled = true;
-        goLStep();
-      } else {
-        button.value = "Start";
-        enabled = false;
-      }
-    }
-
-    // the callback for the step button, only steps forward if the simulation is currently stopped
-    function stepOnclick() {
-      initializing = false;
-      if (!enabled) {
-        goLStep(true);
-      }
-    }
-
-    // performs a single step in the Game of Life
-    function goLStep(isManualStep) {
-      if (goLGrid.length === 0) {
-        return; // don't do anything if things aren't initialized yet
-      }
-
-      var isAlive = false;
-      var toSelect = [];
-      var liveCellCount = 0; // count the number of live cells to determine if there are no more left
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < cols; j++) {
-          if (isAlive) {
-            liveCellCount++;
+        mouseLeave: (e, part, next) => {
+          // restore to original borders
+          var shape = part.elt(0);
+          if (shape) {
+            shape.stroke = gridStroke;
+            shape.strokeWidth = gridStrokeWidth;
           }
-
-          // count the number of cells in the 8 squares adjacent to this one
-          var total = 0;
-
-          var above = goLGrid[i > 0 ? i - 1 : rows - 1];
-          var below = goLGrid[i + 1 < rows ? i + 1 : 0];
-          var left = j > 0 ? j - 1 : cols - 1;
-          var right = j + 1 < cols ? j + 1 : 0;
-
-          total += above[left].data.isAlive;
-          total += above[j].data.isAlive;
-          total += above[right].data.isAlive;
-          total += goLGrid[i][left].data.isAlive;
-          total += goLGrid[i][right].data.isAlive;
-          total += below[left].data.isAlive;
-          total += below[j].data.isAlive;
-          total += below[right].data.isAlive;
-
-          // toggle the cell if necessary according to the three rules
-          var part = goLGrid[i][j];
-          isAlive = part.data.isAlive;
-          if ((total <= 1 && isAlive)
-              || (total > 3 && isAlive)
-              || (total === 3 && !isAlive)) {
-            if (!isAlive) {
-              liveCellCount++;
-            } else {
-              liveCellCount--;
-            }
-            toSelect.push(part); // don't actually toggle the cell yet, this happens all at once after everything is done
-          }
-        }
-      }
-
-      // change the board state according the earlier loop
-      if (enabled || isManualStep) {
-        for (var i = 0; i < toSelect.length; i++) {
-          select(toSelect[i]);
-        }
-      }
-
-      if (enabled) {
-        if (liveCellCount === 0) {
-          toggleSimulation(); // stop the simulation if there are no more live cells
-        } else {
-          setTimeout(goLStep, interval); // queue another step if the simuation is still enabled
-        }
-      }
-    }
-
-    // clear the board of all live cells, stopping the simulation if it's currently enabled
-    function goLClear() {
-      if (enabled) {
-        toggleSimulation();
-      }
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < cols; j++) {
-          var part = goLGrid[i][j];
-          if (part.data.isAlive) {
+          part.zOrder = 1;
+        },
+        click: (e, part) => {
+          // left click to toggle cell
+          initializing = false;
+          if (!enabled) {
             select(part);
           }
-        }
-      }
-    }
-
-    // this function contains all of the data for the four included sample patterns as well as the logic for drawing them
-    function loadSample(value) {
-      goLClear(); // clear the board first, stopping the simulation if it's enabled
-      // select the correct sample data based on the option value passed to the function
-      var sampleData = [];
-      switch (value) {
-        case "symm4":
-          sampleData = [
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 0]
-          ];
-          break;
-        case "pulsar":
-          sampleData = [
-            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [1,  ,  ,  , 1,  , 1,  ,  ,  , 1],
-            [ , 1, 1, 1,  ,  ,  , 1, 1, 1, 0]
-          ]
-          break;
-        case "spaceships":
-          sampleData = [
-            [1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [1,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ , 1, 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  , 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 1, 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
-            [ ,  ,  , 1, 1,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  , 0],
-            [1, 1,  , 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  , 0],
-            [1, 1,  , 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  , 0],
-            [ ,  ,  , 1, 1,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  , 0],
-            [ ,  ,  ,  , 1,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 0]
-          ]
-          break;
-        case "bigGliders":
-          sampleData = [
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1, 1, 1,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  , 1,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  , 1, 1,  ,  , 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  , 1,  ,  ,  ,  , 1, 1,  ,  ,  , 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  , 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1, 1, 1,  ,  ,  , 1,  , 1, 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1, 1,  ,  ,  , 1, 1, 1, 1],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  , 1, 1,  , 1,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  , 1, 1, 1,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  ,  ,  ,  ,  ,  , 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ , 1, 1,  ,  ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [1, 1,  ,  ,  ,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  , 1,  ,  ,  ,  , 1,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  , 1, 1,  ,  , 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-            [ ,  ,  ,  , 1, 1,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 0],
-          ]
-          break;
-      }
-
-      // draw the sample pattern in the middle of the board
-      var startRow = Math.floor((rows / 2) - (sampleData.length / 2));
-      var startCol = Math.floor((cols / 2) - (sampleData[0].length / 2));
-      for (var i = startRow; i < startRow + sampleData.length; i++) {
-        for (var j = startCol; j < startCol + sampleData[0].length; j++) {
-          if (sampleData[i - startRow][j - startCol] === 1) {
-            select(goLGrid[i][j]);
+        },
+        contextClick: (e, part) => {
+          // right click to clear cell
+          initializing = false;
+          if (!enabled && part.data.isAlive) {
+            select(part);
           }
+        },
+        zOrder: 1,
+      },
+      $(go.Shape, {
+        figure: 'Rectangle',
+        fill: 'white',
+        stroke: gridStroke,
+        strokeWidth: gridStrokeWidth,
+        width: nodeSize,
+        height: nodeSize,
+      }),
+      new go.Binding('location')
+    );
+
+    // use a simple model for our node data
+    myDiagram.model = new go.Model(nodeDataArray);
+
+    // myDiagram.parts is populated after a model is assigned;
+    // populate the internal gamestate array with the newly created nodes
+    for (var it = myDiagram.parts.iterator; it.next(); ) {
+      var part = it.value;
+      goLGrid[part.data.row][part.data.col] = part;
+    }
+
+    // load the default sample
+    var e = document.getElementById('samplePatterns');
+    loadSample(e.options[e.selectedIndex].value);
+  }
+
+  // toggles a given node's state, both visually and in the internal gamestate
+  function select(part) {
+    var shape = part.elt(0);
+    if (shape) {
+      if (shape.fill === 'white') {
+        shape.fill = 'steelblue';
+      } else {
+        shape.fill = 'white';
+      }
+    }
+    part.data.isAlive = !part.data.isAlive;
+  }
+
+  // toggles the state of the simulation, changing the button text from "Start" to "Pause" or back again
+  function toggleSimulation() {
+    initializing = false;
+    var button = document.getElementById('start');
+    if (!enabled) {
+      button.value = 'Pause';
+      enabled = true;
+      goLStep();
+    } else {
+      button.value = 'Start';
+      enabled = false;
+    }
+  }
+
+  // the callback for the step button, only steps forward if the simulation is currently stopped
+  function stepOnclick() {
+    initializing = false;
+    if (!enabled) {
+      goLStep(true);
+    }
+  }
+
+  // performs a single step in the Game of Life
+  function goLStep(isManualStep) {
+    if (goLGrid.length === 0) {
+      return; // don't do anything if things aren't initialized yet
+    }
+
+    var isAlive = false;
+    var toSelect = [];
+    var liveCellCount = 0; // count the number of live cells to determine if there are no more left
+    for (var i = 0; i < rows; i++) {
+      for (var j = 0; j < cols; j++) {
+        if (isAlive) {
+          liveCellCount++;
+        }
+
+        // count the number of cells in the 8 squares adjacent to this one
+        var total = 0;
+
+        var above = goLGrid[i > 0 ? i - 1 : rows - 1];
+        var below = goLGrid[i + 1 < rows ? i + 1 : 0];
+        var left = j > 0 ? j - 1 : cols - 1;
+        var right = j + 1 < cols ? j + 1 : 0;
+
+        total += above[left].data.isAlive;
+        total += above[j].data.isAlive;
+        total += above[right].data.isAlive;
+        total += goLGrid[i][left].data.isAlive;
+        total += goLGrid[i][right].data.isAlive;
+        total += below[left].data.isAlive;
+        total += below[j].data.isAlive;
+        total += below[right].data.isAlive;
+
+        // toggle the cell if necessary according to the three rules
+        var part = goLGrid[i][j];
+        isAlive = part.data.isAlive;
+        if ((total <= 1 && isAlive) || (total > 3 && isAlive) || (total === 3 && !isAlive)) {
+          if (!isAlive) {
+            liveCellCount++;
+          } else {
+            liveCellCount--;
+          }
+          toSelect.push(part); // don't actually toggle the cell yet, this happens all at once after everything is done
         }
       }
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
 
-  <div id="sample">
-    <div id="myDiagramDiv" style="border: solid 1px black; width:500px; height:500px"></div>
-    <p>
-      Game Controls:
-      <input id="start" onclick="toggleSimulation()" type="button" value="Start" />
-      <input id="step" onclick="stepOnclick()" type="button" value="Step" />
-      <input id="clear" onclick="goLClear()" type="button" value="Clear" style="margin-bottom: 10px" />
-      Sample patterns:
-      <select id="samplePatterns" onchange="loadSample(this.options[this.selectedIndex].value)" style="margin-bottom: 10px">
-        <option value="symm4">Symmetry</option>
-        <option value="pulsar">Pulsar</option>
-        <option value="spaceships">Spaceships</option>
-        <option value="bigGliders">Big gliders</option>
-      </select>
-    </p>
-    <p>
-      This sample shows an implementation of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's Game of Life</a> in GoJS.
-      Conway's Game of Life is a simple cellular automaton devised by British mathematician John Horton Conway in 1970. To start or advance the simulation,
-      use the controls above.
-    </p>
-    <p>
-      Whether or not a given cell lives, dies, or is born in a step is determined by the number of live cells in the 8 squares adjacent to it. For a cell <i>x</i> with <i>n</i> adjacent live cells:
-    </p>
-    <ul>
-      <li>If <i>n</i> &lt;= 1, cell <i>x</i> dies or stays dead (from underpopulation).</li>
-      <li>If <i>n</i> &gt; 3, cell <i>x</i> dies or stays dead (from overpopulation).</li>
-      <li>If <i>n</i> = 3, then <i>x</i> is born or stays alive.</li>
-      <li>If <i>n</i> = 2, then <i>x</i> maintains its status.</li>
-    </ul>
-    <p>
-      Though the rules are simple, they can produce complex patterns, some of which are shown in the dropdown above.
-      To create your own patterns, click or drag anywhere on the grid when the simulation is not running.
-    </p>
-    <p>
-      Each cell is implemented by a simple <a>Part</a> holding a small square <a>Shape</a>.
-    </p>
-  </div>
+    // change the board state according the earlier loop
+    if (enabled || isManualStep) {
+      for (var i = 0; i < toSelect.length; i++) {
+        select(toSelect[i]);
+      }
+    }
+
+    if (enabled) {
+      if (liveCellCount === 0) {
+        toggleSimulation(); // stop the simulation if there are no more live cells
+      } else {
+        setTimeout(goLStep, interval); // queue another step if the simuation is still enabled
+      }
+    }
+  }
+
+  // clear the board of all live cells, stopping the simulation if it's currently enabled
+  function goLClear() {
+    if (enabled) {
+      toggleSimulation();
+    }
+    for (var i = 0; i < rows; i++) {
+      for (var j = 0; j < cols; j++) {
+        var part = goLGrid[i][j];
+        if (part.data.isAlive) {
+          select(part);
+        }
+      }
+    }
+  }
+
+  // this function contains all of the data for the four included sample patterns as well as the logic for drawing them
+  function loadSample(value) {
+    goLClear(); // clear the board first, stopping the simulation if it's enabled
+    // select the correct sample data based on the option value passed to the function
+    var sampleData = [];
+    switch (value) {
+      case 'symm4':
+        sampleData = [
+          [, , , , , , , , , , 1, 1, 1, , , , , , , , 0],
+          [, , , , , , , , , , 1, , , 1, , , , , , , 0],
+          [, , , , , , , , , , 1, , , 1, , , , , , , 0],
+          [, , , , , , , , , , , , 1, 1, , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, 1, 1, 1, , , , , , , , , , , , , , , , , 0],
+          [1, , , 1, , , , , , , , , , , , , , , , , 0],
+          [1, , , , , , , , , , , , , , , , , , , , 0],
+          [1, 1, 1, , , , , , , , , , , , , , , , 1, 1, 1],
+          [, , , , , , , , , , , , , , , , , , , , 1],
+          [, , , , , , , , , , , , , , , , , 1, , , 1],
+          [, , , , , , , , , , , , , , , , , 1, 1, 1, 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , 1, 1, , , , , , , , , , , , 0],
+          [, , , , , , , 1, , , 1, , , , , , , , , , 0],
+          [, , , , , , , 1, , , 1, , , , , , , , , , 0],
+          [, , , , , , , , 1, 1, 1, , , , , , , , , , 0],
+        ];
+        break;
+      case 'pulsar':
+        sampleData = [
+          [, 1, 1, 1, , , , 1, 1, 1, 0],
+          [1, , , , 1, , 1, , , , 1],
+          [1, , , , 1, , 1, , , , 1],
+          [1, , , , 1, , 1, , , , 1],
+          [, 1, 1, 1, , , , 1, 1, 1, 0],
+          [, , , , , , , , , , 0],
+          [, 1, 1, 1, , , , 1, 1, 1, 0],
+          [1, , , , 1, , 1, , , , 1],
+          [1, , , , 1, , 1, , , , 1],
+          [1, , , , 1, , 1, , , , 1],
+          [, 1, 1, 1, , , , 1, 1, 1, 0],
+        ];
+        break;
+      case 'spaceships':
+        sampleData = [
+          [1, , , 1, , , , , , , , , , , , , 0],
+          [, , , , 1, , , , , , , , , , , , 0],
+          [1, , , , 1, , , , , , , , , , , , 0],
+          [, 1, 1, 1, 1, , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , 1, , 0],
+          [, , , , , , , , , , , , 1, , , , 1],
+          [, , , , , , , , , , , 1, , , , , 0],
+          [, , , , , , , , , , , 1, , , , , 1],
+          [, , , , , , , , , , , 1, 1, 1, 1, 1, 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , 0],
+          [, , , , , 1, , 1, 1, , , , , , , , 0],
+          [, , , , 1, , , , , , , 1, , , , , 0],
+          [, , , 1, 1, , , , 1, , , 1, , , , , 0],
+          [1, 1, , 1, , , , , , 1, 1, , , , , , 0],
+          [1, 1, , 1, , , , , , 1, 1, , , , , , 0],
+          [, , , 1, 1, , , , 1, , , 1, , , , , 0],
+          [, , , , 1, , , , , , , 1, , , , , 0],
+          [, , , , , 1, , 1, 1, , , , , , , , 0],
+        ];
+        break;
+      case 'bigGliders':
+        sampleData = [
+          [, , , , , , , , , , , , , 1, 1, 1, , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , 1, , , 1, 1, 1, , , , , , , , , 0],
+          [, , , , , , , , , , , , , , 1, , 1, , , , , , , , , , , 0],
+          [, , , , , , , , , , 1, 1, , , , , , , , 1, , , , , , , , 0],
+          [, , , , , , , , , , 1, , 1, , , , , 1, , , 1, , , , , , , 0],
+          [, , , , , , , , , , 1, , , , , , , , , 1, 1, , , , , , , 0],
+          [, , , , , , , , , , , 1, 1, , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , 1, , , 1, , , , , , 1, , 1, 1, , , , 0],
+          [, , , , , , , , , , , 1, , , , , , , , , , 1, 1, , 1, , , 0],
+          [, , , , , , , , , , , , , 1, , 1, , , , , , , 1, 1, , , 1, 0],
+          [, , , , , , , , , , , , , , 1, 1, , 1, , , , , 1, 1, , , , 1],
+          [, , , , , , , , , , , , , , , , , , 1, , , , , , , , 1, 0],
+          [, , , , , , , , , , , , , , , , , 1, 1, 1, 1, , , , 1, , 1, 0],
+          [, , , , , , , , , , , , , , , , , 1, , 1, 1, , , , 1, 1, 1, 1],
+          [, , , , , , , , , , , , , , , , , , 1, , , , 1, 1, , 1, , 0],
+          [, , , , , , , , 1, 1, , , , , , , , , , , , , , 1, 1, , , 0],
+          [, , , , , , , 1, 1, , , , , , , , , , , 1, , 1, 1, 1, , , , 0],
+          [, , , , , , , , , 1, , , , , , , , , , , 1, , , 1, , , , 0],
+          [, , , , , , , , , , , 1, 1, , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , 1, , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , , , , , , 1, , , 1, , , , , , , , , , , , , , , 0],
+          [, 1, 1, , , , , , 1, 1, , , , , , , , , , , , , , , , , , 0],
+          [1, 1, , , , , , 1, , , , , , , , , , , , , , , , , , , , 0],
+          [, , 1, , , , , 1, , 1, , , , , , , , , , , , , , , , , , 0],
+          [, , , , 1, 1, , , 1, , , , , , , , , , , , , , , , , , , 0],
+          [, , , , 1, 1, , , , , , , , , , , , , , , , , , , , , , 0],
+        ];
+        break;
+    }
+
+    // draw the sample pattern in the middle of the board
+    var startRow = Math.floor(rows / 2 - sampleData.length / 2);
+    var startCol = Math.floor(cols / 2 - sampleData[0].length / 2);
+    for (var i = startRow; i < startRow + sampleData.length; i++) {
+      for (var j = startCol; j < startCol + sampleData[0].length; j++) {
+        if (sampleData[i - startRow][j - startCol] === 1) {
+          select(goLGrid[i][j]);
+        }
+      }
+    }
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 500px; height: 500px"></div>
+  <p>
+    Game Controls:
+    <input id="start" onclick="toggleSimulation()" type="button" value="Start" />
+    <input id="step" onclick="stepOnclick()" type="button" value="Step" />
+    <input id="clear" onclick="goLClear()" type="button" value="Clear" style="margin-bottom: 10px" />
+    Sample patterns:
+    <select id="samplePatterns" onchange="loadSample(this.options[this.selectedIndex].value)" style="margin-bottom: 10px">
+      <option value="symm4">Symmetry</option>
+      <option value="pulsar">Pulsar</option>
+      <option value="spaceships">Spaceships</option>
+      <option value="bigGliders">Big gliders</option>
+    </select>
+  </p>
+  <p>
+    This sample shows an implementation of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's Game of Life</a> in GoJS. Conway's Game of
+    Life is a simple cellular automaton devised by British mathematician John Horton Conway in 1970. To start or advance the simulation, use the controls above.
+  </p>
+  <p>
+    Whether or not a given cell lives, dies, or is born in a step is determined by the number of live cells in the 8 squares adjacent to it. For a cell
+    <i>x</i> with <i>n</i> adjacent live cells:
+  </p>
+  <ul>
+    <li>If <i>n</i> &lt;= 1, cell <i>x</i> dies or stays dead (from underpopulation).</li>
+    <li>If <i>n</i> &gt; 3, cell <i>x</i> dies or stays dead (from overpopulation).</li>
+    <li>If <i>n</i> = 3, then <i>x</i> is born or stays alive.</li>
+    <li>If <i>n</i> = 2, then <i>x</i> maintains its status.</li>
+  </ul>
+  <p>
+    Though the rules are simple, they can produce complex patterns, some of which are shown in the dropdown above. To create your own patterns, click or drag
+    anywhere on the grid when the simulation is not running.
+  </p>
+  <p>Each cell is implemented by a simple <a>Part</a> holding a small square <a>Shape</a>.</p>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

@@ -1,438 +1,527 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="An editor for snapping pipes together and moving and rotating them as a single assembly."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Pipes</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="An editor for snapping pipes together and moving and rotating them as a single assembly." />
+<meta itemprop="description" content="An editor for snapping pipes together and moving and rotating them as a single assembly." />
+<meta property="og:description" content="An editor for snapping pipes together and moving and rotating them as a single assembly." />
+<meta name="twitter:description" content="An editor for snapping pipes together and moving and rotating them as a single assembly." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Pipes />
+<meta property="og:title" content=Pipes />
+<meta name="twitter:title" content=Pipes />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipes.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipes.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pipes.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/pipes.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/pipes.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Pipes | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for more concise visual tree definitions
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            initialScale: 1.5,
-            "commandHandler.defaultScale": 1.5,
-            allowLink: false,  // no user-drawn links
-            // use a custom DraggingTool instead of the standard one, defined below
-            draggingTool: new SnappingTool(),
-            contextMenu:
-              $("ContextMenu",
-                makeButton("Paste",
-                  (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
-                  o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
-                makeButton("Undo",
-                  (e, obj) => e.diagram.commandHandler.undo(),
-                  o => o.diagram.commandHandler.canUndo()),
-                makeButton("Redo",
-                  (e, obj) => e.diagram.commandHandler.redo(),
-                  o => o.diagram.commandHandler.canRedo())
-              ),
-            "undoManager.isEnabled": true
-          });
-
-      // To simplify this code we define a function for creating a context menu button:
-      function makeButton(text, action, visiblePredicate) {
-        return $("ContextMenuButton",
-          $(go.TextBlock, text),
-          { click: action },
-          // don't bother with binding GraphObject.visible if there's no predicate
-          visiblePredicate ? new go.Binding("visible", "", (o, e) => o.diagram ? visiblePredicate(o, e) : false).ofObject() : {});
-      }
-
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        const button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        const idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.slice(0, idx);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
       });
 
-      myDiagram.nodeTemplateMap.add("Comment",
-        $(go.Node,
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.TextBlock,
-            { stroke: "brown", font: "9pt sans-serif" },
-            new go.Binding("text"))
-        ));
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // Define the generic "pipe" Node.
-      // The Shape gets it Geometry from a geometry path string in the bound data.
-      // This node also gets all of its ports from an array of port data in the bound data.
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for more concise visual tree definitions
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialScale: 1.5,
+      'commandHandler.defaultScale': 1.5,
+      allowLink: false, // no user-drawn links
+      // use a custom DraggingTool instead of the standard one, defined below
+      draggingTool: new SnappingTool(),
+      contextMenu: $('ContextMenu',
+        makeButton(
+          'Paste',
+          (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+          (o) => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
+        ),
+        makeButton(
+          'Undo',
+          (e, obj) => e.diagram.commandHandler.undo(),
+          (o) => o.diagram.commandHandler.canUndo()
+        ),
+        makeButton(
+          'Redo',
+          (e, obj) => e.diagram.commandHandler.redo(),
+          (o) => o.diagram.commandHandler.canRedo()
+        )
+      ),
+      'undoManager.isEnabled': true,
+    });
+
+    // To simplify this code we define a function for creating a context menu button:
+    function makeButton(text, action, visiblePredicate) {
+      return $('ContextMenuButton',
+        $(go.TextBlock, text),
+        { click: action },
+        // don't bother with binding GraphObject.visible if there's no predicate
+        visiblePredicate ? new go.Binding('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false)).ofObject() : {}
+      );
+    }
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', (e) => {
+      const button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    myDiagram.nodeTemplateMap.add(
+      'Comment',
+      $(go.Node,
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.TextBlock, { stroke: 'brown', font: '9pt sans-serif' }, new go.Binding('text'))
+      )
+    );
+
+    // Define the generic "pipe" Node.
+    // The Shape gets it Geometry from a geometry path string in the bound data.
+    // This node also gets all of its ports from an array of port data in the bound data.
+    myDiagram.nodeTemplate = $(go.Node,
+      'Spot',
+      {
+        locationObjectName: 'SHAPE',
+        locationSpot: go.Spot.Center,
+        selectionAdorned: false, // use a Binding on the Shape.stroke to show selection
+        itemTemplate:
+          // each port is an "X" shape whose alignment spot and port ID are given by the item data
+          $(go.Panel,
+            new go.Binding('portId', 'id'),
+            new go.Binding('alignment', 'spot', go.Spot.parse),
+            $(go.Shape,
+              'XLine',
+              { width: 6, height: 6, background: 'transparent', fill: null, stroke: 'gray' },
+              new go.Binding('figure', 'id', portFigure), // portFigure converter is defined below
+              new go.Binding('angle', 'angle')
+            )
+          ),
+        // hide a port when it is connected
+        linkConnected: (node, link, port) => {
+          if (link.category === '') port.visible = false;
+        },
+        linkDisconnected: (node, link, port) => {
+          if (link.category === '') port.visible = true;
+        },
+      },
+      // this creates the variable number of ports for this Spot Panel, based on the data
+      new go.Binding('itemArray', 'ports'),
+      // remember the location of this Node
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      // remember the angle of this Node
+      new go.Binding('angle', 'angle').makeTwoWay(),
+      // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
+      new go.Binding('layerName', 'isSelected', (s) => (s ? 'Foreground' : '')).ofObject(),
+      $(go.Shape,
+        {
+          name: 'SHAPE',
+          // the following are default values;
+          // actual values may come from the node data object via data binding
+          geometryString: 'F1 M0 0 L20 0 20 20 0 20 z',
+          fill: 'rgba(128, 128, 128, 0.5)',
+        },
+        // this determines the actual shape of the Shape
+        new go.Binding('geometryString', 'geo'),
+        // selection causes the stroke to be blue instead of black
+        new go.Binding('stroke', 'isSelected', (s) => (s ? 'dodgerblue' : 'black')).ofObject()
+      )
+    );
+
+    // Show different kinds of port fittings by using different shapes in this Binding converter
+    function portFigure(pid) {
+      if (pid === null || pid === '') return 'XLine';
+      if (pid[0] === 'F') return 'CircleLine';
+      if (pid[0] === 'M') return 'PlusLine';
+      return 'XLine'; // including when the first character is 'U'
+    }
+
+    myDiagram.nodeTemplate.contextMenu = $('ContextMenu',
+      makeButton('Rotate +45', (e, obj) => rotate(obj.part.adornedPart, 45)),
+      makeButton('Rotate -45', (e, obj) => rotate(obj.part.adornedPart, -45)),
+      makeButton('Rotate 180', (e, obj) => rotate(obj.part.adornedPart, 180)),
+      makeButton('Detach', (e, obj) => detachSelection()),
+      makeButton(
+        'Cut',
+        (e, obj) => e.diagram.commandHandler.cutSelection(),
+        (o) => o.diagram.commandHandler.canCutSelection()
+      ),
+      makeButton(
+        'Copy',
+        (e, obj) => e.diagram.commandHandler.copySelection(),
+        (o) => o.diagram.commandHandler.canCopySelection()
+      ),
+      makeButton(
+        'Paste',
+        (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+        (o) => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
+      ),
+      makeButton(
+        'Delete',
+        (e, obj) => e.diagram.commandHandler.deleteSelection(),
+        (o) => o.diagram.commandHandler.canDeleteSelection()
+      ),
+      makeButton(
+        'Undo',
+        (e, obj) => e.diagram.commandHandler.undo(),
+        (o) => o.diagram.commandHandler.canUndo()
+      ),
+      makeButton(
+        'Redo',
+        (e, obj) => e.diagram.commandHandler.redo(),
+        (o) => o.diagram.commandHandler.canRedo()
+      )
+    );
+
+    // Change the angle of the parts connected with the given node
+    function rotate(node, angle) {
+      const tool = myDiagram.toolManager.draggingTool; // should be a SnappingTool
+      myDiagram.startTransaction('rotate ' + angle.toString());
+      const sel = new go.Set(/*go.Node*/);
+      sel.add(node);
+      const coll = tool.computeEffectiveCollection(sel).toKeySet();
+      const bounds = myDiagram.computePartsBounds(coll);
+      const center = bounds.center;
+      coll.each((n) => {
+        n.angle += angle;
+        n.location = n.location.copy().subtract(center).rotate(angle).add(center);
+      });
+      myDiagram.commitTransaction('rotate ' + angle.toString());
+    }
+
+    function detachSelection() {
+      myDiagram.startTransaction('detach');
+      const coll = new go.Set(/*go.Link*/);
+      myDiagram.selection.each((node) => {
+        if (!(node instanceof go.Node)) return;
+        node.linksConnected.each((link) => {
+          if (link.category !== '') return; // ignore comments
+          // ignore links to other selected nodes
+          if (link.getOtherNode(node).isSelected) return;
+          // disconnect this link
+          coll.add(link);
+        });
+      });
+      myDiagram.removeParts(coll, false);
+      myDiagram.commitTransaction('detach');
+    }
+
+    // no visual representation of any link data
+    myDiagram.linkTemplate = $(go.Link, { visible: false });
+
+    // support optional links from comment nodes to pipe nodes
+    myDiagram.linkTemplateMap.add(
+      'Comment',
+      $(go.Link, { curve: go.Curve.Bezier }, $(go.Shape, { stroke: 'brown', strokeWidth: 2 }), $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'brown' }))
+    );
+
+    // this model needs to know about particular ports
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      linkFromPortIdProperty: 'fid',
+      linkToPortIdProperty: 'tid',
+    });
+
+    // Make sure the pipes are ordered by their key in the palette inventory
+    function keyCompare(a, b) {
+      const at = a.data.key;
+      const bt = b.data.key;
+      if (at < bt) return -1;
+      if (at > bt) return 1;
+      return 0;
+    }
+
+    myPalette = new go.Palette('myPaletteDiv', {
+      initialScale: 1.2,
+      contentAlignment: go.Spot.Center,
+      nodeTemplate: myDiagram.nodeTemplate, // shared with the main Diagram
+      'contextMenuTool.isEnabled': false,
+      layout: $(go.GridLayout, { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5), comparer: keyCompare }),
+      // initialize the Palette with a few "pipe" nodes
+      model: new go.GraphLinksModel({
+        copiesArrays: true,
+        copiesArrayObjects: true,
+        linkFromPortIdProperty: 'fid',
+        linkToPortIdProperty: 'tid',
+        nodeDataArray: [
+          // Several different kinds of pipe objects, some already rotated for convenience.
+          // Each "glue point" is implemented by a port.
+          // The port's identifier's first letter must be the type of connector or "fitting".
+          // The port's identifier's second letter must be indicate the direction in which a
+          // connection may be made: 0-7, indicating multiples of 45-degree angles starting at zero.
+          // If you want more than one port of a particular type in the same direction,
+          // you will need to add a suffix to the port identifier.
+          // The Spot determines the approximate location of the port on the shape.
+          // The exact position is offset in order to account for the thickness of the stroke.
+          // Each should be shifted towards the center of the shape by the fraction of its
+          // distance from the center times the stroke thickness.
+          // The following offsets assume the strokeWidth == 1.
           {
-            locationObjectName: "SHAPE",
-            locationSpot: go.Spot.Center,
-            selectionAdorned: false,  // use a Binding on the Shape.stroke to show selection
-            itemTemplate:
-              // each port is an "X" shape whose alignment spot and port ID are given by the item data
-              $(go.Panel,
-                new go.Binding("portId", "id"),
-                new go.Binding("alignment", "spot", go.Spot.parse),
-                $(go.Shape, "XLine",
-                  { width: 6, height: 6, background: "transparent", fill: null, stroke: "gray" },
-                  new go.Binding("figure", "id", portFigure),  // portFigure converter is defined below
-                  new go.Binding("angle", "angle"))
-              ),
-            // hide a port when it is connected
-            linkConnected: (node, link, port) => {
-              if (link.category === "") port.visible = false;
-            },
-            linkDisconnected: (node, link, port) => {
-              if (link.category === "") port.visible = true;
-            }
+            key: 1,
+            geo: 'F1 M0 0 L20 0 20 20 0 20z',
+            ports: [
+              { id: 'U6', spot: '0.5 0 0 0.5' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
           },
-          // this creates the variable number of ports for this Spot Panel, based on the data
-          new go.Binding("itemArray", "ports"),
-          // remember the location of this Node
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          // remember the angle of this Node
-          new go.Binding("angle", "angle").makeTwoWay(),
-          // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
-          new go.Binding("layerName", "isSelected", s => s ? "Foreground" : "").ofObject(),
-          $(go.Shape,
-            {
-              name: "SHAPE",
-              // the following are default values;
-              // actual values may come from the node data object via data binding
-              geometryString: "F1 M0 0 L20 0 20 20 0 20 z",
-              fill: "rgba(128, 128, 128, 0.5)"
-            },
-            // this determines the actual shape of the Shape
-            new go.Binding("geometryString", "geo"),
-            // selection causes the stroke to be blue instead of black
-            new go.Binding("stroke", "isSelected", s => s ? "dodgerblue" : "black").ofObject())
-        );
-
-      // Show different kinds of port fittings by using different shapes in this Binding converter
-      function portFigure(pid) {
-        if (pid === null || pid === "") return "XLine";
-        if (pid[0] === 'F') return "CircleLine";
-        if (pid[0] === 'M') return "PlusLine";
-        return "XLine";  // including when the first character is 'U'
-      }
-
-      myDiagram.nodeTemplate.contextMenu =
-        $("ContextMenu",
-          makeButton("Rotate +45",
-            (e, obj) => rotate(obj.part.adornedPart, 45)),
-          makeButton("Rotate -45",
-            (e, obj) => rotate(obj.part.adornedPart, -45)),
-          makeButton("Rotate 180",
-            (e, obj) => rotate(obj.part.adornedPart, 180)),
-          makeButton("Detach",
-            (e, obj) => detachSelection()),
-          makeButton("Cut",
-            (e, obj) => e.diagram.commandHandler.cutSelection(),
-            o => o.diagram.commandHandler.canCutSelection()),
-          makeButton("Copy",
-            (e, obj) => e.diagram.commandHandler.copySelection(),
-            o => o.diagram.commandHandler.canCopySelection()),
-          makeButton("Paste",
-            (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
-            o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
-          makeButton("Delete",
-            (e, obj) => e.diagram.commandHandler.deleteSelection(),
-            o => o.diagram.commandHandler.canDeleteSelection()),
-          makeButton("Undo",
-            (e, obj) => e.diagram.commandHandler.undo(),
-            o => o.diagram.commandHandler.canUndo()),
-          makeButton("Redo",
-            (e, obj) => e.diagram.commandHandler.redo(),
-            o => o.diagram.commandHandler.canRedo())
-        );
-
-      // Change the angle of the parts connected with the given node
-      function rotate(node, angle) {
-        const tool = myDiagram.toolManager.draggingTool;  // should be a SnappingTool
-        myDiagram.startTransaction("rotate " + angle.toString());
-        const sel = new go.Set(/*go.Node*/);
-        sel.add(node);
-        const coll = tool.computeEffectiveCollection(sel).toKeySet();
-        const bounds = myDiagram.computePartsBounds(coll);
-        const center = bounds.center;
-        coll.each(n => {
-          n.angle += angle;
-          n.location = n.location.copy().subtract(center).rotate(angle).add(center);
-        });
-        myDiagram.commitTransaction("rotate " + angle.toString());
-      }
-
-      function detachSelection() {
-        myDiagram.startTransaction("detach");
-        const coll = new go.Set(/*go.Link*/);
-        myDiagram.selection.each(node => {
-          if (!(node instanceof go.Node)) return;
-          node.linksConnected.each(link => {
-            if (link.category !== "") return;  // ignore comments
-            // ignore links to other selected nodes
-            if (link.getOtherNode(node).isSelected) return;
-            // disconnect this link
-            coll.add(link);
-          });
-        });
-        myDiagram.removeParts(coll, false);
-        myDiagram.commitTransaction("detach");
-      }
-
-      // no visual representation of any link data
-      myDiagram.linkTemplate = $(go.Link, { visible: false });
-
-      // support optional links from comment nodes to pipe nodes
-      myDiagram.linkTemplateMap.add("Comment",
-        $(go.Link,
-          { curve: go.Link.Bezier },
-          $(go.Shape, { stroke: "brown", strokeWidth: 2 }),
-          $(go.Shape, { toArrow: "OpenTriangle", stroke: "brown" })
-        ));
-
-      // this model needs to know about particular ports
-      myDiagram.model =
-        new go.GraphLinksModel(
           {
-            copiesArrays: true,
-            copiesArrayObjects: true,
-            linkFromPortIdProperty: "fid",
-            linkToPortIdProperty: "tid"
-          });
-
-      // Make sure the pipes are ordered by their key in the palette inventory
-      function keyCompare(a, b) {
-        const at = a.data.key;
-        const bt = b.data.key;
-        if (at < bt) return -1;
-        if (at > bt) return 1;
-        return 0;
-      }
-
-      myPalette =
-        new go.Palette("myPaletteDiv",
+            key: 3,
+            angle: 90,
+            geo: 'F1 M0 0 L20 0 20 20 0 20z',
+            ports: [
+              { id: 'U6', spot: '0.5 0 0 0.5' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
           {
-            initialScale: 1.2,
-            contentAlignment: go.Spot.Center,
-            nodeTemplate: myDiagram.nodeTemplate,  // shared with the main Diagram
-            "contextMenuTool.isEnabled": false,
-            layout: $(go.GridLayout,
-              { cellSize: new go.Size(1, 1), spacing: new go.Size(5, 5), comparer: keyCompare }),
-            // initialize the Palette with a few "pipe" nodes
-            model: new go.GraphLinksModel(
-              {
-                copiesArrays: true,
-                copiesArrayObjects: true,
-                linkFromPortIdProperty: "fid",
-                linkToPortIdProperty: "tid",
-                nodeDataArray: [
-                  // Several different kinds of pipe objects, some already rotated for convenience.
-                  // Each "glue point" is implemented by a port.
-                  // The port's identifier's first letter must be the type of connector or "fitting".
-                  // The port's identifier's second letter must be indicate the direction in which a
-                  // connection may be made: 0-7, indicating multiples of 45-degree angles starting at zero.
-                  // If you want more than one port of a particular type in the same direction,
-                  // you will need to add a suffix to the port identifier.
-                  // The Spot determines the approximate location of the port on the shape.
-                  // The exact position is offset in order to account for the thickness of the stroke.
-                  // Each should be shifted towards the center of the shape by the fraction of its
-                  // distance from the center times the stroke thickness.
-                  // The following offsets assume the strokeWidth == 1.
-                  {
-                    key: 1,
-                    geo: "F1 M0 0 L20 0 20 20 0 20z",
-                    ports: [
-                      { id: "U6", spot: "0.5 0 0 0.5" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 3, angle: 90,
-                    geo: "F1 M0 0 L20 0 20 20 0 20z",
-                    ports: [
-                      { id: "U6", spot: "0.5 0 0 0.5" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 5,
-                    geo: "F1 M0 0 L20 0 20 60 0 60z",
-                    ports: [
-                      { id: "U6", spot: "0.5 0 0 0.5" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 7, angle: 90,
-                    geo: "F1 M0 0 L20 0 20 60 0 60z",
-                    ports: [
-                      { id: "U6", spot: "0.5 0 0 0.5" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 11,
-                    geo: "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U2", spot: "0.25 1 0.25 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 12, angle: 90,
-                    geo: "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U2", spot: "0.25 1 0.25 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 13, angle: 180,
-                    geo: "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U2", spot: "0.25 1 0.25 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 14, angle: 270,
-                    geo: "F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U2", spot: "0.25 1 0.25 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 21,
-                    geo: "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U4", spot: "0 0.25 0.5 0.25" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 22, angle: 90,
-                    geo: "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U4", spot: "0 0.25 0.5 0.25" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 23, angle: 180,
-                    geo: "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U4", spot: "0 0.25 0.5 0.25" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 24, angle: 270,
-                    geo: "F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z",
-                    ports: [
-                      { id: "U0", spot: "1 0.25 -0.5 0.25" },
-                      { id: "U4", spot: "0 0.25 0.5 0.25" },
-                      { id: "U2", spot: "0.5 1 0 -0.5" }
-                    ]
-                  },
-                  {
-                    key: 31,
-                    geo: "F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z",
-                    ports: [
-                      { id: "U6", spot: "0 0 10.5 0.5" },
-                      { id: "U1", spot: "1 1 -7.571 -7.571", angle: 45 }
-                    ]
-                  },
-                  {
-                    key: 32, angle: 90,
-                    geo: "F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z",
-                    ports: [
-                      { id: "U6", spot: "0 0 10.5 0.5" },
-                      { id: "U1", spot: "1 1 -7.571 -7.571", angle: 45 }
-                    ]
-                  },
-                  {
-                    key: 33, angle: 180,
-                    geo: "F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z",
-                    ports: [
-                      { id: "U6", spot: "0 0 10.5 0.5" },
-                      { id: "U1", spot: "1 1 -7.571 -7.571", angle: 45 }
-                    ]
-                  },
-                  {
-                    key: 34, angle: 270,
-                    geo: "F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z",
-                    ports: [
-                      { id: "U6", spot: "0 0 10.5 0.5" },
-                      { id: "U1", spot: "1 1 -7.571 -7.571", angle: 45 }
-                    ]
-                  },
-                  {
-                    key: 41,
-                    geo: "F1 M14.142 0 L28.284 14.142 14.142 28.284 0 14.142z",
-                    ports: [
-                      { id: "U1", spot: "1 1 -7.321 -7.321" },
-                      { id: "U3", spot: "0 1 7.321 -7.321" },
-                      { id: "U5", spot: "0 0 7.321 7.321" },
-                      { id: "U7", spot: "1 0 -7.321 7.321" }
-                    ]
-                  },
+            key: 5,
+            geo: 'F1 M0 0 L20 0 20 60 0 60z',
+            ports: [
+              { id: 'U6', spot: '0.5 0 0 0.5' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 7,
+            angle: 90,
+            geo: 'F1 M0 0 L20 0 20 60 0 60z',
+            ports: [
+              { id: 'U6', spot: '0.5 0 0 0.5' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 11,
+            geo: 'F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U2', spot: '0.25 1 0.25 -0.5' },
+            ],
+          },
+          {
+            key: 12,
+            angle: 90,
+            geo: 'F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U2', spot: '0.25 1 0.25 -0.5' },
+            ],
+          },
+          {
+            key: 13,
+            angle: 180,
+            geo: 'F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U2', spot: '0.25 1 0.25 -0.5' },
+            ],
+          },
+          {
+            key: 14,
+            angle: 270,
+            geo: 'F1 M0 40 L0 30 Q0 0 30 0 L40 0 40 20 30 20 Q20 20 20 30 L20 40z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U2', spot: '0.25 1 0.25 -0.5' },
+            ],
+          },
+          {
+            key: 21,
+            geo: 'F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U4', spot: '0 0.25 0.5 0.25' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 22,
+            angle: 90,
+            geo: 'F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U4', spot: '0 0.25 0.5 0.25' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 23,
+            angle: 180,
+            geo: 'F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U4', spot: '0 0.25 0.5 0.25' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 24,
+            angle: 270,
+            geo: 'F1 M0 0 L60 0 60 20 50 20 Q40 20 40 30 L40 40 20 40 20 30 Q20 20 10 20 L0 20z',
+            ports: [
+              { id: 'U0', spot: '1 0.25 -0.5 0.25' },
+              { id: 'U4', spot: '0 0.25 0.5 0.25' },
+              { id: 'U2', spot: '0.5 1 0 -0.5' },
+            ],
+          },
+          {
+            key: 31,
+            geo: 'F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z',
+            ports: [
+              { id: 'U6', spot: '0 0 10.5 0.5' },
+              { id: 'U1', spot: '1 1 -7.571 -7.571', angle: 45 },
+            ],
+          },
+          {
+            key: 32,
+            angle: 90,
+            geo: 'F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z',
+            ports: [
+              { id: 'U6', spot: '0 0 10.5 0.5' },
+              { id: 'U1', spot: '1 1 -7.571 -7.571', angle: 45 },
+            ],
+          },
+          {
+            key: 33,
+            angle: 180,
+            geo: 'F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z',
+            ports: [
+              { id: 'U6', spot: '0 0 10.5 0.5' },
+              { id: 'U1', spot: '1 1 -7.571 -7.571', angle: 45 },
+            ],
+          },
+          {
+            key: 34,
+            angle: 270,
+            geo: 'F1 M0 0 L20 0 20 10 Q20 14.142 22.929 17.071 L30 24.142 15.858 38.284 8.787 31.213 Q0 22.426 0 10z',
+            ports: [
+              { id: 'U6', spot: '0 0 10.5 0.5' },
+              { id: 'U1', spot: '1 1 -7.571 -7.571', angle: 45 },
+            ],
+          },
+          {
+            key: 41,
+            geo: 'F1 M14.142 0 L28.284 14.142 14.142 28.284 0 14.142z',
+            ports: [
+              { id: 'U1', spot: '1 1 -7.321 -7.321' },
+              { id: 'U3', spot: '0 1 7.321 -7.321' },
+              { id: 'U5', spot: '0 0 7.321 7.321' },
+              { id: 'U7', spot: '1 0 -7.321 7.321' },
+            ],
+          },
 
-                  // Example M-F connector pipes
-                  /*
+          // Example M-F connector pipes
+          /*
                   {
                     key: 107, //angle: 90,
                     geo: "F1 M0 0 L5 0, 5 10, 15 10, 15 0, 20 0, 20 40, 0 40z",
@@ -450,14 +539,12 @@
                     ]
                   }
                   */
+        ], // end nodeDataArray
+      }), // end model
+    }); // end Palette
 
-                ]  // end nodeDataArray
-              })  // end model
-          });  // end Palette
-
-      load();
-    } // end init
-
+    load();
+  } // end init
 
   // Define a custom DraggingTool
   class SnappingTool extends go.DraggingTool {
@@ -469,16 +556,14 @@
       // already connected?
       const part1 = p1.part;
       const id1 = p1.portId;
-      if (id1 === null || id1 === "") return false;
-      if (part1.findLinksConnected(id1).filter(l => l.category === "").count > 0) return false;
+      if (id1 === null || id1 === '') return false;
+      if (part1.findLinksConnected(id1).filter((l) => l.category === '').count > 0) return false;
       const part2 = p2.part;
       const id2 = p2.portId;
-      if (id2 === null || id2 === "") return false;
-      if (part2.findLinksConnected(id2).filter(l => l.category === "").count > 0) return false;
+      if (id2 === null || id2 === '') return false;
+      if (part2.findLinksConnected(id2).filter((l) => l.category === '').count > 0) return false;
       // compatible fittings?
-      if ((id1[0] === 'U' && id2[0] === 'U') ||
-        (id1[0] === 'F' && id2[0] === 'M') ||
-        (id1[0] === 'M' && id2[0] === 'F')) {
+      if ((id1[0] === 'U' && id2[0] === 'U') || (id1[0] === 'F' && id2[0] === 'M') || (id1[0] === 'M' && id2[0] === 'F')) {
         // find their effective sides, after rotation
         const a1 = this.effectiveAngle(id1, part1.angle);
         const a2 = this.effectiveAngle(id2, part2.angle);
@@ -529,28 +614,30 @@
         // now calculate snap point for this Node
         const snapoffset = newloc.copy().subtract(node.location);
         let nearbyports = null;
-        let closestDistance = 20 * 20;  // don't bother taking sqrt
+        let closestDistance = 20 * 20; // don't bother taking sqrt
         let closestPort = null;
         let closestPortPt = null;
         let nodePort = null;
         const mit = node.ports;
         while (mit.next()) {
           const port = mit.value;
-          if (node.findLinksConnected(port.portId).filter(l => l.category === "").count > 0) continue;
+          if (node.findLinksConnected(port.portId).filter((l) => l.category === '').count > 0) continue;
           const portPt = port.getDocumentPoint(go.Spot.Center);
-          portPt.add(snapoffset);  // where it would be without snapping
+          portPt.add(snapoffset); // where it would be without snapping
 
           if (nearbyports === null) {
             // this collects the Nodes that intersect with the NODE's bounds,
             // excluding nodes that are being dragged (i.e. in the PARTS collection)
-            const nearbyparts = this.diagram.findObjectsIn(node.actualBounds,
-              x => x.part,
-              p => !parts.has(p),
-              true);
+            const nearbyparts = this.diagram.findObjectsIn(
+              node.actualBounds,
+              (x) => x.part,
+              (p) => !parts.has(p),
+              true
+            );
 
             // gather a collection of GraphObjects that are stationary "ports" for this NODE
             nearbyports = new go.Set(/*go.GraphObject*/);
-            nearbyparts.each(n => {
+            nearbyparts.each((n) => {
               if (n instanceof go.Node) {
                 nearbyports.addAll(n.ports);
               }
@@ -586,7 +673,7 @@
       }
 
       // now do the standard movement with the single (perhaps snapped) offset
-      this._snapOffset = commonOffset.copy();  // remember for mouse-up when copying
+      this._snapOffset = commonOffset.copy(); // remember for mouse-up when copying
       super.moveParts(parts, commonOffset, check);
     }
 
@@ -607,22 +694,25 @@
           // maybe add a link -- see if the port is at another port that is compatible
           const portPt = port.getDocumentPoint(go.Spot.Center);
           if (!portPt.isReal()) continue;
-          const nearbyports =
-            this.diagram.findObjectsAt(portPt,
-              x => {  // some GraphObject at portPt
-                let o = x;
-                // walk up the chain of panels
-                while (o !== null && o.portId === null) o = o.panel;
-                return o;
-              },
-              p => {  // a "port" Panel
-                // the parent Node must not be in the dragged collection, and
-                // this port P must be compatible with the NODE's PORT
-                if (coll.has(p.part)) return false;
-                const ppt = p.getDocumentPoint(go.Spot.Center);
-                if (portPt.distanceSquaredPoint(ppt) >= 0.25) return false;
-                return this.compatiblePorts(port, p);
-              });
+          const nearbyports = this.diagram.findObjectsAt(
+            portPt,
+            (x) => {
+              // some GraphObject at portPt
+              let o = x;
+              // walk up the chain of panels
+              while (o !== null && o.portId === null) o = o.panel;
+              return o;
+            },
+            (p) => {
+              // a "port" Panel
+              // the parent Node must not be in the dragged collection, and
+              // this port P must be compatible with the NODE's PORT
+              if (coll.has(p.part)) return false;
+              const ppt = p.getDocumentPoint(go.Spot.Center);
+              if (portPt.distanceSquaredPoint(ppt) >= 0.25) return false;
+              return this.compatiblePorts(port, p);
+            }
+          );
           // did we find a compatible port?
           const np = nearbyports.first();
           if (np !== null) {
@@ -640,25 +730,25 @@
       if (this.diagram.lastInput.shift) {
         const links = new go.Set(/*go.Link*/);
         const coll = super.computeEffectiveCollection(parts);
-        coll.iteratorKeys.each(node => {
+        coll.iteratorKeys.each((node) => {
           // disconnect all links of this node that connect with stationary node
           if (!(node instanceof go.Node)) return;
-          node.findLinksConnected().each(link => {
-            if (link.category !== "") return;
+          node.findLinksConnected().each((link) => {
+            if (link.category !== '') return;
             // see if this link connects with a node that is being dragged
             const othernode = link.getOtherNode(node);
             if (othernode !== null && !coll.has(othernode)) {
-              links.add(link);  // remember for later deletion
+              links.add(link); // remember for later deletion
             }
           });
         });
         // outside of nested loops we can actually delete the links
-        links.each(l => l.diagram.remove(l));
+        links.each((l) => l.diagram.remove(l));
         return coll;
       } else {
         const map = new go.Map(/*go.Part, Object*/);
         if (parts === null) return map;
-        parts.iterator.each(n => this.gatherConnecteds(map, n));
+        parts.iterator.each((n) => this.gatherConnecteds(map, n));
         return map;
       }
     }
@@ -670,8 +760,8 @@
       // record the original Node location, for relative positioning and for cancellation
       map.add(node, new go.DraggingInfo(node.location));
       // now recursively collect all connected Nodes and the Links to them
-      node.findLinksConnected().each(link => {
-        if (link.category !== "") return;  // ignore comment links
+      node.findLinksConnected().each((link) => {
+        if (link.category !== '') return; // ignore comment links
         map.add(link, new go.DraggingInfo());
         this.gatherConnecteds(map, link.getOtherNode(node));
       });
@@ -679,46 +769,40 @@
   }
   // end SnappingTool class
 
-    function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    }
+  function save() {
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+  }
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+  }
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myPaletteDiv" style="border: solid 1px black; width: 100%; height: 160px"></div>
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px; margin-top: 3px"></div>
   <p>
-    Nodes in this sample use <a>Shape.geometryString</a> to determine their shape.
-    You can see more custom geometry examples and read about geometryString
-    on the <a href="../intro/geometry.html">Geometry Path Strings Introduction page.</a>
+    Nodes in this sample use <a>Shape.geometryString</a> to determine their shape. You can see more custom geometry examples and read about geometryString on
+    the <a href="../intro/geometry.html">Geometry Path Strings Introduction page.</a>
   </p>
   <p>
-    As a part's unconnected port (shown by an X) comes close to a stationary port
-    with which it is compatible, the dragged selection snaps so that those ports coincide.
-    A custom <a>DraggingTool</a>, called <b>SnappingTool</b>, is used to check compatibility.
+    As a part's unconnected port (shown by an X) comes close to a stationary port with which it is compatible, the dragged selection snaps so that those ports
+    coincide. A custom <a>DraggingTool</a>, called <b>SnappingTool</b>, is used to check compatibility.
   </p>
   <p>
-    Dragging automatically drags all connected parts.
-    Hold down the Shift key before dragging in order to detach a part from the parts it is connected with.
+    Dragging automatically drags all connected parts. Hold down the Shift key before dragging in order to detach a part from the parts it is connected with.
     These functionalities are also controlled by the custom SnappingTool.
   </p>
-  <p>
-    Use the <a>GraphObject.contextMenu</a> to rotate, detach, or delete a node.
-    If it is connected with other parts, the whole collection rotates.
-  </p>
+  <p>Use the <a>GraphObject.contextMenu</a> to rotate, detach, or delete a node. If it is connected with other parts, the whole collection rotates.</p>
   <div>
     <div>
       <button id="SaveButton" onclick="save()">Save</button>
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
-    <textarea id="mySavedModel" style="width:100%;height:300px">
+    <textarea id="mySavedModel" style="width: 100%; height: 300px">
 { "class": "go.GraphLinksModel",
   "copiesArrays": true,
   "copiesArrayObjects": true,
@@ -754,11 +838,156 @@
     </textarea>
   </div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Context Menus</h4>
+<p>
+A GoJS context menu is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the user context-clicks (right mouse click or long touch hold)
+an object that has its <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> set.
+The context menu is bound to the same data as the part itself.
+</p>
+<p>
+It is typical to implement a context menu as a "ContextMenu" Panel containing "ContextMenuButton"s,
+as you can see in the code below in the assignment of the Node's <a href="../api/symbols/GraphObject.html#contextMenu" target="api">GraphObject.contextMenu</a> and <a href="../api/symbols/Diagram.html#contextMenu" target="api">Diagram.contextMenu</a> properties.
+Each "ContextMenu" is just a "Vertical" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed.
+Each "ContextMenuButton" is a Panel on which you can set the <a href="../api/symbols/GraphObject.html#click" target="api">GraphObject.click</a> event handler.
+In the event handler <code>obj.part</code> will be the whole context menu Adornment.
+<code>obj.part.adornedPart</code> will be the adorned Node or Link.
+The bound data is <code>obj.part.data</code>, which will be the same as <code>obj.part.adornedPart.data</code>.
+</p>
+<p>
+More information can be found in the <a href="../intro/contextmenus.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#contextmenus">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Palette</h4>
+<p>
+A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#palette">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

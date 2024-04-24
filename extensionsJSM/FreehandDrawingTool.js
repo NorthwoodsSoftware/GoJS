@@ -1,18 +1,18 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * The FreehandDrawingTool allows the user to draw a shape using the mouse.
  * It collects all of the points from a mouse-down, all mouse-moves, until a mouse-up,
- * and puts all of those points in a {@link Geometry} used by a {@link Shape}.
+ * and puts all of those points in a {@link go.Geometry} used by a {@link go.Shape}.
  * It then adds a node data object to the diagram's model.
  *
  * This tool may be installed as the first mouse down tool:
@@ -20,29 +20,33 @@ import * as go from '../release/go-module.js';
  *   myDiagram.toolManager.mouseDownTools.insertAt(0, new FreehandDrawingTool());
  * ```
  *
- * The Shape used during the drawing operation can be customized by setting {@link #temporaryShape}.
- * The node data added to the model can be customized by setting {@link #archetypePartData}.
+ * The Shape used during the drawing operation can be customized by setting {@link temporaryShape}.
+ * The node data added to the model can be customized by setting {@link archetypePartData}.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/FreehandDrawing.html">Freehand Drawing</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/FreehandDrawing.html">Freehand Drawing</a> sample.
  * @category Tool Extension
  */
 export class FreehandDrawingTool extends go.Tool {
-    constructor() {
+    constructor(init) {
         super();
-        this._archetypePartData = {}; // the data to copy for a new polyline Part
-        this._isBackgroundOnly = true; // affects canStart()
         this.name = 'FreehandDrawing';
+        this._archetypePartData = {};
+        this._isBackgroundOnly = true;
         // this is the Shape that is shown during a drawing operation
-        this._temporaryShape = go.GraphObject.make(go.Shape, { name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+        this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1.5 });
         // the Shape has to be inside a temporary Part that is used during the drawing operation
-        go.GraphObject.make(go.Part, { layerName: 'Tool' }, this._temporaryShape);
+        new go.Part({ layerName: 'Tool' }).add(this._temporaryShape);
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * Gets or sets the Shape that is used to hold the line as it is being drawn.
      *
      * The default value is a simple Shape drawing an unfilled open thin black line.
      */
-    get temporaryShape() { return this._temporaryShape; }
+    get temporaryShape() {
+        return this._temporaryShape;
+    }
     set temporaryShape(val) {
         if (this._temporaryShape !== val && val !== null) {
             val.name = 'SHAPE';
@@ -58,16 +62,24 @@ export class FreehandDrawingTool extends go.Tool {
      * Gets or sets the node data object that is copied and added to the model
      * when the freehand drawing operation completes.
      */
-    get archetypePartData() { return this._archetypePartData; }
-    set archetypePartData(val) { this._archetypePartData = val; }
+    get archetypePartData() {
+        return this._archetypePartData;
+    }
+    set archetypePartData(val) {
+        this._archetypePartData = val;
+    }
     /**
      * Gets or sets whether this tool can only run if the user starts in the diagram's background
      * rather than on top of an existing Part.
      *
      * The default value is true.
      */
-    get isBackgroundOnly() { return this._isBackgroundOnly; }
-    set isBackgroundOnly(val) { this._isBackgroundOnly = val; }
+    get isBackgroundOnly() {
+        return this._isBackgroundOnly;
+    }
+    set isBackgroundOnly(val) {
+        this._isBackgroundOnly = val;
+    }
     /**
      * Only start if the diagram is modifiable and allows insertions.
      * OPTIONAL: if the user is starting in the diagram's background, not over an existing Part.
@@ -109,7 +121,7 @@ export class FreehandDrawingTool extends go.Tool {
         this.diagram.isMouseCaptured = false;
     }
     /**
-     * This adds a Point to the {@link #temporaryShape}'s geometry.
+     * This adds a Point to the {@link temporaryShape}'s geometry.
      *
      * If the Shape is not yet in the Diagram, its geometry is initialized and
      * its parent Part is added to the Diagram.
@@ -150,14 +162,14 @@ export class FreehandDrawingTool extends go.Tool {
                 const geo2 = geo.copy();
                 const fig2 = geo2.figures.first();
                 if (fig2 !== null) {
-                    fig2.add(new go.PathSegment(go.PathSegment.Line, q.x, q.y));
+                    fig2.add(new go.PathSegment(go.SegmentType.Line, q.x, q.y));
                     shape.geometry = geo2;
                 }
             }
         }
     }
     /**
-     * Start drawing the line by starting to accumulate points in the {@link #temporaryShape}'s geometry.
+     * Start drawing the line by starting to accumulate points in the {@link temporaryShape}'s geometry.
      */
     doMouseDown() {
         if (!this.isActive) {
@@ -167,7 +179,7 @@ export class FreehandDrawingTool extends go.Tool {
         }
     }
     /**
-     * Keep accumulating points in the {@link #temporaryShape}'s geometry.
+     * Keep accumulating points in the {@link temporaryShape}'s geometry.
      */
     doMouseMove() {
         if (this.isActive) {
@@ -177,7 +189,7 @@ export class FreehandDrawingTool extends go.Tool {
     /**
      * Finish drawing the line by adding a node data object holding the
      * geometry string and the node position that the node template can bind to.
-     * This copies the {@link #archetypePartData} and adds it to the model.
+     * This copies the {@link archetypePartData} and adds it to the model.
      */
     doMouseUp() {
         const diagram = this.diagram;

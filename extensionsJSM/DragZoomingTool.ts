@@ -1,16 +1,16 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
  * The DragZoomingTool lets the user zoom into a diagram by stretching a box
@@ -19,10 +19,10 @@ import * as go from '../release/go-module.js';
  * Hold down the Shift key in order to zoom out.
  *
  * The default drag selection box is a magenta rectangle.
- * You can modify the {@link #box} to customize its appearance.
+ * You can modify the {@link box} to customize its appearance.
  *
- * The diagram that is zoomed by this tool is specified by the {@link #zoomedDiagram} property.
- * If the value is null, the tool zooms its own {@link Tool#diagram}.
+ * The diagram that is zoomed by this tool is specified by the {@link zoomedDiagram} property.
+ * If the value is null, the tool zooms its own {@link go.Tool.diagram}.
  *
  * You can use this tool in a modal manner by executing:
  * ```js
@@ -34,27 +34,28 @@ import * as go from '../release/go-module.js';
  *   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool());
  * ```
  *
- * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
+ * However when used mode-lessly as a mouse-move tool, in {@link go.ToolManager.mouseMoveTools},
  * this cannot start running unless there has been a motionless delay
- * after the mouse-down event of at least {@link #delay} milliseconds.
+ * after the mouse-down event of at least {@link delay} milliseconds.
  *
- * This tool does not utilize any {@link Adornment}s or tool handles,
- * but it does temporarily add the {@link #box} part to the diagram.
+ * This tool does not utilize any {@link go.Adornment}s or tool handles,
+ * but it does temporarily add the {@link box} part to the diagram.
  * This tool does not modify the model or conduct any transaction.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DragZooming.html">Drag Zooming</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/DragZooming.html">Drag Zooming</a> sample.
  * @category Tool Extension
  */
 export class DragZoomingTool extends go.Tool {
   private _box: go.Part;
-  private _delay: number = 175;
-  private _zoomedDiagram: go.Diagram | null = null;
+  private _delay: number;
+  private _zoomedDiagram: go.Diagram | null;
 
   /**
-   * Constructs a DragZoomingTool, sets {@link #box} to a magenta rectangle, and sets name of the tool.
+   * Constructs a DragZoomingTool, sets {@link box} to a magenta rectangle, and sets name of the tool.
    */
-  constructor() {
+  constructor(init?: Partial<DragZoomingTool>) {
     super();
+    this.name = 'DragZooming';
     const b: go.Part = new go.Part();
     const r: go.Shape = new go.Shape();
     b.layerName = 'Tool';
@@ -66,22 +67,28 @@ export class DragZoomingTool extends go.Tool {
     r.position = new go.Point(0, 0);
     b.add(r);
     this._box = b;
-    this.name = 'DragZooming';
+    this._delay = 175;
+    this._zoomedDiagram = null;
+    if (init) Object.assign(this, init);
   }
 
   /**
-   * Gets or sets the {@link Part} used as the "rubber-band zoom box"
+   * Gets or sets the {@link go.Part} used as the "rubber-band zoom box"
    * that is stretched to follow the mouse, as feedback for what area will
-   * be passed to {@link #zoomToRect} upon a mouse-up.
+   * be passed to {@link zoomToRect} upon a mouse-up.
    *
-   * Initially this is a {@link Part} containing only a simple magenta rectangular {@link Shape}.
+   * Initially this is a {@link go.Part} containing only a simple magenta rectangular {@link go.Shape}.
    * The object to be resized should be named "SHAPE".
    * Setting this property does not raise any events.
    *
-   * Modifying this property while this tool {@link Tool#isActive} might have no effect.
+   * Modifying this property while this tool {@link go.Tool.isActive} might have no effect.
    */
-  get box(): go.Part { return this._box; }
-  set box(val: go.Part) { this._box = val; }
+  get box(): go.Part {
+    return this._box;
+  }
+  set box(val: go.Part) {
+    this._box = val;
+  }
 
   /**
    * Gets or sets the time in milliseconds for which the mouse must be stationary
@@ -90,25 +97,33 @@ export class DragZoomingTool extends go.Tool {
    * The default value is 175 milliseconds.
    * Setting this property does not raise any events.
    */
-  get delay(): number { return this._delay; }
-  set delay(val: number) { this._delay = val; }
+  get delay(): number {
+    return this._delay;
+  }
+  set delay(val: number) {
+    this._delay = val;
+  }
 
   /**
-   * Gets or sets the {@link Diagram} whose {@link Diagram#position} and {@link Diagram#scale}
-   * should be set to display the drawn {@link #box} rectangular bounds.
+   * Gets or sets the {@link go.Diagram} whose {@link go.Diagram.position} and {@link go.Diagram.scale}
+   * should be set to display the drawn {@link box} rectangular bounds.
    *
-   * The default value is null, which causes {@link #zoomToRect} to modify this tool's {@link Tool#diagram}.
+   * The default value is null, which causes {@link zoomToRect} to modify this tool's {@link go.Tool.diagram}.
    * Setting this property does not raise any events.
    */
-  get zoomedDiagram(): go.Diagram | null { return this._zoomedDiagram; }
-  set zoomedDiagram(val: go.Diagram | null) { this._zoomedDiagram = val; }
+  get zoomedDiagram(): go.Diagram | null {
+    return this._zoomedDiagram;
+  }
+  set zoomedDiagram(val: go.Diagram | null) {
+    this._zoomedDiagram = val;
+  }
 
   /**
    * This tool can run when there has been a mouse-drag, far enough away not to be a click,
-   * and there has been delay of at least {@link #delay} milliseconds
+   * and there has been delay of at least {@link delay} milliseconds
    * after the mouse-down before a mouse-move.
    */
-  public override canStart(): boolean {
+  override canStart(): boolean {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     const e = diagram.lastInput;
@@ -124,9 +139,9 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * Capture the mouse and show the {@link #box}.
+   * Capture the mouse and show the {@link box}.
    */
-  public override doActivate(): void {
+  override doActivate(): void {
     const diagram = this.diagram;
     this.isActive = true;
     diagram.isMouseCaptured = true;
@@ -136,9 +151,9 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * Release the mouse and remove any {@link #box}.
+   * Release the mouse and remove any {@link box}.
    */
-  public override doDeactivate(): void {
+  override doDeactivate(): void {
     const diagram = this.diagram;
     diagram.remove(this.box);
     diagram.skipsUndoManager = false;
@@ -147,10 +162,10 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * Update the {@link #box}'s position and size according to the value
-   * of {@link #computeBoxBounds}.
+   * Update the {@link box}'s position and size according to the value
+   * of {@link computeBoxBounds}.
    */
-  public override doMouseMove(): void {
+  override doMouseMove(): void {
     if (this.isActive && this.box !== null) {
       const r = this.computeBoxBounds();
       let shape = this.box.findObject('SHAPE');
@@ -161,9 +176,9 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * Call {@link #zoomToRect} with the value of a call to {@link #computeBoxBounds}.
+   * Call {@link zoomToRect} with the value of a call to {@link computeBoxBounds}.
    */
-  public override doMouseUp(): void {
+  override doMouseUp(): void {
     if (this.isActive) {
       const diagram = this.diagram;
       diagram.remove(this.box);
@@ -178,11 +193,11 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * This just returns a {@link Rect} stretching from the mouse-down point to the current mouse point
-   * while maintaining the aspect ratio of the {@link #zoomedDiagram}.
-   * @return {Rect} a {@link Rect} in document coordinates.
+   * This just returns a {@link go.Rect} stretching from the mouse-down point to the current mouse point
+   * while maintaining the aspect ratio of the {@link zoomedDiagram}.
+   * @returns a {@link go.Rect} in document coordinates.
    */
-  public computeBoxBounds(): go.Rect {
+  computeBoxBounds(): go.Rect {
     const diagram = this.diagram;
     const start = diagram.firstInput.documentPoint;
     const latest = diagram.lastInput.documentPoint;
@@ -213,10 +228,10 @@ export class DragZoomingTool extends go.Tool {
   }
 
   /**
-   * This method is called to change the {@link #zoomedDiagram}'s viewport to match the given rectangle.
-   * @param {Rect} r a rectangular bounds in document coordinates.
+   * This method is called to change the {@link zoomedDiagram}'s viewport to match the given rectangle.
+   * @param r - a rectangular bounds in document coordinates.
    */
-  public zoomToRect(r: go.Rect): void {
+  zoomToRect(r: go.Rect): void {
     if (r.width < 0.1) return;
     const diagram = this.diagram;
     let observed = this.zoomedDiagram;
@@ -225,11 +240,17 @@ export class DragZoomingTool extends go.Tool {
 
     // zoom out when using the Shift modifier
     if (diagram.lastInput.shift) {
-      observed.scale = Math.max(observed.scale * r.width / observed.viewportBounds.width, observed.minScale);
+      observed.scale = Math.max(
+        (observed.scale * r.width) / observed.viewportBounds.width,
+        observed.minScale
+      );
       observed.centerRect(r);
     } else {
       // do scale first, so the Diagram's position normalization isn't constrained unduly when increasing scale
-      observed.scale = Math.min(observed.viewportBounds.width * observed.scale / r.width, observed.maxScale);
+      observed.scale = Math.min(
+        (observed.viewportBounds.width * observed.scale) / r.width,
+        observed.maxScale
+      );
       observed.position = new go.Point(r.x, r.y);
     }
   }

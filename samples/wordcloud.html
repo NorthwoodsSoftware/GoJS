@@ -1,67 +1,150 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+      
+        <!-- You do not need this import map in your own code if you are installing gojs via a package manager -->
+        <script type="importmap">
+          {
+            "imports": {
+              "gojs": "../release/go-module.js"
+            }
+          }
+        </script>
+      
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>GoJS Wordcloud</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together." />
+<meta itemprop="description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together." />
+<meta property="og:description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together." />
+<meta name="twitter:description" content="Given a collection of words and their frequencies or importance, generate a diagram of those words scale by their frequency or importance and then packed together." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Word Cloud />
+<meta property="og:title" content=Word Cloud />
+<meta name="twitter:title" content=Word Cloud />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/wordcloud.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/wordcloud.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/wordcloud.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/wordcloud.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/wordcloud.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Word Cloud | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-    <div id="allSampleContent" class="p-4 w-full">
-  <style>
-    input[type=checkbox] {
-      vertical-align: middle;
-      position: relative;
-      bottom: 2px;
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
     }
-  </style>
-  <div id="sample">
-    <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+<style>
+  input[type='checkbox'] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 2px;
+  }
+</style>
+<div id="sample">
+  <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
         This also adds a border to help see the edges of the viewport. -->
-    <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
-    <textarea style="margin-top: 12px; max-width: 100%;" rows="6" cols="75" id='textInput'>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
+  <textarea style="margin-top: 12px; max-width: 100%" rows="6" cols="75" id="textInput">
 GoJS is a feature-rich JavaScript library for implementing custom interactive diagrams and complex visualizations across modern web browsers and platforms. GoJS makes constructing JavaScript diagrams of complex nodes, links, and groups easy with customizable templates and layouts.
 
 GoJS offers many advanced features for user interactivity such as drag-and-drop, copy-and-paste, in-place text editing, tooltips, context menus, automatic layouts, templates, data binding and models, transactional state and undo management, palettes, overviews, event handlers, commands, and an extensible tool system for custom operations.
@@ -93,158 +176,373 @@ Read our comprehensive documentation for an in-depth reference of the properties
 When upgrading to a newer version, please read the Change Log.
 
 You can explore the newest features and samples in the GoJS Beta for the next version, if a next version is available. Read the beta change log for the new features. Please note that our GitHub directory does not have the beta files.
-    </textarea>
+    </textarea
+  >
 
-    <br>Randomize word positions <input type="checkbox" id="randomizePositions"" checked/>
+  <br />Randomize word positions <input type="checkbox" id="randomizePositions"" checked/>
 
-    <br><button id="generateButton" style="margin-bottom: 12px; margin-top: 6px;">Generate wordcloud</button>
+  <br /><button id="generateButton" style="margin-bottom: 12px; margin-top: 6px">Generate wordcloud</button>
 
-    <p>
-      This sample demonstrates a simple way to create a wordcloud visualization
-      using the PackedLayout extension. The most frequent words in the text are
-      shown larger, and common english words such as 'the' or 'of' are skipped.
-      This example shows the text from the <a href="../index.html">GoJS home page</a>,
-      but you can easily create your own by copying text into the box above.
-    </p>
-  </div>
+  <p>
+    This sample demonstrates a simple way to create a wordcloud visualization using the PackedLayout extension. The most frequent words in the text are shown
+    larger, and common english words such as 'the' or 'of' are skipped. This example shows the text from the <a href="../index.html">GoJS home page</a>, but you
+    can easily create your own by copying text into the box above.
+  </p>
+</div>
 
-  <script type="module" id="code">
-import * as go from "../release/go-module.js";
-import { PackedLayout } from '../extensionsJSM/PackedLayout.js';
+<script type="module">
+  import * as go from 'gojs';
+  import { PackedLayout } from '../extensionsJSM/PackedLayout.js';
 
-// Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-// For details, see https://gojs.net/latest/intro/buildingObjects.html
-const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-const myDiagram =
-  new go.Diagram('myDiagramDiv',  // must be the ID or reference to div
+  const myDiagram = new go.Diagram(
+    'myDiagramDiv', // must be the ID or reference to div
     {
       'animationManager.isEnabled': true,
-      isReadOnly: true, autoScale: go.Diagram.Uniform
-    });
-
-// Nodes have a template with bindings for size, shape, and fill color
-myDiagram.nodeTemplate =
-  $(go.Node, 'Auto',
-    new go.Binding('scale', 'scale'),
-    $(go.TextBlock,
-      new go.Binding('text', 'text'),
-      new go.Binding('stroke', 'stroke'),
-      new go.Binding('font', 'font'))
+      isReadOnly: true,
+      autoScale: go.AutoScale.Uniform,
+    }
   );
 
-// find the word input box in the DOM
-const inputBox = document.getElementById('textInput');
+  // Nodes just show text with bindings for scale and font
+  myDiagram.nodeTemplate = new go.Node().bind('scale').add(new go.TextBlock().bind('text').bind('font'));
 
-// create a layout with the default values
-rebuildGraph();
+  // create a layout with the default values
+  rebuildGraph();
 
-function rebuildGraph() {
-  var frequencies = getWordFrequencies();
-  var nodeData = generateNodeData(frequencies);
-  myDiagram.model = new go.GraphLinksModel(nodeData);
+  function rebuildGraph() {
+    var frequencies = getWordFrequencies();
+    var nodeData = generateNodeData(frequencies);
+    myDiagram.model = new go.GraphLinksModel(nodeData);
 
-  myDiagram.startTransaction('create wordcloud');
-  myDiagram.layout = go.GraphObject.make(PackedLayout, {
-    spacing: 5,
-    arrangesToOrigin: false
-  });
-  myDiagram.commitTransaction('create wordcloud');
-}
-
-// returns a map (word -> frequency) of words in the text
-function getWordFrequencies() {
-  // list of english words to exclude from the wordcloud
-  var stopWords = ['i', 'me', 'my', 'myself', 'we', 'us', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
-    'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-    'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'whose', 'this', 'that', 'these',
-    'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does',
-    'did', 'doing', 'will', 'would', 'should', 'can', 'could', 'ought', 'i\'m', 'you\'re', 'he\'s', 'she\'s', 'it\'s',
-    'we\'re', 'they\'re', 'i\'ve', 'you\'ve', 'we\'ve', 'they\'ve', 'i\'d', 'you\'d', 'he\'d', 'she\'d', 'we\'d',
-    'they\'d', 'i\'ll', 'you\'ll', 'he\'ll', 'she\'ll', 'we\'ll', 'they\'ll', 'isn\'t', 'aren\'t', 'wasn\'t',
-    'weren\'t', 'hasn\'t', 'haven\'t', 'hadn\'t', 'doesn\'t', 'don\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shan\'t',
-    'shouldn\'t', 'can\'t', 'cannot', 'couldn\'t', 'mustn\'t', 'let\'s', 'that\'s', 'who\'s', 'what\'s', 'here\'s',
-    'there\'s', 'when\'s', 'where\'s', 'why\'s', 'how\'s', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
-    'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during',
-    'before', 'after', 'above', 'below', 'to', 'from', 'up', 'upon', 'down', 'in', 'out', 'on', 'off', 'over', 'under',
-    'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
-    'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too',
-    'very', 'say', 'says', 'said', 'shall'];
-
-  var word = /[@a-z0-9]+([-.:/'’\u2032\u00A0\u200C\u200D~]+[@a-z0-9]+)*/gi;
-  var text = inputBox.value;
-
-  var frequencies = new go.Map();
-  var result;
-  while ((result = word.exec(text)) !== null) {
-    var match = result[0].toLowerCase();
-    if (stopWords.indexOf(match) > -1) { // skip stop words
-      continue;
-    }
-    if (!isNaN(Number(match))) { // skip numbers
-      continue;
-    }
-
-    if (frequencies.has(match)) {
-      frequencies.add(match, frequencies.get(match) + 1);
-    } else {
-      frequencies.add(match, 1);
-    }
+    myDiagram.startTransaction('create wordcloud');
+    myDiagram.layout = new PackedLayout({
+      spacing: 5,
+      arrangesToOrigin: false
+    });
+    myDiagram.commitTransaction('create wordcloud');
   }
 
-  return frequencies;
-}
+  // returns a map (word -> frequency) of words in the text
+  function getWordFrequencies() {
+    // list of english words to exclude from the wordcloud
+    var stopWords = [
+      'i',
+      'me',
+      'my',
+      'myself',
+      'we',
+      'us',
+      'our',
+      'ours',
+      'ourselves',
+      'you',
+      'your',
+      'yours',
+      'yourself',
+      'yourselves',
+      'he',
+      'him',
+      'his',
+      'himself',
+      'she',
+      'her',
+      'hers',
+      'herself',
+      'it',
+      'its',
+      'itself',
+      'they',
+      'them',
+      'their',
+      'theirs',
+      'themselves',
+      'what',
+      'which',
+      'who',
+      'whom',
+      'whose',
+      'this',
+      'that',
+      'these',
+      'those',
+      'am',
+      'is',
+      'are',
+      'was',
+      'were',
+      'be',
+      'been',
+      'being',
+      'have',
+      'has',
+      'had',
+      'having',
+      'do',
+      'does',
+      'did',
+      'doing',
+      'will',
+      'would',
+      'should',
+      'can',
+      'could',
+      'ought',
+      "i'm",
+      "you're",
+      "he's",
+      "she's",
+      "it's",
+      "we're",
+      "they're",
+      "i've",
+      "you've",
+      "we've",
+      "they've",
+      "i'd",
+      "you'd",
+      "he'd",
+      "she'd",
+      "we'd",
+      "they'd",
+      "i'll",
+      "you'll",
+      "he'll",
+      "she'll",
+      "we'll",
+      "they'll",
+      "isn't",
+      "aren't",
+      "wasn't",
+      "weren't",
+      "hasn't",
+      "haven't",
+      "hadn't",
+      "doesn't",
+      "don't",
+      "didn't",
+      "won't",
+      "wouldn't",
+      "shan't",
+      "shouldn't",
+      "can't",
+      'cannot',
+      "couldn't",
+      "mustn't",
+      "let's",
+      "that's",
+      "who's",
+      "what's",
+      "here's",
+      "there's",
+      "when's",
+      "where's",
+      "why's",
+      "how's",
+      'a',
+      'an',
+      'the',
+      'and',
+      'but',
+      'if',
+      'or',
+      'because',
+      'as',
+      'until',
+      'while',
+      'of',
+      'at',
+      'by',
+      'for',
+      'with',
+      'about',
+      'against',
+      'between',
+      'into',
+      'through',
+      'during',
+      'before',
+      'after',
+      'above',
+      'below',
+      'to',
+      'from',
+      'up',
+      'upon',
+      'down',
+      'in',
+      'out',
+      'on',
+      'off',
+      'over',
+      'under',
+      'again',
+      'further',
+      'then',
+      'once',
+      'here',
+      'there',
+      'when',
+      'where',
+      'why',
+      'how',
+      'all',
+      'any',
+      'both',
+      'each',
+      'few',
+      'more',
+      'most',
+      'other',
+      'some',
+      'such',
+      'no',
+      'nor',
+      'not',
+      'only',
+      'own',
+      'same',
+      'so',
+      'than',
+      'too',
+      'very',
+      'say',
+      'says',
+      'said',
+      'shall',
+    ];
 
-// creates a list of nodes from the frequency map
-function generateNodeData(frequencies) {
-  // convert map to array
-  var it = frequencies.iterator;
-  var freqArr = [];
-  while (it.next()) {
-    freqArr.push({ word: it.key, freq: it.value })
+    var word = /[@a-z0-9]+([-.:/'’\u2032\u00A0\u200C\u200D~]+[@a-z0-9]+)*/gi;
+
+    // use the text in the word input box
+    var text = document.getElementById('textInput').value;
+
+    var frequencies = new go.Map();
+    var result;
+    while ((result = word.exec(text)) !== null) {
+      var match = result[0].toLowerCase();
+      if (stopWords.indexOf(match) > -1) continue; // skip stop words
+      if (!isNaN(Number(match))) continue; // skip numbers
+      if (frequencies.has(match)) {
+        frequencies.add(match, frequencies.get(match) + 1);
+      } else {
+        frequencies.add(match, 1);
+      }
+    }
+    return frequencies;
   }
 
-  // sort the frequency array in descending order
-  freqArr.sort((a, b) => b.freq - a.freq);
+  // creates a list of nodes from the frequency map
+  function generateNodeData(frequencies) {
+    // convert map to array
+    var it = frequencies.iterator;
+    var freqArr = [];
+    while (it.next()) {
+      freqArr.push({ word: it.key, freq: it.value });
+    }
 
-  // create an array of nodes, scaled appropriately by frequency
-  var nodes = [];
-  var singleOccurrenceCount = 0;
-  for (var i = 0; i < freqArr.length; i++) {
-    if (freqArr[i].freq === 1) {
-      singleOccurrenceCount++;
+    // sort the frequency array in descending order
+    freqArr.sort((a, b) => b.freq - a.freq);
+
+    // create an array of nodes, scaled appropriately by frequency
+    var nodes = [];
+    var singleOccurrenceCount = 0;
+    for (var i = 0; i < freqArr.length; i++) {
+      if (freqArr[i].freq === 1) {
+        singleOccurrenceCount++;
+      }
+      // stop creating nodes if we've already added too many that only occurred once, or if we've added 150 already
+      if ((i > 25 && singleOccurrenceCount > 0.25 * i) || i > 150) {
+        break;
+      }
+      // scale node size logarithmically with frequency
+      var scale = 2 * Math.log(freqArr[i].freq) + 1;
+      nodes.push({ text: freqArr[i].word, scale: scale });
     }
-    // stop creating nodes if we've already added too many that only occurred once, or if we've added 150 already
-    if ((i > 25 && singleOccurrenceCount > 0.25 * i) || i > 150) {
-      break;
+
+    // randomize order if checkbox is checked
+    if (document.getElementById('randomizePositions').checked) {
+      var j, x, i;
+      for (i = nodes.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = nodes[i];
+        nodes[i] = nodes[j];
+        nodes[j] = x;
+      }
     }
-    // scale node size logarithmically with frequency
-    var scale = 2 * Math.log(freqArr[i].freq) + 1;
-    nodes.push({ text: freqArr[i].word, scale: scale });
+
+    return nodes;
   }
 
-  // randomize order if checkbox is checked
-  if (document.getElementById('randomizePositions').checked) {
-    var j, x, i;
-    for (i = nodes.length - 1; i > 0; i--) {
-      j = Math.floor(Math.random() * (i + 1));
-      x = nodes[i];
-      nodes[i] = nodes[j];
-      nodes[j] = x;
-    }
-  }
+  document.getElementById('randomizePositions').addEventListener('click', rebuildGraph);
+  document.getElementById('generateButton').addEventListener('click', rebuildGraph);
+</script>
+<script>
+  if (window.location.protocol === 'file:') alert('For security reasons this page must be served from a web server.');
+</script>
 
-  return nodes;
-}
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
 
-document.getElementById("randomizePositions").addEventListener("click", rebuildGraph);
-document.getElementById("generateButton").addEventListener("click", rebuildGraph);
-  </script>
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

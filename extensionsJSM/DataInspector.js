@@ -1,14 +1,14 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * This class implements an inspector for GoJS model data objects.
  * The constructor takes three arguments:
@@ -17,13 +17,13 @@ import * as go from '../release/go-module.js';
  *   - `options` ***Object*** an optional JS Object describing options for the inspector
  *
  * Options:
- *   - `inspectSelection` ***boolean*** see {@link #inspectSelection}
- *   - `includesOwnProperties` ***boolean*** see {@link #includesOwnProperties}
- *   - `properties` ***Object*** see {@link #properties}
- *   - `propertyModified` ***function(propertyName, newValue, inspector)*** see {@link #propertyModified}
- *   - `multipleSelection` ***boolean*** see {@link #multipleSelection}
- *   - `showUnionProperties` ***boolean*** see {@link #showUnionProperties}
- *   - `showLimit` ***number*** see {@link #showLimit}
+ *   - `inspectSelection` ***boolean*** see {@link inspectSelection}
+ *   - `includesOwnProperties` ***boolean*** see {@link includesOwnProperties}
+ *   - `properties` ***Object*** see {@link properties}
+ *   - `propertyModified` ***function(propertyName, newValue, inspector)*** see {@link propertyModified}
+ *   - `multipleSelection` ***boolean*** see {@link multipleSelection}
+ *   - `showUnionProperties` ***boolean*** see {@link showUnionProperties}
+ *   - `showLimit` ***number*** see {@link showLimit}
  *
  * Options for properties:
  *   - `show` ***boolean | function*** a boolean value to show or hide the property from the inspector, or a predicate function to show conditionally.
@@ -58,16 +58,16 @@ import * as go from '../release/go-module.js';
  * </div>
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DataInspector.html">Data Inspector</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/DataInspector.html">Data Inspector</a> sample.
  * @category Extension
  */
 export class Inspector {
     /**
      * Constructs an Inspector and sets up properties based on the options provided.
      * Also sets up change listeners on the Diagram so the Inspector stays up-to-date.
-     * @param {string} divid a string referencing the HTML ID of the to-be Inspector's div
-     * @param {Diagram} diagram a reference to a GoJS Diagram
-     * @param {Object=} options an optional JS Object describing options for the inspector
+     * @param divid - a string referencing the HTML ID of the to-be Inspector's div
+     * @param diagram - a reference to a GoJS Diagram
+     * @param options - an optional JS Object describing options for the inspector
      */
     constructor(divid, diagram, options) {
         this._inspectedObject = null;
@@ -111,7 +111,9 @@ export class Inspector {
             if (e.isTransactionFinished)
                 self.inspectObject();
         };
-        this.inspectOnSelectionChanged = (e) => { self.inspectObject(); };
+        this.inspectOnSelectionChanged = (e) => {
+            self.inspectObject();
+        };
         this._diagram.addModelChangedListener(this.inspectOnModelChanged);
         if (this._inspectSelection) {
             this._diagram.addDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
@@ -120,11 +122,15 @@ export class Inspector {
     /**
      * This read-only property returns the HTMLElement containing the Inspector.
      */
-    get div() { return this._div; }
+    get div() {
+        return this._div;
+    }
     /**
-     * Gets or sets the {@link Diagram} associated with this Inspector.
+     * Gets or sets the {@link go.Diagram} associated with this Inspector.
      */
-    get diagram() { return this._diagram; }
+    get diagram() {
+        return this._diagram;
+    }
     set diagram(val) {
         if (val !== this._diagram) {
             // First, unassociate change listeners with current inspected diagram
@@ -145,16 +151,20 @@ export class Inspector {
     /**
      * This read-only property returns the object currently being inspected.
      *
-     * To set the inspected object, call {@link #inspectObject}.
+     * To set the inspected object, call {@link inspectObject}.
      */
-    get inspectedObject() { return this._inspectedObject; }
+    get inspectedObject() {
+        return this._inspectedObject;
+    }
     /**
      * Gets or sets whether the Inspector automatically inspects the associated Diagram's selection.
-     * When set to false, the Inspector won't show anything until {@link #inspectObject} is called.
+     * When set to false, the Inspector won't show anything until {@link inspectObject} is called.
      *
      * The default value is true.
      */
-    get inspectSelection() { return this._inspectSelection; }
+    get inspectSelection() {
+        return this._inspectSelection;
+    }
     set inspectSelection(val) {
         if (val !== this._inspectSelection) {
             this._inspectSelection = val;
@@ -173,7 +183,9 @@ export class Inspector {
      *
      * The default value is true.
      */
-    get includesOwnProperties() { return this._includesOwnProperties; }
+    get includesOwnProperties() {
+        return this._includesOwnProperties;
+    }
     set includesOwnProperties(val) {
         if (val !== this._includesOwnProperties) {
             this._includesOwnProperties = val;
@@ -187,7 +199,9 @@ export class Inspector {
      *
      * The default value is an empty object.
      */
-    get properties() { return this._properties; }
+    get properties() {
+        return this._properties;
+    }
     set properties(val) {
         if (val !== this._properties) {
             this._properties = val;
@@ -200,7 +214,9 @@ export class Inspector {
      *
      * The default value is null, meaning nothing will be done.
      */
-    get propertyModified() { return this._propertyModified; }
+    get propertyModified() {
+        return this._propertyModified;
+    }
     set propertyModified(val) {
         if (val !== this._propertyModified) {
             this._propertyModified = val;
@@ -209,9 +225,11 @@ export class Inspector {
     /**
      * Gets or sets whether the Inspector displays properties for multiple selected objects or just the first.
      *
-     * The default value is false, meaning only the first item in the {@link Diagram#selection} is inspected.
+     * The default value is false, meaning only the first item in the {@link go.Diagram.selection} is inspected.
      */
-    get multipleSelection() { return this._multipleSelection; }
+    get multipleSelection() {
+        return this._multipleSelection;
+    }
     set multipleSelection(val) {
         if (val !== this._multipleSelection) {
             this._multipleSelection = val;
@@ -223,7 +241,9 @@ export class Inspector {
      *
      * The default value is false, meaning the intersection of properties is inspected.
      */
-    get showUnionProperties() { return this._showUnionProperties; }
+    get showUnionProperties() {
+        return this._showUnionProperties;
+    }
     set showUnionProperties(val) {
         if (val !== this._showUnionProperties) {
             this._showUnionProperties = val;
@@ -231,11 +251,13 @@ export class Inspector {
         }
     }
     /**
-     * Gets or sets how many objects will be displayed when {@link #multipleSelection} is true.
+     * Gets or sets how many objects will be displayed when {@link multipleSelection} is true.
      *
      * The default value is 0, meaning all selected objects will be displayed for a given property.
      */
-    get showLimit() { return this._showLimit; }
+    get showLimit() {
+        return this._showLimit;
+    }
     set showLimit(val) {
         if (val !== this._showLimit) {
             this._showLimit = val;
@@ -244,32 +266,34 @@ export class Inspector {
     }
     /**
      * This predicate function can be used as a value for the `show` option for properties.
-     * When used, the property will only be shown when inspecting a {@link Node}.
-     * @param {Part} part the Part being inspected
-     * @return {boolean}
+     * When used, the property will only be shown when inspecting a {@link go.Node}.
+     * @param part - the Part being inspected
      */
-    static showIfNode(part) { return part instanceof go.Node; }
+    static showIfNode(part) {
+        return part instanceof go.Node;
+    }
     /**
      * This predicate function can be used as a value for the `show` option for properties.
-     * When used, the property will only be shown when inspecting a {@link Link}.
-     * @param {Part} part the Part being inspected
-     * @return {boolean}
+     * When used, the property will only be shown when inspecting a {@link go.Link}.
+     * @param part - the Part being inspected
      */
-    static showIfLink(part) { return part instanceof go.Link; }
+    static showIfLink(part) {
+        return part instanceof go.Link;
+    }
     /**
      * This predicate function can be used as a value for the `show` option for properties.
-     * When used, the property will only be shown when inspecting a {@link Group}.
-     * @param {Part} part the Part being inspected
-     * @return {boolean}
+     * When used, the property will only be shown when inspecting a {@link go.Group}.
+     * @param part - the Part being inspected
      */
-    static showIfGroup(part) { return part instanceof go.Group; }
+    static showIfGroup(part) {
+        return part instanceof go.Group;
+    }
     /**
      * This predicate function can be used as a value for the `show` option for properties.
      * When used, the property will only be shown if present.
      * Useful for properties such as `key`, which will be shown on Nodes and Groups, but normally not on Links
-     * @param {Part|null} part the Part being inspected
-     * @param {string} propname the property to check presence of
-     * @return {boolean}
+     * @param part - the Part being inspected
+     * @param propname - the property to check presence of
      */
     static showIfPresent(data, propname) {
         if (data instanceof go.Part)
@@ -281,9 +305,9 @@ export class Inspector {
      *
      * If passed an object, the Inspector will inspect that object.
      * If passed null, this will do nothing.
-     * If no parameter is supplied, the {@link #inspectedObject} will be set based on the value of {@link #inspectSelection}.
-     * @param {Object=} object an optional argument, used when {@link #inspectSelection} is false to
-     *   set {@link #inspectedObject} and show and edit that object's properties.
+     * If no parameter is supplied, the {@link inspectedObject} will be set based on the value of {@link inspectSelection}.
+     * @param object - an optional argument, used when {@link inspectSelection} is false to
+     *   set {@link inspectedObject} and show and edit that object's properties.
      */
     inspectObject(object) {
         let inspectedObject = null;
@@ -292,26 +316,31 @@ export class Inspector {
             return;
         if (object === undefined) {
             if (this._inspectSelection) {
-                if (this._multipleSelection) { // gets the selection if multiple selection is true
+                if (this._multipleSelection) {
+                    // gets the selection if multiple selection is true
                     inspectedObjects = this._diagram.selection;
                     this._inspectedObject = inspectedObjects.first();
                 }
-                else { // otherwise grab the first object
+                else {
+                    // otherwise grab the first object
                     inspectedObject = this._diagram.selection.first();
                 }
             }
-            else { // if there is a single inspected object
+            else {
+                // if there is a single inspected object
                 inspectedObject = this._inspectedObject;
             }
         }
-        else { // if object was passed in as a parameter
+        else {
+            // if object was passed in as a parameter
             inspectedObject = object;
         }
         if (!inspectedObjects && inspectedObject) {
             inspectedObjects = new go.Set();
             inspectedObjects.add(inspectedObject);
         }
-        if (!inspectedObjects || inspectedObjects.count < 1) { // if nothing is selected
+        if (!inspectedObjects || inspectedObjects.count < 1) {
+            // if nothing is selected
             this.updateAllHTML();
             return;
         }
@@ -332,8 +361,9 @@ export class Inspector {
             it.next();
             inspectedObject = it.value;
             this._inspectedObject = inspectedObject;
-            let data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
-            if (data) { // initial pass to set shared and all
+            let data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
+            if (data) {
+                // initial pass to set shared and all
                 // Go through all the properties passed in to the inspector and add them to the map, if appropriate:
                 for (const name in declaredProperties) {
                     const desc = declaredProperties[name];
@@ -356,19 +386,21 @@ export class Inspector {
                             continue; // skip internal GoJS hash property
                         if (this.inspectedProperties[k])
                             continue; // already exists
-                        if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject))
+                        if (declaredProperties[k] &&
+                            !this.canShowProperty(k, declaredProperties[k], inspectedObject))
                             continue;
                         shared.add(k, data[k]);
                         all.add(k, data[k]);
                     }
                 }
             }
-            while (it.next() && (this._showLimit < 1 || nodecount <= this._showLimit)) { // grabs all the properties from the other selected objects
+            while (it.next() && (this._showLimit < 1 || nodecount <= this._showLimit)) {
+                // grabs all the properties from the other selected objects
                 properties.clear();
                 inspectedObject = it.value;
                 if (inspectedObject) {
                     // use either the Part.data or the object itself (for model.modelData)
-                    data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+                    data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
                     if (data) {
                         // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
                         for (const name in declaredProperties) {
@@ -376,7 +408,9 @@ export class Inspector {
                             if (!this.canShowProperty(name, desc, inspectedObject))
                                 continue;
                             const val = this.findValue(name, desc, data);
-                            if (val === '' && this._properties[name] && this._properties[name].type === 'checkbox') {
+                            if (val === '' &&
+                                this._properties[name] &&
+                                this._properties[name].type === 'checkbox') {
                                 properties.add(name, false);
                             }
                             else {
@@ -390,7 +424,8 @@ export class Inspector {
                                     continue; // skip internal GoJS hash property
                                 if (this.inspectedProperties[k])
                                     continue; // already exists
-                                if (declaredProperties[k] && !this.canShowProperty(k, declaredProperties[k], inspectedObject))
+                                if (declaredProperties[k] &&
+                                    !this.canShowProperty(k, declaredProperties[k], inspectedObject))
                                     continue;
                                 properties.add(k, data[k]);
                             }
@@ -406,18 +441,23 @@ export class Inspector {
                         if (properties.has(addIt.key)) {
                             let newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
                             all.set(addIt.key, newVal);
-                            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-                                && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-                                || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+                            if ((declaredProperties[addIt.key] &&
+                                declaredProperties[addIt.key].type !== 'color' &&
+                                declaredProperties[addIt.key].type !== 'checkbox' &&
+                                declaredProperties[addIt.key].type !== 'select') ||
+                                !declaredProperties[addIt.key]) {
+                                // for non-string properties i.e color
                                 newVal = shared.get(addIt.key) + '|' + properties.get(addIt.key);
                                 shared.set(addIt.key, newVal);
                             }
                         }
-                        else { // toRemove array since addIt is still iterating
+                        else {
+                            // toRemove array since addIt is still iterating
                             toRemove.push(addIt.key);
                         }
                     }
-                    for (let i = 0; i < toRemove.length; i++) { // removes anything that doesn't showUnionProperties
+                    for (let i = 0; i < toRemove.length; i++) {
+                        // removes anything that doesn't showUnionProperties
                         shared.remove(toRemove[i]);
                         all.remove(toRemove[i]);
                     }
@@ -427,9 +467,12 @@ export class Inspector {
                     let addIt = properties.iterator;
                     while (addIt.next()) {
                         if (all.has(addIt.key)) {
-                            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-                                && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-                                || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+                            if ((declaredProperties[addIt.key] &&
+                                declaredProperties[addIt.key].type !== 'color' &&
+                                declaredProperties[addIt.key].type !== 'checkbox' &&
+                                declaredProperties[addIt.key].type !== 'select') ||
+                                !declaredProperties[addIt.key]) {
+                                // for non-string properties i.e color
                                 const newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
                                 all.set(addIt.key, newVal);
                             }
@@ -446,9 +489,12 @@ export class Inspector {
                     addIt = all.iterator;
                     while (addIt.next()) {
                         if (!properties.has(addIt.key)) {
-                            if ((declaredProperties[addIt.key] && declaredProperties[addIt.key].type !== 'color'
-                                && declaredProperties[addIt.key].type !== 'checkbox' && declaredProperties[addIt.key].type !== 'select')
-                                || !declaredProperties[addIt.key]) { // for non-string properties i.e color
+                            if ((declaredProperties[addIt.key] &&
+                                declaredProperties[addIt.key].type !== 'color' &&
+                                declaredProperties[addIt.key].type !== 'checkbox' &&
+                                declaredProperties[addIt.key].type !== 'select') ||
+                                !declaredProperties[addIt.key]) {
+                                // for non-string properties i.e color
                                 const newVal = all.get(addIt.key) + '|';
                                 all.set(addIt.key, newVal);
                             }
@@ -479,10 +525,10 @@ export class Inspector {
      * Normally it only checks the value of "show" on the property descriptor.
      *
      * The default value is true.
-     * @param {string} propertyName the property name
-     * @param {Object} propertyDesc the property descriptor
-     * @param {Object} inspectedObject the data object
-     * @return {boolean} whether a particular property should be shown in this Inspector
+     * @param propertyName - the property name
+     * @param propertyDesc - the property descriptor
+     * @param inspectedObject - the data object
+     * @returns whether a particular property should be shown in this Inspector
      */
     canShowProperty(propertyName, propertyDesc, inspectedObject) {
         const prop = propertyDesc;
@@ -498,10 +544,10 @@ export class Inspector {
      * Normally it only checks the value of "readOnly" on the property descriptor.
      *
      * The default value is true.
-     * @param {string} propertyName the property name
-     * @param {Object} propertyDesc the property descriptor
-     * @param {Object} inspectedObject the data object
-     * @return {boolean} whether a particular property should be shown in this Inspector
+     * @param propertyName - the property name
+     * @param propertyDesc - the property descriptor
+     * @param inspectedObject - the data object
+     * @returns whether a particular property should be shown in this Inspector
      */
     canEditProperty(propertyName, propertyDesc, inspectedObject) {
         if (this._diagram.isReadOnly || this._diagram.isModelReadOnly)
@@ -509,7 +555,7 @@ export class Inspector {
         if (inspectedObject === null)
             return false;
         // assume property values that are functions of Objects cannot be edited
-        const data = (inspectedObject instanceof go.Part) ? inspectedObject.data : inspectedObject;
+        const data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
         const valtype = typeof data[propertyName];
         if (valtype === 'function')
             return false;
@@ -524,7 +570,6 @@ export class Inspector {
         return true;
     }
     /**
-     * @ignore
      * @param propName
      * @param propDesc
      * @param data
@@ -549,15 +594,16 @@ export class Inspector {
      * ```
      *
      * This method can be customized to change how an Inspector row is rendered.
-     * @param {string} propertyName the property name
-     * @param {*} propertyValue the property value
-     * @return {HTMLTableRowElement} the table row
+     * @param propertyName - the property name
+     * @param propertyValue - the property value
+     * @returns the table row
      */
     buildPropertyRow(propertyName, propertyValue) {
         const tr = document.createElement('tr');
         const td1 = document.createElement('td');
         let displayName;
-        if (this._properties[propertyName] && this._properties[propertyName].name !== undefined) { // name changes the dispaly name shown on inspector
+        if (this._properties[propertyName] && this._properties[propertyName].name !== undefined) {
+            // name changes the dispaly name shown on inspector
             displayName = this._properties[propertyName].name;
         }
         else {
@@ -578,21 +624,27 @@ export class Inspector {
             }
         }
         if (decProp && decProp.type === 'select') {
-            const inputs = input = document.createElement('select');
+            const inputs = (input = document.createElement('select'));
             this.updateSelect(decProp, inputs, propertyName, propertyValue);
             inputs.addEventListener('change', updateall);
         }
         else {
-            const inputi = input = document.createElement('input');
+            const inputi = (input = document.createElement('input'));
             if (inputi && inputi.setPointerCapture) {
-                inputi.addEventListener("pointerdown", e => inputi.setPointerCapture(e.pointerId));
+                inputi.addEventListener('pointerdown', (e) => inputi.setPointerCapture(e.pointerId));
             }
             inputi.value = this.convertToString(propertyValue);
             if (decProp) {
                 const t = decProp.type;
-                if (t !== 'string' && t !== 'number' && t !== 'boolean' &&
-                    t !== 'arrayofnumber' && t !== 'point' && t !== 'size' &&
-                    t !== 'rect' && t !== 'spot' && t !== 'margin') {
+                if (t !== 'string' &&
+                    t !== 'number' &&
+                    t !== 'boolean' &&
+                    t !== 'arrayofnumber' &&
+                    t !== 'point' &&
+                    t !== 'size' &&
+                    t !== 'rect' &&
+                    t !== 'spot' &&
+                    t !== 'margin') {
                     inputi.setAttribute('type', decProp.type);
                 }
                 if (decProp.type === 'color') {
@@ -620,7 +672,7 @@ export class Inspector {
         return tr;
     }
     /**
-     * @hidden @ignore
+     * @hidden @internal
      * HTML5 color input will only take hex,
      * so let HTML5 canvas convert the color into hex format.
      * This converts "rgb(255, 0, 0)" into "#FF0000", etc.
@@ -633,7 +685,7 @@ export class Inspector {
         return ctx.fillStyle;
     }
     /**
-     * @hidden @ignore
+     * @hidden @internal
      */
     convertToArrayOfNumber(propertyValue) {
         if (propertyValue === 'null')
@@ -649,7 +701,7 @@ export class Inspector {
         return arr;
     }
     /**
-     * @hidden @ignore
+     * @hidden @internal
      */
     convertToString(x) {
         if (x === undefined)
@@ -681,14 +733,15 @@ export class Inspector {
         return x.toString();
     }
     /**
-     * @hidden @ignore
+     * @hidden @internal
      * Update all of the HTML in this Inspector.
      */
     updateAllHTML() {
         const inspectedProps = this.inspectedProperties;
         const isPart = this._inspectedObject instanceof go.Part;
         const data = isPart ? this._inspectedObject.data : this._inspectedObject;
-        if (!data) { // clear out all of the fields
+        if (!data) {
+            // clear out all of the fields
             for (const name in inspectedProps) {
                 const input = inspectedProps[name];
                 if (input instanceof HTMLSelectElement) {
@@ -726,7 +779,7 @@ export class Inspector {
         }
     }
     /**
-     * @hidden @ignore
+     * @hidden @internal
      * Update an HTMLSelectElement with an appropriate list of choices, given the propertyName
      */
     updateSelect(decProp, select, propertyName, propertyValue) {
@@ -804,8 +857,7 @@ export class Inspector {
         return value;
     }
     /**
-     * @hidden @ignore
-     * Update all of the data properties of all the objects in {@link #inspectedObjects} according to the
+     * Update all of the data properties of all the objects in {@link inspectedObjects} according to the
      * current values held in the HTML input elements.
      */
     updateAllObjectsProperties() {
@@ -819,7 +871,9 @@ export class Inspector {
             let arr2 = [];
             if (this.multipleProperties[name]) {
                 // don't split if it is union and its checkbox type
-                if (this._properties[name] && this._properties[name].type === 'checkbox' && this._showUnionProperties) {
+                if (this._properties[name] &&
+                    this._properties[name].type === 'checkbox' &&
+                    this._showUnionProperties) {
                     arr2.push(this.multipleProperties[name]);
                 }
                 else if (this._properties[name]) {
@@ -830,26 +884,33 @@ export class Inspector {
             let change = false;
             if (this._properties[name] && this._properties[name].type === 'checkbox')
                 change = true; // always change checkbox
-            if (arr1.length < arr2.length // i.e Alpha|Beta -> Alpha procs the change
-                && (!this._properties[name] // from and to links
-                    || !(this._properties[name] // do not change color checkbox and choices due to them always having less
-                        && (this._properties[name].type === 'color' || this._properties[name].type === 'checkbox' || this._properties[name].type === 'choices')))) {
+            if (arr1.length < arr2.length && // i.e Alpha|Beta -> Alpha procs the change
+                (!this._properties[name] || // from and to links
+                    !(this._properties[name] && // do not change color checkbox and choices due to them always having less
+                        (this._properties[name].type === 'color' ||
+                            this._properties[name].type === 'checkbox' ||
+                            this._properties[name].type === 'choices')))) {
                 change = true;
             }
-            else { // standard detection in change in properties
+            else {
+                // standard detection in change in properties
                 for (let j = 0; j < arr1.length && j < arr2.length; j++) {
-                    if (!(arr1[j] === arr2[j])
-                        && !(this._properties[name] && this._properties[name].type === 'color' && arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
+                    if (!(arr1[j] === arr2[j]) &&
+                        !(this._properties[name] &&
+                            this._properties[name].type === 'color' &&
+                            arr1[j].toLowerCase() === arr2[j].toLowerCase())) {
                         change = true;
                     }
                 }
             }
-            if (change) { // only change properties it needs to change instead all of them
+            if (change) {
+                // only change properties it needs to change instead all of them
                 for (let i = 0; i < diagram.selection.count; i++) {
                     it.next();
                     const isPart = it.value instanceof go.Part;
                     const data = isPart ? it.value.data : it.value;
-                    if (data) { // ignores the selected node if there is no data
+                    if (data) {
+                        // ignores the selected node if there is no data
                         if (i < arr1.length)
                             value = arr1[i];
                         else
@@ -875,8 +936,7 @@ export class Inspector {
         diagram.commitTransaction('set all properties');
     }
     /**
-     * @hidden @ignore
-     * Update all of the data properties of {@link #inspectedObject} according to the
+     * Update all of the data properties of {@link inspectedObject} according to the
      * current values held in the HTML input elements.
      */
     updateAllProperties() {

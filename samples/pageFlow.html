@@ -1,299 +1,391 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A workflow diagram showing navigation between web pages, with an editable list of comments and to-dos."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Page Flow</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A workflow diagram showing navigation between web pages, with an editable list of comments and to-dos." />
+<meta itemprop="description" content="A workflow diagram showing navigation between web pages, with an editable list of comments and to-dos." />
+<meta property="og:description" content="A workflow diagram showing navigation between web pages, with an editable list of comments and to-dos." />
+<meta name="twitter:description" content="A workflow diagram showing navigation between web pages, with an editable list of comments and to-dos." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Page Flow />
+<meta property="og:title" content=Page Flow />
+<meta name="twitter:title" content=Page Flow />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pageFlow.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/pageFlow.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/pageFlow.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/pageFlow.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/pageFlow.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Page Flow | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
 <script id="code">
   var isDarkMode = false; // is accessed by html elements (button) so must be declared in script scope
   function init() {
-
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;  // for conciseness in defining templates
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     // colors are almost entirely defined up here to allow for easier theming
-    var yellow = "#FFB400"
+    var yellow = '#FFB400';
 
-    var green = "#7FB800";
-    var blue = "#00A6ED";
-    var red = "#D73909";
-    var white = "#DCE9F9";
+    var green = '#7FB800';
+    var blue = '#00A6ED';
+    var red = '#D73909';
+    var white = '#DCE9F9';
 
-    var blueShadow = "#407090";
-    var greenShadow = "#406050";
-    var yellowShadow = "#804040";
-    var redShadow = "#705020";
-    var whiteShadow = "#404050";
+    var blueShadow = '#407090';
+    var greenShadow = '#406050';
+    var yellowShadow = '#804040';
+    var redShadow = '#705020';
+    var whiteShadow = '#404050';
 
-    var selectColor = "dodgerBlue";
-    var undesiredEventTextColor = "whitesmoke";
+    var selectColor = 'dodgerBlue';
+    var undesiredEventTextColor = 'whitesmoke';
 
-    var lineColor = "#0D2C54";
-    var commentLineColor = "darkgreen";
+    var lineColor = '#0D2C54';
+    var commentLineColor = 'darkgreen';
 
-    var darkModeBackgroundColor = "#06162a";
-    var lightModeBackgroundColor = "#FFFFFF";
+    var darkModeBackgroundColor = '#06162a';
+    var lightModeBackgroundColor = '#FFFFFF';
 
-    var bigfont = "bold 13pt Helvetica, Arial, sans-serif";
-    var smallfont = "bold 11pt Helvetica, Arial, sans-serif";
+    var bigfont = 'bold 13pt Helvetica, Arial, sans-serif';
+    var smallfont = 'bold 11pt Helvetica, Arial, sans-serif';
 
     // Common text styling
     function textStyle() {
       return {
         margin: 10,
-        wrap: go.TextBlock.WrapFit,
-        textAlign: "center",
+        wrap: go.Wrap.Fit,
+        textAlign: 'center',
         editable: true,
-        font: bigfont
-      }
+        font: bigfont,
+      };
     }
 
-    myDiagram =
-      new go.Diagram("myDiagramDiv",
-        {
-          // have mouse wheel events zoom in and out instead of scroll up and down
-          "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
-          initialAutoScale: go.Diagram.Uniform,
-          "linkingTool.direction": go.LinkingTool.ForwardsOnly,
-          layout: $(go.LayeredDigraphLayout,
-            {
-              isInitial: false, isOngoing: false,
-              layerSpacing: 100,
-              alignOption: go.LayeredDigraphLayout.AlignAll
-            }),
-          "undoManager.isEnabled": true,
-        });
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      // have mouse wheel events zoom in and out instead of scroll up and down
+      'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
+      initialAutoScale: go.AutoScale.Uniform,
+      'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
+      layout: $(go.LayeredDigraphLayout, {
+        isInitial: false,
+        isOngoing: false,
+        layerSpacing: 100,
+      }),
+      'undoManager.isEnabled': true,
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", e => {
-      var button = document.getElementById("SaveButton");
+    myDiagram.addDiagramListener('Modified', (e) => {
+      var button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf("*");
+      var idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
-        if (idx < 0) document.title += "*";
+        if (idx < 0) document.title += '*';
       } else {
         if (idx >= 0) document.title = document.title.slice(0, idx);
       }
     });
 
-    var defaultAdornment =
-      $(go.Adornment, "Spot",
-        $(go.Panel, "Auto",
-          $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 3 }),
-          $(go.Placeholder)),
-        // the button to create a "next" node, at the top-right corner
-        $("Button",
-          {
-            alignment: new go.Spot(1, 0, -5, 5),
-            click: addNodeAndLink
-          },  // this function is defined below
-          new go.Binding("visible", "", a => !a.diagram.isReadOnly).ofObject(),
-          $(go.Shape, "PlusLine", { desiredSize: new go.Size(6, 6) })
-        )
-      );
+    var defaultAdornment = $(go.Adornment,
+      'Spot',
+      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 3 }), $(go.Placeholder)),
+      // the button to create a "next" node, at the top-right corner
+      $('Button',
+        {
+          alignment: new go.Spot(1, 0, -5, 5),
+          click: addNodeAndLink,
+        }, // this function is defined below
+        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
+        $(go.Shape, 'PlusLine', { desiredSize: new go.Size(6, 6) })
+      )
+    );
 
     // define the Node template
-    myDiagram.nodeTemplate =
-      $(go.Node, "Auto",
-        {
-          selectionAdornmentTemplate: defaultAdornment,
-          isShadowed: true,
-          shadowBlur: 2,
-          shadowColor: yellowShadow,
-          shadowOffset: new go.Point(4, 6)
-        },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "Rectangle",
-          {
-            fill: yellow, stroke: "rgba(0, 0, 0, 0)",
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-            toEndSegmentLength: 50, fromEndSegmentLength: 40
-          },
-        ),
-        $(go.TextBlock, "Page",
-          {
-            margin: 10,
-            font: bigfont,
-            editable: true
-          },
-          new go.Binding("text", "text").makeTwoWay())
-          );
-
-    myDiagram.nodeTemplateMap.add("Source",
-      $(go.Node, "Auto",
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
       {
+        selectionAdornmentTemplate: defaultAdornment,
         isShadowed: true,
         shadowBlur: 2,
-        shadowColor: blueShadow,
-        shadowOffset: new go.Point(4, 6)
+        shadowColor: yellowShadow,
+        shadowOffset: new go.Point(4, 6),
       },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "RoundedRectangle",
-          {
-            name: "SHAPE",
-            fill: blue, stroke: "rgba(0, 0, 0, 0)",
-            portId: "", fromLinkable: true, cursor: "pointer", fromEndSegmentLength: 40
-          },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock, "Source", textStyle(),
-          new go.Binding("text", "text").makeTwoWay())
-      ));
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      $(go.Shape, 'Rectangle', {
+        fill: yellow,
+        stroke: 'rgba(0, 0, 0, 0)',
+        portId: '',
+        fromLinkable: true,
+        toLinkable: true,
+        cursor: 'pointer',
+        toEndSegmentLength: 50,
+        fromEndSegmentLength: 40,
+      }),
+      $(go.TextBlock,
+        'Page',
+        {
+          margin: 10,
+          font: bigfont,
+          editable: true,
+        },
+        new go.Binding('text', 'text').makeTwoWay()
+      )
+    );
 
-    myDiagram.nodeTemplateMap.add("DesiredEvent",
-      $(go.Node, "Auto",
+    myDiagram.nodeTemplateMap.add(
+      'Source',
+      $(go.Node,
+        'Auto',
+        {
+          isShadowed: true,
+          shadowBlur: 2,
+          shadowColor: blueShadow,
+          shadowOffset: new go.Point(4, 6),
+        },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape,
+          'RoundedRectangle',
+          {
+            name: 'SHAPE',
+            fill: blue,
+            stroke: 'rgba(0, 0, 0, 0)',
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromEndSegmentLength: 40,
+          },
+          new go.Binding('fill', 'color')
+        ),
+        $(go.TextBlock, 'Source', textStyle(), new go.Binding('text', 'text').makeTwoWay())
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'DesiredEvent',
+      $(go.Node,
+        'Auto',
         {
           isShadowed: true,
           shadowBlur: 2,
           shadowColor: greenShadow,
-          shadowOffset: new go.Point(4, 6)
+          shadowOffset: new go.Point(4, 6),
         },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "RoundedRectangle",
-          { fill: green, stroke: null, portId: "", toLinkable: true, toEndSegmentLength: 50 },
-          new go.Binding("fill", "color")),
-        $(go.TextBlock, "Success!", textStyle(),
-          new go.Binding("text", "text").makeTwoWay())
-      ));
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape, 'RoundedRectangle', { fill: green, stroke: null, portId: '', toLinkable: true, toEndSegmentLength: 50 }, new go.Binding('fill', 'color')),
+        $(go.TextBlock, 'Success!', textStyle(), new go.Binding('text', 'text').makeTwoWay())
+      )
+    );
 
     // Undesired events have special adornments that allows adding and removing additional "reasons"
-    var UndesiredEventAdornmentModify =
-      $(go.Adornment, "Spot",
-        $(go.Panel, "Auto",
-          $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 4 }),
-          $(go.Placeholder)),
-        // the button to create a new reason, at the bottom-left corner
-        $("Button",
-          {
-            alignment: new go.Spot(1, 1, -5, -5),
-            click: addReason
-          },  // this function is defined below
-          new go.Binding("visible", "", a => !a.diagram.isReadOnly).ofObject(),
-          $(go.Shape, "TriangleDown", { desiredSize: new go.Size(10, 10) })
-        ),
-        //the button to remove the most recent reason, above the "create" button
-        $("Button",
-          {
-            alignment: new go.Spot(1, 1, -5, -22),
-            click: removeReason
-          }, //this function is also defined below
-          new go.Binding("visible", "", a => !a.diagram.isReadOnly).ofObject(),
-          $(go.Shape, "TriangleUp", { desiredSize: new go.Size(10, 10) })
-        )
-      );
-
-    var reasonTemplate = $(go.Panel, "Horizontal",
-      $(go.TextBlock, "•",
+    var UndesiredEventAdornmentModify = $(go.Adornment,
+      'Spot',
+      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 4 }), $(go.Placeholder)),
+      // the button to create a new reason, at the bottom-left corner
+      $('Button',
         {
-          margin: 4,
-          stroke: undesiredEventTextColor,
-          font: smallfont
-        }),
-      $(go.TextBlock, "Reason",
+          alignment: new go.Spot(1, 1, -5, -5),
+          click: addReason,
+        }, // this function is defined below
+        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
+        $(go.Shape, 'TriangleDown', { desiredSize: new go.Size(10, 10) })
+      ),
+      //the button to remove the most recent reason, above the "create" button
+      $('Button',
+        {
+          alignment: new go.Spot(1, 1, -5, -22),
+          click: removeReason,
+        }, //this function is also defined below
+        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
+        $(go.Shape, 'TriangleUp', { desiredSize: new go.Size(10, 10) })
+      )
+    );
+
+    var reasonTemplate = $(go.Panel,
+      'Horizontal',
+      $(go.TextBlock, '•', {
+        margin: 4,
+        stroke: undesiredEventTextColor,
+        font: smallfont,
+      }),
+      $(go.TextBlock,
+        'Reason',
         {
           margin: 4,
           maxSize: new go.Size(200, NaN),
-          wrap: go.TextBlock.WrapFit,
+          wrap: go.Wrap.Fit,
           stroke: undesiredEventTextColor,
           editable: true,
-          font: smallfont
+          font: smallfont,
         },
-        new go.Binding("text", "text").makeTwoWay())
+        new go.Binding('text', 'text').makeTwoWay()
+      )
     );
 
-    myDiagram.nodeTemplateMap.add("UndesiredEvent",
-      $(go.Node, "Auto",
+    myDiagram.nodeTemplateMap.add(
+      'UndesiredEvent',
+      $(go.Node,
+        'Auto',
         {
           isShadowed: true,
           shadowBlur: 2,
           shadowColor: redShadow,
-          shadowOffset: new go.Point(4, 6)
+          shadowOffset: new go.Point(4, 6),
         },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectionAdornmentTemplate: UndesiredEventAdornmentModify },
-        $(go.Shape, "RoundedRectangle",
-          { fill: red, stroke: null, portId: "", toLinkable: true, toEndSegmentLength: 50 }),
-        $(go.Panel, "Vertical", { defaultAlignment: go.Spot.Top },
+        $(go.Shape, 'RoundedRectangle', { fill: red, stroke: null, portId: '', toLinkable: true, toEndSegmentLength: 50 }),
+        $(go.Panel,
+          'Vertical',
+          { defaultAlignment: go.Spot.Top },
 
-          $(go.TextBlock, "Drop", textStyle(),
+          $(go.TextBlock,
+            'Drop',
+            textStyle(),
             {
               stroke: undesiredEventTextColor,
-              minSize: new go.Size(80, NaN)
+              minSize: new go.Size(80, NaN),
             },
-            new go.Binding("text", "text").makeTwoWay()),
+            new go.Binding('text', 'text').makeTwoWay()
+          ),
 
-            $(go.Panel, "Vertical",
+          $(go.Panel,
+            'Vertical',
             {
               defaultAlignment: go.Spot.TopLeft,
-              itemTemplate: reasonTemplate
+              itemTemplate: reasonTemplate,
             },
-            new go.Binding("itemArray", "reasonsList").makeTwoWay()
+            new go.Binding('itemArray', 'reasonsList').makeTwoWay()
           )
         )
-      ));
+      )
+    );
 
-    myDiagram.nodeTemplateMap.add("Comment",
-      $(go.Node, "Auto",
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, "Rectangle",
-          { portId: "", fill: white, stroke: null, fromLinkable: true }),
-          $(go.TextBlock, "A comment",
+    myDiagram.nodeTemplateMap.add(
+      'Comment',
+      $(go.Node,
+        'Auto',
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        $(go.Shape, 'Rectangle', { portId: '', fill: white, stroke: null, fromLinkable: true }),
+        $(go.TextBlock,
+          'A comment',
           {
             margin: 10,
             maxSize: new go.Size(200, NaN),
-            wrap: go.TextBlock.WrapFit,
+            wrap: go.Wrap.Fit,
             editable: true,
-            font: smallfont
+            font: smallfont,
           },
-          new go.Binding("text", "text").makeTwoWay())
+          new go.Binding('text', 'text').makeTwoWay()
+        )
         // no ports, because no links are allowed to connect with a comment
-      ));
+      )
+    );
 
     // clicking the add button on an UndesiredEvent node inserts a new text object into the panel
     function addReason(e, obj) {
@@ -301,20 +393,20 @@
       if (adorn === null) return;
       e.handled = true;
       var arr = adorn.adornedPart.data.reasonsList;
-      myDiagram.startTransaction("add reason");
+      myDiagram.startTransaction('add reason');
       myDiagram.model.addArrayItem(arr, {});
-      myDiagram.commitTransaction("add reason");
+      myDiagram.commitTransaction('add reason');
     }
 
     // clicking the remove button will remove the most recent text object added to the panel
     function removeReason(e, obj) {
-        var adorn = obj.part;
-        if (adorn === null) return;
-        e.handled = true;
-        var arr = adorn.adornedPart.data.reasonsList;
-        myDiagram.startTransaction("remove reason");
-        myDiagram.model.removeArrayItem(arr, arr.length - 1);
-        myDiagram.commitTransaction("remove reason");
+      var adorn = obj.part;
+      if (adorn === null) return;
+      e.handled = true;
+      var arr = adorn.adornedPart.data.reasonsList;
+      myDiagram.startTransaction('remove reason');
+      myDiagram.model.removeArrayItem(arr, arr.length - 1);
+      myDiagram.commitTransaction('remove reason');
     }
 
     // clicking the button of a default node inserts a new node to the right of the selected node,
@@ -324,14 +416,14 @@
       if (adorn === null) return;
       e.handled = true;
       var diagram = adorn.diagram;
-      diagram.startTransaction("Add State");
+      diagram.startTransaction('Add State');
       // get the node data for which the user clicked the button
       var fromNode = adorn.adornedPart;
       var fromData = fromNode.data;
       // create a new "State" data object, positioned off to the right of the adorned Node
-      var toData = { text: "new" };
+      var toData = { text: 'new' };
       var p = fromNode.location;
-      toData.loc = p.x + 200 + " " + p.y;  // the "loc" property is a string, not a Point object
+      toData.loc = p.x + 200 + ' ' + p.y; // the "loc" property is a string, not a Point object
       // add the new node data to the model
       var model = diagram.model;
       model.addNodeData(toData);
@@ -344,56 +436,55 @@
       // select the new Node
       var newnode = diagram.findNodeForData(toData);
       diagram.select(newnode);
-      diagram.commitTransaction("Add State");
+      diagram.commitTransaction('Add State');
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate =
-      $(go.Link,  // the whole link panel
-        { curve: go.Link.Bezier,
-          toShortLength: 5,
-          fromSpot: go.Spot.Right,
-          toSpot: go.Spot.Left
-        },
-        $(go.Shape,  // the link shape
-          { stroke: lineColor, strokeWidth: 2.5 }),
-        $(go.Shape,  // the arrowhead
-          { toArrow: "Kite", fill: lineColor, stroke: lineColor, scale: 1.5 })
-      );
+    myDiagram.linkTemplate = $(go.Link, // the whole link panel
+      { curve: go.Curve.Bezier, toShortLength: 5, fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
+      $(go.Shape, // the link shape
+        { stroke: lineColor, strokeWidth: 2.5 }
+      ),
+      $(go.Shape, // the arrowhead
+        { toArrow: 'Kite', fill: lineColor, stroke: lineColor, scale: 1.5 }
+      )
+    );
 
     // comments will have different links
-    myDiagram.linkTemplateMap.add("Comment",
+    myDiagram.linkTemplateMap.add(
+      'Comment',
       $(go.Link,
         {
           fromSpot: go.Spot.Center,
-          toSpot: go.Spot.Center
+          toSpot: go.Spot.Center,
         },
-        $(go.Shape, { strokeWidth: 1.5, stroke: "darkgreen" })
+        $(go.Shape, { strokeWidth: 1.5, stroke: 'darkgreen' })
       )
     );
 
     // when a new link is created, determine what template to use
-    myDiagram.addDiagramListener("LinkDrawn", e => {
+    myDiagram.addDiagramListener('LinkDrawn', (e) => {
       var link = e.subject;
-      if(link.fromNode.category === "Comment") {
-        link.category = "Comment";
+      if (link.fromNode.category === 'Comment') {
+        link.category = 'Comment';
       }
     });
 
-    var palette =
-      new go.Palette("myPaletteDiv",  // create a new Palette in the HTML DIV element
-        {
-          // share the template map with the Palette
-          nodeTemplateMap: myDiagram.nodeTemplateMap,
-          autoScale: go.Diagram.Uniform  // everything always fits in viewport
-        });
+    var palette = new go.Palette(
+      'myPaletteDiv', // create a new Palette in the HTML DIV element
+      {
+        // share the template map with the Palette
+        nodeTemplateMap: myDiagram.nodeTemplateMap,
+        autoScale: go.AutoScale.Uniform, // everything always fits in viewport
+      }
+    );
 
     palette.model.nodeDataArray = [
-      { category: "Source" },
+      { category: 'Source' },
       {}, // default node
-      { category: "DesiredEvent" },
-      { category: "UndesiredEvent", reasonsList: [{}] },
-      { category: "Comment" }
+      { category: 'DesiredEvent' },
+      { category: 'UndesiredEvent', reasonsList: [{}] },
+      { category: 'Comment' },
     ];
 
     // read in the JSON-format data from the "mySavedModel" element
@@ -407,53 +498,70 @@
 
   // Show the diagram's model in JSON format
   function save() {
-    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
     myDiagram.isModified = false;
   }
 
   function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
   window.addEventListener('DOMContentLoaded', init);
-
-
 </script>
 
 <div id="sample">
-<div style="width: 100%; display: flex; justify-content: space-between; background-color: #FCFCFC">
-  <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: whitesmoke; border: 1px solid black; position: relative;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 99px; height: 479px;" width="148" height="718">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 99px; height: 479px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
-  <div id="myDiagramDiv" style="flex-grow: 1; height: 480px; border: 1px solid black; position: relative;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 953px; height: 479px;" width="1429" height="718">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 953px; height: 479px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
-</div>
-<p>
-  This workflow diagram uses the <a href="../api/symbols/LayeredDigraphLayout.html" target="api">LayeredDigraphLayout</a> to display some data about the flow of a fictional web site.
-  You can add to the Diagram by dragging Nodes from the <a href="../api/symbols/Palette.html" target="api">Palette</a> and by buttons that
-  appear when clicking on the Page (yellow) and Drop (red) Nodes.
-</p>
-<p>
-  All nodes in this sample have editable text.
-  To activate the <a href="../api/symbols/TextEditingTool.html" target="api">TextEditingTool</a>, click on a node to select it and click on its text once selected.
-</p>
-<p>
-  Several Link relationships are defined.
-  Hovering over the sides of many nodes changes the mouse cursor to a pointer.
-  Clicking and dragging in these areas creates a new link with the <a href="../api/symbols/LinkingTool.html" target="api">LinkingTool</a>.
-  The node definitions contain several rules, for instance you cannot drag links to Source (blue) Nodes,
-  only from them, and you cannot have multiple links between the same two nodes, among others.
-</p>
-<p>
-  Most of the source code for this sample is in defining pleasing Node templates.
-  Much of the functionality seen is done with built-in GoJS components.
-  This is by no means an exhaustive sample, so be sure to check out the other samples to the left,
-  or take a look at the <a href="../intro/">Introductory Documents</a> for
-  a more structured tutorial on different GoJS concepts.
-</p>
+  <div style="width: 100%; display: flex; justify-content: space-between; background-color: #fcfcfc">
+    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: whitesmoke; border: 1px solid black; position: relative">
+      <canvas
+        tabindex="0"
+        style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 99px; height: 479px"
+        width="148"
+        height="718"
+        >This text is displayed if your browser does not support the Canvas HTML element.</canvas
+      >
+      <div style="position: absolute; overflow: auto; width: 99px; height: 479px; z-index: 1">
+        <div style="position: absolute; width: 1px; height: 1px"></div>
+      </div>
+    </div>
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 480px; border: 1px solid black; position: relative">
+      <canvas
+        tabindex="0"
+        style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 953px; height: 479px"
+        width="1429"
+        height="718"
+        >This text is displayed if your browser does not support the Canvas HTML element.</canvas
+      >
+      <div style="position: absolute; overflow: auto; width: 953px; height: 479px; z-index: 1">
+        <div style="position: absolute; width: 1px; height: 1px"></div>
+      </div>
+    </div>
+  </div>
+  <p>
+    This workflow diagram uses the <a href="../api/symbols/LayeredDigraphLayout.html" target="api">LayeredDigraphLayout</a> to display some data about the flow
+    of a fictional web site. You can add to the Diagram by dragging Nodes from the <a href="../api/symbols/Palette.html" target="api">Palette</a> and by buttons
+    that appear when clicking on the Page (yellow) and Drop (red) Nodes.
+  </p>
+  <p>
+    All nodes in this sample have editable text. To activate the <a href="../api/symbols/TextEditingTool.html" target="api">TextEditingTool</a>, click on a node
+    to select it and click on its text once selected.
+  </p>
+  <p>
+    Several Link relationships are defined. Hovering over the sides of many nodes changes the mouse cursor to a pointer. Clicking and dragging in these areas
+    creates a new link with the <a href="../api/symbols/LinkingTool.html" target="api">LinkingTool</a>. The node definitions contain several rules, for instance
+    you cannot drag links to Source (blue) Nodes, only from them, and you cannot have multiple links between the same two nodes, among others.
+  </p>
+  <p>
+    Most of the source code for this sample is in defining pleasing Node templates. Much of the functionality seen is done with built-in GoJS components. This
+    is by no means an exhaustive sample, so be sure to check out the other samples to the left, or take a look at the
+    <a href="../intro/">Introductory Documents</a> for a more structured tutorial on different GoJS concepts.
+  </p>
 
-<button id="SaveButton" onclick="save()" disabled="">Save</button>
-<button onclick="load()">Load</button>
-<button onclick="layout()">Layout</button>
-Diagram Model saved in JSON format:
-<br>
-<textarea id="mySavedModel" style="width:100%;height:300px">{ "class": "go.GraphLinksModel",
+  <button id="SaveButton" onclick="save()" disabled="">Save</button>
+  <button onclick="load()">Load</button>
+  <button onclick="layout()">Layout</button>
+  Diagram Model saved in JSON format:
+  <br />
+  <textarea id="mySavedModel" style="width: 100%; height: 300px">
+{ "class": "go.GraphLinksModel",
 "copiesArrays": true,
 "copiesArrayObjects": true,
 "nodeDataArray": [
@@ -510,13 +618,90 @@ Diagram Model saved in JSON format:
   { "from":  2, "to": 202 }
 ]
 }
-</textarea>
+</textarea
+  >
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Layered Digraph Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a general directed graph in layers (rows or columns). This is more general than <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+as it does not require that the graph be tree-structured.
+More information can be found in the <a href="../intro/layouts.html#LayeredDigraphLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#layered-digraph">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Palette</h4>
+<p>
+A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#palette">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

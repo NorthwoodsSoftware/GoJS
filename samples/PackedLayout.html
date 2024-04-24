@@ -1,0 +1,561 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+      
+        <!-- You do not need this import map in your own code if you are installing gojs via a package manager -->
+        <script type="importmap">
+          {
+            "imports": {
+              "gojs": "../release/go-module.js"
+            }
+          }
+        </script>
+      
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="TypeScript: Arrange nodes into rectangular or elliptical areas, ignoring any links." />
+<meta itemprop="description" content="TypeScript: Arrange nodes into rectangular or elliptical areas, ignoring any links." />
+<meta property="og:description" content="TypeScript: Arrange nodes into rectangular or elliptical areas, ignoring any links." />
+<meta name="twitter:description" content="TypeScript: Arrange nodes into rectangular or elliptical areas, ignoring any links." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Packed Layout />
+<meta property="og:title" content=Packed Layout />
+<meta name="twitter:title" content=Packed Layout />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedLayout.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedLayout.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/PackedLayout.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/PackedLayout.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/PackedLayout.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Packed Layout | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+<style type="text/css">
+  input[type='number'] {
+    width: 60px;
+    margin-left: 3px;
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 2px;
+  }
+</style>
+
+<div id="sample">
+  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>General Properties</b><br />
+      PackShape:<br />
+      <input type="radio" name="packShape" onclick="layout()" value="Elliptical" checked /> Elliptical<br />
+      <input type="radio" name="packShape" onclick="layout()" value="Rectangular" /> Rectangular<br />
+      <input type="radio" name="packShape" onclick="layout()" value="Spiral" /> Spiral<br />
+      PackMode:<br />
+      <input type="radio" name="packMode" onclick="layout()" value="AspectOnly" checked /> Aspect Ratio<br />
+      <input type="radio" name="packMode" onclick="layout()" value="ExpandToFit" /> Expand to Fit<br />
+      <input type="radio" name="packMode" onclick="layout()" value="Fit" /> Fit<br />
+
+      <table>
+        <tr>
+          <td>Aspect ratio:</td>
+          <td><input type="number" size="2" id="aspectRatio" value="1" onchange="layout()" /></td>
+        </tr>
+        <tr>
+          <td>Layout width:</td>
+          <td><input type="number" size="2" id="width" value="600" onchange="layout()" /></td>
+        </tr>
+        <tr>
+          <td>Layout height:</td>
+          <td><input type="number" size="2" id="height" value="600" onchange="layout()" /></td>
+        </tr>
+      </table>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>Node Sorting Properties</b><br />
+      SortOrder:<br />
+      <input type="radio" name="sortOrder" onclick="layout()" value="Descending" checked /> Descending<br />
+      <input type="radio" name="sortOrder" onclick="layout()" value="Ascending" /> Ascending<br />
+      SortMode: <br />
+      <input type="radio" name="sortMode" onclick="layout()" id="modeNone" value="None" /> None (do not sort nodes)<br />
+      <input type="radio" name="sortMode" onclick="layout()" id="modeMaxSide" value="MaxSide" /> Max Side Length<br />
+      <input type="radio" name="sortMode" onclick="layout()" id="modeArea" value="Area" checked /> Area<br />
+
+      <b>Padding between nodes</b><br />
+      Spacing: <input type="number" id="nodeSpacing" value="0" onchange="layout()" /><br />
+      <b>Circle Packing</b><br />
+      hasCircularNodes <input type="checkbox" id="hasCircularNodes" onclick="layout()" />
+    </span>
+
+    <span style="display: inline-block; vertical-align: top; padding: 5px">
+      <b>Node Generation</b><br />
+      <table>
+        <tr>
+          <td>Number of nodes:</td>
+          <td><input type="number" id="numNodes" value="100" onchange="layout()" /><br /></td>
+        </tr>
+        <tr>
+          <td>
+            Node shape:<br /><input type="radio" name="shapeToPack" onclick="layout()" value="Rectangle" checked /> Rectangles<br />
+            <input type="radio" name="shapeToPack" onclick="layout()" value="Ellipse" /> Ellipses<br />
+          </td>
+        </tr>
+
+        <tr>
+          <td>Minimum side length:</td>
+          <td><input type="number" id="nodeMinSide" value="30" onchange="layout()" /><br /></td>
+        </tr>
+        <tr>
+          <td>Maximum side length:</td>
+          <td><input type="number" id="nodeMaxSide" value="50" onchange="layout()" /><br /></td>
+        </tr>
+      </table>
+      Same width/height <input type="checkbox" id="sameSides" onclick="layout()" /><br />
+      <button type="button" id="randomizeGraph" style="margin-top: 5px">Randomize Graph</button>
+    </span>
+  </div>
+  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <p>
+    This sample demonstrates a custom Layout, PackedLayout, which attempts to pack nodes as close together as possible without overlap. Each node is assumed to
+    be either rectangular or circular (dictated by the 'hasCircularNodes' property). This layout supports packing nodes into either a rectangle or an ellipse,
+    with the shape determined by the PackShape and the aspect ratio determined by either the aspectRatio property, or the specified width and height (depending
+    on the PackMode).
+  </p>
+  <p>
+    The layout is defined in its own file, as <a href="PackedLayout.js" target="_blank">PackedLayout.js</a>, with an additional dependency on
+    <a href="Quadtree.js" target="_blank">Quadtree.js</a>.
+  </p>
+</div>
+
+<script type="module" id="code">
+  import * as go from 'gojs';
+  import { PackedLayout, PackMode, PackShape, SortMode, SortOrder } from '../extensionsJSM/PackedLayout.js';
+
+  if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
+  const $ = go.GraphObject.make; // for conciseness in defining templates
+
+  // nodes need to be randomized again if any of these change
+  let minSidePrevious = 0.0;
+  let maxSidePrevious = 0.0;
+  let sameSidesPrevious = false;
+
+  const myDiagram = new go.Diagram(
+    'myDiagramDiv', // must be the ID or reference to div
+    {
+      'animationManager.isEnabled': true,
+      layout: $(PackedLayout),
+      scale: 0.75,
+      isReadOnly: true,
+    }
+  );
+
+  // Nodes have a template with bindings for size, shape, and fill color
+  myDiagram.nodeTemplate = $(go.Node,
+    'Auto',
+    new go.Binding('visible', 'visible'),
+    $(go.Shape,
+      { strokeWidth: 0 },
+      new go.Binding('figure', 'figure'),
+      new go.Binding('width', 'width'),
+      new go.Binding('height', 'height'),
+      new go.Binding('fill', 'fill')
+    )
+  );
+
+  myDiagram.model = new go.GraphLinksModel([]);
+
+  // find the elements in the DOM which control configuration
+  const aspectRatio = document.getElementById('aspectRatio');
+  aspectRatio.onkeydown = aspectRatioHandler;
+  const layoutWidth = document.getElementById('width');
+  const layoutHeight = document.getElementById('height');
+  const nodeSpacing = document.getElementById('nodeSpacing');
+  const hasCircularNodes = document.getElementById('hasCircularNodes');
+  const numNodes = document.getElementById('numNodes');
+  const nodeMinSide = document.getElementById('nodeMinSide');
+  const nodeMaxSide = document.getElementById('nodeMaxSide');
+  const sameSides = document.getElementById('sameSides');
+
+  // create a layout with the default values
+  rebuildGraph();
+
+  // when arrow keys are pressed and the aspect ratio is below 1, increment using the harmonic sequence
+  // this makes the aspect ratio change as follows: 3:1, 2:1, 1:1, 1:2, 1:3, etc.
+  function aspectRatioHandler(e) {
+    if (e.key === 'ArrowUp' && parseFloat(aspectRatio.value) < 1) {
+      e.preventDefault();
+      const denom = Math.round(1 / parseFloat(aspectRatio.value));
+      aspectRatio.value = +(1 / (denom - 1)).toFixed(2) + '';
+      rebuildGraph();
+    } else if (e.key === 'ArrowDown' && parseFloat(aspectRatio.value) <= 1) {
+      e.preventDefault();
+      const denom = Math.round(1 / parseFloat(aspectRatio.value));
+      if (denom < 10) {
+        aspectRatio.value = +(1 / (denom + 1)).toFixed(2) + '';
+        rebuildGraph();
+      }
+    }
+  }
+
+  function validateInput() {
+    if (!aspectRatio.value || parseFloat(aspectRatio.value) <= 0) {
+      aspectRatio.value = '0.1';
+    }
+    if (!layoutWidth.value || parseFloat(layoutWidth.value) <= 0) {
+      layoutWidth.value = '1';
+    }
+    if (!layoutHeight.value || parseFloat(layoutHeight.value) <= 0) {
+      layoutHeight.value = '1';
+    }
+    if (!nodeSpacing.value) {
+      nodeSpacing.value = '0';
+    }
+    if (!numNodes.value || parseInt(numNodes.value) < 1) {
+      numNodes.value = '1';
+    }
+    if (!nodeMinSide.value || parseFloat(nodeMinSide.value) < 1) {
+      nodeMinSide.value = '1';
+    }
+    if (!nodeMaxSide.value || parseFloat(nodeMaxSide.value) < 1) {
+      nodeMaxSide.value = '1';
+    }
+  }
+
+  function rebuildGraph() {
+    validateInput();
+    let packShape = PackShape.Elliptical;
+    switch (getRadioValue('packShape')) {
+      case 'Elliptical':
+        packShape = PackShape.Elliptical;
+        break;
+      case 'Rectangular':
+        packShape = PackShape.Rectangular;
+        break;
+      case 'Spiral':
+        packShape = PackShape.Spiral;
+        break;
+    }
+    let packMode = PackMode.AspectOnly;
+    switch (getRadioValue('packMode')) {
+      case 'AspectOnly':
+        packMode = PackMode.AspectOnly;
+        break;
+      case 'Fit':
+        packMode = PackMode.Fit;
+        break;
+      case 'ExpandToFit':
+        packMode = PackMode.ExpandToFit;
+        break;
+    }
+    let sortMode = SortMode.None;
+    switch (getRadioValue('sortMode')) {
+      case 'None':
+        sortMode = SortMode.None;
+        break;
+      case 'MaxSide':
+        sortMode = SortMode.MaxSide;
+        break;
+      case 'Area':
+        sortMode = SortMode.Area;
+        break;
+    }
+    let sortOrder = SortOrder.Descending;
+    switch (getRadioValue('sortOrder')) {
+      case 'Descending':
+        sortOrder = SortOrder.Descending;
+        break;
+      case 'Ascending':
+        sortOrder = SortOrder.Ascending;
+        break;
+    }
+
+    const params = {
+      packMode: packMode,
+      packShape: packShape,
+      sortMode: sortMode,
+      sortOrder: sortOrder,
+      aspectRatio: parseFloat(aspectRatio.value),
+      size: new go.Size(parseFloat(layoutWidth.value), parseFloat(layoutHeight.value)),
+      spacing: parseFloat(nodeSpacing.value),
+      hasCircularNodes: hasCircularNodes.checked,
+    };
+    disableInputs(params);
+
+    if (sameSides.checked !== sameSidesPrevious || parseFloat(nodeMinSide.value) !== minSidePrevious || parseFloat(nodeMaxSide.value) !== maxSidePrevious) {
+      sameSidesPrevious = sameSides.checked;
+      minSidePrevious = parseFloat(nodeMinSide.value);
+      maxSidePrevious = parseFloat(nodeMaxSide.value);
+      randomize();
+      return;
+    }
+
+    myDiagram.startTransaction('packed layout');
+    generateNodeData();
+    var lay = myDiagram.layout;
+    lay.packShape = params.packShape;
+    lay.packMode = params.packMode;
+    lay.aspectRatio = params.aspectRatio;
+    lay.size = params.size;
+    lay.spacing = params.spacing;
+    lay.sortOrder = params.sortOrder;
+    lay.sortMode = params.sortMode;
+    lay.hasCircularNodes = params.hasCircularNodes;
+    myDiagram.commitTransaction('packed layout');
+  }
+
+  function randomize() {
+    myDiagram.model = new go.GraphLinksModel([]);
+    rebuildGraph();
+  }
+  window.randomize = randomize;
+
+  function generateNodeData() {
+    const nodeDataArray = myDiagram.model.nodeDataArray;
+    const count = parseInt(numNodes.value);
+    const min = parseFloat(nodeMinSide.value);
+    const max = parseFloat(nodeMaxSide.value);
+    const shapeToPack = getRadioValue('shapeToPack');
+    if (count > nodeDataArray.length) {
+      const arr = new Array();
+      for (let i = nodeDataArray.length; i < count; i++) {
+        const width = Math.floor(Math.random() * (max - min + 1)) + min;
+        const height = sameSides.checked ? width : Math.floor(Math.random() * (max - min + 1)) + min;
+        const color = go.Brush.randomColor(128, 235);
+        arr.push({ width: width, height: height, fill: color, figure: shapeToPack });
+      }
+      myDiagram.model.addNodeDataCollection(arr);
+    } else if (count < nodeDataArray.length) {
+      while (count < nodeDataArray.length) {
+        myDiagram.model.removeNodeData(nodeDataArray[nodeDataArray.length - 1]);
+      }
+    } else {
+      for (const data of nodeDataArray) {
+        myDiagram.model.set(data, 'figure', shapeToPack);
+      }
+    }
+    sameSidesPrevious = sameSides.checked;
+    minSidePrevious = min;
+    maxSidePrevious = max;
+  }
+
+  var hasCircularNodesSavedState = null;
+  var sameSidesSavedState = null;
+  function disableInputs(params) {
+    setRadioButtonsDisabled('packMode', params.packShape === PackMode.Spiral);
+    aspectRatio.disabled = params.packMode !== PackMode.AspectOnly || params.packShape === PackShape.Spiral;
+    layoutWidth.disabled = params.packMode === PackMode.AspectOnly || params.packShape === PackShape.Spiral;
+    layoutHeight.disabled = params.packMode === PackMode.AspectOnly || params.packShape === PackShape.Spiral;
+    nodeSpacing.disabled = params.packMode === PackMode.ExpandToFit;
+    hasCircularNodes.disabled = params.packShape === PackShape.Spiral;
+    if (params.packShape === PackShape.Spiral) {
+      if (hasCircularNodesSavedState === null) {
+        hasCircularNodesSavedState = hasCircularNodes.checked;
+      }
+      hasCircularNodes.checked = true;
+      params.hasCircularNodes = true;
+    } else if (hasCircularNodesSavedState !== null) {
+      hasCircularNodes.checked = hasCircularNodesSavedState;
+      params.hasCircularNodes = false;
+      hasCircularNodesSavedState = null;
+    }
+    sameSides.disabled = params.hasCircularNodes;
+    if (params.hasCircularNodes) {
+      if (sameSidesSavedState === null) {
+        sameSidesSavedState = sameSides.checked;
+      }
+      sameSides.checked = true;
+    } else if (sameSidesSavedState !== null) {
+      sameSides.checked = sameSidesSavedState;
+      sameSidesSavedState = null;
+    }
+  }
+
+  function getRadioValue(name) {
+    const radio = document.getElementsByName(name);
+    for (let i = 0; i < radio.length; i++) {
+      if (radio[i].checked) return radio[i].value;
+    }
+  }
+
+  function setRadioButtonsDisabled(name, disabled) {
+    const radio = document.getElementsByName(name);
+    for (let i = 0; i < radio.length; i++) {
+      radio[i].disabled = disabled;
+    }
+  }
+
+  document.getElementById('randomizeGraph').onclick = randomize;
+
+  function layout() {
+    rebuildGraph();
+  }
+  window.layout = layout; // make accessible to button onclick event handlers
+
+  window.myDiagram = myDiagram; // Attach to the window for debugging
+</script>
+<script>
+  if (window.location.protocol === 'file:') alert('For security reasons this page must be served from a web server.');
+</script>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

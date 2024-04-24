@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="A custom Router that prevents overlaps between labels on links." />
+<meta itemprop="description" content="A custom Router that prevents overlaps between labels on links." />
+<meta property="og:description" content="A custom Router that prevents overlaps between labels on links." />
+<meta name="twitter:description" content="A custom Router that prevents overlaps between labels on links." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Link Label Router />
+<meta property="og:title" content=Link Label Router />
+<meta name="twitter:title" content=Link Label Router />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPorts.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPorts.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/dynamicPorts.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/LinkLabelRouter.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/LinkLabelRouter.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Link Label Router | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/AvoidsLinksRouter.js"></script>
+<script src="../extensions/LinkLabelRouter.js"></script>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; //for conciseness in defining node templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', //Diagram refers to its DIV HTML element by id
+      { 'undoManager.isEnabled': true }
+    );
+    myDiagram.routers.add(new AvoidsLinksRouter());
+    myDiagram.routers.add(new LinkLabelRouter());
+
+    // Use some colors for ports
+    portColors = ['black', 'red', 'green', 'gray'];
+    myDiagram.themeManager.set('', {
+      colors: { ports: portColors },
+    });
+
+    const portSize = new go.Size(8, 8);
+
+    // the node template
+    // includes a panel on each side with an itemArray of panels containing ports
+    myDiagram.nodeTemplate = $(go.Node,
+      'Table',
+      {
+        locationObjectName: 'BODY',
+        locationSpot: go.Spot.Center,
+        selectionObjectName: 'BODY'
+      },
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+
+      // the body
+      $(go.Panel,
+        'Auto',
+        {
+          row: 1,
+          column: 1,
+          name: 'BODY',
+          stretch: go.Stretch.Fill,
+        },
+        $(go.Shape, 'Rectangle', {
+          fill: 'lightgray',
+          stroke: 'gray',
+          strokeWidth: 0.5,
+          minSize: new go.Size(60, 60),
+        }),
+        $(go.TextBlock,
+          { margin: 10, textAlign: 'center', font: 'bold 14px Segoe UI,sans-serif', stroke: '#484848', editable: true },
+          new go.Binding('text', 'name').makeTwoWay()
+        )
+      ), // end Auto Panel body
+
+      // the Panel holding the left port elements, which are themselves Panels,
+      // created for each item in the itemArray, bound to data.leftArray
+      $(go.Panel, 'Vertical', new go.Binding('itemArray', 'leftArray'), {
+        row: 1,
+        column: 0,
+        itemTemplate: $(go.Panel,
+          {
+            _side: 'left', // internal property to make it easier to tell which side it's on
+            fromSpot: go.Spot.Left,
+            toSpot: go.Spot.Left,
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          },
+          new go.Binding('portId', 'portId'),
+          $(go.Shape,
+            'Rectangle',
+            {
+              stroke: null,
+              strokeWidth: 0,
+              desiredSize: portSize,
+              margin: new go.Margin(1, 0),
+            },
+            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
+          )
+        ), // end itemTemplate
+      }), // end Vertical Panel
+
+      // the Panel holding the top port elements, which are themselves Panels,
+      // created for each item in the itemArray, bound to data.topArray
+      $(go.Panel, 'Horizontal', new go.Binding('itemArray', 'topArray'), {
+        row: 0,
+        column: 1,
+        itemTemplate: $(go.Panel,
+          {
+            _side: 'top',
+            fromSpot: go.Spot.Top,
+            toSpot: go.Spot.Top,
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          },
+          new go.Binding('portId', 'portId'),
+          $(go.Shape,
+            'Rectangle',
+            {
+              stroke: null,
+              strokeWidth: 0,
+              desiredSize: portSize,
+              margin: new go.Margin(0, 1),
+            },
+            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
+          )
+        ), // end itemTemplate
+      }), // end Horizontal Panel
+
+      // the Panel holding the right port elements, which are themselves Panels,
+      // created for each item in the itemArray, bound to data.rightArray
+      $(go.Panel, 'Vertical', new go.Binding('itemArray', 'rightArray'), {
+        row: 1,
+        column: 2,
+        itemTemplate: $(go.Panel,
+          {
+            _side: 'right',
+            fromSpot: go.Spot.Right,
+            toSpot: go.Spot.Right,
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          },
+          new go.Binding('portId', 'portId'),
+          $(go.Shape,
+            'Rectangle',
+            {
+              stroke: null,
+              strokeWidth: 0,
+              desiredSize: portSize,
+              margin: new go.Margin(1, 0),
+            },
+            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
+          )
+        ), // end itemTemplate
+      }), // end Vertical Panel
+
+      // the Panel holding the bottom port elements, which are themselves Panels,
+      // created for each item in the itemArray, bound to data.bottomArray
+      $(go.Panel, 'Horizontal', new go.Binding('itemArray', 'bottomArray'), {
+        row: 2,
+        column: 1,
+        itemTemplate: $(go.Panel,
+          {
+            _side: 'bottom',
+            fromSpot: go.Spot.Bottom,
+            toSpot: go.Spot.Bottom,
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          },
+          new go.Binding('portId', 'portId'),
+          $(go.Shape,
+            'Rectangle',
+            {
+              stroke: null,
+              strokeWidth: 0,
+              desiredSize: portSize,
+              margin: new go.Margin(0, 1),
+            },
+            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
+          )
+        ), // end itemTemplate
+      }) // end Horizontal Panel
+    ); // end Node
+
+    // an orthogonal link template, reshapable and relinkable
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        routing: go.Routing.AvoidsNodes,
+        corner: 4,
+        curve: go.Curve.JumpGap,
+        reshapable: true,
+        resegmentable: true,
+        relinkableFrom: true,
+        relinkableTo: true
+      },
+      new go.Binding('points').makeTwoWay(),
+      $(go.Shape, { stroke: '#2F4F4F', strokeWidth: 1.5 }),
+      $(go.Panel, "Auto",
+        $(go.Shape, "RoundedRectangle", {
+          fill: "white"
+        },
+        new go.Binding("fill", "labelColor"),
+        new go.Binding("width", "labelWidth"),
+        new go.Binding("height", "labelHeight")
+        ),
+        $(go.TextBlock, {
+          font: "bold 10px Segoe UI,sans-serif",
+          stroke: '#484848',
+          margin: 2
+        },
+        new go.Binding("text", "labelText")
+        )
+      )
+    );
+
+    myDiagram.toolManager.linkingTool.archetypeLinkData = {
+      labelColor: "lightgray",
+      labelText: "Link Label"
+    }
+
+    // load the diagram from JSON data
+    load();
+  }
+
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+
+    // When copying a node, we need to copy the data that the node is bound to.
+    // This JavaScript object includes properties for the node as a whole, and
+    // four properties that are Arrays holding data for each port.
+    // Those arrays and port data objects need to be copied too.
+    // Thus Model.copiesArrays and Model.copiesArrayObjects both need to be true.
+
+    // Link data includes the names of the to- and from- ports;
+    // so the GraphLinksModel needs to set these property names:
+    // linkFromPortIdProperty and linkToPortIdProperty.
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="width: 600px; height: 500px; border: 1px solid black"></div>
+  <p>See the <a href="../intro/ports.html">Ports Intro page</a> for an explanation of GoJS ports.</p>
+  <div>
+    <div>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
+      Diagram Model saved in JSON format:
+    </div>
+
+    <textarea id="mySavedModel" style="width: 100%; height: 250px">
+      { "class": "GraphLinksModel",
+      "copiesArrays": true,
+      "copiesArrayObjects": true,
+      "linkFromPortIdProperty": "fromPort",
+      "linkToPortIdProperty": "toPort",
+      "nodeDataArray": [
+      {"key":1,"name":"Unit One","loc":"101 204","leftArray":[{"portColor":0,"portId":"left0"}],"topArray":[{"portColor":1,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[{"portColor":3,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
+      {"key":2,"name":"Unit Two","loc":"320 152","leftArray":[{"portColor":0,"portId":"left0"},{"portColor":0,"portId":"left1"},{"portColor":0,"portId":"left2"}],"topArray":[{"portColor":3,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"},{"portColor":3,"portId":"bottom1"},{"portColor":0,"portId":"bottom2"}],"rightArray":[]},
+      {"key":3,"name":"Unit Three","loc":"384 319","leftArray":[{"portColor":0,"portId":"left0"},{"portColor":0,"portId":"left1"},{"portColor":0,"portId":"left2"}],"topArray":[{"portColor":0,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[]},
+      {"key":4,"name":"Unit Four","loc":"138 351","leftArray":[{"portColor":0,"portId":"left0"}],"topArray":[{"portColor":0,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
+      {"key":5,"name":"Unit Five","loc":"260 460","leftArray":[],"topArray":[{"portColor":0,"portId":"top0"},{"portColor":1,"portId":"top1"}],"bottomArray":[],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
+      {"key":6,"name":"Unit Six","loc":"12 508","leftArray":[],"topArray":[{"portColor":0,"portId":"top0"},{"portColor":1,"portId":"top1"}],"bottomArray":[],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]}
+      ],
+        "linkDataArray": [
+      {"from":4,"to":2,"fromPort":"top0","toPort":"bottom0","labelText":"Unit 4 to 2","labelColor":"lightgray"},
+      {"from":4,"to":2,"fromPort":"top0","toPort":"bottom0","labelText":"Unit 4 to 2","labelColor":"lightgray"},
+      {"from":3,"to":2,"fromPort":"top0","toPort":"bottom1","labelText":"Unit 3 to 2","labelColor":"lightgray"},
+      {"from":4,"to":3,"fromPort":"right0","toPort":"left0","labelText":"Unit 4 to 3","labelColor":"lightgray"},
+      {"from":4,"to":3,"fromPort":"right1","toPort":"left2","labelText":"Unit 4 to 3","labelColor":"lightgray"},
+      {"from":1,"to":2,"fromPort":"right0","toPort":"left1","labelText":"Unit 1 to 2","labelColor":"lightgray"},
+      {"from":1,"to":2,"fromPort":"right1","toPort":"left2","labelText":"Unit 1 to 2","labelColor":"lightgray"},
+      {"from":6,"to":4,"fromPort":"top1","toPort":"left0","labelText":"Unit 6 to 4","labelColor":"lightgray"},
+      {"from":6,"to":4,"fromPort":"top0","toPort":"left0","labelText":"Unit 6 to 4","labelColor":"lightgray"},
+      {"from":6,"to":5,"fromPort":"right0","toPort":"top0","labelText":"Unit 6 to 5","labelColor":"lightgray"},
+      {"from":6,"to":5,"fromPort":"right1","toPort":"right1","labelText":"Unit 6 to 5","labelColor":"lightgray"},
+      {"from":6,"to":1,"fromPort":"top1","toPort":"bottom0","labelText":"Unit 6 to 1","labelColor":"lightgray"},
+      {"from":6,"to":1,"fromPort":"top1","toPort":"top0","labelText":"Unit 6 to 1","labelColor":"lightgray"},
+      {"from":5,"to":4,"fromPort":"top1","toPort":"bottom0","labelText":"Unit 5 to 4","labelColor":"lightgray"},
+      {"from":5,"to":3,"fromPort":"right0","toPort":"bottom0","labelText":"Unit 5 to 3","labelColor":"lightgray"}
+      ]}
+    </textarea>
+  </div>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Link Routing</h4>
+<p>
+  Each Link performs a very fast default computation of its desired path, its "route",
+  based only on the properties of the Link and the properties of the port objects that it is connected with.
+  GoJS 3.0 provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  <a>Router</a> class.
+</p>
+<p>
+  Routers work by defining a method, <a>Router.routeLinks</a>, which takes a collection of
+  recently recomputed link routes, plus a collection context that is either a Group or the Diagram.
+  This method is called by the Diagram during the update phase after layouts are performed.
+</p>
+<p>
+More information can be found in the <a href="../intro/routers.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#routers">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

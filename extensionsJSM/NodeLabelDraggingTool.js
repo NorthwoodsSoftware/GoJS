@@ -1,45 +1,44 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * The NodeLabelDraggingTool class lets the user move a label on a Node.
  *
  * This tool only works when the Node has a label (any GraphObject) marked with
- * { _isNodeLabel: true } that is positioned in a Spot Panel.
- * It works by modifying that label's {@link GraphObject#alignment} property to have an
+ * `{ _isNodeLabel: true }` that is positioned in a Spot Panel.
+ * It works by modifying that label's {@link go.GraphObject.alignment} property to have an
  * offset from the center of the panel.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/NodeLabelDragging.html">Node Label Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/NodeLabelDragging.html">Node Label Dragging</a> sample.
  * @category Tool Extension
  */
 export class NodeLabelDraggingTool extends go.Tool {
     /**
      * Constructs a NodeLabelDraggingTool and sets the name for the tool.
      */
-    constructor() {
+    constructor(init) {
         super();
-        /**
-         * The label being dragged.
-         */
+        this.name = 'NodeLabelDragging';
         this.label = null;
-        this._offset = new go.Point(); // of the mouse relative to the center of the label object
+        this._offset = new go.Point();
         this._originalAlignment = go.Spot.Default;
         this._originalCenter = new go.Point();
-        this.name = 'NodeLabelDragging';
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * From the GraphObject at the mouse point, search up the visual tree until we get to
      * an object that has the "_isNodeLabel" property set to true, that is in a Spot Panel,
      * and that is not the first element of that Panel (i.e. not the main element of the panel).
-     * @return {GraphObject} This returns null if no such label is at the mouse down point.
+     * @returns This returns null if no such label is at the mouse down point.
      */
     findLabel() {
         const diagram = this.diagram;
@@ -48,7 +47,9 @@ export class NodeLabelDraggingTool extends go.Tool {
         if (elt === null || !(elt.part instanceof go.Node))
             return null;
         while (elt.panel !== null) {
-            if (elt['_isNodeLabel'] && elt.panel.type === go.Panel.Spot && elt.panel.findMainElement() !== elt)
+            if (elt['_isNodeLabel'] &&
+                elt.panel.type === go.Panel.Spot &&
+                elt.panel.findMainElement() !== elt)
                 return elt;
             elt = elt.panel;
         }
@@ -72,15 +73,17 @@ export class NodeLabelDraggingTool extends go.Tool {
         return this.findLabel() !== null;
     }
     /**
-     * Start a transaction, call {@link #findLabel} and remember it as the "label" property,
-     * and remember the original value for the label's {@link GraphObject#alignment} property.
+     * Start a transaction, call {@link findLabel} and remember it as the "label" property,
+     * and remember the original value for the label's {@link go.GraphObject.alignment} property.
      */
     doActivate() {
         this.startTransaction('Shifted Label');
         this.label = this.findLabel();
         if (this.label !== null) {
             // compute the offset of the mouse-down point relative to the center of the label
-            this._offset = this.diagram.firstInput.documentPoint.copy().subtract(this.label.getDocumentPoint(go.Spot.Center));
+            this._offset = this.diagram.firstInput.documentPoint
+                .copy()
+                .subtract(this.label.getDocumentPoint(go.Spot.Center));
             this._originalAlignment = this.label.alignment.copy();
             const panel = this.label.panel;
             if (panel !== null) {
@@ -115,7 +118,7 @@ export class NodeLabelDraggingTool extends go.Tool {
         super.doCancel();
     }
     /**
-     * During the drag, call updateAlignment in order to set the {@link GraphObject#alignment} of the label.
+     * During the drag, call updateAlignment in order to set the {@link go.GraphObject.alignment} of the label.
      */
     doMouseMove() {
         if (!this.isActive)
@@ -134,7 +137,7 @@ export class NodeLabelDraggingTool extends go.Tool {
         this.stopTool();
     }
     /**
-     * Save the label's {@link GraphObject#alignment} as an absolute offset from the center of the Spot Panel
+     * Save the label's {@link go.GraphObject.alignment} as an absolute offset from the center of the Spot Panel
      * that the label is in.
      */
     updateAlignment() {

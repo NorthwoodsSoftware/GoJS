@@ -1,35 +1,35 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 // This is the definitions of the predefined text editor used by TextEditingTool
 // when you set or bind TextBlock.editable to true.
 // You do not need to load this file in order to use in-place text editing.
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
 // This file exposes one instance of HTMLInfo, window.TextEditor
 // Typical usage is:
-// <pre>
+// ```js
 //   new go.Diagram(...,
 //      {
-//        "textEditingTool.defaultTextEditor": window.TextEditor,
+//        'textEditingTool.defaultTextEditor': window.TextEditor,
 //        . . .
 //      })
-// </pre>
+// ```
 // or:
-// <pre>
+// ```js
 //    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
-// </pre>
-// <pre>
+// ```
+// ```js
 //   $(go.Node, . . .,
 //     . . .
 //       $(go.TextBlock, { textEditor: window.TextEditor, . . . })
 //     . . .
 //   )
-// </pre>
+// ```
 // If you do use this code, copy it into your project and modify it there.
 // See also TextEditor.html
 ((window: any) => {
@@ -38,62 +38,75 @@ import * as go from '../release/go-module.js';
   textarea.id = 'myTextArea';
 
   textarea.addEventListener('input', (e) => {
-    const tool = (TextEditor as any).tool;
-    if (tool.textBlock === null) return;
-    const tempText = tool.measureTemporaryTextBlock(textarea.value);
-    const scale = (textarea as any).textScale;
-    textarea.style.width = 20 + tempText.measuredBounds.width * scale + 'px';
-    textarea.rows = tempText.lineCount;
-  }, false);
+      const tool = (TextEditor as any).tool;
+      if (tool.textBlock === null) return;
+      const tempText = tool.measureTemporaryTextBlock(textarea.value);
+      const scale = (textarea as any).textScale;
+      textarea.style.width = 20 + Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale + 'px';
+      textarea.rows = Math.max(tool.textBlock.lineCount, tempText.lineCount);
+    },
+    false
+  );
 
   textarea.addEventListener('keydown', (e) => {
-    if (e.isComposing) return;
-    const tool = (TextEditor as any).tool;
-    if (tool.textBlock === null) return;
-    const key = e.key;
-    if (key === "Enter") { // Enter
-      if (tool.textBlock.isMultiline === false) e.preventDefault();
-      tool.acceptText(go.TextEditingTool.Enter);
-      return;
-    } else if (key === "Tab") { // Tab
-      tool.acceptText(go.TextEditingTool.Tab);
-      e.preventDefault();
-      return;
-    } else if (key === "Escape") { // Esc
-      tool.doCancel();
-      if (tool.diagram !== null) tool.diagram.doFocus();
-    }
-  }, false);
+      if (e.isComposing) return;
+      const tool = (TextEditor as any).tool;
+      if (tool.textBlock === null) return;
+      const key = e.key;
+      if (key === 'Enter') {
+        // Enter
+        if (tool.textBlock.isMultiline === false) e.preventDefault();
+        tool.acceptText(go.TextEditingAccept.Enter);
+      } else if (key === 'Tab') {
+        // Tab
+        tool.acceptText(go.TextEditingAccept.Tab);
+        e.preventDefault();
+      } else if (key === 'Escape') {
+        // Esc
+        tool.doCancel();
+        if (tool.diagram !== null) tool.diagram.doFocus();
+      }
+    },
+    false
+  );
 
   // handle focus:
   textarea.addEventListener('focus', (e) => {
-    const tool = (TextEditor as any).tool;
-    if (!tool || tool.currentTextEditor === null || tool.state === (go.TextEditingTool as any).StateNone) return;
+      const tool = (TextEditor as any).tool;
+      if (!tool ||
+          tool.currentTextEditor === null ||
+          tool.state === go.TextEditingState.None) return;
 
-    if (tool.state === (go.TextEditingTool as any).StateActive) {
-      tool.state = (go.TextEditingTool as any).StateEditing;
-    }
+      if (tool.state === go.TextEditingState.Active) {
+        tool.state = go.TextEditingState.Editing;
+      }
 
-    if (tool.selectsTextOnActivate) {
-      textarea.select();
-      textarea.setSelectionRange(0, 9999);
-    }
-  }, false);
+      if (tool.selectsTextOnActivate) {
+        textarea.select();
+        textarea.setSelectionRange(0, 9999);
+      }
+    },
+    false
+  );
 
   // Disallow blur.
   // If the textEditingTool blurs and the text is not valid,
   // we do not want focus taken off the element just because a user clicked elsewhere.
   textarea.addEventListener('blur', (e) => {
-    const tool = (TextEditor as any).tool;
-    if (!tool || tool.currentTextEditor === null || tool.state === (go.TextEditingTool as any).StateNone) return;
+      const tool = (TextEditor as any).tool;
+      if (!tool ||
+          tool.currentTextEditor === null ||
+          tool.state === go.TextEditingState.None) return;
 
-    textarea.focus();
+      textarea.focus();
 
-    if (tool.selectsTextOnActivate) {
-      textarea.select();
-      textarea.setSelectionRange(0, 9999);
-    }
-  }, false);
+      if (tool.selectsTextOnActivate) {
+        textarea.select();
+        textarea.setSelectionRange(0, 9999);
+      }
+    },
+    false
+  );
 
   TextEditor.valueFunction = () => textarea.value;
 
@@ -107,10 +120,10 @@ import * as go from '../release/go-module.js';
     if (!(textBlock instanceof go.TextBlock)) return;
     if ((TextEditor as any).tool !== null) return; // Only one at a time.
 
-    (TextEditor as any).tool = tool;  // remember the TextEditingTool for use by listeners
+    (TextEditor as any).tool = tool; // remember the TextEditingTool for use by listeners
 
     // This is called during validation, if validation failed:
-    if ((tool as any).state === (go.TextEditingTool as any).StateInvalid) {
+    if ((tool as any).state === go.TextEditingState.Invalid) {
       textarea.style.border = '3px solid red';
       textarea.focus();
       return;
@@ -125,16 +138,21 @@ import * as go from '../release/go-module.js';
     if (textscale < (tool as any).minimumEditorScale) textscale = (tool as any).minimumEditorScale;
     // Add slightly more width/height to stop scrollbars and line wrapping on some browsers
     // +6 is firefox minimum, otherwise lines will be wrapped improperly
-    const textwidth = (textBlock.naturalBounds.width * textscale) + 6;
-    const textheight = (textBlock.naturalBounds.height * textscale) + 2;
+    const textwidth = textBlock.naturalBounds.width * textscale + 6;
+    const textheight = textBlock.naturalBounds.height * textscale + 2;
     const left = (loc.x - pos.x) * sc;
     const yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
     const valign = textBlock.verticalAlignment;
     const oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
     const allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
-    const center = (0.5 * textheight) - (0.5 * allLinesHeight);
+    const center = 0.5 * textheight - 0.5 * allLinesHeight;
     // add offset to yCenter to get the appropriate position:
-    const yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
+    const yOffset =
+      valign.y * textheight -
+      valign.y * allLinesHeight +
+      valign.offsetY -
+      center -
+      allLinesHeight / 2;
 
     textarea.value = textBlock.text;
     // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides
@@ -145,11 +163,11 @@ import * as go from '../release/go-module.js';
     textarea.style['position'] = 'absolute';
     textarea.style['zIndex'] = '100';
     textarea.style['font'] = 'inherit';
-    textarea.style['fontSize'] = (textscale * 100) + '%';
+    textarea.style['fontSize'] = textscale * 100 + '%';
     textarea.style['lineHeight'] = 'normal';
-    textarea.style['width'] = (textwidth) + 'px';
-    textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
-    textarea.style['top'] = (((yCenter + yOffset) | 0) - paddingsize) + 'px';
+    textarea.style['width'] = textwidth + 'px';
+    textarea.style['left'] = ((left - textwidth / 2) | 0) - paddingsize + 'px';
+    textarea.style['top'] = ((yCenter + yOffset) | 0) - paddingsize + 'px';
     textarea.style['textAlign'] = textBlock.textAlign;
     textarea.style['margin'] = '0';
     textarea.style['padding'] = paddingsize + 'px';
@@ -173,7 +191,7 @@ import * as go from '../release/go-module.js';
   };
 
   TextEditor.hide = (diagram: go.Diagram, tool: go.Tool) => {
-    (TextEditor as any).tool = null;  // forget reference to TextEditingTool
+    (TextEditor as any).tool = null; // forget reference to TextEditingTool
     if (diagram.div) diagram.div.removeChild(textarea);
   };
 

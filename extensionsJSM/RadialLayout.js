@@ -1,32 +1,36 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
- * Given a root {@link Node}, this arranges connected nodes in concentric rings,
+ * Given a root {@link go.Node}, this arranges connected nodes in concentric rings,
  * layered by the minimum link distance from the root.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/Radial.html">Radial Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/Radial.html">Radial Layout</a> sample.
  * @category Layout Extension
  */
 export class RadialLayout extends go.Layout {
-    constructor() {
-        super(...arguments);
+    constructor(init) {
+        super();
         this._root = null;
-        this._layerThickness = 100; // how thick each ring should be
+        this._layerThickness = 100;
         this._maxLayers = Infinity;
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Gets or sets the {@link Node} that acts as the root or central node of the radial layout.
+     * Gets or sets the {@link go.Node} that acts as the root or central node of the radial layout.
      */
-    get root() { return this._root; }
+    get root() {
+        return this._root;
+    }
     set root(value) {
         if (this._root !== value) {
             this._root = value;
@@ -38,7 +42,9 @@ export class RadialLayout extends go.Layout {
      *
      * The default value is 100.
      */
-    get layerThickness() { return this._layerThickness; }
+    get layerThickness() {
+        return this._layerThickness;
+    }
     set layerThickness(value) {
         if (this._layerThickness !== value) {
             this._layerThickness = value;
@@ -50,7 +56,9 @@ export class RadialLayout extends go.Layout {
      *
      * The default value is Infinity.
      */
-    get maxLayers() { return this._maxLayers; }
+    get maxLayers() {
+        return this._maxLayers;
+    }
     set maxLayers(value) {
         if (this._maxLayers !== value) {
             this._maxLayers = value;
@@ -76,7 +84,7 @@ export class RadialLayout extends go.Layout {
     }
     /**
      * Find distances between root and vertexes, and then lay out radially.
-     * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
+     * @param coll - A {@link go.Diagram} or a {@link go.Group} or a collection of {@link go.Part}s.
      */
     doLayout(coll) {
         if (this.network === null) {
@@ -102,7 +110,8 @@ export class RadialLayout extends go.Layout {
             const first = this.network.vertexes.first();
             this.root = first === null ? null : first.node;
         }
-        if (this.root === null) { // nothing to do
+        if (this.root === null) {
+            // nothing to do
             this.network = null;
             return;
         }
@@ -180,14 +189,16 @@ export class RadialLayout extends go.Layout {
      * nor the distance the node will be from the root node.
      *
      * In order to give each child of a vertex the same fraction of arc, override this method:
-     * <code>computeBreadth(v) { return 1; }</code>
+     * `computeBreadth(v) { return 1; }`
      *
      * In order to give each child of a vertex a fraction of arc proportional to how many children the child has:
-     * <code>computeBreadth(v) { return Math.max(1, v.children.length); }
+     * `computeBreadth(v) { return Math.max(1, v.children.length); }`
      */
     computeBreadth(v) {
         let b = 0;
-        v.children.forEach(w => { b += this.computeBreadth(w); }); // inefficient
+        v.children.forEach((w) => {
+            b += this.computeBreadth(w);
+        }); // inefficient
         return Math.max(b, 1);
     }
     /**
@@ -197,7 +208,7 @@ export class RadialLayout extends go.Layout {
         if (this.network === null)
             return;
         // keep track of distances from the source node
-        this.network.vertexes.each(v => {
+        this.network.vertexes.each((v) => {
             if (!(v instanceof RadialVertex))
                 return; // typeguard
             v.distance = Infinity;
@@ -237,7 +248,7 @@ export class RadialLayout extends go.Layout {
             seen.remove(least);
             finished.add(least);
             // look at all edges connected with this vertex
-            least.edges.each(e => {
+            least.edges.each((e) => {
                 const neighbor = e.getOtherVertex(least);
                 if (!neighbor)
                     return;
@@ -258,14 +269,15 @@ export class RadialLayout extends go.Layout {
             });
         }
         // now update the RadialVertex.children Arrays to form a tree-structure
-        this.network.vertexes.each(v => {
+        this.network.vertexes.each((v) => {
             if (!(v instanceof RadialVertex))
                 return;
             const dist = v.distance;
             let arr = v.children;
             if (!arr)
                 arr = v.children = [];
-            v.vertexes.each(w => {
+            v.vertexes.each((w) => {
+                // use LayoutVertex.vertexes to remove duplicates
                 if (!(w instanceof RadialVertex))
                     return;
                 // use the RadialVertex.laid property for avoiding already-traversed vertexes
@@ -276,11 +288,13 @@ export class RadialLayout extends go.Layout {
             });
         });
         // reset RadialVertex.laid in case of future use
-        this.network.vertexes.each(v => { if (v instanceof RadialVertex)
-            v.laid = false; });
+        this.network.vertexes.each((v) => {
+            if (v instanceof RadialVertex)
+                v.laid = false;
+        });
     }
     /**
-     * This override positions each Node and also calls {@link #rotateNode}.
+     * This override positions each Node and also calls {@link rotateNode}.
      */
     commitLayout() {
         super.commitLayout();
@@ -290,7 +304,7 @@ export class RadialLayout extends go.Layout {
                 const v = it.value;
                 const n = v.node;
                 if (n !== null) {
-                    n.visible = (v.distance <= this.maxLayers);
+                    n.visible = v.distance <= this.maxLayers;
                     this.rotateNode(n, v.angle, v.sweep, v.radius);
                 }
             }
@@ -300,20 +314,21 @@ export class RadialLayout extends go.Layout {
     /**
      * Override this method in order to modify each node as it is laid out.
      * By default this method does nothing.
-     * @expose
+     * @virtual
      */
     rotateNode(node, angle, sweep, radius) { }
     /**
      * Override this method in order to create background circles indicating the layers of the radial layout.
      * By default this method does nothing.
-     * @expose
+     * @virtual
      */
     commitLayers() { }
 } // end RadialLayout
 /**
  * RadialVertex, a LayoutVertex that holds additional info
+ * @unindexed
  */
-class RadialVertex extends go.LayoutVertex {
+export class RadialVertex extends go.LayoutVertex {
     constructor(network) {
         super(network);
         this.distance = Infinity; // number of layers from the root, non-negative integers

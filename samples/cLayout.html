@@ -1,267 +1,336 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Interactive demonstration of circular layout features by the CircularLayout class."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Circular Layout</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Interactive demonstration of circular layout features by the CircularLayout class." />
+<meta itemprop="description" content="Interactive demonstration of circular layout features by the CircularLayout class." />
+<meta property="og:description" content="Interactive demonstration of circular layout features by the CircularLayout class." />
+<meta name="twitter:description" content="Interactive demonstration of circular layout features by the CircularLayout class." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Circular Layout />
+<meta property="og:title" content=Circular Layout />
+<meta name="twitter:title" content=Circular Layout />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/cLayout.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/cLayout.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/cLayout.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/cLayout.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/cLayout.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Circular Layout | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // must be the ID or reference to div
-          {
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.CircularLayout)
-            // other properties are set by the layout function, defined below
-          });
-
-      // define the Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-          // make sure the Node.location is different from the Node.position
-          { locationSpot: go.Spot.Center },
-          new go.Binding("text", "text"),  // for sorting
-          $(go.Shape, "Ellipse",  // the default value for the Shape.figure property
-            {
-              fill: "lightgray",
-              stroke: null,
-              desiredSize: new go.Size(30, 30)
-            },
-            new go.Binding("figure", "figure"),
-            new go.Binding("fill", "fill"),
-            new go.Binding("desiredSize", "size")),
-          $(go.TextBlock,
-            new go.Binding("text", "text"))
-        );
-
-      // define the Link template
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { selectable: false },
-          $(go.Shape,
-            { strokeWidth: 3, stroke: "#333" }));
-
-      // generate a circle using the default values
-      rebuildGraph();
-    }
-
-    function rebuildGraph() {
-      var numNodes = document.getElementById("numNodes").value;
-      numNodes = parseInt(numNodes, 10);
-      if (isNaN(numNodes)) numNodes = 16;
-
-      var width = document.getElementById("width").value;
-      width = parseFloat(width, 10);
-
-      var height = document.getElementById("height").value;
-      height = parseFloat(height, 10);
-
-      var randSizes = document.getElementById("randSizes").checked;
-
-      var circ = document.getElementById("circ").checked;
-
-      var cyclic = document.getElementById("cyclic").checked;
-
-      var minLinks = document.getElementById("minLinks").value;
-      minLinks = parseInt(minLinks, 10);
-
-      var maxLinks = document.getElementById("maxLinks").value;
-      maxLinks = parseInt(maxLinks, 10);
-
-      generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic);
-    }
-
-    function generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic) {
-      myDiagram.startTransaction("generateCircle");
-      // replace the diagram's model's nodeDataArray
-      generateNodes(numNodes, width, height, randSizes, circ);
-      // replace the diagram's model's linkDataArray
-      generateLinks(minLinks, maxLinks, cyclic);
-      // force a diagram layout
-      layout();
-      myDiagram.commitTransaction("generateCircle");
-    }
-
-    function generateNodes(numNodes, width, height, randSizes, circ) {
-      var nodeArray = [];
-      for (var i = 0; i < numNodes; i++) {
-        var size;
-        if (randSizes) {
-          size = new go.Size(Math.floor(Math.random() * (65 - width + 1)) + width, Math.floor(Math.random() * (65 - height + 1)) + height);
-        } else {
-          size = new go.Size(width, height);
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
+      });
 
-        if (circ) size.height = size.width;
-
-        var figure = "Rectangle";
-        if (circ) figure = "Ellipse";
-
-        nodeArray.push({
-          key: i,
-          text: i.toString(),
-          figure: figure,
-          fill: go.Brush.randomColor(),
-          size: size
-        });
-      }
-
-      // randomize the data, to help demonstrate sorting
-      for (i = 0; i < nodeArray.length; i++) {
-        var swap = Math.floor(Math.random() * nodeArray.length);
-        var temp = nodeArray[swap];
-        nodeArray[swap] = nodeArray[i];
-        nodeArray[i] = temp;
-      }
-
-      // set the nodeDataArray to this array of objects
-      myDiagram.model.nodeDataArray = nodeArray;
-    }
-
-    function generateLinks(min, max, cyclic) {
-      if (myDiagram.nodes.count < 2) return;
-      var linkArray = [];
-      var nit = myDiagram.nodes;
-      var nodes = new go.List(/*go.Node*/);
-      nodes.addAll(nit);
-      var num = nodes.length;
-      if (cyclic) {
-        for (var i = 0; i < num; i++) {
-          if (i >= num - 1) {
-            linkArray.push({ from: i, to: 0 });
-          } else {
-            linkArray.push({ from: i, to: i + 1 });
-          }
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must be the ID or reference to div
+      {
+        initialAutoScale: go.AutoScale.UniformToFill,
+        layout: $(go.CircularLayout),
+        // other properties are set by the layout function, defined below
+      }
+    );
+
+    // define the Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      'Spot',
+      // make sure the Node.location is different from the Node.position
+      { locationSpot: go.Spot.Center },
+      new go.Binding('text', 'text'), // for sorting
+      $(go.Shape,
+        'Ellipse', // the default value for the Shape.figure property
+        {
+          fill: 'lightgray',
+          stroke: null,
+          desiredSize: new go.Size(30, 30),
+        },
+        new go.Binding('figure', 'figure'),
+        new go.Binding('fill', 'fill'),
+        new go.Binding('desiredSize', 'size')
+      ),
+      $(go.TextBlock, new go.Binding('text', 'text'))
+    );
+
+    // define the Link template
+    myDiagram.linkTemplate = $(go.Link, { selectable: false }, $(go.Shape, { strokeWidth: 3, stroke: '#333' }));
+
+    // generate a circle using the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var numNodes = document.getElementById('numNodes').value;
+    numNodes = parseInt(numNodes, 10);
+    if (isNaN(numNodes)) numNodes = 16;
+
+    var width = document.getElementById('width').value;
+    width = parseFloat(width, 10);
+
+    var height = document.getElementById('height').value;
+    height = parseFloat(height, 10);
+
+    var randSizes = document.getElementById('randSizes').checked;
+
+    var circ = document.getElementById('circ').checked;
+
+    var cyclic = document.getElementById('cyclic').checked;
+
+    var minLinks = document.getElementById('minLinks').value;
+    minLinks = parseInt(minLinks, 10);
+
+    var maxLinks = document.getElementById('maxLinks').value;
+    maxLinks = parseInt(maxLinks, 10);
+
+    generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic);
+  }
+
+  function generateCircle(numNodes, width, height, minLinks, maxLinks, randSizes, circ, cyclic) {
+    myDiagram.startTransaction('generateCircle');
+    // replace the diagram's model's nodeDataArray
+    generateNodes(numNodes, width, height, randSizes, circ);
+    // replace the diagram's model's linkDataArray
+    generateLinks(minLinks, maxLinks, cyclic);
+    // force a diagram layout
+    layout();
+    myDiagram.commitTransaction('generateCircle');
+  }
+
+  function generateNodes(numNodes, width, height, randSizes, circ) {
+    var nodeArray = [];
+    for (var i = 0; i < numNodes; i++) {
+      var size;
+      if (randSizes) {
+        size = new go.Size(Math.floor(Math.random() * (65 - width + 1)) + width, Math.floor(Math.random() * (65 - height + 1)) + height);
       } else {
-        if (isNaN(min) || min < 0) min = 0;
-        if (isNaN(max) || max < min) max = min;
-        for (var i = 0; i < num; i++) {
-          var next = nodes.get(i);
-          var children = Math.floor(Math.random() * (max - min + 1)) + min;
-          for (var j = 1; j <= children; j++) {
-            var to = nodes.get(Math.floor(Math.random() * num));
-            // get keys from the Node.text strings
-            var nextKey = parseInt(next.text, 10);
-            var toKey = parseInt(to.text, 10);
-            if (nextKey !== toKey) {
-              linkArray.push({ from: nextKey, to: toKey });
-            }
+        size = new go.Size(width, height);
+      }
+
+      if (circ) size.height = size.width;
+
+      var figure = 'Rectangle';
+      if (circ) figure = 'Ellipse';
+
+      nodeArray.push({
+        key: i,
+        text: i.toString(),
+        figure: figure,
+        fill: go.Brush.randomColor(),
+        size: size,
+      });
+    }
+
+    // randomize the data, to help demonstrate sorting
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
+    }
+
+    // set the nodeDataArray to this array of objects
+    myDiagram.model.nodeDataArray = nodeArray;
+  }
+
+  function generateLinks(min, max, cyclic) {
+    if (myDiagram.nodes.count < 2) return;
+    var linkArray = [];
+    var nit = myDiagram.nodes;
+    var nodes = new go.List(/*go.Node*/);
+    nodes.addAll(nit);
+    var num = nodes.length;
+    if (cyclic) {
+      for (var i = 0; i < num; i++) {
+        if (i >= num - 1) {
+          linkArray.push({ from: i, to: 0 });
+        } else {
+          linkArray.push({ from: i, to: i + 1 });
+        }
+      }
+    } else {
+      if (isNaN(min) || min < 0) min = 0;
+      if (isNaN(max) || max < min) max = min;
+      for (var i = 0; i < num; i++) {
+        var next = nodes.get(i);
+        var children = Math.floor(Math.random() * (max - min + 1)) + min;
+        for (var j = 1; j <= children; j++) {
+          var to = nodes.get(Math.floor(Math.random() * num));
+          // get keys from the Node.text strings
+          var nextKey = parseInt(next.text, 10);
+          var toKey = parseInt(to.text, 10);
+          if (nextKey !== toKey) {
+            linkArray.push({ from: nextKey, to: toKey });
           }
         }
       }
-      myDiagram.model.linkDataArray = linkArray;
     }
+    myDiagram.model.linkDataArray = linkArray;
+  }
 
-    // Update the layout from the controls, and then perform the layout again
-    function layout() {
-      myDiagram.startTransaction("change Layout");
-      var lay = myDiagram.layout;
+  // Update the layout from the controls, and then perform the layout again
+  function layout() {
+    myDiagram.startTransaction('change Layout');
+    var lay = myDiagram.layout;
 
-      var radius = document.getElementById("radius").value;
-      if (radius !== "NaN") radius = parseFloat(radius, 10);
-      else radius = NaN;
-      lay.radius = radius;
+    var radius = document.getElementById('radius').value;
+    if (radius !== 'NaN') radius = parseFloat(radius, 10);
+    else radius = NaN;
+    lay.radius = radius;
 
-      var aspectRatio = document.getElementById("aspectRatio").value;
-      aspectRatio = parseFloat(aspectRatio, 10);
-      lay.aspectRatio = aspectRatio;
+    var aspectRatio = document.getElementById('aspectRatio').value;
+    aspectRatio = parseFloat(aspectRatio, 10);
+    lay.aspectRatio = aspectRatio;
 
-      var startAngle = document.getElementById("startAngle").value;
-      startAngle = parseFloat(startAngle, 10);
-      lay.startAngle = startAngle;
+    var startAngle = document.getElementById('startAngle').value;
+    startAngle = parseFloat(startAngle, 10);
+    lay.startAngle = startAngle;
 
-      var sweepAngle = document.getElementById("sweepAngle").value;
-      sweepAngle = parseFloat(sweepAngle, 10);
-      lay.sweepAngle = sweepAngle;
+    var sweepAngle = document.getElementById('sweepAngle').value;
+    sweepAngle = parseFloat(sweepAngle, 10);
+    lay.sweepAngle = sweepAngle;
 
-      var spacing = document.getElementById("spacing").value;
-      spacing = parseFloat(spacing, 10);
-      lay.spacing = spacing;
+    var spacing = document.getElementById('spacing').value;
+    spacing = parseFloat(spacing, 10);
+    lay.spacing = spacing;
 
-      var arrangement = document.getElementById("arrangement").value;
-      if (arrangement === "ConstantDistance") lay.arrangement = go.CircularLayout.ConstantDistance;
-      else if (arrangement === "ConstantAngle") lay.arrangement = go.CircularLayout.ConstantAngle;
-      else if (arrangement === "ConstantSpacing") lay.arrangement = go.CircularLayout.ConstantSpacing;
-      else if (arrangement === "Packed") lay.arrangement = go.CircularLayout.Packed;
+    var arrangement = document.getElementById('arrangement').value;
+    if (arrangement === 'ConstantDistance') lay.arrangement = go.CircularArrangement.ConstantDistance;
+    else if (arrangement === 'ConstantAngle') lay.arrangement = go.CircularArrangement.ConstantAngle;
+    else if (arrangement === 'ConstantSpacing') lay.arrangement = go.CircularArrangement.ConstantSpacing;
+    else if (arrangement === 'Packed') lay.arrangement = go.CircularArrangement.Packed;
 
-      var diamFormula = getRadioValue("diamFormula");
-      if (diamFormula === "Pythagorean") lay.nodeDiameterFormula = go.CircularLayout.Pythagorean;
-      else if (diamFormula === "Circular") lay.nodeDiameterFormula = go.CircularLayout.Circular;
+    var diamFormula = getRadioValue('diamFormula');
+    if (diamFormula === 'Pythagorean') lay.nodeDiameterFormula = go.CircularNodeDiameterFormula.Pythagorean;
+    else if (diamFormula === 'Circular') lay.nodeDiameterFormula = go.CircularNodeDiameterFormula.Circular;
 
-      var direction = document.getElementById("direction").value;
-      if (direction === "Clockwise") lay.direction = go.CircularLayout.Clockwise;
-      else if (direction === "Counterclockwise") lay.direction = go.CircularLayout.Counterclockwise;
-      else if (direction === "BidirectionalLeft") lay.direction = go.CircularLayout.BidirectionalLeft;
-      else if (direction === "BidirectionalRight") lay.direction = go.CircularLayout.BidirectionalRight;
+    var direction = document.getElementById('direction').value;
+    if (direction === 'Clockwise') lay.direction = go.CircularDirection.Clockwise;
+    else if (direction === 'Counterclockwise') lay.direction = go.CircularDirection.Counterclockwise;
+    else if (direction === 'BidirectionalLeft') lay.direction = go.CircularDirection.BidirectionalLeft;
+    else if (direction === 'BidirectionalRight') lay.direction = go.CircularDirection.BidirectionalRight;
 
-      var sorting = document.getElementById("sorting").value;
-      if (sorting === "Forwards") lay.sorting = go.CircularLayout.Forwards;
-      else if (sorting === "Reverse") lay.sorting = go.CircularLayout.Reverse;
-      else if (sorting === "Ascending") lay.sorting = go.CircularLayout.Ascending;
-      else if (sorting === "Descending") lay.sorting = go.CircularLayout.Descending;
-      else if (sorting === "Optimized") lay.sorting = go.CircularLayout.Optimized;
+    var sorting = document.getElementById('sorting').value;
+    if (sorting === 'Forwards') lay.sorting = go.CircularSorting.Forwards;
+    else if (sorting === 'Reverse') lay.sorting = go.CircularSorting.Reverse;
+    else if (sorting === 'Ascending') lay.sorting = go.CircularSorting.Ascending;
+    else if (sorting === 'Descending') lay.sorting = go.CircularSorting.Descending;
+    else if (sorting === 'Optimized') lay.sorting = go.CircularSorting.Optimized;
 
-      myDiagram.commitTransaction("change Layout");
-    }
+    myDiagram.commitTransaction('change Layout');
+  }
 
-    function getRadioValue(name) {
-      var radio = document.getElementsByName(name);
-      for (var i = 0; i < radio.length; i++)
-        if (radio[i].checked) return radio[i].value;
-    }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++) if (radio[i].checked) return radio[i].value;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
@@ -328,16 +397,64 @@
       (use "Optimized" to reduce the number of link crossings)
     </span>
   </div>
-  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 500px;"></div>
-  <p>
-    For information on <b>CircularLayout</b> and its properties, see the <a>CircularLayout</a> documentation page.
-  </p>
+  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 500px"></div>
+  <p>For information on <b>CircularLayout</b> and its properties, see the <a>CircularLayout</a> documentation page.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Circular Layout</h4>
+<p>
+This predefined layout is used for placing Nodes in a cirular or elliptical arrangement.
+More information can be found in the <a href="../intro/layouts.html#CircularLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#circularlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

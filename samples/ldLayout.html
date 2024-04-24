@@ -1,235 +1,304 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Layered Digraph Layout</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class." />
+<meta itemprop="description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class." />
+<meta property="og:description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class." />
+<meta name="twitter:description" content="Interactive demonstration of hierarchical layout features by the LayeredDigraphLayout class." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Layered Digraph />
+<meta property="og:title" content=Layered Digraph />
+<meta name="twitter:title" content=Layered Digraph />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ldLayout.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/ldLayout.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/ldLayout.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/ldLayout.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/ldLayout.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Layered Digraph | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-    <script id="code">
-    function init() {
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // must be the ID or reference to div
-          {
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.LayeredDigraphLayout, { alignOption: go.LayeredDigraphLayout.AlignAll })
-            // other Layout properties are set by the layout function, defined below
-          });
-
-      // define the Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-          { locationSpot: go.Spot.Center },
-          $(go.Shape, "Rectangle",
-            {
-              fill: "lightgray",  // the initial value, but data binding may provide different value
-              stroke: null,
-              desiredSize: new go.Size(30, 30)
-            },
-            new go.Binding("fill", "fill")),
-          $(go.TextBlock,
-            new go.Binding("text", "text"))
-        );
-
-      // define the Link template to be minimal
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { selectable: false },
-          $(go.Shape,
-            { strokeWidth: 3, stroke: "#333" }));
-
-      // generate a tree with the default values
-      rebuildGraph();
-    }
-
-    function rebuildGraph() {
-      var minNodes = document.getElementById("minNodes").value;
-      minNodes = parseInt(minNodes, 10);
-
-      var maxNodes = document.getElementById("maxNodes").value;
-      maxNodes = parseInt(maxNodes, 10);
-
-      generateDigraph(minNodes, maxNodes);
-    }
-
-    function generateDigraph(minNodes, maxNodes) {
-      myDiagram.startTransaction("generateDigraph");
-      // replace the diagram's model's nodeDataArray
-      generateNodes(minNodes, maxNodes);
-      // replace the diagram's model's linkDataArray
-      generateLinks();
-      // force a diagram layout
-      layout();
-      myDiagram.commitTransaction("generateDigraph");
-    }
-
-    // Creates a random number of randomly colored nodes.
-    function generateNodes(minNodes, maxNodes) {
-      var nodeArray = [];
-      // get the values from the fields and create a random number of nodes within the range
-      var min = parseInt(minNodes, 10);
-      var max = parseInt(maxNodes, 10);
-      if (isNaN(min)) min = 0;
-      if (isNaN(max) || max < min) max = min;
-      var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
-      var i;
-      for (i = 0; i < numNodes; i++) {
-        nodeArray.push({
-          key: i,
-          text: i.toString(),
-          fill: go.Brush.randomColor()
-        });
-      }
-
-      // randomize the node data
-      for (i = 0; i < nodeArray.length; i++) {
-        var swap = Math.floor(Math.random() * nodeArray.length);
-        var temp = nodeArray[swap];
-        nodeArray[swap] = nodeArray[i];
-        nodeArray[i] = temp;
-      }
-
-      // set the nodeDataArray to this array of objects
-      myDiagram.model.nodeDataArray = nodeArray;
-    }
-
-    // Create some link data
-    function generateLinks() {
-      if (myDiagram.nodes.count < 2) return;
-      var linkArray = [];
-      var nit = myDiagram.nodes;
-      var nodes = new go.List(/*go.Node*/);
-      nodes.addAll(nit);
-      for (var i = 0; i < nodes.count - 1; i++) {
-        var from = nodes.get(i);
-        var numto = Math.floor(1 + (Math.random() * 3) / 2);
-        for (var j = 0; j < numto; j++) {
-          var idx = Math.floor(i + 5 + Math.random() * 10);
-          if (idx >= nodes.count) idx = i + (Math.random() * (nodes.count - i)) | 0;
-          var to = nodes.get(idx);
-          linkArray.push({ from: from.data.key, to: to.data.key });
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
         }
       }
-      myDiagram.model.linkDataArray = linkArray;
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // must be the ID or reference to div
+      {
+        initialAutoScale: go.AutoScale.UniformToFill,
+        layout: $(go.LayeredDigraphLayout),
+        // other Layout properties are set by the layout function, defined below
+      }
+    );
+
+    // define the Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      'Spot',
+      { locationSpot: go.Spot.Center },
+      $(go.Shape,
+        'Rectangle',
+        {
+          fill: 'lightgray', // the initial value, but data binding may provide different value
+          stroke: null,
+          desiredSize: new go.Size(30, 30),
+        },
+        new go.Binding('fill', 'fill')
+      ),
+      $(go.TextBlock, new go.Binding('text', 'text'))
+    );
+
+    // define the Link template to be minimal
+    myDiagram.linkTemplate = $(go.Link, { selectable: false }, $(go.Shape, { strokeWidth: 3, stroke: '#333' }));
+
+    // generate a tree with the default values
+    rebuildGraph();
+  }
+
+  function rebuildGraph() {
+    var minNodes = document.getElementById('minNodes').value;
+    minNodes = parseInt(minNodes, 10);
+
+    var maxNodes = document.getElementById('maxNodes').value;
+    maxNodes = parseInt(maxNodes, 10);
+
+    generateDigraph(minNodes, maxNodes);
+  }
+
+  function generateDigraph(minNodes, maxNodes) {
+    myDiagram.startTransaction('generateDigraph');
+    // replace the diagram's model's nodeDataArray
+    generateNodes(minNodes, maxNodes);
+    // replace the diagram's model's linkDataArray
+    generateLinks();
+    // force a diagram layout
+    layout();
+    myDiagram.commitTransaction('generateDigraph');
+  }
+
+  // Creates a random number of randomly colored nodes.
+  function generateNodes(minNodes, maxNodes) {
+    var nodeArray = [];
+    // get the values from the fields and create a random number of nodes within the range
+    var min = parseInt(minNodes, 10);
+    var max = parseInt(maxNodes, 10);
+    if (isNaN(min)) min = 0;
+    if (isNaN(max) || max < min) max = min;
+    var numNodes = Math.floor(Math.random() * (max - min + 1)) + min;
+    var i;
+    for (i = 0; i < numNodes; i++) {
+      nodeArray.push({
+        key: i,
+        text: i.toString(),
+        fill: go.Brush.randomColor(),
+      });
     }
 
-    function layout() {
-      myDiagram.startTransaction("change Layout");
-      var lay = myDiagram.layout;
-
-      var direction = getRadioValue("direction");
-      direction = parseFloat(direction, 10);
-      lay.direction = direction;
-
-      var layerSpacing = document.getElementById("layerSpacing").value;
-      layerSpacing = parseFloat(layerSpacing, 10);
-      lay.layerSpacing = layerSpacing;
-
-      var columnSpacing = document.getElementById("columnSpacing").value;
-      columnSpacing = parseFloat(columnSpacing, 10);
-      lay.columnSpacing = columnSpacing;
-
-      var cycleRemove = getRadioValue("cycleRemove");
-      if (cycleRemove === "CycleDepthFirst") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleDepthFirst;
-      else if (cycleRemove === "CycleGreedy") lay.cycleRemoveOption = go.LayeredDigraphLayout.CycleGreedy;
-
-      var layering = getRadioValue("layering");
-      if (layering === "LayerOptimalLinkLength") lay.layeringOption = go.LayeredDigraphLayout.LayerOptimalLinkLength;
-      else if (layering === "LayerLongestPathSource") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSource;
-      else if (layering === "LayerLongestPathSink") lay.layeringOption = go.LayeredDigraphLayout.LayerLongestPathSink;
-
-      var initialize = getRadioValue("initialize");
-      if (initialize === "InitDepthFirstOut") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstOut;
-      else if (initialize === "InitDepthFirstIn") lay.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
-      else if (initialize === "InitNaive") lay.initializeOption = go.LayeredDigraphLayout.InitNaive;
-
-      var aggressive = getRadioValue("aggressive");
-      if (aggressive === "AggressiveLess") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveLess;
-      else if (aggressive === "AggressiveNone") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveNone;
-      else if (aggressive === "AggressiveMore") lay.aggressiveOption = go.LayeredDigraphLayout.AggressiveMore;
-
-      //TODO implement pack option
-      var i;
-      var pack = document.getElementsByName("pack");
-      var packing = 0;
-      for (i = 0; i < pack.length; i++) {
-        if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
-      }
-      lay.packOption = packing;
-
-      var setsPortSpots = document.getElementById("setsPortSpots");
-      lay.setsPortSpots = setsPortSpots.checked;
-
-      var align = document.getElementsByName("align");
-      var alignOption = 0;
-      for (i = 0; i < align.length; i++) {
-        if (align[i].checked) alignOption = alignOption | parseInt(align[i].value, 10);
-      }
-      for (i = 0; i < pack.length; i++) {
-        var cb = pack[i];
-        cb.disabled = alignOption !== 0;
-      }
-      lay.alignOption = alignOption;
-
-      myDiagram.commitTransaction("change Layout");
+    // randomize the node data
+    for (i = 0; i < nodeArray.length; i++) {
+      var swap = Math.floor(Math.random() * nodeArray.length);
+      var temp = nodeArray[swap];
+      nodeArray[swap] = nodeArray[i];
+      nodeArray[i] = temp;
     }
 
-    function getRadioValue(name) {
-      var radio = document.getElementsByName(name);
-      for (var i = 0; i < radio.length; i++)
-        if (radio[i].checked) return radio[i].value;
+    // set the nodeDataArray to this array of objects
+    myDiagram.model.nodeDataArray = nodeArray;
+  }
+
+  // Create some link data
+  function generateLinks() {
+    if (myDiagram.nodes.count < 2) return;
+    var linkArray = [];
+    var nit = myDiagram.nodes;
+    var nodes = new go.List(/*go.Node*/);
+    nodes.addAll(nit);
+    for (var i = 0; i < nodes.count - 1; i++) {
+      var from = nodes.get(i);
+      var numto = Math.floor(1 + (Math.random() * 3) / 2);
+      for (var j = 0; j < numto; j++) {
+        var idx = Math.floor(i + 5 + Math.random() * 10);
+        if (idx >= nodes.count) idx = (i + Math.random() * (nodes.count - i)) | 0;
+        var to = nodes.get(idx);
+        linkArray.push({ from: from.data.key, to: to.data.key });
+      }
     }
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+    myDiagram.model.linkDataArray = linkArray;
+  }
+
+  function layout() {
+    myDiagram.startTransaction('change Layout');
+    var lay = myDiagram.layout;
+
+    var direction = getRadioValue('direction');
+    direction = parseFloat(direction, 10);
+    lay.direction = direction;
+
+    var layerSpacing = document.getElementById('layerSpacing').value;
+    layerSpacing = parseFloat(layerSpacing, 10);
+    lay.layerSpacing = layerSpacing;
+
+    var columnSpacing = document.getElementById('columnSpacing').value;
+    columnSpacing = parseFloat(columnSpacing, 10);
+    lay.columnSpacing = columnSpacing;
+
+    var cycleRemove = getRadioValue('cycleRemove');
+    if (cycleRemove === 'CycleDepthFirst') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.DepthFirst;
+    else if (cycleRemove === 'CycleGreedy') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.Greedy;
+
+    var layering = getRadioValue('layering');
+    if (layering === 'LayerOptimalLinkLength') lay.layeringOption = go.LayeredDigraphLayering.OptimalLinkLength;
+    else if (layering === 'LayerLongestPathSource') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSource;
+    else if (layering === 'LayerLongestPathSink') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSink;
+
+    var initialize = getRadioValue('initialize');
+    if (initialize === 'InitDepthFirstOut') lay.initializeOption = go.LayeredDigraphInit.DepthFirstOut;
+    else if (initialize === 'InitDepthFirstIn') lay.initializeOption = go.LayeredDigraphInit.DepthFirstIn;
+    else if (initialize === 'InitNaive') lay.initializeOption = go.LayeredDigraphInit.Naive;
+
+    var aggressive = getRadioValue('aggressive');
+    if (aggressive === 'AggressiveLess') lay.aggressiveOption = go.LayeredDigraphAggressive.Less;
+    else if (aggressive === 'AggressiveNone') lay.aggressiveOption = go.LayeredDigraphAggressive.None;
+    else if (aggressive === 'AggressiveMore') lay.aggressiveOption = go.LayeredDigraphAggressive.More;
+
+    //TODO implement pack option
+    var i;
+    var pack = document.getElementsByName('pack');
+    var packing = 0;
+    for (i = 0; i < pack.length; i++) {
+      if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
+    }
+    lay.packOption = packing;
+
+    var setsPortSpots = document.getElementById('setsPortSpots');
+    lay.setsPortSpots = setsPortSpots.checked;
+
+    var align = document.getElementsByName('align');
+    var alignOption = 0;
+    for (i = 0; i < align.length; i++) {
+      if (align[i].checked) alignOption = alignOption | parseInt(align[i].value, 10);
+    }
+    for (i = 0; i < pack.length; i++) {
+      var cb = pack[i];
+      cb.disabled = alignOption !== 0;
+    }
+    lay.alignOption = alignOption;
+
+    myDiagram.commitTransaction('change Layout');
+  }
+
+  function getRadioValue(name) {
+    var radio = document.getElementsByName(name);
+    for (var i = 0; i < radio.length; i++) if (radio[i].checked) return radio[i].value;
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
@@ -243,11 +312,10 @@
       <b>LayeredDigraphLayout Properties</b><br />
       Direction:
       <input type="radio" name="direction" onclick="layout()" value="0" checked="checked" />Right (0)
-      <input type="radio" name="direction" onclick="layout()" value="90" />Down (90)
-      <input type="radio" name="direction" onclick="layout()" value="180" />Left (180)
-      <input type="radio" name="direction" onclick="layout()" value="270" />Up (270)<br />
+      <input type="radio" name="direction" onclick="layout()" value="90" />Down (90) <input type="radio" name="direction" onclick="layout()" value="180" />Left
+      (180) <input type="radio" name="direction" onclick="layout()" value="270" />Up (270)<br />
       LayerSpacing:
-      <input type="text" size="3" id="layerSpacing" value="25" onchange="layout()" style="clear: left;" /><br />
+      <input type="text" size="3" id="layerSpacing" value="25" onchange="layout()" style="clear: left" /><br />
       ColumnSpacing:
       <input type="text" size="3" id="columnSpacing" value="25" onchange="layout()" /><br />
       CycleRemove:
@@ -278,15 +346,62 @@
     </span>
   </div>
   <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 500px"></div>
-  <p>
-    For information on <b>LayeredDigraphLayout</b> and its properties, see the <a>LayeredDigraphLayout</a> documentation page.
-  </p>
+  <p>For information on <b>LayeredDigraphLayout</b> and its properties, see the <a>LayeredDigraphLayout</a> documentation page.</p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Collections</h4>
+<p>
+<b>GoJS</b> provides its own collection classes: <a href="../api/symbols/List.html" target="api">List</a>, <a href="../api/symbols/Set.html" target="api">Set</a>, and <a href="../api/symbols/Map.html" target="api">Map</a>.
+You can iterate over a collection by using an <a href="../api/symbols/Iterator.html" target="api">Iterator</a>.
+More information can be found in the <a href="../intro/collections.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#collections">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Layered Digraph Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a general directed graph in layers (rows or columns). This is more general than <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+as it does not require that the graph be tree-structured.
+More information can be found in the <a href="../intro/layouts.html#LayeredDigraphLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#layered-digraph">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

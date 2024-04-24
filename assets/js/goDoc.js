@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved. */
 
 // Used on live samples on pages, like Intro
 function goCodeExecute(pre, w, h, parentId, animation) {
@@ -77,31 +77,5 @@ function _traverseDOM(node) {
   }
   for (var i = 0; i < node.childNodes.length; i++) {
     _traverseDOM(node.childNodes[i]);
-  }
-}
-
-var coll = document.getElementById('navButton');
-var navList = document.getElementById('navList');
-if (coll !== null) {
-  coll.addEventListener('click', () => {
-    coll.classList.toggle('active');
-    navList.classList.toggle('hidden');
-    document.getElementById('navOpen').classList.toggle('hidden');
-    document.getElementById('navClosed').classList.toggle('hidden');
-  });
-
-  var url = window.location.href;
-  var lindex = url.lastIndexOf('/');
-  url = url.slice(lindex + 1).toLowerCase();
-  var aTags = navList.getElementsByTagName('a');
-  var currentindex = -1;
-  for (var i = 0; i < aTags.length; i++) {
-    var lowerhref = aTags[i].href.toLowerCase();
-    if (lowerhref.indexOf('/' + url) !== -1) {
-      currentindex = i;
-      aTags[i].classList.add('bg-nwoods-secondary');
-      aTags[i].style = 'color: white';
-      break;
-    }
   }
 }

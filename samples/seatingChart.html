@@ -1,526 +1,643 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="A seating chart editor for assigning places at tables."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Seating Chart</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="A seating chart editor for assigning places at tables." />
+<meta itemprop="description" content="A seating chart editor for assigning places at tables." />
+<meta property="og:description" content="A seating chart editor for assigning places at tables." />
+<meta name="twitter:description" content="A seating chart editor for assigning places at tables." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Seating Chart />
+<meta property="og:title" content=Seating Chart />
+<meta name="twitter:title" content=Seating Chart />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/seatingChart.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/seatingChart.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/seatingChart.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/seatingChart.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/seatingChart.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Seating Chart | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
 
-  <style>
-    /* Use a Flexbox to make the Palette/Diagram responsive */
-    #myFlexDiv {
-      display: flex;
-      width: 100%;
-      justify-content: center;
-    }
-
-    @media (min-width: 768px) {
-      #myGuests {
-        width: 100px;
-        height: 500px;
-        margin-right: 10px;
-      }
-
-      #myDiagramDiv {
-        height: 500px;
-        flex: 1;
-      }
-    }
-
-    @media (max-width: 767px) {
-      #myGuests {
-        width: 20%;
-        max-width: 100px;
-        height: 500px;
-      }
-
-      #myDiagramDiv {
-        width: 80%;
-        height: 500px;
-        flex: 1;
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
     }
-  </style>
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-    <script id="code">
-    function init() {
+        
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
-      // Initialize the main Diagram
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            allowDragOut: true,  // to myGuests
-            allowClipboard: false,
-            draggingTool: $(SpecialDraggingTool),
-            rotatingTool: $(HorizontalTextRotatingTool),
-            // For this sample, automatically show the state of the diagram's model on the page
-            "ModelChanged": e => {
-              if (e.isTransactionFinished) {
-                document.getElementById("savedModel").textContent = myDiagram.model.toJson();
-              }
-            },
-            "undoManager.isEnabled": true
-          });
 
-      myDiagram.nodeTemplateMap.add("",  // default template, for people
-        $(go.Node, "Auto",
-          { background: "transparent" },  // in front of all Tables
-          // when selected is in foreground layer
-          new go.Binding("layerName", "isSelected", s => s ? "Foreground" : "").ofObject(),
-          { locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          new go.Binding("text", "key"),
-          { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-            mouseDragEnter: (e, node, prev) => {
-              const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;  // could be copied from palette
-              highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-            },
-            mouseDragLeave: (e, node, next) => {
-              const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-              highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-            },
-            mouseDrop: (e, node) => {
-              assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
-            }
+<style>
+  /* Use a Flexbox to make the Palette/Diagram responsive */
+  #myFlexDiv {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    #myGuests {
+      width: 100px;
+      height: 500px;
+      margin-right: 10px;
+    }
+
+    #myDiagramDiv {
+      height: 500px;
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 767px) {
+    #myGuests {
+      width: 20%;
+      max-width: 100px;
+      height: 500px;
+    }
+
+    #myDiagramDiv {
+      width: 80%;
+      height: 500px;
+      flex: 1;
+    }
+  }
+</style>
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;
+
+    // Initialize the main Diagram
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowDragOut: true, // to myGuests
+      allowClipboard: false,
+      draggingTool: $(SpecialDraggingTool),
+      rotatingTool: $(HorizontalTextRotatingTool),
+      // For this sample, automatically show the state of the diagram's model on the page
+      ModelChanged: (e) => {
+        if (e.isTransactionFinished) {
+          document.getElementById('savedModel').textContent = myDiagram.model.toJson();
+        }
+      },
+      'undoManager.isEnabled': true,
+    });
+
+    myDiagram.nodeTemplateMap.add(
+      '', // default template, for people
+      $(go.Node,
+        'Auto',
+        { background: 'transparent' }, // in front of all Tables
+        // when selected is in foreground layer
+        new go.Binding('layerName', 'isSelected', (s) => (s ? 'Foreground' : '')).ofObject(),
+        { locationSpot: go.Spot.Center },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        new go.Binding('text', 'key'),
+        {
+          // what to do when a drag-over or a drag-drop occurs on a Node representing a table
+          mouseDragEnter: (e, node, prev) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
           },
-          $(go.Shape, "Rectangle", { fill: "blanchedalmond", stroke: null }),
-          $(go.Panel, "Viewbox",
-            { desiredSize: new go.Size(50, 38) },
-            $(go.TextBlock, { margin: 2, desiredSize: new go.Size(55, NaN), font: "8pt Verdana, sans-serif", textAlign: "center", stroke: "darkblue" },
-              new go.Binding("text", "", data => {
-                let s = data.key;
-                if (data.plus) s += " +" + data.plus.toString();
-                return s;
-              }))
+          mouseDragLeave: (e, node, next) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+          },
+          mouseDrop: (e, node) => {
+            assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
+          },
+        },
+        $(go.Shape, 'Rectangle', { fill: 'blanchedalmond', stroke: null }),
+        $(go.Panel,
+          'Viewbox',
+          { desiredSize: new go.Size(50, 38) },
+          $(go.TextBlock,
+            { margin: 2, desiredSize: new go.Size(55, NaN), font: '8pt Verdana, sans-serif', textAlign: 'center', stroke: 'darkblue' },
+            new go.Binding('text', '', (data) => {
+              let s = data.key;
+              if (data.plus) s += ' +' + data.plus.toString();
+              return s;
+            })
           )
-        ));
+        )
+      )
+    );
 
-      // Create a seat element at a particular alignment relative to the table.
-      function Seat(number, align, focus) {
-        if (typeof align === 'string') align = go.Spot.parse(align);
-        if (!align || !align.isSpot()) align = go.Spot.Right;
-        if (typeof focus === 'string') focus = go.Spot.parse(focus);
-        if (!focus || !focus.isSpot()) focus = align.opposite();
-        return $(go.Panel, "Spot",
-          { name: number.toString(), alignment: align, alignmentFocus: focus },
-          $(go.Shape, "Circle",
-            { name: "SEATSHAPE", desiredSize: new go.Size(40, 40), fill: "burlywood", stroke: "white", strokeWidth: 2 },
-            new go.Binding("fill")),
-          $(go.TextBlock, number.toString(),
-            { font: "10pt Verdana, sans-serif" },
-            new go.Binding("angle", "angle", n => -n))
-        );
-      }
-
-      function tableStyle() {
-        return [
-          { background: "transparent" },
-          { layerName: "Background" },  // behind all Persons
-          { locationSpot: go.Spot.Center, locationObjectName: "TABLESHAPE" },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          { rotatable: true },
-          new go.Binding("angle").makeTwoWay(),
-          { // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-            mouseDragEnter: (e, node, prev) => {
-              const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;  // could be copied from palette
-              highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-            },
-            mouseDragLeave: (e, node, next) => {
-              const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-              highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-            },
-            mouseDrop: (e, node) => assignPeopleToSeats(node, node.diagram.selection, e.documentPoint)
-          }
-        ];
-      }
-
-      // various kinds of tables:
-
-      myDiagram.nodeTemplateMap.add("TableR8",  // rectangular with 8 seats
-        $(go.Node, "Spot", tableStyle(),
-          $(go.Panel, "Spot",
-            $(go.Shape, "Rectangle",
-              { name: "TABLESHAPE", desiredSize: new go.Size(160, 80), fill: "burlywood", stroke: null },
-              new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-              new go.Binding("fill")),
-            $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
-              new go.Binding("text", "name").makeTwoWay(),
-              new go.Binding("angle", "angle", n => -n))
-          ),
-          Seat(1, "0.2 0", "0.5 1"),
-          Seat(2, "0.5 0", "0.5 1"),
-          Seat(3, "0.8 0", "0.5 1"),
-          Seat(4, "1 0.5", "0 0.5"),
-          Seat(5, "0.8 1", "0.5 0"),
-          Seat(6, "0.5 1", "0.5 0"),
-          Seat(7, "0.2 1", "0.5 0"),
-          Seat(8, "0 0.5", "1 0.5")
-        ));
-
-      myDiagram.nodeTemplateMap.add("TableR3",  // rectangular with 3 seats in a line
-        $(go.Node, "Spot", tableStyle(),
-          $(go.Panel, "Spot",
-            $(go.Shape, "Rectangle",
-              { name: "TABLESHAPE", desiredSize: new go.Size(160, 60), fill: "burlywood", stroke: null },
-              new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-              new go.Binding("fill")),
-            $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
-              new go.Binding("text", "name").makeTwoWay(),
-              new go.Binding("angle", "angle", n => -n))
-          ),
-          Seat(1, "0.2 0", "0.5 1"),
-          Seat(2, "0.5 0", "0.5 1"),
-          Seat(3, "0.8 0", "0.5 1")
-        ));
-
-      myDiagram.nodeTemplateMap.add("TableC8",  // circular with 8 seats
-        $(go.Node, "Spot", tableStyle(),
-          $(go.Panel, "Spot",
-            $(go.Shape, "Circle",
-              { name: "TABLESHAPE", desiredSize: new go.Size(120, 120), fill: "burlywood", stroke: null },
-              new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-              new go.Binding("fill")),
-            $(go.TextBlock, { editable: true, font: "bold 11pt Verdana, sans-serif" },
-              new go.Binding("text", "name").makeTwoWay(),
-              new go.Binding("angle", "angle", n => -n))
-          ),
-          Seat(1, "0.50 0", "0.5 1"),
-          Seat(2, "0.85 0.15", "0.15 0.85"),
-          Seat(3, "1 0.5", "0 0.5"),
-          Seat(4, "0.85 0.85", "0.15 0.15"),
-          Seat(5, "0.50 1", "0.5 0"),
-          Seat(6, "0.15 0.85", "0.85 0.15"),
-          Seat(7, "0 0.5", "1 0.5"),
-          Seat(8, "0.15 0.15", "0.85 0.85")
-        ));
-
-      // what to do when a drag-drop occurs in the Diagram's background
-      myDiagram.mouseDrop = e => {
-        // when the selection is dropped in the diagram's background,
-        // make sure the selected people no longer belong to any table
-        e.diagram.selection.each(n => {
-          if (isPerson(n)) unassignSeat(n.data);
-        });
-      };
-
-      // to simulate a "move" from the Palette, the source Node must be deleted.
-      myDiagram.addDiagramListener("ExternalObjectsDropped", e => {
-        // if any Tables were dropped, don't delete from myGuests
-        if (!e.subject.any(isTable)) {
-          myGuests.commandHandler.deleteSelection();
-        }
-      });
-
-      // put deleted people back in the myGuests diagram
-      myDiagram.addDiagramListener("SelectionDeleted", e => {
-        // no-op if deleted by myGuests' ExternalObjectsDropped listener
-        if (myDiagram.disableSelectionDeleted) return;
-        // e.subject is the myDiagram.selection collection
-        e.subject.each(n => {
-          if (isPerson(n)) {
-            myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
-          }
-        });
-      });
-
-      // create some initial tables
-      myDiagram.model = new go.GraphLinksModel([
-        { "key": 1, "category": "TableR3", "name": "Head 1", "guests": {}, "loc": "143.5 58" },
-        { "key": 2, "category": "TableR3", "name": "Head 2", "guests": {}, "loc": "324.5 58" },
-        { "key": 3, "category": "TableR8", "name": "3", "guests": {}, "loc": "121.5 203.5" },
-        { "key": 4, "category": "TableC8", "name": "4", "guests": {}, "loc": "364.5 223.5" }
-      ]);  // this sample does not make use of any links
-
-
-      // initialize the Palette
-      myGuests =
-        new go.Diagram("myGuests",
-          {
-            layout: $(go.GridLayout,
-              {
-                sorting: go.GridLayout.Ascending  // sort by Node.text value
-              }),
-            allowDragOut: true,  // to myDiagram
-            allowMove: false
-          });
-
-      myGuests.nodeTemplateMap = myDiagram.nodeTemplateMap;
-
-      // specify the contents of the Palette
-      myGuests.model = new go.GraphLinksModel([
-        { key: "Tyrion Lannister" },
-        { key: "Daenerys Targaryen", plus: 3 },  // dragons, of course
-        { key: "Jon Snow" },
-        { key: "Stannis Baratheon" },
-        { key: "Arya Stark" },
-        { key: "Jorah Mormont" },
-        { key: "Sandor Clegane" },
-        { key: "Joffrey Baratheon" },
-        { key: "Brienne of Tarth" },
-        { key: "Hodor" }
-      ]);
-
-      myGuests.model.undoManager = myDiagram.model.undoManager  // shared UndoManager!
-
-      // To simulate a "move" from the Diagram back to the Palette, the source Node must be deleted.
-      myGuests.addDiagramListener("ExternalObjectsDropped", e => {
-        // e.subject is the myGuests.selection collection
-        // if the user dragged a Table to the myGuests diagram, cancel the drag
-        if (e.subject.any(isTable)) {
-          myDiagram.currentTool.doCancel();
-          myGuests.currentTool.doCancel();
-          return;
-        }
-        myDiagram.selection.each(n => {
-          if (isPerson(n)) unassignSeat(n.data);
-        });
-        myDiagram.disableSelectionDeleted = true;
-        myDiagram.commandHandler.deleteSelection();
-        myDiagram.disableSelectionDeleted = false;
-        myGuests.selection.each(n => {
-          if (isPerson(n)) unassignSeat(n.data);
-        });
-      });
-
-      go.AnimationManager.defineAnimationEffect("location",
-        (obj, startValue, endValue, easing, currentTime, duration, animationState) => {
-          obj.location = new go.Point(easing(currentTime, startValue.x, endValue.x - startValue.x, duration),
-                                      easing(currentTime, startValue.y, endValue.y - startValue.y, duration));
-        }
+    // Create a seat element at a particular alignment relative to the table.
+    function Seat(number, align, focus) {
+      if (typeof align === 'string') align = go.Spot.parse(align);
+      if (!align || !align.isSpot()) align = go.Spot.Right;
+      if (typeof focus === 'string') focus = go.Spot.parse(focus);
+      if (!focus || !focus.isSpot()) focus = align.opposite();
+      return $(go.Panel,
+        'Spot',
+        { name: number.toString(), alignment: align, alignmentFocus: focus },
+        $(go.Shape,
+          'Circle',
+          { name: 'SEATSHAPE', desiredSize: new go.Size(40, 40), fill: 'burlywood', stroke: 'white', strokeWidth: 2 },
+          new go.Binding('fill')
+        ),
+        $(go.TextBlock, number.toString(), { font: '10pt Verdana, sans-serif' }, new go.Binding('angle', 'angle', (n) => -n))
       );
-    } // end init
-
-    function isPerson(n) { return n !== null && n.category === ""; }
-
-    function isTable(n) { return n !== null && n.category !== ""; }
-
-    // Highlight the empty and occupied seats at a "Table" Node
-    function highlightSeats(node, coll, show) {
-      if (isPerson(node)) {  // refer to the person's table instead
-        node = node.diagram.findNodeForKey(node.data.table);
-        if (node === null) return;
-      }
-      const it = coll.iterator;
-      while (it.next()) {
-        const n = it.key;
-        // if dragging a Table, don't do any highlighting
-        if (isTable(n)) return;
-      }
-      const guests = node.data.guests;
-      for (const sit = node.elements; sit.next();) {
-        const seat = sit.value;
-        if (seat.name) {
-          const num = parseFloat(seat.name);
-          if (isNaN(num)) continue;
-          const seatshape = seat.findObject("SEATSHAPE");
-          if (!seatshape) continue;
-          if (show) {
-            if (guests[seat.name]) {
-              seatshape.stroke = "red";
-            } else {
-              seatshape.stroke = "green";
-            }
-          } else {
-            seatshape.stroke = "white";
-          }
-        }
-      }
     }
 
-    // Given a "Table" Node, assign seats for all of the people in the given collection of Nodes;
-    // the optional Point argument indicates where the collection of people may have been dropped.
-    function assignPeopleToSeats(node, coll, pt) {
-      if (isPerson(node)) {  // refer to the person's table instead
-        node = node.diagram.findNodeForKey(node.data.table);
-        if (node === null) return;
+    function tableStyle() {
+      return [
+        { background: 'transparent' },
+        { layerName: 'Background' }, // behind all Persons
+        { locationSpot: go.Spot.Center, locationObjectName: 'TABLESHAPE' },
+        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+        { rotatable: true },
+        new go.Binding('angle').makeTwoWay(),
+        {
+          // what to do when a drag-over or a drag-drop occurs on a Node representing a table
+          mouseDragEnter: (e, node, prev) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
+          },
+          mouseDragLeave: (e, node, next) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+          },
+          mouseDrop: (e, node) => assignPeopleToSeats(node, node.diagram.selection, e.documentPoint),
+        },
+      ];
+    }
+
+    // various kinds of tables:
+
+    myDiagram.nodeTemplateMap.add(
+      'TableR8', // rectangular with 8 seats
+      $(go.Node,
+        'Spot',
+        tableStyle(),
+        $(go.Panel,
+          'Spot',
+          $(go.Shape,
+            'Rectangle',
+            { name: 'TABLESHAPE', desiredSize: new go.Size(160, 80), fill: 'burlywood', stroke: null },
+            new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
+            new go.Binding('fill')
+          ),
+          $(go.TextBlock,
+            { editable: true, font: 'bold 11pt Verdana, sans-serif' },
+            new go.Binding('text', 'name').makeTwoWay(),
+            new go.Binding('angle', 'angle', (n) => -n)
+          )
+        ),
+        Seat(1, '0.2 0', '0.5 1'),
+        Seat(2, '0.5 0', '0.5 1'),
+        Seat(3, '0.8 0', '0.5 1'),
+        Seat(4, '1 0.5', '0 0.5'),
+        Seat(5, '0.8 1', '0.5 0'),
+        Seat(6, '0.5 1', '0.5 0'),
+        Seat(7, '0.2 1', '0.5 0'),
+        Seat(8, '0 0.5', '1 0.5')
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'TableR3', // rectangular with 3 seats in a line
+      $(go.Node,
+        'Spot',
+        tableStyle(),
+        $(go.Panel,
+          'Spot',
+          $(go.Shape,
+            'Rectangle',
+            { name: 'TABLESHAPE', desiredSize: new go.Size(160, 60), fill: 'burlywood', stroke: null },
+            new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
+            new go.Binding('fill')
+          ),
+          $(go.TextBlock,
+            { editable: true, font: 'bold 11pt Verdana, sans-serif' },
+            new go.Binding('text', 'name').makeTwoWay(),
+            new go.Binding('angle', 'angle', (n) => -n)
+          )
+        ),
+        Seat(1, '0.2 0', '0.5 1'),
+        Seat(2, '0.5 0', '0.5 1'),
+        Seat(3, '0.8 0', '0.5 1')
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'TableC8', // circular with 8 seats
+      $(go.Node,
+        'Spot',
+        tableStyle(),
+        $(go.Panel,
+          'Spot',
+          $(go.Shape,
+            'Circle',
+            { name: 'TABLESHAPE', desiredSize: new go.Size(120, 120), fill: 'burlywood', stroke: null },
+            new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
+            new go.Binding('fill')
+          ),
+          $(go.TextBlock,
+            { editable: true, font: 'bold 11pt Verdana, sans-serif' },
+            new go.Binding('text', 'name').makeTwoWay(),
+            new go.Binding('angle', 'angle', (n) => -n)
+          )
+        ),
+        Seat(1, '0.50 0', '0.5 1'),
+        Seat(2, '0.85 0.15', '0.15 0.85'),
+        Seat(3, '1 0.5', '0 0.5'),
+        Seat(4, '0.85 0.85', '0.15 0.15'),
+        Seat(5, '0.50 1', '0.5 0'),
+        Seat(6, '0.15 0.85', '0.85 0.15'),
+        Seat(7, '0 0.5', '1 0.5'),
+        Seat(8, '0.15 0.15', '0.85 0.85')
+      )
+    );
+
+    // what to do when a drag-drop occurs in the Diagram's background
+    myDiagram.mouseDrop = (e) => {
+      // when the selection is dropped in the diagram's background,
+      // make sure the selected people no longer belong to any table
+      e.diagram.selection.each((n) => {
+        if (isPerson(n)) unassignSeat(n.data);
+      });
+    };
+
+    // to simulate a "move" from the Palette, the source Node must be deleted.
+    myDiagram.addDiagramListener('ExternalObjectsDropped', (e) => {
+      // if any Tables were dropped, don't delete from myGuests
+      if (!e.subject.any(isTable)) {
+        myGuests.commandHandler.deleteSelection();
       }
-      if (coll.any(isTable)) {
-        // if dragging a Table, don't allow it to be dropped onto another table
+    });
+
+    // put deleted people back in the myGuests diagram
+    myDiagram.addDiagramListener('SelectionDeleted', (e) => {
+      // no-op if deleted by myGuests' ExternalObjectsDropped listener
+      if (myDiagram.disableSelectionDeleted) return;
+      // e.subject is the myDiagram.selection collection
+      e.subject.each((n) => {
+        if (isPerson(n)) {
+          myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
+        }
+      });
+    });
+
+    // create some initial tables
+    myDiagram.model = new go.GraphLinksModel({
+      copiesKey: true,
+      nodeDataArray: [
+        { key: 1, category: 'TableR3', name: 'Head 1', guests: {}, loc: '143.5 58' },
+        { key: 2, category: 'TableR3', name: 'Head 2', guests: {}, loc: '324.5 58' },
+        { key: 3, category: 'TableR8', name: '3', guests: {}, loc: '121.5 203.5' },
+        { key: 4, category: 'TableC8', name: '4', guests: {}, loc: '364.5 223.5' },
+      ],
+    }); // this sample does not make use of any links
+
+    // initialize the Palette
+    myGuests = new go.Diagram('myGuests', {
+      layout: $(go.GridLayout, {
+        sorting: go.GridSorting.Ascending, // sort by Node.text value
+      }),
+      allowDragOut: true, // to myDiagram
+      allowMove: false,
+    });
+
+    myGuests.nodeTemplateMap = myDiagram.nodeTemplateMap;
+
+    // specify the contents of the Palette
+    myGuests.model = new go.GraphLinksModel({
+      copiesKey: true,
+      nodeDataArray: [
+        { key: 'Tyrion Lannister' },
+        { key: 'Daenerys Targaryen', plus: 3 }, // dragons, of course
+        { key: 'Jon Snow' },
+        { key: 'Stannis Baratheon' },
+        { key: 'Arya Stark' },
+        { key: 'Jorah Mormont' },
+        { key: 'Sandor Clegane' },
+        { key: 'Joffrey Baratheon' },
+        { key: 'Brienne of Tarth' },
+        { key: 'Hodor' },
+      ],
+    });
+
+    myGuests.model.undoManager = myDiagram.model.undoManager; // shared UndoManager!
+
+    // To simulate a "move" from the Diagram back to the Palette, the source Node must be deleted.
+    myGuests.addDiagramListener('ExternalObjectsDropped', (e) => {
+      // e.subject is the myGuests.selection collection
+      // if the user dragged a Table to the myGuests diagram, cancel the drag
+      if (e.subject.any(isTable)) {
         myDiagram.currentTool.doCancel();
+        myGuests.currentTool.doCancel();
         return;
       }
-      // OK -- all Nodes are people, call assignSeat on each person data
-      coll.each(n => assignSeat(node, n.data, pt));
-      positionPeopleAtSeats(node);
+      myDiagram.selection.each((n) => {
+        if (isPerson(n)) unassignSeat(n.data);
+      });
+      myDiagram.disableSelectionDeleted = true;
+      myDiagram.commandHandler.deleteSelection();
+      myDiagram.disableSelectionDeleted = false;
+      myGuests.selection.each((n) => {
+        if (isPerson(n)) unassignSeat(n.data);
+      });
+    });
+
+    go.AnimationManager.defineAnimationEffect('location', (obj, startValue, endValue, easing, currentTime, duration, animationState) => {
+      obj.location = new go.Point(
+        easing(currentTime, startValue.x, endValue.x - startValue.x, duration),
+        easing(currentTime, startValue.y, endValue.y - startValue.y, duration)
+      );
+    });
+  } // end init
+
+  function isPerson(n) {
+    return n !== null && n.category === '';
+  }
+
+  function isTable(n) {
+    return n !== null && n.category !== '';
+  }
+
+  // Highlight the empty and occupied seats at a "Table" Node
+  function highlightSeats(node, coll, show) {
+    if (isPerson(node)) {
+      // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
     }
-
-    // Given a "Table" Node, assign one guest data to a seat at that table.
-    // Also handles cases where the guest represents multiple people, because guest.plus > 0.
-    // This tries to assign the unoccupied seat that is closest to the given point in document coordinates.
-    function assignSeat(node, guest, pt) {
-      if (isPerson(node)) {  // refer to the person's table instead
-        node = node.diagram.findNodeForKey(node.data.table);
-        if (node === null) return;
-      }
-      if (guest instanceof go.GraphObject) throw Error("A guest object must not be a GraphObject: " + guest.toString());
-      if (!(pt instanceof go.Point)) pt = node.location;
-
-      // in case the guest used to be assigned to a different seat, perhaps at a different table
-      unassignSeat(guest);
-
-      const model = node.diagram.model;
-      const guests = node.data.guests;
-      // iterate over all seats in the Node to find one that is not occupied
-      const closestseatname = findClosestUnoccupiedSeat(node, pt);
-      if (closestseatname) {
-        model.setDataProperty(guests, closestseatname, guest.key);
-        model.setDataProperty(guest, "table", node.data.key);
-        model.setDataProperty(guest, "seat", parseFloat(closestseatname));
-      }
-
-      const plus = guest.plus;
-      if (plus) {  // represents several people
-        // forget the "plus" info, since next we create N copies of the node/data
-        guest.plus = undefined;
-        model.updateTargetBindings(guest);
-        for (let i = 0; i < plus; i++) {
-          const copy = model.copyNodeData(guest);
-          // don't copy the seat assignment of the first person
-          copy.table = undefined;
-          copy.seat = undefined;
-          model.addNodeData(copy);
-          assignSeat(node, copy, pt);
-        }
-      }
+    const it = coll.iterator;
+    while (it.next()) {
+      const n = it.key;
+      // if dragging a Table, don't do any highlighting
+      if (isTable(n)) return;
     }
-
-    // Declare that the guest represented by the data is no longer assigned to a seat at a table.
-    // If the guest had been at a table, the guest is removed from the table's list of guests.
-    function unassignSeat(guest) {
-      if (guest instanceof go.GraphObject) throw Error("A guest object must not be a GraphObject: " + guest.toString());
-      const model = myDiagram.model;
-      // remove from any table that the guest is assigned to
-      if (guest.table) {
-        const table = model.findNodeDataForKey(guest.table);
-        if (table) {
-          const guests = table.guests;
-          if (guests) model.setDataProperty(guests, guest.seat.toString(), undefined);
-        }
-      }
-      model.setDataProperty(guest, "table", undefined);
-      model.setDataProperty(guest, "seat", undefined);
-    }
-
-    // Find the name of the unoccupied seat that is closest to the given Point.
-    // This returns null if no seat is available at this table.
-    function findClosestUnoccupiedSeat(node, pt) {
-      if (isPerson(node)) {  // refer to the person's table instead
-        node = node.diagram.findNodeForKey(node.data.table);
-        if (node === null) return;
-      }
-      const guests = node.data.guests;
-      let closestseatname = null;
-      let closestseatdist = Infinity;
-      // iterate over all seats in the Node to find one that is not occupied
-      for (const sit = node.elements; sit.next();) {
-        const seat = sit.value;
-        if (seat.name) {
-          const num = parseFloat(seat.name);
-          if (isNaN(num)) continue;  // not really a "seat"
-          if (guests[seat.name]) continue;  // already assigned
-          const seatloc = seat.getDocumentPoint(go.Spot.Center);
-          const seatdist = seatloc.distanceSquaredPoint(pt);
-          if (seatdist < closestseatdist) {
-            closestseatdist = seatdist;
-            closestseatname = seat.name;
+    const guests = node.data.guests;
+    for (const sit = node.elements; sit.next(); ) {
+      const seat = sit.value;
+      if (seat.name) {
+        const num = parseFloat(seat.name);
+        if (isNaN(num)) continue;
+        const seatshape = seat.findObject('SEATSHAPE');
+        if (!seatshape) continue;
+        if (show) {
+          if (guests[seat.name]) {
+            seatshape.stroke = 'red';
+          } else {
+            seatshape.stroke = 'green';
           }
+        } else {
+          seatshape.stroke = 'white';
         }
       }
-      return closestseatname;
+    }
+  }
+
+  // Given a "Table" Node, assign seats for all of the people in the given collection of Nodes;
+  // the optional Point argument indicates where the collection of people may have been dropped.
+  function assignPeopleToSeats(node, coll, pt) {
+    if (isPerson(node)) {
+      // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
+    if (coll.any(isTable)) {
+      // if dragging a Table, don't allow it to be dropped onto another table
+      myDiagram.currentTool.doCancel();
+      return;
+    }
+    // OK -- all Nodes are people, call assignSeat on each person data
+    coll.each((n) => assignSeat(node, n.data, pt));
+    positionPeopleAtSeats(node);
+  }
+
+  // Given a "Table" Node, assign one guest data to a seat at that table.
+  // Also handles cases where the guest represents multiple people, because guest.plus > 0.
+  // This tries to assign the unoccupied seat that is closest to the given point in document coordinates.
+  function assignSeat(node, guest, pt) {
+    if (isPerson(node)) {
+      // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
+    if (guest instanceof go.GraphObject) throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    if (!(pt instanceof go.Point)) pt = node.location;
+
+    // in case the guest used to be assigned to a different seat, perhaps at a different table
+    unassignSeat(guest);
+
+    const model = node.diagram.model;
+    const guests = node.data.guests;
+    // iterate over all seats in the Node to find one that is not occupied
+    const closestseatname = findClosestUnoccupiedSeat(node, pt);
+    if (closestseatname) {
+      model.setDataProperty(guests, closestseatname, guest.key);
+      model.setDataProperty(guest, 'table', node.data.key);
+      model.setDataProperty(guest, 'seat', parseFloat(closestseatname));
     }
 
-    // Position the nodes of all of the guests that are seated at this table
-    // to be at their corresponding seat elements of the given "Table" Node.
-    function positionPeopleAtSeats(node) {
-      if (isPerson(node)) {  // refer to the person's table instead
-        node = node.diagram.findNodeForKey(node.data.table);
-        if (node === null) return;
-      }
-      const guests = node.data.guests;
-      const model = node.diagram.model;
-      for (let seatname in guests) {
-        const guestkey = guests[seatname];
-        const guestdata = model.findNodeDataForKey(guestkey);
-        positionPersonAtSeat(guestdata);
-      }
-    }
-
-    // Position a single guest Node to be at the location of the seat to which they are assigned.
-    function positionPersonAtSeat(guest) {
-      if (guest instanceof go.GraphObject) throw Error("A guest object must not be a GraphObject: " + guest.toString());
-      if (!guest || !guest.table || !guest.seat) return;
-      const diagram = myDiagram;
-      const table = diagram.findPartForKey(guest.table);
-      const person = diagram.findPartForData(guest);
-      if (table && person) {
-        const seat = table.findObject(guest.seat.toString());
-        const loc = seat.getDocumentPoint(go.Spot.Center);
-        // animate movement, instead of: person.location = loc;
-        const animation = new go.Animation();
-        animation.add(person, "location", person.location, loc);
-        animation.start();
+    const plus = guest.plus;
+    if (plus) {
+      // represents several people
+      // forget the "plus" info, since next we create N copies of the node/data
+      guest.plus = undefined;
+      model.updateTargetBindings(guest);
+      for (let i = 0; i < plus; i++) {
+        const copy = model.copyNodeData(guest);
+        // don't copy the seat assignment of the first person
+        copy.table = undefined;
+        copy.seat = undefined;
+        model.addNodeData(copy);
+        assignSeat(node, copy, pt);
       }
     }
+  }
 
+  // Declare that the guest represented by the data is no longer assigned to a seat at a table.
+  // If the guest had been at a table, the guest is removed from the table's list of guests.
+  function unassignSeat(guest) {
+    if (guest instanceof go.GraphObject) throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    const model = myDiagram.model;
+    // remove from any table that the guest is assigned to
+    if (guest.table) {
+      const table = model.findNodeDataForKey(guest.table);
+      if (table) {
+        const guests = table.guests;
+        if (guests) model.setDataProperty(guests, guest.seat.toString(), undefined);
+      }
+    }
+    model.setDataProperty(guest, 'table', undefined);
+    model.setDataProperty(guest, 'seat', undefined);
+  }
+
+  // Find the name of the unoccupied seat that is closest to the given Point.
+  // This returns null if no seat is available at this table.
+  function findClosestUnoccupiedSeat(node, pt) {
+    if (isPerson(node)) {
+      // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
+    const guests = node.data.guests;
+    let closestseatname = null;
+    let closestseatdist = Infinity;
+    // iterate over all seats in the Node to find one that is not occupied
+    for (const sit = node.elements; sit.next(); ) {
+      const seat = sit.value;
+      if (seat.name) {
+        const num = parseFloat(seat.name);
+        if (isNaN(num)) continue; // not really a "seat"
+        if (guests[seat.name]) continue; // already assigned
+        const seatloc = seat.getDocumentPoint(go.Spot.Center);
+        const seatdist = seatloc.distanceSquaredPoint(pt);
+        if (seatdist < closestseatdist) {
+          closestseatdist = seatdist;
+          closestseatname = seat.name;
+        }
+      }
+    }
+    return closestseatname;
+  }
+
+  // Position the nodes of all of the guests that are seated at this table
+  // to be at their corresponding seat elements of the given "Table" Node.
+  function positionPeopleAtSeats(node) {
+    if (isPerson(node)) {
+      // refer to the person's table instead
+      node = node.diagram.findNodeForKey(node.data.table);
+      if (node === null) return;
+    }
+    const guests = node.data.guests;
+    const model = node.diagram.model;
+    for (let seatname in guests) {
+      const guestkey = guests[seatname];
+      const guestdata = model.findNodeDataForKey(guestkey);
+      positionPersonAtSeat(guestdata);
+    }
+  }
+
+  // Position a single guest Node to be at the location of the seat to which they are assigned.
+  function positionPersonAtSeat(guest) {
+    if (guest instanceof go.GraphObject) throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    if (!guest || !guest.table || !guest.seat) return;
+    const diagram = myDiagram;
+    const table = diagram.findPartForKey(guest.table);
+    const person = diagram.findPartForData(guest);
+    if (table && person) {
+      const seat = table.findObject(guest.seat.toString());
+      const loc = seat.getDocumentPoint(go.Spot.Center);
+      // animate movement, instead of: person.location = loc;
+      const animation = new go.Animation();
+      animation.add(person, 'location', person.location, loc);
+      animation.start();
+    }
+  }
 
   // Automatically drag people Nodes along with the table Node at which they are seated.
   class SpecialDraggingTool extends go.DraggingTool {
     computeEffectiveCollection(parts) {
       const map = super.computeEffectiveCollection(parts);
       // for each Node representing a table, also drag all of the people seated at that table
-      parts.each(table => {
-        if (isPerson(table)) return;  // ignore persons
+      parts.each((table) => {
+        if (isPerson(table)) return; // ignore persons
         // this is a table Node, find all people Nodes using the same table key
-        for (const nit = table.diagram.nodes; nit.next();) {
+        for (const nit = table.diagram.nodes; nit.next(); ) {
           const n = nit.value;
           if (isPerson(n) && n.data.table === table.data.key) {
             if (!map.has(n)) map.add(n, new go.DraggingInfo(n.location.copy()));
@@ -531,7 +648,6 @@
     }
   }
   // end SpecialDraggingTool
-
 
   // Automatically move seated people as a table is rotated, to keep them in their seats.
   // Note that because people are separate Nodes, rotating a table Node means the people Nodes
@@ -545,8 +661,8 @@
   }
   // end HorizontalTextRotatingTool
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myFlexDiv">
@@ -554,34 +670,81 @@
 
     <div id="myDiagramDiv" style="border: solid 1px black"></div>
   </div>
-  This sample demonstrates how a "Person" node can be dropped onto a "Table" node,
-  causing the person to be assigned a position at the closest empty seat at that table.
-  When a person is dropped into the background of the diagram, that person is no longer assigned a seat.
-  People dragged between diagrams are automatically removed from the diagram they came from.
+  This sample demonstrates how a "Person" node can be dropped onto a "Table" node, causing the person to be assigned a position at the closest empty seat at
+  that table. When a person is dropped into the background of the diagram, that person is no longer assigned a seat. People dragged between diagrams are
+  automatically removed from the diagram they came from.
+  <p>"Table" nodes are defined by separate templates, to permit maximum customization of the shapes and sizes and positions of the tables and chairs.</p>
+
   <p>
-  "Table" nodes are defined by separate templates, to permit maximum customization of the shapes and
-  sizes and positions of the tables and chairs.
+    "Person" nodes in the <code>myGuests</code> diagram can also represent a group of people, for example a named person plus one whose name might not be known.
+    When such a person is dropped onto a table, additional nodes are created in <code>myDiagram</code>. Those people are seated at the table if there is room.
+  </p>
+
+  <p>Tables can be moved or rotated. Moving or rotating a table automatically repositions the people seated at that table.</p>
+
   <p>
-  "Person" nodes in the <code>myGuests</code> diagram can also represent a group of people,
-  for example a named person plus one whose name might not be known.
-  When such a person is dropped onto a table, additional nodes are created in <code>myDiagram</code>.
-  Those people are seated at the table if there is room.
-  <p>
-  Tables can be moved or rotated. Moving or rotating a table automatically repositions the people seated at that table.
-  <p>
-  The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either diagram
-  and have it automatically handle drags between diagrams, as well as the usual changes within the diagram.
+    The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either diagram and have it automatically handle drags between
+    diagrams, as well as the usual changes within the diagram.
   </p>
   <div>
     Diagram Model saved in JSON format, automatically updated after each transaction:
-    <pre id="savedModel" style="height:250px"></pre>
+    <pre id="savedModel" style="height: 250px"></pre>
   </div>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Palette</h4>
+<p>
+A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#palette">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

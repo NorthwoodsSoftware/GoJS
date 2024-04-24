@@ -1,301 +1,513 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
+  <head>
+    
+    <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-<meta name="description" content="Use a draggable Overview as a kind of magnifying lens."/> 
-<link rel="stylesheet" href="../assets/css/style.css"/> 
-<!-- Copyright 1998-2023 by Northwoods Software Corporation. -->
-<title>Magnifier</title>
-</head>
 
-<body>
-  <!-- This top nav is not part of the sample code -->
-  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
-    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
-      <div class="md:pl-4">
-        <a class="text-white hover:text-white no-underline hover:no-underline
-        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
-          <h1 class="my-0 p-1 ">GoJS</h1>
-        </a>
-      </div>
-      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
-        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
-          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+<meta name="description" content="Use a draggable Overview as a kind of magnifying lens." />
+<meta itemprop="description" content="Use a draggable Overview as a kind of magnifying lens." />
+<meta property="og:description" content="Use a draggable Overview as a kind of magnifying lens." />
+<meta name="twitter:description" content="Use a draggable Overview as a kind of magnifying lens." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content=Magnifier />
+<meta property="og:title" content=Magnifier />
+<meta name="twitter:title" content=Magnifier />
+
+
+<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/magnifier.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/magnifier.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/magnifier.png" />
+
+<meta property="og:url" content="https://gojs.net/3.0.0/samples/magnifier.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/magnifier.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Magnifier | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div id="topnavList" class="hidden sm:block items-center w-auto mt-0 text-white p-0 z-20">
-        <ul class="list-reset list-none font-semibold flex justify-end flex-wrap sm:flex-nowrap items-center px-0 pb-0">
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../learn/">Learn</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../samples/">Samples</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../intro/">Intro</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../api/">API</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/products/register.html">Register</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="../download.html">Download</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://forum.nwoods.com/c/gojs/11">Forum</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/contact.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a></li>
-          <li class="p-1 sm:p-0"><a class="topnav-link" href="https://www.nwoods.com/sales/index.html"
-           target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a></li>
-        </ul>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a href="https://www.nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
+          <a href="https://www.nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
       </div>
     </div>
-    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
-  </nav>
-  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
-    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
-    <!-- * * * * * * * * * * * * * -->
-    <!-- Start of GoJS sample code -->
-    
-    <script src="../release/go.js"></script>
-    <div id="allSampleContent" class="p-4 w-full">
-  <style type="text/css">
-    #myOverviewDiv {
-      display: none;
-      position: absolute;
-      background-color: white;
-      z-index: 300; /* make sure its in front */
-      border: solid 1px blue;
-      width: 200px;
-      height: 200px;
-      pointer-events: none;
-    }
-  </style>
-    <script id="code">
-    function init() {
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // the DIV HTML element
-          {
-            initialAutoScale: go.Diagram.Uniform,
-            layout:
-              $(go.TreeLayout,  // use a TreeLayout to position all of the nodes
-                {
-                  treeStyle: go.TreeLayout.StyleLastParents,
-                  angle: 90,
-                  layerSpacing: 80,
-                  alternateAngle: 0,
-                  alternateAlignment: go.TreeLayout.AlignmentStart,
-                  alternateNodeIndent: 20,
-                  alternateNodeIndentPastParent: 1,
-                  alternateNodeSpacing: 20,
-                  alternateLayerSpacing: 40,
-                  alternateLayerSpacingParentOverlap: 1,
-                  alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
-                  alternateChildPortSpot: go.Spot.Left
-                }),
-            "commandHandler.doKeyDown": function() {  // method override must be function, not =>
-              if (this.diagram.lastInput.key === 'Esc') clearMagnifier();
-              go.CommandHandler.prototype.doKeyDown.call(this);
-            }
-          });
-
-      // define Converters to be used for Bindings
-      function theNationFlagConverter(nation) {
-        return "https://www.nwoods.com/go/Flags/" + nation.toLowerCase().replace(/\s/g, "-") + "-flag.Png";
-      }
-
-      function theInfoTextConverter(info) {
-        var str = "";
-        if (info.title) str += "Title: " + info.title;
-        if (info.headOf) str += "\n\nHead of: " + info.headOf;
-        if (typeof info.boss === "number") {
-          var bossinfo = myDiagram.model.findNodeDataForKey(info.boss);
-          if (bossinfo !== null) {
-            str += "\n\nReporting to: " + bossinfo.name;
-          }
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
         }
-        return str;
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
       }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
 
-      // define the Node template
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",
-          { isShadowed: true },
-          // the outer shape for the node, surrounding the Table
-          $(go.Shape, "Rectangle",
-            new go.Binding("fill", "isHighlighted", h => h ? "red" : "azure").ofObject()),
-          // a table to contain the different parts of the node
-          $(go.Panel, "Table",
-            { margin: 4, maxSize: new go.Size(150, NaN) },
-            // the two TextBlocks in column 0 both stretch in width
-            // but align on the left side
-            $(go.RowColumnDefinition,
-              {
-                column: 0,
-                stretch: go.GraphObject.Horizontal,
-                alignment: go.Spot.Left
-              }),
-            // the name
-            $(go.TextBlock,
-              {
-                row: 0, column: 0,
-                maxSize: new go.Size(120, NaN), margin: 2,
-                font: "bold 8pt sans-serif",
-                alignment: go.Spot.Top
-              },
-              new go.Binding("text", "name")),
-            // the country flag
-            $(go.Picture,
-              {
-                row: 0, column: 1,
-                desiredSize: new go.Size(34, 26), margin: 2,
-                imageStretch: go.GraphObject.Uniform,
-                alignment: go.Spot.TopRight
-              },
-              new go.Binding("source", "nation", theNationFlagConverter)),
-            // the additional textual information
-            $(go.TextBlock,
-              {
-                row: 1, column: 0, columnSpan: 2,
-                font: "8pt sans-serif"
-              },
-              new go.Binding("text", "", theInfoTextConverter))
-          )  // end Table Panel
-        );  // end Node
+        
 
-      // define the Link template, a simple orthogonal line
-      myDiagram.linkTemplate =
-        $(go.Link, go.Link.Orthogonal,
-          { selectable: false },
-          $(go.Shape, { stroke: '#222' }));  // the default black link shape
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
 
+<style type="text/css">
+  #myOverviewDiv {
+    display: none;
+    position: absolute;
+    background-color: white;
+    z-index: 300; /* make sure its in front */
+    border: solid 1px blue;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+  }
+</style>
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-      // set up the nodeDataArray, describing each person/position
-      var nodeDataArray = [
-        { key: 0, name: "Ban Ki-moon 반기문", nation: "South Korea", title: "Secretary-General of the United Nations", headOf: "Secretariat" },
-        { key: 1, boss: 0, name: "Patricia O'Brien", nation: "Ireland", title: "Under-Secretary-General for Legal Affairs and United Nations Legal Counsel", headOf: "Office of Legal Affairs" },
-        { key: 3, boss: 1, name: "Peter Taksøe-Jensen", nation: "Denmark", title: "Assistant Secretary-General for Legal Affairs" },
-        { key: 9, boss: 3, name: "Other Employees" },
-        { key: 4, boss: 1, name: "Maria R. Vicien - Milburn", nation: "Argentina", title: "General Legal Division Director", headOf: "General Legal Division" },
-        { key: 10, boss: 4, name: "Other Employees" },
-        { key: 5, boss: 1, name: "Václav Mikulka", nation: "Czech Republic", title: "Codification Division Director", headOf: "Codification Division" },
-        { key: 11, boss: 5, name: "Other Employees" },
-        { key: 6, boss: 1, name: "Sergei Tarassenko", nation: "Russia", title: "Division for Ocean Affairs and the Law of the Sea Director", headOf: "Division for Ocean Affairs and the Law of the Sea" },
-        { key: 12, boss: 6, name: "Alexandre Tagore Medeiros de Albuquerque", nation: "Brazil", title: "Chairman of the Commission on the Limits of the Continental Shelf", headOf: "The Commission on the Limits of the Continental Shelf" },
-        { key: 17, boss: 12, name: "Peter F. Croker", nation: "Ireland", title: "Chairman of the Committee on Confidentiality", headOf: "The Committee on Confidentiality" },
-        { key: 31, boss: 17, name: "Michael Anselme Marc Rosette", nation: "Seychelles", title: "Vice Chairman of the Committee on Confidentiality" },
-        { key: 32, boss: 17, name: "Kensaku Tamaki", nation: "Japan", title: "Vice Chairman of the Committee on Confidentiality" },
-        { key: 33, boss: 17, name: "Osvaldo Pedro Astiz", nation: "Argentina", title: "Member of the Committee on Confidentiality" },
-        { key: 34, boss: 17, name: "Yuri Borisovitch Kazmin", nation: "Russia", title: "Member of the Committee on Confidentiality" },
-        { key: 18, boss: 12, name: "Philip Alexander Symonds", nation: "Australia", title: "Chairman of the Committee on provision of scientific and technical advice to coastal States", headOf: "Committee on provision of scientific and technical advice to coastal States" },
-        { key: 35, boss: 18, name: "Emmanuel Kalngui", nation: "Cameroon", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
-        { key: 36, boss: 18, name: "Sivaramakrishnan Rajan", nation: "India", title: "Vice Chairman of the Committee on provision of scientific and technical advice to coastal States" },
-        { key: 37, boss: 18, name: "Francis L. Charles", nation: "Trinidad and Tobago", title: "Member of the Committee on provision of scientific and technical advice to costal States" },
-        { key: 38, boss: 18, name: "Mihai Silviu German", nation: "Romania", title: "Member of the Committee on provision of scientific and technical advice to costal States" },
-        { key: 19, boss: 12, name: "Lawrence Folajimi Awosika", nation: "Nigeria", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
-        { key: 20, boss: 12, name: "Harald Brekke", nation: "Norway", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
-        { key: 21, boss: 12, name: "Yong-Ahn Park", nation: "South Korea", title: "Vice Chairman of the Commission on the Limits of the Continental Shelf" },
-        { key: 22, boss: 12, name: "Abu Bakar Jaafar", nation: "Malaysia", title: "Chairman of the Editorial Committee", headOf: "Editorial Committee" },
-        { key: 23, boss: 12, name: "Galo Carrera Hurtado", nation: "Mexico", title: "Chairman of the Training Committee", headOf: "Training Committee" },
-        { key: 24, boss: 12, name: "Indurlall Fagoonee", nation: "Mauritius", title: "Member of the Commission on the Limits of the Continental Shelf" },
-        { key: 25, boss: 12, name: "George Jaoshvili", nation: "Georgia", title: "Member of the Commission on the Limits of the Continental Shelf" },
-        { key: 26, boss: 12, name: "Wenzhang Lu", nation: "China", title: "Member of the Commission on the Limits of the Continental Shelf" },
-        { key: 27, boss: 12, name: "Isaac Owusu Orudo", nation: "Ghana", title: "Member of the Commission on the Limits of the Continental Shelf" },
-        { key: 28, boss: 12, name: "Fernando Manuel Maia Pimentel", nation: "Portugal", title: "Member of the Commission on the Limits of the Continental Shelf" },
-        { key: 7, boss: 1, name: "Renaud Sorieul", nation: "France", title: "International Trade Law Division Director", headOf: "International Trade Law Division" },
-        { key: 13, boss: 7, name: "Other Employees" },
-        { key: 8, boss: 1, name: "Annebeth Rosenboom", nation: "Netherlands", title: "Treaty Section Chief", headOf: "Treaty Section" },
-        { key: 14, boss: 8, name: "Bradford Smith", nation: "United States", title: "Substantive Legal Issues Head", headOf: "Substantive Legal Issues" },
-        { key: 29, boss: 14, name: "Other Employees" },
-        { key: 15, boss: 8, name: "Andrei Kolomoets", nation: "Russia", title: "Technical/Legal Issues Head", headOf: "Technical/Legal Issues" },
-        { key: 30, boss: 15, name: "Other Employees" },
-        { key: 16, boss: 8, name: "Other Employees" },
-        { key: 2, boss: 0, name: "Heads of Other Offices/Departments" }
-      ];
-
-      // create the Model with data for the tree, and assign to the Diagram
-      myDiagram.model =
-        new go.TreeModel(
+    myDiagram = new go.Diagram(
+      'myDiagramDiv', // the DIV HTML element
+      {
+        initialAutoScale: go.AutoScale.Uniform,
+        layout: $(go.TreeLayout, // use a TreeLayout to position all of the nodes
           {
-            nodeParentKeyProperty: "boss",  // this property refers to the parent node data
-            nodeDataArray: nodeDataArray
-          });
+            treeStyle: go.TreeStyle.LastParents,
+            angle: 90,
+            layerSpacing: 80,
+            alternateAngle: 0,
+            alternateAlignment: go.TreeAlignment.Start,
+            alternateNodeIndent: 20,
+            alternateNodeIndentPastParent: 1,
+            alternateNodeSpacing: 20,
+            alternateLayerSpacing: 40,
+            alternateLayerSpacingParentOverlap: 1,
+            alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
+            alternateChildPortSpot: go.Spot.Left,
+          }
+        ),
+        'commandHandler.doKeyDown': function () {
+          // method override must be function, not =>
+          if (this.diagram.lastInput.key === 'Esc') clearMagnifier();
+          go.CommandHandler.prototype.doKeyDown.call(this);
+        },
+      }
+    );
+
+    // define Converters to be used for Bindings
+    function theNationFlagConverter(nation) {
+      return 'https://www.nwoods.com/go/Flags/' + nation.toLowerCase().replace(/\s/g, '-') + '-flag.Png';
     }
 
-    var myOverview = null;
-
-    function showMagnifier() {
-      myDiagram.focus();
-      var myOverviewDiv = document.getElementById("myOverviewDiv");
-      if (myOverview === null || myOverviewDiv.style.display === "none") {
-        // show DIV
-        myOverviewDiv.style.display = "inline";
-        myOverviewDiv.style.left = "0px";
-        myOverviewDiv.style.top = (myDiagram.div.scrollHeight - myOverviewDiv.scrollHeight) + "px";
-        if (myOverview !== null) {
-          myOverview.observed = myDiagram;
-          myOverview.position = new go.Point(-9999, -9999);
-          return;
+    function theInfoTextConverter(info) {
+      var str = '';
+      if (info.title) str += 'Title: ' + info.title;
+      if (info.headOf) str += '\n\nHead of: ' + info.headOf;
+      if (typeof info.boss === 'number') {
+        var bossinfo = myDiagram.model.findNodeDataForKey(info.boss);
+        if (bossinfo !== null) {
+          str += '\n\nReporting to: ' + bossinfo.name;
         }
+      }
+      return str;
+    }
 
-        // create Overview
-        myOverview =
-          go.GraphObject.make(go.Overview, myOverviewDiv,  // the HTML DIV element for the Overview
-            {
-              scrollMode: go.Diagram.InfiniteScroll,
-              "box.visible": false,
-              observed: myDiagram,   // tell it which Diagram to show
-              // disable normal Overview functionality to make it act as a magnifying glass:
-              initialScale: 2,  // zoom in even more than normal
-              autoScale: go.Diagram.None,  // don't show whole observed Diagram
-              hasHorizontalScrollbar: false,  // don't show any scrollbars
-              hasVerticalScrollbar: false
-            });
+    // define the Node template
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      { isShadowed: true },
+      // the outer shape for the node, surrounding the Table
+      $(go.Shape, 'Rectangle', new go.Binding('fill', 'isHighlighted', (h) => (h ? 'red' : 'azure')).ofObject()),
+      // a table to contain the different parts of the node
+      $(go.Panel,
+        'Table',
+        { margin: 4, maxSize: new go.Size(150, NaN) },
+        // the two TextBlocks in column 0 both stretch in width
+        // but align on the left side
+        $(go.RowColumnDefinition, {
+          column: 0,
+          stretch: go.Stretch.Horizontal,
+          alignment: go.Spot.Left,
+        }),
+        // the name
+        $(go.TextBlock,
+          {
+            row: 0,
+            column: 0,
+            maxSize: new go.Size(120, NaN),
+            margin: 2,
+            font: 'bold 8pt sans-serif',
+            alignment: go.Spot.Top,
+          },
+          new go.Binding('text', 'name')
+        ),
+        // the country flag
+        $(go.Picture,
+          {
+            row: 0,
+            column: 1,
+            desiredSize: new go.Size(34, 26),
+            margin: 2,
+            imageStretch: go.ImageStretch.Uniform,
+            alignment: go.Spot.TopRight,
+          },
+          new go.Binding('source', 'nation', theNationFlagConverter)
+        ),
+        // the additional textual information
+        $(go.TextBlock,
+          {
+            row: 1,
+            column: 0,
+            columnSpan: 2,
+            font: '8pt sans-serif',
+          },
+          new go.Binding('text', '', theInfoTextConverter)
+        )
+      ) // end Table Panel
+    ); // end Node
 
-        // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
-        myDiagram.toolManager.doMouseMove = function() {  // method override must be function, not =>
-          go.ToolManager.prototype.doMouseMove.call(this);
-          var myOverviewDiv = document.getElementById("myOverviewDiv");
-          if (myOverviewDiv.style.display !== "none") {
-            var e = myDiagram.lastInput;
-            var osize = myOverview.viewportBounds.size;
-            myOverview.position = new go.Point(e.documentPoint.x - osize.width / 2, e.documentPoint.y - osize.height / 2);
-            myOverviewDiv.style.left = (e.viewPoint.x - myOverviewDiv.scrollWidth / 2) + "px";
-            myOverviewDiv.style.top = (e.viewPoint.y - myOverviewDiv.scrollHeight / 2) + "px";
-          }
-        };
+    // define the Link template, a simple orthogonal line
+    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, selectable: false }, $(go.Shape, { stroke: '#222' })); // the default black link shape
 
-        // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
-        myDiagram.toolManager.doMouseDown = function() {  // method override must be function, not =>
-          go.ToolManager.prototype.doMouseDown.call(this);
-          clearMagnifier();
-        };
-      } else {
+    // set up the nodeDataArray, describing each person/position
+    var nodeDataArray = [
+      { key: 0, name: 'Ban Ki-moon 반기문', nation: 'South Korea', title: 'Secretary-General of the United Nations', headOf: 'Secretariat' },
+      {
+        key: 1,
+        boss: 0,
+        name: "Patricia O'Brien",
+        nation: 'Ireland',
+        title: 'Under-Secretary-General for Legal Affairs and United Nations Legal Counsel',
+        headOf: 'Office of Legal Affairs',
+      },
+      { key: 3, boss: 1, name: 'Peter Taksøe-Jensen', nation: 'Denmark', title: 'Assistant Secretary-General for Legal Affairs' },
+      { key: 9, boss: 3, name: 'Other Employees' },
+      { key: 4, boss: 1, name: 'Maria R. Vicien - Milburn', nation: 'Argentina', title: 'General Legal Division Director', headOf: 'General Legal Division' },
+      { key: 10, boss: 4, name: 'Other Employees' },
+      { key: 5, boss: 1, name: 'Václav Mikulka', nation: 'Czech Republic', title: 'Codification Division Director', headOf: 'Codification Division' },
+      { key: 11, boss: 5, name: 'Other Employees' },
+      {
+        key: 6,
+        boss: 1,
+        name: 'Sergei Tarassenko',
+        nation: 'Russia',
+        title: 'Division for Ocean Affairs and the Law of the Sea Director',
+        headOf: 'Division for Ocean Affairs and the Law of the Sea',
+      },
+      {
+        key: 12,
+        boss: 6,
+        name: 'Alexandre Tagore Medeiros de Albuquerque',
+        nation: 'Brazil',
+        title: 'Chairman of the Commission on the Limits of the Continental Shelf',
+        headOf: 'The Commission on the Limits of the Continental Shelf',
+      },
+      {
+        key: 17,
+        boss: 12,
+        name: 'Peter F. Croker',
+        nation: 'Ireland',
+        title: 'Chairman of the Committee on Confidentiality',
+        headOf: 'The Committee on Confidentiality',
+      },
+      { key: 31, boss: 17, name: 'Michael Anselme Marc Rosette', nation: 'Seychelles', title: 'Vice Chairman of the Committee on Confidentiality' },
+      { key: 32, boss: 17, name: 'Kensaku Tamaki', nation: 'Japan', title: 'Vice Chairman of the Committee on Confidentiality' },
+      { key: 33, boss: 17, name: 'Osvaldo Pedro Astiz', nation: 'Argentina', title: 'Member of the Committee on Confidentiality' },
+      { key: 34, boss: 17, name: 'Yuri Borisovitch Kazmin', nation: 'Russia', title: 'Member of the Committee on Confidentiality' },
+      {
+        key: 18,
+        boss: 12,
+        name: 'Philip Alexander Symonds',
+        nation: 'Australia',
+        title: 'Chairman of the Committee on provision of scientific and technical advice to coastal States',
+        headOf: 'Committee on provision of scientific and technical advice to coastal States',
+      },
+      {
+        key: 35,
+        boss: 18,
+        name: 'Emmanuel Kalngui',
+        nation: 'Cameroon',
+        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States',
+      },
+      {
+        key: 36,
+        boss: 18,
+        name: 'Sivaramakrishnan Rajan',
+        nation: 'India',
+        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States',
+      },
+      {
+        key: 37,
+        boss: 18,
+        name: 'Francis L. Charles',
+        nation: 'Trinidad and Tobago',
+        title: 'Member of the Committee on provision of scientific and technical advice to costal States',
+      },
+      {
+        key: 38,
+        boss: 18,
+        name: 'Mihai Silviu German',
+        nation: 'Romania',
+        title: 'Member of the Committee on provision of scientific and technical advice to costal States',
+      },
+      {
+        key: 19,
+        boss: 12,
+        name: 'Lawrence Folajimi Awosika',
+        nation: 'Nigeria',
+        title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf',
+      },
+      { key: 20, boss: 12, name: 'Harald Brekke', nation: 'Norway', title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf' },
+      { key: 21, boss: 12, name: 'Yong-Ahn Park', nation: 'South Korea', title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf' },
+      { key: 22, boss: 12, name: 'Abu Bakar Jaafar', nation: 'Malaysia', title: 'Chairman of the Editorial Committee', headOf: 'Editorial Committee' },
+      { key: 23, boss: 12, name: 'Galo Carrera Hurtado', nation: 'Mexico', title: 'Chairman of the Training Committee', headOf: 'Training Committee' },
+      { key: 24, boss: 12, name: 'Indurlall Fagoonee', nation: 'Mauritius', title: 'Member of the Commission on the Limits of the Continental Shelf' },
+      { key: 25, boss: 12, name: 'George Jaoshvili', nation: 'Georgia', title: 'Member of the Commission on the Limits of the Continental Shelf' },
+      { key: 26, boss: 12, name: 'Wenzhang Lu', nation: 'China', title: 'Member of the Commission on the Limits of the Continental Shelf' },
+      { key: 27, boss: 12, name: 'Isaac Owusu Orudo', nation: 'Ghana', title: 'Member of the Commission on the Limits of the Continental Shelf' },
+      {
+        key: 28,
+        boss: 12,
+        name: 'Fernando Manuel Maia Pimentel',
+        nation: 'Portugal',
+        title: 'Member of the Commission on the Limits of the Continental Shelf',
+      },
+      {
+        key: 7,
+        boss: 1,
+        name: 'Renaud Sorieul',
+        nation: 'France',
+        title: 'International Trade Law Division Director',
+        headOf: 'International Trade Law Division',
+      },
+      { key: 13, boss: 7, name: 'Other Employees' },
+      { key: 8, boss: 1, name: 'Annebeth Rosenboom', nation: 'Netherlands', title: 'Treaty Section Chief', headOf: 'Treaty Section' },
+      { key: 14, boss: 8, name: 'Bradford Smith', nation: 'United States', title: 'Substantive Legal Issues Head', headOf: 'Substantive Legal Issues' },
+      { key: 29, boss: 14, name: 'Other Employees' },
+      { key: 15, boss: 8, name: 'Andrei Kolomoets', nation: 'Russia', title: 'Technical/Legal Issues Head', headOf: 'Technical/Legal Issues' },
+      { key: 30, boss: 15, name: 'Other Employees' },
+      { key: 16, boss: 8, name: 'Other Employees' },
+      { key: 2, boss: 0, name: 'Heads of Other Offices/Departments' },
+    ];
+
+    // create the Model with data for the tree, and assign to the Diagram
+    myDiagram.model = new go.TreeModel({
+      nodeParentKeyProperty: 'boss', // this property refers to the parent node data
+      nodeDataArray: nodeDataArray,
+    });
+  }
+
+  var myOverview = null;
+
+  function showMagnifier() {
+    myDiagram.focus();
+    var myOverviewDiv = document.getElementById('myOverviewDiv');
+    if (myOverview === null || myOverviewDiv.style.display === 'none') {
+      // show DIV
+      myOverviewDiv.style.display = 'inline';
+      myOverviewDiv.style.left = '0px';
+      myOverviewDiv.style.top = myDiagram.div.scrollHeight - myOverviewDiv.scrollHeight + 'px';
+      if (myOverview !== null) {
+        myOverview.observed = myDiagram;
+        myOverview.position = new go.Point(-9999, -9999);
+        return;
+      }
+
+      // create Overview
+      myOverview = new go.Overview(myOverviewDiv, // the HTML DIV element for the Overview
+        {
+          scrollMode: go.ScrollMode.Infinite,
+          'box.visible': false,
+          observed: myDiagram, // tell it which Diagram to show
+          // disable normal Overview functionality to make it act as a magnifying glass:
+          initialScale: 2, // zoom in even more than normal
+          autoScale: go.AutoScale.None, // don't show whole observed Diagram
+          hasHorizontalScrollbar: false, // don't show any scrollbars
+          hasVerticalScrollbar: false,
+        });
+
+      // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
+      myDiagram.toolManager.doMouseMove = function () {
+        // method override must be function, not =>
+        go.ToolManager.prototype.doMouseMove.call(this);
+        var myOverviewDiv = document.getElementById('myOverviewDiv');
+        if (myOverviewDiv.style.display !== 'none') {
+          var e = myDiagram.lastInput;
+          var osize = myOverview.viewportBounds.size;
+          myOverview.position = new go.Point(e.documentPoint.x - osize.width / 2, e.documentPoint.y - osize.height / 2);
+          myOverviewDiv.style.left = e.viewPoint.x - myOverviewDiv.scrollWidth / 2 + 'px';
+          myOverviewDiv.style.top = e.viewPoint.y - myOverviewDiv.scrollHeight / 2 + 'px';
+        }
+      };
+
+      // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
+      myDiagram.toolManager.doMouseDown = function () {
+        // method override must be function, not =>
+        go.ToolManager.prototype.doMouseDown.call(this);
         clearMagnifier();
-      }
+      };
+    } else {
+      clearMagnifier();
     }
+  }
 
-    function clearMagnifier() {
-      if (myOverview) myOverview.observed = null;
-      var myOverviewDiv = document.getElementById("myOverviewDiv");
-      if (myOverviewDiv) myOverviewDiv.style.display = "none";
-    }
+  function clearMagnifier() {
+    if (myOverview) myOverview.observed = null;
+    var myOverviewDiv = document.getElementById('myOverviewDiv');
+    if (myOverviewDiv) myOverviewDiv.style.display = 'none';
+  }
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
-<div id="sample" style="position: relative;">
+<div id="sample" style="position: relative">
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 700px"></div>
-  <div id="myOverviewDiv"></div> <!-- Styled in a <style> tag at the top of the html page -->
+  <div id="myOverviewDiv"></div>
+  <!-- Styled in a <style> tag at the top of the html page -->
   <button onclick="showMagnifier()">Show Magnifier</button>
   <p>
-    This variation of the <a href="orgChartStatic.html">Org Chart (Static)</a> sample
-    uses the <a>Overview</a> diagram as a magnifying glass.
-    The primary behavior of showing an observed Diagram is kept, but all other behaviors
-    of the Overview are disabled.
+    This variation of the <a href="orgChartStatic.html">Org Chart (Static)</a> sample uses the <a>Overview</a> diagram as a magnifying glass. The primary
+    behavior of showing an observed Diagram is kept, but all other behaviors of the Overview are disabled.
   </p>
 </div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tree Layout</h4>
+<p>
+This predefined layout is used for placing Nodes of a tree-structured graph in layers (rows or columns).
+For discussion and examples of the most commonly used properties of the <a href="../api/symbols/TreeLayout.html">TreeLayout</a>,
+see the <a href="../intro/trees.html">Trees</a> page in the Introduction.
+More information can be found in the <a href="../intro/layouts.html#TreeLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#treelayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Overview Diagrams</h4>
+<p>
+An <a href="../api/symbols/Overview.html" target="api">Overview</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display all of the <a href="../api/symbols/Part.html" target="api">Part</a>s
+of another diagram and to show where that diagram's viewport is relative to all of those parts.
+The user can also scroll the overviewed diagram by clicking or dragging within the overview.
+</p>
+<p>
+The initialization of an <a href="../api/symbols/Overview.html" target="api">Overview</a> is just a matter of setting <a href="../api/symbols/Overview.html#observed" target="api">Overview.observed</a>
+to refer to the <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that you want it to show.  So there needs to be a DIV for your main diagram,
+for which you create a Diagram in the normal manner, and a separate DIV for your overview, for which you
+create the Overview in a very simple manner.
+</p>
+<p>
+More information can be found in the <a href="../intro/overview.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#overview">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
     </div>
-    <!-- * * * * * * * * * * * * * -->
-    <!--  End of GoJS sample code  -->
-  </div>
-</body>
-<!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-<script src="../assets/js/goSamples.js"></script>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
 </html>

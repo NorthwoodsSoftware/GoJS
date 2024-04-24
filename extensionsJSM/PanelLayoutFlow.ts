@@ -1,57 +1,57 @@
 ﻿/*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 
 /**
-* A custom {@link PanelLayout} that arranges panel elements in rows or columns.
-* A typical use might be:
-* <pre>
-* $(go.Node,
-*   ...
-*   $(go.Panel, "Flow",
-*     ... the elements to be laid out in rows with no space between them ...
-*   )
-*   ...
-* )
-* </pre>
-* A customized use might be:
-* <pre>
-* $(go.Node,
-*   ...
-*   $(go.Panel,
-*     $(PanelLayoutFlow, { spacing: new go.Size(5, 5), direction: 90 }),
-*     ... the elements to be laid out in columns ...
-*   )
-*   ...
-* )
-* </pre>
-*
-* The {@link #direction} property determines whether the elements are arranged in rows (if 0 or 180)
-* or in columns (if 90 or 270).
-*
-* Use the {@link #spacing} property to control how much space there is between elements in a row or column
-* as well as between rows or columns.
-*
-* This layout respects the {@link GraphObject#visible}, {@link GraphObject#stretch},
-* and {@link GraphObject#alignment} properties on each element, along with the Panel's
-* {@link Panel#defaultStretch}, {@link Panel#defaultAlignment}, and {@link Panel#padding} properties.
-*
-* If you want to experiment with this extension, try the <a href="../../extensionsJSM/PanelLayoutFlow.html">Flow PanelLayout</a> sample.
-* @category Layout Extension
-*/
+ * A custom {@link go.PanelLayout} that arranges panel elements in rows or columns.
+ * A typical use might be:
+ * ```js
+ * $(go.Node,
+ *   ...
+ *   $(go.Panel, "Flow",
+ *     ... the elements to be laid out in rows with no space between them ...
+ *   )
+ *   ...
+ * )
+ * ```
+ * A customized use might be:
+ * ```js
+ * $(go.Node,
+ *   ...
+ *   $(go.Panel,
+ *     $(PanelLayoutFlow, { spacing: new go.Size(5, 5), direction: 90 }),
+ *     ... the elements to be laid out in columns ...
+ *   )
+ *   ...
+ * )
+ * ```
+ *
+ * The {@link direction} property determines whether the elements are arranged in rows (if 0 or 180)
+ * or in columns (if 90 or 270).
+ *
+ * Use the {@link spacing} property to control how much space there is between elements in a row or column
+ * as well as between rows or columns.
+ *
+ * This layout respects the {@link go.GraphObject.visible}, {@link go.GraphObject.stretch},
+ * and {@link go.GraphObject.alignment} properties on each element, along with the Panel's
+ * {@link go.Panel.defaultStretch}, {@link go.Panel.defaultAlignment}, and {@link go.Panel.padding} properties.
+ *
+ * If you want to experiment with this extension, try the <a href="../../samples/PanelLayoutFlow.html">Flow PanelLayout</a> sample.
+ * @category Layout Extension
+ */
 export class PanelLayoutFlow extends go.PanelLayout {
-  private _direction: number = 0;  // only 0 or 180 (rows) or 90 or 270 (columns)
-  private _spacing: go.Size = new go.Size(0, 0);  // space between elements and rows/columns
+  private _direction: number; // only 0 or 180 (rows) or 90 or 270 (columns)
+  private _spacing: go.Size; // space between elements and rows/columns
   // these need to go as the Panel.panelLayoutState, because they are computed by measure and later used by arrange
   // lineBreadths = []; // row height or column width, excluding spacing
   // lineLengths = [];  // line length, excluding padding and external spacing
@@ -60,9 +60,12 @@ export class PanelLayoutFlow extends go.PanelLayout {
    * Constructs a PanelLayoutFlow that lays out elements in rows
    * with no space between the elements or between the rows.
    */
-  constructor() {
+  constructor(init?: Partial<PanelLayoutFlow>) {
     super();
-    this.name = "Flow";
+    this.name = 'Flow';
+    this._direction = 0;
+    this._spacing = new go.Size(0, 0);
+    if (init) Object.assign(this, init);
   }
 
   /**
@@ -75,9 +78,11 @@ export class PanelLayoutFlow extends go.PanelLayout {
    * Setting this property does not notify about any changed event,
    * nor does a change in value automatically cause the panel layout to be performed again.
    */
-  get direction() { return this._direction; }
+  get direction() {
+    return this._direction;
+  }
   set direction(d: number) {
-    if (d !== 0 && d !== 90 && d !== 180 && d !== 270) throw new Error("bad direction for PanelLayoutFlow: " + d);
+    if (d !== 0 && d !== 90 && d !== 180 && d !== 270) throw new Error('bad direction for PanelLayoutFlow: ' + d);
     this._direction = d;
   }
 
@@ -89,45 +94,61 @@ export class PanelLayoutFlow extends go.PanelLayout {
    * Setting this property does not notify about any changed event,
    * nor does a change in value automatically cause the panel layout to be performed again.
    */
-   get spacing() { return this._spacing; }
-   set spacing(s: go.Size) { this._spacing = s; }
+  get spacing() {
+    return this._spacing;
+  }
+  set spacing(s: go.Size) {
+    this._spacing = s;
+  }
 
-  public override measure(panel: go.Panel, width: number, height: number, elements: Array<go.GraphObject>, union: go.Rect, minw: number, minh: number): void {
-    const lineBreadths = [] as Array<number>;  // attach properties on panel
+  override measure(
+    panel: go.Panel,
+    width: number,
+    height: number,
+    elements: Array<go.GraphObject>,
+    union: go.Rect,
+    minw: number,
+    minh: number
+  ): void {
+    const lineBreadths = [] as Array<number>; // attach properties on panel
     const lineLengths = [] as Array<number>;
     (panel as any).panelLayoutState = { lineBreadths: lineBreadths, lineLengths: lineLengths };
-    const pad = <go.Margin>panel.padding;
-    const wrapx = width + pad.left;  // might be Infinity
+    const pad = panel.padding as go.Margin;
+    const wrapx = width + pad.left; // might be Infinity
     const wrapy = height + pad.top;
-    let x = pad.left;  // account for padding
+    let x = pad.left; // account for padding
     let y = pad.top;
-    const xstart = x;  // remember start
+    const xstart = x; // remember start
     const ystart = y;
     // assume that measuring is the same for either direction
     if (this.direction === 0 || this.direction === 180) {
-      let maxx = x;  // track total width
-      let rowh = 0;  // compute row height
+      let maxx = x; // track total width
+      let rowh = 0; // compute row height
       for (let i = 0; i < elements.length; i++) {
         const elem = elements[i];
         if (!elem.visible) continue;
         this.measureElement(elem, Infinity, height, minw, minh);
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
-        const gw = marg.left + mb.width + marg.right;  // gross size including margins
+        const marg = elem.margin as go.Margin;
+        const gw = marg.left + mb.width + marg.right; // gross size including margins
         const gh = marg.top + mb.height + marg.bottom;
-        if (x + gw > wrapx && i > 0) {  // next row
-          lineBreadths.push(rowh);  // remember previous row info
+        if (x + gw > wrapx && i > 0) {
+          // next row
+          lineBreadths.push(rowh); // remember previous row info
           lineLengths.push(x - pad.left);
-          y += rowh + this.spacing.height;  // advance x and y
-          if (y + gh <= wrapy) {  // next row fits???
+          y += rowh + this.spacing.height; // advance x and y
+          if (y + gh <= wrapy) {
+            // next row fits???
             x = xstart + gw + this.spacing.width;
             rowh = gh;
-          } else {  // clipped, assume zero size
+          } else {
+            // clipped, assume zero size
             x = xstart;
             rowh = 0;
             break;
           }
-        } else {  // advance x
+        } else {
+          // advance x
           x += gw + this.spacing.width;
           rowh = Math.max(rowh, gh);
         }
@@ -135,7 +156,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
       }
       lineBreadths.push(rowh);
       lineLengths.push(x - pad.left);
-      union.width = Math.max(0, Math.min(maxx, wrapx) - pad.left);  // don't add padding to union
+      union.width = Math.max(0, Math.min(maxx, wrapx) - pad.left); // don't add padding to union
       union.height = Math.max(0, y + rowh - pad.top);
     } else if (this.direction === 90 || this.direction === 270) {
       let maxy = y;
@@ -145,7 +166,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
         if (!elem.visible) continue;
         this.measureElement(elem, width, Infinity, minw, minh);
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
+        const marg = elem.margin as go.Margin;
         const gw = marg.left + mb.width + marg.right;
         const gh = marg.top + mb.height + marg.bottom;
         if (y + gh > wrapy && i > 0) {
@@ -175,9 +196,9 @@ export class PanelLayoutFlow extends go.PanelLayout {
 
   private isStretched(horiz: boolean, elt: go.GraphObject, panel: go.Panel): boolean {
     let s = elt.stretch;
-    if (s === go.GraphObject.Default) s = panel.defaultStretch;
-    if (s === go.GraphObject.Fill) return true;
-    return s === (horiz ? go.GraphObject.Vertical : go.GraphObject.Horizontal);
+    if (s === go.Stretch.Default) s = panel.defaultStretch;
+    if (s === go.Stretch.Fill) return true;
+    return s === (horiz ? go.Stretch.Vertical : go.Stretch.Horizontal);
   }
 
   private align(elt: go.GraphObject, panel: go.Panel): go.Spot {
@@ -187,12 +208,12 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return a;
   }
 
-  public override arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
+  override arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
     const lineBreadths = (panel as any).panelLayoutState.lineBreadths as Array<number>;
     const lineLengths = (panel as any).panelLayoutState.lineLengths as Array<number>;
-    const pad = <go.Margin>panel.padding;
-    let x = (this.direction === 180) ? union.width - pad.right : pad.left;
-    let y = (this.direction === 270) ? union.height - pad.bottom : pad.top;
+    const pad = panel.padding as go.Margin;
+    let x = this.direction === 180 ? union.width - pad.right : pad.left;
+    let y = this.direction === 270 ? union.height - pad.bottom : pad.top;
     const xstart = x;
     const ystart = y;
     if (this.direction === 0) {
@@ -201,23 +222,24 @@ export class PanelLayoutFlow extends go.PanelLayout {
         const elem = elements[i];
         if (!elem.visible) continue;
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
+        const marg = elem.margin as go.Margin;
         const gw = marg.left + mb.width + marg.right;
         // use computed row length to decide whether to wrap, account for error accumulation
         if (x - pad.left > lineLengths[row] - 0.00000005 && i > 0) {
           y += lineBreadths[row++] + this.spacing.height;
           x = xstart;
-          if (row === lineLengths.length) row--;  // if on last row, stay there
+          if (row === lineLengths.length) row--; // if on last row, stay there
         }
-        const lastbr = lineBreadths[row];  // if row was clipped,
-        let h = (lastbr > 0) ? lastbr - marg.top - marg.bottom : 0;  // use zero height
-        let ya = (lastbr > 0) ? y + marg.top : y;  // and stay at same Y point
-        if ((lastbr > 0) && !this.isStretched(true, elem, panel)) {  // if aligning...
-          const align = this.align(elem, panel);  // compute alignment Spot
+        const lastbr = lineBreadths[row]; // if row was clipped,
+        let h = lastbr > 0 ? lastbr - marg.top - marg.bottom : 0; // use zero height
+        let ya = lastbr > 0 ? y + marg.top : y; // and stay at same Y point
+        if (lastbr > 0 && !this.isStretched(true, elem, panel)) {
+          // if aligning...
+          const align = this.align(elem, panel); // compute alignment Spot
           ya += align.y * (h - mb.height) + align.offsetY;
-          h = mb.height;  // only considering Y axis
+          h = mb.height; // only considering Y axis
         }
-        const xa = x + ((lastbr > 0) ? marg.left : 0);
+        const xa = x + (lastbr > 0 ? marg.left : 0);
         this.arrangeElement(elem, xa, ya, mb.width, h);
         x += gw + this.spacing.width;
       }
@@ -227,7 +249,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
         const elem = elements[i];
         if (!elem.visible) continue;
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
+        const marg = elem.margin as go.Margin;
         const gw = marg.left + mb.width + marg.right;
         if (x - gw - pad.left < 0.00000005 && i > 0) {
           y += lineBreadths[row++] + this.spacing.height;
@@ -235,14 +257,14 @@ export class PanelLayoutFlow extends go.PanelLayout {
           if (row === lineLengths.length) row--;
         }
         const lastbr = lineBreadths[row];
-        let h = (lastbr > 0) ? lastbr - marg.top - marg.bottom : 0;
-        let ya = (lastbr > 0) ? y + marg.top : y;
-        if ((lastbr > 0) && !this.isStretched(true, elem, panel)) {
+        let h = lastbr > 0 ? lastbr - marg.top - marg.bottom : 0;
+        let ya = lastbr > 0 ? y + marg.top : y;
+        if (lastbr > 0 && !this.isStretched(true, elem, panel)) {
           const align = this.align(elem, panel);
           ya += align.y * (h - mb.height) + align.offsetY;
           h = mb.height;
         }
-        const xa = x - gw + ((lastbr > 0) ? marg.left : 0);
+        const xa = x - gw + (lastbr > 0 ? marg.left : 0);
         this.arrangeElement(elem, xa, ya, mb.width, h);
         x -= gw + this.spacing.width;
       }
@@ -252,7 +274,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
         const elem = elements[i];
         if (!elem.visible) continue;
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
+        const marg = elem.margin as go.Margin;
         const gh = marg.top + mb.height + marg.bottom;
         if (y - pad.top > lineLengths[col] - 0.00000005 && i > 0) {
           x += lineBreadths[col++] + this.spacing.width;
@@ -260,14 +282,14 @@ export class PanelLayoutFlow extends go.PanelLayout {
           if (col === lineLengths.length) col--;
         }
         const lastbr = lineBreadths[col];
-        let w = (lastbr > 0) ? lastbr - marg.left - marg.right : 0;
-        let xa = (lastbr > 0) ? x + marg.left : x;
-        if ((lastbr > 0) && !this.isStretched(false, elem, panel)) {
+        let w = lastbr > 0 ? lastbr - marg.left - marg.right : 0;
+        let xa = lastbr > 0 ? x + marg.left : x;
+        if (lastbr > 0 && !this.isStretched(false, elem, panel)) {
           const align = this.align(elem, panel);
           xa += align.x * (w - mb.width) + align.offsetX;
           w = mb.width;
         }
-        const ya = y + ((lastbr > 0) ? marg.top : 0);
+        const ya = y + (lastbr > 0 ? marg.top : 0);
         this.arrangeElement(elem, xa, ya, w, mb.height);
         y += gh + this.spacing.height;
       }
@@ -277,7 +299,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
         const elem = elements[i];
         if (!elem.visible) continue;
         const mb = elem.measuredBounds;
-        const marg = <go.Margin>elem.margin;
+        const marg = elem.margin as go.Margin;
         const gh = marg.top + mb.height + marg.bottom;
         if (y - gh - pad.top < 0.00000005 && i > 0) {
           x += lineBreadths[col++] + this.spacing.width;
@@ -287,19 +309,19 @@ export class PanelLayoutFlow extends go.PanelLayout {
           y -= gh;
         }
         const lastbr = lineBreadths[col];
-        let w = (lastbr > 0) ? lastbr - marg.left - marg.right : 0;
-        let xa = (lastbr > 0) ? x + marg.left : x;
-        if ((lastbr > 0) && !this.isStretched(false, elem, panel)) {
+        let w = lastbr > 0 ? lastbr - marg.left - marg.right : 0;
+        let xa = lastbr > 0 ? x + marg.left : x;
+        if (lastbr > 0 && !this.isStretched(false, elem, panel)) {
           const align = this.align(elem, panel);
           xa += align.x * (w - mb.width) + align.offsetX;
           w = mb.width;
         }
-        const ya = y + ((lastbr > 0) ? marg.top : 0);
+        const ya = y + (lastbr > 0 ? marg.top : 0);
         this.arrangeElement(elem, xa, ya, w, mb.height);
         y -= this.spacing.height;
       }
     }
-    (panel as any).panelLayoutState = null;  // free up the temporary Arrays
+    (panel as any).panelLayoutState = null; // free up the temporary Arrays
   }
 }
 

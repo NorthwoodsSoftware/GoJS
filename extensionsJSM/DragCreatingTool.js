@@ -1,23 +1,23 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * The DragCreatingTool lets the user create a new node by dragging in the background
  * to indicate its size and position.
  *
  * The default drag selection box is a magenta rectangle.
- * You can modify the {@link #box} to customize its appearance.
+ * You can modify the {@link box} to customize its appearance.
  *
  * This tool will not be able to start running unless you have set the
- * {@link #archetypeNodeData} property to an object that can be copied and added to the diagram's model.
+ * {@link archetypeNodeData} property to an object that can be copied and added to the diagram's model.
  *
  * You can use this tool in a modal manner by executing:
  * ```js
@@ -29,25 +29,24 @@ import * as go from '../release/go-module.js';
  *   myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragCreatingTool());
  * ```
  *
- * However when used mode-lessly as a mouse-move tool, in {@link ToolManager#mouseMoveTools},
+ * However when used mode-lessly as a mouse-move tool, in {@link go.ToolManager.mouseMoveTools},
  * this cannot start running unless there has been a motionless delay
- * after the mouse-down event of at least {@link #delay} milliseconds.
+ * after the mouse-down event of at least {@link delay} milliseconds.
  *
- * This tool does not utilize any {@link Adornment}s or tool handles,
- * but it does temporarily add the {@link #box} Part to the diagram.
+ * This tool does not utilize any {@link go.Adornment}s or tool handles,
+ * but it does temporarily add the {@link box} Part to the diagram.
  * This tool does conduct a transaction when inserting the new node.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/DragCreating.html">Drag Creating</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/DragCreating.html">Drag Creating</a> sample.
  * @category Tool Extension
  */
 export class DragCreatingTool extends go.Tool {
     /**
-     * Constructs a DragCreatingTool, sets {@link #box} to a magenta rectangle, and sets name of the tool.
+     * Constructs a DragCreatingTool, sets {@link box} to a magenta rectangle, and sets name of the tool.
      */
-    constructor() {
+    constructor(init) {
         super();
-        this._archetypeNodeData = null;
-        this._delay = 175;
+        this.name = 'DragCreating';
         const b = new go.Part();
         const r = new go.Shape();
         b.layerName = 'Tool';
@@ -59,21 +58,28 @@ export class DragCreatingTool extends go.Tool {
         r.position = new go.Point(0, 0);
         b.add(r);
         this._box = b;
-        this.name = 'DragCreating';
+        this._archetypeNodeData = null;
+        this._delay = 175;
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Gets or sets the {@link Part} used as the "rubber-band box"
+     * Gets or sets the {@link go.Part} used as the "rubber-band box"
      * that is stretched to follow the mouse, as feedback for what area will
-     * be passed to {@link #insertPart} upon a mouse-up.
+     * be passed to {@link insertPart} upon a mouse-up.
      *
-     * Initially this is a {@link Part} containing only a simple magenta rectangular {@link Shape}.
+     * Initially this is a {@link go.Part} containing only a simple magenta rectangular {@link go.Shape}.
      * The object to be resized should be named "SHAPE".
      * Setting this property does not raise any events.
      *
-     * Modifying this property while this tool {@link Tool#isActive} might have no effect.
+     * Modifying this property while this tool {@link go.Tool.isActive} might have no effect.
      */
-    get box() { return this._box; }
-    set box(val) { this._box = val; }
+    get box() {
+        return this._box;
+    }
+    set box(val) {
+        this._box = val;
+    }
     /**
      * Gets or sets the time in milliseconds for which the mouse must be stationary
      * before this tool can be started.
@@ -82,8 +88,12 @@ export class DragCreatingTool extends go.Tool {
      * A value of zero will allow this tool to run without any wait after the mouse down.
      * Setting this property does not raise any events.
      */
-    get delay() { return this._delay; }
-    set delay(val) { this._delay = val; }
+    get delay() {
+        return this._delay;
+    }
+    set delay(val) {
+        this._delay = val;
+    }
     /**
      * Gets or sets a data object that will be copied and added to the diagram's model each time this tool executes.
      *
@@ -91,11 +101,15 @@ export class DragCreatingTool extends go.Tool {
      * The value must be non-null for this tool to be able to run.
      * Setting this property does not raise any events.
      */
-    get archetypeNodeData() { return this._archetypeNodeData; }
-    set archetypeNodeData(val) { this._archetypeNodeData = val; }
+    get archetypeNodeData() {
+        return this._archetypeNodeData;
+    }
+    set archetypeNodeData(val) {
+        this._archetypeNodeData = val;
+    }
     /**
      * This tool can run when there has been a mouse-drag, far enough away not to be a click,
-     * and there has been delay of at least {@link #delay} milliseconds
+     * and there has been delay of at least {@link delay} milliseconds
      * after the mouse-down before a mouse-move.
      */
     canStart() {
@@ -125,7 +139,7 @@ export class DragCreatingTool extends go.Tool {
         return true;
     }
     /**
-     * Capture the mouse and show the {@link #box}.
+     * Capture the mouse and show the {@link box}.
      */
     doActivate() {
         const diagram = this.diagram;
@@ -135,7 +149,7 @@ export class DragCreatingTool extends go.Tool {
         this.doMouseMove();
     }
     /**
-     * Release the mouse and remove any {@link #box}.
+     * Release the mouse and remove any {@link box}.
      */
     doDeactivate() {
         const diagram = this.diagram;
@@ -144,8 +158,8 @@ export class DragCreatingTool extends go.Tool {
         this.isActive = false;
     }
     /**
-     * Update the {@link #box}'s position and size according to the value
-     * of {@link #computeBoxBounds}.
+     * Update the {@link box}'s position and size according to the value
+     * of {@link computeBoxBounds}.
      */
     doMouseMove() {
         if (this.isActive && this.box !== null) {
@@ -159,7 +173,7 @@ export class DragCreatingTool extends go.Tool {
         }
     }
     /**
-     * Call {@link #insertPart} with the value of a call to {@link #computeBoxBounds}.
+     * Call {@link insertPart} with the value of a call to {@link computeBoxBounds}.
      */
     doMouseUp() {
         if (this.isActive) {
@@ -176,8 +190,8 @@ export class DragCreatingTool extends go.Tool {
         this.stopTool();
     }
     /**
-     * This just returns a {@link Rect} stretching from the mouse-down point to the current mouse point.
-     * @return {Rect} a {@link Rect} in document coordinates.
+     * This just returns a {@link go.Rect} stretching from the mouse-down point to the current mouse point.
+     * @returns a {@link go.Rect} in document coordinates.
      */
     computeBoxBounds() {
         const diagram = this.diagram;
@@ -186,15 +200,15 @@ export class DragCreatingTool extends go.Tool {
         return new go.Rect(start, latest);
     }
     /**
-     * Create a node by adding a copy of the {@link #archetypeNodeData} object
-     * to the diagram's model, assign its {@link GraphObject#position} and {@link GraphObject#desiredSize}
+     * Create a node by adding a copy of the {@link archetypeNodeData} object
+     * to the diagram's model, assign its {@link go.GraphObject.position} and {@link go.GraphObject.desiredSize}
      * according to the given bounds, and select the new part.
      *
-     * The actual part that is added to the diagram may be a {@link Part}, a {@link Node},
-     * or even a {@link Group}, depending on the properties of the {@link #archetypeNodeData}
+     * The actual part that is added to the diagram may be a {@link go.Part}, a {@link go.Node},
+     * or even a {@link go.Group}, depending on the properties of the {@link archetypeNodeData}
      * and the type of the template that is copied to create the part.
-     * @param {Rect} bounds a Point in document coordinates.
-     * @return {Part} the newly created Part, or null if it failed.
+     * @param bounds - a Point in document coordinates.
+     * @returns the newly created Part, or null if it failed.
      */
     insertPart(bounds) {
         const diagram = this.diagram;

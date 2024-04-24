@@ -1,17 +1,17 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 // These are the definitions for all of the predefined arrowheads.
 // You do not need to load this file in order to use arrowheads.
 // Typical custom definition:
 //   go.Shape.defineArrowheadGeometry("Zigzag", "M0,4 L1,8 3,0 5,8 7,0 8,4");
 // Typical usage in a link template:
 //   myDiagram.linkTemplate =
-//     $(go.Link,
-//       $(go.Shape),
-//       $(go.Shape, { toArrow: "Zigzag" })
+//     new go.Link().add(
+//       new go.Shape(),
+//       new go.Shape({ toArrow: "Zigzag" })
 //     );
-import * as go from '../release/go-module.js';
+import * as go from 'gojs';
 go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
 go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');
 go.Shape.defineArrowheadGeometry('Triangle', 'F1 m 0,0 l 8,4.62 -8,4.62 z');

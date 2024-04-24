@@ -1,25 +1,26 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 /**
  * The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.
- * If {@link #avoidsNodes} is true and the link is orthogonal,
+ * If {@link avoidsNodes} is true and the link is orthogonal,
  * it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.
  *
- * If you want to experiment with this extension, try the <a href="../../extensionsJSM/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class SnapLinkReshapingTool extends go.LinkReshapingTool {
-    constructor() {
-        super(...arguments);
+    constructor(init) {
+        super();
+        this.name = 'SnapLinkReshaping';
         this._gridCellSize = new go.Size(NaN, NaN);
         this._gridOrigin = new go.Point(NaN, NaN);
         this._isGridSnapEnabled = true;
@@ -28,24 +29,30 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
         this._safePoint = new go.Point(NaN, NaN);
         this._prevSegHoriz = false;
         this._nextSegHoriz = false;
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Gets or sets the {@link Size} of each grid cell to which link points will be snapped.
+     * Gets or sets the {@link go.Size} of each grid cell to which link points will be snapped.
      *
-     * The default value is NaNxNaN, which means use the {@link Diagram#grid}'s {@link Panel#gridCellSize}.
+     * The default value is NaNxNaN, which means use the {@link go.Diagram.grid}'s {@link go.Panel.gridCellSize}.
      */
-    get gridCellSize() { return this._gridCellSize; }
+    get gridCellSize() {
+        return this._gridCellSize;
+    }
     set gridCellSize(val) {
         if (!(val instanceof go.Size))
             throw new Error('new value for SnapLinkReshapingTool.gridCellSize must be a Size, not: ' + val);
         this._gridCellSize = val.copy();
     }
     /**
-     * Gets or sets the {@link Point} origin for the grid to which link points will be snapped.
+     * Gets or sets the {@link go.Point} origin for the grid to which link points will be snapped.
      *
-     * The default value is NaN,NaN, which means use the {@link Diagram#grid}'s {@link Panel#gridOrigin}.
+     * The default value is NaN,NaN, which means use the {@link go.Diagram.grid}'s {@link go.Panel.gridOrigin}.
      */
-    get gridOrigin() { return this._gridOrigin; }
+    get gridOrigin() {
+        return this._gridOrigin;
+    }
     set gridOrigin(val) {
         if (!(val instanceof go.Point))
             throw new Error('new value for SnapLinkReshapingTool.gridOrigin must be a Point, not: ' + val);
@@ -53,11 +60,13 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
     }
     /**
      * Gets or sets whether a reshape handle's position should be snapped to a grid point.
-     * This affects the behavior of {@link #computeReshape}.
+     * This affects the behavior of {@link computeReshape}.
      *
      * The default value is true.
      */
-    get isGridSnapEnabled() { return this._isGridSnapEnabled; }
+    get isGridSnapEnabled() {
+        return this._isGridSnapEnabled;
+    }
     set isGridSnapEnabled(val) {
         if (typeof val !== 'boolean')
             throw new Error('new value for SnapLinkReshapingTool.isGridSnapEnabled must be a boolean, not: ' + val);
@@ -66,11 +75,13 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
     /**
      * Gets or sets whether a reshape handle's position should only be dragged where the
      * adjacent segments do not cross over any nodes.
-     * This affects the behavior of {@link #computeReshape}.
+     * This affects the behavior of {@link computeReshape}.
      *
      * The default value is true.
      */
-    get avoidsNodes() { return this._avoidsNodes; }
+    get avoidsNodes() {
+        return this._avoidsNodes;
+    }
     set avoidsNodes(val) {
         if (typeof val !== 'boolean')
             throw new Error('new value for SnapLinkReshapingTool.avoidsNodes must be a boolean, not: ' + val);
@@ -78,11 +89,15 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
     }
     /**
      * This override records information about the original point of the handle being dragged,
-     * if the {@link #adornedLink} is Orthogonal and if {@link #avoidsNodes} is true.
+     * if the {@link adornedLink} is Orthogonal and if {@link avoidsNodes} is true.
      */
     doActivate() {
         super.doActivate();
-        if (this.isActive && this.avoidsNodes && this.adornedLink !== null && this.adornedLink.isOrthogonal && this.handle !== null) {
+        if (this.isActive &&
+            this.avoidsNodes &&
+            this.adornedLink !== null &&
+            this.adornedLink.isOrthogonal &&
+            this.handle !== null) {
             // assume the Link's route starts off correctly avoiding all nodes
             this._safePoint = this.diagram.lastInput.documentPoint.copy();
             const link = this.adornedLink;
@@ -91,15 +106,14 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
             this._nextSegHoriz = Math.abs(link.getPoint(idx + 1).y - link.getPoint(idx).y) < 0.5;
         }
     }
-    ;
     /**
-     * Pretend while dragging a reshape handle the mouse point is at the nearest grid point, if {@link #isGridSnapEnabled} is true.
-     * This uses {@link #gridCellSize} and {@link #gridOrigin}, unless those are not real values,
-     * in which case this uses the {@link Diagram#grid}'s {@link Panel#gridCellSize} and {@link Panel#gridOrigin}.
+     * Pretend while dragging a reshape handle the mouse point is at the nearest grid point, if {@link isGridSnapEnabled} is true.
+     * This uses {@link gridCellSize} and {@link gridOrigin}, unless those are not real values,
+     * in which case this uses the {@link go.Diagram.grid}'s {@link go.Panel.gridCellSize} and {@link go.Panel.gridOrigin}.
      *
-     * If {@link #avoidsNodes} is true and the adorned Link is {@link Link#isOrthogonal},
+     * If {@link avoidsNodes} is true and the adorned Link is {@link go.Link.isOrthogonal},
      * this method also avoids returning a Point that causes the adjacent segments, both before and after
-     * the current handle's index, to cross over any Nodes that are {@link Node#avoidable}.
+     * the current handle's index, to cross over any Nodes that are {@link go.Node.avoidable}.
      */
     computeReshape(p) {
         let pt = p;
@@ -149,20 +163,20 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
                 q1.x = pt.x;
             }
             r.unionPoint(q1);
-            const overlaps = this.diagram.findPartsIn(r, true, false);
-            if (overlaps.any(p => p instanceof go.Node && p.avoidable))
+            let overlaps = this.diagram.findPartsIn(r, true, false);
+            if (overlaps.any((p) => p instanceof go.Node && p.avoidable))
                 return false;
             if (index >= 2) {
                 const p0 = this.adornedLink.getPoint(index - 2);
-                const r = new go.Rect(q1.x, q1.y, 0, 0);
+                const r2 = new go.Rect(q1.x, q1.y, 0, 0);
                 if (this._prevSegHoriz) {
-                    r.unionPoint(new go.Point(q1.x, p0.y));
+                    r2.unionPoint(new go.Point(q1.x, p0.y));
                 }
                 else {
-                    r.unionPoint(new go.Point(p0.x, q1.y));
+                    r2.unionPoint(new go.Point(p0.x, q1.y));
                 }
-                const overlaps = this.diagram.findPartsIn(r, true, false);
-                if (overlaps.any(p => p instanceof go.Node && p.avoidable))
+                overlaps = this.diagram.findPartsIn(r2, true, false);
+                if (overlaps.any((p) => p instanceof go.Node && p.avoidable))
                     return false;
             }
         }
@@ -177,24 +191,23 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
                 q2.x = pt.x;
             }
             r.unionPoint(q2);
-            const overlaps = this.diagram.findPartsIn(r, true, false);
-            if (overlaps.any(p => p instanceof go.Node && p.avoidable))
+            let overlaps = this.diagram.findPartsIn(r, true, false);
+            if (overlaps.any((p) => p instanceof go.Node && p.avoidable))
                 return false;
             if (index < this.adornedLink.pointsCount - 2) {
                 const p3 = this.adornedLink.getPoint(index + 2);
-                const r = new go.Rect(q2.x, q2.y, 0, 0);
+                const r2 = new go.Rect(q2.x, q2.y, 0, 0);
                 if (this._nextSegHoriz) {
-                    r.unionPoint(new go.Point(q2.x, p3.y));
+                    r2.unionPoint(new go.Point(q2.x, p3.y));
                 }
                 else {
-                    r.unionPoint(new go.Point(p3.x, q2.y));
+                    r2.unionPoint(new go.Point(p3.x, q2.y));
                 }
-                const overlaps = this.diagram.findPartsIn(r, true, false);
-                if (overlaps.any(p => p instanceof go.Node && p.avoidable))
+                overlaps = this.diagram.findPartsIn(r2, true, false);
+                if (overlaps.any((p) => p instanceof go.Node && p.avoidable))
                     return false;
             }
         }
         return true;
     }
-    ;
 }

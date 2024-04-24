@@ -1,15 +1,131 @@
 /*
-*  Copyright (C) 1998-2023 by Northwoods Software Corporation. All Rights Reserved.
-*/
+ *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ */
 /*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
-*/
-import * as go from '../release/go-module.js';
+ * This is an extension and not part of the main GoJS library.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 import { Quadtree } from './Quadtree.js';
+/**
+ * @hidden
+ * This enumeration is used to determine the shape of the {@link PackedLayout}.
+ * Used for {@link PackedLayout.packShape}.
+ *
+ * Note: this enumeration is only exists in extensionsJSM, not in extensions.
+ * @since 3.0
+ * @category Layout Extension
+ */
+export var PackShape;
+(function (PackShape) {
+    /**
+     * Causes nodes to be packed into an ellipse.
+     *
+     * The aspect ratio of this ellipse is determined by either {@link PackedLayout.aspectRatio} or {@link PackedLayout.size}.
+     */
+    PackShape[PackShape["Elliptical"] = 0] = "Elliptical";
+    /**
+     * Causes nodes to be packed into a rectangle}.
+     *
+     * The aspect ratio of this rectangle is determined by either {@link PackedLayout.aspectRatio} or {@link PackedLayout.size}.
+     */
+    PackShape[PackShape["Rectangular"] = 1] = "Rectangular";
+    /**
+     * Causes nodes to be packed into a spiral shape.
+     *
+     * The {@link PackedLayout.aspectRatio} property is ignored in this case, the
+     * {@link PackedLayout.size} is expected to be square, and {@link PackedLayout.hasCircularNodes}
+     * will be assumed 'true'. Please see {@link PackedLayout.packShape} for more details.
+     */
+    PackShape[PackShape["Spiral"] = 2] = "Spiral";
+})(PackShape || (PackShape = {}));
+/**
+ * @hidden
+ * This enumeration is used to determine the size of the {@link PackedLayout}.
+ * Used for {@link PackedLayout.packShape}.
+ *
+ * Note: this enumeration is only exists in extensionsJSM, not in extensions.
+ * @since 3.0
+ * @category Layout Extension
+ */
+export var PackMode;
+(function (PackMode) {
+    /**
+     * Nodes will be packed using the {@link PackedLayout.aspectRatio} property,
+     * with no size considerations.
+     *
+     * The {@link PackedLayout.spacing} property will be respected in this mode.
+     */
+    PackMode[PackMode["AspectOnly"] = 10] = "AspectOnly";
+    /**
+     * Nodes will be compressed if necessary (using negative spacing) to fit the given {@link PackedLayout.size}.
+     * However, if the {@link PackedLayout.size} is bigger than the packed shape (with 0 spacing),
+     * it will not expand to fit it.
+     *
+     * The {@link PackedLayout.spacing} property will be respected in this mode, but only
+     * if it does not cause the layout to grow larger than the {@link PackedLayout.size}.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    PackMode[PackMode["Fit"] = 11] = "Fit";
+    /**
+     * Nodes will be either compressed or spaced evenly to fit the given {@link PackedLayout.size}.
+     *
+     * The {@link PackedLayout.spacing} property will not be respected in this mode,
+     * and will not do anything if set.
+     */
+    PackMode[PackMode["ExpandToFit"] = 12] = "ExpandToFit";
+})(PackMode || (PackMode = {}));
+/**
+ * @hidden
+ * This enumeration is used to determine an optional method by which to sort nodes before packing the {@link PackedLayout}.
+ * Used for {@link PackedLayout.sortMode}.
+ *
+ * Note: this enumeration is only exists in extensionsJSM, not in extensions.
+ * @since 3.0
+ * @category Layout Extension
+ */
+export var SortMode;
+(function (SortMode) {
+    /**
+     * Nodes will not be sorted before packing.
+     */
+    SortMode[SortMode["None"] = 20] = "None";
+    /**
+     * Nodes will be sorted by their maximum side length before packing.
+     */
+    SortMode[SortMode["MaxSide"] = 21] = "MaxSide";
+    /**
+     * Nodes will be sorted by their area.
+     */
+    SortMode[SortMode["Area"] = 22] = "Area";
+})(SortMode || (SortMode = {}));
+/**
+ * @hidden
+ * This enumeration is used to determine the order that nodes will be sorted, if applicable, by the {@link PackedLayout}.
+ * Used for {@link PackedLayout.sortOrder}.
+ *
+ * Note: this enumeration is only exists in extensionsJSM, not in extensions.
+ * @since 3.0
+ * @category Layout Extension
+ */
+export var SortOrder;
+(function (SortOrder) {
+    /**
+     * Nodes will be sorted in descending order.
+     *
+     * Does nothing if {@link PackedLayout.sortMode} is set to {@link SortMode.None}.
+     */
+    SortOrder[SortOrder["Descending"] = 30] = "Descending";
+    /**
+     * Nodes will be sorted in ascending order.
+     *
+     * Does nothing if {@link PackedLayout.sortMode} is set to {@link SortMode.None}.
+     */
+    SortOrder[SortOrder["Ascending"] = 31] = "Ascending";
+})(SortOrder || (SortOrder = {}));
 /**
  * @hidden @internal
  * Used to represent the perimeter of the currently packed
@@ -25,11 +141,11 @@ class Segment {
      * Constructs a new Segment. Segments are assumed to be either
      * horizontal or vertical, and the given coordinates should
      * reflect that.
-     * @param x1 the x coordinate of the first point
-     * @param y1 the y coordinate of the first point
-     * @param x2 the x coordinate of the second point
-     * @param y2 the y coordinate of the second point
-     * @param p1Concave whether or not the first point is concave
+     * @param x1 - the x coordinate of the first point
+     * @param y1 - the y coordinate of the first point
+     * @param x2 - the x coordinate of the second point
+     * @param y2 - the y coordinate of the second point
+     * @param p1Concave - whether or not the first point is concave
      */
     constructor(x1, y1, x2, y2, p1Concave) {
         this.x1 = x1;
@@ -44,8 +160,7 @@ class Segment {
      * @hidden @internal
      * Gets a rectangle representing the bounds of a given segment.
      * Used to supply bounds of segments to the quadtree.
-     * @this {VirtualizedPackedLayout}
-     * @param segment the segment to get a rectangle for
+     * @param segment - the segment to get a rectangle for
      */
     static rectFromSegment(segment) {
         if (Math.abs(segment.x1 - segment.x2) < 1e-7) {
@@ -80,10 +195,10 @@ class Fit {
     /**
      * @hidden @internal
      * Constructs a new Fit.
-     * @param bounds the boundaries of the placement, including defined x and y coordinates
-     * @param cost the cost of the placement, lower cost fits will be preferred
-     * @param s1 the segment that the placement was made relative to
-     * @param s2 the second segment that the placement was made relative to, if the fit is a skip fit
+     * @param bounds - the boundaries of the placement, including defined x and y coordinates
+     * @param cost - the cost of the placement, lower cost fits will be preferred
+     * @param s1 - the segment that the placement was made relative to
+     * @param s2 - the second segment that the placement was made relative to, if the fit is a skip fit
      */
     constructor(bounds, cost, s1, s2) {
         this.bounds = bounds;
@@ -92,11 +207,10 @@ class Fit {
         this.s2 = s2;
     }
 }
-;
 /**
  * A Custom Layout that attempts to pack nodes as close together as possible
  * without overlap.  Each node is assumed to be either rectangular or
- * circular (dictated by the {@link #hasCircularNodes} property). This layout
+ * circular (dictated by the {@link hasCircularNodes} property). This layout
  * supports packing nodes into either a rectangle or an ellipse, with the
  * shape determined by the packShape property and the aspect ratio determined
  * by either the aspectRatio property or the specified width and height
@@ -110,116 +224,118 @@ class Fit {
  * change in the future if PackedLayout's implementation is generalized.
  * @category Layout Extension
  */
-class VirtualizedPackedLayout extends go.Layout {
-    constructor() {
-        super(...arguments);
+export class VirtualizedPackedLayout extends go.Layout {
+    constructor(init) {
+        super();
         // configuration defaults
-        /** @hidden @internal */ this._packShape = VirtualizedPackedLayout.Elliptical;
-        /** @hidden @internal */ this._packMode = VirtualizedPackedLayout.AspectOnly;
-        /** @hidden @internal */ this._sortMode = VirtualizedPackedLayout.None;
-        /** @hidden @internal */ this._sortOrder = VirtualizedPackedLayout.Descending;
-        /** @hidden @internal */ this._comparer = undefined;
-        /** @hidden @internal */ this._aspectRatio = 1;
-        /** @hidden @internal */ this._size = new go.Size(500, 500);
-        /** @hidden @internal */ this._defaultSize = this._size.copy();
-        /** @hidden @internal */ this._fillViewport = false; // true if size is (NaN, NaN)
-        /** @hidden @internal */ this._spacing = 0;
-        /** @hidden @internal */ this._hasCircularNodes = false;
-        /** @hidden @internal */ this._arrangesToOrigin = true;
-        /**
-         * @hidden @internal
-         * The forced spacing value applied in the {@link VirtualizedPackedLayout.Fit}
-         * and {@link VirtualizedPackedLayout.ExpandToFit} modes.
-         */
+        this._packShape = PackShape.Elliptical;
+        this._packMode = PackMode.AspectOnly;
+        this._sortMode = SortMode.None;
+        this._sortOrder = SortOrder.Descending;
+        this._comparer = undefined;
+        this._aspectRatio = 1;
+        this._size = new go.Size(500, 500);
+        this._defaultSize = this._size.copy();
+        this._fillViewport = false; // true if size is (NaN, NaN)
+        this._spacing = 0;
+        this._hasCircularNodes = false;
+        this._arrangesToOrigin = true;
         this._fixedSizeModeSpacing = 0;
-        /**
-         * @hidden @internal
-         * The actual target aspect ratio, set from either {@link #aspectRatio}
-         * or from the {@link #size}, depending on the {@link #packMode}.
-         */
         this._eAspectRatio = this._aspectRatio;
         // layout state
-        /** @hidden @internal */ this._center = new go.Point();
-        /** @hidden @internal */ this._bounds = new go.Rect();
-        /** @hidden @internal */ this._actualBounds = new go.Rect();
-        /** @hidden @internal */ this._enclosingCircle = null;
-        /** @hidden @internal */ this._minXSegment = null;
-        /** @hidden @internal */ this._minYSegment = null;
-        /** @hidden @internal */ this._maxXSegment = null;
-        /** @hidden @internal */ this._maxYSegment = null;
-        /** @hidden @internal */ this._tree = new Quadtree();
+        this._center = new go.Point();
+        this._bounds = new go.Rect();
+        this._actualBounds = new go.Rect();
+        this._enclosingCircle = null;
+        this._minXSegment = null;
+        this._minYSegment = null;
+        this._maxXSegment = null;
+        this._maxYSegment = null;
+        this._tree = new Quadtree();
         // saved node bounds and segment list to use to calculate enclosing circle in the enclosingCircle getter
-        /** @hidden @internal */ this._nodeBounds = [];
-        /** @hidden @internal */ this._segments = new CircularDoublyLinkedList();
+        this._nodeBounds = [];
+        this._segments = new CircularDoublyLinkedList();
+        if (init)
+            Object.assign(this, init);
     }
     /**
-     * Gets or sets the shape that nodes will be packed into. Valid values are
-     * {@link VirtualizedPackedLayout.Elliptical}, {@link VirtualizedPackedLayout.Rectangular}, and
-     * {@link VirtualizedPackedLayout.Spiral}.
+     * Gets or sets the shape that nodes will be packed into.
+     * Valid values are {@link PackShape} values.
      *
-     * In {@link VirtualizedPackedLayout.Spiral} mode, nodes are not packed into a particular
+     * In {@link PackShape.Spiral} mode, nodes are not packed into a particular
      * shape, but rather packed consecutively one after another in a spiral fashion.
-     * The {@link #aspectRatio} property is ignored in this mode, and
-     * the {@link #size} property (if provided) is expected to be square.
+     * The {@link aspectRatio} property is ignored in this mode, and
+     * the {@link size} property (if provided) is expected to be square.
      * If it is not square, the largest dimension given will be used. This mode
      * currently only works with circular nodes, so setting it cause the assume that
-     * layout to assume that {@link #hasCircularNodes} is true.
+     * layout to assume that {@link hasCircularNodes} is true.
      *
      * Note that this property sets only the shape, not the aspect ratio. The aspect
-     * ratio of this shape is determined by either {@link #aspectRatio}
-     * or {@link #size}, depending on the {@link #packMode}.
+     * ratio of this shape is determined by either {@link aspectRatio}
+     * or {@link size}, depending on the {@link packMode}.
      *
-     * When the {@link #packMode} is {@link VirtualizedPackedLayout.Fit} or
-     * {@link VirtualizedPackedLayout.ExpandToFit} and this property is set to true, the
+     * When the {@link packMode} is {@link PackMode.Fit} or
+     * {@link PackMode.ExpandToFit} and this property is set to true, the
      * layout will attempt to make the diameter of the enclosing circle of the
      * layout approximately equal to the greater dimension of the given
-     * {@link #size} property.
+     * {@link size} property.
      *
-     * The default value is {@link VirtualizedPackedLayout.Elliptical}.
+     * The default value is {@link PackShape.Elliptical}.
      */
-    get packShape() { return this._packShape; }
+    get packShape() {
+        return this._packShape;
+    }
     set packShape(value) {
-        if (this._packShape !== value && (value === VirtualizedPackedLayout.Elliptical || value === VirtualizedPackedLayout.Rectangular || value === VirtualizedPackedLayout.Spiral)) {
+        if (this._packShape !== value &&
+            (value === PackShape.Elliptical ||
+                value === PackShape.Rectangular ||
+                value === PackShape.Spiral)) {
             this._packShape = value;
             this.invalidateLayout();
         }
     }
     /**
-     * Gets or sets the mode that the layout will use to determine its size. Valid values
-     * are {@link VirtualizedPackedLayout.AspectOnly}, {@link VirtualizedPackedLayout.Fit}, and {@link VirtualizedPackedLayout.ExpandToFit}.
+     * Gets or sets the mode that the layout will use to determine its size.
+     * Valid values are {@link PackMode} values.
      *
-     * The default value is {@link VirtualizedPackedLayout.AspectOnly}. In this mode, the layout will simply
-     * grow as needed, attempting to keep the aspect ratio defined by {@link #aspectRatio}.
+     * The default value is {@link PackMode.AspectOnly}. In this mode, the layout will simply
+     * grow as needed, attempting to keep the aspect ratio defined by {@link aspectRatio}.
      */
-    get packMode() { return this._packMode; }
+    get packMode() {
+        return this._packMode;
+    }
     set packMode(value) {
-        if (value === VirtualizedPackedLayout.AspectOnly || value === VirtualizedPackedLayout.Fit || value === VirtualizedPackedLayout.ExpandToFit) {
+        if (value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit) {
             this._packMode = value;
             this.invalidateLayout();
         }
     }
     /**
-     * Gets or sets the method by which nodes will be sorted before being packed. To change
-     * the order, see {@link #sortOrder}.
+     * Gets or sets the method by which nodes will be sorted before being packed.
+     * To change the order, see {@link sortOrder}.
      *
-     * The default value is {@link VirtualizedPackedLayout.None}, in which nodes will not be sorted at all.
+     * The default value is {@link SortMode.None}, in which nodes will not be sorted at all.
      */
-    get sortMode() { return this._sortMode; }
+    get sortMode() {
+        return this._sortMode;
+    }
     set sortMode(value) {
-        if (value === VirtualizedPackedLayout.None || value === VirtualizedPackedLayout.MaxSide || value === VirtualizedPackedLayout.Area) {
+        if (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area) {
             this._sortMode = value;
             this.invalidateLayout();
         }
     }
     /**
-     * Gets or sets the order that nodes will be sorted in before being packed. To change
-     * the sort method, see {@link #sortMode}.
+     * Gets or sets the order that nodes will be sorted in before being packed.
+     * To change the sort method, see {@link sortMode}.
      *
-     * The default value is {@link VirtualizedPackedLayout.Descending}
+     * The default value is {@link SortOrder.Descending}
      */
-    get sortOrder() { return this._sortOrder; }
+    get sortOrder() {
+        return this._sortOrder;
+    }
     set sortOrder(value) {
-        if (value === VirtualizedPackedLayout.Descending || value === VirtualizedPackedLayout.Ascending) {
+        if (value === SortOrder.Descending || value === SortOrder.Ascending) {
             this._sortOrder = value;
             this.invalidateLayout();
         }
@@ -227,15 +343,14 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * Gets or sets the comparison function used for sorting nodes.
      *
-     * By default, the comparison function is set according to the values of {@link #sortMode}
-     * and {@link #sortOrder}.
+     * By default, the comparison function is set according to the values of {@link sortMode}
+     * and {@link sortOrder}.
      *
-     * Whether this comparison function is used is determined by the value of {@link #sortMode}.
-     * Any value except {@link VirtualizedPackedLayout.None} will result in the comparison function being used.
+     * Whether this comparison function is used is determined by the value of {@link sortMode}.
+     * Any value except {@link SortMode.None} will result in the comparison function being used.
      * ```js
-     *   $(VirtualizedPackedLayout,
-     *     {
-     *       sortMode: VirtualizedPackedLayout.Area,
+     *   new VirtualizedPackedLayout({
+     *       sortMode: SortMode.Area,
      *       comparer: (na, nb) => {
      *         var na = na.data;
      *         var nb = nb.data;
@@ -243,11 +358,12 @@ class VirtualizedPackedLayout extends go.Layout {
      *         if (da.someProperty > db.someProperty) return 1;
      *         return 0;
      *       }
-     *     }
-     *   )
+     *     })
      * ```
      */
-    get comparer() { return this._comparer; }
+    get comparer() {
+        return this._comparer;
+    }
     set comparer(value) {
         if (typeof value === 'function') {
             this._comparer = value;
@@ -257,13 +373,15 @@ class VirtualizedPackedLayout extends go.Layout {
      * Gets or sets the aspect ratio for the shape that nodes will be packed into.
      * The provided aspect ratio should be a nonzero postive number.
      *
-     * Note that this only applies if the {@link #packMode} is
-     * {@link VirtualizedPackedLayout.AspectOnly}. Otherwise, the {@link #size}
+     * Note that this only applies if the {@link packMode} is
+     * {@link PackMode.AspectOnly}. Otherwise, the {@link size}
      * will determine the aspect ratio of the packed shape.
      *
      * The default value is 1.
      */
-    get aspectRatio() { return this._aspectRatio; }
+    get aspectRatio() {
+        return this._aspectRatio;
+    }
     set aspectRatio(value) {
         if (this.isNumeric(value) && isFinite(value) && value > 0) {
             this._aspectRatio = value;
@@ -279,12 +397,14 @@ class VirtualizedPackedLayout extends go.Layout {
      * layout has no diagram associated with it, the default value of size will
      * be used instead.
      *
-     * Note that this only applies if the {@link #packMode} is
-     * {@link VirtualizedPackedLayout.Fit} or {@link VirtualizedPackedLayout.ExpandToFit}.
+     * Note that this only applies if the {@link packMode} is
+     * {@link PackMode.Fit} or {@link PackMode.ExpandToFit}.
      *
      * The default value is 500x500.
      */
-    get size() { return this._size; }
+    get size() {
+        return this._size;
+    }
     set size(value) {
         // check if both width and height are NaN, as per https://stackoverflow.com/a/16988441
         if (value.width !== value.width && value.height !== value.height) {
@@ -292,8 +412,12 @@ class VirtualizedPackedLayout extends go.Layout {
             this._fillViewport = true;
             this.invalidateLayout();
         }
-        else if (this.isNumeric(value.width) && isFinite(value.width) && value.width >= 0
-            && this.isNumeric(value.height) && isFinite(value.height) && value.height >= 0) {
+        else if (this.isNumeric(value.width) &&
+            isFinite(value.width) &&
+            value.width >= 0 &&
+            this.isNumeric(value.height) &&
+            isFinite(value.height) &&
+            value.height >= 0) {
             this._size = value;
             this.invalidateLayout();
         }
@@ -303,14 +427,16 @@ class VirtualizedPackedLayout extends go.Layout {
      * real number (a negative spacing will compress nodes together, and a
      * positive spacing will leave space between them).
      *
-     * Note that the spacing value is only respected in the {@link VirtualizedPackedLayout.Fit}
-     * {@link #packMode} if it does not cause the layout to grow outside
-     * of the specified bounds. In the {@link VirtualizedPackedLayout.ExpandToFit}
-     * {@link #packMode}, this property does not do anything.
+     * Note that the spacing value is only respected in the {@link PackMode.Fit}
+     * {@link packMode} if it does not cause the layout to grow outside
+     * of the specified bounds. In the {@link PackMode.ExpandToFit}
+     * {@link packMode}, this property does not do anything.
      *
      * The default value is 0.
      */
-    get spacing() { return this._spacing; }
+    get spacing() {
+        return this._spacing;
+    }
     set spacing(value) {
         if (this.isNumeric(value) && isFinite(value)) {
             this._spacing = value;
@@ -328,25 +454,29 @@ class VirtualizedPackedLayout extends go.Layout {
      *
      * The default value is false.
      */
-    get hasCircularNodes() { return this._hasCircularNodes; }
+    get hasCircularNodes() {
+        return this._hasCircularNodes;
+    }
     set hasCircularNodes(value) {
-        if (typeof (value) === typeof (true) && value !== this._hasCircularNodes) {
+        if (typeof value === typeof true && value !== this._hasCircularNodes) {
             this._hasCircularNodes = value;
             this.invalidateLayout();
         }
     }
     /**
-     * This read-only property is the effective spacing calculated after {@link VirtualizedPackedLayout#doLayout}.
+     * This read-only property is the effective spacing calculated after {@link VirtualizedPackedLayout.doLayout}.
      *
-     * If the {@link #packMode} is {@link VirtualizedPackedLayout.AspectOnly}, this will simply be the
-     * {@link #spacing} property. However, in the {@link VirtualizedPackedLayout.Fit} and
-     * {@link VirtualizedPackedLayout.ExpandToFit} modes, this property will include the forced spacing added by
+     * If the {@link packMode} is {@link PackMode.AspectOnly}, this will simply be the
+     * {@link spacing} property. However, in the {@link PackMode.Fit} and
+     * {@link PackMode.ExpandToFit} modes, this property will include the forced spacing added by
      * the modes themselves.
      *
      * Note that this property will only return a valid value after a layout has been performed. Before
      * then, its behavior is undefined.
      */
-    get actualSpacing() { return this.spacing + this._fixedSizeModeSpacing; }
+    get actualSpacing() {
+        return this.spacing + this._fixedSizeModeSpacing;
+    }
     /**
      * This read-only property returns the actual rectangular bounds occupied by the packed nodes.
      * This property does not take into account any kind of spacing around the packed nodes.
@@ -354,10 +484,12 @@ class VirtualizedPackedLayout extends go.Layout {
      * Note that this property will only return a valid value after a layout has been performed. Before
      * then, its behavior is undefined.
      */
-    get actualBounds() { return this._actualBounds; }
+    get actualBounds() {
+        return this._actualBounds;
+    }
     /**
      * This read-only property returns the smallest enclosing circle around the packed nodes. It makes
-     * use of the {@link #hasCircularNodes} property to determine whether or not to make
+     * use of the {@link hasCircularNodes} property to determine whether or not to make
      * enclosing circle calculations for rectangles or for circles. This property does not take into
      * account any kind of spacing around the packed nodes. The enclosing circle calculation is
      * performed the first time this property is retrieved, and then cached to prevent slow accesses
@@ -370,7 +502,8 @@ class VirtualizedPackedLayout extends go.Layout {
      */
     get enclosingCircle() {
         if (this._enclosingCircle === null) {
-            if (this.hasCircularNodes || this.packShape === VirtualizedPackedLayout.Spiral) { // remember, spiral mode assumes hasCircularNodes
+            if (this.hasCircularNodes || this.packShape === PackShape.Spiral) {
+                // remember, spiral mode assumes hasCircularNodes
                 const circles = new Array(this._nodeBounds.length);
                 for (let i = 0; i < circles.length; i++) {
                     const bounds = this._nodeBounds[i];
@@ -394,22 +527,23 @@ class VirtualizedPackedLayout extends go.Layout {
         return this._enclosingCircle;
     }
     /**
-     * Gets or sets whether or not to use the {@link Layout#arrangementOrigin}
+     * Gets or sets whether or not to use the {@link go.Layout.arrangementOrigin}
      * property when placing nodes.
      *
      * The default value is true.
      */
-    get arrangesToOrigin() { return this._arrangesToOrigin; }
+    get arrangesToOrigin() {
+        return this._arrangesToOrigin;
+    }
     set arrangesToOrigin(value) {
-        if (typeof (value) === typeof (true) && value !== this._arrangesToOrigin) {
+        if (typeof value === typeof true && value !== this._arrangesToOrigin) {
             this._arrangesToOrigin = value;
             this.invalidateLayout();
         }
     }
     /**
      * Performs the VirtualizedPackedLayout.
-     * @this {VirtualizedPackedLayout}
-     * @param {Diagram|Group|Iterable.<Part>} coll A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
+     * @param coll - A {@link go.Diagram} or a {@link go.Group} or a collection of {@link go.Part}s.
      */
     performLayout(nodes) {
         const diagram = this.diagram;
@@ -420,7 +554,7 @@ class VirtualizedPackedLayout extends go.Layout {
         // push all nodes in parts iterator to an array for easy sorting
         let averageSize = 0;
         let maxSize = 0;
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
             averageSize += node.bounds.width + node.bounds.height;
             if (node.bounds.width > maxSize) {
                 maxSize = node.bounds.width;
@@ -433,13 +567,13 @@ class VirtualizedPackedLayout extends go.Layout {
         if (averageSize < 1) {
             averageSize = 1;
         }
-        if (this.sortMode !== VirtualizedPackedLayout.None) {
+        if (this.sortMode !== SortMode.None) {
             if (!this.comparer) {
                 const sortOrder = this.sortOrder;
                 const sortMode = this.sortMode;
                 this.comparer = (a, b) => {
-                    const sortVal = sortOrder === VirtualizedPackedLayout.Ascending ? 1 : -1;
-                    if (sortMode === VirtualizedPackedLayout.MaxSide) {
+                    const sortVal = sortOrder === SortOrder.Ascending ? 1 : -1;
+                    if (sortMode === SortMode.MaxSide) {
                         const aMax = Math.max(a.bounds.width, a.bounds.height);
                         const bMax = Math.max(b.bounds.width, b.bounds.height);
                         if (aMax > bMax) {
@@ -450,7 +584,7 @@ class VirtualizedPackedLayout extends go.Layout {
                         }
                         return 0;
                     }
-                    else if (sortMode === VirtualizedPackedLayout.Area) {
+                    else if (sortMode === SortMode.Area) {
                         const area1 = a.bounds.width * a.bounds.height;
                         const area2 = b.bounds.width * b.bounds.height;
                         if (area1 > area2) {
@@ -470,28 +604,35 @@ class VirtualizedPackedLayout extends go.Layout {
         let targetHeight = this.size.height !== 0 ? this.size.height : 1;
         if (this._fillViewport && this.diagram !== null) {
             targetWidth = this.diagram.viewportBounds.width !== 0 ? this.diagram.viewportBounds.width : 1;
-            targetHeight = this.diagram.viewportBounds.height !== 0 ? this.diagram.viewportBounds.height : 1;
+            targetHeight =
+                this.diagram.viewportBounds.height !== 0 ? this.diagram.viewportBounds.height : 1;
         }
         else if (this._fillViewport) {
             targetWidth = this._defaultSize.width !== 0 ? this._defaultSize.width : 1;
             targetHeight = this._defaultSize.height !== 0 ? this._defaultSize.height : 1;
         }
         // set the target aspect ratio using the given bounds if necessary
-        if (this.packMode === VirtualizedPackedLayout.Fit || this.packMode === VirtualizedPackedLayout.ExpandToFit) {
+        if (this.packMode === PackMode.Fit || this.packMode === PackMode.ExpandToFit) {
             this._eAspectRatio = targetWidth / targetHeight;
         }
         else {
             this._eAspectRatio = this.aspectRatio;
         }
-        let fits = this.hasCircularNodes || this.packShape === VirtualizedPackedLayout.Spiral ? this.fitCircles(nodes) : this.fitRects(nodes);
+        let fits = this.hasCircularNodes || this.packShape === PackShape.Spiral
+            ? this.fitCircles(nodes)
+            : this.fitRects(nodes);
         // in the Fit and ExpandToFit modes, we need to run the packing another time to figure out what the correct
         // _fixedModeSpacing should be. Then the layout is run a final time with the correct spacing.
-        if (this.packMode === VirtualizedPackedLayout.Fit || this.packMode === VirtualizedPackedLayout.ExpandToFit) {
+        if (this.packMode === PackMode.Fit || this.packMode === PackMode.ExpandToFit) {
             const bounds0 = this._bounds.copy();
             this._bounds = new go.Rect();
             this._fixedSizeModeSpacing = Math.floor(averageSize);
-            fits = this.hasCircularNodes || this.packShape === VirtualizedPackedLayout.Spiral ? this.fitCircles(nodes) : this.fitRects(nodes);
-            if ((this.hasCircularNodes || this.packShape === VirtualizedPackedLayout.Spiral) && this.packShape === VirtualizedPackedLayout.Spiral) {
+            fits =
+                this.hasCircularNodes || this.packShape === PackShape.Spiral
+                    ? this.fitCircles(nodes)
+                    : this.fitRects(nodes);
+            if ((this.hasCircularNodes || this.packShape === PackShape.Spiral) &&
+                this.packShape === PackShape.Spiral) {
                 const targetDiameter = Math.max(targetWidth, targetHeight);
                 const oldDiameter = targetDiameter === targetWidth ? bounds0.width : bounds0.height;
                 const newDiameter = targetDiameter === targetWidth ? this._bounds.width : this._bounds.height;
@@ -505,7 +646,7 @@ class VirtualizedPackedLayout extends go.Layout {
                 const paddingY = (targetHeight - bounds0.height) / dy;
                 this._fixedSizeModeSpacing = Math.abs(paddingX) > Math.abs(paddingY) ? paddingX : paddingY;
             }
-            if (this.packMode === VirtualizedPackedLayout.Fit) {
+            if (this.packMode === PackMode.Fit) {
                 // make sure that the spacing is not positive in this mode
                 this._fixedSizeModeSpacing = Math.min(this._fixedSizeModeSpacing, 0);
             }
@@ -513,7 +654,10 @@ class VirtualizedPackedLayout extends go.Layout {
                 this._fixedSizeModeSpacing = -maxSize;
             }
             this._bounds = new go.Rect();
-            fits = this.hasCircularNodes || this.packShape === VirtualizedPackedLayout.Spiral ? this.fitCircles(nodes) : this.fitRects(nodes);
+            fits =
+                this.hasCircularNodes || this.packShape === PackShape.Spiral
+                    ? this.fitCircles(nodes)
+                    : this.fitRects(nodes);
         }
         // move the nodes and calculate the actualBounds property
         if (this.arrangesToOrigin) {
@@ -543,7 +687,7 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * Cause the vertex to be moved so that its position is at (nx,ny).
      * The default implementation assumes the node.bounds is a Rect that may be modified.
-     * @expose
+     * @virtual
      * @param node
      * @param nx
      * @param ny
@@ -553,11 +697,10 @@ class VirtualizedPackedLayout extends go.Layout {
         node.bounds.y = ny;
     }
     /**
-     * This method is called at the end of {@link #doLayout}, but
+     * This method is called at the end of {@link doLayout}, but
      * before the layout transaction is committed. It can be overriden and
      * used to customize layout behavior. By default, the method does nothing.
-     * @expose
-     * @this {VirtualizedPackedLayout}
+     * @virtual
      */
     commitLayout() { }
     /**
@@ -566,9 +709,8 @@ class VirtualizedPackedLayout extends go.Layout {
      * algorithm used is a slightly modified version of the one proposed
      * by Wang et al. in "Visualization of large hierarchical data by
      * circle packing", 2006.
-     * @this {VirtualizedPackedLayout}
-     * @param nodes the array of Nodes to pack
-     * @return {Array<Rect>} an array of positioned rectangles corresponding to the nodes argument
+     * @param nodes - the array of Nodes to pack
+     * @returns an array of positioned rectangles corresponding to the nodes argument
      */
     fitCircles(nodes) {
         function place(a, b, c) {
@@ -582,8 +724,8 @@ class VirtualizedPackedLayout extends go.Layout {
             if (dc) {
                 const x = 0.5 + ((db *= db) - (da *= da)) / (2 * dc);
                 const y = Math.sqrt(Math.max(0, 2 * da * (db + dc) - (db -= dc) * db - da * da)) / (2 * dc);
-                c.x = (ax + x * dx + y * dy) - (c.width / 2);
-                c.y = (ay + x * dy - y * dx) - (c.height / 2);
+                c.x = ax + x * dx + y * dy - c.width / 2;
+                c.y = ay + x * dy - y * dx - c.height / 2;
             }
             else {
                 c.x = ax + db;
@@ -607,21 +749,21 @@ class VirtualizedPackedLayout extends go.Layout {
             const br = b.width / 2;
             const ab = ar + br;
             const dx = (a.centerX * br + b.centerX * ar) / ab;
-            const dy = (a.centerY * br + b.centerY * ar) / ab * aspect;
-            return shape === VirtualizedPackedLayout.Elliptical ? dx * dx + dy * dy : Math.max(dx * dx, dy * dy);
+            const dy = ((a.centerY * br + b.centerY * ar) / ab) * aspect;
+            return shape === PackShape.Elliptical ? dx * dx + dy * dy : Math.max(dx * dx, dy * dy);
         }
         const sideSpacing = (this.spacing + this._fixedSizeModeSpacing) / 2;
         const fits = [];
         const frontChain = new CircularDoublyLinkedList();
         if (!nodes.length)
             return fits;
-        let r1 = nodes[0].bounds.copy().inflate(sideSpacing, sideSpacing);
+        const r1 = nodes[0].bounds.copy().inflate(sideSpacing, sideSpacing);
         r1.setTo(0, 0, r1.width === 0 ? 0.1 : r1.width, r1.height === 0 ? 0.1 : r1.height);
         fits.push(r1.setTo(0, 0, r1.width, r1.height));
         this._bounds.unionRect(r1);
         if (nodes.length < 2)
             return fits;
-        let r2 = nodes[1].bounds.copy().inflate(sideSpacing, sideSpacing);
+        const r2 = nodes[1].bounds.copy().inflate(sideSpacing, sideSpacing);
         r2.setTo(0, 0, r2.width === 0 ? 0.1 : r2.width, r2.height === 0 ? 0.1 : r2.height);
         fits.push(r2.setTo(-r2.width, r1.centerY - r2.width / 2, r2.width, r2.height));
         this._bounds.unionRect(r2);
@@ -645,29 +787,29 @@ class VirtualizedPackedLayout extends go.Layout {
             do {
                 if (sj <= sk) {
                     if (intersects(j.data, r3)) {
-                        n2 = frontChain.removeBetween(n1, j), i--;
+                        (n2 = frontChain.removeBetween(n1, j)), i--;
                         continue pack;
                     }
-                    sj += j.data.width / 2, j = j.next;
+                    (sj += j.data.width / 2), (j = j.next);
                 }
                 else {
                     if (intersects(k.data, r3)) {
                         frontChain.removeBetween(k, n2);
-                        n1 = k, i--;
+                        (n1 = k), i--;
                         continue pack;
                     }
-                    sk += k.data.width / 2, k = k.prev;
+                    (sk += k.data.width / 2), (k = k.prev);
                 }
             } while (j !== k.next);
             fits.push(r3);
             this._bounds.unionRect(r3);
             n2 = n3 = frontChain.insertAfter(r3, n1);
-            if (this.packShape !== VirtualizedPackedLayout.Spiral) {
+            if (this.packShape !== PackShape.Spiral) {
                 let aa = score(n1);
                 while ((n3 = n3.next) !== n2) {
                     const ca = score(n3);
                     if (ca < aa) {
-                        n1 = n3, aa = ca;
+                        (n1 = n3), (aa = ca);
                     }
                 }
                 n2 = n1.next;
@@ -707,10 +849,8 @@ class VirtualizedPackedLayout extends go.Layout {
      * strategies enables intersection checking to take place extremely
      * quickly, when it would normally be the slowest part of the entire
      * algorithm.
-     *
-     * @this {VirtualizedPackedLayout}
-     * @param nodes the array of Nodes to pack
-     * @return {Array<Rect>} an array of positioned rectangles corresponding to the nodes argument
+     * @param nodes - the array of Nodes to pack
+     * @returns an array of positioned rectangles corresponding to the nodes argument
      */
     fitRects(nodes) {
         const sideSpacing = (this.spacing + this._fixedSizeModeSpacing) / 2;
@@ -766,9 +906,7 @@ class VirtualizedPackedLayout extends go.Layout {
                 s = s.next;
                 j++;
             } while (s !== segments.start);
-            possibleFits.sort((a, b) => {
-                return a.cost - b.cost;
-            });
+            possibleFits.sort((a, b) => a.cost - b.cost);
             /* scales the cost of skip fits. a number below
              * one makes skip fits more likely to appear,
              * which is preferable because they are more
@@ -791,7 +929,9 @@ class VirtualizedPackedLayout extends go.Layout {
                     }
                 }
                 // check skip fits
-                if (hasIntersections && !fit.s1.data.p1Concave && (fit.s1.next.data.p1Concave || fit.s1.next.next.data.p1Concave)) {
+                if (hasIntersections &&
+                    !fit.s1.data.p1Concave &&
+                    (fit.s1.next.data.p1Concave || fit.s1.next.next.data.p1Concave)) {
                     let [nextSegment, usePreviousSegment] = this.findNextOrientedSegment(fit, fit.s1.next);
                     let nextSegmentTouchesFit = false;
                     while (hasIntersections && nextSegment !== null) {
@@ -836,10 +976,8 @@ class VirtualizedPackedLayout extends go.Layout {
      *
      * Oriented segments can be oriented with either fit.s1, or fit.s1.prev. The
      * second return value (usePreviousSegment) indicates which the found segment is.
-     *
-     * @this {VirtualizedPackedLayout}
-     * @param fit the fit to search for a new segment for
-     * @param lastSegment the last segment found.
+     * @param fit - the fit to search for a new segment for
+     * @param lastSegment - the last segment found.
      */
     findNextOrientedSegment(fit, lastSegment) {
         lastSegment = lastSegment.next;
@@ -861,32 +999,43 @@ class VirtualizedPackedLayout extends go.Layout {
                 }
             }
             const validLastOrientation = lastOrientation === targetOrientation;
-            const exceededPrimaryDimension = fit.s1.data.isHorizontal ?
-                Math.abs(lastSegment.data.y1 - fit.s1.data.y1) + 1e-7 > fit.bounds.height :
-                Math.abs(lastSegment.data.x1 - fit.s1.data.x1) + 1e-7 > fit.bounds.width;
+            const exceededPrimaryDimension = fit.s1.data.isHorizontal
+                ? Math.abs(lastSegment.data.y1 - fit.s1.data.y1) + 1e-7 > fit.bounds.height
+                : Math.abs(lastSegment.data.x1 - fit.s1.data.x1) + 1e-7 > fit.bounds.width;
             let validCornerPlacement;
             let exceededSecondaryDimension;
             switch (orientation) {
                 case Orientation.NE:
                     validCornerPlacement = fit.s1.data.x1 < lastSegment.data.x1;
-                    exceededSecondaryDimension = usePreviousSegment ? fit.s1.data.y1 - fit.bounds.height >= lastSegment.data.y1 : fit.s1.data.y2 + fit.bounds.height <= lastSegment.data.y1;
+                    exceededSecondaryDimension = usePreviousSegment
+                        ? fit.s1.data.y1 - fit.bounds.height >= lastSegment.data.y1
+                        : fit.s1.data.y2 + fit.bounds.height <= lastSegment.data.y1;
                     break;
                 case Orientation.NW:
                     validCornerPlacement = fit.s1.data.y1 > lastSegment.data.y1;
-                    exceededSecondaryDimension = usePreviousSegment ? fit.s1.data.x1 - fit.bounds.width >= lastSegment.data.x1 : fit.s1.data.x2 + fit.bounds.width <= lastSegment.data.x1;
+                    exceededSecondaryDimension = usePreviousSegment
+                        ? fit.s1.data.x1 - fit.bounds.width >= lastSegment.data.x1
+                        : fit.s1.data.x2 + fit.bounds.width <= lastSegment.data.x1;
                     break;
                 case Orientation.SW:
                     validCornerPlacement = fit.s1.data.x1 > lastSegment.data.x1;
-                    exceededSecondaryDimension = usePreviousSegment ? fit.s1.data.y1 + fit.bounds.height <= lastSegment.data.y1 : fit.s1.data.y2 - fit.bounds.height >= lastSegment.data.y1;
+                    exceededSecondaryDimension = usePreviousSegment
+                        ? fit.s1.data.y1 + fit.bounds.height <= lastSegment.data.y1
+                        : fit.s1.data.y2 - fit.bounds.height >= lastSegment.data.y1;
                     break;
                 case Orientation.SE:
                     validCornerPlacement = fit.s1.data.y1 < lastSegment.data.y1;
-                    exceededSecondaryDimension = usePreviousSegment ? fit.s1.data.x1 + fit.bounds.width <= lastSegment.data.x1 : fit.s1.data.x2 - fit.bounds.width >= lastSegment.data.x1;
+                    exceededSecondaryDimension = usePreviousSegment
+                        ? fit.s1.data.x1 + fit.bounds.width <= lastSegment.data.x1
+                        : fit.s1.data.x2 - fit.bounds.width >= lastSegment.data.x1;
                     break;
                 default:
                     throw new Error('Unknown orientation ' + orientation);
             }
-            if (!exceededPrimaryDimension && !exceededSecondaryDimension && validCornerPlacement && validLastOrientation) {
+            if (!exceededPrimaryDimension &&
+                !exceededSecondaryDimension &&
+                validCornerPlacement &&
+                validLastOrientation) {
                 return [lastSegment, usePreviousSegment];
             }
             lastSegment = lastSegment.next;
@@ -897,9 +1046,8 @@ class VirtualizedPackedLayout extends go.Layout {
      * @hidden @internal
      * Returns the orientation of two adjacent segments. s2
      * is assumed to start at the end of s1.
-     * @this {VirtualizedPackedLayout}
-     * @param s1 the first segment
-     * @param s2 the second segment
+     * @param s1 - the first segment
+     * @param s2 - the second segment
      */
     segmentOrientation(s1, s2) {
         if (s1.isHorizontal) {
@@ -924,13 +1072,11 @@ class VirtualizedPackedLayout extends go.Layout {
      * Fits a rectangle between two segments (used for skip fits). This is an operation
      * related more to corners than segments, so fit.s1 should always be supplied for
      * segment a (even if usePreviousSegment was true in the return value for
-     * {@link #findNextOrientedSegment}).
-     *
-     * @this {VirtualizedPackedLayout}
-     * @param a the first segment to fit between, should always be fit.s1
-     * @param b the second segment to fit between, found with {@link #findNextOrientedSegment}
-     * @param width the width of the rectangle, should be fit.width
-     * @param height the height of the rectangle, should be fit.height
+     * {@link findNextOrientedSegment}).
+     * @param a - the first segment to fit between, should always be fit.s1
+     * @param b - the second segment to fit between, found with {@link findNextOrientedSegment}
+     * @param width - the width of the rectangle, should be fit.width
+     * @param height - the height of the rectangle, should be fit.height
      */
     rectAgainstMultiSegment(a, b, width, height) {
         switch (this.segmentOrientation(a.prev.data, a.data)) {
@@ -971,10 +1117,9 @@ class VirtualizedPackedLayout extends go.Layout {
      * the top/left side, the bottom/right side, or at the center coordinate
      * of the entire packed shape (if the segment goes through either the x
      * or y coordinate of the center).
-     * @this {VirtualizedPackedLayout}
-     * @param s the segment to place against
-     * @param width the width of the fit, fit.width
-     * @param height the height of the fit, fit.height
+     * @param s - the segment to place against
+     * @param width - the width of the fit, fit.width
+     * @param height - the height of the fit, fit.height
      */
     getBestFitRect(s, width, height) {
         let x1 = s.data.x1;
@@ -1009,71 +1154,77 @@ class VirtualizedPackedLayout extends go.Layout {
         if (coordIsX && (this._center.x - (x1 + width / 2)) * (this._center.x - (x2 + width / 2)) < 0) {
             cost3 = this.placementCost(r.setTo(this._center.x - width / 2, y1, width, height));
         }
-        else if (!coordIsX && (this._center.y - (y1 + height / 2)) * (this._center.y - (y2 + height / 2)) < 0) {
+        else if (!coordIsX &&
+            (this._center.y - (y1 + height / 2)) * (this._center.y - (y2 + height / 2)) < 0) {
             cost3 = this.placementCost(r.setTo(x1, this._center.y - height / 2, width, height));
         }
-        return cost3 < cost2 && cost3 < cost1 ? r
-            : (cost2 < cost1 ? r.setTo(x2, y2, width, height)
-                : r.setTo(x1, y1, width, height));
+        return cost3 < cost2 && cost3 < cost1
+            ? r
+            : cost2 < cost1
+                ? r.setTo(x2, y2, width, height)
+                : r.setTo(x1, y1, width, height);
     }
     /**
      * @hidden @internal
      * Checks if a segment is on the perimeter of the given fit bounds.
      * Also returns true if the segment is within the rect, but that
      * shouldn't matter for any of the cases where this function is used.
-     * @this {VirtualizedPackedLayout}
-     * @param s the segment to test
-     * @param bounds the fit bounds
+     * @param s - the segment to test
+     * @param bounds - the fit bounds
      */
     segmentIsOnFitPerimeter(s, bounds) {
-        const xCoordinatesTogether = this.numberIsBetween(s.x1, bounds.left, bounds.right)
-            || this.numberIsBetween(s.x2, bounds.left, bounds.right)
-            || this.numberIsBetween(bounds.left, s.x1, s.x2)
-            || this.numberIsBetween(bounds.right, s.x1, s.x2);
-        const yCoordinatesTogether = this.numberIsBetween(s.y1, bounds.top, bounds.bottom)
-            || this.numberIsBetween(s.y2, bounds.top, bounds.bottom)
-            || this.numberIsBetween(bounds.top, s.y1, s.y2)
-            || this.numberIsBetween(bounds.bottom, s.y1, s.y2);
-        return (s.isHorizontal && (this.approxEqual(s.y1, bounds.top) || this.approxEqual(s.y1, bounds.bottom)) && xCoordinatesTogether)
-            || (!s.isHorizontal && (this.approxEqual(s.x1, bounds.left) || this.approxEqual(s.x1, bounds.right)) && yCoordinatesTogether);
+        const xCoordinatesTogether = this.numberIsBetween(s.x1, bounds.left, bounds.right) ||
+            this.numberIsBetween(s.x2, bounds.left, bounds.right) ||
+            this.numberIsBetween(bounds.left, s.x1, s.x2) ||
+            this.numberIsBetween(bounds.right, s.x1, s.x2);
+        const yCoordinatesTogether = this.numberIsBetween(s.y1, bounds.top, bounds.bottom) ||
+            this.numberIsBetween(s.y2, bounds.top, bounds.bottom) ||
+            this.numberIsBetween(bounds.top, s.y1, s.y2) ||
+            this.numberIsBetween(bounds.bottom, s.y1, s.y2);
+        return ((s.isHorizontal &&
+            (this.approxEqual(s.y1, bounds.top) || this.approxEqual(s.y1, bounds.bottom)) &&
+            xCoordinatesTogether) ||
+            (!s.isHorizontal &&
+                (this.approxEqual(s.x1, bounds.left) || this.approxEqual(s.x1, bounds.right)) &&
+                yCoordinatesTogether));
     }
     /**
      * @hidden @internal
      * Checks if a point is on the perimeter of the given fit bounds.
      * Also returns true if the point is within the rect, but that
      * shouldn't matter for any of the cases where this function is used.
-     * @this {VirtualizedPackedLayout}
-     * @param x the x coordinate of the point to test
-     * @param y the y coordinate of the point to test
-     * @param bounds the fit bounds
+     * @param x - the x coordinate of the point to test
+     * @param y - the y coordinate of the point to test
+     * @param bounds - the fit bounds
      */
     pointIsOnFitPerimeter(x, y, bounds) {
-        return (x >= bounds.left - 1e-7 && x <= bounds.right + 1e-7 && y >= bounds.top - 1e-7 && y <= bounds.bottom + 1e-7);
+        return (x >= bounds.left - 1e-7 &&
+            x <= bounds.right + 1e-7 &&
+            y >= bounds.top - 1e-7 &&
+            y <= bounds.bottom + 1e-7);
     }
     /**
      * @hidden @internal
      * Checks if a point is on the corner of the given fit bounds.
-     * @this {VirtualizedPackedLayout}
-     * @param x the x coordinate of the point to test
-     * @param y the y coordinate of the point to test
-     * @param bounds the fit bounds
+     * @param x - the x coordinate of the point to test
+     * @param y - the y coordinate of the point to test
+     * @param bounds - the fit bounds
      */
     pointIsFitCorner(x, y, bounds) {
-        return (this.approxEqual(x, bounds.left) && this.approxEqual(y, bounds.top)) ||
+        return ((this.approxEqual(x, bounds.left) && this.approxEqual(y, bounds.top)) ||
             (this.approxEqual(x, bounds.right) && this.approxEqual(y, bounds.top)) ||
             (this.approxEqual(x, bounds.left) && this.approxEqual(y, bounds.bottom)) ||
-            (this.approxEqual(x, bounds.right) && this.approxEqual(y, bounds.bottom));
+            (this.approxEqual(x, bounds.right) && this.approxEqual(y, bounds.bottom)));
     }
     /**
      * @hidden @internal
      * Updates the representation of the perimeter of segments after
      * a new placement is made. This modifies the given segments list,
-     * as well as the quadtree class variable {@link #_tree}.
+     * as well as the quadtree class variable {@link _tree}.
      * Also updates the minimum/maximum segments if they have changed as
      * a result of the new placement.
-     * @this {VirtualizedPackedLayout}
-     * @param fit the fit to add
-     * @param segments the list of segments to update
+     * @param fit - the fit to add
+     * @param segments - the list of segments to update
      */
     updateSegments(fit, segments) {
         let s0 = fit.s1;
@@ -1112,16 +1263,20 @@ class VirtualizedPackedLayout extends go.Layout {
         let shortened0Precond;
         let [cornerX2, cornerY2] = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds);
         if (s0.data.isHorizontal) {
-            shortened0Precond = this.numberIsBetween(cornerX2, s0.data.x1, s0.data.x2) && this.approxEqual(cornerY2, s0.data.y1);
+            shortened0Precond =
+                this.numberIsBetween(cornerX2, s0.data.x1, s0.data.x2) &&
+                    this.approxEqual(cornerY2, s0.data.y1);
         }
         else {
-            shortened0Precond = this.numberIsBetween(cornerY2, s0.data.y1, s0.data.y2) && this.approxEqual(cornerX2, s0.data.x1);
+            shortened0Precond =
+                this.numberIsBetween(cornerY2, s0.data.y1, s0.data.y2) &&
+                    this.approxEqual(cornerX2, s0.data.x1);
         }
-        const shortened0 = !extended0 && this.pointIsFitCorner(s0.data.x2, s0.data.y2, fit.bounds)
-            || !this.pointIsOnFitPerimeter(s0.data.x2, s0.data.y2, fit.bounds)
-            || (this.pointIsOnFitPerimeter(s0.data.x2, s0.data.y2, fit.bounds)
-                && !this.pointIsOnFitPerimeter(s0.data.x1, s0.data.y1, fit.bounds)
-                && shortened0Precond);
+        const shortened0 = (!extended0 && this.pointIsFitCorner(s0.data.x2, s0.data.y2, fit.bounds)) ||
+            !this.pointIsOnFitPerimeter(s0.data.x2, s0.data.y2, fit.bounds) ||
+            (this.pointIsOnFitPerimeter(s0.data.x2, s0.data.y2, fit.bounds) &&
+                !this.pointIsOnFitPerimeter(s0.data.x1, s0.data.y1, fit.bounds) &&
+                shortened0Precond);
         if (extended0) {
             // extend s0
             [s0.data.x2, s0.data.y2] = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds);
@@ -1172,12 +1327,22 @@ class VirtualizedPackedLayout extends go.Layout {
             testOrientation = (testOrientation + 1) % 4;
         }
         [cornerX2, cornerY2] = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds);
-        if (sNext.data.isHorizontal && this.numberIsBetween(cornerX2, sNext.data.x1, sNext.data.x2) && this.approxEqual(cornerY2, sNext.data.y1)
-            || (!sNext.data.isHorizontal && this.numberIsBetween(cornerY2, sNext.data.y1, sNext.data.y2) && this.approxEqual(cornerX2, sNext.data.x1))
-            || (sNext.data.isHorizontal && this.numberIsBetween(fit.bounds.left, sNext.data.x1, sNext.data.x2) && this.numberIsBetween(fit.bounds.right, sNext.data.x1, sNext.data.x2)
-                && (this.approxEqual(fit.bounds.top, sNext.data.y1) || this.approxEqual(fit.bounds.bottom, sNext.data.y1)))
-            || (!sNext.data.isHorizontal && this.numberIsBetween(fit.bounds.top, sNext.data.y1, sNext.data.y2) && this.numberIsBetween(fit.bounds.bottom, sNext.data.y1, sNext.data.y2)
-                && (this.approxEqual(fit.bounds.left, sNext.data.x1) || this.approxEqual(fit.bounds.right, sNext.data.x1)))) {
+        if ((sNext.data.isHorizontal &&
+            this.numberIsBetween(cornerX2, sNext.data.x1, sNext.data.x2) &&
+            this.approxEqual(cornerY2, sNext.data.y1)) ||
+            (!sNext.data.isHorizontal &&
+                this.numberIsBetween(cornerY2, sNext.data.y1, sNext.data.y2) &&
+                this.approxEqual(cornerX2, sNext.data.x1)) ||
+            (sNext.data.isHorizontal &&
+                this.numberIsBetween(fit.bounds.left, sNext.data.x1, sNext.data.x2) &&
+                this.numberIsBetween(fit.bounds.right, sNext.data.x1, sNext.data.x2) &&
+                (this.approxEqual(fit.bounds.top, sNext.data.y1) ||
+                    this.approxEqual(fit.bounds.bottom, sNext.data.y1))) ||
+            (!sNext.data.isHorizontal &&
+                this.numberIsBetween(fit.bounds.top, sNext.data.y1, sNext.data.y2) &&
+                this.numberIsBetween(fit.bounds.bottom, sNext.data.y1, sNext.data.y2) &&
+                (this.approxEqual(fit.bounds.left, sNext.data.x1) ||
+                    this.approxEqual(fit.bounds.right, sNext.data.x1)))) {
             sNext = sNext.next;
             testOrientation = this.segmentOrientation(sNext.data, sNext.next.data);
             if (sNext.data.p1Concave) {
@@ -1191,7 +1356,10 @@ class VirtualizedPackedLayout extends go.Layout {
         [cornerX, cornerY] = this.cornerFromRect(testOrientation, fit.bounds);
         if (this.approxEqual(cornerX, sNext.data.x1) && this.approxEqual(cornerY, sNext.data.y1)) {
             // extend sNext
-            if (s0.data.isHorizontal === sNext.data.isHorizontal && (s0.data.isHorizontal ? this.approxEqual(s0.data.y1, sNext.data.y1) : this.approxEqual(s0.data.x1, sNext.data.x1))) {
+            if (s0.data.isHorizontal === sNext.data.isHorizontal &&
+                (s0.data.isHorizontal
+                    ? this.approxEqual(s0.data.y1, sNext.data.y1)
+                    : this.approxEqual(s0.data.x1, sNext.data.x1))) {
                 s0.data.x2 = sNext.data.x2;
                 s0.data.y2 = sNext.data.y2;
                 this.removeSegmentFromLayoutState(sNext);
@@ -1207,9 +1375,12 @@ class VirtualizedPackedLayout extends go.Layout {
                 this.updateMinMaxSegments(sNext.data);
             }
         }
-        else if (extended0 && (s0.data.isHorizontal ?
-            this.approxEqual(s0.data.y1, sNext.data.y1) && this.numberIsBetween(sNext.data.x1, s0.data.x1, s0.data.x2) :
-            this.approxEqual(s0.data.x1, sNext.data.x1) && this.numberIsBetween(sNext.data.y1, s0.data.y1, s0.data.y2))) {
+        else if (extended0 &&
+            (s0.data.isHorizontal
+                ? this.approxEqual(s0.data.y1, sNext.data.y1) &&
+                    this.numberIsBetween(sNext.data.x1, s0.data.x1, s0.data.x2)
+                : this.approxEqual(s0.data.x1, sNext.data.x1) &&
+                    this.numberIsBetween(sNext.data.y1, s0.data.y1, s0.data.y2))) {
             if (s0.data.isHorizontal) {
                 s0.data.x2 = sNext.data.x1;
             }
@@ -1230,7 +1401,9 @@ class VirtualizedPackedLayout extends go.Layout {
             else {
                 newSegment.p1Concave = true;
             }
-            if (this.approxEqual(sNext.prev.data.x1, cornerX) && this.approxEqual(sNext.prev.data.y1, cornerY) && newSegment.isHorizontal === sNext.prev.data.isHorizontal) {
+            if (this.approxEqual(sNext.prev.data.x1, cornerX) &&
+                this.approxEqual(sNext.prev.data.y1, cornerY) &&
+                newSegment.isHorizontal === sNext.prev.data.isHorizontal) {
                 sNext.prev.data.x2 = sNext.data.x1;
                 sNext.prev.data.y2 = sNext.data.y1;
                 this._tree.setTo(sNext.prev.data, Segment.rectFromSegment(sNext.prev.data));
@@ -1243,7 +1416,8 @@ class VirtualizedPackedLayout extends go.Layout {
                 this.updateMinMaxSegments(newSegment);
             }
         }
-        else { // if (this.pointIsOnFitPerimeter(sNext.data.x1, sNext.data.y1, fit.bounds))
+        else {
+            // if (this.pointIsOnFitPerimeter(sNext.data.x1, sNext.data.y1, fit.bounds))
             // shorten existing segment
             [sNext.data.x1, sNext.data.y1] = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds);
             sNext.data.p1Concave = true;
@@ -1265,20 +1439,23 @@ class VirtualizedPackedLayout extends go.Layout {
      * Finds the new minimum and maximum segments in the packed shape if
      * any of them have been deleted. To do this quickly, the quadtree
      * is used.
-     * @this{VirtualizedPackedLayout}
-     * @param force whether or not to force an update based on the quadtree even if none of the segments were deleted
+     * @param force - whether or not to force an update based on the quadtree even if none of the segments were deleted
      */
     fixMissingMinMaxSegments(force = false) {
-        if (!this._minXSegment || !this._maxXSegment || !this._minYSegment || !this._maxYSegment || force) {
-            [this._minXSegment, this._maxXSegment, this._minYSegment, this._maxYSegment] = this._tree.findExtremeObjects();
+        if (!this._minXSegment ||
+            !this._maxXSegment ||
+            !this._minYSegment ||
+            !this._maxYSegment ||
+            force) {
+            [this._minXSegment, this._maxXSegment, this._minYSegment, this._maxYSegment] =
+                this._tree.findExtremeObjects();
         }
     }
     /**
      * @hidden @internal
      * Updates the minimum or maximum segments with a new segment if that
      * segment is a new minimum or maximum.
-     * @this {VirtualizedPackedLayout}
-     * @param s the new segment to test
+     * @param s - the new segment to test
      */
     updateMinMaxSegments(s) {
         const centerX = (s.x1 + s.x2) / 2;
@@ -1299,9 +1476,8 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Gets the x and y coordinates of a corner of a given rectangle.
-     * @this {VirtualizedPackedLayout}
-     * @param orientation the orientation of the corner to get
-     * @param bounds the bounds of the rectangle to get the corner from
+     * @param orientation - the orientation of the corner to get
+     * @param bounds - the bounds of the rectangle to get the corner from
      */
     cornerFromRect(orientation, bounds) {
         let x = bounds.x;
@@ -1319,10 +1495,9 @@ class VirtualizedPackedLayout extends go.Layout {
      * Tests if a number is in between two other numbers, with included
      * allowance for some floating point error with the supplied values.
      * The order of the given boundaries does not matter.
-     * @this {VirtualizedPackedLayout}
-     * @param n the number to test
-     * @param b1 the first boundary
-     * @param b2 the second boundary
+     * @param n - the number to test
+     * @param b1 - the first boundary
+     * @param b2 - the second boundary
      */
     numberIsBetween(n, b1, b2) {
         const tmp = b1;
@@ -1333,11 +1508,13 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Tests whether or not a given segment is a minimum or maximum segment.
-     * @this {VirtualizedPackedLayout}
-     * @param s the segment to test
+     * @param s - the segment to test
      */
     segmentIsMinOrMax(s) {
-        return s === this._minXSegment || s === this._minYSegment || s === this._maxXSegment || s === this._maxYSegment;
+        return (s === this._minXSegment ||
+            s === this._minYSegment ||
+            s === this._maxXSegment ||
+            s === this._maxYSegment);
     }
     /**
      * @hidden @internal
@@ -1345,8 +1522,7 @@ class VirtualizedPackedLayout extends go.Layout {
      * from the quadtree, as well as setting the corresponding minimum or
      * maximum segment to null if the given segment is a minimum or
      * maximum.
-     * @this {VirtualizedPackedLayout}
-     * @param s the segment to remove
+     * @param s - the segment to remove
      */
     removeSegmentFromLayoutState(s) {
         if (s.data === this._minXSegment) {
@@ -1368,10 +1544,9 @@ class VirtualizedPackedLayout extends go.Layout {
      * Removes all segments between the two given segments (exclusive).
      * This includes removing them from the layout state, as well as
      * the given segment list.
-     * @this {VirtualizedPackedLayout}
-     * @param segments the full list of segments
-     * @param s1 the first segment
-     * @param s2 the second segment
+     * @param segments - the full list of segments
+     * @param s1 - the first segment
+     * @param s2 - the second segment
      */
     removeBetween(segments, s1, s2) {
         if (s1 === s2)
@@ -1393,27 +1568,27 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Calculates the cost of a given fit placement, depending on the
-     * {@link #packShape} and {@link #_eAspectRatio}.
-     * @this {VirtualizedPackedLayout}
-     * @param fit the fit to calculate the cost of
+     * {@link packShape} and {@link _eAspectRatio}.
+     * @param fit - the fit to calculate the cost of
      */
     placementCost(fit) {
-        if (this.packShape === VirtualizedPackedLayout.Rectangular) {
+        if (this.packShape === PackShape.Rectangular) {
             if (this._bounds.containsRect(fit)) {
                 return 0;
             }
             return Math.max(Math.abs(this._center.x - fit.center.x), Math.abs(this._center.y - fit.center.y) * this._eAspectRatio);
         }
-        else { // if (this.packShape === VirtualizedPackedLayout.Elliptical)
-            return Math.pow((fit.center.x - this._center.x) / this._eAspectRatio, 2) + Math.pow(fit.center.y - this._center.y, 2);
+        else {
+            // if (this.packShape === SpackShape.Elliptical)
+            return (Math.pow((fit.center.x - this._center.x) / this._eAspectRatio, 2) +
+                Math.pow(fit.center.y - this._center.y, 2));
         }
     }
     /**
      * @hidden @internal
      * Uses the quadtree to determine if the given fit has any
      * intersections anywhere along the perimeter.
-     * @this {VirtualizedPackedLayout}
-     * @param fit the fit to check
+     * @param fit - the fit to check
      */
     fitHasIntersections(fit) {
         return this._tree.intersecting(fit.bounds).length > 0;
@@ -1425,8 +1600,7 @@ class VirtualizedPackedLayout extends go.Layout {
      * with the quadtree in many cases. However, since it doesn't check
      * the entire perimeter, this function is susceptible to false
      * negatives and should only be used with a more comprehensive check.
-     * @this {VirtualizedPackedLayout}
-     * @param fit the fit to check
+     * @param fit - the fit to check
      */
     fastFitHasIntersections(fit) {
         let sNext = fit.s1.next;
@@ -1446,25 +1620,26 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Checks whether or not a segment intersects with a given rect.
-     * Used for {@link #fastFitHasIntersections}.
-     * @this {VirtualizedPackedLayout}
-     * @param s the segment to test
-     * @param r the rectangle to test
+     * Used for {@link fastFitHasIntersections}.
+     * @param s - the segment to test
+     * @param r - the rectangle to test
      */
     segmentIntersectsRect(s, r) {
         const left = Math.min(s.x1, s.x2);
         const right = Math.max(s.x1, s.x2);
         const top = Math.min(s.y1, s.y2);
         const bottom = Math.min(s.y1, s.y2);
-        return !(left + 1e-7 >= r.right || right - 1e-7 <= r.left || top + 1e-7 >= r.bottom || bottom - 1e-7 <= r.top);
+        return !(left + 1e-7 >= r.right ||
+            right - 1e-7 <= r.left ||
+            top + 1e-7 >= r.bottom ||
+            bottom - 1e-7 <= r.top);
     }
     /**
      * @hidden @internal
      * Checks if two numbers are approximately equal, used for
      * eliminating mistakes caused by floating point error.
-     * @this {VirtualizedPackedLayout}
-     * @param x the first number
-     * @param y the second number
+     * @param x - the first number
+     * @param y - the second number
      */
     approxEqual(x, y) {
         return Math.abs(x - y) < 1e-7;
@@ -1472,8 +1647,7 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Checks if a value is a number, used for parameter validation
-     * @this {VirtualizedPackedLayout}
-     * @param value the value to check
+     * @param value - the value to check
      */
     isNumeric(value) {
         return !isNaN(Number(value.toString()));
@@ -1481,8 +1655,7 @@ class VirtualizedPackedLayout extends go.Layout {
     /**
      * @hidden @internal
      * Copies properties to a cloned Layout.
-     * @this {VirtualizedPackedLayout}
-     * @param {?} copy
+     * @param copy
      */
     cloneProtected(copy) {
         copy._packShape = this._packShape;
@@ -1497,97 +1670,6 @@ class VirtualizedPackedLayout extends go.Layout {
         copy._arrangesToOrigin = this._arrangesToOrigin;
     }
 }
-/********************** Configuration constants **********************/
-// These values determine the shape of the final layout
-/**
- * This value for {@link #packShape} causes nodes to be packed
- * into an ellipse.
- *
- * The aspect ratio of this ellipse is determined by either
- * {@link #aspectRatio} or {@link #size}.
- * @constant
- */
-VirtualizedPackedLayout.Elliptical = 0;
-/**
- * Causes nodes to be packed into a rectangle; this value is used for
- * {@link #packShape}.
- *
- * The aspect ratio of this rectangle is determined by either
- * {@link #aspectRatio} or {@link #size}.
- * @constant
- */
-VirtualizedPackedLayout.Rectangular = 1;
-/**
- * Causes nodes to be packed into a spiral shape; this value is used
- * for {@link #packShape}.
- *
- * The {@link #aspectRatio} property is ignored in this mode, the
- * {@link #size} is expected to be square, and {@link #hasCircularNodes}
- * will be assumed 'true'. Please see {@link #packShape} for more details.
- */
-VirtualizedPackedLayout.Spiral = 2;
-// These values determine the size of the layout
-/**
- * Nodes will be packed using the {@link #aspectRatio} property, with
- * no size considerations; this value is used for {@link #packMode}.
- *
- * The {@link #spacing} property will be respected in this mode.
- * @constant
- */
-VirtualizedPackedLayout.AspectOnly = 10;
-/**
- * Nodes will be compressed if necessary (using negative spacing) to fit the given
- * {@link #size}. However, if the {@link #size} is bigger
- * than the packed shape (with 0 spacing), it will not expand to fit it. This value
- * is used for {@link #packMode}.
- *
- * The {@link #spacing} property will be respected in this mode, but only
- * if it does not cause the layout to grow larger than the {@link #size}.
- * @constant
- */
-VirtualizedPackedLayout.Fit = 11;
-/**
- * Nodes will be either compressed or spaced evenly to fit the given
- * {@link #size}; this value is used for {@link #packMode}.
- *
- * The {@link #spacing} property will not be respected in this mode, and
- * will not do anything if set.
- * @constant
- */
-VirtualizedPackedLayout.ExpandToFit = 12;
-// These values specify an optional method by which to sort nodes before packing
-/**
- * Nodes will not be sorted before packing; this value is used for {@link #sortMode}.
- * @constant
- */
-VirtualizedPackedLayout.None = 20;
-/**
- * Nodes will be sorted by their maximum side length before packing; this value is
- * used for {@link #sortMode}.
- * @constant
- */
-VirtualizedPackedLayout.MaxSide = 21;
-/**
- * Nodes will be sorted by their area; this value is used for {@link #sortMode}.
- * @constant
- */
-VirtualizedPackedLayout.Area = 22;
-// These values specify the order that nodes will be sorted, if applicable
-/**
- * Nodes will be sorted in descending order; this value is used for {@link #sortOrder}.
- *
- * Does nothing if {@link #sortMode} is set to {@link VirtualizedPackedLayout.None}.
- * @constant
- */
-VirtualizedPackedLayout.Descending = 30;
-/**
- * Nodes will be sorted in ascending order; this value is used for {@link #sortOrder}.
- *
- * Does nothing if {@link #sortMode} is set to {@link VirtualizedPackedLayout.None}.
- * @constant
- */
-VirtualizedPackedLayout.Ascending = 31;
-export { VirtualizedPackedLayout };
 /**
  * @hidden @internal
  * Class for a node in a {{@link CircularDoublyLinkedList}.
@@ -1609,7 +1691,7 @@ class ListNode {
 class CircularDoublyLinkedList {
     /**
      * Constructs a new list with an optional list of values
-     * @param vals values to create the list with
+     * @param vals - values to create the list with
      */
     constructor(...vals) {
         /**
@@ -1626,10 +1708,9 @@ class CircularDoublyLinkedList {
     }
     /**
      * Inserts the given value directly after the given node
-     * @this {CircularDoublyLinkedList}
-     * @param val the value to insert
-     * @param node the node to insert after
-     * @return {ListNode<T>} the new node
+     * @param val - the value to insert
+     * @param node - the node to insert after
+     * @returns the new node
      */
     insertAfter(val, node) {
         if (node === null) {
@@ -1637,7 +1718,7 @@ class CircularDoublyLinkedList {
             newnode.prev = newnode;
             newnode.next = newnode;
             this.length = 1;
-            return this.start = newnode;
+            return (this.start = newnode);
         }
         const tmp = node.next;
         node.next = new ListNode(val, node, tmp);
@@ -1647,9 +1728,8 @@ class CircularDoublyLinkedList {
     }
     /**
      * Inserts the given value or values at the end of the list
-     * @this {CircularDoublyLinkedList}
-     * @param vals the value(s) to insert
-     * @return {ListNode<T>} the node for the last value inserted (a list of values is inserted sequentially)
+     * @param vals - the value(s) to insert
+     * @returns the node for the last value inserted (a list of values is inserted sequentially)
      */
     push(...vals) {
         if (vals.length === 0) {
@@ -1664,8 +1744,7 @@ class CircularDoublyLinkedList {
     }
     /**
      * Removes the given node from the list
-     * @this {CircularDoublyLinkedList}
-     * @param node the node to remove
+     * @param node - the node to remove
      */
     remove(node) {
         this.length--;
@@ -1683,10 +1762,9 @@ class CircularDoublyLinkedList {
     /**
      * Removes all nodes between the given start and end point (exclusive).
      * Returns the given end node.
-     * @this {CircularDoublyLinkedList}
-     * @param start node to start removing after
-     * @param end node to stop removing at
-     * @return {ListNode<T>} the end node
+     * @param start - node to start removing after
+     * @param end - node to stop removing at
+     * @returns the end node
      */
     removeBetween(start, end) {
         if (start !== end) {
@@ -1757,7 +1835,7 @@ class Circle extends go.Point {
 }
 /**
  * @hidden @internal
- * @param circles array of circles of points to find the enclosing circle for
+ * @param circles - array of circles of points to find the enclosing circle for
  */
 function enclose(circles) {
     let i = 0;
@@ -1770,19 +1848,20 @@ function enclose(circles) {
         if (e !== null && enclosesWeak(e, p))
             ++i;
         else
-            e = encloseBasis(B = extendBasis(B, p)), i = 0;
+            (e = encloseBasis((B = extendBasis(B, p)))), (i = 0);
     }
     if (e !== null) {
         return circleToRect(e);
     }
-    else { // this will never happen, but needs to be here for strict TypeScript compilation
+    else {
+        // this will never happen, but needs to be here for strict TypeScript compilation
         throw new Error('Assertion error');
     }
 }
 /**
  * @hidden @internal
  * Converts a Circle to a go.Rect object
- * @param c the Circle to convert
+ * @param c - the Circle to convert
  */
 function circleToRect(c) {
     return new go.Rect(c.x - c.r, c.y - c.r, c.r * 2, c.r * 2);
@@ -1795,18 +1874,17 @@ function extendBasis(B, p) {
         return [p];
     // If we get here then B must have at least one element.
     for (let i = 0; i < B.length; ++i) {
-        if (enclosesNot(p, B[i])
-            && enclosesWeakAll(encloseBasis2(B[i], p), B)) {
+        if (enclosesNot(p, B[i]) && enclosesWeakAll(encloseBasis2(B[i], p), B)) {
             return [B[i], p];
         }
     }
     // If we get here then B must have at least two elements.
     for (let i = 0; i < B.length - 1; ++i) {
         for (let j = i + 1; j < B.length; ++j) {
-            if (enclosesNot(encloseBasis2(B[i], B[j]), p)
-                && enclosesNot(encloseBasis2(B[i], p), B[j])
-                && enclosesNot(encloseBasis2(B[j], p), B[i])
-                && enclosesWeakAll(encloseBasis3(B[i], B[j], p), B)) {
+            if (enclosesNot(encloseBasis2(B[i], B[j]), p) &&
+                enclosesNot(encloseBasis2(B[i], p), B[j]) &&
+                enclosesNot(encloseBasis2(B[j], p), B[i]) &&
+                enclosesWeakAll(encloseBasis3(B[i], B[j], p), B)) {
                 return [B[i], B[j], p];
             }
         }
@@ -1852,9 +1930,12 @@ function enclosesWeakAll(a, B) {
  */
 function encloseBasis(B) {
     switch (B.length) {
-        case 2: return encloseBasis2(B[0], B[1]);
-        case 3: return encloseBasis3(B[0], B[1], B[2]);
-        default: return encloseBasis1(B[0]); // case 1
+        case 2:
+            return encloseBasis2(B[0], B[1]);
+        case 3:
+            return encloseBasis3(B[0], B[1], B[2]);
+        default:
+            return encloseBasis1(B[0]); // case 1
     }
 }
 /**
@@ -1880,7 +1961,7 @@ function encloseBasis2(a, b) {
     const y21 = y2 - y1;
     const r21 = r2 - r1;
     const l = Math.sqrt(x21 * x21 + y21 * y21);
-    return new Circle((x1 + x2 + x21 / l * r21) / 2, (y1 + y2 + y21 / l * r21) / 2, (l + r1 + r2) / 2);
+    return new Circle((x1 + x2 + (x21 / l) * r21) / 2, (y1 + y2 + (y21 / l) * r21) / 2, (l + r1 + r2) / 2);
 }
 /**
  * @hidden @internal
@@ -1921,7 +2002,7 @@ function encloseBasis3(a, b, c) {
 /**
  * @hidden @internal
  * Shuffles array in place.
- * @param {Array} a items An array containing the items.
+ * @param a - items An array containing the items.
  */
 function shuffle(a) {
     let j;
