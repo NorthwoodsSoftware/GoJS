@@ -23,12 +23,12 @@
 <meta name="twitter:title" content=HTML Drag and Drop />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlDragDrop.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlDragDrop.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/screenshots/htmlDragDrop.png" />
+<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/screenshots/htmlDragDrop.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/screenshots/htmlDragDrop.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/screenshots/htmlDragDrop.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.0/samples/htmlDragDrop.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.0/samples/htmlDragDrop.html" />
+<meta property="og:url" content="https://gojs.net/3.0.1/samples/htmlDragDrop.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.1/samples/htmlDragDrop.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -145,31 +145,47 @@
 </style>
 <div id="sample">
   <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="paletteZone" style="width: 160px; height: 400px; margin-right: 2px; background-color: lightblue; padding: 10px">
+    <div
+      id="paletteZone"
+      style="
+        width: 160px;
+        height: 400px;
+        margin-right: 2px;
+        background-color: lightblue;
+        padding: 10px;
+      ">
       <div class="draggable" draggable="true">Water</div>
       <div class="draggable" draggable="true">Coffee</div>
       <div class="draggable" draggable="true">Tea</div>
     </div>
     <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
   </div>
-  <input id="removeCheckBox" type="checkbox" /><label for="removeCheckBox">Remove HTML item after drop</label>
+  <input id="removeCheckBox" type="checkbox" /><label for="removeCheckBox"
+    >Remove HTML item after drop</label
+  >
   <p>
-    The "Palette" in this sample is not a <a>Palette</a> (or GoJS component) at all. It is a collection of HTML elements with draggable attributes using the
-    <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop">HTML Drag and Drop API</a>.
+    The "Palette" in this sample is not a <a>Palette</a> (or GoJS component) at all. It is a
+    collection of HTML elements with draggable attributes using the
+    <a href="https://developer.mozilla.org/en-US/docs/DragDrop/Drag_and_Drop"
+      >HTML Drag and Drop API</a
+    >.
   </p>
   <p>
-    This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes. As the mouse passes over stationary nodes or links in the Diagram, they
-    are highlighted.
+    This sample lets you drag these HTML elements onto the Diagram to create GoJS nodes. As the
+    mouse passes over stationary nodes or links in the Diagram, they are highlighted.
   </p>
   <p>
-    If a drop happens (based on the mouse point) on an existing node, a new link is also drawn from that existing node to the newly dropped node. If a drop
-    happens on an existing link, the link is reconnected to go to the newly dropped node, and a new link is added to go from that newly dropped node to whatever
-    node the link had been connected to before.
+    If a drop happens (based on the mouse point) on an existing node, a new link is also drawn from
+    that existing node to the newly dropped node. If a drop happens on an existing link, the link is
+    reconnected to go to the newly dropped node, and a new link is added to go from that newly
+    dropped node to whatever node the link had been connected to before.
   </p>
   <p>
-    This sample also demonstrates allowing external clipboard pasting, by modifying <code>myDiagram.commandHandler.doKeyDown</code> to do nothing but allow the
-    event to bubble, and then defining a <code>"paste"</code> event on the <code>document</code>. So the user can select some text, either on the page or in
-    some other app, and then a paste in the diagram will create a new node using that text.
+    This sample also demonstrates allowing external clipboard pasting, by modifying
+    <code>myDiagram.commandHandler.doKeyDown</code> to do nothing but allow the event to bubble, and
+    then defining a <code>"paste"</code> event on the <code>document</code>. So the user can select
+    some text, either on the page or in some other app, and then a paste in the diagram will create
+    a new node using that text.
   </p>
 </div>
 <script id="code">
@@ -308,7 +324,9 @@
           myDiagram.startTransaction('new node');
           const newdata = {
             // assuming the locationSpot is Spot.Center:
-            location: myDiagram.transformViewToDoc(new go.Point(mx - dragged.offsetX, my - dragged.offsetY)),
+            location: myDiagram.transformViewToDoc(
+              new go.Point(mx - dragged.offsetX, my - dragged.offsetY)
+            ),
             text: event.dataTransfer.getData('text'),
             color: 'lightyellow',
           };
@@ -322,7 +340,8 @@
           myDiagram.commitTransaction('new node');
 
           // remove dragged element from its old location, if checkbox is checked
-          if (document.getElementById('removeCheckBox').checked) dragged.parentNode.removeChild(dragged);
+          if (document.getElementById('removeCheckBox').checked)
+            dragged.parentNode.removeChild(dragged);
         }
 
         // If we were using drag data, we could get it here, ie:
@@ -387,11 +406,13 @@
     );
 
     // define a Node template
-    myDiagram.nodeTemplate = $(go.Node,
+    myDiagram.nodeTemplate = $(
+      go.Node,
       'Auto',
       { locationSpot: go.Spot.Center },
       new go.Binding('location'),
-      $(go.Shape,
+      $(
+        go.Shape,
         'Rectangle',
         { fill: 'white' },
         // Shape.fill is bound to Node.data.color
@@ -403,7 +424,8 @@
           return c ? c : 'white';
         }).ofObject()
       ), // binding source is Node.isHighlighted
-      $(go.TextBlock,
+      $(
+        go.TextBlock,
         { margin: 3, font: 'bold 16px sans-serif', width: 140, textAlign: 'center' },
         // TextBlock.text is bound to Node.data.text
         new go.Binding('text')
@@ -424,9 +446,11 @@
     );
 
     // define a Link template
-    myDiagram.linkTemplate = $(go.Link,
+    myDiagram.linkTemplate = $(
+      go.Link,
       // two path Shapes: the transparent one becomes visible during mouse-over
-      $(go.Shape,
+      $(
+        go.Shape,
         { isPanelMain: true, strokeWidth: 6, stroke: 'transparent' },
         new go.Binding('stroke', 'isHighlighted', (h) => (h ? 'red' : 'transparent')).ofObject()
       ),
@@ -462,8 +486,11 @@
       // The meta (Command) key substitutes for "control" for Mac commands
       const control = e.meta || e.control;
       const shift = e.shift;
-      const key = e.key;
-      if (((control && key === 'V') || (shift && key === 'Insert')) && (!diagram.commandHandler.canPasteSelection() || diagram.selection.count === 0)) {
+      const code = e.code;
+      if (
+        ((control && code === 'KeyV') || (shift && code === 'Insert')) &&
+        (!diagram.commandHandler.canPasteSelection() || diagram.selection.count === 0)
+      ) {
         // Instead of the usual behavior:
         // if (this.canPasteSelection()) this.pasteSelection();
         // let the event bubble up the DOM:

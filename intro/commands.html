@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Commands />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.0/intro/commands.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.0/intro/commands.html" />
+<meta property="og:url" content="https://gojs.net/3.0.1/intro/commands.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/commands.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -338,7 +338,7 @@ For example, to support using the "T" key to collapse or expand the currently se
 <pre class="lang-js"><code>
     myDiagram.commandHandler.doKeyDown = function() { // must be a function, not an arrow =>
       var e = this.diagram.lastInput;
-      if (e.key === "T") {  // could also check for e.control or e.shift
+      if (e.code === "KeyT") {  // could also check for e.control or e.shift
         if (this.canCollapseSubGraph()) {
           this.collapseSubGraph();
         } else if (this.canExpandSubGraph()) {
@@ -466,9 +466,9 @@ Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.un
     var e = this.diagram.lastInput;
     // The meta (Command) key substitutes for "control" for Mac commands
     var control = e.control || e.meta;
-    var key = e.key;
+    var code = e.code;
     // Quit on any undo/redo key combination:
-    if (control && (key === 'Z' || key === 'Y')) return;
+    if (control && (code === 'KeyZ' || code === 'KeyY')) return;
 
     // call base method with no arguments (default functionality)
     go.CommandHandler.prototype.doKeyDown.call(this);

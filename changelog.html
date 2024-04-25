@@ -28,12 +28,12 @@
 <meta name="twitter:title" content=Change Log />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.0/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.0/changelog.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.0/changelog.html" />
+<meta property="og:url" content="https://gojs.net/3.0.1/changelog.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.1/changelog.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -143,6 +143,30 @@
 </p>
 
 <p>There are a number of other changes, detailed below.</p>
+
+<h3 id="3.0.1">Changes for 3.0.1</h3>
+<ul>
+  <li>
+    <strong>Potentially incompatible:</strong>
+    We have added <a>InputEvent.code</a> to correspond to <code>KeyboardEvent.code</code>
+    <a>CommandHandler.doKeyDown</a> now uses <code>KeyboardEvent.code</code> instead of <code>KeyboardEvent.key</code> for better cross-language shortcut support.
+    This may lead to incompatibilities if you have code (such as testing code) that sets an <a>InputEvent.key</a> value. You may need to additionally set <a>InputEvent.code</a>.
+    If your code does not modify the value of <a>InputEvent.key</a> anywhere (such as in a tool customization or in a <a>CommandHandler.doKeyDown</a> override),
+    you do not need to do anything.
+  </li>
+  <li>
+    Fix for initial position when <a>Diagram.autoScale</a> scales initial contents, but a scrollbar is still required.
+  </li>
+  <li>
+    Fixed some <a>Iterator</a>s returned by GoJS (such as from <a>Node.findLinksInto</a>) returning faulty values from
+    use of <code>Symbol.iterator</code>.
+  </li>
+  <li>
+    Fixed a bug where large nodes in a <a>ForceDirectedLayout</a> would sometimes overlap.
+  </li>
+</ul>
+
+<h2 id="3.0">Changes for 3.0</h2>
 
 <h3 id="npmpackages">New npm packages</h3>
 <p>For 3.0, the <code>gojs</code> npm package contains only the release libraries, and no extensions, documentation or
@@ -367,7 +391,7 @@
 </p>
 
 
-<h3 id="InputEventkey">InputEvent.key</h3>
+<h3 id="InputEventkey">InputEvent.key and InputEvent.code</h3>
 <p>
   The value of <a>InputEvent.key</a> now exactly reflects the browser <code>KeyboardEvent.key</code> value.
   If your code does not use the value of <a>InputEvent.key</a> anywhere
@@ -437,6 +461,12 @@
   Note that GoJS treats both "+" and "=" (formerly "Add") as default commands to increase zoom.
 </p>
 
+<p>
+  As of GoJS 3.0.1, GoJS now uses the <a>InputEvent.code</a> rather than <a>InputEvent.key</a> to determine
+  if any command shall be invoked by <a>CommandHandler.doKeyDown</a>.
+  <span class="text-red-600">If you are simulating InputEvents, you will need to set the
+  <a>InputEvent.code</a> instead of, or in addition to, the <a>InputEvent.key</a>.</span>
+</p>
 
 <h3 id="MinorIncompatibilities">Minor Incompatibilities</h3>
 <ul>
@@ -605,16 +635,7 @@
 
 <hr />
 
-<h3 id="3.0.1">Changes for 3.0.1</h3>
-<ul>
-  <li>
-    Fix for initial position when <a>Diagram.autoScale</a> scales initial contents, but a scrollbar is still required.
-  </li>
-  <li>
-    Fixed some <a>Iterator</a>s returned by GoJS (such as from <a>Node.findLinksInto</a>) returning faulty values from
-    use of <code>Symbol.iterator</code>.
-  </li>
-</ul>
+
 
 <h3 id="OldChangeLogs">Old Change Logs</h3>
 <h4><a href="../2.3.16/changelog.html">Change log for 2.3</a></h4>

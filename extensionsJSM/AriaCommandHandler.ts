@@ -92,21 +92,22 @@ export class AriaCommandHandler extends go.CommandHandler {
     if (this.diagram === null) return;
     this._addSelectionChanged();
     const e = this.diagram.lastInput;
-    if (e.key === 'ArrowUp' ||
-        e.key === 'ArrowDown' ||
-        e.key === 'ArrowLeft' ||
-        e.key === 'ArrowRight'
-      ) {
+    if (
+      e.code === 'ArrowUp' ||
+      e.code === 'ArrowDown' ||
+      e.code === 'ArrowLeft' ||
+      e.code === 'ArrowRight'
+    ) {
       if (this.mode === 'tree') {
         this._arrowKeySelectTree();
       } else {
-        this._arrowKeySelect(e.key);
+        this._arrowKeySelect(e.code);
       }
-    } else if (e.key === 'x') {
+    } else if (e.code === 'KeyX') {
       this._goBack();
-    } else if (e.key === 'c') {
+    } else if (e.code === 'KeyC') {
       this._goForward();
-    } else if (e.key === 'b') {
+    } else if (e.code === 'KeyB') {
       this.callSurroundingNodes();
     } else {
       // otherwise do any standard command
@@ -179,10 +180,10 @@ export class AriaCommandHandler extends go.CommandHandler {
     const diagram = this.diagram;
     if (!diagram) return [];
     const allParts: Array<go.Part> = [];
-    diagram.nodes.each(node => {
+    diagram.nodes.each((node) => {
       if (node.isVisible()) allParts.push(node);
     });
-    diagram.parts.each(part => {
+    diagram.parts.each((part) => {
       if (part.isVisible()) allParts.push(part);
     });
     // note that this ignores Links
@@ -350,13 +351,13 @@ export class AriaCommandHandler extends go.CommandHandler {
     }
     if (!(node instanceof go.Node)) return;
     let nextPart = null;
-    if (e.key === 'ArrowUp') nextPart = node.findTreeParentNode() ?? 'No parent node';
-    else if (e.key === 'ArrowDown') {
+    if (e.code === 'ArrowUp') nextPart = node.findTreeParentNode() ?? 'No parent node';
+    else if (e.code === 'ArrowDown') {
       nextPart = node.findTreeChildrenNodes().first() ?? 'No child node';
-    } else if (e.key === 'ArrowLeft') {
+    } else if (e.code === 'ArrowLeft') {
       const nodes = this._getSiblingNodesLeft(node);
       nextPart = nodes !== null ? nodes[0] : 'No sibling node to the left';
-    } else if (e.key === 'ArrowRight') {
+    } else if (e.code === 'ArrowRight') {
       const nodes = this._getSiblingNodesRight(node);
       nextPart = nodes !== null ? nodes[0] : 'No sibling node to the right';
     }

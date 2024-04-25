@@ -37,31 +37,38 @@ import * as go from 'gojs';
   const textarea = document.createElement('textarea');
   textarea.id = 'myTextArea';
 
-  textarea.addEventListener('input', (e) => {
+  textarea.addEventListener(
+    'input',
+    (e) => {
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
       const tempText = tool.measureTemporaryTextBlock(textarea.value);
       const scale = (textarea as any).textScale;
-      textarea.style.width = 20 + Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale + 'px';
+      textarea.style.width =
+        20 +
+        Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale +
+        'px';
       textarea.rows = Math.max(tool.textBlock.lineCount, tempText.lineCount);
     },
     false
   );
 
-  textarea.addEventListener('keydown', (e) => {
+  textarea.addEventListener(
+    'keydown',
+    (e) => {
       if (e.isComposing) return;
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
-      const key = e.key;
-      if (key === 'Enter') {
+      const code = e.code;
+      if (code === 'Enter') {
         // Enter
         if (tool.textBlock.isMultiline === false) e.preventDefault();
         tool.acceptText(go.TextEditingAccept.Enter);
-      } else if (key === 'Tab') {
+      } else if (code === 'Tab') {
         // Tab
         tool.acceptText(go.TextEditingAccept.Tab);
         e.preventDefault();
-      } else if (key === 'Escape') {
+      } else if (code === 'Escape') {
         // Esc
         tool.doCancel();
         if (tool.diagram !== null) tool.diagram.doFocus();
@@ -71,11 +78,12 @@ import * as go from 'gojs';
   );
 
   // handle focus:
-  textarea.addEventListener('focus', (e) => {
+  textarea.addEventListener(
+    'focus',
+    (e) => {
       const tool = (TextEditor as any).tool;
-      if (!tool ||
-          tool.currentTextEditor === null ||
-          tool.state === go.TextEditingState.None) return;
+      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None)
+        return;
 
       if (tool.state === go.TextEditingState.Active) {
         tool.state = go.TextEditingState.Editing;
@@ -92,11 +100,12 @@ import * as go from 'gojs';
   // Disallow blur.
   // If the textEditingTool blurs and the text is not valid,
   // we do not want focus taken off the element just because a user clicked elsewhere.
-  textarea.addEventListener('blur', (e) => {
+  textarea.addEventListener(
+    'blur',
+    (e) => {
       const tool = (TextEditor as any).tool;
-      if (!tool ||
-          tool.currentTextEditor === null ||
-          tool.state === go.TextEditingState.None) return;
+      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None)
+        return;
 
       textarea.focus();
 

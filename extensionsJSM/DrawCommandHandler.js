@@ -253,7 +253,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     spaceEvenlyHorizontally() {
         const diagram = this.diagram;
         const nonlinks = new go.List();
-        diagram.selection.each(part => {
+        diagram.selection.each((part) => {
             if (part instanceof go.Link)
                 return; // skips over links
             nonlinks.add(part); // maybe check for non-movable Parts??
@@ -265,11 +265,11 @@ export class DrawCommandHandler extends go.CommandHandler {
             return;
         nonlinks.sort((n, m) => n.actualBounds.x - m.actualBounds.x);
         let w = 0;
-        nonlinks.each(part => w += part.actualBounds.width);
+        nonlinks.each((part) => (w += part.actualBounds.width));
         const sp = (b.width - w) / (nonlinks.count - 1); // calculate available space between nodes; might be negative
         diagram.startTransaction('space evenly horizontally');
         let x = b.x;
-        nonlinks.each(part => {
+        nonlinks.each((part) => {
             part.moveTo(x, part.actualBounds.y);
             x += part.actualBounds.width + sp;
         });
@@ -286,7 +286,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     spaceEvenlyVertically() {
         const diagram = this.diagram;
         const nonlinks = new go.List();
-        diagram.selection.each(part => {
+        diagram.selection.each((part) => {
             if (part instanceof go.Link)
                 return; // skips over links
             nonlinks.add(part); // maybe check for non-movable Parts??
@@ -298,11 +298,11 @@ export class DrawCommandHandler extends go.CommandHandler {
             return;
         nonlinks.sort((n, m) => n.actualBounds.y - m.actualBounds.y);
         let h = 0;
-        nonlinks.each(part => h += part.actualBounds.height);
+        nonlinks.each((part) => (h += part.actualBounds.height));
         const sp = (b.height - h) / (nonlinks.count - 1); // calculate available space between nodes; might be negative
         diagram.startTransaction('space evenly vertically');
         let y = b.y;
-        nonlinks.each(part => {
+        nonlinks.each((part) => {
             part.moveTo(part.actualBounds.x, y);
             y += part.actualBounds.height + sp;
         });
@@ -448,10 +448,10 @@ export class DrawCommandHandler extends go.CommandHandler {
         const diagram = this.diagram;
         const e = diagram.lastInput;
         // determines the function of the arrow keys
-        if (e.key === 'ArrowUp' ||
-            e.key === 'ArrowDown' ||
-            e.key === 'ArrowLeft' ||
-            e.key === 'ArrowRight') {
+        if (e.code === 'ArrowUp' ||
+            e.code === 'ArrowDown' ||
+            e.code === 'ArrowLeft' ||
+            e.code === 'ArrowRight') {
             const behavior = this.arrowKeyBehavior;
             if (behavior === 'none') {
                 // no-op
@@ -509,16 +509,16 @@ export class DrawCommandHandler extends go.CommandHandler {
         }
         diagram.startTransaction('arrowKeyMove');
         diagram.selection.each((part) => {
-            if (e.key === 'ArrowUp') {
+            if (e.code === 'ArrowUp') {
                 part.moveTo(part.actualBounds.x, part.actualBounds.y - vdistance);
             }
-            else if (e.key === 'ArrowDown') {
+            else if (e.code === 'ArrowDown') {
                 part.moveTo(part.actualBounds.x, part.actualBounds.y + vdistance);
             }
-            else if (e.key === 'ArrowLeft') {
+            else if (e.code === 'ArrowLeft') {
                 part.moveTo(part.actualBounds.x - hdistance, part.actualBounds.y);
             }
-            else if (e.key === 'ArrowRight') {
+            else if (e.code === 'ArrowRight') {
                 part.moveTo(part.actualBounds.x + hdistance, part.actualBounds.y);
             }
         });
@@ -534,16 +534,16 @@ export class DrawCommandHandler extends go.CommandHandler {
         // arrow keys + shift selects the additional part in the specified direction
         // arrow keys + control toggles the selection of the additional part
         let nextPart = null;
-        if (e.key === 'ArrowUp') {
+        if (e.code === 'ArrowUp') {
             nextPart = this._findNearestPartTowards(270);
         }
-        else if (e.key === 'ArrowDown') {
+        else if (e.code === 'ArrowDown') {
             nextPart = this._findNearestPartTowards(90);
         }
-        else if (e.key === 'ArrowLeft') {
+        else if (e.code === 'ArrowLeft') {
             nextPart = this._findNearestPartTowards(180);
         }
-        else if (e.key === 'ArrowRight') {
+        else if (e.code === 'ArrowRight') {
             nextPart = this._findNearestPartTowards(0);
         }
         if (nextPart !== null) {
@@ -606,7 +606,7 @@ export class DrawCommandHandler extends go.CommandHandler {
         if (!(selected instanceof go.Node))
             return;
         const e = diagram.lastInput;
-        if (e.key === 'ArrowRight') {
+        if (e.code === 'ArrowRight') {
             if (selected.isTreeLeaf) {
                 // no-op
             }
@@ -622,7 +622,7 @@ export class DrawCommandHandler extends go.CommandHandler {
                     diagram.select(first);
             }
         }
-        else if (e.key === 'ArrowLeft') {
+        else if (e.code === 'ArrowLeft') {
             if (!selected.isTreeLeaf && selected.isTreeExpanded) {
                 if (diagram.commandHandler.canCollapseTree(selected)) {
                     diagram.commandHandler.collapseTree(selected); // collapses the tree
@@ -635,7 +635,7 @@ export class DrawCommandHandler extends go.CommandHandler {
                     diagram.select(parent);
             }
         }
-        else if (e.key === 'ArrowUp') {
+        else if (e.code === 'ArrowUp') {
             const parent = selected.findTreeParentNode();
             if (parent !== null) {
                 const list = this._sortTreeChildrenByY(parent);
@@ -657,7 +657,7 @@ export class DrawCommandHandler extends go.CommandHandler {
                 }
             }
         }
-        else if (e.key === 'ArrowDown') {
+        else if (e.code === 'ArrowDown') {
             // if at an expanded parent, select the first child
             if (selected.isTreeExpanded && !selected.isTreeLeaf) {
                 const first = this._sortTreeChildrenByY(selected).first();

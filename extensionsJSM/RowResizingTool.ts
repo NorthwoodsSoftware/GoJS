@@ -276,7 +276,10 @@ export class RowResizingTool extends go.Tool {
       sep = table.getRowDefinition(idx).separatorStrokeWidth;
       if (isNaN(sep)) sep = table.defaultRowSeparatorStrokeWidth;
     }
-    this.doResize(rowdef, Math.max(0, locpt.y - pad.top - rowdef.position - (rowdef.total - rowdef.actual) - sep / 2));
+    this.doResize(
+      rowdef,
+      Math.max(0, locpt.y - pad.top - rowdef.position - (rowdef.total - rowdef.actual) - sep / 2)
+    );
   }
 
   /**
@@ -303,7 +306,7 @@ export class RowResizingTool extends go.Tool {
     if (!this.isActive) return;
     const diagram = this.diagram;
     const e = diagram.lastInput;
-    if (e.key === 'Delete' || e.key === '\t') {
+    if (e.code === 'Delete' || e.code === 'Tab') {
       // remove height setting
       if (this.adornedTable !== null && this.handle !== null) {
         const rowdef = this.adornedTable.getRowDefinition(this.handle.row);

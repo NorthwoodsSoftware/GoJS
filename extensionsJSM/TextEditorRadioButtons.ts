@@ -104,15 +104,15 @@ import * as go from 'gojs';
       'keydown',
       (e) => {
         if (e.isComposing) return;
-        const key = e.key;
-        if (key === 'Enter') {
+        const code = e.code;
+        if (code === 'Enter') {
           // Accept on Enter
           (tool as any).acceptText(go.TextEditingAccept.Enter);
-        } else if (key === 'Tab') {
+        } else if (code === 'Tab') {
           // Accept on Tab
           (tool as any).acceptText(go.TextEditingAccept.Tab);
           e.preventDefault();
-        } else if (key === 'Escape') {
+        } else if (code === 'Escape') {
           // Cancel on Esc
           tool.doCancel();
           if (tool.diagram) tool.diagram.focus();

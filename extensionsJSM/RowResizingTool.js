@@ -287,7 +287,7 @@ export class RowResizingTool extends go.Tool {
             return;
         const diagram = this.diagram;
         const e = diagram.lastInput;
-        if (e.key === 'Delete' || e.key === '\t') {
+        if (e.code === 'Delete' || e.code === 'Tab') {
             // remove height setting
             if (this.adornedTable !== null && this.handle !== null) {
                 const rowdef = this.adornedTable.getRowDefinition(this.handle.row);

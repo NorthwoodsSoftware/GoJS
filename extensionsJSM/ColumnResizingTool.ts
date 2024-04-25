@@ -276,7 +276,10 @@ export class ColumnResizingTool extends go.Tool {
       sep = table.getColumnDefinition(idx).separatorStrokeWidth;
       if (isNaN(sep)) sep = table.defaultColumnSeparatorStrokeWidth;
     }
-    this.doResize(coldef, Math.max(0, locpt.x - pad.left - coldef.position - (coldef.total - coldef.actual) - sep / 2));
+    this.doResize(
+      coldef,
+      Math.max(0, locpt.x - pad.left - coldef.position - (coldef.total - coldef.actual) - sep / 2)
+    );
   }
 
   /**
@@ -302,7 +305,7 @@ export class ColumnResizingTool extends go.Tool {
   override doKeyDown(): void {
     if (!this.isActive) return;
     const e = this.diagram.lastInput;
-    if (e.key === 'Delete' || e.key === '\t') {
+    if (e.code === 'Delete' || e.code === 'Tab') {
       // remove width setting
       if (this.adornedTable !== null && this.handle !== null) {
         const coldef = this.adornedTable.getColumnDefinition(this.handle.column);

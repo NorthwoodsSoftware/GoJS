@@ -442,10 +442,10 @@ export class PolygonDrawingTool extends go.Tool {
     const diagram = this.diagram;
     if (!this.isActive) return;
     const e = diagram.lastInput;
-    if (e.key === '\r') {
+    if (e.code === 'Enter') {
       // accept
       this.finishShape(); // all done!
-    } else if (e.key === 'Z') {
+    } else if (e.code === 'KeyZ') {
       // undo
       this.undo();
     } else {

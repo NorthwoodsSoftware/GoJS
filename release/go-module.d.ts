@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.0
+ * Type definitions for GoJS v3.0.1
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -3401,9 +3401,18 @@ export class InputEvent {
     /**
      * Gets or sets the key pressed or released as this event.
      * This property is valid if this is a keyboard event.
+     * This corresponds to a `KeyboardEvent.key`
      */
     get key(): string;
     set key(value: string);
+    /**
+     * Gets or sets the code pressed or released as this event.
+     * This property is valid if this is a keyboard event.
+     * This corresponds to a `KeyboardEvent.code`
+     * @since 3.0
+     */
+    get code(): string;
+    set code(value: string);
     /**
      * Gets or sets whether the InputEvent represents a mouse-down or a key-down event.
      * The default value is false.
@@ -13595,6 +13604,8 @@ export class CommandHandler {
      * There is an example custom CommandHandler in the extensions directory: <a href="../../extensions/DrawCommandHandler.js">DrawCommandHandler.js</a>,
      * which implements additional behaviors for the arrow keys by overriding this method.
      * For additional discussion, please read the <a href="../../intro/commands.html">Introduction page on Commands</a>.
+     *
+     * Starting in 3.0.1, this looks at the value of {@link InputEvent.code} rather than {@link InputEvent.key}
      * @virtual
      */
     doKeyDown(): void;
