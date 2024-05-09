@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Ports in Nodes />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/ports.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/ports.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/ports.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/ports.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,49 +247,51 @@
         
 <h1>Ports in Nodes</h1>
 <p>
-Although you have some control over where links will connect to a node (at a particular spot, along one or
-more sides, or at the intersection with the edge), there are times when you want to have different logical
-and graphical places at which links should connect.  The elements at which a link may connect are called
-<i>ports</i>.  There may be any number of ports in a node.  By default there is just one port, the whole node,
-which results in the effect of having the whole node act as the port, as you have seen in all of the previous examples.
+  Although you have some control over where links will connect to a node
+  (at a particular spot, along one or more sides, or at the intersection with the edge),
+  there are times when you want to have different logical and graphical places at which links should connect.
+  The elements at which a link may connect are called <i>ports</i>.
+  There may be any number of ports in a node.
+  By default there is just one port, the whole node, which results in the effect of having the whole node act as the port,
+  as you have seen in all of the previous examples.
 </p>
 <p>
-To declare that a particular element in a <a>Node</a> is a port, set the <a>GraphObject.portId</a> property to a string.
-Note that the port-or-link-related properties may apply to any element in the visual tree of the node,
-which is why they are properties of <a>GraphObject</a> rather than <a>Node</a>.
+  To declare that a particular element in a <a>Node</a> is a port, set the <a>GraphObject.portId</a> property to a string.
+  Note that the port-or-link-related properties may apply to any element in the visual tree of the node,
+  which is why they are properties of <a>GraphObject</a> rather than <a>Node</a>.
 </p>
 <p>
-Port-like GraphObjects can only be in <a>Node</a>s or <a>Group</a>s, not in <a>Link</a>s or <a>Adornment</a>s or simple <a>Part</a>s.
-So there is no reason to try to set <a>GraphObject.portId</a> on any object in a Link.
+  Port-like GraphObjects can only be in <a>Node</a>s or <a>Group</a>s, not in <a>Link</a>s or <a>Adornment</a>s or simple <a>Part</a>s.
+  So there is no reason to try to set <a>GraphObject.portId</a> on any object in a Link.
 </p>
 <p>
 <p>
-See samples that make use of ports in the <a href="../samples/index.html#ports">samples index</a>.
+  See samples that make use of ports in the <a href="../samples/index.html#ports">samples index</a>.
 </p>
 </p>
 
 <h2 id="SinglePorts">Single Ports</h2>
 <p>
-In many situations you want to consider links logically related to the node as a whole but you don't want links
-connecting to the whole node.
-In this case each node has only one port, but you do not want the whole node to act as the one port.
+  In many situations you want to consider links logically related to the node as a whole but you don't want links
+  connecting to the whole node.
+  In this case each node has only one port, but you do not want the whole node to act as the one port.
 </p>
 <p>
-For example, consider how links connect to the nodes when the whole node is acting as a port in one common manner.
-The <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a> are at the middles of the sides.
-Because the height of the whole node includes the text label,
-the middle of the side is not the middle of the "icon", which in this case is a circle.
+  For example, consider how links connect to the nodes when the whole node is acting as a port in one common manner.
+  The <a>GraphObject.fromSpot</a> and <a>GraphObject.toSpot</a> are at the middles of the sides.
+  Because the height of the whole node includes the text label,
+  the middle of the side is not the middle of the "icon", which in this case is a circle.
 </p>
 <pre class="lang-js" id="defaultPort"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      { fromSpot: go.Spot.Right, toSpot: go.Spot.Left },   // port properties on the node
-      $(go.Shape, "Ellipse",
-        { width: 30, height: 30, fill: "green" }),
-      $(go.TextBlock,
-        { font: "20px sans-serif" },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Vertical",
+      { fromSpot: go.Spot.Right, toSpot: go.Spot.Left })   // port properties on the node
+      .add(
+        new go.Shape("Ellipse",
+          { width: 30, height: 30, fill: "green" }),
+        new go.TextBlock({ font: "20px sans-serif" })
+          .bind("text", "key")
+      );
 
   var nodeDataArray = [
     { key: "Alpha" },
@@ -300,34 +302,34 @@ the middle of the side is not the middle of the "icon", which in this case is a 
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
-<script>goCode("defaultPort", 600, 100)</script>
+<script>goCode("defaultPort", 600, 150)</script>
 <p>
-This appearance does not look or behave quite right.
-Really we want links to connect to the circular <a>Shape</a>.
+  This appearance does not look or behave quite right.
+  Really we want links to connect to the circular <a>Shape</a>.
 </p>
 
 <p>
-If you want a particular element to act as the port rather than the whole node,
-just set its <a>GraphObject.portId</a> to the empty string.
-The empty string is the name of the default port.
+  If you want a particular element to act as the port rather than the whole node,
+  just set its <a>GraphObject.portId</a> to the empty string.
+  The empty string is the name of the default port.
 </p>
 <p>
-In this example, we set <a>GraphObject.portId</a> on the circular shape.
-Note that we move the other port-related properties, such as the port spots, to that object too.
+  In this example, we set <a>GraphObject.portId</a> on the circular shape.
+  Note that we move the other port-related properties, such as the port spots, to that object too.
 </p>
 <pre class="lang-js" id="singlePort"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      $(go.Shape, "Ellipse",
-        { width: 30, height: 30, fill: "green",
-          portId: "",  // now the Shape is the port, not the whole Node
-          fromSpot: go.Spot.Right,  // port properties go on the port!
-          toSpot: go.Spot.Left
-        }),
-      $(go.TextBlock,
-        { font: "20px sans-serif" },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Vertical")
+      .add(
+        new go.Shape("Ellipse",
+          { width: 30, height: 30, fill: "green",
+            portId: "",  // now the Shape is the port, not the whole Node
+            fromSpot: go.Spot.Right,  // port properties go on the port!
+            toSpot: go.Spot.Left
+          }),
+        new go.TextBlock({ font: "20px sans-serif" })
+          .bind("text", "key")
+      );
 
   var nodeDataArray = [
     { key: "Alpha" },
@@ -338,81 +340,84 @@ Note that we move the other port-related properties, such as the port spots, to 
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
-<script>goCode("singlePort", 600, 100)</script>
+<script>goCode("singlePort", 600, 150)</script>
 <p>
-Notice how the links nicely connect the circular shapes by ignoring the text labels.
+  Notice how the links nicely connect the circular shapes by ignoring the text labels.
 </p>
 
 <h2 id="GeneralPorts">General Ports</h2>
 <p>
-It is also common to have diagrams where you want more than one port in a node.
-The number of ports might even vary dynamically.
+  It is also common to have diagrams where you want more than one port in a node.
+  The number of ports might even vary dynamically.
 </p>
 <p>
-In order for a link data object to distinguish which port the link should connect to,
-the <a>GraphLinksModel</a> supports two additional data properties that identify the names of the ports in the nodes
-at both ends of the link.
-<a>GraphLinksModel.getToKeyForLinkData</a> identifies the node to connect to;
-<a>GraphLinksModel.getToPortIdForLinkData</a> identifies the port within the node.
-Similarly, <a>GraphLinksModel.getFromKeyForLinkData</a> and <a>GraphLinksModel.getFromPortIdForLinkData</a> identify the node and its port.
+  In order for a link data object to distinguish which port the link should connect to,
+  the <a>GraphLinksModel</a> supports two additional data properties that identify the names of the ports in the nodes
+  at both ends of the link.
+  <a>GraphLinksModel.getToKeyForLinkData</a> identifies the node to connect to;
+  <a>GraphLinksModel.getToPortIdForLinkData</a> identifies the port within the node.
+  Similarly, <a>GraphLinksModel.getFromKeyForLinkData</a> and <a>GraphLinksModel.getFromPortIdForLinkData</a> identify the node and its port.
 </p>
 <p>
-Normally a <a>GraphLinksModel</a> assumes that there is no need to recognize port information on link data.
-If you want to support port identifiers on link data, you need to set <a>GraphLinksModel.linkToPortIdProperty</a>
-and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of the link data properties.
-If you do not set these properties, all port identifiers are assumed to be the empty string,
-which is the name of the one default port for a node.
+  Normally a <a>GraphLinksModel</a> assumes that there is no need to recognize port information on link data.
+  If you want to support port identifiers on link data, you need to set <a>GraphLinksModel.linkToPortIdProperty</a>
+  and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of the link data properties.
+  If you do not set these properties, all port identifiers are assumed to be the empty string,
+  which is the name of the one default port for a node.
 </p>
 <p class="box bg-danger">
-If you have set or bound <a>GraphObject.portId</a> on any element to be a non-empty string,
-you will need to use a <a>GraphLinksModel</a> and set <a>GraphLinksModel.linkToPortIdProperty</a>
-and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of two properties on your link data,
-or you will need to hard code the portId names in the link template(s)
-(i.e. <a>Link.fromPortId</a> and <a>Link.toPortId</a>),
-in order for the user to be able to link with those ports.
+  If you have set or bound <a>GraphObject.portId</a> on any element to be a non-empty string,
+  you will need to use a <a>GraphLinksModel</a> and set <a>GraphLinksModel.linkToPortIdProperty</a>
+  and <a>GraphLinksModel.linkFromPortIdProperty</a> to be the names of two properties on your link data,
+  or you will need to hard code the portId names in the link template(s)
+  (i.e. <a>Link.fromPortId</a> and <a>Link.toPortId</a>),
+  in order for the user to be able to link with those ports.
 </p>
 <pre class="lang-js" id="ports"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.Panel, "Table",
-        $(go.RowColumnDefinition,
-          { column: 0, alignment: go.Spot.Left}),
-        $(go.RowColumnDefinition,
-          { column: 2, alignment: go.Spot.Right }),
-        $(go.TextBlock,  // the node title
-          { column: 0, row: 0, columnSpan: 3, alignment: go.Spot.Center,
-            font: "bold 10pt sans-serif", margin: new go.Margin(4, 2) },
-          new go.Binding("text", "key")),
-        $(go.Panel, "Horizontal",
-          { column: 0, row: 1 },
-          $(go.Shape,  // the "A" port
-            { width: 6, height: 6, portId: "A", toSpot: go.Spot.Left }),
-          $(go.TextBlock, "A")  // "A" port label
-        ),
-        $(go.Panel, "Horizontal",
-          { column: 0, row: 2 },
-          $(go.Shape,  // the "B" port
-            { width: 6, height: 6, portId: "B", toSpot: go.Spot.Left }),
-          $(go.TextBlock, "B")  // "B" port label
-        ),
-        $(go.Panel, "Horizontal",
-          { column: 2, row: 1, rowSpan: 2 },
-          $(go.TextBlock, "Out"),  // "Out" port label
-          $(go.Shape,  // the "Out" port
-            { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.Right })
-        )
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.Panel("Table")
+          .addColumnDefinition(0, { alignment: go.Spot.Left })
+          .addColumnDefinition(2, { alignment: go.Spot.Right })
+          .add(
+            new go.TextBlock(  // the node title
+              { column: 0, row: 0, columnSpan: 3, alignment: go.Spot.Center,
+                font: "bold 10pt sans-serif", margin: new go.Margin(4, 2) })
+              .bind("text", "key"),
+            new go.Panel("Horizontal",
+              { column: 0, row: 1 })
+              .add(
+                new go.Shape(  // the "A" port
+                  { width: 6, height: 6, portId: "A", toSpot: go.Spot.Left }),
+                new go.TextBlock("A")  // "A" port label
+              ),
+            new go.Panel("Horizontal",
+              { column: 0, row: 2 })
+              .add(
+                new go.Shape(  // the "B" port
+                  { width: 6, height: 6, portId: "B", toSpot: go.Spot.Left }),
+                new go.TextBlock("B")  // "B" port label
+              ),
+            new go.Panel("Horizontal",
+              { column: 2, row: 1, rowSpan: 2 })
+              .add(
+                new go.TextBlock("Out"),  // "Out" port label
+                new go.Shape(  // the "Out" port
+                  { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.Right })
+              )
+          )
+      );
 
   diagram.linkTemplate =
-    $(go.Link,
-      { routing: go.Routing.Orthogonal, corner: 3 },
-      $(go.Shape),
-      $(go.Shape, { toArrow: "Standard" })
-    );
+    new go.Link({ routing: go.Routing.Orthogonal, corner: 3 })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: "Standard" })
+      );
 
-  diagram.layout = $(go.LayeredDigraphLayout, { columnSpacing: 10 });
+  diagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 10 });
 
   diagram.model =
     new go.GraphLinksModel(
@@ -428,62 +433,65 @@ in order for the user to be able to link with those ports.
           { from: "Add2", fromPort: "Out", to: "Subtract1", toPort: "B" }
         ] });
 </code></pre>
-<script>goCode("ports", 600, 150)</script>
+<script>goCode("ports", 600, 200)</script>
 
 <h2 id="DrawingNewLinks">Drawing new Links</h2>
 <p>
-Setting either or both of the <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>
-properties to true allows users to interactively draw new links between ports.
+  Setting either or both of the <a>GraphObject.fromLinkable</a> and <a>GraphObject.toLinkable</a>
+  properties to true allows users to interactively draw new links between ports.
 </p>
 <p>
-To draw a new link, mouse down on an "Out" port, move (drag) to nearby an input port,
-and then mouse-up to complete the link.
+  To draw a new link, mouse down on an "Out" port, move (drag) to nearby an input port,
+  and then mouse-up to complete the link.
 </p>
 <pre class="lang-js" id="linkablePorts"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.Panel, "Table",
-        $(go.RowColumnDefinition,
-          { column: 0, alignment: go.Spot.Left}),
-        $(go.RowColumnDefinition,
-          { column: 2, alignment: go.Spot.Right }),
-        $(go.TextBlock,  // the node title
-          { column: 0, row: 0, columnSpan: 3, alignment: go.Spot.Center,
-            font: "bold 10pt sans-serif", margin: new go.Margin(4, 2) },
-          new go.Binding("text", "key")),
-        $(go.Panel, "Horizontal",
-          { column: 0, row: 1 },
-          $(go.Shape,  // the "A" port
-            { width: 6, height: 6, portId: "A", toSpot: go.Spot.Left,
-              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
-          $(go.TextBlock, "A")  // "A" port label
-        ),
-        $(go.Panel, "Horizontal",
-          { column: 0, row: 2 },
-          $(go.Shape,  // the "B" port
-            { width: 6, height: 6, portId: "B", toSpot: go.Spot.Left,
-              toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
-          $(go.TextBlock, "B")  // "B" port label
-        ),
-        $(go.Panel, "Horizontal",
-          { column: 2, row: 1, rowSpan: 2 },
-          $(go.TextBlock, "Out"),  // "Out" port label
-          $(go.Shape,  // the "Out" port
-            { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.Right,
-              fromLinkable: true })  // allow user-drawn links from here
-        )
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.Panel("Table")
+          .addColumnDefinition(0, { alignment: go.Spot.Left })
+          .addColumnDefinition(2, { alignment: go.Spot.Right })
+          .add(
+            new go.TextBlock(  // the node title
+              { column: 0, row: 0, columnSpan: 3, alignment: go.Spot.Center,
+                font: "bold 10pt sans-serif", margin: new go.Margin(4, 2) })
+              .bind("text", "key"),
+            new go.Panel("Horizontal",
+              { column: 0, row: 1 })
+              .add(
+                new go.Shape( // the "A" port
+                  { width: 6, height: 6, portId: "A", toSpot: go.Spot.Left,
+                    toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
+                new go.TextBlock( "A")  // "A" port label
+              ),
+            new go.Panel("Horizontal",
+              { column: 0, row: 2 })
+              .add(
+                new go.Shape( // the "B" port
+                  { width: 6, height: 6, portId: "B", toSpot: go.Spot.Left,
+                    toLinkable: true, toMaxLinks: 1 }),  // allow user-drawn links to here
+                new go.TextBlock( "B")  // "B" port label
+              ),
+            new go.Panel("Horizontal",
+              { column: 2, row: 1, rowSpan: 2 })
+              .add(
+                new go.TextBlock( "Out"),  // "Out" port label
+                new go.Shape( // the "Out" port
+                  { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.Right,
+                    fromLinkable: true, cursor: "pointer" })  // allow user-drawn links from here
+              )
+          )
+      );
 
   diagram.linkTemplate =
-    $(go.Link,
-      { routing: go.Routing.Orthogonal, corner: 3 },
-      $(go.Shape),
-      $(go.Shape, { toArrow: "Standard" })
-    );
+    new go.Link({ routing: go.Routing.Orthogonal, corner: 3 })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: "Standard" })
+      );
 
-  diagram.layout = $(go.LayeredDigraphLayout, { columnSpacing: 10 });
+  diagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 10 });
 
   diagram.toolManager.linkingTool.temporaryLink.routing = go.Routing.Orthogonal;
 
@@ -502,13 +510,13 @@ and then mouse-up to complete the link.
 </code></pre>
 <script>goCode("linkablePorts", 600, 250)</script>
 <p>
-By default the user may not draw more than one link in the same direction between any pair of ports,
-nor may the user draw a link connecting a node with itself.
-Please read a general discussion of <a href="validation.html">Linking Validation</a>.
+  By default the user may not draw more than one link in the same direction between any pair of ports,
+  nor may the user draw a link connecting a node with itself.
+  Please read a general discussion of <a href="validation.html">Linking Validation</a>.
 </p>
 <p>
-By setting <a>GraphObject.toMaxLinks</a> to 1, as shown in this example, the user may draw at most one link going into that port.
-And because <a>GraphObject.fromLinkable</a> is false for that port element, the user will not be able to connect any links coming out of that port.
+  By setting <a>GraphObject.toMaxLinks</a> to 1, as shown in this example, the user may draw at most one link going into that port.
+  And because <a>GraphObject.fromLinkable</a> is false for that port element, the user will not be able to connect any links coming out of that port.
 </p>
 <p>
   If you want to prevent the user from connecting any more than one Link with a Node, regardless of direction,

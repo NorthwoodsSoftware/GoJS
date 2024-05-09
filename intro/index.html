@@ -22,12 +22,12 @@
 <meta name="twitter:title" content=Introduction />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -270,12 +270,12 @@
 // the node template describes how each Node should be constructed
 diagram.nodeTemplate =
   new go.Node("Auto")
-    .add(  // the Shape will go around the TextBlock
+    .add(  // the Shape will be sized to go around the TextBlock
       new go.Shape("RoundedRectangle")
         // Shape.fill is bound to Node.data.color
         .bind("fill", "color"),
       new go.TextBlock({ margin: 8}) // Specify a margin to add some room around the text
-        // TextBlock.text is bound to Node.data.key
+        // TextBlock.text is bound to Node.data.text
         .bind("text")
     );
 
@@ -304,20 +304,21 @@ diagram.undoManager.isEnabled = true;
   You can interact with this diagram in many ways:
 </p>
 <ul>
-  <li>You can select a part by clicking on it.
+  <li>You can select a part (a <a>Node</a> or a <a>Link</a>) by clicking on it.
     Selected nodes are highlighted with an <a>Adornment</a> that is a blue rectangle surrounding the node.
     Selected links are highlighted with a blue line following the path of the link.</li>
   <li>Multiple parts may be selected at once.
     Hold the Shift key down when clicking to add to the selection.
     Hold the Control key down when clicking to toggle whether that part is selected.</li>
-  <li>Another way to multi-select is to mouse-down at a point in the background (not on a part), wait a moment, and then
-    drag a box.
-    Parts that are in the box when the mouse-up occurs are selected.
+  <li>Another way to multi-select is to mouse-down at a point in the background (not on a part),
+    wait a moment, and then drag a box.
+    Parts that are fully in the box when the mouse-up occurs are selected.
     The Shift and Control modifiers work then as well.</li>
   <li>Ctrl-A selects all parts in the diagram.</li>
   <li>Move one or more nodes by selecting them and dragging.</li>
   <li>Copying selected parts works with either copy/paste (Ctrl-C/Ctrl-V) or with Ctrl-mouse-drag.</li>
   <li>Delete selected parts with the Delete key.</li>
+  <li>Ctrl-Z to undo the previous modification and Ctrl-Y to redo it.</li>
   <li>If scrollbars are visible or if the whole collection of parts is smaller than the viewable area of the diagram
     (the "viewport"),
     you can pan the diagram with a mouse-down in the background (not on a part) if you drag without waiting.</li>
@@ -342,7 +343,7 @@ diagram.undoManager.isEnabled = true;
   To make it easier to search the JavaScript code and documentation or to experiment by modifying the samples,
   you can install the <b>GoJS</b> kit in various manners:
 <ul>
-  <li>Download a ZIP file from <a href="../download.html">Download</a>.</li>
+  <li>Download a ZIP file from our <a href="../download.html">Download</a> page.</li>
   <li>Clone or download from <a href="https://github.com/NorthwoodsSoftware/GoJS">GoJS on GitHub</a>.</li>
   <li>Install GoJS using <code>npm install gojs</code> and <code>npm create gojs-kit</code>.</li>
 </ul>
@@ -641,7 +642,7 @@ diagram.undoManager.isEnabled = true;
 <p>
   Animations are implemented and controlled by the <a>AnimationManager</a>.
   Automatic animations happen after automatic layouts and upon the execution of various commands.
-  You an define your own custom <a>Animation</a>s.
+  You can define your own custom <a>Animation</a>s.
 </p>
 
 <p>
@@ -695,14 +696,17 @@ However it does require that the environment support modern HTML and JavaScript.
 </p>
 <p>
   If you want to use ECMAScript modules, use <code>go-module.js</code> in the <code>release/</code> directory.
+  However your build environment may automatically make this choice for you.
+</p>
+<p>
   The extension classes are implemented in TypeScript and compiled as ECMAScript modules in the <code>extensionsJSM/</code> directory.
+  That directory is present in the kit downloaded from our <a href="../download.html">website</a>
+  or <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub</a>,
+  or in the <code>create-gojs-kit</code> npm package that you can install using <code>npm create gojs-kit</code>.
   The extension classes are compiled into regular script-loadable JavaScript in the <code>extensions/</code> directory.
-  Please copy the extension file into your project so that you can adjust the <code>import</code> statement to
-  get the same GoJS library that the rest of your code imports.
 </p>
 <pre class="lang-bash"><code>
-import * as go from "./path/to/gojs/release/go-module.js";
-import { DoubleTreeLayout } from "./path/to/gojs/extensionsJSM/DoubleTreeLayout.js";</code></pre>
+import { DoubleTreeLayout } from "./path/to/gojs-kit/dist/extensionsJSM/DoubleTreeLayout.js";</code></pre>
 
 <p>
   If you are using <a href="http://requirejs.org" target="_blank">RequireJS</a>,
@@ -757,7 +761,8 @@ import { DoubleTreeLayout } from "./path/to/gojs/extensionsJSM/DoubleTreeLayout.
 <script>goCode("minimal2", 400, 150)</script>
 
 <p>
-  This completes the implementation of the "Hello World!" live diagram that you see above.
+  That one HTML DIV element and little bit of JavaScript code are the complete implementation of
+  the "Hello World!" live diagram that you see above.
 </p>
 
 <h3 id="DevelopingYourDiagram">Developing your Diagram</h3>

@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Coordinate Systems />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/viewport.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/viewport.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/viewport.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/viewport.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,15 +247,18 @@
         
 <h1>Coordinate Systems</h1>
 <p>
-  A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document coordinates and view coordinates. Furthermore each <a>Panel</a> within
-  a <a>Part</a> has its own coordinate system that its elements use.
+  A <a>Diagram</a> uses two major coordinate systems when drawing <a>Part</a>s: document coordinates and view coordinates.
+  Furthermore each <a>Panel</a> within a <a>Part</a> has its own coordinate system that its elements use.
 </p>
-<p>All coordinate systems in <b>GoJS</b> have <a>Point</a>s with increasing values of X going rightwards and increasing values of Y going downwards.</p>
+<p>
+  All coordinate systems in <b>GoJS</b> have <a>Point</a>s with increasing values of X going rightwards and increasing values of Y going downwards.
+</p>
 
 <h2 id="DocumentAndViewCoordinates">Document and View coordinates</h2>
 <p>
-  The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates. Thus the <a>Point</a> that
-  may be saved for a Node's location in the model's node data object are normally in document coordinates:
+  The <a>Part.location</a> and <a>GraphObject.actualBounds</a> and <a>GraphObject.position</a> of Parts are in document coordinates.
+  Thus the <a>Point</a> that may be saved for a Node's location in the model's node data object are normally in document coordinates:
+  These document coordinates are unchanging when the user scrolls or zooms the diagram.
 </p>
 <pre class="lang-js"><code>
   diagram.model.nodeDataArray = [
@@ -264,36 +267,49 @@
   ];
 </code></pre>
 <p>
-  The union of all of the Nodes and Links in a Diagram form the <a>Diagram.documentBounds</a>. This <a>Rect</a> has values that are in document coordinates.
-  Depending on where the Nodes and Links are, the document bounds may cover a very large area. The range of the document bounds might be entirely positive x and
-  y values, or that might be entirely negative, or more likely they may cover both negative and positive values.
+  The union of all of the Nodes and Links in a Diagram form the <a>Diagram.documentBounds</a>.
+  This <a>Rect</a> has values that are in document coordinates.
+  Depending on where the Nodes and Links are, the document bounds may cover a very large area.
+  The range of the document bounds might be entirely positive x and y values,
+  or that might be entirely negative, or more likely they may cover both negative and positive values.
 </p>
 <p>
-  But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn at the top-left corner of the HTML Div element that the user sees
-  in the page. When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas. And if the user zooms in to make the parts appear
-  larger, the parts will be drawn at different points in the canvas. Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the
-  diagram.
+  But a Part with a <a>Part.location</a> of (0, 0) in document coordinates is not always drawn
+  at the top-left corner of the HTML Div element that the user sees in the page.
+  When the user scrolls the diagram the part will need to be drawn elsewhere on the canvas.
+  And if the user zooms in to make the parts appear larger, the parts will be drawn at different points in the canvas.
+  Yet the <a>Part.location</a> does not change value as the user scrolls or zooms the diagram.
 </p>
 <p>
-  The <i>viewport</i> is the area of the document that is visible in the canvas. That area is available as the <a>Diagram.viewportBounds</a>. Note that the
-  viewport bounds is in document coordinates, not in view coordinates! The top-left corner of the viewport is (0,0) in view coordinates but is at
-  <a>Diagram.position</a> in document coordinates. The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates. The
-  bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
+  The <i>viewport</i> is the area of the document that is visible in the canvas.
+  That area is available as the <a>Diagram.viewportBounds</a>.
+  Note that the viewport bounds is in document coordinates, not in view coordinates!
+  The top-left corner of the viewport is (0,0) in view coordinates but is at <a>Diagram.position</a> in document coordinates.
+  The bottom-right corner of the viewport is at the canvas's (width,height) in view coordinates.
+  The bottom-right corner of the viewport in document coordinates depends on the <a>Diagram.scale</a>.
 </p>
 <p>
-  Points in the canvas are in view coordinates, which are independent of document coordinates. View coordinates are distances from the top-left corner of the
-  canvas in device-independent pixels. The differences between document coordinates and view coordinates are primarily controlled by two
-  <a>Diagram</a> properties: <a>Diagram.position</a> and <a>Diagram.scale</a>. Scrolling and panning change the <a>Diagram.position</a>. Zooming in or out
-  changes the <a>Diagram.scale</a>. You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and
-  <a>Diagram.transformViewToDoc</a>. However very few properties or method arguments or return values are in view coordinates -- almost everything is in
-  document coordinates or in panel coordinates.
+  Points in the canvas are in view coordinates, which are independent of document coordinates.
+  View coordinates are distances from the top-left corner of the canvas in device-independent pixels.
+  The differences between document coordinates and view coordinates are primarily controlled by two <a>Diagram</a> properties:
+  <a>Diagram.position</a> and <a>Diagram.scale</a>.
+  Scrolling and panning change the <a>Diagram.position</a>.
+  Zooming in or out changes the <a>Diagram.scale</a>.
+  You can also convert between coordinate systems by calling <a>Diagram.transformDocToView</a> and <a>Diagram.transformViewToDoc</a>.
+  However very few properties or method arguments or return values are in view coordinates --
+  almost everything is in document coordinates or in panel coordinates.
 </p>
 <p>
-  As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that. Take a look at the overview that is in the
-  <a href="../samples/orgChartStatic.html">Org Chart sample</a>. The overview shows the whole document of the main diagram. The magenta box shows the main
-  diagram's viewport within the whole document. As you scroll or pan the main diagram, the viewport moves. As you zoom out, the viewport gets larger.
+  As an example of showing the viewport in the context of the whole document, an <a>Overview</a> does exactly that.
+  Take a look at the overview that is in the <a href="../samples/orgChartStatic.html">Org Chart sample</a>.
+  The overview shows the whole document of the main diagram.
+  The magenta box shows the main diagram's viewport within the whole document.
+  As you scroll or pan the main diagram, the viewport moves.
+  As you zoom out, the viewport gets larger.
 </p>
-<p>To better understand the difference between document and viewport coordinates, look at this diagram:</p>
+<p>
+  To better understand the difference between document and viewport coordinates, look at this diagram:
+</p>
 <pre class="lang-js" id="diffCoordSystems" style="display: none"><code>
   diagram.nodeTemplate =
   $(go.Node, "Auto",
@@ -301,7 +317,7 @@
     new go.Binding("location", "loc", gridPointParse),
     new go.Binding("scale", "scale"),
     { locationSpot: go.Spot.Center, portId: "NODE" },
-    $(go.Shape, "RoundedRectangle",
+    new go.Shape("RoundedRectangle",
       { fill: "white", portId: "SHAPE" },
       new go.Binding("fill", "color"),
       new go.Binding("strokeWidth", "strokeW")),
@@ -354,7 +370,7 @@
       new go.Binding("location", "loc", gridPointParse),
       new go.Binding("scale", "scale"),
       { locationSpot: go.Spot.Center, portId: "NODE" },
-      $(go.Shape, "RoundedRectangle",
+      new go.Shape("RoundedRectangle",
         { fill: "white", portId: "SHAPE" },
         new go.Binding("fill", "color"),
         new go.Binding("strokeWidth", "strokeW")),
@@ -375,7 +391,7 @@
       new go.Binding("location", "loc", gridPointParse),
       new go.Binding("scale", "scale"),
       { locationSpot: go.Spot.Center, portId: "NODE" },
-      $(go.Shape, "RoundedRectangle",
+      new go.Shape("RoundedRectangle",
         { fill: "white", portId: "SHAPE" },
         new go.Binding("fill", "color"),
         new go.Binding("strokeWidth", "strokeW")),
@@ -447,7 +463,7 @@
   diagram.groupTemplateMap.add("Grid",
     $(go.Group, "Position",
       { movable: false },
-      $(go.Shape, "Rectangle", { fill: "transparent", strokeWidth: 2},
+      new go.Shape("Rectangle", { fill: "transparent", strokeWidth: 2},
         new go.Binding("fill", "fill"),
         new go.Binding("stroke", "border"),
         new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify)),
@@ -455,9 +471,9 @@
         { name: "DOCGRID", desiredSize: cellSize, gridCellSize: new go.Size(cellSide, cellSide) },
         new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify),
         new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
-        $(go.Shape, "LineV",
+        new go.Shape("LineV",
           new go.Binding("stroke")),
-        $(go.Shape, "LineH",
+        new go.Shape("LineH",
           new go.Binding("stroke"))
       ),
       new go.Binding("location", "loc", gridPointParse)
@@ -528,30 +544,31 @@
 
 <h2 id="CoordinateSystemsExample">Coordinate systems example</h2>
 <p>
-  This example shows three Parts at three different locations in document coordinates. Pass the mouse over each of the parts to see where those locations are in
-  view coordinates. Initially you will see that the only difference between document and view coordinates are a constant offset. That offset is due to the
-  <a>Diagram.padding</a> that puts a little space between the edge of the canvas and the edge of where the diagram's objects are. It is also due to
-  <a>Part.locationSpot</a> having the location be at the center of the "+" Shape, not at the top-left corner of the whole Part.
+  This example shows three Parts at three different locations in document coordinates.
+  Pass the mouse over each of the parts to see where those locations are in view coordinates.
+  Initially you will see that the only difference between document and view coordinates are a constant offset.
+  That offset is due to the <a>Diagram.padding</a> that puts a little space between the edge of the canvas and
+  the edge of where the diagram's objects are.
+  It is also due to <a>Part.locationSpot</a> having the location be at the center of the "+" Shape,
+  not at the top-left corner of the whole Part.
 </p>
 <pre class="lang-js" id="coordsystems"><code>
   // read-only to avoid accidentally moving any Part in document coordinates
   diagram.isReadOnly = true;
 
   diagram.nodeTemplate =
-    $(go.Part,  // no links or grouping, so use the simpler Part class instead of Node
-      {
+    new go.Part({  // no links or grouping, so use the simpler Part class instead of Node
         locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
         layerName: "Background",
         mouseOver: (e, obj) => showPoint(obj.part.location),
         click: (e, obj) => showPoint(obj.part.location)
-      },
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "PlusLine",
-        { name: "SHAPE", width: 8, height: 8 }),
-      $(go.TextBlock,
-        { position: new go.Point(6, 6), font: "8pt sans-serif" },
-        new go.Binding("text", "loc"))
-    );
+      })
+      .bind("location", "loc", go.Point.parse)
+      .add(
+        new go.Shape("PlusLine", { name: "SHAPE", width: 8, height: 8 }),
+        new go.TextBlock({ position: new go.Point(6, 6), font: "8pt sans-serif" })
+          .bind("text", "loc")
+      );
 
   diagram.model.nodeDataArray = [
     { loc: "0 0" },
@@ -575,49 +592,60 @@
 <input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
 <input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
 <p>
-  Then try scrolling or zooming in and looking at the locations of those parts in view coordinates. Zooming in increases the <a>Diagram.scale</a> by a small
-  factor. That changes the locations in view coordinates, even though the locations in document coordinates did not change.
+  Then try scrolling or zooming in and looking at the locations of those parts in view coordinates.
+  Zooming in increases the <a>Diagram.scale</a> by a small factor.
+  That changes the locations in view coordinates, even though the locations in document coordinates did not change.
 </p>
 <p class="box bg-info">
-  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates. To "scroll" a diagram one must change the
-  <a>Diagram.position</a>. Either way will cause a node to appear at a different point in the viewport.
+  To "move" a node one must change its <a>GraphObject.position</a> or <a>Part.location</a> in document coordinates.
+  To "scroll" a diagram one must change the <a>Diagram.position</a>.
+  Either way will cause a node to appear at a different point in the viewport.
 </p>
 
 <h2 id="DocumentBounds">Document bounds</h2>
 <p>
-  All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates. The union of all of those
-  parts' actualBounds constitutes the <a>Diagram.documentBounds</a>. If all of the parts are close together, the document bounds might be small. If some or all
-  of the parts are far apart from each other, the document bounds might be large, even if there are only two parts or if there is just one really large part.
-  The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>. The former only depends on the bounds of the parts; the latter
-  only depends on the size of the canvas and the diagram's position and scale.
+  All of the <a>Part</a>s of a diagram have positions and sizes (i.e. their <a>GraphObject.actualBounds</a>) in document coordinates.
+  The union of all of those parts' actualBounds constitutes the <a>Diagram.documentBounds</a>.
+  If all of the parts are close together, the document bounds might be small.
+  If some or all of the parts are far apart from each other, the document bounds might be large,
+  even if there are only two parts or if there is just one really large part.
+  The <a>Diagram.documentBounds</a> value is independent of the <a>Diagram.viewportBounds</a>.
+  The former only depends on the bounds of the parts; the latter only depends on the size of the canvas and the diagram's position and scale.
 </p>
 <p>
-  <a>Diagram.computeBounds</a>, which is responsible for the bounds computation, also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up
-  against the edge of the diagram when scrolled to that side. You may want to keep some parts, particularly background decorations, from being included in the
-  document bounds computation. Just set <a>Part.isInDocumentBounds</a> to false for such parts.
+  <a>Diagram.computeBounds</a>, which is responsible for the bounds computation,
+  also adds the <a>Diagram.padding</a> Margin so that no Parts appear directly up against the edge of the diagram when scrolled to that side.
+  You may want to keep some parts, particularly background decorations, from being included in the document bounds computation.
+  Just set <a>Part.isInDocumentBounds</a> to false for such parts.
 </p>
 <p>
-  The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately upon any change to any part or the addition or removal of a part. Thus
-  the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
+  The diagram does not compute a new value for <a>Diagram.documentBounds</a> immediately
+  upon any change to any part or the addition or removal of a part.
+  Thus the <a>Diagram.documentBounds</a> property value may not be up-to-date until after a transaction completes.
 </p>
 <p>
-  The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not scrollbars are needed. You can set
-  <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to make sure no scrollbar appears even when needed. Or set
-  <a>Diagram.scrollMode</a> to <a>ScrollMode.Infinite</a>.
+  The relative sizes of the <a>Diagram.documentBounds</a> and <a>Diagram.viewportBounds</a> control whether or not scrollbars are needed.
+  You can set <a>Diagram.hasHorizontalScrollbar</a> and/or <a>Diagram.hasVerticalScrollbar</a> to false to make sure no scrollbar appears even when needed.
+  Or set <a>Diagram.scrollMode</a> to <a>ScrollMode.Infinite</a>.
 </p>
 <p>
-  If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links, you can set the
-  <a>Diagram.fixedBounds</a> property. However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to
-  see them.
+  If you do not want the <a>Diagram.documentBounds</a> to always reflect the sizes and locations of all of the nodes and links,
+  you can set the <a>Diagram.fixedBounds</a> property.
+  However if there are any nodes that are located beyond the fixedBounds, the user may be unable to scroll the diagram to see them.
 </p>
-<p>If you want to be notified whenever the document bounds changes, you can register a "DocumentBoundsChanged" <a>DiagramEvent</a> listener.</p>
+<p>
+  If you want to be notified whenever the document bounds changes, you can register a "DocumentBoundsChanged" <a>DiagramEvent</a> listener.
+</p>
 
 <h2 id="ViewportBounds">Viewport bounds</h2>
 <p>
-  The <a>Diagram.viewportBounds</a> always has x and y values that are given by the <a>Diagram.position</a>. It always has width and height values that are
-  computed from the canvas size and the <a>Diagram.scale</a>.
+  The <a>Diagram.viewportBounds</a> always has x and y values that are given by the <a>Diagram.position</a>.
+  It always has width and height values that are computed from the canvas size and the <a>Diagram.scale</a>.
 </p>
-<p>Users can scroll the document contents using keyboard commands, scrollbars or panning. Programmatically, you can scroll using several means:</p>
+<p>
+  Users can scroll the document contents using keyboard commands, scrollbars or panning.
+  Programmatically, you can scroll using several means:
+</p>
 <ul>
   <li>setting <a>Diagram.position</a></li>
   <li>calling <a>Diagram.scrollToRect</a> or <a>Diagram.centerRect</a> or <a>Diagram.scroll</a></li>
@@ -626,16 +654,20 @@
   <li>calling <a>CommandHandler.scrollToPart</a></li>
 </ul>
 <p>
-  Furthermore, scrolling may happen automatically as nodes or links are added to or removed from or change visibility in the diagram. Also, zooming will
-  typically result in scrolling as well.
+  Furthermore, scrolling may happen automatically as nodes or links are added to or removed from or change visibility in the diagram.
+  Also, zooming will typically result in scrolling as well.
 </p>
 <p>
-  When scrolling, the <a>Diagram.position</a> normally will be limited to the range specified by the <a>Diagram.documentBounds</a>. The short or "line"
-  scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>. The long or "page" scrolling
-  distance is controlled by the size of the viewport. If you want to control the precise values that the <a>Diagram.position</a> may have, you can specify a
+  When scrolling, the <a>Diagram.position</a> normally will be limited to the range specified by the <a>Diagram.documentBounds</a>.
+  The short or "line" scrolling distance is controlled by <a>Diagram.scrollHorizontalLineChange</a> and <a>Diagram.scrollVerticalLineChange</a>.
+  he long or "page" scrolling distance is controlled by the size of the viewport.
+  If you want to control the precise values that the <a>Diagram.position</a> may have, you can specify a
   <a>Diagram.positionComputation</a> function. See the example below.
 </p>
-<p>User can zoom in or out using keyboard commands, mouse wheel, or pinching. Programmatically, you can zoom using several means:</p>
+<p>
+  User can zoom in or out using keyboard commands, mouse wheel, or pinching.
+  Programmatically, you can zoom using several means:
+</p>
 <ul>
   <li>setting <a>Diagram.scale</a></li>
   <li>calling <a>Diagram.zoomToFit</a> or <a>Diagram.zoomToRect</a></li>
@@ -643,49 +675,58 @@
   <li>calling <a>CommandHandler.decreaseZoom</a>, <a>CommandHandler.increaseZoom</a>, <a>CommandHandler.resetZoom</a>, or <a>CommandHandler.zoomToFit</a></li>
 </ul>
 <p>
-  When zooming in or out, the <a>Diagram.scale</a> normally will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>. If you
-  want to control the precise values that the <a>Diagram.scale</a> may have, you can specify a <a>Diagram.scaleComputation</a> function. See the example below.
+  When zooming in or out, the <a>Diagram.scale</a> normally will be limited to the range given by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
+  If you want to control the precise values that the <a>Diagram.scale</a> may have, you can specify a <a>Diagram.scaleComputation</a> function.
+  See the example below.
 </p>
-<p>If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.</p>
 <p>
-  If you want a Part to always be displayed within the viewport, no matter how the user scrolls or zooms, you can add them to a Layer that has
-  <a>Layer.isViewportAligned</a> set to true. Such Parts are positioned by the <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> properties
-  rather than by the <a>GraphObject.position</a> or <a>Part.location</a> properties. Read more at <a href="legends.html#StaticParts">Static Parts</a>.
+  If you want to be notified whenever the viewport bounds changes, you can register a "ViewportBoundsChanged" <a>DiagramEvent</a> listener.
+</p>
+<p>
+  If you want a Part to always be displayed within the viewport, no matter how the user scrolls or zooms,
+  you can add them to a Layer that has <a>Layer.isViewportAligned</a> set to true.
+  Such Parts are positioned by the <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> properties
+  rather than by the <a>GraphObject.position</a> or <a>Part.location</a> properties.
+  Read more at <a href="legends.html#StaticParts">Static Parts</a>.
 </p>
 
 <h2 id="ScrollMargin">Scroll margin</h2>
 <p>
-  <a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport, when the document bounds (including its
-  <a>Diagram.padding</a> margin) is greater than the viewport bounds. This can be useful when users need extra space at the edges of a Diagram, for instance to
+  <a>Diagram.scrollMargin</a> allows the user to scroll into empty space at the edges of the viewport,
+  when the document bounds (including its <a>Diagram.padding</a> margin) is greater than the viewport bounds.
+  This can be useful when users need extra space at the edges of a Diagram, for instance to
   have an area to create new nodes with the <a>ClickCreatingTool</a>.
 </p>
 <p>
-  <a>Diagram.padding</a> is added as if part of the document bounds, whereas <a>Diagram.scrollMargin</a> makes sure you can scroll to empty space beyond the
-  document bounds. Because of this, <a>Diagram.scrollMargin</a> does not create additional scrollable empty space if none is needed to scroll the margin
+  <a>Diagram.padding</a> is added as if part of the document bounds,
+  whereas <a>Diagram.scrollMargin</a> makes sure you can scroll to empty space beyond the document bounds.
+  Because of this, <a>Diagram.scrollMargin</a> does not create additional scrollable empty space if none is needed to scroll the margin
   distance beyond, such as when the document bounds are very small in the viewport.
 </p>
 <p>
-  Below is a Diagram with <a>Diagram.scrollMargin</a> set to <code>100</code>. As you drag to the boundary, you will find the additional space created by the
-  margin.
+  Below is a Diagram with <a>Diagram.scrollMargin</a> set to <code>100</code>.
+  As you drag to the boundary, you will find the additional space created by the margin.
 </p>
 
 <pre class="lang-js" id="scrollmargin" style="display: none"><code>
-  diagram.grid = $(go.Panel, "Grid",
-          $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
-          $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
-          $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
-          $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
-        );
+  diagram.grid =
+    new go.Panel("Grid")
+      .add(
+        new go.Shape("LineH", { stroke: "gray", strokeWidth: 0.5 }),
+        new go.Shape("LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+        new go.Shape("LineV", { stroke: "gray", strokeWidth: 0.5 }),
+        new go.Shape("LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+      );
   diagram.scrollMargin = 100;
 
 diagram.nodeTemplate =
-  $(go.Node, "Auto",
-    $(go.Shape, "RoundedRectangle",
-      new go.Binding("fill", "color")),
-    $(go.TextBlock,
-      { margin: 3 },
-      new go.Binding("text", "key"))
-  );
+  new go.Node("Auto")
+    .add(
+      new go.Shape("RoundedRectangle")
+        .bind("fill", "color"),
+      new go.TextBlock({ margin: 3 })
+        .bind("text", "key")
+    );
 
 var nodes = [];
 for (let i = 0; i < 99; i++) {
@@ -700,37 +741,39 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
 
 <h2 id="ScrollingModes">Scrolling modes</h2>
 <p>
-  <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>ScrollMode.Document</a> (the default), or scroll endlessly with
-  <a>ScrollMode.Infinite</a>.
+  <a>Diagram.scrollMode</a> allows the user to either scroll to document bound borders with <a>ScrollMode.Document</a> (the default),
+  or scroll endlessly with <a>ScrollMode.Infinite</a>.
 </p>
 <p>
-  <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions and scales are acceptable to be scrolled to. For
-  instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
+  <a>Diagram.positionComputation</a> and <a>Diagram.scaleComputation</a> allow you to determine what positions and scales are acceptable to be scrolled to.
+  For  instance, you could allow only integer position values, or only allow scaling to the values of 0.5, 1, or 2.
 </p>
 <p>
-  The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below, which lets you toggle these three properties.
+  The <a href="../samples/scrollModes.html">Scroll Modes sample</a> displays all the code for the example below,
+  which lets you toggle these three properties.
 </p>
 
 <pre class="lang-js" id="scrollmodes" style="display: none"><code>
-    diagram.minScale = 0.25;
-    diagram.grid = $(go.Panel, "Grid",
-            $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5 }),
-            $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
-            $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5 }),
-            $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
-          );
-    diagram.toolManager.draggingTool.isGridSnapEnabled = true;
-    diagram.undoManager.isEnabled = true;
-
+  diagram.minScale = 0.25;
+  diagram.grid =
+    new go.Panel("Grid")
+      .add(
+        new go.Shape("LineH", { stroke: "gray", strokeWidth: 0.5 }),
+        new go.Shape("LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
+        new go.Shape("LineV", { stroke: "gray", strokeWidth: 0.5 }),
+        new go.Shape("LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+      );
+  diagram.toolManager.draggingTool.isGridSnapEnabled = true;
+  diagram.undoManager.isEnabled = true;
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 3 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle")
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 3 })
+          .bind("text", "key")
+      );
 
   // create the model data that will be represented by Nodes and Links
   diagram.model = new go.GraphLinksModel(
@@ -826,22 +869,25 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
 
 <h2 id="PanelCoordinates">Panel coordinates</h2>
 <p>
-  A <a>GraphObject</a> that is not a <a>Part</a> but is an element of a <a>Panel</a> has measurements that are in panel coordinates, not in document
-  coordinates. That means that <a>GraphObject.position</a>, <a>GraphObject.actualBounds</a>, <a>GraphObject.maxSize</a>, <a>GraphObject.minSize</a>,
-  <a>GraphObject.measuredBounds</a>, <a>GraphObject.margin</a>, and <a>RowColumnDefinition</a> properties apply to all elements of a panel using the same
-  coordinate system.
+  A <a>GraphObject</a> that is not a <a>Part</a> but is an element of a <a>Panel</a> has measurements that are in panel coordinates,
+  not in document coordinates.
+  That means that <a>GraphObject.position</a>, <a>GraphObject.actualBounds</a>, <a>GraphObject.maxSize</a>, <a>GraphObject.minSize</a>,
+  <a>GraphObject.measuredBounds</a>, <a>GraphObject.margin</a>, and <a>RowColumnDefinition</a> properties
+  apply to all elements of a panel using the same coordinate system.
 </p>
 <p>
-  Some <a>GraphObject</a> properties use units that have values before they are transformed for use by the containing <a>Panel</a>'s coordinate system. In
-  particular, <a>GraphObject.desiredSize</a> (which means <a>GraphObject.width</a> and <a>GraphObject.height</a>), <a>GraphObject.naturalBounds</a>,
-  <a>Shape.geometry</a>, and <a>Shape.strokeWidth</a> are in "local" coordinates, before the object is scaled and rotated by the value of
-  <a>GraphObject.scale</a> and <a>GraphObject.angle</a>.
+  Some <a>GraphObject</a> properties use units that have values before they are transformed for use by the containing <a>Panel</a>'s coordinate system.
+  In particular, <a>GraphObject.desiredSize</a> (which means <a>GraphObject.width</a> and <a>GraphObject.height</a>), <a>GraphObject.naturalBounds</a>,
+  <a>Shape.geometry</a>, and <a>Shape.strokeWidth</a> are in "local" coordinates,
+  before the object is scaled and rotated by the value of <a>GraphObject.scale</a> and <a>GraphObject.angle</a>.
 </p>
 <p>
-  <a>GraphObject.actualBounds</a> will tell you the position and size of an element within its panel. If you want to get the document position of some object
-  that is within a Node, call <a>GraphObject.getDocumentPoint</a>.
+  <a>GraphObject.actualBounds</a> will tell you the position and size of an element within its panel.
+  If you want to get the document position of some object that is within a Node, call <a>GraphObject.getDocumentPoint</a>.
 </p>
-<p>For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.</p>
+<p>
+  For examples of the sizes of elements in a panel, see <a href="sizing.html">Sizing GraphObjects</a>.
+</p>
 
 <h3 id="NestedPanelCoordinates">Nested Panel coordinates</h3>
 <pre class="lang-js" id="nestedpanelcoords" style="display: none"><code>
@@ -874,7 +920,9 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
 
   // generates cells in data tables
   function dataBlock(conv, alo1, alo2) {
-    return $(go.TextBlock, "", new go.Binding("text", "gro", prec(conv)), new AlignmentObject(alo1, alo2));
+    return $(go.TextBlock,
+      new AlignmentObject(alo1, alo2),
+      new go.Binding("text", "gro", prec(conv)));
   }
 
   var nodeTemplates = new go.Map();
@@ -994,7 +1042,7 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
           angle: 120, scale: 0.8, padding: 50,
           background: go.Brush.mix("brown", "lightyellow", 0.4)},
         $(go.Panel, "Auto", { position: new go.Point(25,0), desiredSize: new go.Size(60,90)},
-          $(go.Shape, "Triangle", { fill: "transparent" }),
+          new go.Shape("Triangle", { fill: "transparent" }),
           $(go.TextBlock, "This Side Up")),
         $(go.TextBlock, "Position Panel", { position: new go.Point(0,100), font: "bold 12pt sans-serif" }),
        ),
@@ -1003,7 +1051,7 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
         {portId: "spotPanel",
           angle: 30, scale: 1.5,
           background: "lightgreen" },
-        $(go.Shape, "RoundedRectangle", {strokeWidth: 0, desiredSize: new go.Size(50,100), fill: "transparent"}),
+        new go.Shape("RoundedRectangle", {strokeWidth: 0, desiredSize: new go.Size(50,100), fill: "transparent"}),
         $(go.TextBlock, "Spot Panel",
           {
             font: "bold 12pt sans-serif",
@@ -1029,8 +1077,7 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
 
   diagram.linkTemplate =
     $(go.Link,
-      new go.Binding("fromNode", "from", diagram.findNodeForKey),
-      new go.Binding("to"), new go.Binding("toPortId"),
+      new go.Binding("toPortId"),
       $(go.Shape, {strokeWidth: 5}),
       $(go.Shape, {scale: 3,toArrow: "Standard"}));
 
@@ -1057,20 +1104,24 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
     {from: 3, to: "bn", toPortId: "bottomLabel"}
   ]);
 </code></pre>
-<p>The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.</p>
+<p>
+  The transformations of each element in a <a>Panel</a> are compounded by that panel's transformations.
+</p>
 <script>
   goCode('nestedpanelcoords', 600, 400);
 </script>
 <p>
-  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright. But that TextBlock is an element in
-  the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30, so it and its text should appear somewhat tilted. However the blue "Vertical" Panel itself
-  has an <a>GraphObject.angle</a> of 165. Because each Panel has its own coordinate system and because transformations on nested elements are compounded, the
-  effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
+  The <a>TextBlock</a> that is "Bottom" has the default <a>GraphObject.angle</a> of zero, so that the text is drawn upright.
+  But that TextBlock is an element in the green "Spot" <a>Panel</a> whose <a>GraphObject.angle</a> to 30,
+  so it and its text should appear somewhat tilted.
+  However the blue "Vertical" Panel itself has an <a>GraphObject.angle</a> of 165.
+  Because each Panel has its own coordinate system and because transformations on nested elements are compounded,
+  the effective angle for the green Panel is 195 degrees, the sum of those individual angles (30 + 165), which is nearly upside down.
 </p>
 <p>
-  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel. The brown "Position" <a>Panel</a> has a scale of 0.8
-  relative to its container. But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall, the product of those individual scales
-  (0.8 x 1.5).
+  The <a>GraphObject.scale</a> property also affects how an object is sized in its container Panel.
+  The brown "Position" <a>Panel</a> has a scale of 0.8 relative to its container.
+  But because the "Vertical" Panel has a scale of 1.5, its effective scale is 1.2 overall, the product of those individual scales (0.8 x 1.5).
 </p>
 
       </div>

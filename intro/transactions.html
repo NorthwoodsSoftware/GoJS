@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Transactions />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/transactions.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/transactions.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/transactions.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/transactions.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,57 +247,73 @@
         
 <h1>Transactions and the UndoManager</h1>
 <p>
-  <b>GoJS</b> models and diagrams make use of an <a>UndoManager</a> that can record all changes and support undoing and redoing those changes. Each state change
-  is recorded in a <a>ChangedEvent</a>, which includes enough information about both before and after to be able to reproduce the state change in either
-  direction, backward (undo) or forward (redo). Such changes are grouped together into <a>Transaction</a>s so that a user action, which may result in many
-  changes, can be undone and redone as a single operation.
+  <b>GoJS</b> models and diagrams make use of an <a>UndoManager</a> that can record all changes and support undoing and redoing those changes.
+  Each state change is recorded in a <a>ChangedEvent</a>,
+  which includes enough information about both before and after to be able to reproduce the state change in either direction,
+  backward (undo) or forward (redo).
+  Such changes are grouped together into <a>Transaction</a>s so that a user action, which may result in many changes,
+  can be undone and redone as a single operation.
 </p>
 <p>
-  Not all state changes result in <a>ChangedEvent</a>s that can be recorded by the UndoManager. Some properties are considered transient, such as
-  <a>Diagram.position</a>, <a>Diagram.scale</a>, <a>Diagram.currentTool</a>, <a>Diagram.currentCursor</a>, or <a>Diagram.isModified</a>. Some changes are
-  structural or considered unchanging, such as <a>Diagram.model</a>, any property of <a>CommandHandler</a>, or any of the tool or layout properties. But most
-  <a>GraphObject</a> and model properties do raise a ChangedEvent on the Diagram or Model, respectively, when a property value has been changed.
+  Not all state changes result in <a>ChangedEvent</a>s that can be recorded by the UndoManager.
+  Some properties are considered transient, such as <a>Diagram.position</a>, <a>Diagram.scale</a>, <a>Diagram.currentTool</a>,
+  <a>Diagram.currentCursor</a>, or <a>Diagram.isModified</a>.
+  Some changes are structural or considered unchanging, such as <a>Diagram.model</a>, any property of <a>CommandHandler</a>,
+  or any of the tool or layout properties.
+  But most <a>GraphObject</a> and model properties do raise a ChangedEvent on the Diagram or Model, respectively, when a property value has been changed.
 </p>
 
 <h2 id="Transactions">Transactions</h2>
 <p>
-  Whenever you modify a model or its data programmatically in response to some event, you should wrap the code in a transaction. Call
-  <a>Diagram.startTransaction</a> or <a>Model.startTransaction</a>, make the changes, and then call <a>Diagram.commitTransaction</a> or
-  <a>Model.commitTransaction</a>. Although the primary benefit from using transactions is to group together side-effects for undo/redo, you should use
-  transactions even if your application does not support undo/redo by the user.
+  Whenever you modify a model or its data programmatically in response to some event, you should wrap the code in a transaction.
+  Call <a>Diagram.startTransaction</a> or <a>Model.startTransaction</a>, make the changes,
+  and then call <a>Diagram.commitTransaction</a> or <a>Model.commitTransaction</a>.
+  Although the primary benefit from using transactions is to group together side-effects for undo/redo,
+  you should use transactions even if your application does not support undo/redo by the user.
 </p>
 <p>
-  As with database transactions, you will want to perform transactions that are short and infrequent. Do not leave transactions ongoing between user actions.
+  As with database transactions, you will want to perform transactions that are short and infrequent.
+  Do not leave transactions ongoing between user actions.
   Consider whether it would be better to have a single transaction surrounding a loop instead of starting and finishing a transaction repeatedly within a loop.
-  Do not execute transactions within a property setter -- such granularity is too small. Instead execute a transaction where the properties are set in response
-  to some user action or external event.
+  Do not execute transactions within a property setter -- such granularity is too small.
+  Instead execute a transaction where the properties are set in response to some user action or external event.
 </p>
 <p>
-  However, unlike database transactions, you do not need to conduct a transaction in order to access any state. All JavaScript objects are in memory, so you can
-  look at their properties at any time that it would make sense to do so. But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject</a> or
-  a <a>Model</a> or a JavaScript object in a model, do so within a transaction.
+  However, unlike database transactions, you do not need to conduct a transaction in order to access any state.
+  All JavaScript objects are in memory, so you can look at their properties at any time that it would make sense to do so.
+  But when you want to make state changes to a <a>Diagram</a> or a <a>GraphObject</a> or a <a>Model</a> or a JavaScript object in a model,
+  do so within a transaction.
 </p>
 <p>
   The only exception is that transactions are unnecessary when initializing a model or a diagram before assigning the model to the
-  <a>Diagram.model</a> property. (A Diagram only gets access to an UndoManager via the Model, the <a>Model.undoManager</a> property.)
+  <a>Diagram.model</a> property.
+  (A Diagram only gets access to an UndoManager via the Model, the <a>Model.undoManager</a> property.)
 </p>
 <p>
   Furthermore many event handlers and listeners are already executed within transactions that are conducted by <a>Tool</a>s or <a>CommandHandler</a> commands,
-  so you often will not need to start and commit a transaction within such functions. Read the API documentation for details about whether a function is called
-  within a transaction. For example, setting <a>GraphObject.click</a> to an event handler to respond to a click on an object needs to perform a transaction if
-  it wants to modify the model or the diagram. Most custom click event handlers do not change the diagram but instead update some HTML.
+  so you often will not need to start and commit a transaction within such functions.
+  Read the API documentation for details about whether a function is called within a transaction.
+  For example, the <a>GraphObject.click</a> event handler to respond to a click on a GraphObject needs to perform a transaction if
+  it wants to modify the model or the diagram.
+  Most custom click event handlers do not change the diagram but instead update some HTML.
 </p>
 <p>
-  But implementing an "ExternalObjectsDropped" <a>DiagramEvent</a> listener, which usually does want to modify the just-dropped Parts in the
-  <a>Diagram.selection</a>, is called within the <a>DraggingTool</a>'s transaction, so no additional start/commit transaction calls are needed.
+  But implementing an "ExternalObjectsDropped" <a>DiagramEvent</a> listener,
+  which usually does want to modify the just-dropped Parts in the <a>Diagram.selection</a>,
+  is called within the <a>DraggingTool</a>'s transaction, so no additional start/commit transaction calls are needed.
 </p>
-<p>Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, should not modify the diagram or model at all.</p>
 <p>
-  Both model changes and diagram changes are recorded in the <a>UndoManager</a> only if the model's <a>UndoManager.isEnabled</a> has been set to true. If you do
-  not want the user to be able to perform undo or redo and also prevent the recording of any <a>Transaction</a>s, but you still want to get "Transaction"-type
-  <a>ChangedEvent</a>s because you want to update a database, you can set <a>UndoManager.maxHistoryLength</a> to zero.
+  Finally, some customizations, such as the <a>Node.linkValidation</a> predicate, should not modify the diagram or model at all.
 </p>
-<p>To better understand the relationships between objects and transactions in memory, look at this diagram:</p>
+<p>
+  Both model changes and diagram changes are recorded in the <a>UndoManager</a> only if the model's <a>UndoManager.isEnabled</a> has been set to true.
+  If you do not want the user to be able to perform undo or redo and also prevent the recording of any <a>Transaction</a>s,
+  but you still want to get "Transaction"-type <a>ChangedEvent</a>s because you want to update a database,
+  you can set <a>UndoManager.maxHistoryLength</a> to zero.
+</p>
+<p>
+  To better understand the relationships between objects and transactions in memory, look at this diagram:
+</p>
 
 <p></p>
 <pre class="lang-js" id="transactionsDiagram" style="display: none"><code>
@@ -493,7 +509,9 @@
 <script>
   goCode('transactionsDiagram', 650, 550);
 </script>
-<p>A typical case for using transactions is when some command makes a change to the model.</p>
+<p>
+  A typical case for using transactions is when some command makes a change to the model.
+</p>
 <pre class="lang-js" id="transaction"><code>
   // define a function named "addChild" that is invoked by a button click
   addChild = () => {
@@ -511,13 +529,14 @@
   };
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle", { fill: "whitesmoke" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
 
-  diagram.layout = $(go.TreeLayout);
+  diagram.layout = new go.TreeLayout();
 
   const nodeDataArray = [
     { key: "Alpha" },
@@ -530,8 +549,9 @@
   diagram.model.undoManager.isEnabled = true;
 </code></pre>
 <p>
-  In the following example, select a node and then click the button. The addChild function adds a link connecting the selected node to a new node. When no Node
-  is selected, nothing happens.
+  In the following example, select a node and then click the button.
+  The addChild function adds a link connecting the selected node to a new node.
+  When no Node is selected, nothing happens.
 </p>
 <button onclick="addChild()">addChild() to selected Node</button>
 <script>
@@ -540,18 +560,20 @@
 
 <h2 id="SupportUndoManager">Supporting the UndoManager</h2>
 <p>
-  Changes to JavaScript data properties do not automatically result in any notifications that can be observed. Thus when you want to change the value of a
-  property in a manner that can be undone and redone, you should call <a>Model.setDataProperty</a> (or <a>Model.set</a>, which is an abbreviation for that
-  method). This will get the previous value for the property, set the property to the new value, and call <a>Model.raiseDataChanged</a>, which will also
-  automatically update any target bindings in the Node corresponding to the data.
+  Changes to JavaScript data properties do not automatically result in any notifications that can be observed.
+  Thus when you want to change the value of a property in a manner that can be undone and redone,
+  you should call <a>Model.setDataProperty</a> (or <a>Model.set</a>, which is an abbreviation for that method).
+  This will get the previous value for the property, set the property to the new value, and call <a>Model.raiseDataChanged</a>,
+  which will also automatically update any target bindings in the Node corresponding to the data.
 </p>
 <pre class="lang-js" id="changingData"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle", { fill: "whitesmoke" }),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "someValue"))  // bind to the "someValue" data property
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle", { fill: "whitesmoke" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "someValue")  // bind to the "someValue" data property
+      );
 
   const nodeDataArray = [
     { key: "Alpha", someValue: 1 }
@@ -568,8 +590,9 @@
   };
 </code></pre>
 <p>
-  Move the node around. Click on the button to increase the value of the "someValue" property on the first node data. Click to focus in the Diagram and then
-  Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
+  Move the node around.
+  Click on the button to increase the value of the "someValue" property on the first node data.
+  Click to focus in the Diagram and then Ctrl-Z and Ctrl-Y to undo and redo the moves and value changes.
 </p>
 <button onclick="incrementData()">incrementData()</button>
 <script>

@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Printing />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/printing.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/printing.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/printing.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/printing.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -245,100 +245,6 @@
       
       <div class="px-4 pb-16 w-full overflow-hidden prose">
         
-<style type="text/css">
-  svg {
-    border: solid 1px black;
-  }
-
-  @media screen {
-    img {
-      border: 1px solid rgba(255, 0, 0, 0.4);
-    }
-  }
-
-  /* @media print specifies CSS rules that only apply when printing */
-  @media print {
-    /* CSS reset to clear styles for printing */
-    html,
-    body,
-    div {
-      margin: 0;
-      padding: 0;
-      border: 0;
-      font-size: 100%;
-      font: inherit;
-      vertical-align: baseline;
-    }
-
-    /* Hide everything on the page */
-    * {
-      visibility: hidden;
-      margin: 0;
-      padding: 0;
-    }
-
-    #container,
-    #content,
-    #myImages {
-      /* Only display the images we want printed */
-      /* all of the image's parent divs
-         leading up to the body must be un-hidden (displayed) too
-      */
-      visibility: initial;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      /* CSS reset to clear the specific visible divs for printing */
-      margin: 0;
-      padding: 0;
-      border: 0;
-      font-size: 100%;
-      font: inherit;
-      vertical-align: baseline;
-    }
-
-    #myImages img {
-      visibility: initial;
-    }
-
-    /* We have line breaks in the DIV
-       to separate the images in the browser,
-       but do not want those line breaks when printing
-    */
-    #myImages br {
-      display: none;
-    }
-
-    #manyImgCode {
-      display: none;
-    }
-
-    #mycss {
-      display: none;
-    }
-
-    img {
-      /* Only some browsers respect this rule: */
-      page-break-inside: avoid;
-      /* Almost all browsers respect this rule: */
-      page-break-after: always;
-    }
-  }
-
-  /* The @page rules specify additional printing directives that browsers may respect
-     Here we suggest printing in landscape (instead of portrait) with a small margin.
-     Browsers, however, are free to ignore or override these suggestions.
-     See also:
-      https://developer.mozilla.org/en-US/docs/CSS/@page
-      https://dev.w3.org/csswg/css3-page/#at-page-rule
-  */
-  @page {
-    /* Some browsers respect rules such as size: landscape */
-    margin: 1cm;
-  }
-</style>
-
 <h1>Printing</h1>
 <p>
   Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them, inserting them into a PDF or other document, or
@@ -352,7 +258,7 @@
   nearly identical to making images. In this page's examples you could substitute <a>Diagram.makeImage</a> for the same result.
 </p>
 
-<p>Below is the Diagram we are going to prepare for print.</p>
+<p>Below is the Diagram we are going to prepare for printing.</p>
 <!-- Don't bother showing this source -->
 <pre class="lang-js" id="diag" style="display: none"><code>
   window.myDiagram = diagram;
@@ -360,22 +266,21 @@
 
   // define the Node template
   myDiagram.nodeTemplate =
-    $(go.Node, "Spot",
-      { locationSpot: go.Spot.Center },
-      $(go.Shape, "Rectangle",
-        { fill: "lightgray",  // the initial value, but data-binding may provide different value
-          stroke: "black",
-          desiredSize: new go.Size(30, 30) },
-        new go.Binding("fill", "fill")),
-      $(go.TextBlock,
-        new go.Binding("text", "text"))
-    );
+    new go.Node("Spot", { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape("Rectangle",
+            { fill: "lightgray",  // the initial value, but data-binding may provide different value
+              stroke: "black",
+              desiredSize: new go.Size(30, 30) })
+          .bind("fill"),
+        new go.TextBlock()
+          .bind("text")
+      );
 
   // define the Link template to be minimal
   myDiagram.linkTemplate =
-    $(go.Link,
-      { selectable: false },
-      $(go.Shape));
+    new go.Link({ selectable: false })
+      .add(new go.Shape());
 
   myDiagram.layout = new go.LayeredDigraphLayout();
 
@@ -426,155 +331,77 @@
   myDiagram.model.linkDataArray = linkArray;
   myDiagram.commitTransaction("generateDigraph");
 
+  // print the diagram by opening a new window holding SVG images of the diagram contents for each page
+  function printDiagram(width, height) {
+    if (!width) width = 700;
+    if (!height) height = 960;
+    const svgWindow = window.open();
+    if (!svgWindow) return; // failure to open a new Window
+    svgWindow.document.title = "GoJS Flowchart";
+    svgWindow.document.body.style.margin = "0px";
+    const printSize = new go.Size(width, height);
+    const bnds = myDiagram.documentBounds;
+    let x = bnds.x;
+    let y = bnds.y;
+    while (y < bnds.bottom) {
+      while (x < bnds.right) {
+        const svg = myDiagram.makeSvg({
+          scale: 1.0,
+          position: new go.Point(x, y),
+          size: printSize,
+          background: myDiagram.themeManager.findValue('div', 'colors'),
+        });
+        svgWindow.document.body.appendChild(svg);
+        x += printSize.width;
+      }
+      x = bnds.x;
+      y += printSize.height;
+    }
+    setTimeout(() => { svgWindow.print(); svgWindow.close(); }, 1);
+  }
+  window.printDiagram = printDiagram;
 </code></pre>
 <script>
   goCode('diag', 500, 500);
 </script>
-<script>
-  window.extras = [];
-  window.goCode3 = (pre) => extras.push(pre);
 
-  window.extra = () => {
-    for (let i = 0; i < extras.length; i++) {
-      var ex = extras[i];
-      var pre = document.getElementById(ex);
-      var f = eval('(function () {' + pre.textContent + '\n})');
-      f();
-    }
-  };
-</script>
 <p>
-  Our code for print preparation contains a <code>generateImages</code> function that cuts the Diagram into several images of a given width and height. On this
-  page it is called by default with (700, 960), but the width and height can be modified dynamically with HTML inputs below.
+  Our code for print preparation is in a <code>printDiagram</code> function that cuts the Diagram into several images of a given width and height
+  and renders each such page individually.  Those images are in a separate window just to make it easier to manage than
+  combining them with the contents of this page.
 </p>
 <pre class="lang-js" id="manyImgCode"><code>
-    // if width or height are below 50, they are set to 50
-    function generateImages(width, height) {
-      // sanitize input
-      width = parseInt(width);
-      height = parseInt(height);
-      if (isNaN(width)) width = 100;
-      if (isNaN(height)) height = 100;
-      // Give a minimum size of 50x50
-      width = Math.max(width, 50);
-      height = Math.max(height, 50);
-
-      var imgDiv = document.getElementById('myImages');
-      imgDiv.innerHTML = ''; // clear out the old images, if any
-      var db = myDiagram.documentBounds;
-      var boundswidth = db.width;
-      var boundsheight = db.height;
-      var imgWidth = width;
-      var imgHeight = height;
-      var p = db.position;
-      for (let i = 0; i &lt; boundsheight; i += imgHeight) {
-        for (let j = 0; j &lt; boundswidth; j += imgWidth) {
-          var img = myDiagram.makeSvg({
-            scale: 1,
-            position: new go.Point(p.x + j, p.y + i),
-            size: new go.Size(imgWidth, imgHeight)
-          });
-          // Append the new HTMLImageElement to the #myImages div
-          img.className = 'images';
-          imgDiv.appendChild(img);
-          imgDiv.appendChild(document.createElement('br'));
-        }
+  // print the diagram by opening a new window holding SVG images of the diagram contents for each page
+  function printDiagram(width, height) {
+    if (!width) width = 700;
+    if (!height) height = 960;
+    const svgWindow = window.open();
+    if (!svgWindow) return; // failure to open a new Window
+    svgWindow.document.title = "GoJS Printing";
+    svgWindow.document.body.style.margin = "0px";
+    const printSize = new go.Size(width, height);
+    const bnds = myDiagram.documentBounds;
+    let x = bnds.x;
+    let y = bnds.y;
+    while (y < bnds.bottom) {
+      while (x < bnds.right) {
+        const svg = myDiagram.makeSvg({
+          scale: 1.0,
+          position: new go.Point(x, y),
+          size: printSize,
+          background: myDiagram.themeManager.findValue('div', 'colors'),
+        });
+        svgWindow.document.body.appendChild(svg);
+        x += printSize.width;
       }
+      x = bnds.x;
+      y += printSize.height;
     }
-
-    var button = document.getElementById('makeSVG');
-    button.addEventListener('click', () => {
-      var width = parseInt(document.getElementById('widthInput').value);
-      var height = parseInt(document.getElementById('heightInput').value);
-      generateImages(width, height);
-    }, false);
-
-    // Call it with some default values
-    generateImages(700, 960);
+    setTimeout(() => { svgWindow.print(); svgWindow.close(); }, 1);
+  }
 </code></pre>
-
-<p>
-  We want to show nothing but the images when this HTML page is printed, so we must use CSS rules to hide all page elements except the images themselves and the
-  DOM parents of the images leading up to the body (#content, #myImages).
-</p>
-<p>
-  With the CSS below, printing this page will give yield nothing but the generated images that have been added to the end of this page. Typically the image or
-  images used for printing may be hidden from the user completely, except when printing, or else added to a separate page in a new window.
-</p>
-<pre class="lang-css" id="mycss"><code>
-/* @media print specifies CSS rules that only apply when printing */
-@media print {
-  /* CSS reset to clear styles for printing */
-  html, body, div {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-  }
-
-  /* Hide everything on the page */
-  body * {
-    display: none;
-  }
-
-  #content, #myImages, #myImages * {
-    /* Only display the images we want printed */
-    /* all of the image's parent divs
-       leading up to the body must be un-hidden (displayed) too
-    */
-    display: block;
-    /* CSS reset to clear the specific visible divs for printing */
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-  }
-
-  /* We have line breaks in the DIV
-     to separate the images in the browser,
-     but do not want those line breaks when printing
-  */
-  #myImages br {
-    display: none;
-  }
-
-  img {
-    /* Only some browsers respect this rule: */
-    page-break-inside: avoid;
-    /* Almost all browsers respect this rule: */
-    page-break-after:always;
-  }
-}
-
-/* The @page rules specify additional printing directives that browsers may respect
-   Here we suggest printing in landscape (instead of portrait) with a small margin.
-   Browsers, however, are free to ignore or override these suggestions.
-   See also:
-    https://developer.mozilla.org/en-US/docs/CSS/@page
-    https://dev.w3.org/csswg/css3-page/#at-page-rule
-*/
-@page {
-  /* Some browsers respect rules such as size: landscape */
-  margin: 1cm;
-}
-</code></pre>
-<p>
-  The images at the end of this page are generated by calling <code>generateImages(700, 960)</code>. Using the inputs below the images can be replaced with
-  those of a different size. Different papers, page orientations, and margins will require different sized images if they are to fill the paper, and (700, 960)
-  is a suggested size for 8.5 inch by 11 paper in portrait orientation, with minimal margins.
-</p>
-<div style="border: 1px solid gray; padding: 10px; margin-bottom: 20px">
-  Width: <input id="widthInput" value="700" /> Height: <input id="heightInput" value="960" />
-  <button id="makeSVG">Generate images for printing</button>
-</div>
-<div id="myImages"></div>
-<script>
-  goCode3('manyImgCode');
-</script>
+<button onclick="window.printDiagram(700, 960)">Print Diagram (portrait)</button>
+<button onclick="window.printDiagram(960, 700)">Print Diagram (landscape)</button>
 
       </div>
     </div>

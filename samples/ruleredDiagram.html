@@ -23,12 +23,12 @@
 <meta name="twitter:title" content=Rulered Diagram />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/screenshots/ruleredDiagram.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/screenshots/ruleredDiagram.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/screenshots/ruleredDiagram.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/screenshots/ruleredDiagram.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/screenshots/ruleredDiagram.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/screenshots/ruleredDiagram.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/samples/ruleredDiagram.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/samples/ruleredDiagram.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/samples/ruleredDiagram.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/samples/ruleredDiagram.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -128,6 +128,7 @@
       myDiagram =
         new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
           {
+            layout: new go.ForceDirectedLayout(),
             "undoManager.isEnabled": true,  // enable undo & redo
             scrollMode: go.ScrollMode.Infinite,  // allow the diagram to be scrolled beyond content
             "grid.visible": true  // show that the ticks of the rulers always line up with the grid lines
@@ -276,6 +277,8 @@
       function printDiagram() {
         const svgWindow = window.open();
         if (!svgWindow) return;  // failure to open a new Window
+        svgWindow.document.title = "GoJS Rulered Diagram";
+        svgWindow.document.body.style.margin = "0px";
         const printSize = new go.Size(700, 960);
         const bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
         let x = bnds.x;
@@ -298,7 +301,7 @@
           y += printSize.height;
         }
         // invoke the browser's print command
-        setTimeout(() => { svgWindow.print(); updateScales(); }, 1);
+        setTimeout(() => { svgWindow.); updateScales(); svgWindow.close(); }, 1);
       }
 
       document.getElementById("myPrintButton").addEventListener("click", printDiagram);

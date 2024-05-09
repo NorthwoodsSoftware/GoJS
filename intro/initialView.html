@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Initial Viewport />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/initialView.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/initialView.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/initialView.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/initialView.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,23 +247,27 @@
         
 <h1>Initial, Automatic, and Programmatic Viewport Management</h1>
 <p>
-  Once you have created and assigned a model to cause some Parts to appear in your Diagram, you can control where your parts initially appear in the viewport,
+  Once you have created and assigned a model to cause some Parts to appear in your Diagram,
+  you can control where your parts initially appear in the viewport,
   and you can control where they are shown after the diagram has been modified.
 </p>
 
 <h2 id="InitialViewport">Initial viewport</h2>
 <p>
-  You can very easily set the <a>Diagram.initialPosition</a> and/or <a>Diagram.initialScale</a> properties at any time, even before assigning the model. This
-  will cause the <a>Diagram.position</a> and/or <a>Diagram.scale</a>
-  properties to be set to the specified initial value(s) once all of the Parts have been created and any initial layout has been performed.
+  You can very easily set the <a>Diagram.initialPosition</a> and/or <a>Diagram.initialScale</a> properties at any time,
+  even before assigning the model.
+  This will cause the <a>Diagram.position</a> and/or <a>Diagram.scale</a> properties to be set to the specified initial value(s)
+  once all of the Parts have been created and any initial layout has been performed.
 </p>
 <p>
-  But what if you do not know how big your diagram document will be? If you want to show a particular area of the document, you will not know what position to
-  set. If you want to show a big document at the largest scale that shows all of it, you will not know what scale to set.
+  But what if you do not know how big your diagram document will be?
+  If you want to show a particular area of the document, you will not know what position to set.
+  If you want to show a big document at the largest scale that shows all of it, you will not know what scale to set.
 </p>
 <p>
-  One solution to this problem is to set the <a>Diagram.initialDocumentSpot</a> and <a>Diagram.initialViewportSpot</a> properties to particular
-  <a>Spot</a> values. For example, if you are showing a tree-like diagram and you want tree to be centered horizontally but positioned vertically at the top,
+  One solution to this problem is to set the <a>Diagram.initialDocumentSpot</a> and <a>Diagram.initialViewportSpot</a> properties
+  to particular <a>Spot</a> values.
+  For example, if you are showing a tree-like diagram and you want tree to be centered horizontally but positioned vertically at the top,
   you can do something like this when you create the Diagram:
 </p>
 <pre class="lang-js"><code>
@@ -274,13 +278,14 @@
     })
 </code></pre>
 <p>
-  This makes sure that after the initial layout of your diagram the middle top point of the diagram contents is positioned to be at the middle top point of the
-  viewport.
+  This makes sure that after the initial layout of your diagram the middle top point of the diagram contents is positioned
+  to be at the middle top point of the viewport.
 </p>
 <p>
-  Another solution to this problem is to set the <a>Diagram.initialContentAlignment</a> or <a>Diagram.initialAutoScale</a> properties. For example it is fairly
-  common to want to make sure that small documents appear top-centered within the diagram window -- just set <a>Diagram.initialContentAlignment</a> to
-  <a>Spot.Top</a>. Or if you want to "zoom-to-fit" the diagram, just set <a>Diagram.initialAutoScale</a> to <a>AutoScale.Uniform</a>.
+  Another solution to this problem is to set the <a>Diagram.initialContentAlignment</a> or <a>Diagram.initialAutoScale</a> properties.
+  For example it is fairly common to want to make sure that small documents appear top-centered within the diagram window --
+  just set <a>Diagram.initialContentAlignment</a> to <a>Spot.Top</a>.
+  Or if you want to "zoom-to-fit" the diagram, just set <a>Diagram.initialAutoScale</a> to <a>AutoScale.Uniform</a>.
 </p>
 <pre class="lang-js"><code>
   new go.Diagram("myDiagramDiv",
@@ -288,20 +293,23 @@
       initialAutoScale: go.AutoScale.Uniform
     })
 </code></pre>
-<p>More generally, you may want to try to center a particular <a>Node</a>. Here is how you can do that:</p>
+<p>
+  More generally, you may want to try to center a particular <a>Node</a>. Here is how you can do that:
+</p>
 <pre class="lang-js" id="centernode"><code>
   // allow the diagram to be scrolled a bit beyond the document bounds
   diagram.scrollMargin = 100;
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("location", "loc"),
-      $(go.Shape, { fill: "lightyellow" }),
-      $(go.TextBlock, { margin: 5 },
-        // show the location as text in the node
-        new go.Binding("text", "loc",
-                       p => p.x.toFixed() + ", " + p.y.toFixed()))
-    );
+    new go.Node("Auto")
+      .bind("location", "loc")
+      .add(
+        new go.Shape({ fill: "lightyellow" }),
+        new go.TextBlock({ margin: 5 })
+          // show the location as text in the node
+          .bind("text", "loc",
+                p => p.x.toFixed() + ", " + p.y.toFixed())
+      );
 
   // initialize the model with random nodes:
   var nodeDataArray = [];
@@ -325,46 +333,55 @@
   goCode('centernode', 300, 150);
 </script>
 <p>
-  Note: because by default one cannot scroll past any edge of the document plus any <a>Diagram.scrollMargin</a>, if the selected node happens to be at or near
-  an edge, the node cannot actually be centered in the viewport.
+  Note: because by default one cannot scroll past any edge of the document plus any <a>Diagram.scrollMargin</a>,
+  if the selected node happens to be at or near an edge, the node cannot actually be centered in the viewport
+  unless you set <a>Diagram.scrollMode</a>, <a>Diagram.scrollMargin</a>, or <a>Diagram.padding</a>.
 </p>
 
 <h2 id="AutomaticViewportManagement">Automatic viewport management</h2>
 <p>
-  There are also times when you will want to control the viewport (i.e. the <a>Diagram.position</a> and <a>Diagram.scale</a>) after every change to the diagram.
-  For example, if you always want to keep the document centered after the user has moved or deleted or inserted nodes, set
-  <a>Diagram.contentAlignment</a> (rather than <a>Diagram.initialContentAlignment</a>) to <a>Spot.Center</a>.
+  There are also times when you will want to control the viewport (i.e. the <a>Diagram.position</a> and <a>Diagram.scale</a>)
+  after every change to the diagram.
+  For example, if you always want to keep the document centered after the user has moved or deleted or inserted nodes,
+  set <a>Diagram.contentAlignment</a> (rather than <a>Diagram.initialContentAlignment</a>) to <a>Spot.Center</a>.
 </p>
 <p>
-  Or if you always want to keep the document "zoomed-to-fit", set <a>Diagram.autoScale</a> (rather than <a>Diagram.initialAutoScale</a>) to
-  <a>AutoScale.Uniform</a>. As an example, the <a>Overview</a> diagram does this.
+  Or if you always want to keep the document "zoomed-to-fit", set <a>Diagram.autoScale</a> (rather than <a>Diagram.initialAutoScale</a>)
+  to <a>AutoScale.Uniform</a>.
+  As an example, the <a>Overview</a> diagram does this.
 </p>
 
 <h2 id="ProgrammaticViewportManagement">Programmatic viewport management</h2>
 <p>
-  If you do not want continual repositioning or rescaling of the diagram, but you do sometimes want to change the <a>Diagram.position</a> and/or the
-  <a>Diagram.scale</a>, you can set those properties to whatever values you like. However, please note that the ultimate value for <a>Diagram.position</a> is
-  normally limited by the <a>Diagram.documentBounds</a> and the size of the viewport and the scale of the diagram. The <a>Diagram.scale</a> is limited by
-  <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
+  If you do not want continual repositioning or rescaling of the diagram,
+  but you do sometimes want to change the <a>Diagram.position</a> and/or the <a>Diagram.scale</a>,
+  you can set those properties to whatever values you like.
+  However, please note that the ultimate value for <a>Diagram.position</a> is normally limited by the <a>Diagram.documentBounds</a>
+  and the size of the viewport and the scale of the diagram.
+  The <a>Diagram.scale</a> is limited by <a>Diagram.minScale</a> and <a>Diagram.maxScale</a>.
 </p>
 <p>
-  But it is more common to call a method on Diagram to achieve the results that you want. For example, to get the effect of the
-  <a>Diagram.initialDocumentSpot</a> and <a>Diagram.initialViewportSpot</a> properties that are used when the "InitialLayoutCompleted" DiagramEvent occurs, call
-  <a>Diagram.alignDocument</a> with the two desired Spots that you want to have coincide.
+  But it is more common to call a method on Diagram to achieve the results that you want.
+  For example, to get the effect of the <a>Diagram.initialDocumentSpot</a> and <a>Diagram.initialViewportSpot</a> properties
+  that are used when the "InitialLayoutCompleted" DiagramEvent occurs, call <a>Diagram.alignDocument</a> with the two
+  desired Spots that you want to have coincide.
 </p>
 <p>
-  As already demonstrated above, if you want to try to center a particular node in the viewport, you can call <a>Diagram.centerRect</a> with the node's
-  <a>GraphObject.actualBounds</a>.
+  As already demonstrated above, if you want to try to center a particular node in the viewport,
+  you can call <a>Diagram.centerRect</a> with the node's <a>GraphObject.actualBounds</a>.
 </p>
-<p>If you want to make sure that a particular node is within the viewport, but not necessarily centered, call <a>Diagram.scrollToRect</a>.</p>
 <p>
-  If you just want to scroll the diagram, in the same manners as the user might via a scrollbar or the mouse wheel, call <a>Diagram.scroll</a> with arguments
-  that specify how much to scroll and in which direction.
+  If you want to make sure that a particular node is within the viewport, but not necessarily centered, call <a>Diagram.scrollToRect</a>.
+</p>
+<p>
+  If you just want to scroll the diagram, in the same manners as the user might via a scrollbar or the mouse wheel,
+  call <a>Diagram.scroll</a> with arguments that specify how much to scroll and in which direction.
 </p>
 
 <p>
-  The just-mentioned Diagram methods do not change the <a>Diagram.scale</a>. If you want to rescale the diagram so that the whole document bounds are shown,
-  call <a>Diagram.zoomToFit</a>. More generally, if you want a particular area of your diagram to be shown at whatever scale will make it fit in the viewport,
+  The just-mentioned Diagram methods do not change the <a>Diagram.scale</a>.
+  If you want to rescale the diagram so that the whole document bounds are shown, call <a>Diagram.zoomToFit</a>.
+  More generally, if you want a particular area of your diagram to be shown at whatever scale will make it fit in the viewport,
   call <a>Diagram.zoomToRect</a>.
 </p>
 

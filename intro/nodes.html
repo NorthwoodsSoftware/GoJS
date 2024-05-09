@@ -17,12 +17,12 @@
 <meta name="twitter:title" content=Nodes />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.1/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.1/intro/nodes.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.1/intro/nodes.html" />
+<meta property="og:url" content="https://gojs.net/3.0.2/intro/nodes.html" />
+<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/nodes.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,33 +247,33 @@
         
 <h1>Nodes</h1>
 <p>
-You can customize your nodes to have exactly the appearance and behavior that you want.
-So far you have only seen very simple nodes.
-But if you have seen the <a href="../samples/index.html">Sample Applications</a>,
-you have seen many other kinds of nodes.
+  You can customize your nodes to have exactly the appearance and behavior that you want.
+  So far you have only seen very simple nodes.
+  But if you have seen the <a href="../samples/index.html">Sample Applications</a>,
+  you have seen many other kinds of nodes.
 </p>
 <p>
-In this page we demonstrate some of the choices you can make when designing your nodes.
+  In this page we demonstrate some of the choices you can make when designing your nodes.
 </p>
 
 <h2 id="SurroundingContent">Surrounding Content</h2>
 <p>
-It is common to surround interesting information with a border or other background.
+  It is common to surround interesting information with a border or other background.
 </p>
 <h3 id="SimpleBorders">Simple borders</h3>
 <p>
-Many of the simplest nodes just consist of a <a>Panel</a> of type <a>Panel.Auto</a> with a <a>Shape</a>
-surrounding a <a>TextBlock</a>.
+  Many of the simplest nodes just consist of a <a>Panel</a> of type <a>Panel.Auto</a> with a <a>Shape</a>
+  surrounding a <a>TextBlock</a>.
 </p>
 <pre class="lang-js" id="border"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle")
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
 
   diagram.model.nodeDataArray = [
     { key: "Alpha", color: "lightblue" }
@@ -283,19 +283,19 @@ surrounding a <a>TextBlock</a>.
 
 <h3 id="ShapedNodes">Shaped nodes</h3>
 <p>
-The Shape surrounding the content need not be rectangular.
-This example demonstrates a number of shapes.
+  The Shape surrounding the content need not be rectangular.
+  This example demonstrates a number of shapes.
 </p>
 <pre class="lang-js" id="shapes"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape,
-        new go.Binding("figure", "fig"),
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape()
+          .bind("figure", "fig")
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
 
   diagram.model.nodeDataArray = [
     { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
@@ -308,41 +308,40 @@ This example demonstrates a number of shapes.
 </code></pre>
 <script>goCode("shapes", 300, 150)</script>
 <p>
-The surrounding/background object need not be a <a>Shape</a>.
-You could use a <a>Picture</a> or even a more complex object such as a <a>Panel</a>.
+  The surrounding/background object need not be a <a>Shape</a>.
+  You could use a <a>Picture</a> or even a more complex object such as a <a>Panel</a>.
 </p>
 
 <h3 id="ComplexContents">Complex contents</h3>
 <p>
-The content of an Auto <a>Panel</a> need not be limited to a single <a>TextBlock</a> --
-you can have arbitrarily complex panels of objects.
-In this example the content is a Table Panel with three rows of TextBlocks.
+  The content of an Auto <a>Panel</a> need not be limited to a single <a>TextBlock</a> --
+  you can have arbitrarily complex panels of objects.
+  In this example the content is a Table Panel with three rows of TextBlocks.
 </p>
 <pre class="lang-js" id="borderedtable"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape,
-        { fill: $(go.Brush, "Linear", { 0: "white", 1: "lightblue" }),
-          stroke: "darkblue", strokeWidth: 2 }),
-      $(go.Panel, "Table",
-        { defaultAlignment: go.Spot.Left, margin: 4 },
-        $(go.RowColumnDefinition, { column: 1, width: 4 }),
-        $(go.TextBlock,
-          { row: 0, column: 0, columnSpan: 3, alignment: go.Spot.Center },
-          { font: "bold 12pt sans-serif" },
-          new go.Binding("text", "key")),
-        $(go.TextBlock, "First: ",
-          { row: 1, column: 0 }),
-        $(go.TextBlock,
-          { row: 1, column: 2 },
-          new go.Binding("text", "prop1")),
-        $(go.TextBlock, "Second: ",
-          { row: 2, column: 0 }),
-        $(go.TextBlock,
-          { row: 2, column: 2 },
-          new go.Binding("text", "prop2"))
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape({
+            fill: new go.Brush("Linear", { 0: "white", 1: "lightblue" }),
+            stroke: "darkblue", strokeWidth: 2
+          }),
+        new go.Panel("Table", { defaultAlignment: go.Spot.Left, margin: 4 })
+          .addColumnDefinition(1, { width: 4 })
+          .add(
+            new go.TextBlock({
+                row: 0, column: 0, columnSpan: 3, alignment: go.Spot.Center,
+                font: "bold 12pt sans-serif"
+              })
+              .bind("text", "key"),
+            new go.TextBlock("First: ", { row: 1, column: 0 }),
+            new go.TextBlock({ row: 1, column: 2 })
+              .bind("text", "prop1"),
+            new go.TextBlock("Second: ", { row: 2, column: 0 }),
+            new go.TextBlock({ row: 2, column: 2 })
+              .bind("text", "prop2")
+          )
+      );
 
   diagram.model.nodeDataArray = [
     { key: "Alpha", prop1: "value of 'prop1'", prop2: "the other property" }
@@ -351,28 +350,28 @@ In this example the content is a Table Panel with three rows of TextBlocks.
 <script>goCode("borderedtable", 300, 150)</script>
 
 <h3 id="FixedSizeNodes">Fixed-size nodes</h3>
-  <p>
-    The above examples have the "Auto" Panel surround some content, where the content might be of different sizes.
-    That results in the Nodes having different sizes.
-  </p>
-  <p>
-    If you want a <a>Panel</a> (and thus a Node, because <a>Node</a> inherits from <a>Part</a> which inherits from <a>Panel</a>)
-    to be of fixed size, set <a>GraphObject.desiredSize</a> on that panel.
-    (Equivalently, you can set <a>GraphObject.width</a> and <a>GraphObject.height</a>.)
-    That may result in the clipping of content that is too large,
-    or it may result in extra space if the content is smaller than the available area provided by the "Auto" Panel.
-  </p>
+<p>
+  The above examples have the "Auto" Panel surround some content, where the content might be of different sizes.
+  That results in the Nodes having different sizes.
+</p>
+<p>
+  If you want a <a>Panel</a> (and thus a Node, because <a>Node</a> inherits from <a>Part</a> which inherits from <a>Panel</a>)
+  to be of fixed size, set <a>GraphObject.desiredSize</a> on that panel.
+  (Equivalently, you can set <a>GraphObject.width</a> and <a>GraphObject.height</a>.)
+  That may result in the clipping of content that is too large,
+  or it may result in extra space if the content is smaller than the available area provided by the "Auto" Panel.
+</p>
 <pre class="lang-js" id="fixedsize"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { desiredSize: new go.Size(100, 50) },  // on Panel
-      $(go.Shape,
-        new go.Binding("figure", "fig"),
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { desiredSize: new go.Size(100, 50) })  // on Panel
+      .add(
+        new go.Shape()
+          .bind("figure", "fig")
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
+
   diagram.model.nodeDataArray = [
     { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
     { key: "Beta", color: "lightblue", fig: "Ellipse" },
@@ -383,25 +382,25 @@ In this example the content is a Table Panel with three rows of TextBlocks.
   ];
 </code></pre>
 <script>goCode("fixedsize", 500, 200)</script>
-  <p>
-    Note how the "Epsilon..." TextBlock is measured with the constraint of having a limited width,
-    as imposed by the Panel's width.  That results in the text being wrapped before (maybe) being clipped.
-  </p>
-  <p>
-    You probably do not want to set the desiredSize of the main element, the Shape in this case above.
-    If you did, that would not constrain how the content elements are sized within the Panel.
-  </p>
+<p>
+  Note how the "Epsilon..." TextBlock is measured with the constraint of having a limited width,
+  as imposed by the Panel's width.  That results in the text being wrapped before (maybe) being clipped.
+</p>
+<p>
+  You probably do not want to set the desiredSize of the main element, the Shape in this case above.
+  If you did, that would not constrain how the content elements are sized within the Panel.
+</p>
 <pre class="lang-js" id="fixedsize2"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape,
-        { desiredSize: new go.Size(100, 50) },  // on main element, not on Panel
-        new go.Binding("figure", "fig"),
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape({ desiredSize: new go.Size(100, 50) })  // not here!
+          .bind("figure", "fig")
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
+
   diagram.model.nodeDataArray = [
     { key: "Alpha", color: "lightblue", fig: "RoundedRectangle" },
     { key: "Beta", color: "lightblue", fig: "Ellipse" },
@@ -412,32 +411,33 @@ In this example the content is a Table Panel with three rows of TextBlocks.
   ];
 </code></pre>
 <script>goCode("fixedsize2", 500, 200)</script>
-  <p>
-    Note how the TextBlock is measured without the constraint of having a limited width from the Panel.
-    That results in the text being treated as a single long line, which is then clipped by the Panel.
-  </p>
+<p>
+  Note how the TextBlock is measured without the constraint of having a limited width from the Panel.
+  That results in the text being treated as a single long line, which is then clipped by the Panel.
+</p>
 
 <h2 id="StackedContent">Stacked Content</h2>
 <p>
-Many simple nodes consist of a few objects positioned above each other or next to each other.
+  Many simple nodes consist of a few objects positioned above each other or next to each other.
 </p>
 
 <h3 id="Icons">Icons</h3>
 <p>
-Perhaps the most commonly seen kind of node can be implemented using a Vertical <a>Panel</a>.
+  Perhaps the most commonly seen kind of node can be implemented using a Vertical <a>Panel</a>.
 </p>
 <pre class="lang-js" id="icons"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      $(go.Picture,
-        { maxSize: new go.Size(50, 50) },
-        new go.Binding("source", "img")),
-      $(go.TextBlock,
-        { margin: new go.Margin(3, 0, 0, 0),
-          maxSize: new go.Size(100, 30),
-          isMultiline: false },
-        new go.Binding("text", "text"))
-    );
+    new go.Node("Vertical")
+      .add(
+        new go.Picture({ maxSize: new go.Size(50, 50) })
+          .bind("source", "img"),
+        new go.TextBlock({
+            margin: new go.Margin(3, 0, 0, 0),
+            maxSize: new go.Size(100, 30),
+            isMultiline: false
+          })
+          .bind("text", "text")
+      );
 
   diagram.model.nodeDataArray = [
     { text: "Jellylorum", img: "images/50x40.png" }
@@ -450,22 +450,25 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
 </p>
 <pre class="lang-js" id="icons2"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      $(go.TextBlock,
-        { margin: new go.Margin(3, 0, 0, 0),
-          maxSize: new go.Size(100, 30),
-          isMultiline: false,
-          font: "bold 10pt sans-serif" },
-        new go.Binding("text", "head")),
-      $(go.Picture,
-        { maxSize: new go.Size(50, 50) },
-        new go.Binding("source", "img")),
-      $(go.TextBlock,
-        { margin: new go.Margin(3, 0, 0, 0),
-          maxSize: new go.Size(100, 30),
-          isMultiline: false },
-        new go.Binding("text", "foot"))
-    );
+    new go.Node("Vertical")
+      .add(
+        new go.TextBlock({
+            margin: new go.Margin(3, 0, 0, 0),
+            maxSize: new go.Size(100, 30),
+            isMultiline: false,
+            font: "bold 10pt sans-serif"
+          })
+          .bind("text", "head"),
+        new go.Picture({ maxSize: new go.Size(50, 50) })
+          .bind("source", "img"),
+        new go.TextBlock({
+            margin: new go.Margin(3, 0, 0, 0),
+            maxSize: new go.Size(100, 30),
+            isMultiline: false
+          })
+          .bind("text", "foot")
+      );
+
   diagram.model.nodeDataArray = [
     { head: "Kitten", foot: "Tantomile", img: "images/50x40.png" }
   ];
@@ -474,18 +477,17 @@ Perhaps the most commonly seen kind of node can be implemented using a Vertical 
 
 <h3 id="SmallIcons">Small icons</h3>
 <p>
-Another commonly seen kind of node can be implemented using a Horizontal <a>Panel</a>.
+  Another commonly seen kind of node can be implemented using a Horizontal <a>Panel</a>.
 </p>
 <pre class="lang-js" id="smallicons"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Horizontal",
-      $(go.Picture,
-        { maxSize: new go.Size(16, 16) },
-        new go.Binding("source", "img")),
-      $(go.TextBlock,
-        { margin: new go.Margin(0, 0, 0, 2) },
-        new go.Binding("text", "text"))
-    );
+    new go.Node("Horizontal")
+      .add(
+        new go.Picture({ maxSize: new go.Size(16, 16) })
+          .bind("source", "img"),
+        new go.TextBlock({ margin: new go.Margin(0, 0, 0, 2) })
+          .bind("text", "text")
+      );
 
   diagram.model.nodeDataArray = [
     { text: "Alonzo", img: "images/50x40.png" }
@@ -495,50 +497,54 @@ Another commonly seen kind of node can be implemented using a Horizontal <a>Pane
 
 <h2 id="NestedPanels">Nested Panels</h2>
 <p>
-Panels can be nested.
-For example, here is a node consisting of a "Vertical" Panel consisting of an "Auto" Panel surrounding a "Vertical" Panel including a "Horizontal" Panel.
-The outer "Vertical" Panel arranges the main stuff on top and a TextBlock on the bottom.
-The "Auto" Panel supplies a border around everything but the bottom text.
-The inner "Vertical" Panel places three objects vertically in a stack.
-The "Horizontal" Panel which is the first element of the "Vertical" Panel places three objects horizontally in a row.
+  Panels can be nested.
+  For example, here is a node consisting of a "Vertical" Panel consisting of an "Auto" Panel surrounding a "Vertical" Panel including a "Horizontal" Panel.
+  The outer "Vertical" Panel arranges the main stuff on top and a TextBlock on the bottom.
+  The "Auto" Panel supplies a border around everything but the bottom text.
+  The inner "Vertical" Panel places three objects vertically in a stack.
+  The "Horizontal" Panel which is the first element of the "Vertical" Panel places three objects horizontally in a row.
 </p>
 <pre class="lang-js" id="nestedpanel1"><code>
   // common styling for each indicator
   function makeIndicator(propName) {  // the data property name
-    return $(go.Shape,
-        "Circle",
-        { width: 8, height: 8, fill: "white", strokeWidth: 0, margin: 5 },
-        new go.Binding("fill", propName));
+    return new go.Shape("Circle", {
+          width: 8, height: 8, fill: "white", strokeWidth: 0, margin: 5
+        })
+        .bind("fill", propName);
   }
 
   function makeImagePath(icon) { return "../samples/images/" + icon; }
 
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      $(go.Panel, "Auto",
-        { background: "white" },
-        { portId: "" },  // this whole panel acts as the only port for the node
-        $(go.Shape,  // the border
-          { fill: "transparent", stroke: "lightgray" }),
-        $(go.Panel, "Vertical",  // everything within the border
-          $(go.Panel, "Horizontal",  // the row of status indicators
-            makeIndicator("ind0"),
-            makeIndicator("ind1"),
-            makeIndicator("ind2")
-          ),  // end Horizontal Panel
-          $(go.Picture,
-            { width: 32, height: 32, margin: 4 },
-            new go.Binding("source", "icon", makeImagePath)),
-          $(go.TextBlock,
-            { stretch: go.Stretch.Horizontal, textAlign: "center" },
-            new go.Binding("text", "number"),
-            new go.Binding("background", "color"))
-        )  // end Vertical Panel
-      ),  // end Auto Panel
-      $(go.TextBlock,
-        { margin: 4 },
-        new go.Binding("text"))
-    );
+    new go.Node("Vertical")
+      .add(
+        new go.Panel("Auto", {
+            background: "white",
+            portId: ""  // this whole panel acts as the only port for the node
+          })
+          .add(
+            new go.Shape(  // the border
+              { fill: "transparent", stroke: "lightgray" }),
+            new go.Panel("Vertical")  // everything within the border
+              .add(
+                new go.Panel("Horizontal")
+                  .add(  // the row of status indicators
+                    makeIndicator("ind0"),
+                    makeIndicator("ind1"),
+                    makeIndicator("ind2")
+                  ),  // end Horizontal Panel
+                new go.Picture({ width: 32, height: 32, margin: 4 })
+                  .bind("source", "icon", makeImagePath),
+                new go.TextBlock({
+                    stretch: go.Stretch.Horizontal, textAlign: "center"
+                  })
+                  .bind("text", "number")
+                  .bind("background", "color")
+              )  // end Vertical Panel
+          ),  // end Auto Panel
+        new go.TextBlock({ margin: 4 })
+          .bind("text")
+      );
 
   diagram.model.nodeDataArray = [
     { key: 1, text: "Device Type A", number: 17, icon: "server switch.jpg", color: "moccasin",
@@ -554,14 +560,13 @@ The "Horizontal" Panel which is the first element of the "Vertical" Panel places
 
 <h2 id="DecoratedContent">Decorated Content</h2>
 <p>
-Sometimes you want to have a simple node that may display additional visuals
-to indicate what state it is in.
+  Sometimes you want to have a simple node that may display additional visuals to indicate what state it is in.
 </p>
 
 <p>
-One way to implement this is to use a Spot <a>Panel</a>, where the main element is itself a Panel
-containing the elements that you always want to display, and there are additional objects located at spots around the main element.
-The basic outline would be:
+  One way to implement this is to use a Spot <a>Panel</a>, where the main element is itself a Panel containing the
+  elements that you always want to display, and there are additional objects located at spots around the main element.
+  The basic outline would be:
 </p>
 <pre  class="lang-js"><code>
 Node, "Spot"
@@ -572,47 +577,49 @@ Node, "Spot"
     Shape  // the decoration
 </code></pre>
 <p>
-So the basic body of the node is in a "Vertical" or any kind of Panel,
-which is surrounded by a border using an "Auto" Panel,
-which gets decorations using the "Spot" Panel that is also the Node.
+  So the basic body of the node is in a "Vertical" or any kind of Panel,
+  which is surrounded by a border using an "Auto" Panel,
+  which gets decorations using the "Spot" Panel that is also the Node.
 </p>
 <p>
-The same design of having the Node be a "Spot" Panel can also used for placing ports relative to the body of a node.
+  The same design of having the Node be a "Spot" Panel can also used for placing ports relative to the body of a node.
 </p>
 <pre class="lang-js" id="spotdecorations"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Spot",
-      // the main content:
-      $(go.Panel, "Vertical",
-        $(go.Picture,
-          { maxSize: new go.Size(50, 50) },
-          new go.Binding("source", "img")),
-        $(go.TextBlock,
-          { margin: new go.Margin(3, 0, 0, 0) },
-          new go.Binding("text", "text"),
-          new go.Binding("stroke", "error", err => err ? "red" : "black"))
-      ),
-      // decorations:
-      $(go.Shape, "TriangleUp",
-        { alignment: go.Spot.TopLeft,
-          fill: "yellow", width: 14, height: 14,
-          visible: false },
-        new go.Binding("visible", "info", i => i ? true : false)),
-      $(go.Shape, "StopSign",
-        { alignment: go.Spot.TopRight,
-          fill: "red", width: 14, height: 14,
-          visible: false },
-        new go.Binding("visible", "error")),
-      {
+    new go.Node("Spot", {
         toolTip:
-          $(go.Adornment, "Auto",
-            $(go.Shape, { fill: "#FFFFCC" },
-              new go.Binding("visible", "info", i => i ? true : false)),
-            $(go.TextBlock, { margin: 4 },
-              new go.Binding("text", "info"))
-          )
-      }
-    );
+          new go.Adornment("Auto")
+            .add(
+              new go.Shape({ fill: "#FFFFCC" })
+                .bind("visible", "info", i => i ? true : false),
+              new go.TextBlock({ margin: 4 })
+                .bind("text", "info")
+            )
+      })
+      .add(
+        // the main content:
+        new go.Panel("Vertical")
+          .add(
+            new go.Picture({ maxSize: new go.Size(50, 50) })
+              .bind("source", "img"),
+            new go.TextBlock({ margin: new go.Margin(3, 0, 0, 0) })
+              .bind("text", "text")
+              .bind("stroke", "error", err => err ? "red" : "black")
+          ),
+        // decorations:
+        new go.Shape("TriangleUp", {
+            alignment: go.Spot.TopLeft,
+            fill: "yellow", width: 14, height: 14,
+            visible: false
+          })
+          .bind("visible", "info", i => i ? true : false),
+        new go.Shape("StopSign", {
+            alignment: go.Spot.TopRight,
+            fill: "red", width: 14, height: 14,
+            visible: false
+          })
+          .bind("visible", "error")
+      );
 
   diagram.model.nodeDataArray = [
     { text: "Demeter", img: "images/50x40.png", info: "" },
@@ -622,42 +629,48 @@ The same design of having the Node be a "Spot" Panel can also used for placing p
 <script>goCode("spotdecorations", 300, 150)</script>
 
 <p>
-As another example of a node decoration, this implements a "ribbon" at the top right corner of the node.
-The ribbon is implemented by a <a>Panel</a> that contains both a <a>Shape</a> and a <a>TextBlock</a>,
-and the panel is positioned by its <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> in
-the Spot Panel that also is the <a>Node</a>.
-The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and binding <a>GraphObject.opacity</a>.
+  As another example of a node decoration, this implements a "ribbon" at the top right corner of the node.
+  The ribbon is implemented by a <a>Panel</a> that contains both a <a>Shape</a> and a <a>TextBlock</a>,
+  and the panel is positioned by its <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a> in
+  the Spot Panel that also is the <a>Node</a>.
+  The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and binding <a>GraphObject.opacity</a>.
 </p>
 <pre class="lang-js" id="ribbondecorations"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Spot",
-      { locationSpot: go.Spot.Center, locationObjectName: "BODY" },
-      { selectionObjectName: "BODY" },
-      $(go.Panel, "Auto",
-        { name: "BODY", width: 150, height: 100 },
-        { portId: "" },
-        $(go.Shape,
-          { fill: "lightgray", stroke: null, strokeWidth: 0 }),
-        $(go.TextBlock,
-          new go.Binding("text"))
-      ),
-      $(go.Panel, "Spot",
-        new go.Binding("opacity", "ribbon", t => t ? 1 : 0),
-        // note that the opacity defaults to zero (not visible),
-        // in case there is no "ribbon" property
-        { opacity: 0,
-          alignment: new go.Spot(1, 0, 5, -5),
-          alignmentFocus: go.Spot.TopRight },
-        $(go.Shape,  // the ribbon itself
-          { geometryString: "F1 M0 0 L30 0 70 40 70 70z",
-            fill: "red", stroke: null, strokeWidth: 0 }),
-        $(go.TextBlock,
-          new go.Binding("text", "ribbon"),
-          { alignment: new go.Spot(1, 0, -29, 29),
-            angle: 45, maxSize: new go.Size(100, NaN),
-            stroke: "white", font: "bold 13px sans-serif", textAlign: "center" })
-      )
-    );
+    new go.Node("Spot", {
+        locationSpot: go.Spot.Center, locationObjectName: "BODY",
+        selectionObjectName: "BODY"
+      })
+      .add(
+        new go.Panel("Auto", {
+            name: "BODY", width: 150, height: 100, portId: ""
+          })
+          .add(
+            new go.Shape({ fill: "lightgray", stroke: null, strokeWidth: 0 }),
+            new go.TextBlock()
+              .bind("text")
+          ),  // end "Auto" Panel
+        new go.Panel("Spot", {
+            // note that the opacity defaults to zero (not visible),
+            // in case there is no "ribbon" property
+            opacity: 0,
+            alignment: new go.Spot(1, 0, 2, -2),
+            alignmentFocus: go.Spot.TopRight
+          })
+          .bind("opacity", "ribbon", t => t ? 1 : 0)
+          .add(
+            new go.Shape({  // the ribbon itself
+                geometryString: "F1 M0 0 L30 0 70 40 70 70z",
+                fill: "red", stroke: null, strokeWidth: 0
+              }),
+            new go.TextBlock({
+                alignment: new go.Spot(1, 0, -29, 29),
+                angle: 45, maxSize: new go.Size(100, NaN),
+                stroke: "white", font: "bold 13px sans-serif", textAlign: "center"
+              })
+              .bind("text", "ribbon")
+          )  // end inner "Spot" Panel
+      );  // end outer "Spot" Panel
 
   diagram.model = new go.GraphLinksModel([
     { key: 1, text: "Alpha" },
@@ -669,90 +682,91 @@ The appearance of the ribbon is achieved by using a custom <a>Geometry</a> and b
 
 <h2 id="PositionAndLocation">Position and Location</h2>
 <p>
-Nodes are positioned in document coordinates.
-(For more information, read <a href="viewport.html">Coordinate Systems</a>.)
-The point at which a Node resides, in document coordinates, is normally the top-left corner of the Node's <a>GraphObject.actualBounds</a>.
-If you set the <a>GraphObject.position</a> of a Node, you will be modifying the <code>x</code> and <code>y</code> values of the node's <a>GraphObject.actualBounds</a>.
+  Nodes are positioned in document coordinates.
+  (For more information, read <a href="viewport.html">Coordinate Systems</a>.)
+  The point at which a Node resides, in document coordinates, is normally the top-left corner of the Node's <a>GraphObject.actualBounds</a>.
+  If you set the <a>GraphObject.position</a> of a Node, you will be modifying the <code>x</code> and <code>y</code> values
+  of the node's <a>GraphObject.actualBounds</a>.
 </p>
 <p>
-However there are times when it is more natural to think that the "point" of a Node is not at the top-left corner but at some other spot within.
-This is especially true when you want any variably-sized text labels or occasional decorations to be ignored regarding the node's location.
-That is why Nodes also have a "location" which refers to a point inside the Node.
-If you set the <a>Part.location</a> of a Node, you will be lining up the location point of the node to be at that point in document coordinates.
-When you move a Node you are actually changing its <a>Part.location</a>.
+  However there are times when it is more natural to think that the "point" of a Node is not at the top-left corner but at some other spot within.
+  This is especially true when you want any variably-sized text labels or occasional decorations to be ignored regarding the node's location.
+  That is why Nodes also have a "location" which refers to a point inside the Node.
+  If you set the <a>Part.location</a> of a Node, you will be lining up the location point of the node to be at that point in document coordinates.
+  When you move a Node you are actually changing its <a>Part.location</a>.
 </p>
 <p>
-By default the location of a Node is the same as its position.
-However you can set the <a>Part.locationSpot</a> to cause the location point to be at some spot in the node's actualBounds.
-Furthermore you can set the <a>Part.locationObjectName</a> to cause the location point to be at some spot in some element within the node.
-The position will always be at the top-left corner of the whole node,
-but the location may be some point at some spot in some object within the node.
+  By default the location of a Node is the same as its position.
+  However you can set the <a>Part.locationSpot</a> to cause the location point to be at some spot in the node's actualBounds.
+  Furthermore you can set the <a>Part.locationObjectName</a> to cause the location point to be at some spot in some element within the node.
+  The position will always be at the top-left corner of the whole node,
+  but the location may be some point at some spot in some object within the node.
 </p>
 <pre class="lang-js" id="positionlocation"><code>
   diagram.grid.visible = true;
 
   diagram.add(
-    $(go.Node, "Vertical",
-      { position: new go.Point(0, 0) },  // set the Node.position
-      $(go.TextBlock, "position", { editable: true }),
-      $(go.Shape, { name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
-    ));
+    new go.Node("Vertical", { position: new go.Point(0, 0) })  // set the Node.position
+      .add(
+        new go.TextBlock("position", { editable: true }),
+        new go.Shape({ name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
+      ));
 
   diagram.add(
-    $(go.Node, "Vertical",
-      {
+    new go.Node("Vertical", {
         location: new go.Point(100, 0),  // set the Node.location
         locationObjectName: "SHAPE"  // the location point is on the element named "SHAPE"
-      },
-      $(go.TextBlock, "location", { editable: true }),
-      $(go.Shape, { name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
-    ));
+      })
+      .add(
+        new go.TextBlock("location", { editable: true }),
+        new go.Shape({ name: "SHAPE", width: 30, height: 30, fill: "lightgreen" })
+      ));
 </code></pre>
 <script>goCode("positionlocation", 500, 200)</script>
 <p>
-In this example both nodes have the same Y-coordinate value of zero.
-Note how in the above example the "position" Node has the top-left corner of the node at the grid point.
-Yet the "location" Node has the top-left corner of the green square at the grid point.
-If you edit the text of each node after double-clicking on the text,
-note how the green square moves relative to the diagram grid for the "position" node,
-but that it does not move for the "location" node.
+  In this example both nodes have the same Y-coordinate value of zero.
+  Note how in the above example the "position" Node has the top-left corner of the node at the grid point.
+  Yet the "location" Node has the top-left corner of the green square at the grid point.
+  If you edit the text of each node after double-clicking on the text,
+  note how the green square moves relative to the diagram grid for the "position" node,
+  but that it does not move for the "location" node.
 </p>
 <p>
-It is common to specify the <a>Part.locationSpot</a> to be <code>go.Spot.Center</code> so that the location point
-is at the center of some element in the node, rather than at the top-left corner of that element.
+  It is common to specify the <a>Part.locationSpot</a> to be <code>go.Spot.Center</code> so that the location point
+  is at the center of some element in the node, rather than at the top-left corner of that element.
 </p>
 <pre class="lang-js" id="positionlocation2"><code>
 diagram.grid.visible = true;
 
 diagram.add(
-  $(go.Node, "Vertical",
+  new go.Node("Vertical",
     { position: new go.Point(0, 0) },  // set the Node.position
-    $(go.TextBlock, "position", { editable: true }),
-    $(go.Panel, "Auto",
-      $(go.Shape, "Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
-      $(go.Shape, "Circle", { width: 6, height: 6, strokeWidth: 0 })
+    new go.TextBlock("position", { editable: true }),
+    new go.Panel("Auto",
+      new go.Shape("Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
+      new go.Shape("Circle", { width: 6, height: 6, strokeWidth: 0 })
     )
   ));
 
 diagram.add(
-  $(go.Node, "Vertical",
+  new go.Node("Vertical",
     {
       location: new go.Point(100, 0),  // set the Node.location
       locationObjectName: "SHAPE",  // the location point is at the center of "SHAPE"
       locationSpot: go.Spot.Center
     },
-    $(go.TextBlock, "location", { editable: true }),
-    $(go.Panel, "Auto",
-      $(go.Shape, "Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
-      $(go.Shape, "Circle", { width: 6, height: 6, strokeWidth: 0 })
+    new go.TextBlock("location", { editable: true }),
+    new go.Panel("Auto",
+      new go.Shape("Circle", { name: "SHAPE", width: 16, height: 16, fill: "lightgreen" }),
+      new go.Shape("Circle", { width: 6, height: 6, strokeWidth: 0 })
     )
   ));
 </code></pre>
 <script>goCode("positionlocation2", 500, 200)</script>
 <p>
-If the position or location of a Node is not <a>Point.isReal</a>, it will not be seen, because GoJS will not know where to draw the node.
-In fact the default value for a node's position or location is <code>NaN, NaN</code> and it is the responsibility of either the <a>Diagram.layout</a>
-or data bindings to assign real point values for each node.
+  If the position or location of a Node is not <a>Point.isReal</a>, it will not be seen, because GoJS will not know where to draw the node.
+  In fact the default value for a node's position or location is <code>NaN, NaN</code> and it is the responsibility
+  of either the <a>Diagram.layout</a> or data bindings to assign real point values for each node.
 </p>
 </div>
 
