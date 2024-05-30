@@ -117,11 +117,14 @@ export class LinkLabelRouter extends go.Router {
             return;
         if (coll instanceof go.Group)
             return;
+        this.layout.activeSet = links;
         this.layout.doLayout(coll.links);
         if (this.layout.network === null)
             return;
         for (const vertex of this.layout.network.vertexes) {
             if (!(vertex instanceof LabelVertex))
+                continue;
+            if (vertex.isFixed)
                 continue;
             const object = vertex.object;
             if (!object)
@@ -142,6 +145,7 @@ class LabelVertex extends go.ForceDirectedVertex {
         this.object = null;
         this.objectBounds = null;
         this.currentBounds = null;
+        this.isDummy = false;
     }
 }
 /** @hidden @internal */
@@ -149,6 +153,7 @@ class LabelLayout extends go.ForceDirectedLayout {
     constructor() {
         super(...arguments);
         /** @hidden */ this.router = null;
+        /** @hidden */ this.activeSet = null;
     }
     /**
      * we should not ever do a prelayout on this virtual, "fake" force-directed network
@@ -173,13 +178,14 @@ class LabelLayout extends go.ForceDirectedLayout {
      * @param { LabelVertex } v2
      */
     shouldInteract(v1, v2) {
-        if (v1.isFixed || v2.isFixed)
+        if (v1.isDummy || v2.isDummy)
             return false;
         const b1 = v1.currentBounds;
         const b2 = v2.currentBounds;
         return b1.intersectsRect(b2);
     }
     makeNetwork(coll) {
+        var _a;
         const net = new go.ForceDirectedNetwork(this);
         let allparts;
         if (coll instanceof go.Diagram) {
@@ -208,29 +214,44 @@ class LabelLayout extends go.ForceDirectedLayout {
                 else {
                     documentBounds.grow(margin, margin, margin, margin);
                 }
-                // add vertex for label node
-                const v1 = new LabelVertex(net);
-                v1.centerX = documentBounds.centerX;
-                v1.centerY = documentBounds.centerY;
-                v1.width = documentBounds.width;
-                v1.height = documentBounds.height;
-                v1.object = label;
-                v1.objectBounds = documentBounds.copy();
-                v1.currentBounds = documentBounds.copy();
-                net.addVertex(v1);
-                // add vertex for fixed dummy node at the label's original position
-                const v2 = new LabelVertex(net);
-                v2.centerX = v1.centerX;
-                v2.centerY = v1.centerY;
-                v2.charge = 0;
-                v2.isFixed = true;
-                net.addVertex(v2);
-                // add edge to incentivize the Label to stay near its original position
-                const e = new go.ForceDirectedEdge(net);
-                e.length = 0;
-                e.fromVertex = v1;
-                e.toVertex = v2;
-                net.addEdge(e);
+                if ((_a = this.activeSet) === null || _a === void 0 ? void 0 : _a.contains(part)) {
+                    // add vertex for label node
+                    const v1 = new LabelVertex(net);
+                    v1.centerX = documentBounds.centerX;
+                    v1.centerY = documentBounds.centerY;
+                    v1.width = documentBounds.width;
+                    v1.height = documentBounds.height;
+                    v1.object = label;
+                    v1.objectBounds = documentBounds.copy();
+                    v1.currentBounds = documentBounds.copy();
+                    net.addVertex(v1);
+                    // add vertex for fixed dummy node at the label's original position
+                    const v2 = new LabelVertex(net);
+                    v2.centerX = v1.centerX;
+                    v2.centerY = v1.centerY;
+                    v2.charge = 0;
+                    v2.isFixed = true;
+                    v2.isDummy = true;
+                    net.addVertex(v2);
+                    // add edge to incentivize the Label to stay near its original position
+                    const e = new go.ForceDirectedEdge(net);
+                    e.length = 0;
+                    e.fromVertex = v1;
+                    e.toVertex = v2;
+                    net.addEdge(e);
+                }
+                else {
+                    const v = new LabelVertex(net);
+                    v.centerX = documentBounds.centerX;
+                    v.centerY = documentBounds.centerY;
+                    v.width = documentBounds.width;
+                    v.height = documentBounds.height;
+                    v.object = label;
+                    v.objectBounds = documentBounds.copy();
+                    v.currentBounds = documentBounds.copy();
+                    v.isFixed = true;
+                    net.addVertex(v);
+                }
             }
         }
         return net;

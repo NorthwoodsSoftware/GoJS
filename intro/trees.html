@@ -12,17 +12,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=Trees />
-<meta property="og:title" content=Trees />
-<meta name="twitter:title" content=Trees />
+<meta itemprop="name" content="Trees" />
+<meta property="og:title" content="Trees" />
+<meta name="twitter:title" content="Trees" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/intro/trees.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/trees.html" />
+<meta property="og:url" content="https://gojs.net/latest/intro/trees.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/trees.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,29 +247,35 @@
         
 <h1>Trees and TreeLayout</h1>
 <p>
-  There is no limit to the kinds of graphs that you can build in <b>GoJS</b>. But the most common kind of graph forms a "tree". A tree is a graph where each
-  node may have at most one "tree parent" and at most one link connecting to that parent node, and where there are no cycles within the graph.
+  There is no limit to the kinds of graphs that you can build in <b>GoJS</b>.
+  But the most common kind of graph forms a "tree".
+  A tree is a graph where each node may have at most one "tree parent" and at most one link connecting to that parent node,
+  and where there are no cycles within the graph.
 </p>
-<p>Because trees occur so frequently in diagrams, there is also a tree layout that offers many customizations specifically for trees.</p>
+<p>
+  Because trees occur so frequently in diagrams, there is also a predefined tree layout that offers many customizations specifically for trees.
+</p>
 
 <h2 id="ManualLayoutOfTreeStructure">Manual layout of a tree structure</h2>
 <p>
-  You can of course position the nodes manually, either by hand or programmatically. In this first example, the node locations are stored in the node data, and
-  there is a Binding of <a>Part.location</a> to the node data property.
+  You can of course position the nodes manually, either by hand or programmatically.
+  In this first example, the node locations are stored in the node data, and there is a Binding of <a>Part.location</a> to the node data property.
 </p>
 <pre class="lang-js" id="tree"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .bind("location", "loc", go.Point.parse)
+      .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text", "key")
+      );
 
   diagram.linkTemplate =
-    $(go.Link,
-      { routing: go.Routing.Orthogonal, corner: 5 },
-      $(go.Shape));
+    new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+      .add(
+        new go.Shape()
+      );
 
   var nodeDataArray = [
     { key: "Alpha", loc: "0 60" },
@@ -295,20 +301,25 @@
 <script>
   goCode('tree', 600, 200);
 </script>
-<p>You can also get the same results by using a <a>TreeModel</a>.</p>
+<p>
+  You can also get the same results by using a <a>TreeModel</a>.
+  Note how the node template and the link template are exactly the same as when using a <a>GraphLinksModel</a>, above.
+</p>
 <pre class="lang-js" id="tree2"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .bind("location", "loc", go.Point.parse)
+      .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text", "key")
+      );
 
   diagram.linkTemplate =
-    $(go.Link,
-      { routing: go.Routing.Orthogonal, corner: 5 },
-      $(go.Shape));
+    new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+      .add(
+        new go.Shape()
+      );
 
   var nodeDataArray = [
     { key: "Alpha", loc: "0 60" },
@@ -328,22 +339,25 @@
 
 <h2 id="AutomaticTreeLayout">Automatic TreeLayout</h2>
 <p>
-  It is most common to use <a>TreeLayout</a> for laying out trees. Just assign <a>Diagram.layout</a> to a new instance of <a>TreeLayout</a>. This example also
-  defines the <code>setupTree</code> function that is used in later examples on this page.
+  It is most common to use <a>TreeLayout</a> for laying out trees.
+  Just assign <a>Diagram.layout</a> to an instance of <a>TreeLayout</a>.
+  This example also defines the <code>setupTree</code> function that is used in later examples on this page.
 </p>
 <pre class="lang-js" id="treeLayout"><code>
 function setupTree(diagram) {
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text", "key")
+      );
 
   diagram.linkTemplate =
-    $(go.Link,
-      { routing: go.Routing.Orthogonal, corner: 5 },
-      $(go.Shape));
+    new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+      .add(
+        new go.Shape()
+      );
 
   var nodeDataArray = [
     { key: "Alpha" },
@@ -358,9 +372,9 @@ function setupTree(diagram) {
   diagram.model = new go.TreeModel(nodeDataArray);
 }
 
-  setupTree(diagram);
-  // automatic tree layout
-  diagram.layout = $(go.TreeLayout);
+setupTree(diagram);
+// automatic tree layout
+diagram.layout = new go.TreeLayout();
 </code></pre>
 <script>
   goCode('treeLayout', 600, 200);
@@ -368,9 +382,20 @@ function setupTree(diagram) {
 
 <script>
   function setupTree(diagram) {
-    diagram.nodeTemplate = new go.Node('Auto').add(new go.Shape('Ellipse', { fill: 'white' }), new go.TextBlock().bind('text', 'key'));
+    diagram.nodeTemplate =
+      new go.Node("Auto")
+        .bind("location", "loc", go.Point.parse)
+        .add(
+          new go.Shape("Ellipse", { fill: "white" }),
+          new go.TextBlock()
+            .bind("text", "key")
+        );
 
-    diagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, corner: 5 }).add($(go.Shape));
+    diagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+        .add(
+          new go.Shape()
+        );
 
     var nodeDataArray = [
       { key: 'Alpha' },
@@ -393,7 +418,7 @@ function setupTree(diagram) {
 </p>
 <pre class="lang-js" id="angle"><code>
   setupTree(diagram);
-  diagram.layout = $(go.TreeLayout, { angle: 90 });
+  diagram.layout = new go.TreeLayout({ angle: 90 });
 </code></pre>
 <script>
   goCode('angle', 600, 200);
@@ -407,7 +432,7 @@ function setupTree(diagram) {
 </p>
 <pre class="lang-js" id="alignment"><code>
   setupTree(diagram);
-  diagram.layout = $(go.TreeLayout, { angle: 90, alignment: go.TreeAlignment.Start });
+  diagram.layout = new go.TreeLayout({ angle: 90, alignment: go.TreeAlignment.Start });
 </code></pre>
 <script>
   goCode('alignment', 600, 200);
@@ -420,7 +445,7 @@ function setupTree(diagram) {
 </p>
 <pre class="lang-js" id="spacing"><code>
   setupTree(diagram);
-  diagram.layout = $(go.TreeLayout, { layerSpacing: 20, nodeSpacing: 0 });
+  diagram.layout = new go.TreeLayout({ layerSpacing: 20, nodeSpacing: 0 });
 </code></pre>
 <script>
   goCode('spacing', 600, 200);
@@ -435,13 +460,14 @@ function setupTree(diagram) {
 <pre class="lang-js" id="sort"><code>
   setupTree(diagram);
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("text", "key"),  // bind Part.text to support sorting
-      $(go.Shape, "Ellipse", { fill: "lightblue" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key"))
-    );
-  diagram.layout = $(go.TreeLayout, { sorting: go.TreeSorting.Ascending });
+    new go.Node("Auto")
+      .bind("text", "key")  // bind Part.text to support sorting
+      .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text", "key")
+      );
+  diagram.layout = new go.TreeLayout({ sorting: go.TreeSorting.Ascending });
 </code></pre>
 <script>
   goCode('sort', 600, 200);
@@ -451,13 +477,12 @@ function setupTree(diagram) {
   new go.Diagram(. . .,
     {
       layout:
-          $(go.TreeLayout,
-            {
+          new go.TreeLayout({
               sorting: go.TreeSorting.Ascending,
               comparer: (a, b) => {
                   // A and B are TreeVertexes
-                  const av = a.node.data.index;
-                  const bv = b.node.data.index;
+                  const av = a.node.data.someProp;
+                  const bv = b.node.data.someProp;
                   if (av < bv) return -1;
                   if (av > bv) return 1;
                   return 0;

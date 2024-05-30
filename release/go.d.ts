@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.2
+ * Type definitions for GoJS v3.0.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -23504,7 +23504,7 @@ export class PositionArray {
      * @param h
      * @returns int
      */
-    maxUnoccupiedH(minx: number, maxx: number, y: number, h: number): number;
+    maxAvoidsLinksSpaceH(minx: number, maxx: number, y: number, h: number): number;
     /**
      * (undocumented)
      * @param miny
@@ -23513,7 +23513,7 @@ export class PositionArray {
      * @param w
      * @returns int
      */
-    maxUnoccupiedV(miny: number, maxy: number, x: number, w: number): number;
+    maxAvoidsLinksSpaceV(miny: number, maxy: number, x: number, w: number): number;
 }
 /**
  * A Group is a {@link Node} that can contain a subgraph of {@link Node}s and {@link Link}s,

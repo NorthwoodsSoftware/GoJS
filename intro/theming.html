@@ -12,17 +12,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=Theming />
-<meta property="og:title" content=Theming />
-<meta name="twitter:title" content=Theming />
+<meta itemprop="name" content="Theming" />
+<meta property="og:title" content="Theming" />
+<meta name="twitter:title" content="Theming" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/intro/theming.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/theming.html" />
+<meta property="og:url" content="https://gojs.net/latest/intro/theming.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/theming.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -259,48 +259,50 @@
   or change the temporary link color when drawing a new link without providing a <a>LinkingBaseTool.temporaryLink</a>.
 </p>
 <pre class="lang-js" id="theme0"><code>
-  // The ThemeManager.currentTheme defaults to 'light'
+// The ThemeManager.currentTheme defaults to 'light'
 
-  diagram.themeManager.set('light', {  // modify some property values of the "light" Theme
-    colors: {
-      selection: '#ec4899',  // pink selection adornment
-      tempLink: '#14b8a6'  // teal temporary link while linking
-    },
-    numbers: {
-      selection: 6  // increased selection adornment thickness
-    }
-  });
+diagram.themeManager.set('light', {  // modify some property values of the "light" Theme
+  colors: {
+    selection: '#ec4899',  // pink selection adornment
+    tempLink: '#14b8a6'  // teal temporary link while linking
+  },
+  numbers: {
+    selection: 6  // increased selection adornment thickness
+  }
+});
 
-  diagram.nodeTemplate =
-    new go.Node('Auto')
-      .add(new go.Shape('RoundedRectangle',
-        { fill: 'white', strokeWidth: 0,
-          portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' })
-      )
-      .add(new go.TextBlock({ margin: 8 })
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
+      new go.Shape('RoundedRectangle', {
+          fill: 'white', strokeWidth: 0,
+          portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer'
+        }),
+      new go.TextBlock({ margin: 8 })
         .bind('text')
-      );
+    );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha' },
     { key: 2, text: 'Beta' }
   ]);
 
-  diagram.select(diagram.nodes.first());
+diagram.select(diagram.nodes.first());
 </code></pre>
 <script>
   goCode('theme0', 400, 150);
 </script>
 
 <p>
-  For a complete list of themed properties on predefined templates, see <a href="../extensionsJSM/Templates.js">Templates.js</a> in the Extensions directory.
+  For a complete list of themed properties on predefined templates,
+  see <a href="../extensionsJSM/Templates.js">Templates.js</a> in the ExtensionsJSM directory.
 </p>
 
 <h2 id="BasicTheming">Basic Theming</h2>
 <p>
-  The simplest way to theme your diagram is to use the predefined <a>Themes</a> available and call <a>GraphObject.theme</a> or create a new
-  <a>ThemeBinding</a> when constructing templates.
+  The simplest way to theme your diagram is to use the predefined <a>Themes</a> available and call <a>GraphObject.theme</a>
+  or create a new <a>ThemeBinding</a> when constructing templates.
   By default, a light and dark theme are provided in the <a>ThemeManager</a>.
   These are the <a>Themes.Light</a> and <a>Themes.Dark</a> objects, respectively.
 </p>
@@ -311,26 +313,26 @@
   <code>'light'</code> or <code>'dark'</code> theme depending on the end user's browser preference.
 </p>
 <pre class="lang-js" id="theme1"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value
+diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value;
 
-  // Update the div background color when theme changes;
-  // in most applications, the div background will be transparent,
-  // and the page background should be updated.
-  diagram.themeManager.changesDivBackground = true;
+// Update the div background color when theme changes;
+// in most applications, the div background will be transparent,
+// and the page background should be updated.
+diagram.themeManager.changesDivBackground = true;
 
-  diagram.nodeTemplate =
-    new go.Node('Auto')
-      .add(new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-        .theme('fill', 'group')  // fill color is a semi-transparent gray
-      )
-      .add(new go.TextBlock({ margin: 8 })
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+        .theme('fill', 'group'),  // fill color is a semi-transparent gray
+      new go.TextBlock({ margin: 8 })
         .bind('text')
         .theme('stroke', 'text')  // stroke color is a dark or light gray
-      );
+    );
 
-  // the default link template changes color based on the theme's 'link' color
+// the default link template changes color based on the theme's 'link' color
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha' },
     { key: 2, text: 'Beta' }
@@ -339,9 +341,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme1 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value;
-  };
+changeTheme1 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect1').value;
+};
 </code></pre>
 <script>
   goCode('theme1', 400, 150);
@@ -359,8 +361,7 @@
 <p>
   In most scenarios, you'll want custom themes, either by modifying the predefined themes or creating your own.
   This can be done by calling <a>ThemeManager.set</a>, passing a theme name and a partial (or complete) <a>Theme</a> object.
-  Passing an empty string as the theme name will modify the
-  <a>ThemeManager.defaultTheme</a>, which is initially <code>'light'</code>.
+  Passing an empty string as the theme name will modify the <a>ThemeManager.defaultTheme</a>, which is initially <code>'light'</code>.
 </p>
 <p>
   If the theme name exists in the <a>ThemeManger.themeMap</a>, that theme will be updated by merging the partial theme object into it.
@@ -368,25 +369,26 @@
 </p>
 
 <pre class="lang-js" id="theme2"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value
-  diagram.themeManager.changesDivBackground = true;
+diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value
+diagram.themeManager.changesDivBackground = true;
 
-  // update the light theme and dark theme with some additional colors
-  diagram.themeManager.set('light', {
-    colors: {
-      primary: '#a5b4fc',
-      border: '#4f46e5'
-    }
-  });
-  diagram.themeManager.set('dark', {
-    colors: {
-      primary: '#4338ca'
-      // border comes from default theme
-    }
-  });
+// update the light theme and dark theme with some additional colors
+diagram.themeManager.set('light', {
+  colors: {
+    primary: '#a5b4fc',
+    border: '#4f46e5'
+  }
+});
+diagram.themeManager.set('dark', {
+  colors: {
+    primary: '#4338ca'
+    // border comes from default theme
+  }
+});
 
-  diagram.nodeTemplate =
-    new go.Node('Auto').add(
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
       new go.Shape('RoundedRectangle', { strokeWidth: 2 })
         .theme('fill', 'primary')  // Shape.fill is set to the current theme's colors.primary
         .theme('stroke', 'border'),  // Shape.stroke is set to the current theme's colors.border
@@ -395,7 +397,7 @@
         .theme('stroke', 'text')  // stroke color is a dark or light gray
     );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha' },
     { key: 2, text: 'Beta' }
@@ -404,9 +406,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme2 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value;
-  };
+changeTheme2 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect2').value;
+};
 </code></pre>
 <script>
   goCode('theme2', 400, 150);
@@ -432,21 +434,23 @@
 </p>
 
 <pre class="lang-js" id="theme3"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value
-  diagram.themeManager.changesDivBackground = true;
-  diagram.themeManager.set('', {
-    colors: {
-      red: '#dc2626',
-      blue: '#2563eb',
-      selected: '#0ea5e9'
-    }
-  });
+diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value
+diagram.themeManager.changesDivBackground = true;
 
-  // converted from Part.isSelected to a theme property name
-  const convertSelectedToThemeProp = s => s ? 'selected' : 'text';
+diagram.themeManager.set('', {
+  colors: {
+    red: '#dc2626',
+    blue: '#2563eb',
+    selected: '#0ea5e9'
+  }
+});
 
-  diagram.nodeTemplate =
-    new go.Node('Auto').add(
+// converted from Part.isSelected to a theme property name
+const convertSelectedToThemeProp = s => s ? 'selected' : 'text';
+
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
       new go.Shape('RoundedRectangle', { strokeWidth: 0 })
         .themeData('fill', 'color'),  // from data
       new go.TextBlock({ margin: 8 })
@@ -454,7 +458,7 @@
         .themeObject('stroke', 'isSelected', null, convertSelectedToThemeProp)  // from object
     );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha', color: 'red' },
     { key: 2, text: 'Beta', color: 'blue' }
@@ -463,9 +467,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme3 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value;
-  };
+changeTheme3 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect3').value;
+};
 </code></pre>
 <script>
   goCode('theme3', 400, 150);
@@ -487,17 +491,19 @@
 </p>
 
 <pre class="lang-js" id="theme4"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value
-  diagram.themeManager.changesDivBackground = true;
-  diagram.themeManager.set('', {
-    colors: {
-      red: '#dc2626',
-      blue: '#2563eb'
-    }
-  });
+diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value
+diagram.themeManager.changesDivBackground = true;
 
-  diagram.nodeTemplate =
-    new go.Node('Auto').add(
+diagram.themeManager.set('', {
+  colors: {
+    red: '#dc2626',
+    blue: '#2563eb'
+  }
+});
+
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
       new go.Shape('RoundedRectangle', { strokeWidth: 2 })
         .themeData('fill', 'color')  // from data
         .themeData('stroke', 'color', null, null, go.Brush.darken),  // from data, converted to a darker color
@@ -506,7 +512,7 @@
         .theme('stroke', 'text')
     );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha', color: 'red' },
     { key: 2, text: 'Beta', color: 'blue' }
@@ -515,9 +521,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme4 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value;
-  };
+changeTheme4 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect4').value;
+};
 </code></pre>
 <script>
   goCode('theme4', 400, 150);
@@ -542,38 +548,45 @@
 </p>
 
 <pre class="lang-js" id="theme5"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value
-  diagram.themeManager.changesDivBackground = true;
-  diagram.themeManager.set('', {
-    colors: {
-      primary: '#a5b4fc'
-    },
-    icons: {
-      mode: 'M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z'
-    }
-  });
-  diagram.themeManager.set('dark', {
-    icons: {
-      mode: 'M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z'
-    }
-  });
+diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value
+diagram.themeManager.changesDivBackground = true;
 
-  diagram.nodeTemplate =
-    new go.Node('Auto').add(
+diagram.themeManager.set('', {
+  colors: {
+    primary: '#a5b4fc'
+  },
+  icons: {
+    mode: 'M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z'
+  }
+});
+diagram.themeManager.set('dark', {
+  icons: {
+    mode: 'M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z'
+  }
+});
+
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
       new go.Shape('RoundedRectangle', { strokeWidth: 0 })
         .theme('fill', 'primary'),  // colors.primary
-      new go.Panel('Horizontal', { margin: 8 }).add(
-        new go.TextBlock({ margin: new go.Margin(0, 8, 0, 0), stretch: go.Stretch.Vertical, verticalAlignment: go.Spot.Center })
-          .bind('text')
-          .theme('stroke', 'text')  // colors.text
-          .theme('font', 'bold'),  // fonts.bold
-        new go.Shape({ width: 16, height: 16, strokeWidth: 2 })
-          .theme('geometryString', 'icons.mode')  // looks in the theme's 'icons' object
-          .theme('stroke', 'text')  // colors.text
-      )
+      new go.Panel('Horizontal', { margin: 8 })
+        .add(
+          new go.TextBlock({
+              margin: new go.Margin(0, 8, 0, 0),
+              stretch: go.Stretch.Vertical,
+              verticalAlignment: go.Spot.Center
+            })
+            .bind('text')
+            .theme('stroke', 'text')  // colors.text
+            .theme('font', 'bold'),  // fonts.bold
+          new go.Shape({ width: 16, height: 16, strokeWidth: 2 })
+            .theme('geometryString', 'icons.mode')  // looks in the theme's 'icons' object
+            .theme('stroke', 'text')  // colors.text
+        )
     );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha' },
     { key: 2, text: 'Beta' }
@@ -582,9 +595,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme5 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value;
-  };
+changeTheme5 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect5').value;
+};
 </code></pre>
 <script>
   goCode('theme5', 400, 150);
@@ -599,73 +612,78 @@
 </div>
 
 <h2 id="BuilderObjects">Theming builder objects</h2>
-<p>To keep the builder objects ("Button", "ToolTip", "ContextMenu", etc) simple, they are not themed by default.</p>
 <p>
-  Creating themed versions of these objects is relatively simple given the predefined definitions available at
-  <a href="../extensions/Buttons.js">Buttons.js</a>. Here we demonstrate theming the "Button" and "ToolTip" builders.
+  To keep the builder objects ("Button", "ToolTip", "ContextMenu", etc) simple, they are not themed by default.
 </p>
 <p>
-  See the intro pages on <a href="./buttons.html">Buttons</a>, <a href="./tooltips.html">ToolTips</a>, and <a href="./contextMenus.html">Context Menus</a> to
-  change appearances without theming.
+  Creating themed versions of these objects is relatively simple given the predefined definitions available at
+  <a href="../extensions/Buttons.js">Buttons.js</a>.
+  Here we demonstrate theming the "Button" and "ToolTip" builders.
+</p>
+<p>
+  See the intro pages on <a href="./buttons.html">Buttons</a>, <a href="./tooltips.html">ToolTips</a>,
+  and <a href="./contextMenus.html">Context Menus</a> to change appearances without theming.
 </p>
 
 <pre class="lang-js" id="theme6"><code>
-  diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value
-  diagram.themeManager.changesDivBackground = true;
+diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value
+diagram.themeManager.changesDivBackground = true;
 
-  // update the light theme and dark theme with some additional colors
-  diagram.themeManager.set('light', {
-    colors: {
-      primary: '#a5b4fc',
-      button: '#f9a8d4',
-      buttonHover: '#f472b6',
-      toolTip: '#fafafa'
-    }
-  });
-  diagram.themeManager.set('dark', {
-    colors: {
-      primary: '#4338ca',
-      button: '#be185d',
-      buttonHover: '#db2777',
-      toolTip: '#262626'
-    }
-  });
+// update the light theme and dark theme with some additional colors
+diagram.themeManager.set('light', {
+  colors: {
+    primary: '#a5b4fc',
+    button: '#f9a8d4',
+    buttonHover: '#f472b6',
+    toolTip: '#fafafa'
+  }
+});
+diagram.themeManager.set('dark', {
+  colors: {
+    primary: '#4338ca',
+    button: '#be185d',
+    buttonHover: '#db2777',
+    toolTip: '#262626'
+  }
+});
 
-  // theme the predefined "Button", modifying the initial fill and _button properties via theming
-  go.GraphObject.defineBuilder('ThemedButton', (args) => {
-    return go.GraphObject.build('Button', { 'ButtonBorder.strokeWidth': 0 })
-      .theme('ButtonBorder.fill', 'button')
-      .theme('_buttonFillOver', 'buttonHover');
-  });
+// theme the predefined "Button", modifying the initial fill and _button properties via theming
+go.GraphObject.defineBuilder('ThemedButton', args =>
+  go.GraphObject.make('Button', { 'ButtonBorder.strokeWidth': 0 })
+    .theme('ButtonBorder.fill', 'button')
+    .theme('_buttonFillOver', 'buttonHover')
+);
 
-  // theme the predefined "ToolTip", modifying the fill via theming
-  go.GraphObject.defineBuilder('ThemedToolTip', (args) => {
-    return go.GraphObject.build('ToolTip').theme('Border.fill', 'toolTip');
-  });
+// theme the predefined "ToolTip", modifying the fill via theming
+go.GraphObject.defineBuilder('ThemedToolTip', args =>
+  go.GraphObject.make('ToolTip').theme('Border.fill', 'toolTip')
+);
 
-  diagram.nodeTemplate =
-    new go.Node('Auto', {
+diagram.nodeTemplate =
+  new go.Node('Auto', {
       toolTip:
-        go.GraphObject.build('ThemedToolTip').add(
+        go.GraphObject.make('ThemedToolTip').add(
           new go.TextBlock('tooltip', { margin: 5 })
             .bind('text', 'text', k => `${k}'s tooltip`)
             .theme('stroke', 'text')
         )
-    }).add(
+    })
+    .add(
       new go.Shape('RoundedRectangle', { strokeWidth: 0 })
         .theme('fill', 'primary'),
-      new go.Panel('Vertical', { margin: 8 }).add(
-        new go.TextBlock({ margin: new go.Margin(0, 0, 8, 0) })
-          .bind('text', 'key')
-          .theme('stroke', 'text')
-          .theme('font', 'bold'),
-        go.GraphObject.build('ThemedButton').add(
-          new go.TextBlock('Button', { margin: 5 }).theme('stroke', 'text')
+      new go.Panel('Vertical', { margin: 8 })
+        .add(
+          new go.TextBlock({ margin: new go.Margin(0, 0, 8, 0) })
+            .bind('text', 'key')
+            .theme('stroke', 'text')
+            .theme('font', 'bold'),
+          go.GraphObject.make('ThemedButton').add(
+            new go.TextBlock('Button', { margin: 5 }).theme('stroke', 'text')
+          )
         )
-      )
     );
 
-  diagram.model = new go.GraphLinksModel(
+diagram.model = new go.GraphLinksModel(
   [
     { key: 1, text: 'Alpha' },
     { key: 2, text: 'Beta' }
@@ -674,9 +692,9 @@
     { from: 1, to: 2 }
   ]);
 
-  changeTheme6 = () => {
-    diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value;
-  };
+changeTheme6 = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelect6').value;
+};
 </code></pre>
 <script>
   goCode('theme6', 400, 150);

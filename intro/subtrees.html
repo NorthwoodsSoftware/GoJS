@@ -12,17 +12,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=SubTrees />
-<meta property="og:title" content=SubTrees />
-<meta name="twitter:title" content=SubTrees />
+<meta itemprop="name" content="SubTrees" />
+<meta property="og:title" content="SubTrees" />
+<meta name="twitter:title" content="SubTrees" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/intro/subtrees.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/subtrees.html" />
+<meta property="og:url" content="https://gojs.net/latest/intro/subtrees.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/subtrees.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,101 +247,110 @@
         
 <h1>SubTrees</h1>
 <p>
-  Tree diagrams can get very large. One way to simplify the diagram is to hide branches of the tree. "Collapsing" a tree node means making all of its children
-  and the links to them not visible, and recursively collapsing all of the children that have children.
+  Tree diagrams can get very large.
+  One way to simplify the diagram is to hide branches of the tree.
+  "Collapsing" a tree node means making all of its children and the links to them not visible,
+  and recursively collapsing all of the children that have children.
 </p>
 <p>
-  To collapse a node in a tree, set <a>Node.isTreeExpanded</a> to false; to make sure it is expanded, set that property to true. You should not set this
-  property to true on a <a>Node</a> that is not <a>GraphObject.visible</a>.
+  To collapse a node in a tree, set <a>Node.isTreeExpanded</a> to false; to make sure it is expanded, set that property to true.
+  You should not set this property to true on a <a>Node</a> that is not <a>GraphObject.visible</a>.
 </p>
 <p>
   It is commonplace to provide a button on a node to allow users to collapse and expand subtrees as they wish.
-  <b>GoJS</b> makes this easy to implement by providing a predefined kind of <a>Panel</a>, named "TreeExpanderButton", that acts as a button to collapse and
-  expand the subtree of a node. This button changes the visibility of all parts of the subtree except for the node itself.
+  <b>GoJS</b> makes this easy to implement by providing a predefined kind of <a>Panel</a>, named "TreeExpanderButton",
+  that acts as a button to collapse and expand the subtree of a node.
+  This button changes the visibility of all parts of the subtree except for the node itself.
 </p>
 <p>
-  Clicking on an expander button also invalidates the layout that is responsible for the node. Collapsing a subtree often results in a large empty area, and
-  expanding a subtree often results in overlapping nodes, so a new layout ought to be performed again to make the tree look better.
+  Clicking on an expander button also invalidates the layout that is responsible for the node.
+  Collapsing a subtree often results in a large empty area, and expanding a subtree often results in overlapping nodes,
+  so a new layout ought to be performed again to make the tree look better.
 </p>
 <pre class="lang-js" id="tree"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Horizontal",
-      $(go.Panel, "Auto",
-        $(go.Shape, "Ellipse", { fill: null }),
-        $(go.TextBlock,
-          new go.Binding("text", "key"))
-      ),
-      $("TreeExpanderButton")
+diagram.nodeTemplate =
+  new go.Node("Horizontal")
+    .add(
+      new go.Panel("Auto")
+        .add(
+          new go.Shape("Ellipse", { fill: "white" }),
+          new go.TextBlock()
+            .bind("text", "key")
+        ),
+      go.GraphObject.make("TreeExpanderButton")
     );
 
-  diagram.layout = $(go.TreeLayout);
+diagram.layout = new go.TreeLayout();
 
-  var nodeDataArray = [
-    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
-    { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" },
-    { from: "Beta", to: "Gamma" },
-    { from: "Beta", to: "Delta" },
-    { from: "Alpha", to: "Epsilon" },
-    { from: "Epsilon", to: "Zeta" },
-    { from: "Epsilon", to: "Eta" },
-    { from: "Epsilon", to: "Theta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+var nodeDataArray = [
+  { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
+  { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" }
+];
+var linkDataArray = [
+  { from: "Alpha", to: "Beta" },
+  { from: "Beta", to: "Gamma" },
+  { from: "Beta", to: "Delta" },
+  { from: "Alpha", to: "Epsilon" },
+  { from: "Epsilon", to: "Zeta" },
+  { from: "Epsilon", to: "Eta" },
+  { from: "Epsilon", to: "Theta" }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
 <script>
   goCode('tree', 600, 200);
 </script>
 <p>
-  Notice that if you first collapse the "Beta" node and then collapse the "Alpha" root node, if you then expand the "Alpha" node, the "Beta" node remains
-  collapsed, whereas the "Epsilon" node remains expanded. This is because the collapsing operation remembers the state of nodes within the subtree, as the
-  property <a>Node.wasTreeExpanded</a>. The expanding operation respects the value of that property when recursing through the subtree.
+  Notice that if you first collapse the "Beta" node and then collapse the "Alpha" root node,
+  if you then expand the "Alpha" node, the "Beta" node remains collapsed, whereas the "Epsilon" node remains expanded.
+  This is because the collapsing operation remembers the state of nodes within the subtree, as the property <a>Node.wasTreeExpanded</a>.
+  The expanding operation respects the value of that property when recursing through the subtree.
 </p>
 
 <p>
-  You may also want to start off the tree mostly or completely collapsed. First, set <a>Node.isTreeExpanded</a> to false in the template. That will cause only
-  the roots of the tree to be shown. Second, if you want to show three levels of the tree, call <a>Node.expandTree</a>.
+  You may also want to start off the tree mostly or completely collapsed.
+  First, set <a>Node.isTreeExpanded</a> to false in the template.
+  That will cause only the roots of the tree to be shown.
+  Second, if you want to show some levels of the tree, call <a>Node.expandTree</a> on each root node.
 </p>
 <pre class="lang-js" id="tree2"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Horizontal",
-      { isTreeExpanded: false },  // by default collapsed
-      $(go.Panel, "Auto",
-        $(go.Shape, "Ellipse", { fill: null }),
-        $(go.TextBlock,
-          new go.Binding("text", "key"))
-      ),
-      $("TreeExpanderButton")
+diagram.nodeTemplate =
+  // by default each node is collapsed
+  new go.Node("Horizontal", { isTreeExpanded: false })
+    .add(
+      new go.Panel("Auto")
+        .add(
+          new go.Shape("Ellipse", { fill: "white" }),
+          new go.TextBlock()
+            .bind("text", "key")
+        ),
+      go.GraphObject.make("TreeExpanderButton")
     );
 
-  diagram.layout = $(go.TreeLayout);
+diagram.layout = new go.TreeLayout({ });
 
-  // After the nodes and links have been created,
-  // expand each of the tree roots to 3 levels deep.
-  diagram.addDiagramListener("InitialLayoutCompleted", e => {
-      e.diagram.findTreeRoots().each(r => r.expandTree(3));
-    });
+var nodeDataArray = [
+  { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
+  { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" },
+  { key: "Iota" }, { key: "Kappa" }, { key: "Lambda" }
+];
+var linkDataArray = [
+  { from: "Alpha", to: "Beta" },
+  { from: "Beta", to: "Gamma" },
+  { from: "Beta", to: "Delta" },
+  { from: "Alpha", to: "Epsilon" },
+  { from: "Epsilon", to: "Zeta" },
+  { from: "Epsilon", to: "Eta" },
+  { from: "Eta", to: "Theta" },
+  { from: "Gamma", to: "Iota" },
+  { from: "Iota", to: "Kappa" },
+  { from: "Iota", to: "Lambda" }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
-  var nodeDataArray = [
-    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }, { key: "Delta" },
-    { key: "Epsilon" }, { key: "Zeta" }, { key: "Eta" }, { key: "Theta" },
-    { key: "Iota" }, { key: "Kappa" }, { key: "Lambda" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" },
-    { from: "Beta", to: "Gamma" },
-    { from: "Beta", to: "Delta" },
-    { from: "Alpha", to: "Epsilon" },
-    { from: "Epsilon", to: "Zeta" },
-    { from: "Epsilon", to: "Eta" },
-    { from: "Eta", to: "Theta" },
-    { from: "Gamma", to: "Iota" },
-    { from: "Iota", to: "Kappa" },
-    { from: "Iota", to: "Lambda" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+// After the nodes and links have been created,
+// expand each of the tree roots to 3 levels deep.
+diagram.findTreeRoots().each(r => r.expandTree(3));
 </code></pre>
 <script>
   goCode('tree2', 600, 200);

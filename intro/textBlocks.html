@@ -12,17 +12,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=TextBlocks />
-<meta property="og:title" content=TextBlocks />
-<meta name="twitter:title" content=TextBlocks />
+<meta itemprop="name" content="TextBlocks" />
+<meta property="og:title" content="TextBlocks" />
+<meta name="twitter:title" content="TextBlocks" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/intro/textBlocks.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/textBlocks.html" />
+<meta property="og:url" content="https://gojs.net/latest/intro/textBlocks.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/textBlocks.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -245,8 +245,6 @@
       
       <div class="px-4 pb-16 w-full overflow-hidden prose">
         
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-
 <h1>TextBlocks</h1>
 <p>Use the <a>TextBlock</a> class to display text.</p>
 <p>
@@ -285,14 +283,20 @@
 
 <h3 id="IconFonts">Icon Fonts</h3>
 <p>
-  In some cases, you can show an icon that is provided by a font, instead of using a <a>Picture</a> or a <a>Shape</a>. First, make sure the font is loaded in
-  the page before creating the diagram.
+  In some cases, you can show an icon that is provided by a font, instead of using a <a>Picture</a> or a <a>Shape</a>.
+  First, make sure the font is loaded in the page before creating the diagram.
+  Then you can show a string containing the Unicode code point for the desired icon.
 </p>
-<pre class="lang-html"><code>
-  &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"&gt;
-</code></pre>
 
 <pre class="lang-js" id="awesomeFont"><code>
+// Explicitly load a font.  Only do this once, not each time you load a model.
+const awesome = new FontFace("awesome",
+    "url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf)");
+document.fonts.add(awesome);
+// Wait for the Font Awesome font to load before actually loading the diagram.
+awesome.load().then(() => load());
+
+function load() {
   diagram.add(
     new go.Node("Auto")
       .add(
@@ -300,11 +304,12 @@
         new go.Panel("Horizontal", { margin: 8 })
           .add(
             new go.TextBlock(
-              { text: '\uf030', font: '10pt FontAwesome' }),
+              { text: "\uf030", font: "14pt awesome" }),
             new go.TextBlock("an example using FontAwesome",
               { margin: new go.Margin(0, 0, 0, 2) })
           )
       ));
+}
 </code></pre>
 <script>
   goCode('awesomeFont', 600, 100);

@@ -12,17 +12,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=Selection />
-<meta property="og:title" content=Selection />
-<meta name="twitter:title" content=Selection />
+<meta itemprop="name" content="Selection" />
+<meta property="og:title" content="Selection" />
+<meta name="twitter:title" content="Selection" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/fp/defaultCard.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/intro/selection.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/intro/selection.html" />
+<meta property="og:url" content="https://gojs.net/latest/intro/selection.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/selection.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -247,227 +247,239 @@
         
 <h1>Selection</h1>
 <p>
-  Users normally select <a>Part</a>s manually by clicking on them and they deselect them by clicking in the background or pressing the Esc key. You can select
-  parts programmatically by setting <a>Part.isSelected</a>.
+  Users normally select <a>Part</a>s manually by clicking on them and they deselect them by clicking in the background or pressing the Esc key.
+  You can select parts programmatically by setting <a>Part.isSelected</a> or calling one of several <a>Diagram</a> methods.
 </p>
 <p>
-  Users can also drag in the background in order to select the Parts that are within a rectangular area, via the <a>DragSelectingTool</a>. Read more about that
-  in the Introduction to Tools at <a href="tools.html#DragSelectingTool">DragSelectingTool</a>.
+  Users can also drag in the background in order to select the Parts that are within a rectangular area, via the <a>DragSelectingTool</a>.
+  Read more about that in the Introduction to Tools at <a href="tools.html#DragSelectingTool">DragSelectingTool</a>.
 </p>
 <p>
-  The <a>Diagram</a> keeps a collection of selected parts, <a>Diagram.selection</a>. That collection is read-only -- the only way to select or deselect a Part
-  is by setting its <a>Part.isSelected</a> property. You can limit how many parts are selected by setting <a>Diagram.maxSelectionCount</a>. Prevent all
-  selection by the user by setting <a>Diagram.allowSelect</a> to false. Or prevent a particular Part from being selected by setting <a>Part.selectable</a> to
-  false.
+  The <a>Diagram</a> keeps a collection of selected parts, <a>Diagram.selection</a>.
+  That collection is read-only -- the only way to select or deselect a Part is by setting its <a>Part.isSelected</a> property.
+  You can limit how many parts are selected by setting <a>Diagram.maxSelectionCount</a>.
+  Prevent all selection by the user by setting <a>Diagram.allowSelect</a> to false.
+  Or prevent a particular Part from being selected by setting or binding its <a>Part.selectable</a> property to false.
 </p>
 <p>
-  You can show that a part is selected by either or both of two general techniques: adding <a>Adornment</a>s or changing the appearance of some of the elements
-  in the visual tree of the selected Part.
+  You can show that a part is selected by either or both of two general techniques:
+  adding <a>Adornment</a>s or changing the appearance of some of the elements in the visual tree of the selected Part.
 </p>
 
 <h2 id="SelectionAdornments">Selection Adornments</h2>
 <p>
-  It is common to display that a Part is selected by having it show a selection <a>Adornment</a> when the Part is selected. For nodes this is normally a blue
-  rectangle surrounding the whole Node. This is the default behavior; if you do not want such an adornment, you can set <a>Part.selectionAdorned</a> to false.
+  It is common to display that a Part is selected by having it show a selection <a>Adornment</a> when the Part is selected.
+  For nodes this is normally a blue rectangle surrounding the whole Node.
+  This is the default behavior; if you do not want such an adornment, you can set <a>Part.selectionAdorned</a> to false.
 </p>
 
 <pre class="lang-js" id="adornmentDefault"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Vertical",
+diagram.nodeTemplate =
+  new go.Node("Vertical", {
       // the location is the center of the Shape, not the center of the whole Node
-      { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape,
-        {
+      locationSpot: go.Spot.Center, locationObjectName: "ICON"
+    })
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape({
           name: "ICON",
           width: 40, height: 40,
           fill: "gray",
           portId: ""  // the port is this Shape, not the whole Node
-        },
-        new go.Binding("figure")),
-      $(go.TextBlock,
-        { margin: new go.Margin(5, 0, 0, 0) },
-        new go.Binding("text", "key"))
+        })
+        .bind("figure"),
+      new go.TextBlock({ margin: new go.Margin(5, 0, 0, 0) })
+        .bind("text", "key")
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", figure: "Club", loc: "0 0" },
-    { key: "Beta", figure: "Spade", loc: "200 50" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.commandHandler.selectAll();
+var nodeDataArray = [
+  { key: "Alpha", figure: "Club", loc: "0 0" },
+  { key: "Beta", figure: "Spade", loc: "200 50" }
+];
+var linkDataArray = [
+  { from: "Alpha", to: "Beta" }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.commandHandler.selectAll();
 </code></pre>
 <script>
   goCode('adornmentDefault', 600, 150);
 </script>
 
 <p>
-  By default an <a>Adornment</a> will apply to the whole <a>Node</a>. What if you want attention to be drawn only to the main piece of a node? You can
-  accomplish that by naming that object and setting <a>Part.selectionObjectName</a> to that name.
+  By default an <a>Adornment</a> will apply to the whole <a>Node</a>.
+  What if you want attention to be drawn only to the main piece of a node?
+  You can accomplish that by naming that object and setting <a>Part.selectionObjectName</a> to that name.
 </p>
 <pre class="lang-js" id="adornmentObject"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      { selectionObjectName: "ICON" },  // added this property!
-        // the location is the center of the Shape, not the center of the whole Node
-      { locationSpot: go.Spot.Center, locationObjectName: "ICON" },
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape,
-        {
+diagram.nodeTemplate =
+  new go.Node("Vertical", {
+      selectionObjectName: "ICON",  // added this property!
+      // the location is the center of the Shape, not the center of the whole Node
+      locationSpot: go.Spot.Center, locationObjectName: "ICON"
+    })
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape({
           name: "ICON",
           width: 40, height: 40,
           fill: "gray",
           portId: ""  // the port is this Shape, not the whole Node
-        },
-        new go.Binding("figure")),
-      $(go.TextBlock,
-        { margin: new go.Margin(5, 0, 0, 0) },
-        new go.Binding("text", "key"))
+        })
+        .bind("figure"),
+      new go.TextBlock({ margin: new go.Margin(5, 0, 0, 0) })
+        .bind("text", "key")
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", figure: "Club", loc: "0 0" },
-    { key: "Beta", figure: "Spade", loc: "200 50" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.selectCollection(diagram.nodes);
+var nodeDataArray = [
+  { key: "Alpha", figure: "Club", loc: "0 0" },
+  { key: "Beta", figure: "Spade", loc: "200 50" }
+];
+var linkDataArray = [
+  { from: "Alpha", to: "Beta" }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.selectCollection(diagram.nodes);
 </code></pre>
 <script>
   goCode('adornmentObject', 600, 150);
 </script>
 <p>
   Note how the <a>Part.selectionObjectName</a> property is similar to the <a>Part.locationObjectName</a>
-  in helping to treat a node as if only one piece of it really mattered.
+  in helping to treat a node as if only one piece of it really matters.
 </p>
 
 <h3 id="CustomSelectionAdornments">Custom Selection Adornments</h3>
 <p>
-  If you do want a selection adornment but want something different than the standard one, you can customize it. Such customization can be done by setting the
-  <a>Part.selectionAdornmentTemplate</a>. In this example, nodes get thick blue rounded rectangles surrounding the selected node, and links get thick blue lines
+  If you do want a selection adornment but want something different than the standard one, you can customize it.
+  Such customization can be done by setting the <a>Part.selectionAdornmentTemplate</a>.
+  In this example, nodes get thick blue rounded rectangles surrounding the selected node, and links get thick blue lines
   following the selected link's path.
 </p>
 <pre class="lang-js" id="custom"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key")),
-      {
-        selectionAdornmentTemplate:
-          $(go.Adornment, "Auto",
-            $(go.Shape, "RoundedRectangle",
-            { fill: null, stroke: "dodgerblue", strokeWidth: 8 }),
-            $(go.Placeholder)
+diagram.nodeTemplate =
+  new go.Node("Auto", {
+      selectionAdornmentTemplate:
+        new go.Adornment("Auto")
+          .add(
+            new go.Shape("RoundedRectangle", {
+                fill: null, stroke: "dodgerblue", strokeWidth: 8
+              }),
+            new go.Placeholder()
           )  // end Adornment
-      }
+    })
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape("RoundedRectangle", { fill: "lightgray" }),
+      new go.TextBlock({ margin: 5 })
+        .bind("text", "key")
     );
 
-  diagram.linkTemplate =
-    $(go.Link,
-      $(go.Shape, { strokeWidth: 2 }),
-      $(go.Shape, { toArrow: "Standard" }),
-      {
-        selectionAdornmentTemplate:
-          $(go.Adornment,
-            $(go.Shape,
-              { isPanelMain: true, stroke: "dodgerblue", strokeWidth: 8 }),
-            $(go.Shape,
-              { toArrow: "Standard", fill: "dodgerblue", stroke: null, scale: 2.5 })
+diagram.linkTemplate =
+  new go.Link({
+      selectionAdornmentTemplate:
+        new go.Adornment()
+          .add(
+            new go.Shape({ isPanelMain: true, stroke: "dodgerblue", strokeWidth: 8 }),
+            new go.Shape({ toArrow: "Standard", fill: "dodgerblue", stroke: null, scale: 2.5 })
           )  // end Adornment
-      }
+    })
+    .add(
+      new go.Shape({ strokeWidth: 2 }),
+      new go.Shape({ toArrow: "Standard" })
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", loc: "0 0" },
-    { key: "Beta", loc: "200 50" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.commandHandler.selectAll();
+var nodeDataArray = [
+  { key: "Alpha", loc: "0 0" },
+  { key: "Beta", loc: "200 50" }
+];
+var linkDataArray = [
+  { from: "Alpha", to: "Beta" }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.commandHandler.selectAll();
 </code></pre>
 <script>
   goCode('custom', 600, 100);
 </script>
 <p>
-  Note that an <a>Adornment</a> is just a <a>Part</a>. Adornments for nodes must contain a <a>Placeholder</a> in their visual tree. The Placeholder gets
-  positioned where the selected object is.
+  Note that an <a>Adornment</a> is just a <a>Part</a>.
+  Adornments for nodes must contain a <a>Placeholder</a> in their visual tree.
+  The Placeholder gets positioned where the selected object is.
 </p>
 <p>
-  Adornments for links are assumed to be panels of <a>Panel.type</a> that is <a>Panel.Link</a>. Hence the main element may be a <a>Shape</a> that gets the
-  geometry of the selected Link's path shape, and the other elements of the adornment may be positioned on or near the segments of the link route just as for a
-  regular <a>Link</a>.
+  Adornments for links are assumed to be panels of <a>Panel.type</a> that is <a>Panel.Link</a>.
+  Hence the main element may be a <a>Shape</a> that gets the geometry of the selected Link's path shape,
+  and the other elements of the adornment may be positioned on or near the segments of the link route just as for a regular <a>Link</a>.
 </p>
 
 <h3 id="MoreComplexAdornments">More Complex Adornments</h3>
 <p>
-  The custom <a>Adornment</a> for a <a>Node</a> need not be only a simple <a>Shape</a> outlining the selected node. Here is an adornment that adds a button to
-  the adornment which inserts a node and a link to that new node.
+  The custom <a>Adornment</a> for a <a>Node</a> need not be only a simple <a>Shape</a> outlining the selected node.
+  Here is an adornment that adds a button to the adornment which inserts a node and a link to that new node.
 </p>
 <pre class="lang-js" id="complex"><code>
-  function addNodeAndLink(e, b) {
-    // take a button panel in an Adornment, get its Adornment, and then get its adorned Node
-    var node = b.part.adornedPart;
-    // we are modifying the model, so conduct a transaction
-    var diagram = node.diagram;
-    diagram.startTransaction("add node and link");
-    // have the Model add the node data
-    var newnode = { key: "N" };
-    diagram.model.addNodeData(newnode);
-    // locate the node initially where the parent node is
-    diagram.findNodeForData(newnode).location = node.location;
-    // and then add a link data connecting the original node with the new one
-    var newlink = { from: node.data.key, to: newnode.key };
-    diagram.model.addLinkData(newlink);
-    // finish the transaction -- will automatically perform a layout
-    diagram.commitTransaction("add node and link");
-  }
+function addNodeAndLink(e, b) {
+  // take a button panel in an Adornment, get its Adornment, and then get its adorned Node
+  var node = b.part.adornedPart;
+  // we are modifying the model, so conduct a transaction
+  var diagram = node.diagram;
+  diagram.startTransaction("add node and link");
+  // have the Model add the node data
+  var newnode = { text: "N" + diagram.model.nodeDataArray.length };
+  diagram.model.addNodeData(newnode);
+  // locate the node initially where the parent node is
+  diagram.findNodeForData(newnode).location = node.location;
+  // and then add a link data connecting the original node with the new one
+  var newlink = { from: node.data.key, to: newnode.key };
+  diagram.model.addLinkData(newlink);
+  // finish the transaction -- will automatically perform a layout
+  diagram.commitTransaction("add node and link");
+}
 
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle", { fill: "lightgray" }),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key")),
-      {
-        selectionAdornmentTemplate:
-          $(go.Adornment, "Spot",
-            $(go.Panel, "Auto",
-              // this Adornment has a rectangular blue Shape around the selected node
-              $(go.Shape, { fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
-              $(go.Placeholder)
-            ),
+diagram.nodeTemplate =
+  new go.Node("Auto", {
+      selectionAdornmentTemplate:
+        new go.Adornment("Spot")
+          .add(
+            new go.Panel("Auto")
+              .add(
+                // this Adornment has a rectangular blue Shape around the selected node
+                new go.Shape({ fill: null, stroke: "dodgerblue", strokeWidth: 3 }),
+                new go.Placeholder()
+              ),
             // and this Adornment has a Button to the right of the selected node
-            $("Button",
-              { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left,
-                click: addNodeAndLink },  // define click behavior for Button in Adornment
-              $(go.TextBlock, "ADD",  // the Button content
-                { font: "bold 6pt sans-serif" })
-            )
+            go.GraphObject.make("Button", {
+                alignment: go.Spot.Right, alignmentFocus: go.Spot.Left,
+                click: addNodeAndLink
+              })  // define click behavior for Button in Adornment
+              .add(
+                new go.TextBlock("ADD",  // the Button content
+                    { stroke: "blue", font: "bold 8pt sans-serif" })
+              )
           )  // end Adornment
-      }
+    })
+    .add(
+      new go.Shape("RoundedRectangle", { fill: "lightgray" }),
+      new go.TextBlock({ margin: 5 })
+        .bind("text")
     );
 
-  diagram.layout = $(go.TreeLayout);
+diagram.layout = new go.TreeLayout();
 
-  var nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.select(diagram.findNodeForKey("Beta"));
+var nodeDataArray = [
+  { key: 1, text: "Alpha" },
+  { key: 2, text: "Beta" }
+];
+var linkDataArray = [
+  { from: 1, to: 2 }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.select(diagram.findNodeForKey("Beta"));
 </code></pre>
 <script>
   goCode('complex', 600, 200);
@@ -480,122 +492,137 @@
   for that part will also be bound to the same data object.
 </p>
 <pre class="lang-js" id="binding"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "RoundedRectangle", { fill: "lightgray", strokeWidth: 2 },
-        new go.Binding("stroke", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key")),
-      {
-        selectionAdornmentTemplate:
-          $(go.Adornment, "Auto",
-            $(go.Shape,
-              { fill: null, stroke: "dodgerblue", strokeWidth: 6 },
-              new go.Binding("stroke", "color")),
-            $(go.Placeholder)
+diagram.nodeTemplate =
+  new go.Node("Auto", {
+      selectionAdornmentTemplate:
+        new go.Adornment("Auto")
+          .add(
+            new go.Shape({ fill: null, stroke: "dodgerblue", strokeWidth: 6 })
+              .bind("stroke", "color"),
+            new go.Placeholder()
           )  // end Adornment
-      }
+    })
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape("RoundedRectangle", { fill: "lightgray", strokeWidth: 2 })
+        .bind("stroke", "color"),
+      new go.TextBlock({ margin: 5 })
+        .bind("text")
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", loc: "0 0", color: "blue" },
-    { key: "Beta", loc: "200 50", color: "red" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.selectCollection(diagram.nodes);
+var nodeDataArray = [
+  { key: 1, text: "Alpha", loc: "0 0", color: "blue" },
+  { key: 2, text: "Beta", loc: "200 50", color: "red" }
+];
+var linkDataArray = [
+  { from: 1, to: 2 }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.selectCollection(diagram.nodes);
 </code></pre>
 <script>
-  goCode('binding', 600, 100);
+  goCode('binding', 600, 150);
 </script>
-<p>Notice how each Adornment has the same color as the selected node's data.color.</p>
+<p>
+  Notice how each Adornment has the same color as the selected node's data.color.
+</p>
 
 <h2 id="SelectionAppearanceChanges">Selection Appearance changes</h2>
 <p>
-  Adding a selection adornment is not the only way to indicate visually that a <a>Part</a> is selected. You can also modify the appearance of one or more
-  objects in your Part.
+  Adding a selection adornment is not the only way to indicate visually that a <a>Part</a> is selected.
+  You can also modify the appearance of one or more objects in your Part.
 </p>
 <p>
-  One way to do this is with data binding. Here we data bind the <a>Shape.fill</a> to the <a>Part.isSelected</a> property with a converter function that
-  converts the boolean value to a color string or brush. We also turn off the regular rectangular blue selection adornment.
+  One way to do this is with data binding. Here we data bind the <a>Shape.fill</a> to the <a>Part.isSelected</a> property
+  with a converter function that converts the boolean value to a color string or brush.
+  We also turn off the regular rectangular blue selection adornment.
 </p>
 <pre class="lang-js" id="isSelected"><code>
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { selectionAdorned: false },  // don't bother with any selection adornment
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "RoundedRectangle", { fill: "lightgray", strokeWidth: 2 },
+diagram.nodeTemplate =
+  new go.Node("Auto", { selectionAdorned: false })  // don't bother with any selection adornment
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape("RoundedRectangle", { fill: "lightgray", strokeWidth: 2 })
         // when this Part.isSelected changes value, change this Shape.fill value:
-        new go.Binding("fill", "isSelected", sel => {
-          if (sel) return "cyan"; else return "lightgray";
-        }).ofObject("")),  // The object named "" is the root visual element, the Node itself
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
+        .bindObject("fill", "isSelected", sel => {
+            if (sel) return "cyan"; else return "lightgray";
+          }), // The object named "" is the root visual element, the Node itself
+      new go.TextBlock({ margin: 5 })
+        .bind("text")
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", loc: "0 0" },
-    { key: "Beta", loc: "200 50" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.select(diagram.findNodeForKey("Beta"));
+var nodeDataArray = [
+  { key: 1, text: "Alpha", loc: "0 0", color: "blue" },
+  { key: 2, text: "Beta", loc: "200 50", color: "red" }
+];
+var linkDataArray = [
+  { from: 1, to: 2 }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.select(diagram.findNodeForKey(2));
 </code></pre>
 <script>
-  goCode('isSelected', 600, 100);
+  goCode('isSelected', 600, 150);
 </script>
-<p>Now when you select a node its background color changes to cyan.</p>
+<p>
+  Here the "Beta" node is selected initially.
+  Now when you select a node its background color changes to cyan.
+</p>
 
 <p>
-  More generally you can execute code to modify the Part when <a>Part.isSelected</a> has changed value. In this example we will have the same side effects as
-  the previous example.
+  More generally you can execute code to modify the Part when <a>Part.isSelected</a> has changed value.
+  In this example we will have the same side effects as the previous example.
 </p>
 <pre class="lang-js" id="selectionChanged"><code>
-  function onSelectionChanged(node) {
-    var icon = node.findObject("Icon");
-    if (icon !== null) {
-      if (node.isSelected)
-        icon.fill = "cyan";
-      else
-        icon.fill = "lightgray";
-    }
+function onSelectionChanged(node) {
+  var icon = node.findObject("ICON");
+  if (icon !== null) {
+    if (node.isSelected)
+      icon.fill = "cyan";
+    else
+      icon.fill = "lightgray";
   }
+}
 
-  diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { selectionAdorned: false,  // don't bother with any selection adornment
-        selectionChanged: onSelectionChanged },  // executed when Part.isSelected has changed
-      new go.Binding("location", "loc", go.Point.parse),
-      $(go.Shape, "RoundedRectangle",
-        { name: "Icon", fill: "lightgray", strokeWidth: 2 }),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
+diagram.nodeTemplate =
+  new go.Node("Auto", {
+      selectionAdorned: false,  // don't bother with any selection adornment
+      selectionChanged: onSelectionChanged
+    })
+    .bind("location", "loc", go.Point.parse)
+    .add(
+      new go.Shape("RoundedRectangle", { fill: "lightgray", strokeWidth: 2 })
+        // when this Part.isSelected changes value, change this Shape.fill value:
+        .bindObject("fill", "isSelected", sel => {
+            if (sel) return "cyan"; else return "lightgray";
+          }), // The object named "" is the root visual element, the Node itself
+      new go.TextBlock({ margin: 5 })
+        .bind("text")
     );
 
-  var nodeDataArray = [
-    { key: "Alpha", loc: "0 0" },
-    { key: "Beta", loc: "200 50" }
-  ];
-  var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
-  ];
-  diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
-  diagram.select(diagram.findNodeForKey("Beta"));
+var nodeDataArray = [
+  { key: 1, text: "Alpha", loc: "0 0", color: "blue" },
+  { key: 2, text: "Beta", loc: "200 50", color: "red" }
+];
+var linkDataArray = [
+  { from: 1, to: 2 }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+diagram.select(diagram.findNodeForKey(2));
 </code></pre>
 <script>
-  goCode('selectionChanged', 600, 100);
+  goCode('selectionChanged', 600, 150);
 </script>
 <p>
-  There are some restrictions on what you can do in such an event handler: you should not select or deselect any parts, and you should not add or remove any
-  parts from the diagram.
+  This basically has the same effect as the <a>GraphObject.bindObject</a> binding of the previous example,
+  but the possible changes you could make to that node are much greater and probably simpler than trying to use Bindings.
+</p>
+<p>
+  There are some restrictions on what you can do in such an event handler:
+  you should not select or deselect any parts, and you should not add or remove any parts from the diagram.
 </p>
 
       </div>

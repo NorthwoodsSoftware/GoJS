@@ -18,17 +18,17 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content=Decision Tree />
-<meta property="og:title" content=Decision Tree />
-<meta name="twitter:title" content=Decision Tree />
+<meta itemprop="name" content="Decision Tree" />
+<meta property="og:title" content="Decision Tree" />
+<meta name="twitter:title" content="Decision Tree" />
 
 
-<meta property="og:image" content="https://gojs.net/3.0.2/assets/images/screenshots/decisionTree.png" />
-<meta itemprop="image" content="https://gojs.net/3.0.2/assets/images/screenshots/decisionTree.png" />
-<meta name="twitter:image" content="https://gojs.net/3.0.2/assets/images/screenshots/decisionTree.png" />
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/decisionTree.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/decisionTree.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/decisionTree.png" />
 
-<meta property="og:url" content="https://gojs.net/3.0.2/samples/decisionTree.html" />
-<meta property="twitter:url" content="https://gojs.net/3.0.2/samples/decisionTree.html" />
+<meta property="og:url" content="https://gojs.net/latest/samples/decisionTree.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/decisionTree.html" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="og:type" content="website" />
@@ -123,7 +123,6 @@
             
             
 
-<link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" type="text/css" />
 <script id="code">
   function init() {
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
@@ -193,7 +192,7 @@
       { 'Border.fill': 'whitesmoke', 'Border.stroke': 'lightgray' },
       $(go.TextBlock,
         {
-          font: '8pt sans-serif',
+          font: '8pt Roboto, sans-serif',
           wrap: go.Wrap.Fit,
           desiredSize: new go.Size(200, NaN),
           alignment: go.Spot.Center,
@@ -204,10 +203,8 @@
     );
 
     // define the Node template for non-leaf nodes
-    myDiagram.nodeTemplateMap.add(
-      'decision',
-      $(go.Node,
-        'Auto',
+    myDiagram.nodeTemplateMap.add('decision',
+      $(go.Node, 'Auto',
         new go.Binding('text', 'key'),
         // define the node's outer shape, which will surround the Horizontal Panel
         $(go.Shape, 'Rectangle', { fill: 'whitesmoke', stroke: 'lightgray' }),
@@ -226,7 +223,7 @@
                 toolTip: tooltipTemplate,
               },
               new go.Binding('portId', 'a'),
-              $(go.TextBlock, { font: '500 16px Roboto, sans-serif' }, new go.Binding('text', 'aText'))
+              $(go.TextBlock, { font: '900 16px Roboto, sans-serif' }, new go.Binding('text', 'aText'))
             ), // end button A
             $('Button', // button B
               {
@@ -235,7 +232,7 @@
                 toolTip: tooltipTemplate,
               },
               new go.Binding('portId', 'b'),
-              $(go.TextBlock, { font: '500 16px Roboto, sans-serif' }, new go.Binding('text', 'bText'))
+              $(go.TextBlock, { font: '900 16px Roboto, sans-serif' }, new go.Binding('text', 'bText'))
             ) // end button B
           ) // end Vertical Panel
         ) // end Horizontal Panel
@@ -243,10 +240,8 @@
     ); // end Node and call to add
 
     // define the Node template for leaf nodes
-    myDiagram.nodeTemplateMap.add(
-      'personality',
-      $(go.Node,
-        'Auto',
+    myDiagram.nodeTemplateMap.add('personality',
+      $(go.Node, 'Auto',
         new go.Binding('text', 'key'),
         $(go.Shape, 'Rectangle', { fill: 'whitesmoke', stroke: 'lightgray' }),
         $(go.TextBlock,
@@ -453,7 +448,12 @@
     }
     model.linkDataArray = linkDataArray;
   }
-  window.addEventListener('DOMContentLoaded', init);
+  window.addEventListener('DOMContentLoaded', () => {
+    const roboto = new FontFace("Roboto", "url(https://fonts.cdnfonts.com/s/12165/Roboto-Regular.woff)");
+    document.fonts.add(roboto);
+    // wait for the Roboto font to load before actually loading the diagram
+    roboto.load().then(() => init());
+  });
 </script>
 
 <div id="sample">
