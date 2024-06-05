@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.3
+ * Type definitions for GoJS v3.0.4
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -9546,8 +9546,6 @@ export declare enum TriggerStart {
  * * `"opacity"`
  * * `"angle"`
  * * `"desiredSize"`
- * * `"width"`
- * * `"height"`
  * * `"background"`
  * * `"fill"` (on Shapes)
  * * `"strokeWidth"` (on Shapes)
@@ -9600,8 +9598,6 @@ export class AnimationTrigger {
      * * `"opacity"`
      * * `"angle"`
      * * `"desiredSize"`
-     * * `"width"`
-     * * `"height"`
      * * `"background"`
      * * `"fill"` (on Shapes)
      * * `"strokeWidth"` (on Shapes)
@@ -15488,9 +15484,26 @@ export abstract class GraphObject {
     get margin(): MarginLike;
     set margin(value: MarginLike);
     /**
-     * Adds an {@link AnimationTrigger} to this GraphObject.
-     * @since 2.2
+     * Add an {@link AnimationTrigger} to this GraphObject for the given property name and optional animation settings.
+     * @param propertyName - A string naming the target property to animate.
+     *   This should not be the empty string.
+     * @param animationSettings - An optional Object describing properties to set on animations created by this AnimationTrigger.
+     *   See the {@link AnimationTrigger.animationSettings} property for detail.
+     *   If specified, this also sets the {@link AnimationTrigger.startCondition} to {@link TriggerStart.Immediate}.
+     * @param startCondition - An optional TriggerStart to set the {@link AnimationTrigger.startCondition} property.
+     * @returns this GraphObject
+     * @since 3.0
+     */
+    trigger(propertyName: string, animationSettings?: {
+        duration?: number;
+        finished?: (animation: Animation) => void;
+        easing?: EasingFunction;
+    }, startCondition?: TriggerStart): this;
+    /**
+     * Add an {@link AnimationTrigger} to this GraphObject.
      * @param trigger - an AnimationTrigger
+     * @returns this GraphObject
+     * @since 2.2
      */
     trigger(trigger: AnimationTrigger): this;
     /**********************************************************

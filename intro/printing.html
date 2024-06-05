@@ -247,18 +247,19 @@
         
 <h1>Printing</h1>
 <p>
-  Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them, inserting them into a PDF or other document, or
-  printing them directly from the browser. On this page we will create several images out of a large Diagram and prepare some CSS so that printing this page
-  prints only those images.
+  Printing a Diagram is typically accomplished by making several images of the Diagram and either saving them,
+  inserting them into a PDF or other document, or printing them directly from the browser.
+  On this page we will create several images out of a large Diagram and prepare a separate window holding those images.
+  That window is what is actually printed.
 </p>
-<p>This page uses <a>Diagram.makeSvg</a>, which has its own introduction page: <a href="makingSVG.html">Making Images with GoJS</a>.</p>
-
-<p class="box bg-info">
-  Depending on your situation, you may want to use raster images to print instead, and there is also a page on <a href="makingImages.html">Making Images with GoJS</a>, which is
-  nearly identical to making images. In this page's examples you could substitute <a>Diagram.makeImage</a> for the same result.
+<p>
+  This page uses <a>Diagram.makeSvg</a>, which has its own introduction page: <a href="makingSVG.html">Making Images with GoJS</a>.
+  Depending on your situation, you may want to use raster images to print by calling <a>Diagram.makeImage</a> instead.
 </p>
 
-<p>Below is the Diagram we are going to prepare for printing.</p>
+<p>
+  Below is the Diagram we are going to prepare for printing, scaled down to fit on this page.
+</p>
 <!-- Don't bother showing this source -->
 <pre class="lang-js" id="diag" style="display: none"><code>
   window.myDiagram = diagram;
@@ -349,7 +350,7 @@
           scale: 1.0,
           position: new go.Point(x, y),
           size: printSize,
-          background: myDiagram.themeManager.findValue('div', 'colors'),
+          background: myDiagram.div.style.background
         });
         svgWindow.document.body.appendChild(svg);
         x += printSize.width;
@@ -366,9 +367,9 @@
 </script>
 
 <p>
-  Our code for print preparation is in a <code>printDiagram</code> function that cuts the Diagram into several images of a given width and height
-  and renders each such page individually.  Those images are in a separate window just to make it easier to manage than
-  combining them with the contents of this page.
+  Our code for print preparation is in a <code>printDiagram</code> function that cuts the Diagram into several images
+  of a given width and height and renders each such page individually.
+  Those images are in a separate window just to make it easier to manage than combining them with the contents of this page.
 </p>
 <pre class="lang-js" id="manyImgCode"><code>
   // print the diagram by opening a new window holding SVG images of the diagram contents for each page
@@ -414,19 +415,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

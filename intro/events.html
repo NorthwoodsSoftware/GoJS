@@ -516,8 +516,8 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
 
   diagram.addDiagramListener("ObjectSingleClicked",
       e => {
-        var part = e.subject.part;
-        if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.key);
+        const part = e.subject.part;
+        if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data.text);
       });
 
   diagram.addDiagramListener("BackgroundDoubleClicked",
@@ -527,16 +527,16 @@ This example demonstrates handling several diagram events: <b>"ObjectSingleClick
       e => showMessage("Pasted " + e.diagram.selection.count + " parts"));
 
   var nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta", group: "Omega" },
-    { key: "Gamma", group: "Omega" },
-    { key: "Omega", isGroup: true },
-    { key: "Delta" }
+    { key: 1, text: "Alpha" },
+    { key: 2, text: "Beta", group: 4 },
+    { key: 3, text: "Gamma", group: 4 },
+    { key: 4, text: "Omega", isGroup: true },
+    { key: 5, text: "Delta" }
   ];
   var linkDataArray = [
-    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
-    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
-    { from: "Omega", to: "Delta" }  // from the Group to a Node
+    { from: 1, to: 2 },  // from outside the Group to inside it
+    { from: 2, to: 3 },  // this link is a member of the Group
+    { from: 4, to: 5 }  // from the Group to a Node
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
@@ -611,45 +611,52 @@ clicking on nodes and entering/leaving groups.
   }
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key")),
-      { click: (e, obj) => showMessage("Clicked on " + obj.part.data.key) }
-    );
+    new go.Node("Auto", {
+        click: (e, obj) => showMessage("Clicked on " + obj.part.data.text)
+      })
+      .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text")
+      );
 
   diagram.groupTemplate =
-    $(go.Group, "Vertical",
-      $(go.TextBlock,
-        { alignment: go.Spot.Left, font: "Bold 12pt Sans-Serif" },
-        new go.Binding("text", "key")),
-      $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle",
-          { name: "SHAPE",
-            parameter1: 14,
-            fill: "rgba(128,128,128,0.33)" }),
-        $(go.Placeholder, { padding: 5 })
-      ),
-      { mouseEnter: (e, obj, prev) => {  // change group's background brush
-            var shape = obj.part.findObject("SHAPE");
-            if (shape) shape.fill = "red";
-          },
+    new go.Group("Vertical", {
+        click: (e, obj) => showMessage("Clicked on " + obj.part.data.text),
+        mouseEnter: (e, obj, prev) => {  // change group's background brush
+          const shape = obj.part.findObject("SHAPE");
+          if (shape) shape.fill = "red";
+        },
         mouseLeave: (e, obj, next) => {  // restore to original brush
-            var shape = obj.part.findObject("SHAPE");
-            if (shape) shape.fill = "rgba(128,128,128,0.33)";
-          } });
+          const shape = obj.part.findObject("SHAPE");
+          if (shape) shape.fill = "rgba(128,128,128,0.33)";
+        }
+      })
+      .add(
+        new go.TextBlock({ alignment: go.Spot.Left, font: "Bold 12pt Sans-Serif" })
+          .bind("text"),
+        new go.Panel("Auto")
+          .add(
+            new go.Shape("RoundedRectangle", {
+                name: "SHAPE",
+                parameter1: 14,
+                fill: "rgba(128,128,128,0.33)"
+              }),
+            new go.Placeholder({ padding: 5 })
+          )
+      );
 
   var nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta", group: "Omega" },
-    { key: "Gamma", group: "Omega" },
-    { key: "Omega", isGroup: true },
-    { key: "Delta" }
+    { key: 1, text: "Alpha" },
+    { key: 2, text: "Beta", group: 4 },
+    { key: 3, text: "Gamma", group: 4 },
+    { key: 4, text: "Omega", isGroup: true },
+    { key: 5, text: "Delta" }
   ];
   var linkDataArray = [
-    { from: "Alpha", to: "Beta" },  // from outside the Group to inside it
-    { from: "Beta", to: "Gamma" },  // this link is a member of the Group
-    { from: "Omega", to: "Delta" }  // from the Group to a Node
+    { from: 1, to: 2 },  // from outside the Group to inside it
+    { from: 2, to: 3 },  // this link is a member of the Group
+    { from: 4, to: 5 }  // from the Group to a Node
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
@@ -667,26 +674,28 @@ This example demonstrates both the "click" and the "selectionChanged" events:
   }
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { selectionAdorned: false },
-      $(go.Shape, "Ellipse", { fill: "white" }),
-      $(go.TextBlock,
-        new go.Binding("text", "key")),
-      {
-        click: (e, obj) => showMessage("Clicked on " + obj.part.data.key),
+    new go.Node("Auto", {
+        click: (e, obj) => showMessage("Clicked on " + obj.part.data.text),
+        selectionAdorned: false,
         selectionChanged: part => {
-            var shape = part.elt(0);
-            shape.fill = part.isSelected ? "red" : "white";
-          }
-      }
-    );
+          const shape = part.elt(0);
+          shape.fill = part.isSelected ? "red" : "white";
+        }
+      })
+     .add(
+        new go.Shape("Ellipse", { fill: "white" }),
+        new go.TextBlock()
+          .bind("text")
+      );
 
   var nodeDataArray = [
-    { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
+    { key: 1, text: "Alpha" },
+    { key: 2, text: "Beta" },
+    { key: 3, text: "Gamma" }
   ];
   var linkDataArray = [
-    { from: "Alpha", to: "Beta" },
-    { from: "Beta", to: "Gamma" }
+    { from: 1, to: 2 },
+    { from: 2, to: 3 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
@@ -712,19 +721,19 @@ it was due to a property change to the node.
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

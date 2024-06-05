@@ -247,39 +247,45 @@
         
 <h1>Template Maps</h1>
 <p>
-  Many of the previous examples have provided custom templates for nodes, groups, or links. Those examples have shown how to make simple adaptations of the
-  templates for particular data instances via data binding. But what if you want to have nodes with drastically different appearances or behaviors in a single
-  diagram at the same time?
+  Many of the previous examples have provided custom templates for nodes, groups, or links.
+  Those examples have shown how to make simple adaptations of the templates for particular data instances via data binding.
+  But what if you want to have nodes with drastically different appearances or behaviors in a single diagram at the same time?
 </p>
 <p>
-  It is possible to define a node template that includes all possible configurations for all of the kinds of nodes that you want to display. There would need to
-  be a lot of data binding and/or code to make the needed changes. Often you will want to make not-<a>GraphObject.visible</a> large parts of the template in
-  order to make visible the one panel that you want to show. But this technique is difficult to use -- templates get way too complicated too quickly.
+  It is possible to define a node template that includes all possible configurations for all of the kinds of nodes that you want to display.
+  There would need to be a lot of data binding and/or code to make the needed changes.
+  Often you will want to make not-<a>GraphObject.visible</a> large parts of the template in order to make visible the one panel
+  that you want to show.
+  But this technique is difficult to use -- templates get way too complicated too quickly.
 </p>
 <p>
-  Instead <b>GoJS</b> supports as many templates as you want -- you choose dynamically which one you want to use to represent a particular node data. This does
-  mean potentially a lot of templates, but each one will be much simpler, easier to write, and easier to maintain.
+  Instead <b>GoJS</b> supports as many templates as you want -- you choose dynamically which one you want to use
+  to represent a particular node data.
+  This does mean potentially a lot of templates, but each one will be much simpler, easier to write, and easier to maintain.
 </p>
 <p>
-  Each <a>Diagram</a> actually holds a <a>Map</a> of templates for each type of <a>Part</a>: <a>Node</a>, <a>Group</a>, and <a>Link</a>. Each Map associates a
-  "category" name with a template. For example, when the diagram wants to create a <a>Node</a> for a particular node data object, the diagram uses that node
-  data's category to look up the node template in the <a>Diagram.nodeTemplateMap</a>. Similar lookups are done using the <a>Diagram.groupTemplateMap</a> and the
-  <a>Diagram.linkTemplateMap</a>.
+  Each <a>Diagram</a> actually holds a <a>Map</a> of templates for each type of <a>Part</a>: <a>Node</a>, <a>Group</a>, and <a>Link</a>.
+  Each Map associates a "category" name with a template.
+  For example, when the diagram wants to create a <a>Node</a> for a particular node data object, the diagram uses that node
+  data's category to look up the node template in the <a>Diagram.nodeTemplateMap</a>.
+  Similar lookups are done using the <a>Diagram.groupTemplateMap</a> and the <a>Diagram.linkTemplateMap</a>.
 </p>
 <p>
-  Each <a>Diagram</a> initially has its own template maps stocked with predefined categories. The default category for any data object is the empty string, "".
-  The <a>Diagram.nodeTemplateMap</a> initially contains for the empty string a very simple <a>Node</a> template holding a <a>TextBlock</a> whose
-  <a>TextBlock.text</a> property is data bound to the data converted to a string. You can see the default templates for nodes, groups, and links in a number of
-  the previous examples, such as the <a href="groups.html#GroupsLinks">Groups and Links</a> example.
+  Each <a>Diagram</a> initially has its own template maps stocked with predefined categories.
+  The default category for any data object is the empty string, "".
+  The <a>Diagram.nodeTemplateMap</a> initially contains for the empty string a very simple <a>Node</a> template holding
+  a <a>TextBlock</a> whose <a>TextBlock.text</a> property is data bound to the data converted to a string.
+  You can see the default templates for nodes, groups, and links in a number of the previous examples,
+  such as the <a href="groups.html#GroupsLinks">Groups and Links</a> example.
 </p>
 <p>
-  The value of <a>Diagram.nodeTemplate</a> is just the value of <code>thatDiagram.nodeTemplateMap.get("")</code>. Setting <a>Diagram.nodeTemplate</a> just
-  replaces the template in <a>Diagram.nodeTemplateMap</a>
-  named with the empty string.
+  The value of <a>Diagram.nodeTemplate</a> is just the value of <code>thatDiagram.nodeTemplateMap.get("")</code>.
+  Setting <a>Diagram.nodeTemplate</a> just replaces the template in <a>Diagram.nodeTemplateMap</a> named with the empty string.
 </p>
 <p>
-  The implementations of all predefined templates are provided in <a href="../extensions/Templates.js">Templates.js</a> in the Extensions directory. You may
-  wish to copy and adapt these definitions when creating your own templates.
+  The implementations of all predefined templates are provided in <a href="../extensions/Templates.js">Templates.js</a>
+  in the Extensions directory.
+  You may wish to copy and adapt these definitions when creating your own templates.
 </p>
 
 <h2 id="ExampleOfNodeTemplates">Example of Node templates</h2>
@@ -287,35 +293,39 @@
   // the "simple" template just shows the key string and the color in the background,
   // but it also includes a tooltip that shows the description
   const simpletemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Ellipse",
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        new go.Binding("text", "key")),
-      {
+    new go.Node("Auto", {
         toolTip:
-          $("ToolTip",
-            $(go.TextBlock, { margin: 4 },
-              new go.Binding("text", "desc"))
-          )
-      }
-    );
+          go.GraphObject.build("ToolTip")
+            .add(
+              new go.TextBlock({ margin: 4 })
+                .bind("text", "desc")
+            )
+      })
+      .add(
+        new go.Shape("Ellipse")
+          .bind("fill", "color"),
+        new go.TextBlock()
+          .bind("text", "key")
+      );
 
   // the "detailed" template shows all of the information in a Table Panel
   const detailtemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        new go.Binding("fill", "color")),
-      $(go.Panel, "Table",
-        { defaultAlignment: go.Spot.Left },
-        $(go.TextBlock, { row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" },
-          new go.Binding("text", "key")),
-        $(go.TextBlock, { row: 1, column: 0 }, "Description:"),
-        $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "desc")),
-        $(go.TextBlock, { row: 2, column: 0 }, "Color:"),
-        $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "color"))
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle")
+          .bind("fill", "color"),
+        new go.Panel("Table", { defaultAlignment: go.Spot.Left })
+          .add(
+            new go.TextBlock({ row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" })
+              .bind("text", "key"),
+            new go.TextBlock("Description:", { row: 1, column: 0 }),
+            new go.TextBlock({ row: 1, column: 1 })
+              .bind("text", "desc"),
+            new go.TextBlock("Color:", { row: 2, column: 0 }),
+            new go.TextBlock({ row: 2, column: 1 })
+              .bind("text", "color")
+          )
+      );
 
   // create the nodeTemplateMap, holding three node templates:
   const templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
@@ -339,21 +349,23 @@
   goCode('templates', 600, 150);
 </script>
 <p>
-  If you hover the mouse over the "Beta" node, you will see the tooltip showing the description string. The detailed template does not bother using tooltips to
-  show extra information because everything is already shown.
+  If you hover the mouse over the "Beta" node, you will see the tooltip showing the description string.
+  The detailed template does not bother using tooltips to show extra information because everything is already shown.
 </p>
 <p>
-  By default the way that the model and diagram know about the category of a node data or a link data is by looking at its category property. If you want to use
-  a different property on the data, for example because you want to use the category property to mean something different, set
-  <a>Model.nodeCategoryProperty</a> to be the name of the property that results in the actual category string value. Or set <a>Model.nodeCategoryProperty</a> to
-  be the empty string to cause all nodes to use the default node template.
+  By default the way that the model and diagram know about the category of a node data or a link data is by looking at its category property.
+  If you want to use a different property on the data, for example because you want to use the category property to mean something different,
+  set <a>Model.nodeCategoryProperty</a> to be the name of the property that results in the actual category string value.
+  Or set <a>Model.nodeCategoryProperty</a> to be the empty string to cause all nodes to use the default node template.
 </p>
 
 <h2 id="ExampleOfItemTemplates">Example of Item Templates</h2>
 <p>
-  For Panels with a value for <a>Panel.itemArray</a>, there is also the <a>Panel.itemTemplateMap</a>. As with Nodes and Groups and Links, the
-  <a>Panel.itemTemplate</a> is just a reference to the template named with the empty string in the <a>Panel.itemTemplateMap</a>. Similarly, the
-  <a>Panel.itemCategoryProperty</a> names the property on the item data that identifies the template to use from the itemTemplateMap.
+  For Panels with a value for <a>Panel.itemArray</a>, there is also the <a>Panel.itemTemplateMap</a>.
+  As with Nodes and Groups and Links, the <a>Panel.itemTemplate</a> is just a reference to the template named with
+  the empty string in the <a>Panel.itemTemplateMap</a>.
+  Similarly, the <a>Panel.itemCategoryProperty</a> names the property on the item data that identifies the template
+  to use from the itemTemplateMap.
 </p>
 <pre class="lang-js" id="itemTemplates"><code>
   // create a template map for items
@@ -361,41 +373,44 @@
 
   // the template when type == "text"
   itemtemplates.add("text",
-    $(go.Panel,
-      $(go.TextBlock,
-        new go.Binding("text"))
-    ));
+    new go.Panel()
+      .add(
+        new go.TextBlock()
+          .bind("text")
+      ));
 
   // the template when type == "button"
   itemtemplates.add("button",
-    $("Button",
-      $(go.TextBlock,
-        new go.Binding("text")),
+    go.GraphObject.build("Button")
       // convert a function name into a function value,
       // because functions cannot be represented in JSON format
-      new go.Binding("click", "handler",
-                      name => {
-                        if (name === "alert") return raiseAlert;  // defined below
-                        return null;
-                      })
-    ));
+      .bind("click", "handler",
+            name => {
+              if (name === "alert") return raiseAlert;  // defined below
+              return null;
+            })
+      .add(
+        new go.TextBlock()
+          .bind("text")
+      ));
 
   diagram.nodeTemplate =
-    $(go.Node, "Vertical",
-      $(go.TextBlock,
-        new go.Binding("text", "key")),
-      $(go.Panel, "Auto",
-        $(go.Shape, { fill: "white" }),
-        $(go.Panel, "Vertical",
-          {
-            margin: 3,
-            defaultAlignment: go.Spot.Left,
-            itemCategoryProperty: "type",  // this property controls the template used
-            itemTemplateMap: itemtemplates  // map was defined above
-          },
-          new go.Binding("itemArray", "info"))
-      )
-    );
+    new go.Node("Vertical")
+      .add(
+        new go.TextBlock()
+          .bind("text", "key"),
+        new go.Panel("Auto")
+          .add(
+            new go.Shape({ fill: "white" }),
+            new go.Panel("Vertical", {
+                margin: 3,
+                defaultAlignment: go.Spot.Left,
+                itemCategoryProperty: "type",  // this property controls the template used
+                itemTemplateMap: itemtemplates  // map was defined above
+              })
+              .bind("itemArray", "info")
+          )
+      );
 
   function raiseAlert(e, obj) {  // here OBJ will be the item Panel
     const node = obj.part;
@@ -428,46 +443,46 @@
 
 <h2 id="ExampleOfTableHeaderShowingItemData">Example of Table Header Showing Item Data</h2>
 <p>
-  The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item) hold the data for the header, but have it be styled
-  differently. In this example we define a "Header" item template in the <a>Panel.itemTemplateMap</a>.
+  The natural way to have a distinct header for a Table Panel is to have the first row (i.e. the first item)
+  hold the data for the header, but have it be styled differently.
+  In this example we define a "Header" item template in the <a>Panel.itemTemplateMap</a>.
 </p>
 <pre class="lang-js" id="header"><code>
   const itemTemplateMap = new go.Map();
   itemTemplateMap.add("",
-    $(go.Panel, "TableRow",
-      $(go.TextBlock, new go.Binding("text", "name"),
-        { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
-      $(go.TextBlock, new go.Binding("text", "phone"),
-        { column: 1, margin: 2 }),
-      $(go.TextBlock, new go.Binding("text", "loc"),
-        { column: 2, margin: 2 })
-    ));
+    new go.Panel("TableRow")
+      .add(
+        new go.TextBlock({ column: 0, margin: 2, font: "bold 10pt sans-serif" })
+          .bind("text", "name"),
+        new go.TextBlock({ column: 1, margin: 2 })
+          .bind("text", "phone"),
+        new go.TextBlock({ column: 2, margin: 2 })
+          .bind("text", "loc")
+      ));
   itemTemplateMap.add("Header",
-    $(go.Panel, "TableRow",
-      $(go.TextBlock, new go.Binding("text", "name"),
-        { column: 0, margin: 2, font: "bold 10pt sans-serif" }),
-      $(go.TextBlock, new go.Binding("text", "phone"),
-        { column: 1, margin: 2, font: "bold 10pt sans-serif" }),
-      $(go.TextBlock, new go.Binding("text", "loc"),
-        { column: 2, margin: 2, font: "bold 10pt sans-serif" })
-    ));
+    new go.Panel("TableRow")
+      .add(
+        new go.TextBlock({ column: 0, margin: 2, font: "bold 10pt sans-serif" })
+          .bind("text", "name"),
+        new go.TextBlock({ column: 1, margin: 2, font: "bold 10pt sans-serif" })
+          .bind("text", "phone"),
+        new go.TextBlock({ column: 2, margin: 2, font: "bold 10pt sans-serif" })
+          .bind("text", "loc")
+      ));
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, { fill: "white" }),
-      $(go.Panel, "Table",
-        new go.Binding("itemArray", "people"),
-        {
-          defaultAlignment: go.Spot.Left,
-          defaultColumnSeparatorStroke: "black",
-          itemTemplateMap: itemTemplateMap
-        },
-        $(go.RowColumnDefinition,
-          { row: 0, background: "lightgray" }),
-        $(go.RowColumnDefinition,
-          { row: 1, separatorStroke: "black" })
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape({ fill: "white" }),
+        new go.Panel("Table", {
+            defaultAlignment: go.Spot.Left,
+            defaultColumnSeparatorStroke: "black",
+            itemTemplateMap: itemTemplateMap
+          })
+          .bind("itemArray", "people")
+          .addRowDefinition(0, { background: "lightgray" })
+          .addRowDefinition(1, { separatorStroke: "black" })
+      );
 
   diagram.model =
     new go.GraphLinksModel(
@@ -493,15 +508,16 @@
   goCode('header', 600, 200);
 </script>
 <p>
-  If you do not want to have the header data in the itemArray, and you want to define the header in the node template rather than as an item template, see the
-  example in <a href="itemArrays.html">Item Arrays</a>.
+  If you do not want to have the header data in the itemArray, and you want to define the header in the
+  node template rather than as an item template, see the example in <a href="itemArrays.html">Item Arrays</a>.
 </p>
 
 <h2 id="ChangingCategoryOfPart">Changing category of a Part</h2>
 <p>
-  To change the representation of a data object, call <a>Model.setCategoryForNodeData</a> or <a>GraphLinksModel.setCategoryForLinkData</a>. (If you set the
-  <a>Part.category</a> of a data bound <a>Part</a>, it will call the Model method for you.) This causes the diagram to discard any existing Part for the data
-  and re-create it using the new template that is associated with the new category value.
+  To change the representation of a data object, call <a>Model.setCategoryForNodeData</a> or <a>GraphLinksModel.setCategoryForLinkData</a>.
+  (If you set the <a>Part.category</a> of a data bound <a>Part</a>, it will call the Model method for you.)
+  This causes the diagram to discard any existing Part for the data and re-create it using the new template
+  that is associated with the new category value.
 </p>
 <pre class="lang-js" id="changingCategory"><code>
   // this function changes the category of the node data to cause the Node to be replaced
@@ -523,117 +539,139 @@
   // The "simple" template just shows the key string and the color in the background.
   // There is a Button to invoke the changeCategory function.
   const simpletemplate =
-    $(go.Node, "Spot",
-      $(go.Panel, "Auto",
-        $(go.Shape, "Ellipse",
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          new go.Binding("text", "key"))
-      ),
-      $("Button",
-        { alignment: go.Spot.TopRight },
-        $(go.Shape, "AsteriskLine", { width: 8, height: 8 }),
-        { click: changeCategory })
-    );
+    new go.Node("Spot")
+      .add(
+        new go.Panel("Auto")
+          .add(
+            new go.Shape("Ellipse")
+              .bind("fill", "color"),
+            new go.TextBlock()
+              .bind("text")
+          ),
+        go.GraphObject.build("Button", {
+            alignment: go.Spot.TopRight,
+            click: changeCategory
+          })
+          .add(
+            new go.Shape("AsteriskLine", { width: 8, height: 8 })
+          )
+      );
 
   // The "detailed" template shows all of the information in a Table Panel.
   // There is a Button to invoke the changeCategory function.
   const detailtemplate =
-    $(go.Node, "Spot",
-      $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle",
-          new go.Binding("fill", "color")),
-        $(go.Panel, "Table",
-          { defaultAlignment: go.Spot.Left },
-          $(go.TextBlock, { row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" },
-            new go.Binding("text", "key")),
-          $(go.TextBlock, { row: 1, column: 0 }, "Description:"),
-          $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "desc")),
-          $(go.TextBlock, { row: 2, column: 0 }, "Color:"),
-          $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "color"))
-        )
-      ),
-      $("Button",
-        { alignment: go.Spot.TopRight },
-        $(go.Shape, "AsteriskLine", { width: 8, height: 8 }),
-        { click: changeCategory })
-    );
+    new go.Node("Spot")
+      .add(
+        new go.Panel("Auto")
+          .add(
+            new go.Shape("RoundedRectangle")
+              .bind("fill", "color"),
+            new go.Panel("Table", { defaultAlignment: go.Spot.Left })
+              .add(
+                new go.TextBlock({ row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" })
+                  .bind("text"),
+                new go.TextBlock("Description:", { row: 1, column: 0 }),
+                new go.TextBlock({ row: 1, column: 1 })
+                  .bind("text", "desc"),
+                new go.TextBlock("Color:", { row: 2, column: 0 }),
+                new go.TextBlock({ row: 2, column: 1 })
+                  .bind("text", "color")
+              )
+          ),
+        go.GraphObject.build("Button", {
+            alignment: go.Spot.TopRight,
+            click: changeCategory
+          })
+          .add(
+            new go.Shape("AsteriskLine", { width: 8, height: 8 })
+          )
+      );
 
   const templmap = new go.Map(); // In TypeScript you could write: new go.Map&lt;string, go.Node&gt;();
   templmap.add("simple", simpletemplate);
   templmap.add("detailed", detailtemplate);
   diagram.nodeTemplateMap = templmap;
 
-  diagram.layout = $(go.TreeLayout);
+  diagram.layout = new go.TreeLayout();
 
   diagram.model.nodeDataArray = [
-    { key: "Beta", desc: "second letter", color: "lightblue", category: "simple" },
-    { key: "Gamma", desc: "third letter", color: "pink", category: "detailed" },
-    { key: "Delta", desc: "fourth letter", color: "cyan", category: "detailed" }
+    { key: 2, text: "Beta", desc: "second letter", color: "lightblue", category: "simple" },
+    { key: 3, text: "Gamma", desc: "third letter", color: "pink", category: "detailed" },
+    { key: 4, text: "Delta", desc: "fourth letter", color: "cyan", category: "detailed" }
   ];
   diagram.model.linkDataArray = [
-    { from: "Beta", to: "Gamma" },
-    { from: "Gamma", to: "Delta" }
+    { from: 2, to: 3 },
+    { from: 3, to: 4 }
   ];
 </code></pre>
 <script>
   goCode('changingCategory', 600, 150);
 </script>
-<p>Click on the "asterisk" button on any node to toggle dynamically between the "simple" and the "detailed" category for each node.</p>
+<p>
+  Click on the "asterisk" button on any node to toggle dynamically between the "simple" and the "detailed" category for each node.
+</p>
 
 <h2 id="ChangingTemplateMaps">Changing template maps</h2>
 <p>
-  You can also replace one or all of the diagram's template maps (e.g. <a>Diagram.nodeTemplateMap</a>) in order to discard and re-create all of the nodes in the
-  diagram. If you are only using the default template for nodes, you would only need to replace the <a>Diagram.nodeTemplate</a>.
+  You can also replace one or all of the diagram's template maps (e.g. <a>Diagram.nodeTemplateMap</a>)
+  in order to discard and re-create all of the nodes in the diagram.
+  If you are only using the default template for nodes, you would only need to replace the <a>Diagram.nodeTemplate</a>.
 </p>
 <p>
-  One common circumstance for doing this is as the <a>Diagram.scale</a> changes. When the user zooms out far enough, there is no point in having too much detail
-  about each of the nodes.
+  One common circumstance for doing this is as the <a>Diagram.scale</a> changes.
+  When the user zooms out far enough, there is no point in having too much detail about each of the nodes.
 </p>
 <p>
   If you zoom out in this example, the <a>DiagramEvent</a> listener will detect when the <a>Diagram.scale</a>
-  becomes small enough to use the simpler template for all of the nodes. Zoom in again and suddenly it uses the more detailed template.
+  becomes small enough to use the simpler template for all of the nodes.
+  Zoom in again and suddenly it uses the more detailed template.
 </p>
 <pre class="lang-js" id="changingMap"><code>
   // The "simple" template just shows the key string and the color in the background.
   const simpletemplate =
-    $(go.Node, "Spot",
-      $(go.Panel, "Auto",
-        $(go.Shape, "Ellipse",
-          new go.Binding("fill", "color")),
-        $(go.TextBlock,
-          new go.Binding("text", "key"))
-      )
-    );
+    new go.Node("Spot")
+      .add(
+        new go.Panel("Auto")
+          .add(
+            new go.Shape("Ellipse")
+              .bind("fill", "color"),
+            new go.TextBlock()
+              .bind("text", "key")
+          )
+      );
 
   // The "detailed" template shows all of the information in a Table Panel.
   const detailtemplate =
-    $(go.Node, "Spot",
-      $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle",
-          new go.Binding("fill", "color")),
-        $(go.Panel, "Table",
-          { defaultAlignment: go.Spot.Left },
-          $(go.TextBlock, { row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" },
-            new go.Binding("text", "key")),
-          $(go.TextBlock, { row: 1, column: 0 }, "Description:"),
-          $(go.TextBlock, { row: 1, column: 1 }, new go.Binding("text", "desc")),
-          $(go.TextBlock, { row: 2, column: 0 }, "Color:"),
-          $(go.TextBlock, { row: 2, column: 1 }, new go.Binding("text", "color"))
-        )
-      )
-    );
+    new go.Node("Spot")
+      .add(
+        new go.Panel("Auto")
+          .add(
+            new go.Shape("RoundedRectangle")
+              .bind("fill", "color"),
+            new go.Panel("Table", { defaultAlignment: go.Spot.Left })
+              .add(
+                new go.TextBlock({ row: 0, column: 0, columnSpan: 2, font: "bold 12pt sans-serif" })
+                  .bind("text"),
+                new go.TextBlock("Description:", { row: 1, column: 0 }),
+                new go.TextBlock({ row: 1, column: 1 })
+                  .bind("text", "desc"),
+                new go.TextBlock("Color:", { row: 2, column: 0 }),
+                new go.TextBlock({ row: 2, column: 1 })
+                  .bind("text", "color")
+              )
+          )
+      );
 
-  diagram.layout = $(go.TreeLayout);
+  diagram.layout = new go.TreeLayout();
 
   diagram.model.nodeDataArray = [
-    { key: "Beta", desc: "second letter", color: "lightblue" },
-    { key: "Gamma", desc: "third letter", color: "pink" },
-    { key: "Delta", desc: "fourth letter", color: "cyan" }
+    { key: 2, text: "Beta", desc: "second letter", color: "lightblue" },
+    { key: 3, text: "Gamma", desc: "third letter", color: "pink" },
+    { key: 4, text: "Delta", desc: "fourth letter", color: "cyan" }
   ];
   diagram.model.linkDataArray = [
-    { from: "Beta", to: "Gamma" },
-    { from: "Gamma", to: "Delta" }
+    { from: 2, to: 3 },
+    { from: 3, to: 4 }
   ];
 
   // initially use the detailed templates
@@ -657,11 +695,14 @@
 <input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
 <input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
 <p>
-  Caution: if you modify a template <a>Map</a>, there is no notification that the map has changed. You will need to call <a>Diagram.rebuildParts</a> explicitly.
-  If you are replacing the <a>Diagram.nodeTemplate</a> or the <a>Diagram.nodeTemplateMap</a> or the corresponding properties for Groups or Links, the Diagram
-  property setters will automatically call <a>Diagram.rebuildParts</a>.
+  Caution: if you modify a template <a>Map</a>, there is no notification that the map has changed.
+  You will need to call <a>Diagram.rebuildParts</a> explicitly.
+  If you are replacing the <a>Diagram.nodeTemplate</a> or the <a>Diagram.nodeTemplateMap</a> or the
+  corresponding properties for Groups or Links, the Diagram property setters will automatically call <a>Diagram.rebuildParts</a>.
 </p>
-<p>When one or more templates are replaced in a diagram, layouts are automatically performed again.</p>
+<p>
+  When one or more templates are replaced in a diagram, layouts are automatically performed again.
+</p>
 
       </div>
     </div>
@@ -674,19 +715,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

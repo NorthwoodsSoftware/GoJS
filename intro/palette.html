@@ -262,14 +262,16 @@
 </p>
 <pre class="lang-js" id="diagramPre"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: "white" },
-        new go.Binding("fill", "color"),
-        { portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer" }),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle", {
+            fill: "white",
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer"
+          })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "color")
+      );
 
   diagram.undoManager.isEnabled = true;
 
@@ -279,13 +281,13 @@
 
   // the Palette's node template is different from the main Diagram's
   myPalette.nodeTemplate =
-    $(go.Node, "Horizontal",
-      $(go.Shape,
-        { width: 14, height: 14, fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        new go.Binding("text", "color"))
-    );
+    new go.Node("Horizontal")
+      .add(
+        new go.Shape({ width: 14, height: 14, fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 2 })
+          .bind("text", "color")
+      );
 
   // the list of data to show in the Palette
   myPalette.model.nodeDataArray = [
@@ -303,19 +305,20 @@
   var myPalette2 =
     new go.Palette("myPaletteDiv2",
       { // customize the GridLayout to align the centers of the locationObjects
-        layout: $(go.GridLayout, { alignment: go.GridAlignment.Location })
+        layout: new go.GridLayout({ alignment: go.GridAlignment.Location })
       });
 
   // the Palette's node template is different from the main Diagram's
   myPalette2.nodeTemplate =
-    $(go.Node, "Vertical",
-      { locationObjectName: "TB", locationSpot: go.Spot.Center },
-      $(go.Shape,
-        { width: 20, height: 20, fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock, { name: "TB" },
-        new go.Binding("text", "color"))
-    );
+    new go.Node("Vertical", {
+        locationObjectName: "TB", locationSpot: go.Spot.Center
+      })
+      .add(
+        new go.Shape({ width: 20, height: 20, fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ name: "TB" })
+          .bind("text", "color")
+      );
 
   // the list of data to show in the Palette
   myPalette2.model.nodeDataArray = [
@@ -389,19 +392,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

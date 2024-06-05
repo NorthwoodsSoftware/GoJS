@@ -247,7 +247,9 @@
         
 <h1>HTML Interaction</h1>
 
-<p>This intro page explains how to use GoJS Diagrams alongside other HTML elements in a webapp.</p>
+<p>
+  This intro page explains how to use GoJS Diagrams alongside other HTML elements in a webapp.
+</p>
 
 <p>
   For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a>HTMLInfo</a> class.
@@ -308,9 +310,13 @@
 </code></pre>
 
 <h2 id="HTMLInfoClass">The HTMLInfo Class</h2>
-<p>Use the <a>HTMLInfo</a> class to display custom HTML page elements, such as a context menu, tooltip, or text editor made of HTML.</p>
+<p>
+  Use the <a>HTMLInfo</a> class to display custom HTML page elements, such as a context menu, tooltip, or text editor made of HTML.
+</p>
 
-<p>Properties that can be set to an instance of <code>HTMLInfo</code> include:</p>
+<p>
+  Properties that can be set to an instance of <code>HTMLInfo</code> include:
+</p>
 
 <ul>
   <li><a>TextEditingTool.defaultTextEditor</a></li>
@@ -385,7 +391,7 @@
     var pt = diagram.lastInput.viewPoint;
     toolTipDIV.style.left = (pt.x + 10) + "px";
     toolTipDIV.style.top = (pt.y + 10) + "px";
-    document.getElementById('toolTipParagraph').textContent = "Tooltip for: " + obj.data.key;
+    document.getElementById('toolTipParagraph').textContent = "Tooltip for: " + obj.data.text;
     toolTipDIV.style.display = "block";
   }
 
@@ -394,7 +400,7 @@
    toolTipDIV.style.display = "none";
   }
 
-  var myToolTip = $(go.HTMLInfo, {
+  var myToolTip = new go.HTMLInfo({
     show: showToolTip,
     hide: hideToolTip
     /*
@@ -405,23 +411,20 @@
   });
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      {
-        toolTip: myToolTip
-      },
-      $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 8 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { toolTip: myToolTip })
+      .add(
+        new go.Shape("RoundedRectangle", { strokeWidth: 0})
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 8 })
+          .bind("text")
+      );
 
   diagram.model = new go.GraphLinksModel(
   [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "orange" },
-    { key: "Gamma", color: "lightgreen" },
-    { key: "Delta", color: "pink" }
+    { text: "Alpha", color: "lightblue" },
+    { text: "Beta", color: "orange" },
+    { text: "Gamma", color: "lightgreen" },
+    { text: "Delta", color: "pink" }
   ]);
 </code></pre>
 
@@ -444,7 +447,7 @@
 </p>
 
 <pre class="lang-js"><code>// Assign an HTMLInfo to the Diagram:
-myDiagram.contextMenu = $(go.HTMLInfo, {
+myDiagram.contextMenu = new go.HTMLInfo({
   show: showContextMenu,
   hide: hideContextMenu
 });
@@ -490,13 +493,17 @@ function buttonClick() {
 <pre class="lang-js" id="textEditorExample"><code>
 // Diagram setup. The HTMLInfo is set at the end of this code block.
 diagram.nodeTemplate =
-  $(go.Node, "Auto",
-    $(go.Shape, "RoundedRectangle", { strokeWidth: 0},
-      new go.Binding("fill", "color")),
-    $(go.TextBlock,
-      { editable: true, margin: 8, choices: ['Alpha', 'Beta', 'Gamma', 'Delta'] },
-      new go.Binding("text"))
-  );
+  new go.Node("Auto")
+    .add(
+      new go.Shape("RoundedRectangle", { strokeWidth: 0})
+        .bind("fill", "color"),
+      new go.TextBlock({
+          editable: true,
+          margin: 8,
+          choices: ['Alpha', 'Beta', 'Gamma', 'Delta']
+        })
+        .bind("text")
+    );
 
 diagram.model = new go.GraphLinksModel(
 [
@@ -553,6 +560,7 @@ customEditor.show = (textBlock, diagram, tool) => {
   customSelectBox.style.zIndex = 100; // place it in front of the Diagram
 
   diagram.div.appendChild(customSelectBox);
+  customSelectBox.focus();
 }
 
 customEditor.hide = (diagram, tool) => {
@@ -581,19 +589,19 @@ diagram.toolManager.textEditingTool.defaultTextEditor = customEditor;
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

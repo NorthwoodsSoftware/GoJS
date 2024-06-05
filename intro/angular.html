@@ -246,51 +246,54 @@
       <div class="px-4 pb-16 w-full overflow-hidden prose">
         
 <div id="container" class="container-fluid">
-    <div id="content">
+  <div id="content">
+    <h1>Using GoJS with Angular</h1>
+    <p class="box" style="background-color: lightgoldenrodyellow;">
+      Examples of most of the topics discussed on this page can be found in the <a
+        href="https://github.com/NorthwoodsSoftware/gojs-angular-basic" target="_blank">gojs-angular-basic</a>
+      project,
+      which serves as a simple starter project.
+    </p>
 
-        <h1>Using GoJS with Angular</h1>
-        <p class="box" style="background-color: lightgoldenrodyellow;">
-            Examples of most of the topics discussed on this page can be found in the <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic"
-                                                                                         target="_blank">gojs-angular-basic</a>
-            project,
-            which serves as a simple starter project.
-        </p>
+    <p>
+      If you are new to GoJS, it may be helpful to first visit the <a href="../learn/index.html" target="_blank">
+        Getting
+        Started Tutorial
+      </a>.
+    </p>
 
-        <p>
-            If you are new to GoJS, it may be helpful to first visit the <a href="../learn/index.html" target="_blank">
-                Getting
-                Started Tutorial
-            </a>.
-        </p>
+    <p>
+      The easiest way to get a component set up for a GoJS Diagram is to use the <a
+        href="https://github.com/NorthwoodsSoftware/gojs-angular" target="_blank">gojs-angular</a>
+      package,
+      which exports Angular Components for GoJS Diagrams, Palettes, and Overviews.
+      More information about the package, including the various props it takes, can be found on the
+      <a href="https://npmjs.com/gojs-angular" target="_blank">NPM</a> page. Examples here will be using a
+      <a>GraphLinksModel</a>,
+      but any model can be used.
+    </p>
 
-        <p>
-            The easiest way to get a component set up for a GoJS Diagram is to use the <a href="https://github.com/NorthwoodsSoftware/gojs-angular" target="_blank">gojs-angular</a>
-            package,
-            which exports Angular Components for GoJS Diagrams, Palettes, and Overviews.
-            More information about the package, including the various props it takes, can be found on the
-            <a href="https://npmjs.com/gojs-angular" target="_blank">NPM</a> page. Examples here will be using a <a>GraphLinksModel</a>,
-            but any model can be used.
-        </p>
+    <p>
+      <b>Note:</b> This page is assumes use of <code>gojs-angular</code> version 2.0+. <a href="#MigratingTo2.0">Click
+        here</a> for a discussion
+      on upgrading to version 2.0.
+    </p>
 
-        <p>
-            <b>Note:</b> This page is assumes use of <code>gojs-angular</code> version 2.0+. <a href="#MigratingTo2.0">Click here</a> for a discussion
-            on upgrading to version 2.0.
-        </p>
+    <h2 id="GeneralInformation">General Information</h2>
+    <h3 id="Installation">Installation</h3>
+    <p>
+      To use the published components, make sure you install GoJS and gojs-angular:
+      <code>npm install gojs gojs-angular</code>.
+    </p>
 
-        <h2 id="GeneralInformation">General Information</h2>
-        <h3 id="Installation">Installation</h3>
-        <p>
-            To use the published components, make sure you install GoJS and gojs-angular: <code>npm install gojs gojs-angular</code>.
-        </p>
-
-        <h3 id="AboutComponentStyling">About Component Styling</h3>
-        <p>
-            Whether you are using a Diagram, Palette, or Overview <code>gojs-angular</code> component, you will
-            probably
-            want to style them.
-            First, you'll need to style a CSS class for the div of your GoJS Diagram / Palette / Overview such as:
-        </p>
-        <pre class="lang-css"> <code>
+    <h3 id="AboutComponentStyling">About Component Styling</h3>
+    <p>
+      Whether you are using a Diagram, Palette, or Overview <code>gojs-angular</code> component, you will
+      probably
+      want to style them.
+      First, you'll need to style a CSS class for the div of your GoJS Diagram / Palette / Overview such as:
+    </p>
+    <pre class="lang-css"> <code>
 /* app.component.css */
 .myDiagramDiv {
   background: whitesmoke;
@@ -298,165 +301,174 @@
   height: 300px;
   border: 1px solid black;
 }
-           </code> </pre>
+    </code> </pre>
 
-        <p>
-            To style the GoJS Diagram / Palette / Overview div, which will reside in the <code>gojs-angular</code>
-            component(s) you are using, make sure you set the <code>@Component</code> decorator's <code>encapsulation</code>
-            property to either
-            <code>ViewEncapsulation.None</code> or <code>ViewEncapsulation.ShadowDown</code>. Without this, your
-            styling will not effect
-            the
-            component divs.
-            Read more about Angular view encapsulation <a href="https://angular.io/api/core/ViewEncapsulation">here</a>.
-        </p>
-        <p>
-            Your <code>@Component</code> decorator for the component holding the your GoJS / Angular Component(s)
-            should
-            look something
-            like:
-        </p>
-        <pre class="lang-ts"> <code>
+    <p>
+      To style the GoJS Diagram / Palette / Overview div, which will reside in the <code>gojs-angular</code>
+      component(s) you are using, make sure you set the <code>@Component</code> decorator's <code>encapsulation</code>
+      property to either
+      <code>ViewEncapsulation.None</code> or <code>ViewEncapsulation.ShadowDown</code>. Without this, your
+      styling will not effect
+      the
+      component divs.
+      Read more about Angular view encapsulation <a href="https://angular.io/api/core/ViewEncapsulation">here</a>.
+    </p>
+    <p>
+      Your <code>@Component</code> decorator for the component holding the your GoJS / Angular Component(s)
+      should
+      look something
+      like:
+    </p>
+    <pre class="lang-ts"> <code>
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-</code></pre>
-        <p>
-            <strong>Note:</strong> You may alternatively use the default <code>ViewEncapsulation.Emulated</code>
-            value, if you assign additional CSS modifiers :host and ::ng-deep to your class selector. Be warned,
-            however, ng-deep is technically deprecated, so this is not best practice.
-        </p>
+    </code></pre>
+    <p>
+      <strong>Note:</strong> You may alternatively use the default <code>ViewEncapsulation.Emulated</code>
+      value, if you assign additional CSS modifiers :host and ::ng-deep to your class selector. Be warned,
+      however, ng-deep is technically deprecated, so this is not best practice.
+    </p>
 
-        <h2 id="DataSyncService">The DataSyncService</h2>
+    <h2 id="DataSyncService">The DataSyncService</h2>
 
-        <p>
-            The <code>gojs-angular</code> package comes with an Angular <a href="https://angular.io/tutorial/toh-pt4">service</a>
-            called DataSyncService, used to
-            easily merge changes (a <a href="https://gojs.net/latest/api/symbols/IncrementalData.html">go.IncrementalData</a>
-            instance) with an Array of Node or Link Data, or a <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">
-                modelData
-            </a> object.
-        </p>
-        <p>This service has three static functions: </p>
-        <ul>
-            <li>
-                <code>syncNodeData(changes, array)</code> - Merges any node data changes in a go.IncrementalData
-                object
-                with a given array of node data, then returns the new array
-            </li>
-            <li>
-                <code>syncLinkData(changes, array)</code> - Merges any link data changes in a go.IncrementalData
-                object
-                with a given array of link data, then returns the new array. <strong>Note</strong>: Ensure you set
-                the <a href="https://gojs.net/latest/api/symbols/GraphLinksModel.html#linkKeyProperty">linkKeyProperty</a>
-                if you are using GraphLinksModel, so data merging is possible.
-            </li>
-            <li>
-                <code>syncModelData(changes, object)</code> - Merges any modelData changes in a go.IncrementalData
-                object
-                with a given modelData object, then returns the new object
-            </li>
-        </ul>
+    <p>
+      The <code>gojs-angular</code> package comes with an Angular <a
+        href="https://angular.io/tutorial/toh-pt4">service</a>
+      called DataSyncService, used to
+      easily merge changes (a <a href="https://gojs.net/latest/api/symbols/IncrementalData.html">go.IncrementalData</a>
+      instance) with an Array of Node or Link Data, or a <a
+        href="https://gojs.net/latest/api/symbols/Model.html#modelData">
+        modelData
+      </a> object.
+    </p>
+    <p>
+      This service has three static functions:
+    </p>
+    <ul>
+      <li>
+        <code>syncNodeData(changes, array)</code> - Merges any node data changes in a go.IncrementalData
+        object
+        with a given array of node data, then returns the new array
+      </li>
+      <li>
+        <code>syncLinkData(changes, array)</code> - Merges any link data changes in a go.IncrementalData
+        object
+        with a given array of link data, then returns the new array. <strong>Note</strong>: Ensure you set
+        the <a href="https://gojs.net/latest/api/symbols/GraphLinksModel.html#linkKeyProperty">linkKeyProperty</a>
+        if you are using GraphLinksModel, so data merging is possible.
+      </li>
+      <li>
+        <code>syncModelData(changes, object)</code> - Merges any modelData changes in a go.IncrementalData
+        object
+        with a given modelData object, then returns the new object
+      </li>
+    </ul>
 
-        <p>
-            These functions should allow you to keep your data synced up as needed, without needing to write lots
-            of
-            code.
-        </p>
+    <p>
+      These functions should allow you to keep your data synced up as needed, without needing to write lots
+      of
+      code.
+    </p>
 
-        <h3 id="ListeningForModelChanges">Listening for Model Changes</h3>
-        <p>
-            It is common to listen for data changes in a Diagram or Palette, then do
-            something with
-            those changes on an application-level (such as syncing those changes with app-level data). That's why,
-            for both the DiagramComponent
-            and
-            PaletteComponent, there is a <code>modelChange</code> <code>@Input</code> property function. This is a
-            prime example of where the DataSyncService can be used.
-        </p>
+    <h3 id="ListeningForModelChanges">Listening for Model Changes</h3>
+    <p>
+      It is common to listen for data changes in a Diagram or Palette, then do
+      something with
+      those changes on an application-level (such as syncing those changes with app-level data). That's why,
+      for both the DiagramComponent
+      and
+      PaletteComponent, there is a <code>modelChange</code> <code>@Input</code> property function. This is a
+      prime example of where the DataSyncService can be used.
+    </p>
 
-        <p>
-            As of <code>gojs-angular</code> 2.0, Array / object <code>@Input</code>
-            properties are assumed to be immutable. As such, when updating these properties, new Arrays / objects
-            must be generated -- one cannot simply mutate an element of the Array or object.
-            Please see the <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>
-            project for examples of both maintaining state immutability and usage of the DataSyncService.
-        </p>
+    <p>
+      As of <code>gojs-angular</code> 2.0, Array / object <code>@Input</code>
+      properties are assumed to be immutable. As such, when updating these properties, new Arrays / objects
+      must be generated -- one cannot simply mutate an element of the Array or object.
+      Please see the <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>
+      project for examples of both maintaining state immutability and usage of the DataSyncService.
+    </p>
 
-        <p>
-            <strong>Note:</strong> The <a href="https://gojs.net/latest/api/symbols/UndoManager.html">UndoManager</a>
-            should always be
-            enabled to allow for transactions to take place, but its
-            <a href="https://gojs.net/latest/api/symbols/UndoManager.html#maxHistoryLength">maxHistoryLength</a>
-            can be set to 0 to prevent undo and redo.
-        </p>
+    <p>
+      <strong>Note:</strong> The <a href="https://gojs.net/latest/api/symbols/UndoManager.html">UndoManager</a>
+      should always be
+      enabled to allow for transactions to take place, but its
+      <a href="https://gojs.net/latest/api/symbols/UndoManager.html#maxHistoryLength">maxHistoryLength</a>
+      can be set to 0 to prevent undo and redo.
+    </p>
 
-        <br>
-        <h2 id="UsingDiagramComponent">The Diagram and Palette Components</h2>
-        <p>The Diagram and Palette Components accept a similar set of <code>@Input</code> properties.</p>
-        <p>
-            Diagram Component accepts:
-            <ul>
-                <li>
-                    <code>initDiagram</code> - A function that must return a GoJS Diagram. You may define your
-                    Diagram's
-                    Node
-                    and Link templates here.
-                </li>
-                <li><code>divClassName</code> - A class name for your Diagram div</li>
-                <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
-                <li><code>linkDataArray</code> - An array containing data objects for your links. Optional. </li>
-                <li>
-                    <code>modelData</code> - A data object,
-                    containing your diagram's <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
-                    Optional.
-                <li>
-                    <code>skipsDiagramUpdate</code> - A boolean flag, specifying whether the component should skip
-                    updating,
-                    often set when updating state from a GoJS model change.
-                </li>
-                <li>
-                    <code>modelChange</code> - A function, which accepts a <a href="">go.IncrementalData</a>
-                    object.
-                    This function will fire when your Diagram's model changes, allowing you to decide what to do
-                    with those
-                    changes. A common practice is to sync your app-level data to reflect the changes in the diagram
-                    model,
-                    which
-                    is made simple using the DataSyncService <code>gojs-angular</code> ships with.
-                </li>
-            </ul>
-        </p>
+    <br>
+    <h2 id="UsingDiagramComponent">The Diagram and Palette Components</h2>
+    <p>
+      The Diagram and Palette Components accept a similar set of <code>@Input</code> properties.
+    </p>
+    <p>
+      Diagram Component accepts:
+    <ul>
+      <li>
+        <code>initDiagram</code> - A function that must return a GoJS Diagram. You may define your
+        Diagram's
+        Node
+        and Link templates here.
+      </li>
+      <li><code>divClassName</code> - A class name for your Diagram div</li>
+      <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
+      <li><code>linkDataArray</code> - An array containing data objects for your links. Optional. </li>
+      <li>
+        <code>modelData</code> - A data object,
+        containing your diagram's <a
+          href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
+        Optional.
+      <li>
+        <code>skipsDiagramUpdate</code> - A boolean flag, specifying whether the component should skip
+        updating,
+        often set when updating state from a GoJS model change.
+      </li>
+      <li>
+        <code>modelChange</code> - A function, which accepts a <a href="">go.IncrementalData</a>
+        object.
+        This function will fire when your Diagram's model changes, allowing you to decide what to do
+        with those
+        changes. A common practice is to sync your app-level data to reflect the changes in the diagram
+        model,
+        which
+        is made simple using the DataSyncService <code>gojs-angular</code> ships with.
+      </li>
+    </ul>
+    </p>
 
-        <p>
-            The Palette Component accepts:
-        </p>
-        <ul>
-            <li>
-                <code>initPalette</code> - A function that must return a GoJS Palette. You may define your
-                Palette's Node
-                and Link templates here.
-            </li>
-            <li><code>divClassName</code> - A class name for the div your Palette div</li>
-            <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
-            <li><code>linkDataArray</code> - An array containing data objects for your links. Optional. </li>
-            <li>
-                <code>modelData</code> - A data object,
-                containing your palette's <a href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
-                Optional.
-        </ul>
-        <p>
-            Because GoJS Palettes are read-only by default, there is no <code>modelChange</code> property in PaletteComponent. Since there won't be user-driven changes to a Palette's model,
-            changes to node/link/model data should be achieved by immutably altering the analogous above @Input properties.
-        </p>
+    <p>
+      The Palette Component accepts:
+    </p>
+    <ul>
+      <li>
+        <code>initPalette</code> - A function that must return a GoJS Palette. You may define your
+        Palette's Node
+        and Link templates here.
+      </li>
+      <li><code>divClassName</code> - A class name for the div your Palette div</li>
+      <li><code>nodeDataArray</code> - An array containing data objects for your nodes </li>
+      <li><code>linkDataArray</code> - An array containing data objects for your links. Optional. </li>
+      <li>
+        <code>modelData</code> - A data object,
+        containing your palette's <a
+          href="https://gojs.net/latest/api/symbols/Model.html#modelData">model.modelData</a>.
+        Optional.
+    </ul>
+    <p>
+      Because GoJS Palettes are read-only by default, there is no <code>modelChange</code> property in PaletteComponent.
+      Since there won't be user-driven changes to a Palette's model,
+      changes to node/link/model data should be achieved by immutably altering the analogous above @Input properties.
+    </p>
 
-        <h2>Sample Diagram / Palette Component Usage</h2>
-        <p>
-            Here is an example of how one might set up their Diagram / Palette component properties
-            <pre class="lang-ts"> <code>
+    <h2>Sample Diagram / Palette Component Usage</h2>
+    <p>
+      Here is an example of how one might set up their Diagram / Palette component properties
+    <pre class="lang-ts"> <code>
 // Big object that holds app-level state data
 // As of gojs-angular 2.0, immutability is required of state for change detection
 public state = {
@@ -495,21 +507,22 @@ public initDiagram(): go.Diagram {
 
   // define the Node template
   dia.nodeTemplate =
-    new go.Node('Auto').add(
-      new go.Shape('RoundedRectangle', { stroke: null })
-        .bind('fill', 'color'),
-      new go.TextBlock({ margin: 8, editable: true })
-        .bindTwoWay('text', 'text')
-    );
+    new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', { stroke: null })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8, editable: true })
+          .bindTwoWay('text', 'text')
+      );
 
   return dia;
 }
 
 /**
- * Handle GoJS model changes, which output an object of data changes via Mode.toIncrementalData.
- * This method should iterate over thoe changes and update state to keep in sync with the FoJS model.
- * This can be done with any preferred state management method, as long as immutability is preserved.
- */
+  * Handle GoJS model changes, which output an object of data changes via Mode.toIncrementalData.
+  * This method should iterate over thoe changes and update state to keep in sync with the FoJS model.
+  * This can be done with any preferred state management method, as long as immutability is preserved.
+  */
 public diagramModelChange = function(changes: go.IncrementalData) {
   console.log(changes);
   // see gojs-angular-basic for an example model changed handler that preserves immutability
@@ -521,12 +534,13 @@ public initPalette(): go.Palette {
 
   // define the Node template
   palette.nodeTemplate =
-    new go.Node('Auto').add(
-      new go.Shape('RoundedRectangle', { stroke: null })
-        .bind('fill', 'color'),
-      new go.TextBlock({ margin: 8 })
-        .bind('text', 'key')
-    );
+    new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', { stroke: null })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 })
+          .bind('text', 'key')
+      );
 
   palette.model = new go.GraphLinksModel(
     {
@@ -535,14 +549,14 @@ public initPalette(): go.Palette {
 
   return palette;
 }
-</code></pre>
+    </code></pre>
 
-        <p>
-            Once you've defined your <code>@Input</code> properties for your components, pass these properties
-            to your DiagramComponent and PaletteComponent in your template, like so:
-        </p>
+    <p>
+      Once you've defined your <code>@Input</code> properties for your components, pass these properties
+      to your DiagramComponent and PaletteComponent in your template, like so:
+    </p>
 
-        <pre class="lang-html"> <code>
+    <pre class="lang-html"> <code>
 &lt;gojs-diagram
   [initDiagram]='initDiagram'
   [nodeDataArray]='state.diagramNodeData'
@@ -558,32 +572,34 @@ public initPalette(): go.Palette {
   [nodeDataArray]='state.paletteNodeData'
   [divClassName]='paletteDivClassName'&gt;
 &lt;/gojs-palette&gt;
-</code></pre>
+    </code></pre>
 
-  <p>
-    You will now have a GoJS Diagram and Palette working in your Angular application. Again, for a full
-    example of a <code>gojs-angular</code> application, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>.
-  </p>
+    <p>
+      You will now have a GoJS Diagram and Palette working in your Angular application. Again, for a full
+      example of a <code>gojs-angular</code> application, see <a
+        href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>.
+    </p>
 
-  <h4>A Note on Diagram Reinitialization</h4>
-  <p>
-    Occasionally you may want to treat a model update as if you were loading a completely new model.
-    But initialization is only done in your <code>initDiagram</code> function,
-    within the <code>DiagramComponent</code>'s <code>ngAfterViewInit</code> lifecycle hook, and only once.
-    A regular model update is not treated as an initialization, so none of the <code>initial...</code> properties
-    of your Diagram will apply.
-  </p>
-  <p>
-    To address this problem, <code>DiagramComponent</code> exposes a <code>clear</code> method.
-    When called, it clears its diagram of all nodes, links, and model data, and
-    prepares the next state update to be treated as a diagram initialization.
-    That will result in an initial layout and perform initial diagram content alignment and scaling.
-    Note that <code>initDiagram</code> is not called again.
-  </p>
-  <p>
-    Here is a small sample of how one might trigger diagram reinitilization using the <code>clear</code> method with <code>gojs-angular</code> 2.0.
-  </p>
-<pre class="lang-ts"><code>
+    <h4>A Note on Diagram Reinitialization</h4>
+    <p>
+      Occasionally you may want to treat a model update as if you were loading a completely new model.
+      But initialization is only done in your <code>initDiagram</code> function,
+      within the <code>DiagramComponent</code>'s <code>ngAfterViewInit</code> lifecycle hook, and only once.
+      A regular model update is not treated as an initialization, so none of the <code>initial...</code> properties
+      of your Diagram will apply.
+    </p>
+    <p>
+      To address this problem, <code>DiagramComponent</code> exposes a <code>clear</code> method.
+      When called, it clears its diagram of all nodes, links, and model data, and
+      prepares the next state update to be treated as a diagram initialization.
+      That will result in an initial layout and perform initial diagram content alignment and scaling.
+      Note that <code>initDiagram</code> is not called again.
+    </p>
+    <p>
+      Here is a small sample of how one might trigger diagram reinitilization using the <code>clear</code> method with
+      <code>gojs-angular</code> 2.0.
+    </p>
+    <pre class="lang-ts"><code>
 public reinitModel() {
     this.myDiagramComponent.clear();
     this.state = produce(this.state, draft => {
@@ -592,64 +608,67 @@ public reinitModel() {
         draft.diagramLinkData = [];
     });
 }
-</code></pre>
+    </code></pre>
 
-        <br>
-        <h2 id="UsingOverviewComponent">Using the Overview Component</h2>
-        <p>
-            The Overview Component accepts the following Angular <code>@Input()</code> properties.
-        </p>
-        <ul>
-            <li><code>initOverview</code> - A function that must return a GoJS Overview.</li>
-            <li><code>divClassName</code> - A class name for your Overview div</li>
-            <li><code>observedDiagram</code> - The GoJS Diagram this Overview observes</li>
-        </ul>
+    <br>
+    <h2 id="UsingOverviewComponent">Using the Overview Component</h2>
+    <p>
+      The Overview Component accepts the following Angular <code>@Input()</code> properties.
+    </p>
+    <ul>
+      <li><code>initOverview</code> - A function that must return a GoJS Overview.</li>
+      <li><code>divClassName</code> - A class name for your Overview div</li>
+      <li><code>observedDiagram</code> - The GoJS Diagram this Overview observes</li>
+    </ul>
 
-        <p>
-            Define these properties in the component that will hold your Overview Component, like:
-        </p>
+    <p>
+      Define these properties in the component that will hold your Overview Component, like:
+    </p>
 
-        <pre class="lang-ts"> <code>
+    <pre class="lang-ts"> <code>
 public oDivClassName = 'myOverviewDiv';
 public initOverview(): go.Overview {
   return new go.Overview();
 }
-public observedDiagram = null;</code></pre>
+public observedDiagram = null;
+    </code></pre>
 
-        <p>
-            Then pass these properties to your Overview Component in your template, like:
-        </p>
+    <p>
+      Then pass these properties to your Overview Component in your template, like:
+    </p>
 
-        <pre class="lang-html"> <code>
+    <pre class="lang-html"> <code>
 &lt;gojs-overview
   [initOverview]='initOverview'
   [divClassName]='oDivClassName'
   [observedDiagram]='observedDiagram'&gt;
-&lt;/gojs-overview&gt; </code></pre>
+&lt;/gojs-overview&gt;
+    </code></pre>
 
-        <p>
-            But, we're not done yet. <code>observedDiagram</code> is null, so the Overview won't observe
-            anything.
-            To assign your Overview a Diagram to observe, you will have to reassign the <code>observedDiagram</code>
-            property after initialization. To do so,
-            reassign the bound <code>observedDiagram</code> property in your component holding your Overview
-            Component in the <code>ngAfterViewInit</code> lifecycle hook.
-        </p>
-        <p>
-            <strong>Note</strong>: To avoid a <code>ExpressionChangedAfterItHasBeenCheckedError</code>, you
-            must
-            inform
-            Angular
-            to then detect changes.
-            This can be done with the <a href="https://angular.io/api/core/ChangeDetectorRef#detectchanges">ChangeDetectorRef.detectChanges()</a>
-            method. You can inject a ChangeDetectorRef instance
-            into your wrapper Component constructor, and use that after you alter <code>observedDiagram</code>
-            to
-            call
-            detectChanges(). Like so:
-        </p>
+    <p>
+      But, we're not done yet. <code>observedDiagram</code> is null, so the Overview won't observe
+      anything.
+      To assign your Overview a Diagram to observe, you will have to reassign the <code>observedDiagram</code>
+      property after initialization. To do so,
+      reassign the bound <code>observedDiagram</code> property in your component holding your Overview
+      Component in the <code>ngAfterViewInit</code> lifecycle hook.
+    </p>
+    <p>
+      <strong>Note</strong>: To avoid a <code>ExpressionChangedAfterItHasBeenCheckedError</code>, you
+      must
+      inform
+      Angular
+      to then detect changes.
+      This can be done with the <a
+        href="https://angular.io/api/core/ChangeDetectorRef#detectchanges">ChangeDetectorRef.detectChanges()</a>
+      method. You can inject a ChangeDetectorRef instance
+      into your wrapper Component constructor, and use that after you alter <code>observedDiagram</code>
+      to
+      call
+      detectChanges(). Like so:
+    </p>
 
-        <pre class="lang-ts"> <code>
+    <pre class="lang-ts"> <code>
 constructor(private cdr: ChangeDetectorRef) { }
 
 public ngAfterViewInit() {
@@ -661,37 +680,36 @@ public ngAfterViewInit() {
   // IMPORTANT: without this, Angular will throw ExpressionChangedAfterItHasBeenCheckedError (dev mode only)
   this.cdr.detectChanges();
 }
-       </code></pre>
+    </code></pre>
 
-        <p>
-            Now, after initialization, your Overview should display appropriately.
-        </p>
+    <p>
+      Now, after initialization, your Overview should display appropriately.
+    </p>
 
-        <br>
-        <h2 id="UpdatingPropertiesBasedOnAppState">Updating Properties Based on App State</h2>
-        <p>
-            You may have some app-level properties you want to affect the behavior / appearance of your
-            Diagram,
-            Palette,
-            or Overview. You could subclass their respective components and add <code>@Input</code> bindings
-            with
-            specific
-            setter methods, or, more simply, you can have an <code>ngOnChanges</code> function in your
-            app-level
-            component
-            that updates various Diagram / Palette / Component properties based on your app state.
-        </p>
+    <br>
+    <h2 id="UpdatingPropertiesBasedOnAppState">Updating Properties Based on App State</h2>
+    <p>
+      You may have some app-level properties you want to affect the behavior / appearance of your
+      Diagram,
+      Palette,
+      or Overview. You could subclass their respective components and add <code>@Input</code> bindings
+      with
+      specific
+      setter methods, or, more simply, you can have an <code>ngOnChanges</code> function in your
+      app-level
+      component
+      that updates various Diagram / Palette / Component properties based on your app state.
+    </p>
 
-        <p>
-            For example, say you have an app-level property called <code>showGrid</code>. When <code>showGrid</code>
-            is
-            true, your Diagram's grid should be visible -- when false, it should be invisible. In your
-            AppComponent, you
-            could do something like:
-        </p>
+    <p>
+      For example, say you have an app-level property called <code>showGrid</code>. When <code>showGrid</code>
+      is
+      true, your Diagram's grid should be visible -- when false, it should be invisible. In your
+      AppComponent, you
+      could do something like:
+    </p>
 
-        <pre class="lang-ts"> <code>
-
+    <pre class="lang-ts"> <code>
 // myDiagramComponent is a reference to your DiagramComponent
 @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
 
@@ -701,75 +719,89 @@ public ngOnChanges () {
     this.myDiagramComponent.diagram.grid.visible = this.showGrid;
   }
 }
-      </code></pre>
+    </code></pre>
 
-        <h2 id="MigratingTo2.0">Migrating to 2.0</h2>
-        <p>
-            This page assumes use of <code>gojs-angular</code> version 2.0, which
-            requires
-            immutable state, unlike version 1.0. It is recommended to use the 2.0 version. If you have a
-            <code>gojs-angular</code> project using version 1.x and want to upgrade, reference this section for tips on migrating to version 2.
-        </p>
-        <h3>Should I Upgrade?</h3>
-        <p>
-            In general, yes.
-        </p>
-        <p>
-            If you have very simple node and link data, using the latest 1.x version might be okay. But new features and quality of life changes
-            will be published on the
-            2.x branch moving forward.
-        </p>
-        <p>
-            Version 2.0 handles complex nested data much better than the previous version, due to its focus on immutable data. Additionally, it is a bit
-            smaller in file size.
-        </p>
-        <p>
-            One may wish to hold off on upgrading if they have lots of operations mutating their <code>@Input</code> properties, and they do not want to take the
-            time to rewrite those operations immutably. However, the guide below details one way one could do this. Our <code>gojs-angular-basic</code> sample also
-            has demonstrations of immutably updating <code>@Input</code> properties to make such a rewrite easier.
-        </p>
-        <h3>Upgrade gojs-angular Version </h3>
-        <p>
-            Update your <code>package.json</code> to require <code>gojs-angular</code> version 2.0 or greater,
-            then run <code>npm install</code>
-        </p>
-        <p>
-            It is also recommended to upgrade to the latest version of <code>gojs</code>.
-        </p>
-        <h3>Immutability</h3>
-        <p>
-            The biggest change with 2.0 is you must enforce immutability of <code>@Input</code>
-            properties to your Diagram and Palette components.
-        </p>
-        <p>
-            So, for instance, whenever an entry of <code>diagramNodeData</code>
-            is updated, removed, or changed, you will need to generate a whole new Array for <code>DiagramComponent.diagramNodeData</code>. This can be done in
-            many different ways with many different packages. A popular choice is <a href="https://github.com/immerjs/immer">immer</a>, which exposes a <code>produce</code> function
-            that allows one to immutability manipulate their data on a <code>draft</code> variable. We will use that function here for demonstration purposes.
-        </p>
+    <h2 id="MigratingTo2.0">Migrating to 2.0</h2>
+    <p>
+      This page assumes use of <code>gojs-angular</code> version 2.0, which
+      requires
+      immutable state, unlike version 1.0. It is recommended to use the 2.0 version. If you have a
+      <code>gojs-angular</code> project using version 1.x and want to upgrade, reference this section for tips on
+      migrating
+      to version 2.
+    </p>
+    <h3>Should I Upgrade?</h3>
+    <p>
+      In general, yes.
+    </p>
+    <p>
+      If you have very simple node and link data, using the latest 1.x version might be okay. But new features and
+      quality
+      of life changes
+      will be published on the
+      2.x branch moving forward.
+    </p>
+    <p>
+      Version 2.0 handles complex nested data much better than the previous version, due to its focus on immutable data.
+      Additionally, it is a bit
+      smaller in file size.
+    </p>
+    <p>
+      One may wish to hold off on upgrading if they have lots of operations mutating their <code>@Input</code>
+      properties,
+      and they do not want to take the
+      time to rewrite those operations immutably. However, the guide below details one way one could do this. Our
+      <code>gojs-angular-basic</code> sample also
+      has demonstrations of immutably updating <code>@Input</code> properties to make such a rewrite easier.
+    </p>
+    <h3>Upgrade gojs-angular Version </h3>
+    <p>
+      Update your <code>package.json</code> to require <code>gojs-angular</code> version 2.0 or greater,
+      then run <code>npm install</code>
+    </p>
+    <p>
+      It is also recommended to upgrade to the latest version of <code>gojs</code>.
+    </p>
+    <h3>Immutability</h3>
+    <p>
+      The biggest change with 2.0 is you must enforce immutability of <code>@Input</code>
+      properties to your Diagram and Palette components.
+    </p>
+    <p>
+      So, for instance, whenever an entry of <code>diagramNodeData</code>
+      is updated, removed, or changed, you will need to generate a whole new Array for
+      <code>DiagramComponent.diagramNodeData</code>. This can be done in
+      many different ways with many different packages. A popular choice is <a
+        href="https://github.com/immerjs/immer">immer</a>, which exposes a <code>produce</code> function
+      that allows one to immutability manipulate their data on a <code>draft</code> variable. We will use that function
+      here
+      for demonstration purposes.
+    </p>
 
-        <h4>The Version 1.0 Way</h4>
-        <p>
-            In <code>gojs-angular</code> version 1, if you wanted to add some node data to your <code>diagramNodeData</code> <code>@Input</code> property,
-            you could do so by simply adding to the <code>diagramNodeData</code>, mutating it. Such as:
-        </p>
+    <h4>The Version 1.0 Way</h4>
+    <p>
+      In <code>gojs-angular</code> version 1, if you wanted to add some node data to your <code>diagramNodeData</code>
+      <code>@Input</code> property,
+      you could do so by simply adding to the <code>diagramNodeData</code>, mutating it. Such as:
+    </p>
 
-        <pre class="lang-ts"><code>
+    <pre class="lang-ts"><code>
 public addNode = function(nodeData: go.ObjectData) {
   // sync changes with GoJS model
   this.skipsDiagramUpdate = false;
   this.diagramNodeData.push(nodeData);
 };
-          </code></pre>
+    </code></pre>
 
-        <h4>The Version 2.0 Way</h4>
-        <p>
-            In <code>gojs-angular</code> version 2, that same <code>addNode</code> function must be changed so the <code>diagramNodeData</code>
-            property is updated immutably (that is, replaced with an entirely new Array). Here is an example of
-            doing that with immer's <code>produce</code> function.
-        </p>
+    <h4>The Version 2.0 Way</h4>
+    <p>
+      In <code>gojs-angular</code> version 2, that same <code>addNode</code> function must be changed so the
+      <code>diagramNodeData</code>
+      property is updated immutably (that is, replaced with an entirely new Array). Here is an example of
+      doing that with immer's <code>produce</code> function.
+    </p>
 
-        <pre class="lang-ts"><code>
+    <pre class="lang-ts"><code>
 public addNode = function(nodeData: go.ObjectData) {
   this.state = produce(this.state, draft => {
     var nodedata = { id: "Zeta", text: "Zorro", color: "red" };
@@ -777,26 +809,31 @@ public addNode = function(nodeData: go.ObjectData) {
     draft.diagramNodeData.push(nodedata);
   });
 }
-          </code></pre>
+    </code></pre>
 
-        <p>
-            Notice we are also using a massive <code>state</code> object to hold <code>gojs-angular</code> component properties. This makes these kinds
-            of immutable operations (especially if you are using immer, or a package like it) straightforward (see how we were able to update both <code>skipsDiagramUpdate</code>
-            and <code>diagramNodeData</code> on the same <code>draft</code> variable).
-        </p>
+    <p>
+      Notice we are also using a massive <code>state</code> object to hold <code>gojs-angular</code> component
+      properties.
+      This makes these kinds
+      of immutable operations (especially if you are using immer, or a package like it) straightforward (see how we were
+      able to update both <code>skipsDiagramUpdate</code>
+      and <code>diagramNodeData</code> on the same <code>draft</code> variable).
+    </p>
 
-        <p>
-            To see more samples of enforcing immutability with <code>gojs-angular</code>, see <a href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>,
-            particularly the <code>modelChange</code> property of the Diagram Component.
-        </p>
-        <h3>Additional Considerations</h3>
-        <p>
-            Additionally, PaletteComponent no longer supports <code>skipsPaletteUpdate</code> or <code>modelChange</code> properties. As GoJS Palettes are read-only by default, their models should not
-            be changing based on user input. Instead, if you need to update their node/link/model data, update their <code>@Input</code> properties (immutably, of course).
-        </p>
+    <p>
+      To see more samples of enforcing immutability with <code>gojs-angular</code>, see <a
+        href="https://github.com/NorthwoodsSoftware/gojs-angular-basic">gojs-angular-basic</a>,
+      particularly the <code>modelChange</code> property of the Diagram Component.
+    </p>
+    <h3>Additional Considerations</h3>
+    <p>
+      Additionally, PaletteComponent no longer supports <code>skipsPaletteUpdate</code> or <code>modelChange</code>
+      properties. As GoJS Palettes are read-only by default, their models should not
+      be changing based on user input. Instead, if you need to update their node/link/model data, update their
+      <code>@Input</code> properties (immutably, of course).
+    </p>
 
-
-    </div>
+  </div>
 </div>
       </div>
     </div>
@@ -809,19 +846,19 @@ public addNode = function(nodeData: go.ObjectData) {
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

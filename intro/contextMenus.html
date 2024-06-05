@@ -327,43 +327,44 @@
         new go.Shape("RoundedRectangle", { fill: "white" })
           .bind("fill", "color"),
         new go.TextBlock({ margin: 5 })
-          .bind("text", "key")
+          .bind("text")
       );
 
   // also define a context menu for the diagram's background
   diagram.contextMenu =
-    go.GraphObject.build("ContextMenu").add(
-      go.GraphObject.build("ContextMenuButton", {
-          click: (e, obj) => e.diagram.commandHandler.undo()
-        })
-        .add(new go.TextBlock("Undo"))
-        .bindObject("visible", "", o => o.diagram.commandHandler.canUndo()),
-      go.GraphObject.build("ContextMenuButton", {
-          click: (e, obj) => e.diagram.commandHandler.redo()
-        })
-        .add(new go.TextBlock("Redo"))
-        .bindObject("visible", "", o => o.diagram.commandHandler.canRedo()),
-      // no binding, always visible button:
-      go.GraphObject.build("ContextMenuButton", {
-          click: (e, obj) => {
-            e.diagram.commit(d => {
-              var data = {};
-              d.model.addNodeData(data);
-              part = d.findPartForData(data);  // must be same data reference, not a new {}
-              // set location to saved mouseDownPoint in ContextMenuTool
-              part.location = d.toolManager.contextMenuTool.mouseDownPoint;
-            }, 'new node');
-          }
-        })
-        .add(new go.TextBlock("New Node"))
-    );
+    go.GraphObject.build("ContextMenu")
+      .add(
+        go.GraphObject.build("ContextMenuButton", {
+            click: (e, obj) => e.diagram.commandHandler.undo()
+          })
+          .add(new go.TextBlock("Undo"))
+          .bindObject("visible", "", o => o.diagram.commandHandler.canUndo()),
+        go.GraphObject.build("ContextMenuButton", {
+            click: (e, obj) => e.diagram.commandHandler.redo()
+          })
+          .add(new go.TextBlock("Redo"))
+          .bindObject("visible", "", o => o.diagram.commandHandler.canRedo()),
+        // no binding, always visible button:
+        go.GraphObject.build("ContextMenuButton", {
+            click: (e, obj) => {
+              e.diagram.commit(d => {
+                var data = {};
+                d.model.addNodeData(data);
+                part = d.findPartForData(data);  // must be same data reference, not a new {}
+                // set location to saved mouseDownPoint in ContextMenuTool
+                part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+              }, 'new node');
+            }
+          })
+          .add(new go.TextBlock("New Node"))
+      );
 
   var nodeDataArray = [
-    { key: "Alpha", color: "lightyellow" },
-    { key: "Beta", color: "orange" }
+    { key: 1, text: "Alpha", color: "lightyellow" },
+    { key: 2, text: "Beta", color: "orange" }
   ];
   var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   diagram.undoManager.isEnabled = true;
@@ -391,7 +392,7 @@
   function cmCommand(e, obj) {
     var node = obj.part.adornedPart;  // the Node with the context menu
     var buttontext = obj.elt(1);  // the TextBlock
-    alert(buttontext.text + " command on " + node.data.key);
+    alert(buttontext.text + " command on " + node.data.text);
   }
 
   // this is a normal Node template that also has a contextMenu defined for it
@@ -420,15 +421,15 @@
         new go.Shape("RoundedRectangle", { fill: "white" })
           .bind("fill", "color"),
         new go.TextBlock({ margin: 5 })
-          .bind("text", "key")
+          .bind("text")
       );
 
   var nodeDataArray = [
-    { key: "Alpha", color: "lightyellow" },
-    { key: "Beta", color: "orange" }
+    { key: 1, text: "Alpha", color: "lightyellow" },
+    { key: 2, text: "Beta", color: "orange" }
   ];
   var linkDataArray = [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
@@ -508,19 +509,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

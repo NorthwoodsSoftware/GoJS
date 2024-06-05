@@ -270,26 +270,30 @@
 <pre class="lang-js" id="graduatedSimple"><code>
 diagram.add(
   // all Parts are Panels
-  $(go.Part, go.Panel.Graduated,  // or "Graduated"
-    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main shape, a horizontal line
-    $(go.Shape, { geometryString: "M0 0 V10" })  // a tick mark, a vertical line
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),  // the main shape, a horizontal line
+      new go.Shape({ geometryString: "M0 0 V10" })  // a tick mark, a vertical line
+    ));
 </code></pre>
 <script>
   goCode('graduatedSimple', 500, 100);
 </script>
 
-<p>Any shape, including custom geometries, can be used as the main Shape or as a tick mark Shape of a Graduated Panel.</p>
+<p>
+  Any shape, including custom geometries, can be used as the main Shape or as a tick mark Shape of a Graduated Panel.
+</p>
 <pre class="lang-js" id="graduatedCircle"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    { background: "transparent" }, // make panel pickable
-    // main shape is a whole circle
-    $(go.Shape, "Circle",
-      { fill: null, desiredSize: new go.Size(150, 150) }),
-    // tick shape is a double line
-    $(go.Shape, { geometryString: "M0 0 V10 M3 0 V10" })
-  ));
+  new go.Part("Graduated",
+      { background: "transparent" }) // make panel pickable
+    .add(
+      // main shape is a whole circle
+      new go.Shape("Circle",
+        { fill: null, desiredSize: new go.Size(150, 150) }),
+      // tick shape is a double line
+      new go.Shape({ geometryString: "M0 0 V10 M3 0 V10" })
+    ));
 </code></pre>
 <script>
   goCode('graduatedCircle', 200, 200);
@@ -302,18 +306,21 @@ diagram.add(
 </p>
 <pre class="lang-js" id="graduatedLabels"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    { background: "transparent" }, // make panel pickable
-    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main shape
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })  // tick labels
-  ));
+  new go.Part("Graduated",
+      { background: "transparent" }) // make panel pickable
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),  // the main shape
+      new go.TextBlock({ segmentOffset: new go.Point(0, 12) })  // tick labels
+    ));
 </code></pre>
 <script>
   goCode('graduatedLabels', 500, 100);
 </script>
 
 <h2 id="GraduatedPanelProperties">Graduated Panel Properties</h2>
-<p>There are a number of properties that govern the appearance of tick marks and labels.</p>
+<p>
+  There are a number of properties that govern the appearance of tick marks and labels.
+</p>
 
 <h3 id="TickMarkValues">Tick Mark Values</h3>
 <p>
@@ -338,39 +345,41 @@ diagram.add(
 </p>
 <pre class="lang-js" id="graduatedVals1"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: 0, graduatedMax: 77,
       graduatedTickBase: 0, graduatedTickUnit: 2.5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
-    // a short, frequent tick mark
-    $(go.Shape, { geometryString: "M0 0 V5" }),
-    // a longer tick mark every four ticks
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),
-    // text label only every four ticks, with a vertical offset
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),  // the main Shape
+      // a short, frequent tick mark
+      new go.Shape({ geometryString: "M0 0 V5" }),
+      // a longer tick mark every four ticks
+      new go.Shape({ geometryString: "M0 0 V10", interval: 4 }),
+      // text label only every four ticks, with a vertical offset
+      new go.TextBlock( { segmentOffset: new go.Point(0, 12), interval: 4 })
+    ));
 </code></pre>
 <script>
   goCode('graduatedVals1', 500, 100);
 </script>
 
-<p>Changing <code>graduatedMin</code> to <code>-23</code> results in:</p>
+<p>
+  Changing <code>graduatedMin</code> to <code>-23</code> results in:
+</p>
 <pre class="lang-js" id="graduatedVals2"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: -23, graduatedMax: 77,
       graduatedTickBase: 0, graduatedTickUnit: 2.5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
-    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),  // the main Shape
+      new go.Shape({ geometryString: "M0 0 V5" }),  // short tick mark
+      new go.Shape({ geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+      new go.TextBlock( { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+    ));
 </code></pre>
 <script>
   goCode('graduatedVals2', 500, 100);
@@ -380,20 +389,22 @@ diagram.add(
   length main path.
 </p>
 
-<p>Changing <code>graduatedTickBase</code> to <code>1.2</code> results in:</p>
+<p>
+  Changing <code>graduatedTickBase</code> to <code>1.2</code> results in:
+</p>
 <pre class="lang-js" id="graduatedVals3"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: -23, graduatedMax: 77,
       graduatedTickBase: 1.2, graduatedTickUnit: 2.5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H400" }),  // the main Shape
-    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),  // the main Shape
+      new go.Shape({ geometryString: "M0 0 V5" }),  // short tick mark
+      new go.Shape({ geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+      new go.TextBlock( { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+    ));
 </code></pre>
 <script>
   goCode('graduatedVals3', 500, 100);
@@ -404,71 +415,85 @@ diagram.add(
   if that value is within the range of the graduated scale.
 </p>
 
-<p>Doubling the <code>graduatedTickUnit</code> to <code>5</code> results in:</p>
+<p>
+  Doubling the <code>graduatedTickUnit</code> to <code>5</code> results in:
+</p>
 <pre class="lang-js" id="graduatedVals4"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: -23, graduatedMax: 77,
       graduatedTickBase: 1.2, graduatedTickUnit: 5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V5" }),  // short tick mark
+      new go.Shape({ geometryString: "M0 0 V10", interval: 4 }),  // long tick mark
+      new go.TextBlock( { segmentOffset: new go.Point(0, 12), interval: 4 })  // labels
+    ));
 </code></pre>
 <script>
   goCode('graduatedVals4', 500, 100);
 </script>
-<p>Doubling the tick unit halves the number of ticks for the same length path, but again the end values are unchanged.</p>
+<p>
+  Doubling the tick unit halves the number of ticks for the same length path, but again the end values are unchanged.
+</p>
 
-<p>Changing <code>graduatedTickBase</code> back to <code>0</code> and the intervals to <code>5</code> results in:</p>
+<p>
+  Changing <code>graduatedTickBase</code> back to <code>0</code> and the intervals to <code>5</code> results in:
+</p>
 <pre class="lang-js" id="graduatedVals5"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: -23, graduatedMax: 77,
       graduatedTickBase: 0, graduatedTickUnit: 5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V5" }),  // short tick mark
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 5 }),  // long tick mark
-    $(go.TextBlock, { interval: 5, segmentOffset: new go.Point(0, 12) })
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V5" }),  // short tick mark
+      new go.Shape({ geometryString: "M0 0 V10", interval: 5 }),  // long tick mark
+      new go.TextBlock({ interval: 5, segmentOffset: new go.Point(0, 12) })
+    ));
 </code></pre>
 <script>
   goCode('graduatedVals5', 500, 100);
 </script>
 
-<p>You can have more than one label. For example, small text that is more frequent than larger text:</p>
+<p>
+  You can have more than one label. For example, small text that is more frequent than larger text:
+</p>
 <pre class="lang-js" id="graduated2Labels"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    {
+  new go.Part("Graduated", {
       graduatedMin: 0, graduatedMax: 140,
       graduatedTickBase: 0, graduatedTickUnit: 5,
       background: "transparent"
-    },
-    $(go.Shape, { geometryString: "M0 0 H450" }),  // longer line
-    $(go.Shape, { geometryString: "M0 0 V5" }),
-    $(go.Shape, { geometryString: "M0 0 V10", interval: 4 }),
-    // minor label
-    $(go.TextBlock, { interval: 2, segmentOffset: new go.Point(0, 8),
-                      stroke: "blue", font: "7pt sans-serif" }),
-    // major label
-    $(go.TextBlock, { interval: 4, segmentOffset: new go.Point(0, 12),
-                      stroke: "red", font: "bold 12pt sans-serif" })
-  ));
+    })
+    .add(
+      new go.Shape({ geometryString: "M0 0 H450" }),  // longer line
+      new go.Shape({ geometryString: "M0 0 V5" }),
+      new go.Shape({ geometryString: "M0 0 V10", interval: 4 }),
+      // minor label
+      new go.TextBlock({
+          interval: 2, segmentOffset: new go.Point(0, 8),
+          stroke: "blue", font: "7pt sans-serif"
+        }),
+      // major label
+      new go.TextBlock({
+          interval: 4, segmentOffset: new go.Point(0, 12),
+          stroke: "red", font: "bold 12pt sans-serif"
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduated2Labels', 500, 100);
 </script>
 
 <h3 id="TickMarkAppearance">Tick Mark Appearance</h3>
-<p>The appearance of tick marks relative to the main shape path is controlled by a few properties:</p>
+<p>
+  The appearance of tick marks relative to the main shape path is controlled by a few properties:
+</p>
 <ul>
   <li>
     <a>Shape.graduatedStart</a>/<a>TextBlock.graduatedStart</a> - the fractional distance along the main stroke at which drawing this tick or label may begin
@@ -486,87 +511,109 @@ diagram.add(
   <a href="linkLabels.html">Introduction page on Link labels</a>, and are used by Graduated Panels in a similar manner.
 </p>
 
-<p>Setting <code>graduatedStart</code> and/or <code>graduatedEnd</code> allows for drawing ticks only along part of the main stroke:</p>
+<p>
+  Setting <code>graduatedStart</code> and/or <code>graduatedEnd</code> allows for drawing ticks only along part of the main stroke:
+</p>
 <pre class="lang-js" id="graduatedAppr1"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10", graduatedStart: .25, graduatedEnd: .75 })
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10", graduatedStart: .25, graduatedEnd: .75 })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr1', 500, 100);
 </script>
-<p>In this case, tick marks are now only drawn in the middle half of the main shape.</p>
+<p>
+  In this case, tick marks are now only drawn in the middle half of the main shape.
+</p>
 
-<p>Setting <code>alignmentFocus</code> to <code>go.Spot.Bottom</code> will cause the ticks to have their bottoms aligned to the main stroke:</p>
+<p>
+  Setting <code>alignmentFocus</code> to <code>go.Spot.Bottom</code> will cause the ticks to have their bottoms aligned to the main stroke:
+</p>
 <pre class="lang-js" id="graduatedAppr2"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom })
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr2', 500, 100);
 </script>
 
-<p>Setting <code>alignmentFocus</code> to <code>go.Spot.Center</code> will cause the ticks to be centered across the path:</p>
+<p>
+  Setting <code>alignmentFocus</code> to <code>go.Spot.Center</code> will cause the ticks to be centered across the path:
+</p>
 <pre class="lang-js" id="graduatedAppr21"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10 M0 20 V30", alignmentFocus: go.Spot.Center })
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10 M0 20 V30", alignmentFocus: go.Spot.Center })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr21', 500, 100);
 </script>
-<p>Note the gap in the geometry of the shape.</p>
+<p>
+  Note the gap in the geometry of the shape.
+</p>
 
-<p>Setting <code>segmentOffset</code> for labels can make them more readable near tick marks:</p>
+<p>
+  Setting <code>segmentOffset</code> for labels can make them more readable near tick marks:
+</p>
 <pre class="lang-js" id="graduatedAppr3"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10" }),
-    // offset to display below ticks
-    $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10" }),
+      // offset to display below ticks
+      new go.TextBlock({ segmentOffset: new go.Point(0, 12) })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr3', 500, 100);
 </script>
 
-<p>Setting <code>segmentOrientation</code> for labels can alter the angle at which they are drawn relative to the main stroke:</p>
+<p>
+  Setting <code>segmentOrientation</code> for labels can alter the angle at which they are drawn relative to the main stroke:
+</p>
 <pre class="lang-js" id="graduatedAppr4"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10" }),
-    // change the angle of the text
-    $(go.TextBlock, { segmentOrientation: go.Orientation.Minus90 })
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10" }),
+      // change the angle of the text
+      new go.TextBlock({ segmentOrientation: go.Orientation.Minus90 })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr4', 500, 100);
 </script>
-<p>Note that the top-center point of each label is exactly at the point along the path for that value.</p>
+<p>
+  Note that the top-center point of each label is exactly at the point along the path for that value.
+</p>
 
-<p>Combining these two properties and re-aligning the tick marks:</p>
+<p>
+  Combining these two properties and re-aligning the tick marks:
+</p>
 <pre class="lang-js" id="graduatedAppr5"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 H400" }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        segmentOffset: new go.Point(0, -12),
-        segmentOrientation: go.Orientation.Minus90
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+      new go.TextBlock({
+          alignmentFocus: go.Spot.Left,
+          segmentOffset: new go.Point(0, -12),
+          segmentOrientation: go.Orientation.Minus90
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedAppr5', 500, 100);
@@ -577,90 +624,93 @@ diagram.add(
 </p>
 <pre class="lang-js" id="graduatedApprDiag"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 L285 285" }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        segmentOffset: new go.Point(0, -12),
-        segmentOrientation: go.Orientation.Minus90
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 L285 285" }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+      new go.TextBlock({
+          alignmentFocus: go.Spot.Left,
+          segmentOffset: new go.Point(0, -12),
+          segmentOrientation: go.Orientation.Minus90
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedApprDiag', 350, 350);
 </script>
 
-<p>Now let us try a curve:</p>
+<p>
+  Now let us try a curve:
+</p>
 <pre class="lang-js" id="graduatedApprCurve"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, "Curve1", { desiredSize: new go.Size(285, 285) }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        segmentOffset: new go.Point(0, -12),
-        segmentOrientation: go.Orientation.Minus90
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape("Curve1", { desiredSize: new go.Size(285, 285) }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+      new go.TextBlock({
+          alignmentFocus: go.Spot.Left,
+          segmentOffset: new go.Point(0, -12),
+          segmentOrientation: go.Orientation.Minus90
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedApprCurve', 350, 350);
 </script>
 
-<p>Here's another commonplace configuration:</p>
+<p>
+  Here's another commonplace configuration:
+</p>
 <pre class="lang-js" id="graduatedApprCurve2"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 A120 120 0 0 1 200 0" }),  // an arc
-    $(go.Shape, { geometryString: "M0 0 V10" }),
-    $(go.TextBlock,
-      {
-        segmentOffset: new go.Point(0, 12),
-        segmentOrientation: go.Orientation.Along
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 A120 120 0 0 1 200 0" }),  // an arc
+      new go.Shape({ geometryString: "M0 0 V10" }),
+      new go.TextBlock({
+          segmentOffset: new go.Point(0, 12),
+          segmentOrientation: go.Orientation.Along
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedApprCurve2', 350, 100);
 </script>
 
-<p>For vertical lines, it's not necessary to rotate the text:</p>
+<p>
+  For vertical lines, it's not necessary to rotate the text:
+</p>
 <pre class="lang-js" id="graduatedApprVert"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 V400" }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        segmentOffset: new go.Point(0, -12)
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 V400" }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Bottom }),
+      new go.TextBlock({
+          alignmentFocus: go.Spot.Left,
+          segmentOffset: new go.Point(0, -12)
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedApprVert', 100, 450);
 </script>
 
-<p>We can also go from bottom to top:</p>
+<p>
+  We can also go from bottom to top:
+</p>
 <pre class="lang-js" id="graduatedApprVertUp"><code>
 diagram.add(
-  $(go.Part, "Graduated",
-    $(go.Shape, { geometryString: "M0 0 V-400" }),
-    $(go.Shape, { geometryString: "M0 0 V10", alignmentFocus: go.Spot.Top }),
-    $(go.TextBlock,
-      {
-        alignmentFocus: go.Spot.Left,
-        segmentOffset: new go.Point(0, 12)
-      }
-    )
-  ));
+  new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 V-400" }),
+      new go.Shape({ geometryString: "M0 0 V10", alignmentFocus: go.Spot.Top }),
+      new go.TextBlock({
+          alignmentFocus: go.Spot.Left,
+          segmentOffset: new go.Point(0, 12)
+        })
+    ));
 </code></pre>
 <script>
   goCode('graduatedApprVertUp', 100, 450);
@@ -677,54 +727,54 @@ diagram.add(
 </p>
 <pre class="lang-js" id="graduatedApprTxtAngle"><code>
   diagram.add(
-    $(go.Part, "Spot",
-      $(go.Panel, "Graduated",
-        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
-        $(go.Shape, { geometryString: "M0 0 V10" }),
-        $(go.TextBlock,
-          {
-            interval: 5,
-            angle: 45,
-            segmentOffset: new go.Point(0, 12)
-          }
-        )
-      ),
-      $(go.TextBlock, "None")
+    new go.Part("Spot")
+      .add(
+        new go.Panel("Graduated")
+          .add(
+            new go.Shape({ geometryString: "M0 0 L100 0 100 100 L0 100" }),
+            new go.Shape({ geometryString: "M0 0 V10" }),
+            new go.TextBlock({
+                interval: 5,
+                angle: 45,
+                segmentOffset: new go.Point(0, 12)
+              })
+          ),
+        new go.TextBlock( "None")
     ));
 
   diagram.add(
-    $(go.Part, "Spot",
-      $(go.Panel, "Graduated",
-        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
-        $(go.Shape, { geometryString: "M0 0 V10" }),
-        $(go.TextBlock,
-          {
-            interval: 5,
-            angle: 45,
-            segmentOrientation: go.Orientation.Along,
-            segmentOffset: new go.Point(0, 12)
-          }
-        )
-      ),
-      $(go.TextBlock, "Along")
-    ));
+    new go.Part("Spot")
+      .add(
+        new go.Panel("Graduated")
+          .add(
+            new go.Shape({ geometryString: "M0 0 L100 0 100 100 L0 100" }),
+            new go.Shape({ geometryString: "M0 0 V10" }),
+            new go.TextBlock({
+                interval: 5,
+                angle: 45,
+                segmentOrientation: go.Orientation.Along,
+                segmentOffset: new go.Point(0, 12)
+              })
+          ),
+        new go.TextBlock( "Along")
+      ));
 
   diagram.add(
-    $(go.Part, "Spot",
-      $(go.Panel, "Graduated",
-        $(go.Shape, { geometryString: "M0 0 L100 0 100 100 L0 100" }),
-        $(go.Shape, { geometryString: "M0 0 V10" }),
-        $(go.TextBlock,
-          {
-            interval: 5,
-            angle: 45,
-            segmentOrientation: go.Orientation.Upright,
-            segmentOffset: new go.Point(0, 12)
-          }
-        )
-      ),
-      $(go.TextBlock, "Upright")
-    ));
+    new go.Part("Spot")
+      .add(
+        new go.Panel("Graduated")
+          .add(
+            new go.Shape({ geometryString: "M0 0 L100 0 100 100 L0 100" }),
+            new go.Shape({ geometryString: "M0 0 V10" }),
+            new go.TextBlock({
+                interval: 5,
+                angle: 45,
+                segmentOrientation: go.Orientation.Upright,
+                segmentOffset: new go.Point(0, 12)
+              })
+          ),
+        new go.TextBlock( "Upright")
+      ));
   </code></pre>
 <script>
   goCode('graduatedApprTxtAngle', 300, 300);
@@ -735,7 +785,9 @@ diagram.add(
 </p>
 
 <h3 id="FunctionalAppearanceProperties">Functional Appearance Properties</h3>
-<p>There are also some functional properties allowing for further customization of the appearance of ticks and labels.</p>
+<p>
+  There are also some functional properties allowing for further customization of the appearance of ticks and labels.
+</p>
 <ul>
   <li>
     <a>Shape.graduatedSkip</a>/<a>TextBlock.graduatedSkip</a> - an optional function which returns true for values that should be skipped while drawing a
@@ -747,44 +799,50 @@ diagram.add(
   </li>
 </ul>
 
-<p>Setting <code>graduatedSkip</code> allows for skipping ticks where the supplied function returns true:</p>
+<p>
+  Setting <code>graduatedSkip</code> allows for skipping ticks where the supplied function returns true:
+</p>
 <pre class="lang-js" id="graduatedSkip"><code>
   diagram.add(
-    $(go.Part, "Graduated",
-      $(go.Shape, { geometryString: "M0 0 H400" }),
-      $(go.Shape,
-        { // skip drawing tick at 30
+    new go.Part("Graduated")
+    .add(
+      new go.Shape({ geometryString: "M0 0 H400" }),
+      new go.Shape({
+          // skip drawing tick at 30
           graduatedSkip: v => v === 30,
           geometryString: "M0 0 V10"
-        }
-      ),
-      $(go.TextBlock, { segmentOffset: new go.Point(0, 12) })
+        }),
+      new go.TextBlock({ segmentOffset: new go.Point(0, 12) })
     ));
 </code></pre>
 <script>
   goCode('graduatedSkip', 500, 100);
 </script>
 
-<p>Setting <code>graduatedFunction</code> allows for changing the way labels are displayed:</p>
+<p>
+  Setting <code>graduatedFunction</code> allows for changing the way labels are displayed:
+</p>
 <pre class="lang-js" id="graduatedFunc"><code>
   diagram.add(
-    $(go.Part, "Graduated",
-      $(go.Shape, { geometryString: "M0 0 H400" }),
-      $(go.Shape, { geometryString: "M0 0 V10" }),
-      $(go.TextBlock,
-        { // always display two decimals
-          graduatedFunction: val => val.toFixed(2),
-          segmentOffset: new go.Point(0, 12)
-        }
-      )
-    ));
+    new go.Part("Graduated")
+      .add(
+        new go.Shape({ geometryString: "M0 0 H400" }),
+        new go.Shape({ geometryString: "M0 0 V10" }),
+        new go.TextBlock({
+            // always display two decimals
+            graduatedFunction: val => val.toFixed(2),
+            segmentOffset: new go.Point(0, 12)
+          })
+      ));
 </code></pre>
 <script>
   goCode('graduatedFunc', 500, 100);
 </script>
 
 <h2 id="GraduatedValueComputations">Graduated Value Computations</h2>
-<p>There are some methods available for computing points along graduated paths:</p>
+<p>
+  There are some methods available for computing points along graduated paths:
+</p>
 <ul>
   <li><a>Panel.graduatedPointForValue</a> - returns the Point along the main shape at some value between graduatedMin and graduatedMax in Panel coordinates</li>
   <li><a>Panel.graduatedValueForPoint</a> - returns the value along the main shape nearest a given Point</li>
@@ -796,34 +854,37 @@ diagram.add(
 
 <pre class="lang-js" id="graduatedPointValueCalc"><code>
 var gauge =
-  $(go.Part, "Auto",
-    { location: new go.Point(10, 20) },
-    $(go.Shape, { fill: "white" }),
-    $(go.Panel, "Graduated",
-      { name: "SCALE", margin: 10 },
-      $(go.Shape, { name: "PATH", geometryString: "M0 0 A120 120 0 0 1 200 0" }),
-      $(go.Shape, { geometryString: "M0 0 V10" }),
-      $(go.TextBlock,
-        { segmentOffset: new go.Point(0, 12), segmentOrientation: go.Orientation.Along })
-    )
-  );
+  new go.Part("Auto", { location: new go.Point(10, 20) })
+    .add(
+      new go.Shape({ fill: "white" }),
+      new go.Panel("Graduated", { name: "SCALE", margin: 10 })
+        .add(
+          new go.Shape({ name: "PATH", geometryString: "M0 0 A120 120 0 0 1 200 0" }),
+          new go.Shape({ geometryString: "M0 0 V10" }),
+          new go.TextBlock({
+              segmentOffset: new go.Point(0, 12),
+              segmentOrientation: go.Orientation.Along
+            })
+        )
+    );
 diagram.add(gauge);
 
 var marker =
-  $(go.Part, "Spot",
-    { locationSpot: go.Spot.Center, selectionAdorned: false },
-    $(go.Shape, "Circle", { fill: "transparent", strokeWidth: 0, cursor: "pointer" }),
-    $(go.Shape, "Circle", { fill: "red", strokeWidth: 0, width: 8, height: 8 }),
-    {
-      dragComputation: (node, pt) => {
-        var scale = gauge.findObject("SCALE");
-        var loc = scale.getLocalPoint(pt);
-        var val = scale.graduatedValueForPoint(loc);
-        var gpt = scale.graduatedPointForValue(val);
-        return scale.getDocumentPoint(gpt);
-      }
-    }
-  );
+  new go.Part("Spot", {
+        locationSpot: go.Spot.Center,
+        selectionAdorned: false,
+        dragComputation: (node, pt) => {
+          var scale = gauge.findObject("SCALE");
+          var loc = scale.getLocalPoint(pt);
+          var val = scale.graduatedValueForPoint(loc);
+          var gpt = scale.graduatedPointForValue(val);
+          return scale.getDocumentPoint(gpt);
+        }
+      })
+    .add(
+      new go.Shape("Circle", { fill: "transparent", strokeWidth: 0, cursor: "pointer" }),
+      new go.Shape("Circle", { fill: "red", strokeWidth: 0, width: 8, height: 8 }),
+    );
 diagram.add(marker);
 
 // once everything has been positioned, give the marker its location
@@ -855,11 +916,11 @@ diagram.addDiagramListener("InitialLayoutCompleted", e => {
 </p>
 <pre class="lang-js" id="graduatedBackground"><code>
 diagram.add(
-  $(go.Part, "Graduated",  // or "Graduated"
-    { background: "white" },
-    $(go.Shape, { geometryString: "M0 0 H150", stroke: "blue", strokeWidth: 2 }),
-    $(go.Shape, { geometryString: "M0 0 V20", stroke: "blue", strokeDashArray: [2, 2] })
-  ));
+  new go.Part("Graduated", { background: "white" })
+    .add(  // or "Graduated"
+      new go.Shape({ geometryString: "M0 0 H150", stroke: "blue", strokeWidth: 2 }),
+      new go.Shape({ geometryString: "M0 0 V20", stroke: "blue", strokeDashArray: [2, 2] })
+    ));
 </code></pre>
 <script>
   goCode('graduatedBackground', 500, 100);
@@ -881,19 +942,19 @@ diagram.add(
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

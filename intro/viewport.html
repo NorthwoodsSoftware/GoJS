@@ -317,7 +317,7 @@
     new go.Binding("location", "loc", gridPointParse),
     new go.Binding("scale", "scale"),
     { locationSpot: go.Spot.Center, portId: "NODE" },
-    new go.Shape("RoundedRectangle",
+    $(go.Shape, "RoundedRectangle",
       { fill: "white", portId: "SHAPE" },
       new go.Binding("fill", "color"),
       new go.Binding("strokeWidth", "strokeW")),
@@ -370,7 +370,7 @@
       new go.Binding("location", "loc", gridPointParse),
       new go.Binding("scale", "scale"),
       { locationSpot: go.Spot.Center, portId: "NODE" },
-      new go.Shape("RoundedRectangle",
+      $(go.Shape, "RoundedRectangle",
         { fill: "white", portId: "SHAPE" },
         new go.Binding("fill", "color"),
         new go.Binding("strokeWidth", "strokeW")),
@@ -391,7 +391,7 @@
       new go.Binding("location", "loc", gridPointParse),
       new go.Binding("scale", "scale"),
       { locationSpot: go.Spot.Center, portId: "NODE" },
-      new go.Shape("RoundedRectangle",
+      $(go.Shape, "RoundedRectangle",
         { fill: "white", portId: "SHAPE" },
         new go.Binding("fill", "color"),
         new go.Binding("strokeWidth", "strokeW")),
@@ -463,7 +463,7 @@
   diagram.groupTemplateMap.add("Grid",
     $(go.Group, "Position",
       { movable: false },
-      new go.Shape("Rectangle", { fill: "transparent", strokeWidth: 2},
+      $(go.Shape, "Rectangle", { fill: "transparent", strokeWidth: 2},
         new go.Binding("fill", "fill"),
         new go.Binding("stroke", "border"),
         new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify)),
@@ -471,9 +471,9 @@
         { name: "DOCGRID", desiredSize: cellSize, gridCellSize: new go.Size(cellSide, cellSide) },
         new go.Binding("desiredSize", "size", gridSizeParse).makeTwoWay(go.Size.stringify),
         new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
-        new go.Shape("LineV",
+        $(go.Shape, "LineV",
           new go.Binding("stroke")),
-        new go.Shape("LineH",
+        $(go.Shape, "LineH",
           new go.Binding("stroke"))
       ),
       new go.Binding("location", "loc", gridPointParse)
@@ -588,7 +588,7 @@
 <script>
   goCode('coordsystems', 300, 150);
 </script>
-<textarea id="Message1" style="width: 300px; height: 70px">(move mouse over node to see points in document and in view coordinates)</textarea>
+<textarea id="Message1" style="font-size: 11px; width: 300px; height: 70px">(move mouse over node to see points in document and in view coordinates)</textarea>
 <input id="ZoomOut" type="button" onclick="myDiagram.commandHandler.decreaseZoom()" value="Zoom Out" />
 <input id="ZoomIn" type="button" onclick="myDiagram.commandHandler.increaseZoom()" value="Zoom In" />
 <p>
@@ -732,7 +732,7 @@ var nodes = [];
 for (let i = 0; i < 99; i++) {
   nodes.push({ key: "Alpha", color: "lightblue" });
 }
-diagram.model = new go.GraphLinksModel(nodes,[]);
+diagram.model = new go.GraphLinksModel(nodes);
 
 </code></pre>
 <script>
@@ -772,22 +772,22 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
         new go.Shape("RoundedRectangle")
           .bind("fill", "color"),
         new go.TextBlock({ margin: 3 })
-          .bind("text", "key")
+          .bind("text")
       );
 
   // create the model data that will be represented by Nodes and Links
   diagram.model = new go.GraphLinksModel(
   [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta",  color: "orange" },
-    { key: "Gamma", color: "lightgreen" },
-    { key: "Delta", color: "pink" }
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta",  color: "orange" },
+    { key: 3, text: "Gamma", color: "lightgreen" },
+    { key: 4, text: "Delta", color: "pink" }
   ],
   [
-    { from: "Alpha", to: "Beta" },
-    { from: "Alpha", to: "Gamma" },
-    { from: "Gamma", to: "Delta" },
-    { from: "Delta", to: "Alpha" }
+    { from: 1, to: 2 },
+    { from: 1, to: 3 },
+    { from: 3, to: 4 },
+    { from: 4, to: 1 }
   ]);
 
   // make accessible to the HTML buttons
@@ -1135,19 +1135,19 @@ diagram.model = new go.GraphLinksModel(nodes,[]);
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

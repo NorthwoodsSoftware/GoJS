@@ -344,13 +344,13 @@ export class AvoidsLinksRouter extends go.Router {
                 // if there are node overlaps, find the minimum spacing that will avoid node overlaps with some padding
                 if (vertical) {
                     if (!positions.isUnoccupied(minCoord, minColumn, maxCoord - minCoord, maxColumn - minColumn)) {
-                        const availSpace = positions.maxUnoccupiedV(minColumn, maxColumn, this._coord(gridline[0]), maxCoord - minCoord);
+                        const availSpace = positions.maxAvoidsLinksSpaceV(minColumn, maxColumn, this._coord(gridline[0]), maxCoord - minCoord);
                         realSpacing = Math.min(this._linkSpacing, (2 * availSpace) / (1 + maxlayer));
                     }
                 }
                 else {
                     if (!positions.isUnoccupied(minColumn, minCoord, maxColumn - minColumn, maxCoord - minCoord)) {
-                        const availSpace = positions.maxUnoccupiedH(minColumn, maxColumn, this._coord(gridline[0]), maxCoord - minCoord);
+                        const availSpace = positions.maxAvoidsLinksSpaceH(minColumn, maxColumn, this._coord(gridline[0]), maxCoord - minCoord);
                         realSpacing = Math.min(this._linkSpacing, (2 * availSpace) / (1 + maxlayer));
                     }
                 }

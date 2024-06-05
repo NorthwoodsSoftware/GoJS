@@ -268,20 +268,20 @@
 </p>
 <pre class="lang-js" id="tooltips"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "key")),
-      {
+    new go.Node("Auto", {
         toolTip:  // define a tooltip for each node that displays the color as text
-          $("ToolTip",
-            $(go.TextBlock, { margin: 4 },
-              new go.Binding("text", "color"))
-          )  // end of Adornment
-      }
-    );
+          go.GraphObject.build("ToolTip")
+            .add(
+              new go.TextBlock({ margin: 4 })
+                .bind("text", "color")
+            )  // end of Adornment
+      })
+      .add(
+        new go.Shape("RoundedRectangle", { fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text")
+      );
 
   // a function that produces the content of the diagram tooltip
   function diagramInfo(model) {
@@ -291,23 +291,24 @@
 
   // provide a tooltip for the background of the Diagram, when not over any Part
   diagram.toolTip =
-    $("ToolTip",
-      $(go.TextBlock, { margin: 4 },
-        // use a converter to display information about the diagram model
-        new go.Binding("text", "", diagramInfo))
-    );
+    go.GraphObject.build("ToolTip")
+      .add(
+        new go.TextBlock({ margin: 4 })
+          // use a converter to display information about the diagram model
+          .bind("text", "", diagramInfo)
+      );
 
   const nodeDataArray = [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "pink" }
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta", color: "pink" }
   ];
   const linkDataArray = [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
 <script>
-  goCode('tooltips', 250, 100);
+  goCode('tooltips', 250, 150);
 </script>
 <p>
   Try pausing the mouse over each of the nodes or in the background of the diagram. If you copy some parts, you will see that the tooltip for the diagram
@@ -332,33 +333,33 @@
 <pre class="lang-js" id="tooltipsplaceholder"><code>
   // this is a normal Node template that also has a toolTip defined for it
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "RoundedRectangle",
-        { fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "key")),
-      {
+    new go.Node("Auto", {
         toolTip:                       // define a tooltip for each node
-          $(go.Adornment, "Spot",      // that has several labels around it
-            { background: "transparent" },  // avoid hiding tooltip when mouse moves
-            $(go.Placeholder, { padding: 5 }),
-            $(go.TextBlock,
-              { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, stroke: "red" },
-              new go.Binding("text", "key", s => "key: " + s)),
-            $(go.TextBlock, "Bottom",
-              { alignment: go.Spot.Bottom, alignmentFocus: go.Spot.Top, stroke: "red" },
-              new go.Binding("text", "color", s => "color: " + s))
-          )  // end Adornment
-      }
-    );
+          new go.Adornment("Spot",      // that has several labels around it
+              { background: "transparent" })  // avoid hiding tooltip when mouse moves
+            .add(
+              new go.Placeholder({ padding: 5 }),  // placeholder will be a bit bigger than node
+              new go.TextBlock(
+                { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, stroke: "red" })
+                .bind("text", "key", s => "key: " + s),
+              new go.TextBlock("Bottom",
+                { alignment: go.Spot.Bottom, alignmentFocus: go.Spot.Top, stroke: "red" })
+                .bind("text", "color", s => "color: " + s)
+            )  // end Adornment
+      })
+      .add(
+        new go.Shape("RoundedRectangle", { fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text")
+      );
 
   const nodeDataArray = [
-    { key: "Alpha", color: "lightyellow" },
-    { key: "Beta", color: "orange" }
+    { key: 1, text: "Alpha", color: "lightyellow" },
+    { key: 2, text: "Beta", color: "orange" }
   ];
   const linkDataArray = [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 </code></pre>
@@ -391,19 +392,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

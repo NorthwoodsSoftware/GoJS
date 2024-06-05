@@ -315,7 +315,6 @@
   To better understand the relationships between objects and transactions in memory, look at this diagram:
 </p>
 
-<p></p>
 <pre class="lang-js" id="transactionsDiagram" style="display: none"><code>
   diagram.nodeTemplate =
     $(go.Node, "Auto",
@@ -519,7 +518,7 @@
     if (!(selnode instanceof go.Node)) return;
     diagram.commit(d => {
       // have the Model add a new node data
-      const newnode = { key: "N" };
+      const newnode = { key: "N", text: `New ${d.model.nodeDataArray.length}` };
       d.model.addNodeData(newnode);  // this makes sure the key is unique
       // and then add a link data connecting the original node with the new one
       const newlink = { from: selnode.data.key, to: newnode.key };
@@ -533,17 +532,17 @@
       .add(
         new go.Shape("RoundedRectangle", { fill: "whitesmoke" }),
         new go.TextBlock({ margin: 5 })
-          .bind("text", "key")
+          .bind("text")
       );
 
   diagram.layout = new go.TreeLayout();
 
   const nodeDataArray = [
-    { key: "Alpha" },
-    { key: "Beta" }
+    { key: 1, text: "Alpha" },
+    { key: 2, text: "Beta" }
   ];
   const linkDataArray = [
-    { from: "Alpha", to: "Beta" }
+    { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   diagram.model.undoManager.isEnabled = true;
@@ -585,7 +584,7 @@
   incrementData = () => {
     diagram.model.commit(m => {
       const data = m.nodeDataArray[0];  // get the first node data
-      m.set(data, "someValue", data.someValue + 1);
+      m.set(data, "someValue", (data.someValue || 0) + 1);
     }, "increment");
   };
 </code></pre>
@@ -610,19 +609,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

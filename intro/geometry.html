@@ -370,10 +370,13 @@
 <p>Here is a simple usage of a geometry path string when initializing a <a>Shape</a> without setting <a>Shape.figure</a>:</p>
 <pre class="lang-js" id="s1"><code>
 diagram.add(
-  $(go.Node,
-    $(go.Shape,
-      { geometryString: "F M120 0 L80 80 0 50z",
-        fill: "lightgreen" })));
+  new go.Node()
+    .add(
+      new go.Shape({
+          geometryString: "F M120 0 L80 80 0 50z",
+          fill: "lightgreen"
+        })
+    ));
 </code></pre>
 <script>
   goCode('s1', 600, 140);
@@ -381,10 +384,13 @@ diagram.add(
 <p>Here is a geometry path string that uses quadratic Bezier curves:</p>
 <pre class="lang-js" id="s2"><code>
 diagram.add(
-  $(go.Node,
-    $(go.Shape,
-      { geometryString: "F M0 0 L100 0 Q150 50 100 100 L0 100 Q50 50 0 0z",
-        fill: "lightgreen" })));
+  new go.Node()
+    .add(
+      new go.Shape({
+          geometryString: "F M0 0 L100 0 Q150 50 100 100 L0 100 Q50 50 0 0z",
+          fill: "lightgreen"
+        })
+    ));
 </code></pre>
 <script>
   goCode('s2', 600, 140);
@@ -392,12 +398,14 @@ diagram.add(
 <p>This geometry uses <b>GoJS</b> arcs:</p>
 <pre class="lang-js" id="s3"><code>
 diagram.add(
-  $(go.Node, "Spot",
-    $(go.Shape,
-      { geometryString: "F M0 0 L80 0 B-90 90 80 20 20 20 L100 100 20 100 B90 90 20 80 20 20z",
-        fill: "lightgreen" }),
-    $(go.TextBlock, "custom shape")
-  ));
+  new go.Node("Spot")
+    .add(
+      new go.Shape({
+          geometryString: "F M0 0 L80 0 B-90 90 80 20 20 20 L100 100 20 100 B90 90 20 80 20 20z",
+          fill: "lightgreen"
+        }),
+      new go.TextBlock("custom shape")
+    ));
 </code></pre>
 <script>
   goCode('s3', 600, 140);
@@ -408,13 +416,14 @@ diagram.add(
 </p>
 <pre class="lang-js" id="s4"><code>
 diagram.add(
-  $(go.Node, "Auto",
-    $(go.Shape,
-      { geometryString: "F M0 0 L.8 0 B-90 90 .8 .2 .2 .2 L1 1 .2 1 B90 90 .2 .8 .2 .2z",
-        fill: "lightgreen" }),
-    $(go.TextBlock, "custom shape",
-      { margin: 4 })
-  ));
+  new go.Node("Auto")
+    .add(
+      new go.Shape({
+          geometryString: "F M0 0 L.8 0 B-90 90 .8 .2 .2 .2 L1 1 .2 1 B90 90 .2 .8 .2 .2z",
+          fill: "lightgreen"
+        }),
+      new go.TextBlock("custom shape", { margin: 4 })
+    ));
 </code></pre>
 <script>
   goCode('s4', 600, 140);
@@ -425,13 +434,16 @@ diagram.add(
 </p>
 <pre class="lang-js" id="a"><code>
 diagram.add(
-  $(go.Part,
-    $(go.Shape,
-      { geometryString:
-          "F M 0 0 l 30,30 10,10 35,0 0,-35 x m 50 0 l 0,-50 10,0 35,35 x" +
-          "f m 50 0 l 0,-50 10,0 35,35z",
-        strokeWidth: 10, stroke: "lightblue", fill: "gray" })
-  ));
+  new go.Part()
+    .add(
+      new go.Shape({
+          geometryString:
+            "F M 0 0 l 30,30 10,10 35,0 0,-35 x m 50 0 l 0,-50 10,0 35,35 x" +
+            "f m 50 0 l 0,-50 10,0 35,35z",
+          strokeWidth: 10, stroke: "lightblue",
+          fill: "gray"
+        })
+    ));
 </code></pre>
 <script>
   goCode('a', 600, 140);
@@ -444,14 +456,16 @@ The first two PathFigures are open; the first and third figures are filled. The 
 </p>
 <pre class="lang-js" id="a2"><code>
 diagram.add(
-  $(go.Part,
-    { isShadowed: true, shadowOffset: new go.Point(10, 10) },
-    $(go.Shape,
-      { geometryString:
-          "F M 0 0 l 30,30 10,10 35,0 0,-35 x u m 50 0 l 0,-50 10,0 35,35 x" +
-          "u f m 50 0 l 0,-50 10,0 35,35z x m 70 0 l 0,30 30,0 5,-35z",
-        strokeWidth: 8, stroke: "lightblue", fill: "lightcoral" })
-  ));
+  new go.Part({ isShadowed: true, shadowOffset: new go.Point(10, 10) })
+    .add(
+      new go.Shape({
+          geometryString:
+            "F M 0 0 l 30,30 10,10 35,0 0,-35 x u m 50 0 l 0,-50 10,0 35,35 x" +
+            "u f m 50 0 l 0,-50 10,0 35,35z x m 70 0 l 0,30 30,0 5,-35z",
+          strokeWidth: 8, stroke: "lightblue",
+          fill: "lightcoral"
+        })
+    ));
 </code></pre>
 <script>
   goCode('a2', 600, 140);
@@ -460,19 +474,27 @@ The first and last PathFigures are shadowed; the second and third are unshadowed
 
 <h3 id="EvenOdd">Even Odd</h3>
 <pre class="lang-js" id="even-odd"><code>
-  diagram.add($(go.Part,
-      $(go.Shape,
-        { geometryString:
-            "F M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
-          strokeWidth: 2, stroke: "black", fill: "lightcoral" })
-    ));
+  diagram.add(
+    new go.Part()
+      .add(
+        new go.Shape({
+            geometryString:
+              "F M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
+            strokeWidth: 2, stroke: "black",
+            fill: "lightcoral"
+          })
+      ));
 
-  diagram.add($(go.Part,
-      $(go.Shape,
-        { geometryString:
-            "F0 M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
-          strokeWidth: 2, stroke: "black", fill: "lightcoral" })
-    ));
+  diagram.add(
+    new go.Part()
+      .add(
+        new go.Shape({
+            geometryString:
+              "F0 M 0 100 L 100 100 100 30 20 30 20 50 70 50 70 80 40 80 40 0 0 0z",
+            strokeWidth: 2, stroke: "black",
+            fill: "lightcoral"
+          })
+      ));
   </code></pre>
 <script>
   goCode('even-odd', 600, 140);
@@ -484,16 +506,18 @@ The first and last PathFigures are shadowed; the second and third are unshadowed
 </p>
 
 <h3 id="GeometryParse">Geometry.parse</h3>
-<p>Use the static method <a>Geometry.parse</a> to convert a <b>GoJS</b> syntax path string into a <a>Geometry</a>.</p>
+<p>Use the static function <a>Geometry.parse</a> to convert a <b>GoJS</b> syntax path string into a <a>Geometry</a>.</p>
 <pre class="lang-js" id="s11"><code>
 diagram.add(
-  $(go.Node, "Horizontal",
-    $(go.TextBlock, "Custom Triangle:"),
-    $(go.Shape,
-      { geometry: go.Geometry.parse("M120 0 L80 80 0 50z"), // Geometry is not filled
-        fill: "green", background: "whitesmoke",
-        stroke: "orange", strokeWidth: 2 })
-  ));
+  new go.Node("Horizontal")
+    .add(
+      new go.TextBlock("Custom Triangle:"),
+      new go.Shape({
+          geometry: go.Geometry.parse("M120 0 L80 80 0 50z"), // Geometry is not filled
+          fill: "green", background: "whitesmoke",
+          stroke: "orange", strokeWidth: 2
+        })
+    ));
 </code></pre>
 <script>
   goCode('s11', 600, 140);
@@ -514,13 +538,15 @@ diagram.add(
 <p>Here is the same example, but using a filled geometry path string.</p>
 <pre class="lang-js" id="s11a"><code>
 diagram.add(
-  $(go.Node, "Horizontal",
-    $(go.TextBlock, "Custom Triangle:"),
-    $(go.Shape,
-      { geometry: go.Geometry.parse("F M120 0 L80 80 0 50z"), // Geometry is filled
-        fill: "green", background: "whitesmoke",
-        stroke: "orange", strokeWidth: 2 })
-  ));
+  new go.Node("Horizontal")
+    .add(
+      new go.TextBlock("Custom Triangle:"),
+      new go.Shape({
+          geometry: go.Geometry.parse("F M120 0 L80 80 0 50z"), // Geometry is filled
+          fill: "green", background: "whitesmoke",
+          stroke: "orange", strokeWidth: 2
+        })
+    ));
 </code></pre>
 <script>
   goCode('s11a', 600, 140);
@@ -532,13 +558,15 @@ diagram.add(
 </p>
 <pre class="lang-js" id="s12"><code>
 diagram.add(
-  $(go.Node, "Horizontal",
-    $(go.TextBlock, "Custom Triangle:"),
-    $(go.Shape,
-      { geometry: go.Geometry.parse("M120 50 L80 80 50 50z", true), // Geometry is filled
-        fill: "green", background: "whitesmoke",
-        stroke: "orange", strokeWidth: 2 })
-  ));
+  new go.Node("Horizontal")
+    .add(
+      new go.TextBlock("Custom Triangle:"),
+      new go.Shape({
+          geometry: go.Geometry.parse("M120 50 L80 80 50 50z", true), // Geometry is filled
+          fill: "green", background: "whitesmoke",
+          stroke: "orange", strokeWidth: 2
+        })
+    ));
 </code></pre>
 <script>
   goCode('s12', 600, 140);
@@ -553,13 +581,15 @@ var geo = go.Geometry.parse("M120 50 L80 80 50 50z", true);
 geo.normalize();
 
 diagram.add(
-  $(go.Node, "Horizontal",
-    $(go.TextBlock, "Custom Triangle:"),
-    $(go.Shape,
-      { geometry: geo,  // normalized above
-        fill: "green", background: "whitesmoke",
-        stroke: "orange", strokeWidth: 2 })
-  ));
+  new go.Node("Horizontal")
+    .add(
+      new go.TextBlock("Custom Triangle:"),
+      new go.Shape({
+          geometry: geo,  // normalized above
+          fill: "green", background: "whitesmoke",
+          stroke: "orange", strokeWidth: 2
+        })
+    ));
 </code></pre>
 <script>
   goCode('s12a', 600, 140);
@@ -582,37 +612,43 @@ var pathstring = "M30 100 C 50 50, 70 20, 100 100, 110, 130, 45, 150, 65, 100";
 
 // Just parsing the geometry
 diagram.add(
-  $(go.Part, "Vertical",
-    $(go.Shape,
-      { geometry: go.Geometry.parse(pathstring),
-        strokeWidth: 10, stroke: "lightcoral",
-        background: "whitesmoke" }),
-    $(go.TextBlock, "parse")
-  ));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+          geometry: go.Geometry.parse(pathstring),
+          strokeWidth: 10, stroke: "lightcoral",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("parse")
+    ));
 
 // Parsing the geometry and normalizing it
 var geo = go.Geometry.parse(pathstring);
 geo.normalize();
 diagram.add(
-  $(go.Part, "Vertical",
-    $(go.Shape,
-      { geometry: geo,
-        strokeWidth: 10, stroke: "lightgreen",
-        background: "whitesmoke" }),
-    $(go.TextBlock, "parse/normalize")
-  ));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+          geometry: geo,
+          strokeWidth: 10, stroke: "lightgreen",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("parse/normalize")
+    ));
 
 // Using geometryString to parse and normalize the geometry
 diagram.add(
-  $(go.Part, "Vertical",
-    $(go.Shape,
-      { geometryString: pathstring,
-        strokeWidth: 10, stroke: "lightblue",
-        background: "whitesmoke" }),
-    $(go.TextBlock, "geometryString")
-  ));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+          geometryString: pathstring,
+          strokeWidth: 10, stroke: "lightblue",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("geometryString")
+    ));
 
-diagram.layout = $(go.GridLayout);
+diagram.layout = new go.GridLayout();
 
 // Select them all to more easily see their sizes
 diagram.commandHandler.selectAll();
@@ -634,37 +670,43 @@ var geo = go.Geometry.parse(pathstring);
 geo.normalize();
 
 diagram.add(
-$(go.Part, "Vertical",
-  $(go.Shape,
-    { geometry: geo,
-      strokeWidth: 10, stroke: "lightgreen",
-      background: "whitesmoke" }),
-  $(go.TextBlock, "geometry from string\n(normalized)")
-));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+        geometry: geo,
+          strokeWidth: 10, stroke: "lightgreen",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("geometry from string\n(normalized)")
+    ));
 
 var geo2 = geo.copy();
 geo2.scale(-1, 1); // flips a geometry horizontally
 diagram.add(
-$(go.Part, "Vertical",
-  $(go.Shape,
-    { geometry: geo2,
-      strokeWidth: 10, stroke: "lightgreen",
-      background: "whitesmoke" }),
-  $(go.TextBlock, "flipped horizontally")
-));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+          geometry: geo2,
+          strokeWidth: 10, stroke: "lightgreen",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("flipped horizontally")
+    ));
 
 var geo3 = geo.copy();
 geo3.scale(1, -1); // flips a geometry vertically
 diagram.add(
-$(go.Part, "Vertical",
-  $(go.Shape,
-    { geometry: geo3,
-      strokeWidth: 10, stroke: "lightgreen",
-      background: "whitesmoke" }),
-  $(go.TextBlock, "flipped vertically")
-));
+  new go.Part("Vertical")
+    .add(
+      new go.Shape({
+          geometry: geo3,
+          strokeWidth: 10, stroke: "lightgreen",
+          background: "whitesmoke"
+        }),
+      new go.TextBlock("flipped vertically")
+    ));
 
-diagram.layout = $(go.GridLayout);
+diagram.layout = new go.GridLayout();
 </code></pre>
 <script>
   goCode('b2', 600, 180);
@@ -724,19 +766,19 @@ The result can then be passed to <a>Geometry.parse</a> or <a>Shape.geometryStrin
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

@@ -425,7 +425,7 @@ export class PolygonDrawingTool extends go.Tool {
             // accept
             this.finishShape(); // all done!
         }
-        else if (e.code === 'KeyZ') {
+        else if (e.code === 'KeyZ' || e.key.toLowerCase() === 'z') {
             // undo
             this.undo();
         }

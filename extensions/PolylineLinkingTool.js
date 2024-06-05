@@ -224,7 +224,7 @@ class PolylineLinkingTool extends go.LinkingTool {
         if (!this.isActive)
             return;
         const e = this.diagram.lastInput;
-        if (e.code === 'KeyZ' &&
+        if ((e.code === 'KeyZ' || e.key.toLowerCase() === 'z') &&
             this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) {
             // undo
             // remove a point, and then treat the last one as a temporary one

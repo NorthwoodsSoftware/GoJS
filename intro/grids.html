@@ -257,19 +257,24 @@
 <p>
   Unlike in other kinds of <a>Panel</a>s, Grid Panel elements must be <a>Shape</a>s that are only used to control how the grid lines or grid bars are drawn.
 </p>
-<p>See samples that make use of grids in the <a href="../samples/index.html#grid">samples index</a>.</p>
+<p>
+  See samples that make use of grids in the <a href="../samples/index.html#grid">samples index</a>.
+</p>
 
 <h2 id="DefaultGrid">Default Grid</h2>
-<p>To display a grid pattern in the background of the diagram, you can just make the <a>Diagram.grid</a> visible:</p>
+<p>
+  To display a grid pattern in the background of the diagram, you can just make the <a>Diagram.grid</a> visible:
+</p>
 <pre class="lang-js" id="defaultGrid"><code>
   diagram.grid.visible = true;
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
   ];
@@ -293,14 +298,13 @@
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
   diagram.toolManager.resizingTool.isGridSnapEnabled = true;
 
-
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { resizable: true })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
   ];
@@ -311,21 +315,22 @@
 </script>
 
 <h2 id="SimpleGridCustomization">Simple Grid Customization</h2>
-<p>You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:</p>
+<p>
+  You can change the size of the grid cell by setting <a>Panel.gridCellSize</a>:
+</p>
 <pre class="lang-js" id="biggerGrid"><code>
   diagram.grid.visible = true;
   diagram.grid.gridCellSize = new go.Size(30, 20);
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
   diagram.toolManager.resizingTool.isGridSnapEnabled = true;
 
-
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { resizable: true })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
   ];
@@ -349,14 +354,13 @@
   // (the default background grid has a cell size of 10x10)
   diagram.toolManager.draggingTool.gridSnapCellSize = new go.Size(20, 20);
 
-
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { resizable: true })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }, { key: "Beta" }, { key: "Gamma" }
   ];
@@ -372,14 +376,16 @@
   whose <a>Shape.figure</a> is one of a small set of known kinds of figures. The only figures it can accept are: "LineH", "LineV", "BarH", and "BarV". The two
   "Line" figures result in stroked lines separating the grid cells; the two "Bar" figures result in filled rectangles in the grid cells.
 </p>
-<p>Here is a simple grid consisting of blue horizontal lines and green vertical lines:</p>
+<p>
+  Here is a simple grid consisting of blue horizontal lines and green vertical lines:
+</p>
 <pre class="lang-js" id="customBackground"><code>
   diagram.grid =
-    $(go.Panel, go.Panel.Grid,  // or "Grid"
-      { gridCellSize: new go.Size(25, 25) },
-      $(go.Shape, "LineH", { stroke: "blue" }),
-      $(go.Shape, "LineV", { stroke: "green" })
-    );
+    new go.Panel("Grid", { gridCellSize: new go.Size(25, 25) })
+      .add(
+        new go.Shape("LineH", { stroke: "blue" }),
+        new go.Shape("LineV", { stroke: "green" })
+      );
 </code></pre>
 <script>
   goCode('customBackground', 600, 150);
@@ -391,21 +397,21 @@
 </p>
 <pre class="lang-js" id="customBackground2"><code>
   diagram.grid =
-    $(go.Panel, "Grid",
-      { gridCellSize: new go.Size(10, 10) },
-      $(go.Shape, "LineH", { stroke: "lightblue" }),
-      $(go.Shape, "LineV", { stroke: "lightgreen" }),
-      $(go.Shape, "LineH", { stroke: "blue", interval: 5 }),
-      $(go.Shape, "LineV", { stroke: "green", interval: 5 })
+    new go.Panel("Grid", { gridCellSize: new go.Size(10, 10) })
+      .add(
+        new go.Shape("LineH", { stroke: "lightblue" }),
+        new go.Shape("LineV", { stroke: "lightgreen" }),
+        new go.Shape("LineH", { stroke: "blue", interval: 5 }),
+        new go.Shape("LineV", { stroke: "green", interval: 5 })
       );
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { resizable: true })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }
   ];
@@ -418,23 +424,25 @@
   Note that the Shapes are drawn in the order in which they appear in the Panel, so you can see that the dark blue horizontal lines are drawn in front of the
   light green vertical lines, and that the dark green vertical line crosses in front of the dark blue horizontal lines.
 </p>
-<p>Here is the definition of the predefined <a>Diagram.grid</a>:</p>
+<p>
+  Here is the definition of the predefined <a>Diagram.grid</a>:
+</p>
 <pre class="lang-js" id="standardGrid"><code>
   diagram.grid =
-    $(go.Panel, "Grid",
-      {
+    new go.Panel("Grid", {
         name: "GRID",
         visible: false,
         gridCellSize: new go.Size(10, 10),
         gridOrigin: new go.Point(0, 0)
-      },
-      $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
-      $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
-      $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 1.0, interval: 10 }),
-      $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
-      $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
-      $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 1.0, interval: 10 })
-    );
+      })
+      .add(
+        new go.Shape("LineH", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
+        new go.Shape("LineH", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
+        new go.Shape("LineH", { stroke: "gray", strokeWidth: 1.0, interval: 10 }),
+        new go.Shape("LineV", { stroke: "lightgray", strokeWidth: 0.5, interval: 1 }),
+        new go.Shape("LineV", { stroke: "gray", strokeWidth: 0.5, interval: 5 }),
+        new go.Shape("LineV", { stroke: "gray", strokeWidth: 1.0, interval: 10 })
+      );
 
   diagram.grid.visible = true;  // so that this example shows the standard grid
   diagram.div.style.background = "white";
@@ -448,24 +456,23 @@
 </p>
 <pre class="lang-js" id="customBackground3"><code>
   diagram.grid =
-    $(go.Panel, "Grid",
-      { gridCellSize: new go.Size(50, 50) },
-      $(go.Shape, "BarH", { fill: "lightgreen", interval: 2, height: 50 })
+    new go.Panel("Grid", { gridCellSize: new go.Size(50, 50) })
+      .add(
+        new go.Shape("BarH", { fill: "lightgreen", interval: 2, height: 50 })
       );
 
-
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      {
+    new go.Node("Auto", {
         dragComputation: (node, pt, gridpt) => {
           pt.y = Math.round(pt.y/100)*100;
           return pt;
         }
-      },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+      })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }
   ];
@@ -478,24 +485,26 @@
   This example also demonstrates how one can use the <a>Part.dragComputation</a> property to customize where the user can drag the node. In this case the
   <a>Part.location</a>.y is limited to be multiples of 100, corresponding to the rows of cells filled by the green bars.
 </p>
-<p>To get a tablecloth effect, one can use both vertical and horizontal bars with a translucent color:</p>
+<p>
+  To get a tablecloth effect, one can use both vertical and horizontal bars with a translucent color:
+</p>
 <pre class="lang-js" id="customBackground4"><code>
   diagram.grid =
-    $(go.Panel, "Grid",
-      { gridCellSize: new go.Size(100, 100) },
-      $(go.Shape, "BarV", { fill: "rgba(255,0,0,0.1)", width: 50 }),
-      $(go.Shape, "BarH", { fill: "rgba(255,0,0,0.1)", height: 50 })
+    new go.Panel("Grid", { gridCellSize: new go.Size(100, 100) })
+      .add(
+        new go.Shape("BarV", { fill: "rgba(255,0,0,0.1)", width: 50 }),
+        new go.Shape("BarH", { fill: "rgba(255,0,0,0.1)", height: 50 })
       );
 
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { width: 50, height: 50 },
-      $(go.Shape, "Rectangle", { fill: "lightgray" }),
-      $(go.TextBlock, { margin: 5},
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto", { width: 50, height: 50 })
+      .add(
+        new go.Shape("Rectangle", { fill: "lightgray" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }
   ];
@@ -504,24 +513,30 @@
 <script>
   goCode('customBackground4', 600, 350);
 </script>
-<p>This example limits dragging of all nodes by setting <a>DraggingTool.isGridSnapEnabled</a> to true.</p>
-<p>Another custom grid: dots</p>
+<p>
+  This example limits dragging of all nodes by setting <a>DraggingTool.isGridSnapEnabled</a> to true.
+</p>
+<p>
+  Another custom grid: dots
+</p>
 <pre class="lang-js" id="customBackground5"><code>
   diagram.div.style.background = "white";
 
   diagram.grid =
-    $(go.Panel, "Grid",
-      $(go.Shape, "LineH", { strokeWidth: 0.5, strokeDashArray: [0, 9.5, 0.5, 0] })
-    );
+    new go.Panel("Grid")
+      .add(
+        new go.Shape("LineH", { strokeWidth: 1, strokeDashArray: [0, 9, 1, 0] })
+      );
 
   diagram.toolManager.draggingTool.isGridSnapEnabled = true;
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle", { fill: "white" }),
-      $(go.TextBlock, { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "white" }),
+        new go.TextBlock({ margin: 5 })
+          .bind("text", "key")
+      );
   var nodeDataArray = [
     { key: "Alpha" }
   ];
@@ -530,22 +545,29 @@
 <script>
   goCode('customBackground5', 600, 350);
 </script>
-<p>Here is an example of using a "Grid" <a>Panel</a> as a regular data bound element in a <a>Node</a>:</p>
+<p>
+  Here is an example of using a "Grid" <a>Panel</a> as a regular data bound element in a <a>Node</a>:
+</p>
 <pre class="lang-js" id="nodeGrid"><code>
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      { resizable: true, resizeObjectName: "GRID" },
-      $(go.Shape, "Rectangle", { fill: "transparent" }),
-      $(go.Panel, "Grid",
-        { name: "GRID", desiredSize: new go.Size(100, 100), gridCellSize: new go.Size(20, 20) },
-        new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-        new go.Binding("gridCellSize", "cell", go.Size.parse).makeTwoWay(go.Size.stringify),
-        $(go.Shape, "LineV",
-          new go.Binding("stroke")),
-        $(go.Shape, "LineH",
-          new go.Binding("stroke"))
-      ));
+    new go.Node("Auto", { resizable: true, resizeObjectName: "GRID" })
+      .add(
+        new go.Shape("Rectangle", { fill: "transparent" }),
+        new go.Panel("Grid", {
+            name: "GRID",
+            desiredSize: new go.Size(100, 100),
+            gridCellSize: new go.Size(20, 20)
+          })
+          .bindTwoWay("desiredSize", "size", go.Size.parse, go.Size.stringify)
+          .bindTwoWay("gridCellSize", "cell", go.Size.parse, go.Size.stringify)
+          .add(
+            new go.Shape("LineV")
+              .bind("stroke"),
+            new go.Shape("LineH")
+              .bind("stroke")
+          )
+      );
 
   diagram.model = new go.GraphLinksModel([
     { key: "Alpha", cell: "25 25", stroke: "lightgreen" },
@@ -560,7 +582,9 @@
 <p>
   A Grid Panel should have a non-null <code>background</code> if it needs to be pickable. One cannot set or bind the <a>Panel.itemArray</a> of a Grid Panel.
 </p>
-<p>Events on the Shapes will be ignored. Shapes in a Grid Panel must not be scaled or rotated.</p>
+<p>
+  Events on the Shapes will be ignored. Shapes in a Grid Panel must not be scaled or rotated.
+</p>
 
       </div>
     </div>
@@ -573,19 +597,19 @@
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

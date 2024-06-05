@@ -257,7 +257,9 @@
 </p>
 
 <h2 id="StandardLayers">Standard Layers</h2>
-<p>Every Diagram starts off with several standard layers. These are their <a>Layer.name</a>s, in order from furthest behind to most in front:</p>
+<p>
+  Every Diagram starts off with several standard layers. These are their <a>Layer.name</a>s, in order from furthest behind to most in front:
+</p>
 <ul>
   <li><b>"Grid"</b>, holding the <a>Diagram.grid</a> and any other static Parts that you wish to be behind everything</li>
   <li><b>"ViewportBackground"</b>, holding Parts aligned to the viewport rather than in the document</li>
@@ -299,28 +301,26 @@
   // These new layers come in front of the standard regular layers,
   // but behind the "Foreground" layer:
   var forelayer = diagram.findLayer("Foreground");
-  diagram.addLayerBefore($(go.Layer, { name: "blue" }), forelayer);
-  diagram.addLayerBefore($(go.Layer, { name: "green" }), forelayer);
-  diagram.addLayerBefore($(go.Layer, { name: "orange" }), forelayer);
+  diagram.addLayerBefore(new go.Layer({ name: "blue" }), forelayer);
+  diagram.addLayerBefore(new go.Layer({ name: "green" }), forelayer);
+  diagram.addLayerBefore(new go.Layer({ name: "orange" }), forelayer);
 
-  diagram.nodeTemplate =
-    $(go.Part, "Spot", // no links or grouping, so can use the simpler Part class
-      new go.Binding("layerName", "color"),
-      new go.Binding("location", "loc"),
-      $(go.Shape,
-        { width: 80, height: 80 },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { stroke: "white", font: "bold 12px sans-serif" }),
-      {
+  diagram.nodeTemplate =  // no links or grouping, so can use the simpler Part class
+    new go.Part("Spot", {
         selectionChanged: p => {
           p.layerName = (p.isSelected ? "Foreground" : p.data.color);
         },
         layerChanged: (p, oldLayer, newLayer) => {
           if (newLayer !== null) p.elt(1).text = newLayer.name;
         }
-      }
-    );
+      })
+      .bind("layerName", "color")
+      .bind("location", "loc")
+      .add(
+        new go.Shape({ width: 80, height: 80 })
+          .bind("fill", "color"),
+        new go.TextBlock({ stroke: "white", font: "bold 12px sans-serif" })
+      );
 
   var array = [];
   for (let i = 0; i &lt; 12; i++) {
@@ -358,7 +358,9 @@ Layer visibility:<br />
   This example adds several <a>Part</a>s to one Layer (the default) in the diagram. Every <a>Part.zOrder</a> is data-bound to the "zOrder" property of the node
   data, as is its text.
 </p>
-<p>Buttons on the Part can be used to modify the z-order of each.</p>
+<p>
+  Buttons on the Part can be used to modify the z-order of each.
+</p>
 <pre class="lang-js" id="zOrder"><code>
   function changeZOrder(amt, obj) {
     diagram.commit(d => {
@@ -368,24 +370,32 @@ Layer visibility:<br />
   }
 
   diagram.nodeTemplate =
-    $(go.Part,  "Spot",
-      new go.Binding("layerName", "color"),
-      new go.Binding("location", "loc"),
-      new go.Binding("zOrder"),
-      $(go.Shape,
-        { width: 100, height: 100, stroke: 'rgb(50,50,50)', fill: 'rgb(50,100,255)' }),
-      $(go.TextBlock,
-        { font: "52px sans-serif", stroke: 'whitesmoke' },
-        new go.Binding("text", "zOrder")),
-      $("Button",
-        { alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.BottomLeft,
-          click: (e, obj) => changeZOrder(-1, obj) },
-        $(go.Shape, "LineH", { width: 14, height: 14 })),
-      $("Button",
-        { alignment: go.Spot.BottomRight, alignmentFocus: go.Spot.BottomRight,
-          click: (e, obj) => changeZOrder(1, obj) },
-        $(go.Shape, "PlusLine", { width: 14, height: 14 }))
-    );
+    new go.Part("Spot")
+      .bind("layerName", "color")
+      .bind("location", "loc")
+      .bind("zOrder")
+      .add(
+        new go.Shape({
+            width: 100, height: 100,
+            stroke: 'rgb(50,50,50)', fill: 'rgb(50,100,255)'
+          }),
+        new go.TextBlock({ font: "52px sans-serif", stroke: 'whitesmoke' })
+          .bind("text", "zOrder"),
+        go.GraphObject.build("Button", {
+            alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.BottomLeft,
+            click: (e, obj) => changeZOrder(-1, obj)
+          })
+          .add(
+            new go.Shape("LineH", { width: 14, height: 14 })
+          ),
+        go.GraphObject.build("Button", {
+            alignment: go.Spot.BottomRight, alignmentFocus: go.Spot.BottomRight,
+            click: (e, obj) => changeZOrder(1, obj)
+          })
+          .add(
+            new go.Shape("PlusLine", { width: 14, height: 14 })
+          )
+      );
 
   var array = [];
   for (let i = 0; i < 12; i++) {
@@ -411,19 +421,19 @@ Layer visibility:<br />
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

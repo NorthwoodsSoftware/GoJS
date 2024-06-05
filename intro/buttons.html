@@ -276,15 +276,12 @@
 </p>
 <pre class="lang-js" id="button"><code>
   diagram.nodeTemplate =
-    new go.Node("Auto",
-        { locationSpot: go.Spot.Center })
+    new go.Node("Auto", { locationSpot: go.Spot.Center })
       .add(
         new go.Shape("Rectangle", { fill: "gold" }),
         new go.Panel("Vertical", { margin: 3 })
           .add(
-            go.GraphObject.build("Button",
-                { margin: 2,
-                  click: incrementCounter })
+            go.GraphObject.build("Button", { margin: 2, click: incrementCounter })
               .add(
                 new go.TextBlock("Click me!")
               ),
@@ -317,56 +314,57 @@
 </p>
 <pre class="lang-js" id="button2"><code>
   diagram.nodeTemplate =
-    new go.Node("Auto",
-        { locationSpot: go.Spot.Center }).add(
-      new go.Shape("Rectangle", { fill: "gold" }),
-      new go.Panel("Vertical", { margin: 3 }).add(
-        go.GraphObject.build("Button", {
-              margin: 2,
-              click: (e, button) => alert(button.findObject("ButtonBorder").fill),
-              // set properties on the border Shape of the "Button"
-              "ButtonBorder.fill": "fuchsia",
-              // set properties on the "Button" itself used by its event handlers
-              "_buttonFillOver": "pink",
-            })
+    new go.Node("Auto", { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape("Rectangle", { fill: "gold" }),
+        new go.Panel("Vertical", { margin: 3 })
           .add(
-            new go.TextBlock("fuchsia button\nwith pink highlight", { margin: 2, textAlign: "center" })
-          ),
-        go.GraphObject.build("Button", {
-              margin: 2,
-              click: (e, button) => alert(button.findObject("ButtonBorder").stroke),
-              // set properties on the border Shape of the "Button"
-              "ButtonBorder.figure": "Circle",
-              "ButtonBorder.fill": "cyan",
-              "ButtonBorder.stroke": "darkcyan",
-              "ButtonBorder.strokeWidth": 3,
-              // set properties on the "Button" itself used by its event handlers
-              "_buttonFillOver": "white",
-              "_buttonStrokeOver": "cyan",
-              "_buttonFillPressed": "lightgray"
-            })
-          .add(
-            new go.TextBlock("Circular\nbutton", { margin: 2, textAlign: "center" })
-          ),
-        go.GraphObject.build("Button", {
-              margin: 2,
-              click: (e, button) => alert(button.findObject("PIC").source)
-            })
-          .add(
-            // the button content can be anything -- it doesn't have to be a TextBlock
-            new go.Picture("images/50x40.png", { name: "PIC", width: 50, height: 40 })
-          ),
-        go.GraphObject.build("Button", {
-              margin: 2,
-              // buttons can be disabled too, by either setting or data binding:
-              isEnabled: false,
-              click: (e, button) => alert("won't be alerted")
-            })
-          .add(
-            new go.TextBlock("disabled", { stroke: "gray" })
+            go.GraphObject.build("Button", {
+                  margin: 2,
+                  click: (e, button) => alert(button.findObject("ButtonBorder").fill),
+                  // set properties on the border Shape of the "Button"
+                  "ButtonBorder.fill": "fuchsia",
+                  // set properties on the "Button" itself used by its event handlers
+                  "_buttonFillOver": "pink",
+                })
+              .add(
+                new go.TextBlock("fuchsia button\nwith pink highlight", { margin: 2, textAlign: "center" })
+              ),
+            go.GraphObject.build("Button", {
+                  margin: 2,
+                  click: (e, button) => alert(button.findObject("ButtonBorder").stroke),
+                  // set properties on the border Shape of the "Button"
+                  "ButtonBorder.figure": "Circle",
+                  "ButtonBorder.fill": "cyan",
+                  "ButtonBorder.stroke": "darkcyan",
+                  "ButtonBorder.strokeWidth": 3,
+                  // set properties on the "Button" itself used by its event handlers
+                  "_buttonFillOver": "white",
+                  "_buttonStrokeOver": "cyan",
+                  "_buttonFillPressed": "lightgray"
+                })
+              .add(
+                new go.TextBlock("Circular\nbutton", { margin: 2, textAlign: "center" })
+              ),
+            go.GraphObject.build("Button", {
+                  margin: 2,
+                  click: (e, button) => alert(button.findObject("PIC").source)
+                })
+              .add(
+                // the button content can be anything -- it doesn't have to be a TextBlock
+                new go.Picture("images/50x40.png", { name: "PIC", width: 50, height: 40 })
+              ),
+            go.GraphObject.build("Button", {
+                  margin: 2,
+                  // buttons can be disabled too, by either setting or data binding:
+                  isEnabled: false,
+                  click: (e, button) => alert("won't be alerted")
+                })
+              .add(
+                new go.TextBlock("disabled", { stroke: "gray" })
+              )
           )
-      )
-    );
+      );
 
   diagram.model = new go.GraphLinksModel([ { } ]);
 </code></pre>
@@ -535,30 +533,36 @@ diagram.groupTemplate =
 </p>
 <pre class="lang-js" id="panelExpanderButton"><code>
   diagram.nodeTemplate =
-    new go.Node("Auto").add(
-      new go.Shape({ fill: "gold" }),
-      new go.Panel("Table",
-            { defaultAlignment: go.Spot.Top, defaultColumnSeparatorStroke: "black" }).add(
-        new go.Panel("Table", { column: 0 }).add(
-          new go.TextBlock("List 1",
-              { column: 0, margin: new go.Margin(3, 3, 0, 3),
-                font: "bold 12pt sans-serif" }),
-          go.GraphObject.build("PanelExpanderButton", { column: 1 }, "LIST1"),
-          new go.Panel("Vertical",
-              { name: "LIST1", row: 1, column: 0, columnSpan: 2 })
-            .bind("itemArray", "list1")
-        ),
-        new go.Panel("Table", { column: 1 }).add(
-          new go.TextBlock("List 2",
-              { column: 0, margin: new go.Margin(3, 3, 0, 3),
-                font: "bold 12pt sans-serif" }),
-          go.GraphObject.build("PanelExpanderButton", { column: 1 }, "LIST2"),
-          new go.Panel("Vertical",
-              { name: "LIST2", row: 1, column: 0, columnSpan: 2 })
-            .bind("itemArray", "list2")
-        )
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape({ fill: "gold" }),
+        new go.Panel("Table",
+              { defaultAlignment: go.Spot.Top, defaultColumnSeparatorStroke: "black" })
+          .add(
+            new go.Panel("Table", { column: 0 })
+              .add(
+                new go.TextBlock("List 1", {
+                    column: 0, margin: new go.Margin(3, 3, 0, 3),
+                    font: "bold 12pt sans-serif"
+                  }),
+                go.GraphObject.build("PanelExpanderButton", { column: 1 }, "LIST1"),
+                new go.Panel("Vertical",
+                    { name: "LIST1", row: 1, column: 0, columnSpan: 2 })
+                  .bind("itemArray", "list1")
+              ),
+            new go.Panel("Table", { column: 1 })
+              .add(
+                new go.TextBlock("List 2", {
+                    column: 0, margin: new go.Margin(3, 3, 0, 3),
+                    font: "bold 12pt sans-serif"
+                  }),
+                go.GraphObject.build("PanelExpanderButton", { column: 1 }, "LIST2"),
+                new go.Panel("Vertical",
+                    { name: "LIST2", row: 1, column: 0, columnSpan: 2 })
+                  .bind("itemArray", "list2")
+              )
+          )
+      );
 
   diagram.model = new go.GraphLinksModel([
     {
@@ -576,49 +580,57 @@ diagram.groupTemplate =
 </p>
 <pre class="lang-js" id="panelExpanderButton2"><code>
   diagram.nodeTemplate =
-    new go.Node("Auto").add(
-      new go.Shape({ fill: "gold" }),
-      new go.Panel("Table",
-          { defaultAlignment: go.Spot.Top, defaultColumnSeparatorStroke: "black" }).add(
-        new go.Panel("Table", { column: 0 }).add(
-          new go.TextBlock("List 1",
-              { column: 0, margin: new go.Margin(3, 3, 0, 3),
-                font: "bold 12pt sans-serif" }),
-          go.GraphObject.build("PanelExpanderButton", {
-              column: 1, height: 16,
-              // set the two additional properties used by "PanelExpanderButton"
-              // that control the shape depending on the value of GraphObject.visible
-              // of the object named "LIST1"
-              "_buttonExpandedFigure": "M0 0 L10 0",
-              "_buttonCollapsedFigure": "M0 5 L10 5 M5 0 L5 10",
-              "ButtonIcon.stroke": "blue"
-            },
-            "LIST1"),
-          new go.Panel("Vertical",
-              { name: "LIST1", row: 1, column: 0, columnSpan: 2 })
-            .bind("itemArray", "list1")
-        ),
-        new go.Panel("Table", { column: 1 }).add(
-          new go.TextBlock("List 2",
-              { column: 0, margin: new go.Margin(3, 3, 0, 3),
-                font: "bold 12pt sans-serif" }),
-          go.GraphObject.build("PanelExpanderButton", {
-              column: 1,
-              // set the two additional properties used by "PanelExpanderButton"
-              // that control the shape depending on the value of GraphObject.visible
-              // of the object named "LIST1"
-              "_buttonExpandedFigure": "F M0 10 L5 0 10 10z",
-              "_buttonCollapsedFigure": "F M0 0 L10 0 5 10z",
-              "ButtonIcon.strokeWidth": 0,
-              "ButtonIcon.fill": "blue"
-            },
-            "LIST2"),
-          new go.Panel("Vertical",
-              { name: "LIST2", row: 1, column: 0, columnSpan: 2 })
-            .bind("itemArray", "list2")
-        )
-      )
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape({ fill: "gold" }),
+        new go.Panel("Table",
+            { defaultAlignment: go.Spot.Top, defaultColumnSeparatorStroke: "black" })
+          .add(
+            new go.Panel("Table", { column: 0 })
+              .add(
+                new go.TextBlock("List 1", {
+                    column: 0, margin: new go.Margin(3, 3, 0, 3),
+                    font: "bold 12pt sans-serif"
+                  }),
+                go.GraphObject.build("PanelExpanderButton", {
+                    column: 1, height: 16,
+                    // set the two additional properties used by "PanelExpanderButton"
+                    // that control the shape depending on the value of GraphObject.visible
+                    // of the object named "LIST1"
+                    "_buttonExpandedFigure": "M0 0 L10 0",
+                    "_buttonCollapsedFigure": "M0 5 L10 5 M5 0 L5 10",
+                    "ButtonIcon.stroke": "blue"
+                  },
+                  "LIST1"),
+                new go.Panel("Vertical", {
+                    name: "LIST1", row: 1, column: 0, columnSpan: 2
+                  })
+                  .bind("itemArray", "list1")
+              ),
+            new go.Panel("Table", { column: 1 })
+              .add(
+                new go.TextBlock("List 2", {
+                    column: 0, margin: new go.Margin(3, 3, 0, 3),
+                    font: "bold 12pt sans-serif"
+                  }),
+                go.GraphObject.build("PanelExpanderButton", {
+                    column: 1,
+                    // set the two additional properties used by "PanelExpanderButton"
+                    // that control the shape depending on the value of GraphObject.visible
+                    // of the object named "LIST1"
+                    "_buttonExpandedFigure": "F M0 10 L5 0 10 10z",
+                    "_buttonCollapsedFigure": "F M0 0 L10 0 5 10z",
+                    "ButtonIcon.strokeWidth": 0,
+                    "ButtonIcon.fill": "blue"
+                  },
+                  "LIST2"),
+                new go.Panel("Vertical", {
+                    name: "LIST2", row: 1, column: 0, columnSpan: 2
+                  })
+                  .bind("itemArray", "list2")
+              )
+          )
+      );
 
   diagram.model = new go.GraphLinksModel([
     {
@@ -693,34 +705,35 @@ diagram.groupTemplate =
       );
 
   diagram.nodeTemplate.contextMenu =
-    go.GraphObject.build("ContextMenu").add(
-      go.GraphObject.build("ContextMenuButton",
-          {
-            click: (e, obj) => shiftNode(obj, -20),
-            "ButtonBorder.fill": "yellow",
-            "_buttonFillOver": "cyan",
-            "_buttonFillPressed": "lime"
-          })
-        .add(
-          new go.TextBlock("Shift Left")
-        ),
-      go.GraphObject.build("ContextMenuButton",
-          {
-            click: (e, obj) => shiftNode(obj, +20),
-            "ButtonBorder.fill": "yellow",
-            "_buttonFillOver": "cyan",
-            "_buttonFillPressed": "lime"
-          })
-        .add(
-          new go.TextBlock("Shift Right")
-        ),
-      go.GraphObject.build("ContextMenuButton",
-          { isEnabled: false,
-            click: (e, obj) => alert("won't be alerted") })
-        .add(
-          new go.TextBlock("Disabled", { stroke: "gray" })
-        )
-    );
+    go.GraphObject.build("ContextMenu")
+      .add(
+        go.GraphObject.build("ContextMenuButton",
+            {
+              click: (e, obj) => shiftNode(obj, -20),
+              "ButtonBorder.fill": "yellow",
+              "_buttonFillOver": "cyan",
+              "_buttonFillPressed": "lime"
+            })
+          .add(
+            new go.TextBlock("Shift Left")
+          ),
+        go.GraphObject.build("ContextMenuButton",
+            {
+              click: (e, obj) => shiftNode(obj, +20),
+              "ButtonBorder.fill": "yellow",
+              "_buttonFillOver": "cyan",
+              "_buttonFillPressed": "lime"
+            })
+          .add(
+            new go.TextBlock("Shift Right")
+          ),
+        go.GraphObject.build("ContextMenuButton",
+            { isEnabled: false,
+              click: (e, obj) => alert("won't be alerted") })
+          .add(
+            new go.TextBlock("Disabled", { stroke: "gray" })
+          )
+      );
 
   function shiftNode(obj, dist) {
     var adorn = obj.part;
@@ -798,19 +811,19 @@ diagram.groupTemplate =
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

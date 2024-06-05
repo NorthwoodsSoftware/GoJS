@@ -265,39 +265,45 @@ diagram.allowVerticalScroll = false;
 
 const panelBackgroundColor = 'palegreen';
 function makepanel(type, desc) {
-  return new go.Node("Vertical").add(
-    new go.TextBlock("go.Panel(\""+ type + "\")", { margin: 4, font: "13px monospace" }),
-    new go.Panel(type, { background: panelBackgroundColor }).add(
-      sh('lightpink').set({ figure: 'RoundedRectangle' }),
-      sh('lightsalmon').set({ figure: 'Triangle', row: 1, width: 15, height: 15 }),
-      sh('lightcoral').set({ figure: 'Ellipse', column: 3, width: 25, height: 25 }),
-      sh('red').set({ column: 1, row: 2 })
+  return new go.Node("Vertical")
+    .add(
+      new go.TextBlock("go.Panel(\""+ type + "\")", { margin: 4, font: "13px monospace" }),
+      new go.Panel(type, { background: panelBackgroundColor })
+        .add(
+          sh('lightpink').set({ figure: 'RoundedRectangle' }),
+          sh('lightsalmon').set({ figure: 'Triangle', row: 1, width: 15, height: 15 }),
+          sh('lightcoral').set({ figure: 'Ellipse', column: 3, width: 25, height: 25 }),
+          sh('red').set({ column: 1, row: 2 })
+        )
     )
-  )
 }
 
 function makepanelAuto() {
-  return new go.Node("Vertical").add(
-    new go.TextBlock('go.Panel("Auto")', { margin: 4, font: "13px monospace" }),
-    new go.Panel("Auto", { background: panelBackgroundColor, width: 150 }).add(
-      new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', fill: 'lightpink' }),
-      new go.TextBlock('Auto Panel\'s first element expands dynamically to fit all other elements, like a border. In this case, the contents are a single TextBlock with a long string.',
-          { margin: 8, textAlign: 'center' })
+  return new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Panel("Auto")', { margin: 4, font: "13px monospace" }),
+      new go.Panel("Auto", { background: panelBackgroundColor, width: 150 })
+        .add(
+          new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', fill: 'lightpink' }),
+          new go.TextBlock('Auto Panel\'s first element expands dynamically to fit all other elements, like a border. In this case, the contents are a single TextBlock with a long string.',
+              { margin: 8, textAlign: 'center' })
+        )
     )
-  )
 }
 
 function makepanelSpot() {
-  return new go.Node("Vertical").add(
-    new go.TextBlock('go.Panel("Spot")', { margin: 4, font: "13px monospace" }),
-    new go.Panel("Spot", { background: panelBackgroundColor }).add(
-      new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', width: 50, height: 50, fill: 'lightpink' }),
-      sh('lightsalmon').set({ figure: 'Triangle', alignment: go.Spot.Left }),
-      sh('lightcoral').set({ figure: 'Ellipse', alignment: go.Spot.Right }),
-      sh('red').set({ alignment: go.Spot.Top })
+  return new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Panel("Spot")', { margin: 4, font: "13px monospace" }),
+      new go.Panel("Spot", { background: panelBackgroundColor })
+        .add(
+          new go.Shape({ strokeWidth: 2, figure: 'RoundedRectangle', width: 50, height: 50, fill: 'lightpink' }),
+          sh('lightsalmon').set({ figure: 'Triangle', alignment: go.Spot.Left }),
+          sh('lightcoral').set({ figure: 'Ellipse', alignment: go.Spot.Right }),
+          sh('red').set({ alignment: go.Spot.Top })
+        )
     )
-  )
-}
+  }
 
 diagram.nodeTemplateMap.add('Horizontal', makepanel("Horizontal"));
 diagram.nodeTemplateMap.add('Vertical', makepanel("Vertical"));
@@ -311,55 +317,61 @@ new go.Node("Spot")
 )
 
 diagram.nodeTemplateMap.add('TextBlock',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.TextBlock("Some Text")',
-        { spacingBelow: 4, font: "13px monospace" }),
-    new go.TextBlock("Some Text", { font: "26px serif" })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.TextBlock("Some Text")',
+          { spacingBelow: 4, font: "13px monospace" }),
+      new go.TextBlock("Some Text", { font: "26px serif" })
+    )
+  );
 
 diagram.nodeTemplateMap.add('Picture',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.Picture("images/55x55.png")',
-        { spacingBelow: 4, font: "13px monospace" }),
-    new go.Picture("images/55x55.png", { width: 50, height: 50 })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Picture("images/55x55.png")',
+          { spacingBelow: 4, font: "13px monospace" }),
+      new go.Picture("images/55x55.png", { width: 50, height: 50 })
+    )
+  );
 
 diagram.nodeTemplateMap.add('Shape',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.Shape("Triangle")',
-        { spacingBelow: 4, font: "13px monospace" }),
-    new go.Shape("Triangle", { width: 50, height: 50, fill: '#00FAFA' })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Shape("Triangle")',
+          { spacingBelow: 4, font: "13px monospace" }),
+      new go.Shape("Triangle", { width: 50, height: 50, fill: '#00FAFA' })
+    )
+  );
 
 diagram.nodeTemplateMap.add('Panel',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.Panel("[PanelType]")',
-        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
-    new go.TextBlock("Panels have no visual unless\na background is specified.\nThey hold other GraphObjects,\nand can be nested.",
-        { textAlign: 'center' })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Panel("[PanelType]")',
+          { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+      new go.TextBlock("Panels have no visual unless\na background is specified.\nThey hold other GraphObjects,\nand can be nested.",
+          { textAlign: 'center' })
+    )
+  );
 
 diagram.nodeTemplateMap.add('Node',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.Node("[PanelType]")',
-        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
-    new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
-        { textAlign: 'center' })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Node("[PanelType]")',
+          { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+      new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
+          { textAlign: 'center' })
+    )
+  );
 
 diagram.nodeTemplateMap.add('Link',
-  new go.Node("Vertical").add(
-    new go.TextBlock('go.Link()',
-        { spacingBelow: 4, font: "13px monospace", margin: 2 }),
-    new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
-        { textAlign: 'center' })
-  )
-);
+  new go.Node("Vertical")
+    .add(
+      new go.TextBlock('go.Link()',
+          { spacingBelow: 4, font: "13px monospace", margin: 2 }),
+      new go.TextBlock("Nodes can connect with links\n and be members of a Group.",
+          { textAlign: 'center' })
+    )
+  );
 
 diagram.groupTemplate =
   new go.Group("Vertical",
@@ -371,17 +383,18 @@ diagram.groupTemplate =
     .bind("location", "loc")
     .add(
       new go.TextBlock({ margin: 4, font: '13pt sans-serif' }).bind("text"),
-      new go.Panel("Auto").add(
-        new go.Shape("RoundedRectangle", { fill: 'whitesmoke', stroke: 'darkgray' }),
-        new go.Placeholder({ padding: 5 })
-      )
+      new go.Panel("Auto")
+        .add(
+          new go.Shape("RoundedRectangle", { fill: 'whitesmoke', stroke: 'darkgray' }),
+          new go.Placeholder({ padding: 5 })
+        )
     );
 
-diagram.linkTemplate = new go.Link(
-  {
-    routing: go.Routing.Orthogonal,
-    toShortLength: 2
-  }).add(
+diagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      toShortLength: 2
+    })
+  .add(
     new go.Shape({strokeWidth: 2}),
     new go.Shape({ toArrow: 'Standard' })
   );
@@ -514,13 +527,14 @@ const shape = new go.Shape("RoundedRectangle", {
 <pre class="lang-js"><code>
 // Create a node and .add a Shape and TextBlock to it
 myDiagram.add(
-  new go.Node("Auto").add(
-    new go.Shape("RoundedRectangle",
-        { fill: "lightblue", strokeWidth: 3 }),
-    new go.TextBlock("Hello!",
-        { margin: 5 })
-  )
-);
+  new go.Node("Auto")
+    .add(
+      new go.Shape("RoundedRectangle",
+          { fill: "lightblue", strokeWidth: 3 }),
+      new go.TextBlock("Hello!",
+          { margin: 5 })
+    )
+  );
 </code></pre>
 <p>Unlike the GraphObject.make methodology below, this code is typed at compile time or in your IDE, if using TypeScript.</p>
 
@@ -862,19 +876,19 @@ myDiagram.add(
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>

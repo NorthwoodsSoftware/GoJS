@@ -344,28 +344,27 @@
 <p>
   As a concrete example, we will override <a>Tool.standardMouseSelect</a> to select only Nodes and Links that have a width and height of less than 50 diagram
   units. This means that we must find the to-be-selected object using <code>diagram.findPartAt</code>, check its bounds, and quit if the bounds are too large.
-  Otherwise, we call the base functionality to select as we normally might.
+  Otherwise, we call the base functionality to select as it normally would.
 </p>
 
 <pre class="lang-js" id="tool"><code>
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        { fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text")
+      );
 
   var tool = diagram.toolManager.clickSelectingTool;
   tool.standardMouseSelect = function() { // must not be an arrow function =>
-    var diagram = this.diagram;
-    var e = diagram.lastInput;
+    const diagram = this.diagram;
+    const e = diagram.lastInput;
     // to select containing Group if Part.canSelect() is false
-    var curobj = diagram.findPartAt(e.documentPoint, false);
+    const curobj = diagram.findPartAt(e.documentPoint, false);
     if (curobj !== null) {
-      var bounds = curobj.actualBounds;
+      const bounds = curobj.actualBounds;
       // End the selection process if the bounds are greater than 50 width or height
       if (bounds.width > 50 || bounds.height > 50) {
         // If this was a left click with no modifier, we want to act the same as if
@@ -383,10 +382,10 @@
   }
 
   diagram.model = new go.Model([
-    { key: "Alpha", color: "lightblue" },
-    { key: "Epsilon", color: "thistle" },
-    { key: "Psi", color: "lightcoral" },
-    { key: "Gamma", color: "lightgreen" }
+    { text: "Alpha", color: "lightblue" },
+    { text: "Epsilon", color: "thistle" },
+    { text: "Psi", color: "lightcoral" },
+    { text: "Gamma", color: "lightgreen" }
   ]);
 </code></pre>
 <p>
@@ -419,7 +418,9 @@
   }
 </code></pre>
 
-<p>You can define property getters and setters:</p>
+<p>
+  You can define property getters and setters:
+</p>
 <pre class="lang-js"><code>
   this._offset = new go.Size(12, 12);
 
@@ -450,7 +451,9 @@
   Lastly we'll define a <a>Layout.doLayout</a>, being sure to look at the documentation and accommodate all possible input, as <code>doLayout</code> has one
   argument that can either be a <a>Diagram</a>, or a <a>Group</a>, or an <a>Iterable</a> collection.
 </p>
-<p>All together, we can see the cascade layout in action:</p>
+<p>
+  All together, we can see the cascade layout in action:
+</p>
 <pre class="lang-js" id="example"><code>
 /**
 * This layout arranges nodes in a cascade specified by the offset property
@@ -504,20 +507,19 @@ class CascadeLayout extends go.Layout {
   diagram.layout = new CascadeLayout();
 
   diagram.nodeTemplate =
-    $(go.Node, "Auto",
-      $(go.Shape, "Rectangle",
-        { fill: "white" },
-        new go.Binding("fill", "color")),
-      $(go.TextBlock,
-        { margin: 5 },
-        new go.Binding("text", "key"))
-    );
+    new go.Node("Auto")
+      .add(
+        new go.Shape("Rectangle", { fill: "white" })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 5 })
+          .bind("text")
+      );
 
   diagram.model = new go.Model([
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "thistle" },
-    { key: "Delta", color: "lightcoral" },
-    { key: "Gamma", color: "lightgreen" }
+    { text: "Alpha", color: "lightblue" },
+    { text: "Beta", color: "thistle" },
+    { text: "Delta", color: "lightcoral" },
+    { text: "Gamma", color: "lightgreen" }
   ]);
 </code></pre>
 <script>
@@ -535,19 +537,19 @@ class CascadeLayout extends go.Layout {
         <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
         <ul class="list-none space-y-4 md:space-y-1 px-0">
           <li>
-            <a href="samples/index.html">Samples</a>
+            <a href="../samples/index.html">Samples</a>
           </li>
           <li>
-            <a href="learn/index.html">Learn</a>
+            <a href="../learn/index.html">Learn</a>
           </li>
           <li>
-            <a href="intro/index.html">Intro</a>
+            <a href="../intro/index.html">Intro</a>
           </li>
           <li>
-            <a href="api/index.html">API</a>
+            <a href="../api/index.html">API</a>
           </li>
           <li>
-            <a href="changelog.html">Changelog</a>
+            <a href="../changelog.html">Changelog</a>
           </li>
           <li>
             <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
