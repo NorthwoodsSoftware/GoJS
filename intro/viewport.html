@@ -334,13 +334,13 @@
   );
 
   // colors
-  var docGridStroke = "rgba(70, 130, 180, 0.5)";
-  var viewGridStroke = "rgba(255, 128, 128, 1)";
-  var commentStroke = "brown";
+  const docGridStroke = "rgba(70, 130, 180, 0.5)";
+  const viewGridStroke = "rgba(255, 128, 128, 1)";
+  const commentStroke = "brown";
 
-  var cellSide = 20; // side length of one grid cell
-  var cellSize = new go.Size(cellSide * 5, cellSide * 5);
-  var pointSize = 7;
+  const cellSide = 20; // side length of one grid cell
+  const cellSize = new go.Size(cellSide * 5, cellSide * 5);
+  const pointSize = 7;
 
   function gridSizeParse(size) {
     if (!(size instanceof go.Size)) {
@@ -420,14 +420,14 @@
           textLines = label.split("\n");
           width = 0
           textLines.forEach(text => {
-            var textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
+            const textBlock = $(go.TextBlock, { text: text, font: "bold 10pt sans-serif"});
             if (textBlock.naturalBounds.right > width) {
               width = textBlock.naturalBounds.right;
             }
           });
 
           // text block with entire string to measure height
-          var textBlock = $(go.TextBlock, { text: label, font: "bold 10pt sans-serif" });
+          const textBlock = $(go.TextBlock, { text: label, font: "bold 10pt sans-serif" });
           point = new go.Point(point.x, point.y);
 
           // convert from grid coordinates to diagram coordinates
@@ -481,7 +481,7 @@
 
   diagram.initialContentAlignment = go.Spot.Center;
 
-  var model = new go.GraphLinksModel();
+  const model = new go.GraphLinksModel();
   model.linkFromPortIdProperty = "fPID";
   model.linkToPortIdProperty = "tPID"
 
@@ -577,8 +577,8 @@
   ];
 
   function showPoint(loc) {
-    var docloc = diagram.transformDocToView(loc);
-    var elt = document.getElementById("Message1");
+    const docloc = diagram.transformDocToView(loc);
+    const elt = document.getElementById("Message1");
     elt.textContent = "Selected node location,\ndocument coordinates: " + loc.x.toFixed(2) + " " + loc.y.toFixed(2) +
                       "\nview coordinates: " + docloc.x.toFixed(2) + " " + docloc.y.toFixed(2);
   }
@@ -728,7 +728,7 @@ diagram.nodeTemplate =
         .bind("text", "key")
     );
 
-var nodes = [];
+const nodes = [];
 for (let i = 0; i < 99; i++) {
   nodes.push({ key: "Alpha", color: "lightblue" });
 }
@@ -808,7 +808,7 @@ diagram.model = new go.GraphLinksModel(nodes);
 </p>
 <pre class="lang-js"><code>
   function positionfunc(diagram, pos) {
-    var size = diagram.grid.gridCellSize;
+    const size = diagram.grid.gridCellSize;
     return new go.Point(
       Math.round(pos.x / size.width) * size.width,
       Math.round(pos.y / size.height) * size.height);
@@ -820,7 +820,7 @@ diagram.model = new go.GraphLinksModel(nodes);
 </p>
 <pre class="lang-js"><code>
   function scalefunc(diagram, scale) {
-    var oldscale = diagram.scale;
+    const oldscale = diagram.scale;
     if (scale > oldscale) {
       return oldscale + 0.25;
     } else if (scale < oldscale) {
@@ -831,12 +831,12 @@ diagram.model = new go.GraphLinksModel(nodes);
 </code></pre>
 <script type="text/javascript">
   function positionfunc(diagram, pos) {
-    var size = diagram.grid.gridCellSize;
+    const size = diagram.grid.gridCellSize;
     return new go.Point(Math.round(pos.x / size.width) * size.width, Math.round(pos.y / size.height) * size.height);
   }
 
   function scalefunc(diagram, scale) {
-    var oldscale = diagram.scale;
+    const oldscale = diagram.scale;
     if (scale > oldscale) {
       return oldscale + 0.25;
     } else if (scale < oldscale) {
@@ -845,21 +845,21 @@ diagram.model = new go.GraphLinksModel(nodes);
     return oldscale;
   }
 
-  var infscroll = document.getElementById('infscroll');
+  const infscroll = document.getElementById('infscroll');
   infscroll.addEventListener('change', (e) => {
     myDiagram2.commit((d) => {
       d.scrollMode = infscroll.checked ? go.ScrollMode.Infinite : go.ScrollMode.Document;
     });
   });
 
-  var poscomp = document.getElementById('poscomp');
+  const poscomp = document.getElementById('poscomp');
   poscomp.addEventListener('change', (e) => {
     myDiagram2.commit((d) => {
       d.positionComputation = poscomp.checked ? positionfunc : null;
     });
   });
 
-  var scalecomp = document.getElementById('scalecomp');
+  const scalecomp = document.getElementById('scalecomp');
   scalecomp.addEventListener('change', (e) => {
     myDiagram2.commit((d) => {
       d.scaleComputation = scalecomp.checked ? scalefunc : null;
@@ -925,7 +925,7 @@ diagram.model = new go.GraphLinksModel(nodes);
       new go.Binding("text", "gro", prec(conv)));
   }
 
-  var nodeTemplates = new go.Map();
+  const nodeTemplates = new go.Map();
 
   // Template for data tables
   nodeTemplates.add("info",
@@ -1022,7 +1022,7 @@ diagram.model = new go.GraphLinksModel(nodes);
 
   // creating the main node's template, adding the nested Panels to it, and adding it to the node template map.
   let vertPanel = posPanel = spotPanel = vertLabel = topLabel = {};
-  var BigNode =
+  const BigNode =
   $(go.Node, "Auto",
     {
       location: new go.Point(300,0),

@@ -387,8 +387,8 @@
 
 <pre class="lang-js" id="toolTipExample"><code>
   function showToolTip(obj, diagram, tool) {
-    var toolTipDIV = document.getElementById('toolTipDIV');
-    var pt = diagram.lastInput.viewPoint;
+    const toolTipDIV = document.getElementById('toolTipDIV');
+    const pt = diagram.lastInput.viewPoint;
     toolTipDIV.style.left = (pt.x + 10) + "px";
     toolTipDIV.style.top = (pt.y + 10) + "px";
     document.getElementById('toolTipParagraph').textContent = "Tooltip for: " + obj.data.text;
@@ -396,11 +396,11 @@
   }
 
   function hideToolTip(diagram, tool) {
-   var toolTipDIV = document.getElementById('toolTipDIV');
+   const toolTipDIV = document.getElementById('toolTipDIV');
    toolTipDIV.style.display = "none";
   }
 
-  var myToolTip = new go.HTMLInfo({
+  const myToolTip = new go.HTMLInfo({
     show: showToolTip,
     hide: hideToolTip
     /*
@@ -514,8 +514,8 @@ diagram.model = new go.GraphLinksModel(
 ]);
 
 // Create an HTMLInfo and dynamically create some HTML to show/hide
-var customEditor = new go.HTMLInfo();
-var customSelectBox = document.createElement("select");
+const customEditor = new go.HTMLInfo();
+const customSelectBox = document.createElement("select");
 
 customEditor.show = (textBlock, diagram, tool) => {
   if (!(textBlock instanceof go.TextBlock)) return;
@@ -524,9 +524,9 @@ customEditor.show = (textBlock, diagram, tool) => {
   customSelectBox.innerHTML = "";
 
   // this sample assumes textBlock.choices is not null
-  var list = textBlock.choices;
+  const list = textBlock.choices;
   for (let i = 0; i < list.length; i++) {
-    var op = document.createElement("option");
+    const op = document.createElement("option");
     op.text = list[i];
     op.value = list[i];
     customSelectBox.add(op, null);
@@ -538,7 +538,7 @@ customEditor.show = (textBlock, diagram, tool) => {
   // Do a few different things when a user presses a key
   customSelectBox.addEventListener("keydown", e => {
     if (e.isComposing) return;
-    var key = e.key;
+    const key = e.key;
     if (key === "Enter") { // Accept on Enter
       tool.acceptText(go.TextEditingAccept.Enter);
       return;
@@ -552,8 +552,8 @@ customEditor.show = (textBlock, diagram, tool) => {
     }
   }, false);
 
-  var loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
-  var pos = diagram.transformDocToView(loc);
+  const loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
+  const pos = diagram.transformDocToView(loc);
   customSelectBox.style.left = pos.x + "px";
   customSelectBox.style.top  = pos.y + "px";
   customSelectBox.style.position = 'absolute';

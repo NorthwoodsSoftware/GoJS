@@ -34,7 +34,7 @@
  *
  * Example usage of Inspector:
  * ```js
- * var inspector = new Inspector("myInspector", myDiagram,
+ * const inspector = new Inspector("myInspector", myDiagram,
  *   {
  *     includesOwnProperties: false,
  *     properties: {

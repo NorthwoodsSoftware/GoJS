@@ -402,8 +402,8 @@ export class PackedLayout extends go.Layout {
    *   new PackedLayout({
    *       sortMode: SortMode.Area,
    *       comparer: (na, nb) => {
-   *         var na = na.data;
-   *         var nb = nb.data;
+   *         const na = na.data;
+   *         const nb = nb.data;
    *         if (da.someProperty < db.someProperty) return -1;
    *         if (da.someProperty > db.someProperty) return 1;
    *         return 0;

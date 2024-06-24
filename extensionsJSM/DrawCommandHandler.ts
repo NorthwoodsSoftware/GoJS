@@ -48,7 +48,7 @@ export class DrawCommandHandler extends go.CommandHandler {
   }
 
   /**
-   * Gets or sets the arrow key behavior. Possible values are "move", "select", and "scroll".
+   * Gets or sets the arrow key behavior. Possible values are "move", "select", "scroll", "tree", and "none".
    *
    * The default value is "move".
    */

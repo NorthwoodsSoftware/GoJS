@@ -25,7 +25,7 @@
  *
  * Example usage of ZoomSlider:
  * ```js
- * var zoomSlider = new ZoomSlider(myDiagram,
+ * const zoomSlider = new ZoomSlider(myDiagram,
  *   {
  *     alignment: go.Spot.TopRight, alignmentFocus: go.Spot.TopRight,
  *     size: 150, buttonSize: 30, orientation: 'horizontal'

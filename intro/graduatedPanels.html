@@ -853,7 +853,7 @@ diagram.add(
 </p>
 
 <pre class="lang-js" id="graduatedPointValueCalc"><code>
-var gauge =
+const gauge =
   new go.Part("Auto", { location: new go.Point(10, 20) })
     .add(
       new go.Shape({ fill: "white" }),
@@ -869,15 +869,15 @@ var gauge =
     );
 diagram.add(gauge);
 
-var marker =
+const marker =
   new go.Part("Spot", {
         locationSpot: go.Spot.Center,
         selectionAdorned: false,
         dragComputation: (node, pt) => {
-          var scale = gauge.findObject("SCALE");
-          var loc = scale.getLocalPoint(pt);
-          var val = scale.graduatedValueForPoint(loc);
-          var gpt = scale.graduatedPointForValue(val);
+          const scale = gauge.findObject("SCALE");
+          const loc = scale.getLocalPoint(pt);
+          const val = scale.graduatedValueForPoint(loc);
+          const gpt = scale.graduatedPointForValue(val);
           return scale.getDocumentPoint(gpt);
         }
       })
@@ -889,8 +889,8 @@ diagram.add(marker);
 
 // once everything has been positioned, give the marker its location
 diagram.addDiagramListener("InitialLayoutCompleted", e => {
-  var scale = gauge.findObject("SCALE");
-  var gpt = scale.graduatedPointForValue(0);
+  const scale = gauge.findObject("SCALE");
+  const gpt = scale.graduatedPointForValue(0);
   marker.location = scale.getDocumentPoint(gpt);
 });
 </code></pre>

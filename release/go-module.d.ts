@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.4
+ * Type definitions for GoJS v3.0.5
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5828,7 +5828,7 @@ export class DraggingTool extends Tool {
      */
     constructor(init?: Partial<DraggingTool>);
     /**
-     * Gets or sets whether for any internal copying operation is permitted by control-drag-and-drop.
+     * Gets or sets whether for any internal copying operation is permitted by control-drag-and-drop (or alt-drag-and-drop on Mac).
      * This property affects the behavior of {@link mayCopy},
      * but does not affect whether copied objects may be dropped into this diagram from a different diagram.
      *
@@ -31414,6 +31414,11 @@ export class AvoidsNodesRouter extends Router {
      * @param init - Optional initialization properties.
      */
     constructor(init?: Partial<AvoidsNodesRouter>);
+    /**
+     * Determine whether the AvoidsNodesRouter should operate on a given collection.
+     * If no avoiding links are present in the collection, the router will not run.
+     */
+    canRoute(coll: Diagram | Group): boolean;
     /**
      * Route the links.
      * By default this is called in a depth-first manner on every Group in the Diagram, and then the Diagram itself.

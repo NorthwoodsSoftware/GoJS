@@ -418,7 +418,7 @@
       $(go.TextBlock, ".data", { font: "bold 12pt Courier", segmentOffset: new go.Point(0, -10) })
   ));
 
-  var model = new go.GraphLinksModel();
+  const model = new go.GraphLinksModel();
   model.linkFromPortIdProperty = "fPID";
   model.linkToPortIdProperty = "tPID"
   model.linkLabelKeysProperty = "labels";
@@ -765,7 +765,7 @@ function createItemDataTable(reference) {
 }
 
 //create all relevant tables
-var n1 = diagram.model.nodeDataArray[1];
+const n1 = diagram.model.nodeDataArray[1];
 createNodeItemArrayTable(n1);
 for (let i = 0; i < n1.items.length; i++)
     createItemDataTable(n1.items[i]);
@@ -810,11 +810,11 @@ for (let i = 0; i < n1.items.length; i++)
           .bind("strokeWidth", "thick")  // shape.strokeWidth = data.thick
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: 1, text: "Alpha", color: "lightblue" },
     { key: 2, text: "Beta", color: "pink" }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: 1, to: 2, color: "blue", thick: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -873,12 +873,12 @@ for (let i = 0; i < n1.items.length; i++)
           .bind("text")
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     // for each node specify the location using Point values
     { key: 1, text: "Alpha", color: "lightblue", loc: new go.Point(0, 0) },
     { key: 2, text: "Beta", color: "pink", loc: new go.Point(100, 50) }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -925,11 +925,11 @@ for (let i = 0; i < n1.items.length; i++)
           .bind("text")
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: 1, text: "Alpha", color: "lightblue", loc: "0 0" },  // note string values for location
     { key: 2, text: "Beta", color: "pink", loc: "100 50" }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -967,12 +967,12 @@ for (let i = 0; i < n1.items.length; i++)
           .bind("text")
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: 1, text: "Alpha", loc: "0 0", highlight: false },
     { key: 2, text: "Beta", loc: "100 50", highlight: true },
     { key: 3, text: "Gamma", loc: "0 100" }  // highlight property undefined: use defaults
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -1029,7 +1029,7 @@ for (let i = 0; i < n1.items.length; i++)
   function flash() {
     // all model changes should happen in a transaction
     diagram.model.commit(m => {
-      var data = m.nodeDataArray[0];  // get the first node data
+      const data = m.nodeDataArray[0];  // get the first node data
       m.set(data, "highlight", !data.highlight);
     }, "flash");
   }
@@ -1094,12 +1094,12 @@ for (let i = 0; i < n1.items.length; i++)
           .bind("text")
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { key: 1, text: "Alpha" },
     { key: 2, text: "Beta" },
     { key: 3, text: "Gamma" }
   ];
-  var linkDataArray = [
+  const linkDataArray = [
     { from: 1, to: 2 }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
@@ -1107,7 +1107,7 @@ for (let i = 0; i < n1.items.length; i++)
   function switchTo() {
     // all model changes should happen in a transaction
     diagram.model.commit(m => {
-      var data = m.linkDataArray[0];  // get the first link data
+      const data = m.linkDataArray[0];  // get the first link data
       if (m.getToKeyForLinkData(data) === 2)
         m.setToKeyForLinkData(data, 3);
       else
@@ -1232,8 +1232,8 @@ diagram.undoManager.isEnabled = true;
 changeColor = () => {  // define a function named "changeColor" callable by button.onclick
   diagram.model.commit(m => {
     // alternate between lightblue and lightgreen colors
-    var oldcolor = m.modelData.color;
-    var newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
+    const oldcolor = m.modelData.color;
+    const newcolor = (oldcolor === "lightblue" ? "lightgreen" : "lightblue");
     m.set(m.modelData, "color", newcolor);
   }, "changed shared color");
 }
@@ -1276,7 +1276,7 @@ diagram.nodeTemplate =
           .bind("text")
       );
 
-  var nodeDataArray = [
+  const nodeDataArray = [
     { text: "Alpha", loc: new go.Point(0, 0) }
   ];
   diagram.model = new go.GraphLinksModel(nodeDataArray);
@@ -1284,9 +1284,9 @@ diagram.nodeTemplate =
   window.shiftNode = () => {  // define a function named "shiftNode" callable by button.onclick
     // all model changes should happen in a transaction
     diagram.commit(d => {
-      var data = d.model.nodeDataArray[0];  // get the first node data
-      var node = d.findNodeForData(data);   // find the corresponding Node
-      var p = node.location.copy();  // make a copy of the location, a Point
+      const data = d.model.nodeDataArray[0];  // get the first node data
+      const node = d.findNodeForData(data);   // find the corresponding Node
+      const p = node.location.copy();  // make a copy of the location, a Point
       p.x += 10;
       if (p.x > 200) p.x = 0;
       // changing the Node.location also changes the data.loc property due to TwoWay binding

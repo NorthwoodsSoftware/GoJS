@@ -543,7 +543,7 @@ myDiagram.add(
 <p>
   <em>
     Unlike building with <b>.add</b>, <b>GraphObject.make</b> is not well type-checked when using TypeScript definitions.
-    However, it is more flexible, and many of our samples use it.
+    However, it is more flexible, and many of our samples still use it.
   </em>
 </p>
 
@@ -577,7 +577,6 @@ myDiagram.add(
     ));
 </code></pre>
 <pre class="lang-js" id="simpleJSAML" style="display: none"><code>
-  var $ = go.GraphObject.make;  // can't eval const $ when there's a binding of $ in call to eval
   diagram.add(
     $(go.Node, "Auto",
       $(go.Shape, "RoundedRectangle",
@@ -589,17 +588,16 @@ myDiagram.add(
 <script>
   goCode('simpleJSAML', 250, 150);
 </script>
-<p>Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.</p>
 <p>
-  The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy that we will assume its use from now on.
-  Having the call to <b>go.GraphObject.make</b> be minimized into a single character helps remove clutter from the code and
-  lets the indentation match the nesting of <a>GraphObject</a>s in the visual tree that is being constructed.
+  Notice how we set the <a>Panel.type</a>, <a>Shape.figure</a>, and <a>TextBlock.text</a> properties by just using the string value.
 </p>
 <p>
-  Some other JavaScript libraries automatically define "$" to be a handy-to-type function name, assuming that they are the only library that matters.
-  But you cannot have the same symbol have two different meanings at the same time in the same scope.
-  So you may want to choose to use a different short name, such as "$$" or "GO" when using <b>GoJS</b>.
+  The use of <b>$</b> as an abbreviation for <b>go.GraphObject.make</b> is so handy that if you see its use,
+  you can assume it refers to <b>go.GraphObject.make</b> unless noted otherwise.
+  Having the call to <b>go.GraphObject.make</b> be minimized into a single character helps remove clutter from the code and
+  lets the indentation match the nesting of <a>GraphObject</a>s in the visual tree that is being constructed.
   The <b>GoJS</b> documentation and samples make use of "$" because it makes the resulting code most clear and compact.
+  In your code you may want to use a different identifer, such as "$$" or "GO" if there might be a conflict with other code.
 </p>
 <p class="box bg-info">
   Another advantage of using <a>GraphObject.make</a> is that it will make sure at run-time that any properties

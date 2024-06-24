@@ -132,6 +132,7 @@
 
     myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
       {
+        layout: new go.TreeLayout(),
         commandHandler: new DrawCommandHandler(),  // defined in DrawCommandHandler.js
         "commandHandler.archetypeGroupData": { isGroup: true },
         "undoManager.isEnabled": true  // enable undo & redo
@@ -158,22 +159,25 @@
         { key: 1, text: "Alpha", color: "lightblue" },
         { key: 2, text: "Beta", color: "orange" },
         { key: 3, text: "Gamma", color: "lightgreen" },
-        { key: 4, text: "Delta", color: "pink" }
+        { key: 4, text: "Delta", color: "pink" },
+        { key: 5, text: "Epsilon", color: "yellow" },
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 3, to: 4 },
+        { from: 3, to: 5 },
       ]);
   }
 
   // update arrowkey function
   function arrowMode() {
     // no transaction needed, because we are modifying the CommandHandler for future use
-    var move = document.getElementById("move");
-    var select = document.getElementById("select");
-    var scroll = document.getElementById("scroll");
-    var tree = document.getElementById("tree");
+    const move = document.getElementById("move");
+    const select = document.getElementById("select");
+    const scroll = document.getElementById("scroll");
+    const tree = document.getElementById("tree");
+    const none = document.getElementById("none");
     if (move.checked === true) {
       myDiagram.commandHandler.arrowKeyBehavior = "move";
     } else if (select.checked === true) {
@@ -182,6 +186,8 @@
       myDiagram.commandHandler.arrowKeyBehavior = "scroll";
     } else if (tree.checked === true) {
       myDiagram.commandHandler.arrowKeyBehavior = "tree";
+    } else if (none.checked === true) {
+      myDiagram.commandHandler.arrowKeyBehavior = "none";
     }
   }
   window.addEventListener('DOMContentLoaded', init);
@@ -221,6 +227,7 @@
     <input type="radio" name="arrow" id="select" onclick="arrowMode()">Select</input>
     <input type="radio" name="arrow" id="scroll" onclick="arrowMode()">Scroll</input>
     <input type="radio" name="arrow" id="tree" onclick="arrowMode()">Tree</input>
+    <input type="radio" name="arrow" id="none" onclick="arrowMode()">None</input>
   </p>
   <p>
     This example demonstrates a custom <a>CommandHandler</a>.
