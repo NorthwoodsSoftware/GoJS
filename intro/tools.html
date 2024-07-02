@@ -623,6 +623,40 @@
 </script>
 
 <p>
+  You can customize all eight standard resize handles by setting <a>ResizingTool.archetypeHandle</a>.
+  For example, to change all of the handles to be slightly larger yellow circles:
+</p>
+<pre class="lang-js" id="resizingArchetype"><code>
+  diagram.toolManager.resizingTool.handleArchetype =
+    new go.Shape("Circle", {
+      width: 10, height: 10, fill: "yellow", cursor: "pointer"
+    });
+
+  diagram.add(
+    new go.Node("Vertical", {
+        resizable: true, resizeObjectName: "SHAPE",
+        selectionAdorned: false  // don't show selection Adornment, a rectangle
+      })
+      .add(
+        new go.Shape("RoundedRectangle", {
+            name: "SHAPE",
+            fill: "gray",
+            width: 50, height: 30,
+            maxSize: new go.Size(100, 40), minSize: new go.Size(20, 20)
+          }),
+        new go.TextBlock("Hello!", { margin: 3 })
+      ));
+  diagram.commandHandler.selectAll();
+</code></pre>
+<script>
+  goCode('resizingArchetype', 600, 100);
+</script>
+<p>
+  Note that the ResizingTool will automatically set each resize handle's <a>GraphObject.cursor</a> appropriately.
+  Note also that because <a>Part.selectionAdorned</a> is false, there is no blue rectangle default selection adornment.
+</p>
+
+<p>
   You can customize the resize handles by setting <a>Part.resizeAdornmentTemplate</a>.
   For example, to allow the user to only change the width of a Shape in a Node, the <a>Adornment</a> should have only
   two resize handles: one at the left and one at the right.
@@ -655,14 +689,14 @@
                 .bindObject("text", "adornedObject",
                             shp => shp.naturalBounds.width.toFixed(0))
             ),
-        selectionAdorned: false
-      })  // don't show selection Adornment, a rectangle
+        selectionAdorned: false  // don't show selection Adornment, a rectangle
+      })
       .add(
         new go.Shape("RoundedRectangle", {
             name: "SHAPE",
             fill: "orange",
             width: 50, height: 30,
-            maxSize: new go.Size(100, 40), minSize: new go.Size(20, 20)
+            maxSize: new go.Size(200, 40), minSize: new go.Size(20, 20)
           }),
         new go.TextBlock("Hello!", { margin: 3 })
       ));
@@ -671,9 +705,6 @@
 <script>
   goCode('resizingTemplate', 600, 100);
 </script>
-<p>
-  Note also that because <a>Part.selectionAdorned</a> is false, there is no blue rectangle default selection adornment.
-</p>
 <p>
   There are examples custom resizing tools defined in the samples and extensions directories:
   <a href="../samples/FloorPlanEditor.html">Resize Multiple Tool (in Floor Plan Editor)</a>,

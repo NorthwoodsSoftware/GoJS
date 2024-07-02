@@ -122,6 +122,7 @@ export class LinkLabelRouter extends go.Router {
     if (coll instanceof go.Group) return;
 
     this.layout.activeSet = links;
+    if (coll instanceof go.Diagram) this.layout.diagram = coll;
     this.layout.doLayout(coll.links);
     if (this.layout.network === null) return;
 
@@ -214,7 +215,7 @@ class LabelLayout extends go.ForceDirectedLayout {
           documentBounds.grow(margin, margin, margin, margin);
         }
 
-        if (this.activeSet?.contains(part)) {
+        if (this.activeSet?.has(part)) {
           // add vertex for label node
           const v1 = new LabelVertex(net);
           v1.centerX = documentBounds.centerX;

@@ -126,6 +126,8 @@ export class ArrangingLayout extends go.Layout {
       mainnet = this.makeNetwork(maincoll);
       subnets = mainnet.splitIntoSubNetworks();
     }
+    if (this.primaryLayout !== null) this.primaryLayout.diagram = diagram;
+    if (this.sideLayout !== null) this.sideLayout.diagram = diagram;
     let bounds = null;
     if (
       this.arrangingLayout !== null &&
@@ -138,7 +140,6 @@ export class ArrangingLayout extends go.Layout {
       while (it.next()) {
         const net = it.value;
         const subcoll = net.findAllParts();
-        this.primaryLayout.diagram = diagram;
         this.preparePrimaryLayout(this.primaryLayout, subcoll);
         this.primaryLayout.doLayout(subcoll);
         this._addMainNode(groups, subcoll, diagram);
@@ -149,7 +150,6 @@ export class ArrangingLayout extends go.Layout {
         if (v.node) {
           const subcoll = new go.Set<go.Part>();
           subcoll.add(v.node);
-          this.primaryLayout.diagram = diagram;
           this.preparePrimaryLayout(this.primaryLayout, subcoll);
           this.primaryLayout.doLayout(subcoll);
           this._addMainNode(groups, subcoll, diagram);
@@ -166,7 +166,6 @@ export class ArrangingLayout extends go.Layout {
       bounds = diagram.computePartsBounds(groups.toKeySet()); // not maincoll due to links without real bounds
     } else {
       // no this.arrangingLayout
-      this.primaryLayout.diagram = diagram;
       this.preparePrimaryLayout(this.primaryLayout, maincoll);
       this.primaryLayout.doLayout(maincoll);
       bounds = diagram.computePartsBounds(maincoll);
@@ -200,7 +199,7 @@ export class ArrangingLayout extends go.Layout {
     const grpb = diagram.computePartsBounds(subcoll);
     grp.desiredSize = grpb.size;
     grp.position = grpb.position;
-    groups.add(grp, { parts: subcoll, bounds: grpb });
+    groups.set(grp, { parts: subcoll, bounds: grpb });
   }
 
   /**
@@ -237,9 +236,9 @@ export class ArrangingLayout extends go.Layout {
     coll.each((p) => {
       if (p instanceof go.Link) {
         if (!p.fromNode || !p.toNode) return;
-        if (maincoll.contains(p.fromNode) && maincoll.contains(p.toNode)) {
+        if (maincoll.has(p.fromNode) && maincoll.has(p.toNode)) {
           maincoll.add(p);
-        } else if (sidecoll.contains(p.fromNode) && sidecoll.contains(p.toNode)) {
+        } else if (sidecoll.has(p.fromNode) && sidecoll.has(p.toNode)) {
           sidecoll.add(p);
         }
       }

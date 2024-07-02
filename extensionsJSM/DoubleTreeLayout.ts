@@ -144,10 +144,12 @@ export class DoubleTreeLayout extends go.Layout {
     // create and perform two TreeLayouts, one in each direction,
     // without moving the ROOT node, on the different subsets of nodes and links
     const layout1 = this.createTreeLayout(false);
+    layout1.diagram = diagram;
     layout1.angle = this.vertical ? 270 : 180;
     layout1.arrangement = go.TreeArrangement.FixedRoots;
 
     const layout2 = this.createTreeLayout(true);
+    layout2.diagram = diagram;
     layout2.angle = this.vertical ? 90 : 0;
     layout2.arrangement = go.TreeArrangement.FixedRoots;
 
@@ -166,11 +168,7 @@ export class DoubleTreeLayout extends go.Layout {
     const lay = new go.TreeLayout();
     let opts = this.topLeftOptions;
     if (positive) opts = this.bottomRightOptions;
-    if (opts) {
-      for (const p in opts) {
-        (lay as any)[p] = (opts as any)[p];
-      }
-    }
+    if (opts) Object.assign(lay, opts);
     return lay;
   }
 

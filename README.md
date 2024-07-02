@@ -51,7 +51,7 @@ Read more about GoJS at [gojs.net](https://gojs.net)
 This repository contains only the library.
 The sources for all samples, extensions, and documentation can be installed by running:
 ```html
-$ npm create gojs-kit
+$ npm create gojs-kit@latest
 ```
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 

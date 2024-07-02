@@ -247,17 +247,31 @@
         
 <h1>Selection</h1>
 <p>
-  Users normally select <a>Part</a>s manually by clicking on them and they deselect them by clicking in the background or pressing the Esc key.
-  You can select parts programmatically by setting <a>Part.isSelected</a> or calling one of several <a>Diagram</a> methods.
+  Selection is a mechanism that provides the ability for the user to operate commands or tools on a
+  subset of the <a>Part</a>s in a <a>Diagram</a>.
+  GoJS provides built-in appearances and behaviors for selection.
+  Although this page describes how those built-in appearances and behaviors can be customized,
+  if you want a more general highlighting capability with no built-in appearances or behaviors,
+  please read the page on <a href="highlighting.html">Highlighting</a>.
+</p>
+<p>
+  Users normally select Parts manually by clicking on them and they deselect them by clicking in the background.
+  This behavior is implemented by the <a>ClickSelectingTool</a>.
+  Users can also deselect all Parts by pressing the Esc key.
 </p>
 <p>
   Users can also drag in the background in order to select the Parts that are within a rectangular area, via the <a>DragSelectingTool</a>.
   Read more about that in the Introduction to Tools at <a href="tools.html#DragSelectingTool">DragSelectingTool</a>.
 </p>
 <p>
+  You can select parts programmatically by setting <a>Part.isSelected</a> or calling one of several
+  <a>Diagram</a> methods such as <a>Diagram.select</a>, <a>Diagram.selectCollection</a>, and <a>Diagram.clearSelection</a>.
+</p>
+<p>
   The <a>Diagram</a> keeps a collection of selected parts, <a>Diagram.selection</a>.
-  That collection is read-only -- the only way to select or deselect a Part is by setting its <a>Part.isSelected</a> property.
-  You can limit how many parts are selected by setting <a>Diagram.maxSelectionCount</a>.
+  That collection is read-only -- the only way to add or remove a Part in the <a>Diagram.selection</a> collection
+  is by setting its <a>Part.isSelected</a> property.
+  You can limit how many parts the user may select by setting <a>Diagram.maxSelectionCount</a>.
   Prevent all selection by the user by setting <a>Diagram.allowSelect</a> to false.
   Or prevent a particular Part from being selected by setting or binding its <a>Part.selectable</a> property to false.
 </p>
@@ -497,7 +511,7 @@ diagram.nodeTemplate =
       selectionAdornmentTemplate:
         new go.Adornment("Auto")
           .add(
-            new go.Shape({ fill: null, stroke: "dodgerblue", strokeWidth: 6 })
+            new go.Shape("Diamond", { fill: null, stroke: "dodgerblue", strokeWidth: 6 })
               .bind("stroke", "color"),
             new go.Placeholder()
           )  // end Adornment
@@ -525,7 +539,7 @@ diagram.selectCollection(diagram.nodes);
   goCode('binding', 600, 150);
 </script>
 <p>
-  Notice how each Adornment has the same color as the selected node's data.color.
+  Notice how each Adornment has the same color as the selected node's <code>data.color</code>.
 </p>
 
 <h2 id="SelectionAppearanceChanges">Selection Appearance changes</h2>

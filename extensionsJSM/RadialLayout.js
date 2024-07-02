@@ -253,7 +253,7 @@ export class RadialLayout extends go.Layout {
                 if (!neighbor)
                     return;
                 // skip vertexes that we have finished
-                if (finished.contains(neighbor))
+                if (finished.has(neighbor))
                     return;
                 const neighbordist = neighbor.distance;
                 // assume "distance" along a link is unitary, but could be any non-negative number.

@@ -52,7 +52,7 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
         const orig = this._originalSelection;
         orig.each((p) => (p.isSelected = true));
         this._temporarySelection.each((p) => {
-            if (!orig.contains(p))
+            if (!orig.has(p))
                 p.isSelected = false;
         });
         super.doCancel();
@@ -99,8 +99,8 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
             if (e.shift) {
                 // deselect only
                 temp.each((p) => {
-                    if (!found.contains(p))
-                        p.isSelected = orig.contains(p);
+                    if (!found.has(p))
+                        p.isSelected = orig.has(p);
                 });
                 found.each((p) => {
                     p.isSelected = false;
@@ -110,11 +110,11 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
             else {
                 // toggle selectedness of parts based on _originalSelection
                 temp.each((p) => {
-                    if (!found.contains(p))
-                        p.isSelected = orig.contains(p);
+                    if (!found.has(p))
+                        p.isSelected = orig.has(p);
                 });
                 found.each((p) => {
-                    p.isSelected = !orig.contains(p);
+                    p.isSelected = !orig.has(p);
                     temp.add(p);
                 });
             }
@@ -122,8 +122,8 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
         else if (e.shift) {
             // extend selection only
             temp.each((p) => {
-                if (!found.contains(p))
-                    p.isSelected = orig.contains(p);
+                if (!found.has(p))
+                    p.isSelected = orig.has(p);
             });
             found.each((p) => {
                 p.isSelected = true;
@@ -133,11 +133,11 @@ export class RealtimeDragSelectingTool extends go.DragSelectingTool {
         else {
             // select found parts, and unselect all other previously selected parts
             temp.each((p) => {
-                if (!found.contains(p))
+                if (!found.has(p))
                     p.isSelected = false;
             });
             orig.each((p) => {
-                if (!found.contains(p))
+                if (!found.has(p))
                     p.isSelected = false;
             });
             found.each((p) => {

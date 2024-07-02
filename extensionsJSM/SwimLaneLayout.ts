@@ -363,7 +363,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     // sort laneNames and initialize laneIndexes
     if (typeof this.laneComparer === 'function') this.laneNames.sort(this.laneComparer);
     for (let i = 0; i < this.laneNames.length; i++) {
-      laneIndexes.add(this.laneNames[i], i);
+      laneIndexes.set(this.laneNames[i], i);
     }
     // now OK to call findLane
 
@@ -401,7 +401,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     // compute needed width for each lane, in columns
     for (let i = 0; i < this.laneNames.length; i++) {
       const lane = this.laneNames[i];
-      this.laneBreadths.add(lane, this.computeMinLaneWidth(lane));
+      this.laneBreadths.set(lane, this.computeMinLaneWidth(lane));
     }
     const lwidths = new go.Map<string, number>(); // reused for each layer
     for (let i = 0; i <= this.maxLayer; i++) {

@@ -180,12 +180,12 @@ class Robot {
     }
     /**
      * Simulate a key down event.
-     * @param keyorcode
+     * @param keyCodeOrKey A simulated KeyboardEvent.keyCode (number) or KeyboardEvent.key (string)
      * @param time - the timestamp of the simulated event, in milliseconds; default zero
      * @param eventprops - an optional argument providing properties for the InputEvent.
      */
-    keyDown(keyorcode, time, eventprops) {
-        if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number')
+    keyDown(keyCodeOrKey, time, eventprops) {
+        if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number')
             throw new Error('Robot.keyDown first arg must be a string or a number');
         if (time === undefined)
             time = 0;
@@ -194,12 +194,13 @@ class Robot {
             return;
         const n = diagram.lastInput.copy();
         n.diagram = diagram;
-        if (typeof keyorcode === 'string') {
-            n.key = keyorcode;
+        if (typeof keyCodeOrKey === 'string') {
+            n.key = keyCodeOrKey;
         }
-        else if (typeof keyorcode === 'number') {
-            n.key = String.fromCharCode(keyorcode);
+        else if (typeof keyCodeOrKey === 'number') {
+            n.key = String.fromCharCode(keyCodeOrKey);
         }
+        n.code = n.key; // For Delete, Backspace etc compatibility
         n.timestamp = time;
         n.down = true;
         this.initializeEvent(n, eventprops);
@@ -208,12 +209,12 @@ class Robot {
     }
     /**
      * Simulate a key up event.
-     * @param keyorcode
+     * @param keyCodeOrKey A simulated KeyboardEvent.keyCode (number) or KeyboardEvent.key (string)
      * @param time - the timestamp of the simulated event, in milliseconds; default zero
      * @param eventprops - an optional argument providing properties for the InputEvent.
      */
-    keyUp(keyorcode, time, eventprops) {
-        if (typeof keyorcode !== 'string' && typeof keyorcode !== 'number')
+    keyUp(keyCodeOrKey, time, eventprops) {
+        if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number')
             throw new Error('Robot.keyUp first arg must be a string or a number');
         if (time === undefined)
             time = 0;
@@ -222,12 +223,13 @@ class Robot {
             return;
         const n = diagram.lastInput.copy();
         n.diagram = diagram;
-        if (typeof keyorcode === 'string') {
-            n.key = keyorcode;
+        if (typeof keyCodeOrKey === 'string') {
+            n.key = keyCodeOrKey;
         }
-        else if (typeof keyorcode === 'number') {
-            n.key = String.fromCharCode(keyorcode);
+        else if (typeof keyCodeOrKey === 'number') {
+            n.key = String.fromCharCode(keyCodeOrKey);
         }
+        n.code = n.key; // For Delete, Backspace etc compatibility
         n.timestamp = time;
         n.up = true;
         this.initializeEvent(n, eventprops);

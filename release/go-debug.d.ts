@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.5
+ * Type definitions for GoJS v3.0.6
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -355,8 +355,8 @@ export interface IContext {
  * For convenience this **GoJS** List class has synonyms for the following methods and property:
  *   - **get(idx)**: {@link elt}
  *   - **set(idx,val)**: {@link setElt}
- *   - **has(val)**: {@link contains}
- *   - **delete(val)**: {@link remove}
+ *   - **has(val)**: {@link has}
+ *   - **delete(val)**: {@link delete}
  *   - **clear()**: {@link clear}
  *   - **size**: {@link count}
  *
@@ -7381,13 +7381,15 @@ export class ResizingTool extends Tool {
     /**
      * Gets or sets a small GraphObject that is copied as a resizing handle for the selected part.
      * By default this is a {@link Shape} that is a small blue rectangle.
+     * This ResizingTool will automatically update the {@link GraphObject.cursor} property to match
+     * the corresponding corners or sides, if it is set to "pointer" or "...resize" in this archetype.
      * Setting this property does not raise any events.
      *
      * Here is an example of changing the default handle to be larger yellow circles:
      * ```js
      *   myDiagram.toolManager.resizingTool.handleArchetype =
      *     $(go.Shape, "Circle",
-     *       { width: 10, height: 10, fill: "yellow" });
+     *       { width: 10, height: 10, fill: "yellow", cursor: "pointer" });
      * ```
      *
      * This property is ignored when a custom resizing Adornment is specified as the {@link Part.resizeAdornmentTemplate}.
@@ -23091,6 +23093,10 @@ export class Link extends Part {
      * to perform the actual determination of the route.
      */
     invalidateRoute(): void;
+    /** @hidden Undocumented */
+    get suspendsRouting(): boolean;
+    /** @hidden Undocumented */
+    set suspendsRouting(value: boolean);
     /**
      * (undocumented)
      */
@@ -26360,7 +26366,7 @@ export class Model {
      * to {@link addNodeData}.
      *
      * If you want to ensure that this function is called when copying data that already has a key,
-     * set {@link copiesKey} to false, which its default value.
+     * set {@link copiesKey} to false, which is its default value.
      * This is typically useful when copying a node from a Palette, where the key it has in the Palette's Model
      * happens to be unique within the target Diagram's Model.
      * If you set {@link copiesKey} to true on the target Diagram's model,

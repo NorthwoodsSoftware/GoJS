@@ -57,7 +57,7 @@ class RotateMultipleTool extends go.RotatingTool {
         // calculate initial relative angle
         const dir = this._centerPoint.directionPoint(part.location);
         // saves part-angle combination in array
-        infos.add(part, new PartInfo(dir, dist, part.rotateObject.angle));
+        infos.set(part, new PartInfo(dir, dist, part.rotateObject.angle));
         // recurse into Groups
         if (part instanceof go.Group) {
             const it = part.memberParts.iterator;

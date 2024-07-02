@@ -382,11 +382,11 @@ export class Inspector {
           if (!this.canShowProperty(name, desc, inspectedObject)) continue;
           const val = this.findValue(name, desc, data);
           if (val === '' && this._properties[name] && this._properties[name].type === 'checkbox') {
-            shared.add(name, false);
-            all.add(name, false);
+            shared.set(name, false);
+            all.set(name, false);
           } else {
-            shared.add(name, val);
-            all.add(name, val);
+            shared.set(name, val);
+            all.set(name, val);
           }
         }
         // Go through all the properties on the model data and add them to the map, if appropriate:
@@ -396,8 +396,8 @@ export class Inspector {
             if (this.inspectedProperties[k]) continue; // already exists
             if (declaredProperties[k] &&
                 !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
-            shared.add(k, data[k]);
-            all.add(k, data[k]);
+            shared.set(k, data[k]);
+            all.set(k, data[k]);
           }
         }
       }
@@ -419,9 +419,9 @@ export class Inspector {
                 this._properties[name] &&
                 this._properties[name].type === 'checkbox'
               ) {
-                properties.add(name, false);
+                properties.set(name, false);
               } else {
-                properties.add(name, val);
+                properties.set(name, val);
               }
             }
             // Go through all the properties on the model data and add them to properties to add, if appropriate:
@@ -431,7 +431,7 @@ export class Inspector {
                 if (this.inspectedProperties[k]) continue; // already exists
                 if (declaredProperties[k] &&
                     !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
-                properties.add(k, data[k]);
+                properties.set(k, data[k]);
               }
             }
           }
@@ -463,8 +463,8 @@ export class Inspector {
           }
           for (let i = 0; i < toRemove.length; i++) {
             // removes anything that doesn't showUnionProperties
-            shared.remove(toRemove[i]);
-            all.remove(toRemove[i]);
+            shared.delete(toRemove[i]);
+            all.delete(toRemove[i]);
           }
         } else {
           // Adds missing properties to all with the correct amount of seperators

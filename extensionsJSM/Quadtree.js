@@ -256,7 +256,7 @@ export class Quadtree {
             this._root.bounds = new go.Rect(Math.min(this._root.bounds.x, bounds.x), Math.min(this._root.bounds.y, bounds.y), len, len);
         }
         // map the object to its corresponding QuadObj (so that the bounds of this object can be retrieved later)
-        this._treeObjectMap.add(obj, treeObj);
+        this._treeObjectMap.set(obj, treeObj);
         // grow as many times as necessary to fit the new object
         while (!this._root.bounds.containsRect(bounds)) {
             const old = this._root;
@@ -559,7 +559,7 @@ export class Quadtree {
                 owner.treeObjects.splice(owner.treeObjects.indexOf(treeObj), 1);
                 owner.objects.splice(owner.objects.indexOf(obj), 1);
                 owner.totalObjects--;
-                this._treeObjectMap.remove(obj);
+                this._treeObjectMap.delete(obj);
                 let parent = owner.parent;
                 while (parent) {
                     parent.totalObjects--;
@@ -593,7 +593,7 @@ export class Quadtree {
             return;
         }
         for (let i = indexes.length - 1; i >= 0; i--) {
-            this._treeObjectMap.remove(owner.objects[indexes[i]]);
+            this._treeObjectMap.delete(owner.objects[indexes[i]]);
             owner.treeObjects.splice(indexes[i], 1);
             owner.objects.splice(indexes[i], 1);
         }
