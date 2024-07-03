@@ -92,22 +92,23 @@ export class AriaCommandHandler extends go.CommandHandler {
     if (this.diagram === null) return;
     this._addSelectionChanged();
     const e = this.diagram.lastInput;
+    const commandKey = e.commandKey;
     if (
-      e.code === 'ArrowUp' ||
-      e.code === 'ArrowDown' ||
-      e.code === 'ArrowLeft' ||
-      e.code === 'ArrowRight'
+      commandKey === 'ArrowUp' ||
+      commandKey === 'ArrowDown' ||
+      commandKey === 'ArrowLeft' ||
+      commandKey === 'ArrowRight'
     ) {
       if (this.mode === 'tree') {
         this._arrowKeySelectTree();
       } else {
-        this._arrowKeySelect(e.code);
+        this._arrowKeySelect(commandKey);
       }
-    } else if (e.code === 'KeyX') {
+    } else if (commandKey === 'x') {
       this._goBack();
-    } else if (e.code === 'KeyC') {
+    } else if (commandKey === 'c') {
       this._goForward();
-    } else if (e.code === 'KeyB') {
+    } else if (commandKey === 'b') {
       this.callSurroundingNodes();
     } else {
       // otherwise do any standard command

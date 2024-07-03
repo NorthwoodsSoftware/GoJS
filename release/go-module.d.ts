@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.6
+ * Type definitions for GoJS v3.0.7
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -3272,14 +3272,15 @@ export class PathSegment {
  * These properties include the {@link documentPoint} at which a mouse event
  * occurred in document coordinates,
  * the corresponding point in view/element coordinates, {@link viewPoint},
- * the {@link key} for keyboard events,
+ * the {@link key} and {@link code} for keyboard events,
  * and the {@link modifiers} and {@link button} at the time.
  * Additional descriptive properties include {@link clickCount}, {@link delta},
  * {@link timestamp}, and the source event {@link event} (if available).
  *
  * Many of its properties are provided for convenient access to the state of the input event,
  * such as asking whether the {@link control} key was held down at the time,
- * or the {@link targetObject} (a {@link GraphObject}) that the mouse was over .
+ * or the {@link targetObject} (a {@link GraphObject}) that the mouse was over.
+ * KeyboardEvent keys across languages are normalized for use in Tools and Commands via {@link commandKey}.
  *
  * When real events fire on the Diagram, InputEvents are created automatically set update the value of {@link Diagram.lastInput}.
  * These events set the value of {@link event} with the backing browser-defined Event,
@@ -3402,6 +3403,7 @@ export class InputEvent {
      * Gets or sets the key pressed or released as this event.
      * This property is valid if this is a keyboard event.
      * This corresponds to a `KeyboardEvent.key`
+     * @see {@link commandKey}
      */
     get key(): string;
     set key(value: string);
@@ -3409,6 +3411,7 @@ export class InputEvent {
      * Gets or sets the code pressed or released as this event.
      * This property is valid if this is a keyboard event.
      * This corresponds to a `KeyboardEvent.code`
+     * @see {@link commandKey}
      * @since 3.0
      */
     get code(): string;
@@ -3571,6 +3574,16 @@ export class InputEvent {
      */
     get middle(): boolean;
     set middle(value: boolean);
+    /**
+     * Given this InputEvent's {@link key} and {@link code}, this gets the lowercase key,
+     * or else the code string, relevant for built-in Commands.
+     * This is intended to normalize values across keyboard layouts in different languages.
+     *
+     * This will return one of the lowercase letters used by the {@link CommandHandler}: `'x', 'v', 'y', 'z', 'a', 'g'`,
+     * or else a `KeyboardEvent.code` string for a key such as `'Delete', 'Insert', 'Backspace', 'ArrowDown'`, etc.
+     * @since 3.0
+     */
+    get commandKey(): string;
 }
 /**
  * A DiagramEvent represents a more abstract event than an {@link InputEvent}.
@@ -13603,7 +13616,7 @@ export class CommandHandler {
      * which implements additional behaviors for the arrow keys by overriding this method.
      * For additional discussion, please read the <a href="../../intro/commands.html">Introduction page on Commands</a>.
      *
-     * Starting in 3.0.1, this looks at the value of {@link InputEvent.code} rather than {@link InputEvent.key}
+     * Starting in 3.0.7, this uses the value of {@link InputEvent.commandKey}.
      * @virtual
      */
     doKeyDown(): void;

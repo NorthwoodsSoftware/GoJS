@@ -198,7 +198,6 @@ export class Robot {
     } else if (typeof keyCodeOrKey === 'number') {
       n.key = String.fromCharCode(keyCodeOrKey);
     }
-    n.code = n.key; // For Delete, Backspace etc compatibility
     n.timestamp = time;
     n.down = true;
     this.initializeEvent(n, eventprops);
@@ -226,7 +225,6 @@ export class Robot {
     } else if (typeof keyCodeOrKey === 'number') {
       n.key = String.fromCharCode(keyCodeOrKey);
     }
-    n.code = n.key; // For Delete, Backspace etc compatibility
     n.timestamp = time;
     n.up = true;
     this.initializeEvent(n, eventprops);

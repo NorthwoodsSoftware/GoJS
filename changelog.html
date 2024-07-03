@@ -144,17 +144,30 @@
 
 <p>There are a number of other changes, detailed below.</p>
 
+<h3 id="3.0.7">Changes for 3.0.7</h3>
+<ul>
+  <li>
+    Added <a>InputEvent.commandKey</a>, which returns a normalized key string based on the <a>InputEvent.key</a> and <a>InputEvent.code</a>.
+    This is convenient to use in <a>CommandHandler.doKeyDown</a> or <a>Tool.doKeyDown</a> and their overrides.
+  </li>
+  <li>
+    Fixed keyboard shortcuts for QWERTZ-layout keyboards.
+  </li>
+</ul>
+
 <h3 id="3.0.6">Changes for 3.0.6</h3>
 <ul>
   <li>
     Added another work-around for Babel transpilation bug.
   </li>
   <li>
-    Fixed the <a>Robot</a> to handle "Delete" key events.
+    Fixed the <a>Robot</a> extension to handle "Delete" key events.
   </li>
   <li>
-    Fixed <a>GridLayout</a> when <a>GridLayout.alignment</a> is Position for Parts that have non-zero <a>GraphObject.margin</a> on the left or top sides.
-    Fixed other built-in Layouts that use LayoutNetworks when Nodes have non-zero <a>GraphObject.margin</a> on the left or top sides.
+    Fixed <a>GridLayout</a> when <a>GridLayout.alignment</a> is <code>Position</code> for Parts that have
+    non-zero <a>GraphObject.margin</a> on the left or top sides.
+    Fixed other built-in Layouts that use LayoutNetworks when Nodes have non-zero
+    <a>GraphObject.margin</a> on the left or top sides.
   </li>
 </ul>
 
@@ -466,7 +479,7 @@
 </p>
 
 
-<h3 id="InputEventkey">InputEvent.key and InputEvent.code</h3>
+<h3 id="InputEventkey">InputEvent.key, InputEvent.code, and InputEvent.commandKey</h3>
 <p>
   The value of <a>InputEvent.key</a> now exactly reflects the browser <code>KeyboardEvent.key</code> value.
   If your code does not use the value of <a>InputEvent.key</a> anywhere
@@ -537,10 +550,13 @@
 </p>
 
 <p>
-  As of GoJS 3.0.1, GoJS now uses the <a>InputEvent.code</a> rather than <a>InputEvent.key</a> to determine
+  As of GoJS 3.0.7, GoJS uses <a>InputEvent.commandKey</a> to determine
   if any command shall be invoked by <a>CommandHandler.doKeyDown</a>.
-  <span class="text-red-600">If you are simulating InputEvents, you will need to set the
-  <a>InputEvent.code</a> instead of, or in addition to, the <a>InputEvent.key</a>.</span>
+  This readonly property considers the values of both <a>InputEvent.code</a> and <a>InputEvent.key</a>
+  and normalizes the output to be consistent across keyboard languages.
+  If you are overriding Tool or CommandHandler behavior, considering the value of
+  <a>InputEvent.commandKey</a> rather than <a>InputEvent.code</a> or <a>InputEvent.key</a>
+  will lead to more consistent behavior.
 </p>
 
 <h3 id="MinorIncompatibilities">Minor Incompatibilities</h3>
