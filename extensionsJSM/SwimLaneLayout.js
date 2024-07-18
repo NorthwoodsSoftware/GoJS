@@ -555,6 +555,9 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             return -1;
         if (laneV > laneW)
             return 1;
+        // OPTIONAL: sort dummy vertexes before vertexes representing real nodes
+        //if (v.node === null && w.node !== null) return -1;
+        //if (v.node !== null && w.node === null) return 1;
         if (v.column < w.column)
             return -1;
         if (v.column > w.column)

@@ -1,7 +1,6 @@
-GoJS, a JavaScript Library for HTML Diagrams
-============================================
+# GoJS, a JavaScript Library for HTML Diagrams
 
-<img align="right" height="150" src="https://www.nwoods.com/images/go.png">
+<img align="right" height="150" src="https://nwoods.com/images/go.png">
 
 [GoJS](https://gojs.net) is a JavaScript and TypeScript library for creating and manipulating diagrams, charts, and graphs.
 
@@ -14,7 +13,6 @@ GoJS, a JavaScript Library for HTML Diagrams
 [See GoJS Samples](https://gojs.net/latest/samples)
 
 [Get Started with GoJS](https://gojs.net/latest/learn)
-
 
 GoJS is a flexible library that can be used to create a number of different kinds of interactive diagrams,
 including data visualizations, drawing tools, and graph editors.
@@ -50,9 +48,11 @@ Read more about GoJS at [gojs.net](https://gojs.net)
 
 This repository contains only the library.
 The sources for all samples, extensions, and documentation can be installed by running:
+
 ```html
 $ npm create gojs-kit@latest
 ```
+
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 
 <h2>Minimal Sample</h2>
@@ -65,37 +65,41 @@ Graphs are constructed by creating one or more templates, with desired propertie
 <script src="https://unpkg.com/gojs"></script>
 
 <script>
-const myDiagram =
-  new go.Diagram("myDiagramDiv",  // create a Diagram for the HTML Div element
-    { "undoManager.isEnabled": true });  // enable undo & redo
+  const myDiagram = new go.Diagram(
+    'myDiagramDiv', // create a Diagram for the HTML Div element
+    { 'undoManager.isEnabled': true }
+  ); // enable undo & redo
 
-// define a simple Node template
-myDiagram.nodeTemplate =
-  new go.Node("Auto")  // the Shape will automatically surround the TextBlock
+  // define a simple Node template
+  myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will automatically surround the TextBlock
     // add a Shape and a TextBlock to this "Auto" Panel
-    .add(new go.Shape("RoundedRectangle",
-        { strokeWidth: 0, fill: "white" })  // no border; default fill is white
-        .bind("fill", "color"))  // Shape.fill is bound to Node.data.color
-    .add(new go.TextBlock({ margin: 8, stroke: "#333" })  // some room around the text
-        .bind("text", "key"));  // TextBlock.text is bound to Node.data.key
+    .add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+        .bind('fill', 'color')
+    ) // Shape.fill is bound to Node.data.color
+    .add(
+      new go.TextBlock({ margin: 8, stroke: '#333' }) // some room around the text
+        .bind('text', 'key')
+    ); // TextBlock.text is bound to Node.data.key
 
-// but use the default Link template, by not setting Diagram.linkTemplate
+  // but use the default Link template, by not setting Diagram.linkTemplate
 
-// create the model data that will be represented by Nodes and Links
-myDiagram.model = new go.GraphLinksModel(
-  [
-    { key: "Alpha", color: "lightblue" },
-    { key: "Beta", color: "orange" },
-    { key: "Gamma", color: "lightgreen" },
-    { key: "Delta", color: "pink" }
-  ],
-  [
-    { from: "Alpha", to: "Beta" },
-    { from: "Alpha", to: "Gamma" },
-    { from: "Beta", to: "Beta" },
-    { from: "Gamma", to: "Delta" },
-    { from: "Delta", to: "Alpha" }
-  ]);
+  // create the model data that will be represented by Nodes and Links
+  myDiagram.model = new go.GraphLinksModel(
+    [
+      { key: 'Alpha', color: 'lightblue' },
+      { key: 'Beta', color: 'orange' },
+      { key: 'Gamma', color: 'lightgreen' },
+      { key: 'Delta', color: 'pink' },
+    ],
+    [
+      { from: 'Alpha', to: 'Beta' },
+      { from: 'Alpha', to: 'Gamma' },
+      { from: 'Beta', to: 'Beta' },
+      { from: 'Gamma', to: 'Delta' },
+      { from: 'Delta', to: 'Alpha' },
+    ]
+  );
 </script>
 ```
 
@@ -104,8 +108,7 @@ The user can now click on nodes or links to select them, copy-and-paste them, dr
 
 [<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](https://gojs.net/latest/samples/minimal.html)
 
-*Click the image to see the interactive GoJS Diagram*
-
+_Click the image to see the interactive GoJS Diagram_
 
 <h2>Support</h2>
 
@@ -114,15 +117,13 @@ Northwoods Software offers a month of free developer-to-developer support for Go
 Read and search the official <a href="https://forum.nwoods.com/c/gojs">GoJS forum</a> for any topics related to your questions.
 
 Posting in the forum is the fastest and most effective way of obtaining support for any GoJS related inquiries.
-Please register for support at Northwoods Software's <a href="https://www.nwoods.com/register.html">registration form</a> before posting in the forum.
+Please register for support at Northwoods Software's <a href="https://nwoods.com/register.html">registration form</a> before posting in the forum.
 
 For any nontechnical questions about GoJS, such as about sales or licensing,
-please visit Northwoods Software's <a href="https://www.nwoods.com/contact.html">contact form</a>.
-
+please visit Northwoods Software's <a href="https://nwoods.com/contact.html">contact form</a>.
 
 <h2>License</h2>
 
 The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.
-
 
 Copyright (c) Northwoods Software Corporation

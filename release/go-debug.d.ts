@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.7
+ * Type definitions for GoJS v3.0.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -3550,6 +3550,8 @@ export class InputEvent {
      * this property uses the value of {@link button}. Otherwise, it uses the value of {@link buttons}.
      *
      * When setting, this sets the value of {@link buttons}.
+     * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
+     * of {@link #button}, but setting it to true does set {@link #button}.
      * @see {@link button}
      * @see {@link middle}
      * @see {@link right}
@@ -3559,6 +3561,13 @@ export class InputEvent {
     /**
      * Gets or sets whether the logical right mouse button is being held down.
      * This is true if the button was pressed at the time of the event.
+     *
+     * If this InputEvent has a {@link event} of type `MouseEvent` with `e.type` of "mouseup" or "mousedown",
+     * this property uses the value of {@link button}. Otherwise, it uses the value of {@link buttons}.
+     *
+     * When setting, this sets the value of {@link buttons}.
+     * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
+     * of {@link #button}, but setting it to true does set {@link #button}.
      * @see {@link button}
      * @see {@link left}
      * @see {@link middle}
@@ -3568,6 +3577,13 @@ export class InputEvent {
     /**
      * Gets or sets whether the logical middle mouse button is being held down.
      * This is true if the button was pressed at the time of the event.
+     *
+     * If this InputEvent has a {@link event} of type `MouseEvent` with `e.type` of "mouseup" or "mousedown",
+     * this property uses the value of {@link button}. Otherwise, it uses the value of {@link buttons}.
+     *
+     * When setting, this sets the value of {@link buttons}.
+     * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
+     * of {@link #button}, but setting it to true does set {@link #button}.
      * @see {@link button}
      * @see {@link left}
      * @see {@link right}
@@ -17944,7 +17960,7 @@ export class Panel extends GraphObject {
      *
      * If the element to be added is already in this Panel's list of elements,
      * the object is moved to the specified index.
-     * You cannot add a GraphObject to a Panel that if that GraphObject is already in a different Panel.
+     * You cannot add a GraphObject to a Panel if that GraphObject is already in a different Panel.
      * @param index
      * @param element - A GraphObject.
      */
@@ -30069,7 +30085,8 @@ export class TreeLayout extends Layout {
     get breadthLimit(): number;
     set breadthLimit(value: number);
     /**
-     * Gets or sets the distance between rows or columns of a parent node's immediate children.
+     * Gets or sets the distance between multiple rows or columns of a parent node's immediate children
+     * when the breadth occupied by the children is limited by {@link breadthLimit}.
      *
      * The default value is 25.
      *
@@ -30078,6 +30095,7 @@ export class TreeLayout extends Layout {
      * The {@link nodeSpacing} property determines the distance between siblings.
      * The {@link layerSpacing} property determines the distance between
      * the parent node and its first row or column of child nodes.
+     * The {@link rowIndent} property determines any indentation for all of the rows.
      *
      * This sets the {@link rootDefaults}' property of the same name.
      */
@@ -30085,12 +30103,14 @@ export class TreeLayout extends Layout {
     set rowSpacing(value: number);
     /**
      * Gets or sets the default indentation of the first child of each row,
-     * if the {@link alignment} is not a "Center" alignment.
+     * if the {@link alignment} is not a "Center" alignment,
+     * when the breadth occupied by the children is limited by {@link breadthLimit}.
      *
      * The default value is 10.  The value should be non-negative.
      *
      * This is used to leave room for the links that connect a parent node
      * with the child nodes that are in additional rows.
+     * The {@link rowSpacing} property determines the distance between the rows or columns when there is more than one.
      *
      * This sets the {@link rootDefaults}' property of the same name.
      */

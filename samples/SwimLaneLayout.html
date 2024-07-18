@@ -62,10 +62,10 @@
           <a href="../api/">API</a>
           <a href="../download.html">Download</a>
           <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
-          <a href="https://www.nwoods.com/contact.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/contact.html', 'contact');">Contact</a>
-          <a href="https://www.nwoods.com/sales/index.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://www.nwoods.com/sales/index.html', 'buy');">Buy</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
         </div>
       </div>
     </div>
@@ -153,7 +153,11 @@
 
           var rect = layerRects[forwards ? layerRects.length - 1 : 0];
           var totallength = horiz ? rect.right : rect.bottom;
-
+          if (horiz) {
+            offset.y -= this.columnSpacing*3/2;
+          } else {
+            offset.x -= this.columnSpacing*3/2;
+          }
           for (var i = 0; i < this.laneNames.length; i++) {
             var lane = this.laneNames[i];
             // assume lane names do not conflict with node names
@@ -206,7 +210,7 @@
 
     function convertKeyImage(key) {
       if (!key) key = 'NE';
-      return 'https://www.nwoods.com/go/beatpaths/' + key + '_logo-50x50.png';
+      return 'https://nwoods.com/go/beatpaths/' + key + '_logo-50x50.png';
     }
 
     // replace the default Link template in the linkTemplateMap
