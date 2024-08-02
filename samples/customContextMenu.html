@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -180,43 +179,29 @@
   var myDiagram = null;
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true
+    });
 
     // This is the actual HTML context menu:
     var cxElement = document.getElementById('contextMenu');
 
     // an HTMLInfo object is needed to invoke the code to set up the HTML cxElement
-    var myContextMenu = $(go.HTMLInfo, {
+    var myContextMenu = new go.HTMLInfo({
       show: showContextMenu,
-      hide: hideContextMenu,
+      hide: hideContextMenu
     });
 
     // define a simple Node template (but use the default Link template)
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { contextMenu: myContextMenu },
-      $(go.Shape,
-        'RoundedRectangle',
-        // Shape.fill is bound to Node.data.color
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        { margin: 3 }, // some room around the text
-        // TextBlock.text is bound to Node.data.text
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', { contextMenu: myContextMenu })
+      .add(
+        new go.Shape('RoundedRectangle')
+          // Shape.fill is bound to Node.data.color
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 3 }) // some room around the text
+          // TextBlock.text is bound to Node.data.text
+          .bind('text')
+      );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
@@ -224,14 +209,14 @@
         { key: 1, text: 'Alpha', color: '#f38181' },
         { key: 2, text: 'Beta', color: '#eaffd0' },
         { key: 3, text: 'Gamma', color: '#95e1d3' },
-        { key: 4, text: 'Delta', color: '#fce38a' },
+        { key: 4, text: 'Delta', color: '#fce38a' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
 

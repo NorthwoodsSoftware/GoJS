@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -194,27 +193,40 @@
   }
   // end of PanelLayoutCascading
 
-  // Register the PanelLayout so that go.GraphObject.make can use it by name:
+  // Register the PanelLayout so that go.GraphObject.ma ke can use it by name:
   go.Panel.definePanelLayout('Cascading', new PanelLayoutCascading());
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
     // Define a simple Node template that includes a Cascading Panel holding
     // some number of item Panels holding Shapes, based on data.items being an Array
     // of item descriptor objects.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { width: 100, height: 100 },
-      $(go.Shape, { fill: 'transparent', strokeWidth: 2 }, new go.Binding('stroke', 'color')),
-      $(go.Panel, 'Cascading', new go.Binding('itemArray', 'items'), {
-        itemTemplate: $(go.Panel, $(go.Shape, { width: 20, height: 20, strokeWidth: 0 }, new go.Binding('figure', 'fig'), new go.Binding('fill', 'color'))),
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+        width: 100,
+        height: 100
       })
-    );
+        .add(
+          new go.Shape({
+            fill: 'transparent',
+            strokeWidth: 2
+          })
+            .bind('stroke', 'color'),
+          new go.Panel('Cascading', {
+            itemTemplate: new go.Panel()
+              .add(
+                new go.Shape({
+                  width: 20,
+                  height: 20,
+                  strokeWidth: 0
+                })
+                  .bind('figure', 'fig')
+                  .bind('fill', 'color')
+              )
+          })
+            .bind('itemArray', 'items')
+        );
 
     myDiagram.model = new go.GraphLinksModel([
       {
@@ -222,8 +234,8 @@
         color: 'lightgreen',
         items: [
           { fig: 'RoundedRectangle', color: 'lightblue' },
-          { fig: 'Triangle', color: 'pink' },
-        ],
+          { fig: 'Triangle', color: 'pink' }
+        ]
       },
       {
         key: 2,
@@ -231,13 +243,13 @@
         items: [
           { fig: 'RoundedRectangle', color: 'lightgray' },
           { fig: 'Square', color: 'yellow' },
-          { fig: 'Circle', color: 'orange' },
-        ],
+          { fig: 'Circle', color: 'orange' }
+        ]
       },
       {
         key: 3,
         color: 'purple',
-        items: [{ fig: 'Diamond', color: 'red' }],
+        items: [{ fig: 'Diamond', color: 'red' }]
       },
       {
         key: 4,
@@ -246,9 +258,9 @@
           { fig: 'Circle', color: 'green' },
           { fig: 'Square', color: 'blue' },
           { fig: 'Triangle', color: 'red' },
-          { fig: 'TriangleRight', color: 'green' },
-        ],
-      },
+          { fig: 'TriangleRight', color: 'green' }
+        ]
+      }
     ]);
   }
   window.addEventListener('DOMContentLoaded', init);

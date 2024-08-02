@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,26 +124,23 @@
 
 <script id="code">
   function init() {
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        'animationManager.initialAnimationStyle': go.AnimationStyle.None,
-        InitialAnimationStarting: (e) => {
-          var animation = e.subject.defaultAnimation;
-          animation.easing = go.Animation.EaseOutExpo;
-          animation.duration = 800;
-          animation.add(e.diagram, 'scale', 0.3, 1);
-          animation.add(e.diagram, 'opacity', 0, 1);
-        },
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.initialAnimationStyle': go.AnimationStyle.None,
+      InitialAnimationStarting: (e) => {
+        var animation = e.subject.defaultAnimation;
+        animation.easing = go.Animation.EaseOutExpo;
+        animation.duration = 800;
+        animation.add(e.diagram, 'scale', 0.3, 1);
+        animation.add(e.diagram, 'opacity', 0, 1);
+      },
 
-        // have mouse wheel events zoom in and out instead of scroll up and down
-        'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
-        // support double-click in background creating a new node
-        'clickCreatingTool.archetypeNodeData': { text: 'new node' },
-        // enable undo & redo
-        'undoManager.isEnabled': true,
-      }
-    );
+      // have mouse wheel events zoom in and out instead of scroll up and down
+      'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
+      // support double-click in background creating a new node
+      'clickCreatingTool.archetypeNodeData': { text: 'new node' },
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
@@ -163,14 +159,14 @@
       blue: '#b7d8f7',
       green: '#b9e1c8',
       yellow: '#faeb98',
-      background: '#e8e8e8',
+      background: '#e8e8e8'
     };
     const colorsDark = {
       green: '#3fab76',
       yellow: '#f4d90a',
       blue: '#0091ff',
       pink: '#e65257',
-      background: '#161616',
+      background: '#161616'
     };
     myDiagram.div.style.backgroundColor = colors.background;
 
@@ -178,13 +174,17 @@
       isShadowed: true,
       shadowBlur: 0,
       shadowOffset: new go.Point(5, 5),
-      shadowColor: 'black',
+      shadowColor: 'black'
     })
       .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       .add(
         new go.Shape('RoundedRectangle', {
           strokeWidth: 1.5,
           fill: colors.blue,
+          portId: '',
+          fromLinkable: true, fromLinkableSelfNode: false, fromLinkableDuplicates: true,
+          toLinkable: true, toLinkableSelfNode: false, toLinkableDuplicates: true,
+          cursor: 'pointer'
         })
           .bind('fill', 'type', (type) => {
             if (type === 'Start') return colors.green;
@@ -200,7 +200,7 @@
           shadowVisible: false,
           margin: 8,
           font: 'bold 14px sans-serif',
-          stroke: '#333',
+          stroke: '#333'
         }).bind('text')
       );
 
@@ -215,9 +215,9 @@
 
         // the button to create a "next" node, at the top-right corner
         go.GraphObject.build('Button', {
-            alignment: go.Spot.TopRight,
-            click: addNodeAndLink, // this function is defined below
-          })
+          alignment: go.Spot.TopRight,
+          click: addNodeAndLink // this function is defined below
+        })
           .add(
             new go.Shape('PlusLine', { width: 6, height: 6 })
           ) // end button
@@ -246,7 +246,7 @@
       var linkdata = {
         from: model.getKeyForNodeData(fromData), // or just: fromData.id
         to: model.getKeyForNodeData(toData),
-        text: 'transition',
+        text: 'transition'
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
@@ -274,7 +274,7 @@
       relinkableFrom: true,
       relinkableTo: true,
       fromShortLength: 8,
-      toShortLength: 10,
+      toShortLength: 10
     })
       .bindTwoWay('points')
       .bind('curviness')
@@ -287,19 +287,21 @@
         new go.Shape({ fromArrow: 'circle', strokeWidth: 1.5, fill: 'white' }).bind('opacity', 'progress', (progress) => (progress ? 1 : 0.5)),
         new go.Shape({ toArrow: 'standard', stroke: null, scale: 1.5, fill: 'black' }).bind('opacity', 'progress', (progress) => (progress ? 1 : 0.5)),
         // The link label
-        new go.Panel('Auto').add(
-          new go.Shape('RoundedRectangle', {
-            shadowVisible: true,
-            fill: colors.yellow,
-            strokeWidth: 0.5,
-          }),
-          new go.TextBlock({
-            font: '9pt helvetica, arial, sans-serif',
-            margin: 1,
-            editable: true, // enable in-place editing
-          }).bind('text')
-          // editing the text automatically updates the model data
-        )
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', {
+              shadowVisible: true,
+              fill: colors.yellow,
+              strokeWidth: 0.5
+            }),
+            new go.TextBlock({
+              font: '9pt helvetica, arial, sans-serif',
+              margin: 1,
+              editable: true, // enable in-place editing
+              text: 'Action' // default text
+            }).bind('text')
+            // editing the text automatically updates the model data
+          )
       );
 
     // read in the JSON data from the "mySavedModel" element
@@ -322,9 +324,12 @@
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 470px; background: whitesmoke"></div>
   <p>This sample creates a state chart to story-board an online shopping experience.</p>
   <p>
-    The text is editable for both the nodes and the links. The user can draw as many links from one node to another node as desired, and the links can be
-    reshaped or deleted when selected. Double-clicking in the background of the diagram creates a new node. The mouse wheel is set to zoom in and out instead of
-    scroll.
+    The text is editable for both the <a>Node</a>s and the <a>Link</a>s. The 
+    user can draw as many links from one <a>Node</a> to another <a>Node</a> as 
+    desired. To create a new <a>Link</a> start dragging from the edge of a 
+    <a>Node</a>. The <a>Link</a> s can be reshaped or deleted when selected. 
+    Double-clicking in the background of the <a>Diagram</a> creates a new node. 
+    The mouse wheel is set to zoom in and out instead of scroll.
   </p>
   <p>
     This sample customizes the <a>Part.selectionAdornmentTemplate</a> of the node to a template that contains a button The button is positioned to be at the

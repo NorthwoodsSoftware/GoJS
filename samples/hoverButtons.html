@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,64 +124,52 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        hoverDelay: 200, // controls how long to wait motionless (msec) before showing Adornment
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      hoverDelay: 200, // controls how long to wait motionless (msec) before showing Adornment
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
     // this is shown by the mouseHover event handler
-    var nodeHoverAdornment = $(go.Adornment,
-      'Spot',
-      {
-        //background: "transparent",
-        // hide the Adornment when the mouse leaves it
-        mouseLeave: (e, obj) => {
-          var ad = obj.part;
-          ad.adornedPart.removeAdornment('mouseHover');
-        },
-      },
-      $(go.Placeholder, {
-        //background: "transparent",  // to allow this Placeholder to be "seen" by mouse events
-        isActionable: true, // needed because this is in a temporary Layer
-        click: (e, obj) => {
-          var node = obj.part.adornedPart;
-          node.diagram.select(node);
-        },
-      }),
-      $('Button', { alignment: go.Spot.Left, alignmentFocus: go.Spot.Right }, { click: (e, obj) => alert('Hi!') }, $(go.TextBlock, 'Hi!')),
-      $('Button', { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left }, { click: (e, obj) => alert('Bye') }, $(go.TextBlock, 'Bye'))
-    );
+    var nodeHoverAdornment = new go.Adornment('Spot', {
+      //background: "transparent",
+      // hide the Adornment when the mouse leaves it
+      mouseLeave: (e, obj) => {
+        var ad = obj.part;
+        ad.adornedPart.removeAdornment('mouseHover');
+      }
+    })
+      .add(
+        new go.Placeholder({
+          //background: "transparent",  // to allow this Placeholder to be "seen" by mouse events
+          isActionable: true, // needed because this is in a temporary Layer
+          click: (e, obj) => {
+            var node = obj.part.adornedPart;
+            node.diagram.select(node);
+          }
+        }),
+        go.GraphObject.build('Button', { alignment: go.Spot.Left, alignmentFocus: go.Spot.Right, click: (e, obj) => alert('Hi!') })
+          .add(new go.TextBlock('Hi!')),
+        go.GraphObject.build('Button', { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, click: (e, obj) => alert('Bye') })
+          .add(new go.TextBlock('Bye'))
+      );
 
     // define a simple Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto', // the Shape will go around the TextBlock
-      $(go.Shape,
-        'RoundedRectangle',
-        { strokeWidth: 0 },
-        // Shape.fill is bound to Node.data.color
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        { margin: 8 }, // some room around the text
-        // TextBlock.text is bound to Node.data.text
-        new go.Binding('text')
-      ),
-      {
-        // show the Adornment when a mouseHover event occurs
-        mouseHover: (e, obj) => {
-          var node = obj.part;
-          nodeHoverAdornment.adornedObject = node;
-          node.addAdornment('mouseHover', nodeHoverAdornment);
-        },
+    myDiagram.nodeTemplate = new go.Node('Auto', { // the Shape will go around the TextBlock
+      // show the Adornment when a mouseHover event occurs
+      mouseHover: (e, obj) => {
+        var node = obj.part;
+        nodeHoverAdornment.adornedObject = node;
+        node.addAdornment('mouseHover', nodeHoverAdornment);
       }
-    );
+    })
+      .add(
+        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+          // Shape.fill is bound to Node.data.color
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 }) // some room around the text
+          // TextBlock.text is bound to Node.data.text
+          .bind('text')
+      );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -192,14 +179,14 @@
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
   }

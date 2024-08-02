@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -129,77 +128,60 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must identify the DIV
-      {
-        // default text editor is now a SelectBox
-        'textEditingTool.defaultTextEditor': window.TextEditorSelectBox, // defined in textEditorSelectBox.js
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      // default text editor is now a SelectBox
+      'textEditingTool.defaultTextEditor': window.TextEditorSelectBox, // defined in textEditorSelectBox.js
+      'undoManager.isEnabled': true
+    });
 
     var brush = new go.Brush(go.BrushType.Linear);
     brush.addColorStop(0, 'rgb(255, 211, 89)');
     brush.addColorStop(1, 'rgb(255, 239, 113)');
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      {
-        resizable: true,
-        rotatable: true,
-        locationSpot: go.Spot.Center,
-      },
-      new go.Binding('location').makeTwoWay(),
-      $(go.TextBlock,
-        {
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      resizable: true,
+      rotatable: true,
+      locationSpot: go.Spot.Center
+    })
+      .bindTwoWay('location')
+      .add(
+        new go.TextBlock({
           text: 'Alpha',
           editable: true,
           font: '32pt Georgia, serif',
-          background: 'lightblue',
-        },
-        new go.Binding('choices')
-      ),
-      $(go.TextBlock,
-        {
+          background: 'lightblue'
+        }).bind('choices'),
+        new go.TextBlock({
           text: 'Beta',
           editable: true,
           font: '22pt Georgia, serif',
           background: 'lightgreen',
-          scale: 2,
-        },
-        new go.Binding('choices')
-      ),
-      $(go.TextBlock,
-        {
+          scale: 2
+        }).bind('choices'),
+        new go.TextBlock({
           text: 'Gamma',
           editable: true,
           font: '60pt Georgia, serif',
           background: 'orangered',
-          scale: 0.4,
-        },
-        new go.Binding('choices')
-      ),
-      $(go.TextBlock, {
-        text: 'One',
-        editable: true,
-        font: 'bold 16pt Arial, Helvetica, sans-serif',
-        background: brush,
-        scale: 2,
-        // this specific TextBlock uses a RadioButtons for editing text
-        textEditor: window.TextEditorRadioButtons, // defined in textEditorRadioButtons.js
-        // this specific TextBlock has its own choices:
-        choices: ['One', 'Two', 'Three', 'Four'],
-      })
-    );
+          scale: 0.4
+        }).bind('choices'),
+        new go.TextBlock({
+          text: 'One',
+          editable: true,
+          font: 'bold 16pt Arial, Helvetica, sans-serif',
+          background: brush,
+          scale: 2,
+          // this specific TextBlock uses a RadioButtons for editing text
+          textEditor: window.TextEditorRadioButtons, // defined in textEditorRadioButtons.js
+          // this specific TextBlock has its own choices:
+          choices: ['One', 'Two', 'Three', 'Four']
+        })
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, choices: ['Alpha', 'Beta', 'Gamma', 'Theta'], location: new go.Point(250, 150) },
-        { key: 2, choices: ['Alpha', 'Beta', 'Gamma', 'Theta'], location: new go.Point(50, 50) },
+        { key: 2, choices: ['Alpha', 'Beta', 'Gamma', 'Theta'], location: new go.Point(50, 50) }
       ],
       [{ from: 1, to: 2 }]
     );

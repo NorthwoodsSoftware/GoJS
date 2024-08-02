@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,23 +124,16 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram = new go.Diagram('myDiagramDiv', { // create a Diagram for the DIV HTML element
+      // allow double-click in background to create a new node
+      'clickCreatingTool.archetypeNodeData': { text: 'Node', color: 'white' },
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        // allow double-click in background to create a new node
-        'clickCreatingTool.archetypeNodeData': { text: 'Node', color: 'white' },
+      // allow Ctrl-G to call groupSelection()
+      'commandHandler.archetypeGroupData': { text: 'Group', isGroup: true, color: 'blue' },
 
-        // allow Ctrl-G to call groupSelection()
-        'commandHandler.archetypeGroupData': { text: 'Group', isGroup: true, color: 'blue' },
-
-        // enable undo & redo
-        'undoManager.isEnabled': true,
-      }
-    );
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
 
     // Define the appearance and behavior for Nodes:
 
@@ -149,66 +141,75 @@
 
     // To simplify this code we define a function for creating a context menu button:
     function makeButton(text, action, visiblePredicate) {
-      return $('ContextMenuButton',
-        $(go.TextBlock, text),
-        { click: action },
-        // don't bother with binding GraphObject.visible if there's no predicate
-        visiblePredicate ? new go.Binding('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false)).ofObject() : {}
-      );
+      let button = go.GraphObject.build('ContextMenuButton')
+        .add(
+          new go.TextBlock(text, { click: action })
+        );
+      // don't bother with binding GraphObject.visible if there's no predicate
+      if (visiblePredicate)
+        button.bindObject('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false));
+      return button;
     }
 
     // a context menu is an Adornment with a bunch of buttons in them
-    var partContextMenu = $('ContextMenu',
-      makeButton('Properties', (e, obj) => {
-        // OBJ is this Button
-        var contextmenu = obj.part; // the Button is in the context menu Adornment
-        var part = contextmenu.adornedPart; // the adornedPart is the Part that the context menu adorns
-        // now can do something with PART, or with its data, or with the Adornment (the context menu)
-        if (part instanceof go.Link) alert(linkInfo(part.data));
-        else if (part instanceof go.Group) alert(groupInfo(contextmenu));
-        else alert(nodeInfo(part.data));
-      }),
-      makeButton(
-        'Cut',
-        (e, obj) => e.diagram.commandHandler.cutSelection(),
-        (o) => o.diagram.commandHandler.canCutSelection()
-      ),
-      makeButton(
-        'Copy',
-        (e, obj) => e.diagram.commandHandler.copySelection(),
-        (o) => o.diagram.commandHandler.canCopySelection()
-      ),
-      makeButton(
-        'Paste',
-        (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
-        (o) => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
-      ),
-      makeButton(
-        'Delete',
-        (e, obj) => e.diagram.commandHandler.deleteSelection(),
-        (o) => o.diagram.commandHandler.canDeleteSelection()
-      ),
-      makeButton(
-        'Undo',
-        (e, obj) => e.diagram.commandHandler.undo(),
-        (o) => o.diagram.commandHandler.canUndo()
-      ),
-      makeButton(
-        'Redo',
-        (e, obj) => e.diagram.commandHandler.redo(),
-        (o) => o.diagram.commandHandler.canRedo()
-      ),
-      makeButton(
-        'Group',
-        (e, obj) => e.diagram.commandHandler.groupSelection(),
-        (o) => o.diagram.commandHandler.canGroupSelection()
-      ),
-      makeButton(
-        'Ungroup',
-        (e, obj) => e.diagram.commandHandler.ungroupSelection(),
-        (o) => o.diagram.commandHandler.canUngroupSelection()
-      )
-    );
+    var partContextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        makeButton('Properties', (e, obj) => {
+          // OBJ is this Button
+          var contextmenu = obj.part; // the Button is in the context menu Adornment
+          var part = contextmenu.adornedPart; // the adornedPart is the Part that the context menu adorns
+          // now can do something with PART, or with its data, or with the Adornment (the context menu)
+          if (part instanceof go.Link) alert(linkInfo(part.data));
+          else if (part instanceof go.Group) alert(groupInfo(contextmenu));
+          else alert(nodeInfo(part.data));
+        }),
+        makeButton(
+          'Cut',
+          (e, obj) => e.diagram.commandHandler.cutSelection(),
+          (o) => o.diagram.commandHandler.canCutSelection()
+        ),
+        makeButton(
+          'Copy',
+          (e, obj) => e.diagram.commandHandler.copySelection(),
+          (o) => o.diagram.commandHandler.canCopySelection()
+        ),
+        makeButton(
+          'Paste',
+          (e, obj) =>
+            e.diagram.commandHandler.pasteSelection(
+              e.diagram.toolManager.contextMenuTool.mouseDownPoint
+            ),
+          (o) =>
+            o.diagram.commandHandler.canPasteSelection(
+              o.diagram.toolManager.contextMenuTool.mouseDownPoint
+            )
+        ),
+        makeButton(
+          'Delete',
+          (e, obj) => e.diagram.commandHandler.deleteSelection(),
+          (o) => o.diagram.commandHandler.canDeleteSelection()
+        ),
+        makeButton(
+          'Undo',
+          (e, obj) => e.diagram.commandHandler.undo(),
+          (o) => o.diagram.commandHandler.canUndo()
+        ),
+        makeButton(
+          'Redo',
+          (e, obj) => e.diagram.commandHandler.redo(),
+          (o) => o.diagram.commandHandler.canRedo()
+        ),
+        makeButton(
+          'Group',
+          (e, obj) => e.diagram.commandHandler.groupSelection(),
+          (o) => o.diagram.commandHandler.canGroupSelection()
+        ),
+        makeButton(
+          'Ungroup',
+          (e, obj) => e.diagram.commandHandler.ungroupSelection(),
+          (o) => o.diagram.commandHandler.canUngroupSelection()
+        )
+      );
 
     function nodeInfo(d) {
       // Tooltip info for a node data object
@@ -222,12 +223,19 @@
     // whose fill color is bound to the node data.
     // The user can drag a node by dragging its TextBlock label.
     // Dragging from the Shape will start drawing a new link.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      $(go.Shape,
-        'RoundedRectangle',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      locationSpot: go.Spot.Center,
+      // this tooltip Adornment is shared by all nodes
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling nodeInfo(data)
+            .bind('text', '', nodeInfo)
+        ),
+      // this context menu Adornment is shared by all nodes
+      contextMenu: partContextMenu
+    })
+      .add(
+        new go.Shape('RoundedRectangle', {
           fill: 'white', // the default fill, if there is no data bound value
           portId: '',
           cursor: 'pointer', // the Shape is the port, not the whole Node
@@ -237,32 +245,16 @@
           fromLinkableDuplicates: true,
           toLinkable: true,
           toLinkableSelfNode: true,
-          toLinkableDuplicates: true,
-        },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        {
+          toLinkableDuplicates: true
+        }).bind('fill', 'color'),
+        new go.TextBlock({
           font: 'bold 14px sans-serif',
           stroke: '#333',
           margin: 6, // make some extra space for the shape around the text
           isMultiline: false, // don't allow newlines in text
-          editable: true, // allow in-place editing by user
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      ), // the label shows the node data's text
-      {
-        // this tooltip Adornment is shared by all nodes
-        toolTip: $('ToolTip',
-          $(go.TextBlock,
-            { margin: 4 }, // the tooltip shows the result of calling nodeInfo(data)
-            new go.Binding('text', '', nodeInfo)
-          )
-        ),
-        // this context menu Adornment is shared by all nodes
-        contextMenu: partContextMenu,
-      }
-    );
+          editable: true // allow in-place editing by user
+        }).bindTwoWay('text', 'text')
+      );
 
     // Define the appearance and behavior for Links:
 
@@ -272,22 +264,23 @@
     }
 
     // The link shape and arrowhead have their stroke brush data bound to the "color" property
-    myDiagram.linkTemplate = $(go.Link,
-      { toShortLength: 3, relinkableFrom: true, relinkableTo: true }, // allow the user to relink existing links
-      $(go.Shape, { strokeWidth: 2 }, new go.Binding('stroke', 'color')),
-      $(go.Shape, { toArrow: 'Standard', stroke: null }, new go.Binding('fill', 'color')),
-      {
-        // this tooltip Adornment is shared by all links
-        toolTip: $('ToolTip',
-          $(go.TextBlock,
-            { margin: 4 }, // the tooltip shows the result of calling linkInfo(data)
-            new go.Binding('text', '', linkInfo)
-          )
+    myDiagram.linkTemplate = new go.Link({
+      toShortLength: 3,
+      relinkableFrom: true,
+      relinkableTo: true,
+      // this tooltip Adornment is shared by all links
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling linkInfo(data)
+            .bind('text', '', linkInfo)
         ),
-        // the same context menu Adornment is shared by all links
-        contextMenu: partContextMenu,
-      }
-    );
+      // the same context menu Adornment is shared by all links
+      contextMenu: partContextMenu
+    }) // allow the user to relink existing links
+      .add(
+        new go.Shape({ strokeWidth: 2 }).bind('stroke', 'color'),
+        new go.Shape({ toArrow: 'Standard', stroke: null }).bind('fill', 'color')
+      );
 
     // Define the appearance and behavior for Groups:
 
@@ -299,33 +292,46 @@
       g.memberParts.each((part) => {
         if (part instanceof go.Link) links++;
       });
-      return 'Group ' + g.data.key + ': ' + g.data.text + '\n' + mems + ' members including ' + links + ' links';
+      return (
+        'Group ' +
+        g.data.key +
+        ': ' +
+        g.data.text +
+        '\n' +
+        mems +
+        ' members including ' +
+        links +
+        ' links'
+      );
     }
 
     // Groups consist of a title in the color given by the group node data
     // above a translucent gray rectangle surrounding the member parts
-    myDiagram.groupTemplate = $(go.Group,
-      'Vertical',
-      {
-        selectionObjectName: 'PANEL', // selection handle goes around shape, not label
-        ungroupable: true, // enable Ctrl-Shift-G to ungroup a selected Group
-      },
-      $(go.TextBlock,
-        {
-          //alignment: go.Spot.Right,
-          font: 'bold 19px sans-serif',
-          isMultiline: false, // don't allow newlines in text
-          editable: true, // allow in-place editing by user
-        },
-        new go.Binding('text', 'text').makeTwoWay(),
-        new go.Binding('stroke', 'color')
-      ),
-      $(go.Panel,
-        'Auto',
-        { name: 'PANEL' },
-        $(go.Shape,
-          'Rectangle', // the rectangular shape around the members
-          {
+    myDiagram.groupTemplate = new go.Group('Vertical', {
+      selectionObjectName: 'PANEL', // selection handle goes around shape, not label
+      ungroupable: true, // enable Ctrl-Shift-G to ungroup a selected Group
+      // this tooltip Adornment is shared by all groups
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4 })
+            // bind to tooltip, not to Group.data, to allow access to Group properties
+            .bindObject('text', '', groupInfo)
+        ),
+      // the same context menu Adornment is shared by all groups
+      contextMenu: partContextMenu
+    }).add(
+      new go.TextBlock({
+        //alignment: go.Spot.Right,
+        font: 'bold 19px sans-serif',
+        isMultiline: false, // don't allow newlines in text
+        editable: true // allow in-place editing by user
+      })
+        .bindTwoWay('text', 'text')
+        .bind('stroke', 'color'),
+      new go.Panel('Auto', { name: 'PANEL' })
+        .add(
+          new go.Shape('Rectangle', {
+            // the rectangular shape around the members
             fill: 'rgba(128,128,128,0.2)',
             stroke: 'gray',
             strokeWidth: 3,
@@ -337,53 +343,52 @@
             fromLinkableDuplicates: true,
             toLinkable: true,
             toLinkableSelfNode: true,
-            toLinkableDuplicates: true,
-          }
-        ),
-        $(go.Placeholder, { margin: 10, background: 'transparent' }) // represents where the members are
-      ),
-      {
-        // this tooltip Adornment is shared by all groups
-        toolTip: $('ToolTip',
-          $(go.TextBlock,
-            { margin: 4 },
-            // bind to tooltip, not to Group.data, to allow access to Group properties
-            new go.Binding('text', '', groupInfo).ofObject()
-          )
-        ),
-        // the same context menu Adornment is shared by all groups
-        contextMenu: partContextMenu,
-      }
+            toLinkableDuplicates: true
+          }),
+          new go.Placeholder({ margin: 10, background: 'transparent' })
+        ) // represents where the members are
     );
 
     // Define the behavior for the Diagram background:
 
     function diagramInfo(model) {
       // Tooltip info for the diagram's model
-      return 'Model:\n' + model.nodeDataArray.length + ' nodes, ' + model.linkDataArray.length + ' links';
+      return (
+        'Model:\n' + model.nodeDataArray.length + ' nodes, ' + model.linkDataArray.length + ' links'
+      );
     }
 
     // provide a tooltip for the background of the Diagram, when not over any Part
-    myDiagram.toolTip = $('ToolTip', $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', diagramInfo)));
+    myDiagram.toolTip = go.GraphObject.build('ToolTip')
+      .add(
+        new go.TextBlock({ margin: 4 }).bind('text', '', diagramInfo)
+      );
 
     // provide a context menu for the background of the Diagram, when not over any Part
-    myDiagram.contextMenu = $('ContextMenu',
-      makeButton(
-        'Paste',
-        (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
-        (o) => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
-      ),
-      makeButton(
-        'Undo',
-        (e, obj) => e.diagram.commandHandler.undo(),
-        (o) => o.diagram.commandHandler.canUndo()
-      ),
-      makeButton(
-        'Redo',
-        (e, obj) => e.diagram.commandHandler.redo(),
-        (o) => o.diagram.commandHandler.canRedo()
-      )
-    );
+    myDiagram.contextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        makeButton(
+          'Paste',
+          (e, obj) =>
+            e.diagram.commandHandler.pasteSelection(
+              e.diagram.toolManager.contextMenuTool.mouseDownPoint
+            ),
+          (o) =>
+            o.diagram.commandHandler.canPasteSelection(
+              o.diagram.toolManager.contextMenuTool.mouseDownPoint
+            )
+        ),
+        makeButton(
+          'Undo',
+          (e, obj) => e.diagram.commandHandler.undo(),
+          (o) => o.diagram.commandHandler.canUndo()
+        ),
+        makeButton(
+          'Redo',
+          (e, obj) => e.diagram.commandHandler.redo(),
+          (o) => o.diagram.commandHandler.canRedo()
+        )
+      );
 
     // Create the Diagram's Model:
     var nodeDataArray = [
@@ -391,13 +396,13 @@
       { key: 2, text: 'Beta', color: 'orange' },
       { key: 3, text: 'Gamma', color: 'lightgreen', group: 5 },
       { key: 4, text: 'Delta', color: 'pink', group: 5 },
-      { key: 5, text: 'Epsilon', color: 'green', isGroup: true },
+      { key: 5, text: 'Epsilon', color: 'green', isGroup: true }
     ];
     var linkDataArray = [
       { from: 1, to: 2, color: 'blue' },
       { from: 2, to: 2 },
       { from: 3, to: 4, color: 'green' },
-      { from: 3, to: 1, color: 'purple' },
+      { from: 3, to: 1, color: 'purple' }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
@@ -407,30 +412,44 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 400px; height: 400px"></div>
   <p>
-    This sample demonstrates tooltips and context menus for all parts and for the diagram background, as well as several other powerful diagram editing
-    abilities.
+    This sample demonstrates tooltips and context menus for all parts and for the diagram
+    background, as well as several other powerful diagram editing abilities.
   </p>
   <p>
-    Unlike the <a href="minimal.html">Minimal</a> sample, this sample has templates for Links and for Groups, plus tooltips and context menus for Nodes, for
-    Links, for Groups, and for the Diagram.
+    Unlike the <a href="minimal.html">Minimal</a> sample, this sample has templates for Links and
+    for Groups, plus tooltips and context menus for Nodes, for Links, for Groups, and for the
+    Diagram.
   </p>
-  <p>This sample has all of the functionality of the Minimal sample, but additionally allows the user to:</p>
+  <p>
+    This sample has all of the functionality of the Minimal sample, but additionally allows the user
+    to:
+  </p>
   <ul>
     <li>create new nodes: double-click in the background of the diagram</li>
     <li>edit text: select the node and then click on the text, or select the node and press F2</li>
     <li>draw new links: drag from the inner edge of the node's or the group's shape</li>
-    <li>reconnect existing links: select the link and then drag the diamond-shaped handle at either end of the link</li>
-    <li>group nodes and links: select some nodes and links and then type Ctrl-G (or invoke via context menu)</li>
-    <li>ungroup an existing group: select a group and then type Ctrl-Shift-G (or invoke via context menu)</li>
+    <li>
+      reconnect existing links: select the link and then drag the diamond-shaped handle at either
+      end of the link
+    </li>
+    <li>
+      group nodes and links: select some nodes and links and then type Ctrl-G (or invoke via context
+      menu)
+    </li>
+    <li>
+      ungroup an existing group: select a group and then type Ctrl-Shift-G (or invoke via context
+      menu)
+    </li>
   </ul>
   <p>
-    GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch or programmatically.
+    GoJS contains many other possible commands, which can be invoked by either mouse/keyboard/touch
+    or programmatically.
     <a href="../intro/commands.html">See an overview of possible commands here.</a>
     On a Mac, use CMD instead of Ctrl.
   </p>
   <p>
-    On touch devices, hold your finger stationary to bring up a context menu. The default context menu supports most of the standard commands that are enabled
-    at that time for that object.
+    On touch devices, hold your finger stationary to bring up a context menu. The default context
+    menu supports most of the standard commands that are enabled at that time for that object.
   </p>
 </div>
 

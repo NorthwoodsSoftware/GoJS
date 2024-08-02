@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.8
+ * Type definitions for GoJS v3.0.9
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -588,7 +588,7 @@ export class List<T> implements Iterable<T> {
      */
     toArray(): Array<T>;
     /**
-     * Converts the List to a {@link Set}.
+     * Converts the List to a {@link Set | go.Set}.
      * The count of the resulting Set may be less than the count of this List
      * if any duplicates were removed.
      * @returns A copy of the contents of this List,
@@ -952,7 +952,7 @@ export class Set<T> implements Iterable<T> {
  * ```
  * But note that there is no guaranteed ordering amongst the key/value pairs.
  *
- * Call {@link toKeySet} to get a read-only {@link Set} that holds all of the keys of a Map.
+ * Call {@link toKeySet} to get a read-only {@link Set | go.Set} that holds all of the keys of a Map.
  * Iterating over that Set will produce values that are the keys in the Map.
  *
  * For compatibility with versions of GoJS before version 3.0, the following synonyms are defined:
@@ -1153,7 +1153,7 @@ export class Map<K, V> {
      */
     toArray(): Array<IKeyValuePair<K, V>>;
     /**
-     * Produces a {@link Set} that provides a read-only view onto the keys of this Map.
+     * Produces a {@link Set | go.Set} that provides a read-only view onto the keys of this Map.
      * The collection of keys is not copied.
      */
     toKeySet(): Set<K>;
@@ -3551,7 +3551,7 @@ export class InputEvent {
      *
      * When setting, this sets the value of {@link buttons}.
      * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
-     * of {@link #button}, but setting it to true does set {@link #button}.
+     * of {@link button}, but setting it to true does set {@link button}.
      * @see {@link button}
      * @see {@link middle}
      * @see {@link right}
@@ -3567,7 +3567,7 @@ export class InputEvent {
      *
      * When setting, this sets the value of {@link buttons}.
      * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
-     * of {@link #button}, but setting it to true does set {@link #button}.
+     * of {@link button}, but setting it to true does set {@link button}.
      * @see {@link button}
      * @see {@link left}
      * @see {@link middle}
@@ -3583,7 +3583,7 @@ export class InputEvent {
      *
      * When setting, this sets the value of {@link buttons}.
      * Because a button must be pressed on an InputEvent, setting this to false does not modify the value
-     * of {@link #button}, but setting it to true does set {@link #button}.
+     * of {@link button}, but setting it to true does set {@link button}.
      * @see {@link button}
      * @see {@link left}
      * @see {@link right}
@@ -5759,7 +5759,7 @@ export class ToolManager extends Tool {
  * to those selected parts, such as members of groups.
  * If {@link dragsTree} is true, the effective collection also includes all of the nodes and links that
  * constitute the subtree starting from selected nodes.
- * The result of {@link computeEffectiveCollection} is not a {@link Set} but a {@link Map}
+ * The result of {@link computeEffectiveCollection} is not a {@link Set | go.Set} but a {@link Map | go.Map}
  * which remembers the original {@link Part.location} for all of the dragged parts.
  * This map is saved as the value of {@link draggedParts}.
  *
@@ -5768,7 +5768,7 @@ export class ToolManager extends Tool {
  * (It only copies the {@link Diagram.selection}, not the whole effective collection,
  * if {@link copiesEffectiveCollection} is false.)
  * The collection of copied parts is held by {@link copiedParts}.
- * It too is a {@link Map} remembering the original locations of the parts.
+ * It too is a {@link Map | go.Map} remembering the original locations of the parts.
  * {@link copiedParts} will be null when this tool is moving (not copying) at the moment.
  *
  * Each Part's movement is limited by the {@link Diagram.computeMove} method.
@@ -5778,7 +5778,7 @@ export class ToolManager extends Tool {
  * part's current location.
  * So, for example, an easy way to declare that the user may only drag a node horizontally is to just set:
  * ```js
- * $(go.Node,
+ * new go.Node(
  *   . . .
  *   { minLocation: new go.Point(-Infinity, NaN), maxLocation: new go.Point(Infinity, NaN) },
  *   . . .
@@ -5825,7 +5825,7 @@ export class ToolManager extends Tool {
  * This also expects that {@link Group.computesBoundsIncludingLinks} is false.
  * Then in your node template(s), just set:
  * ```js
- * $(go.Node,
+ * new go.Node(
  *   . . .,
  *   { dragComputation: stayInGroup },
  *   . . .
@@ -6023,7 +6023,7 @@ export class DraggingTool extends Tool {
     set currentPart(value: Part | null);
     /**
      * Gets or sets the collection of {@link Part}s that this tool has copied.
-     * The value is a {@link Map} mapping {@link Part}s to DraggingInfo Objects
+     * The value is a {@link Map | go.Map} mapping {@link Part}s to DraggingInfo Objects
      * that have a "point" property remembering the original location of that Part.
      * The value is null when moving instead of copying.
      *
@@ -6033,7 +6033,7 @@ export class DraggingTool extends Tool {
     set copiedParts(value: Map<Part, DraggingInfo> | null);
     /**
      * Gets or sets the collection of {@link Part}s being moved.
-     * The value is a {@link Map} mapping {@link Part}s to DraggingInfo Objects
+     * The value is a {@link Map | go.Map} mapping {@link Part}s to DraggingInfo Objects
      * that have a "point" property remembering the original location of that Part.
      *
      * {@link copiedParts} provides the map of Parts that have been copied during a copying operation, if any.
@@ -6042,7 +6042,7 @@ export class DraggingTool extends Tool {
     set draggedParts(value: Map<Part, DraggingInfo> | null);
     /**
      * (undocumented)
-     * This read-only property returns a {@link Set} that holds all of the Parts that are currently being dragged for either copying or moving.
+     * This read-only property returns a {@link Set | go.Set} that holds all of the Parts that are currently being dragged for either copying or moving.
      * @returns Returns the {@link Map.toKeySet} of either {@link copiedParts} or {@link draggedParts}, or else an empty Set.
      */
     get draggingParts(): Set<Part>;
@@ -6115,7 +6115,7 @@ export class DraggingTool extends Tool {
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
-     * @param parts - A {@link Set} or {@link List} of {@link Part}s.
+     * @param parts - A {@link Set | go.Set} or {@link List} of {@link Part}s.
      * @param options - Potential options for the collection computation
      * @returns a Map mapping {@link Part}s to DraggingInfo Objects
      *         that have a "point" property remembering the original location of that Part.
@@ -6156,8 +6156,8 @@ export class DraggingTool extends Tool {
      * It also respects {@link isGridSnapEnabled} in order to try to automatically snap part locations to a grid.
      * And it also uses the {@link Part.dragComputation} function, if any, to determine the new location for each part.
      *
-     * The first argument is a {@link Map} as produced by {@link computeEffectiveCollection},
-     * not a {@link List} or {@link Set} or {@link Iterator} of Parts.
+     * The first argument is a {@link Map | go.Map} as produced by {@link computeEffectiveCollection},
+     * not a {@link List} or {@link Set | go.Set} or {@link Iterator} of Parts.
      * Call {@link Diagram.moveParts} if you want to move a simple collection of Parts without having to create the argument Map.
      * @virtual
      * @param parts -  a Map mapping {@link Part}s to DraggingInfo Objects
@@ -6917,9 +6917,9 @@ export class RelinkingTool extends LinkingBaseTool {
      *
      * Here is an example of changing the default handle to be larger green triangles:
      * ```js
-     * myDiagram.toolManager.relinkingTool.toHandleArchetype =
-     *   $(go.Shape, "Triangle",
-     *     { width: 10, height: 10, fill: "limegreen", segmentIndex: 0 });
+     *  myDiagram.toolManager.relinkingTool.fromHandleArchetype =
+     *    new go.Shape('Triangle',
+     *      { width: 10, height: 10, fill: 'limegreen', segmentIndex: 0, cursor: 'pointer' });
      * ```
      * @see {@link toHandleArchetype}
      */
@@ -6933,9 +6933,9 @@ export class RelinkingTool extends LinkingBaseTool {
      *
      * Here is an example of changing the default handle to be larger orange triangles:
      * ```js
-     *   myDiagram.toolManager.relinkingTool.toHandleArchetype =
-     *   $(go.Shape, "Triangle",
-     *     { width: 10, height: 10, fill: "orange", segmentIndex: -1 });
+     *  myDiagram.toolManager.relinkingTool.toHandleArchetype =
+     *    new go.Shape('Triangle',
+     *      { width: 10, height: 10, fill: 'orange', segmentIndex: -1, cursor: 'pointer' });
      * ```
      * @see {@link fromHandleArchetype}
      */
@@ -7158,9 +7158,8 @@ export class LinkReshapingTool extends Tool {
      *
      * Here is an example of changing the default handles to be larger yellow circles:
      * ```js
-     *   myDiagram.toolManager.linkReshapingTool.handleArchetype =
-     *     $(go.Shape, "Circle",
-     *       { width: 10, height: 10, fill: "yellow" });
+     * myDiagram.toolManager.linkReshapingTool.handleArchetype =
+     *   new go.Shape('Circle', { width: 10, height: 10, fill: 'yellow' });
      * ```
      * @see {@link midHandleArchetype}
      */
@@ -7183,8 +7182,8 @@ export class LinkReshapingTool extends Tool {
      *
      * Here is an example of changing the default handle to be larger cyan triangles:
      * ```js
-     *   myDiagram.toolManager.linkReshapingTool.midHandleArchetype =
-     *     $(go.Shape, "Triangle", { width: 10, height: 10, fill: "cyan" });
+     * myDiagram.toolManager.linkReshapingTool.midHandleArchetype =
+     *   new go.Shape('Triangle', { width: 10, height: 10, fill: 'cyan' });
      * ```
      * @see {@link handleArchetype}
      */
@@ -7416,9 +7415,8 @@ export class ResizingTool extends Tool {
      *
      * Here is an example of changing the default handle to be larger yellow circles:
      * ```js
-     *   myDiagram.toolManager.resizingTool.handleArchetype =
-     *     $(go.Shape, "Circle",
-     *       { width: 10, height: 10, fill: "yellow", cursor: "pointer" });
+     * myDiagram.toolManager.resizingTool.handleArchetype =
+     *   new go.Shape('Circle', { width: 10, height: 10, fill: 'yellow', cursor: 'pointer' });
      * ```
      *
      * This property is ignored when a custom resizing Adornment is specified as the {@link Part.resizeAdornmentTemplate}.
@@ -7744,9 +7742,14 @@ export class RotatingTool extends Tool {
      *
      * Here is an example of changing the default handle to be green "X":
      * ```js
-     *   myDiagram.toolManager.rotatingTool.handleArchetype =
-     *     $(go.Shape, "XLine",
-     *       { width: 8, height: 8, stroke: "green", fill: "transparent" });
+     * myDiagram.toolManager.rotatingTool.handleArchetype =
+     *   new go.Shape('XLine', {
+     *     width: 8,
+     *     height: 8,
+     *     stroke: 'green',
+     *     fill: 'transparent',
+     *     cursor: 'pointer'
+     *   });
      * ```
      *
      * This property is ignored when a custom rotating Adornment is specified as the {@link Part.rotateAdornmentTemplate}.
@@ -8240,11 +8243,16 @@ export class DragSelectingTool extends Tool {
      *
      * Here is an example of changing the selection box to be a thicker bright green rectangle:
      * ```js
-     *   myDiagram.toolManager.dragSelectingTool.box =
-     *     $(go.Part,
-     *       { layerName: "Tool", selectable: false },
-     *       $(go.Shape,
-     *         { name: "SHAPE", fill: null, stroke: "chartreuse", strokeWidth: 3 }));
+     * myDiagram.toolManager.dragSelectingTool.box =
+     *   new go.Part({ layerName: "Tool", selectable: false })
+     *     .add(
+     *       new go.Shape({
+     *         name: "SHAPE",
+     *         fill: null,
+     *         stroke: "chartreuse",
+     *         strokeWidth: 3
+     *       })
+     *     );
      * ```
      * Note that the Part should be put into a {@link Layer} that {@link Layer.isTemporary}.
      *
@@ -8360,7 +8368,7 @@ export class PanningTool extends Tool {
  * Here is the outline for typical usage of HTMLInfo as a context menu:
  * ```js
  * // Assign an HTMLInfo to the Diagram:
- * myDiagram.contextMenu = $(go.HTMLInfo, {
+ * myDiagram.contextMenu = new go.HTMLInfo({
  *   show: showContextMenu,
  *   hide: hideContextMenu
  * });
@@ -9706,29 +9714,41 @@ export class AnimationTrigger {
  * Layers are how named collections of {@link Part}s are drawn in front or behind other collections of Parts in a {@link Diagram}.
  * Layers can only contain {@link Part}s, such as {@link Node}s and {@link Link}s. They cannot hold {@link GraphObject}s directly.
  *
+ * Layers have many properties that control what actions users are permitted to perform involving the parts in the layer.
+ * These properties are very much like the similarly named properties on {@link Diagram}.
+ *
  * You put a Part into a Layer by assigning {@link Part.layerName} with the name of the Layer.
  * You can use data binding to initialize and remember a Part's layer's name.
  * You can change a Part's layer by modifying its {@link Part.layerName}, which changes its {@link Part.layer}.
+ * A Part cannot be in more than one Layer at a time.
  *
  * Each Diagram starts off with the following list of Layers:
- * "Grid", "Background", "" (the default layer), "Foreground", "Adornment", "Tool".
- * Parts are normally put in the default layer.
- * The "Grid", "Adornment", and "Tool" layers are considered {@link isTemporary}.
- * Changes to objects in temporary layers are not recorded by the {@link UndoManager}.
- * Parts in temporary layers are not selected and are not considered to be part of the document.
- * Objects in temporary layers do not receive click events unless you set their {@link GraphObject.isActionable} to true.
- * The "Grid" layer is the furthest back; it also contains "temporary" parts that cannot be selected.
- * Furthermore the "Grid" layer has {@link pickable} set to false so that mouse or touch events
- * and calls to the "find..." methods do not even consider any parts in that layer.
- *
- * Layers have many properties that control what actions users are permitted to perform involving the parts in the layer.
- * These properties are very much like the similarly named properties on {@link Diagram}.
- * <h3>Z-ordering</h3>
+ * <ul>
+ *   <li>"Grid"</li>
+ *   <li>"ViewportBackground"</li>
+ *   <li>"Background"</li>
+ *   <li>"" (the default layer)</li>
+ *   <li>"Foreground"</li>
+ *   <li>"ViewportForeground"</li>
+ *   <li>"Adornment"</li>
+ *   <li>"Tool"</li>
+ * </ul>
  *
  * Layers are drawn and presented in order.
+ * Parts are normally put in the default layer.
+ *
+ * The "Grid" layer is the furthest back; it also contains "temporary" parts that cannot be selected.
+ * Furthermore the "Grid" layer has {@link pickable} set to false so that mouse or touch events
+ * and calls to the "find..." hit-testing methods do not even consider any parts in that layer.
+ *
+ * The "Grid", "Adornment", "Tool", and both "Viewport..." layers are considered {@link isTemporary}.
+ * Changes to objects in temporary layers are not recorded by the {@link UndoManager}.
+ * Parts in temporary layers are not selected.
+ * Objects in temporary layers do not receive click events unless you set their {@link GraphObject.isActionable} to true.
+ *
+ * Use {@link Diagram.findLayer} to get the Layer with a particular name.
  * You can add your own layers by calling {@link Diagram.addLayerBefore} or {@link Diagram.addLayerAfter}
  * to insert a new layer at a particular place in the Z-order, or to re-order existing layers.
- * Use {@link Diagram.findLayer} to get the Layer with a particular name.
  * {@link Part}s can be individually z-ordered within a layer by setting {@link Part.zOrder}.
  */
 export class Layer {
@@ -9846,6 +9866,7 @@ export class Layer {
      * This property, unlike {@link visible}, does not change whether any objects are found by the "find..." methods.
      * @see {@link GraphObject.opacity}
      * @see {@link Diagram.opacity}
+     * @see {@link visible}
      */
     get opacity(): number;
     set opacity(value: number);
@@ -9900,14 +9921,10 @@ export class Layer {
      * and changes to Parts in temporary layers are not recorded in the {@link UndoManager}.
      * Objects in temporary layers do not receive click events unless you set their {@link GraphObject.isActionable} to true.
      *
-     * Temporary layers are excluded from bounds calculations, with the exception of the "Tool" layer,
-     * so that temporary objects created while dragging are included in the bounds.
-     *
      * Default value is false.
      *
      * As of v3.0, setting this property to true no longer sets {@link isInDocumentBounds} on this layer set to false.
      * You may want to set this property to false on temporary Layers.
-     *
      * @see {@link isInDocumentBounds}
      */
     get isTemporary(): boolean;
@@ -9918,14 +9935,17 @@ export class Layer {
      * The default value is true -- all visible Parts are drawn.
      * When this property is false, all of the "find..." methods will fail to find parts that are in this layer.
      * @see {@link GraphObject.visible}
+     * @see {@link opacity}
+     * @see {@link pickable}
      */
     get visible(): boolean;
     set visible(value: boolean);
     /**
      * Gets or sets whether methods such as {@link findObjectAt} find any of the objects in this layer.
      *
-     * The default value is true.
      * When this property is false, all of the "find..." methods will fail to find parts that are in this layer.
+     * The default value is true.
+     * All of the predefined Layers have this property true, except for the "Grid" Layer.
      *
      * Note that setting pickable to false does not prevent users from selecting nodes.
      * It does prevent them from selecting nodes by clicking on them,
@@ -9934,12 +9954,15 @@ export class Layer {
      *
      * You can control whether individual GraphObjects are "hittable" by setting {@link GraphObject.pickable}.
      * @see {@link GraphObject.pickable}
+     * @see {@link visible}
      */
     get pickable(): boolean;
     set pickable(value: boolean);
     /**
-     * Gets or sets whether or not a layer is included in the documentBounds computation.
+     * Gets or sets whether or not a layer is included in the {@link Diagram.documentBounds} computation.
+     *
      * Default value is `true`.
+     * All of the predefined temporary Layers have this property false, except for the "Tool" Layer.
      * @since 2.2
      * @see {@link isTemporary}
      */
@@ -9948,72 +9971,110 @@ export class Layer {
     /**
      * Gets or sets whether the user may copy objects in this layer.
      * The initial value is true.
+     * @see {@link Part.copyable}
+     * @see {@link Part.canCopy}
+     * @see {@link Diagram.allowCopy}
      */
     get allowCopy(): boolean;
     set allowCopy(value: boolean);
     /**
      * Gets or sets whether the user may delete objects in this layer.
      * The initial value is true.
+     * @see {@link Part.deletable}
+     * @see {@link Part.canDelete}
+     * @see {@link Diagram.allowDelete}
      */
     get allowDelete(): boolean;
     set allowDelete(value: boolean);
     /**
      * Gets or sets whether the user may do in-place text editing in this layer.
      * The initial value is true.
+     * @see {@link Part.textEditable}
+     * @see {@link Part.canEdit}
+     * @see {@link Diagram.allowTextEdit}
      */
     get allowTextEdit(): boolean;
     set allowTextEdit(value: boolean);
     /**
      * Gets or sets whether the user may group parts together in this layer.
      * The initial value is true.
+     * @see {@link Part.groupable}
+     * @see {@link Part.canGroup}
+     * @see {@link Diagram.allowGroup}
      */
     get allowGroup(): boolean;
     set allowGroup(value: boolean);
     /**
      * Gets or sets whether the user may ungroup existing groups in this layer.
      * The initial value is true.
+     * @see {@link Group.ungroupable}
+     * @see {@link Group.canUngroup}
+     * @see {@link Diagram.allowUngroup}
      */
     get allowUngroup(): boolean;
     set allowUngroup(value: boolean);
     /**
      * Gets or sets whether the user may draw new links in this layer.
      * The initial value is true.
+     * @see {@link Diagram.allowLink}
      */
     get allowLink(): boolean;
     set allowLink(value: boolean);
     /**
      * Gets or sets whether the user may reconnect existing links in this layer.
      * The initial value is true.
+     * @see {@link Link.relinkableFrom}
+     * @see {@link Link.relinkableTo}
+     * @see {@link Link.canRelinkFrom}
+     * @see {@link Link.canRelinkTo}
+     * @see {@link Diagram.allowRelink}
      */
     get allowRelink(): boolean;
     set allowRelink(value: boolean);
     /**
      * Gets or sets whether the user may move objects in this layer.
      * The initial value is true.
+     * @see {@link Part.movable}
+     * @see {@link Part.canMove}
+     * @see {@link Diagram.allowMove}
      */
     get allowMove(): boolean;
     set allowMove(value: boolean);
     /**
      * Gets or sets whether the user may reshape parts in this layer.
      * The initial value is true.
+     * @see {@link Part.reshapable}
+     * @see {@link Part.canReshape}
+     * @see {@link Diagram.allowReshape}
      */
     get allowReshape(): boolean;
     set allowReshape(value: boolean);
     /**
      * Gets or sets whether the user may resize parts in this layer.
      * The initial value is true.
+     * @see {@link Part.resizable}
+     * @see {@link Part.canResize}
+     * @see {@link Diagram.allowResize}
      */
     get allowResize(): boolean;
     set allowResize(value: boolean);
     /**
      * Gets or sets whether the user may rotate parts in this layer.
      * The initial value is true.
+     * @see {@link Part.rotatable}
+     * @see {@link Part.canRotate}
+     * @see {@link Diagram.allowRotate}
      */
     get allowRotate(): boolean;
     set allowRotate(value: boolean);
     /**
      * Gets or sets whether the user may select objects in this layer.
      * The initial value is true.
+     *
+     * All of the predefined Layers have this property set to true, except for the "Grid" Layer.
+     * @see {@link Part.selectable}
+     * @see {@link Part.canSelect}
+     * @see {@link Diagram.allowSelect}
      */
     get allowSelect(): boolean;
     set allowSelect(value: boolean);
@@ -11107,12 +11168,12 @@ export class Diagram {
      * The {@link CommandHandler.deleteSelection} command may delete other Parts as well, depending on {@link CommandHandler.deletesTree}.
      *
      * At this time there is no "addParts" method -- just call {@link Diagram.add} on each Part.
-     * @param coll - A {@link List} or {@link Set} or {@link Iterator} or Array of {@link Part}s.
+     * @param coll - A {@link List} or {@link Set | go.Set} or {@link Iterator} or Array of {@link Part}s.
      * @param check - Whether to check {@link Part.canDelete} on each part; default value is false.
      */
     removeParts(coll: Iterable<Part> | Array<Part>, check?: boolean): void;
     /**
-     * Make a copy of a collection of {@link Part}s and return them in a {@link Map} mapping each original Part to its copy.
+     * Make a copy of a collection of {@link Part}s and return them in a {@link Map | go.Map} mapping each original Part to its copy.
      * It may optionally add them to a given {@link Diagram}.
      * Copying a {@link Group} will also copy its member Nodes and Links.
      * Copying a {@link Link} will also copy any label Nodes that it owns.
@@ -11121,7 +11182,7 @@ export class Diagram {
      * Call {@link CommandHandler.copySelection}, which calls this method,
      * if you want to copy all selected Parts into the clipboard.
      * The {@link CommandHandler.copySelection} command may also copy additional Parts as well, depending on {@link CommandHandler.copiesTree}.
-     * @param coll - A {@link List} or a {@link Set} or {@link Iterator} of {@link Part}s, or an Array of {@link Part}s.
+     * @param coll - A {@link List} or a {@link Set | go.Set} or {@link Iterator} of {@link Part}s, or an Array of {@link Part}s.
      * @param diagram - The destination diagram; if null, the copied parts are not added to this diagram.
      * @param check - Whether to check {@link Part.canCopy} on each part.  The default value is false.
      */
@@ -11133,7 +11194,7 @@ export class Diagram {
      *
      * This does not perform a transaction nor does it raise a {@link DiagramEvent}.
      *
-     * @param coll - A {@link List} or a {@link Set} or {@link Iterator} of {@link Part}s, or an Array of {@link Part}s,
+     * @param coll - A {@link List} or a {@link Set | go.Set} or {@link Iterator} of {@link Part}s, or an Array of {@link Part}s,
      * or null to move all of the Parts in this Diagram.
      * @param offset - the amount to move each Part, in document coordinates.
      * @param check - Whether to check {@link Part.canMove} on each part.  The default value is false.
@@ -11463,7 +11524,7 @@ export class Diagram {
      * Select all of the {@link Part}s supplied in the given collection, and deselect all other Parts.
      *
      * This method raises the "ChangingSelection" and "ChangedSelection" {@link DiagramEvent}s.
-     * @param coll - a {@link List} or {@link Set} or {@link Iterator} or Array, of {@link Part}s to be selected.
+     * @param coll - a {@link List} or {@link Set | go.Set} or {@link Iterator} or Array, of {@link Part}s to be selected.
      * @see {@link select}
      * @see {@link clearSelection}
      * @see {@link highlightCollection}
@@ -11501,7 +11562,7 @@ export class Diagram {
      *
      * Note that no predefined command or tool operates on the {@link highlighteds} collection,
      * and there is no predefined visual rendering when a part becomes {@link Part.isHighlighted}.
-     * @param coll - a {@link List} or {@link Set} or {@link Iterator} or Array, of {@link Part}s to be highlighted.
+     * @param coll - a {@link List} or {@link Set | go.Set} or {@link Iterator} or Array, of {@link Part}s to be highlighted.
      * @see {@link Part.isHighlighted}
      * @see {@link highlight}
      * @see {@link clearHighlighteds}
@@ -11656,12 +11717,18 @@ export class Diagram {
     /**
      * Gets or sets whether the user may copy objects.
      * The initial value is true.
+     * @see {@link Part.copyable}
+     * @see {@link Part.canCopy}
+     * @see {@link Layer.allowCopy}
      */
     get allowCopy(): boolean;
     set allowCopy(value: boolean);
     /**
      * Gets or sets whether the user may delete objects from the Diagram.
      * The initial value is true.
+     * @see {@link Part.deletable}
+     * @see {@link Part.canDelete}
+     * @see {@link Layer.allowDelete}
      */
     get allowDelete(): boolean;
     set allowDelete(value: boolean);
@@ -11683,18 +11750,27 @@ export class Diagram {
     /**
      * Gets or sets whether the user may do in-place text editing.
      * The initial value is true.
+     * @see {@link Part.textEditable}
+     * @see {@link Part.canEdit}
+     * @see {@link Layer.allowTextEdit}
      */
     get allowTextEdit(): boolean;
     set allowTextEdit(value: boolean);
     /**
      * Gets or sets whether the user may group parts together.
      * The initial value is true.
+     * @see {@link Part.groupable}
+     * @see {@link Part.canGroup}
+     * @see {@link Layer.allowGroup}
      */
     get allowGroup(): boolean;
     set allowGroup(value: boolean);
     /**
      * Gets or sets whether the user may ungroup existing groups.
      * The initial value is true.
+     * @see {@link Group.ungroupable}
+     * @see {@link Group.canUngroup}
+     * @see {@link Layer.allowUngroup}
      */
     get allowUngroup(): boolean;
     set allowUngroup(value: boolean);
@@ -11707,42 +11783,63 @@ export class Diagram {
     /**
      * Gets or sets whether the user may draw new links.
      * The initial value is true.
+     * @see {@link Layer.allowLink}
      */
     get allowLink(): boolean;
     set allowLink(value: boolean);
     /**
      * Gets or sets whether the user may reconnect existing links.
      * The initial value is true.
+     * @see {@link Link.relinkableFrom}
+     * @see {@link Link.relinkableTo}
+     * @see {@link Link.canRelinkFrom}
+     * @see {@link Link.canRelinkTo}
+     * @see {@link Layer.allowRelink}
      */
     get allowRelink(): boolean;
     set allowRelink(value: boolean);
     /**
      * Gets or sets whether the user may move objects.
      * The initial value is true.
+     * @see {@link Part.movable}
+     * @see {@link Part.canMove}
+     * @see {@link Layer.allowMove}
      */
     get allowMove(): boolean;
     set allowMove(value: boolean);
     /**
      * Gets or sets whether the user may reshape parts.
      * The initial value is true.
+     * @see {@link Part.reshapable}
+     * @see {@link Part.canReshape}
+     * @see {@link Layer.allowReshape}
      */
     get allowReshape(): boolean;
     set allowReshape(value: boolean);
     /**
      * Gets or sets whether the user may resize parts.
      * The initial value is true.
+     * @see {@link Part.resizable}
+     * @see {@link Part.canResize}
+     * @see {@link Layer.allowResize}
      */
     get allowResize(): boolean;
     set allowResize(value: boolean);
     /**
      * Gets or sets whether the user may rotate parts.
      * The initial value is true.
+     * @see {@link Part.rotatable}
+     * @see {@link Part.canRotate}
+     * @see {@link Layer.allowRotate}
      */
     get allowRotate(): boolean;
     set allowRotate(value: boolean);
     /**
      * Gets or sets whether the user may select objects.
      * The initial value is true.
+     * @see {@link Part.selectable}
+     * @see {@link Part.canSelect}
+     * @see {@link Layer.allowSelect}
      */
     get allowSelect(): boolean;
     set allowSelect(value: boolean);
@@ -12469,14 +12566,14 @@ export class Diagram {
     get nodeTemplate(): Part;
     set nodeTemplate(value: Part);
     /**
-     * Gets or sets a {@link Map} mapping template names to {@link Part}s.
+     * Gets or sets a {@link Map | go.Map} mapping template names to {@link Part}s.
      * These nodes are copied for each node data that is added to the {@link model}.
      *
      * The new value must not be null and must contain {@link Node}s or simple {@link Part}s.
      * These Parts must not be in the visual tree of any Diagram.
      * Replacing this Map will automatically call {@link rebuildParts}.
      *
-     * If you modify this {@link Map}, by replacing a {@link Node} or by adding or
+     * If you modify this {@link Map | go.Map}, by replacing a {@link Node} or by adding or
      * removing a map entry, you need to explicitly call {@link rebuildParts} afterwards.
      * Any new map values must not be {@link Link}s or {@link Group}s.
      *
@@ -12496,14 +12593,14 @@ export class Diagram {
     get groupTemplate(): Group;
     set groupTemplate(value: Group);
     /**
-     * Gets or sets a {@link Map} mapping template names to {@link Group}s.
+     * Gets or sets a {@link Map | go.Map} mapping template names to {@link Group}s.
      * These groups are copied for each group data that is added to the {@link model}.
      *
      * The new value must not be null, nor may it contain a {@link Node} or {@link Link} or simple {@link Part}.
      * The Links must not be in the visual tree of any Diagram.
      * Replacing this Map will automatically call {@link rebuildParts}.
      *
-     * If you modify this {@link Map}, by replacing a {@link Group} in it or by adding or
+     * If you modify this {@link Map | go.Map}, by replacing a {@link Group} in it or by adding or
      * removing a map entry, you need to explicitly call {@link rebuildParts} afterwards.
      */
     get groupTemplateMap(): Map<string, Group>;
@@ -12520,14 +12617,14 @@ export class Diagram {
     get linkTemplate(): Link;
     set linkTemplate(value: Link);
     /**
-     * Gets or sets a {@link Map} mapping template names to {@link Link}s.
+     * Gets or sets a {@link Map | go.Map} mapping template names to {@link Link}s.
      * These links are copied for each link data that is added to the {@link model}.
      *
      * The new value must not be null and must contain only {@link Link}s, not {@link Node}s or simple {@link Part}s.
      * The Links must not be in the visual tree of any Diagram.
      * Replacing this Map will automatically call {@link rebuildParts}.
      *
-     * If you modify this {@link Map}, by replacing a {@link Link} in it or by adding or
+     * If you modify this {@link Map | go.Map}, by replacing a {@link Link} in it or by adding or
      * removing a map entry, you need to explicitly call {@link rebuildParts} afterwards.
      */
     get linkTemplateMap(): Map<string, Link>;
@@ -14444,13 +14541,13 @@ export class CommandHandler {
      * this includes nodes and links that are "tree" descendants from selected nodes.
      *
      * Note that this does not return a simple collection of {@link Part}s,
-     * but a {@link Map} associating a chosen {@link Part}
+     * but a {@link Map | go.Map} associating a chosen {@link Part}
      * with an Object holding its original location Points as the value of the "point" property.
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
-     * @param parts - A {@link Set} or {@link List} of {@link Part}s.
+     * @param parts - A {@link Set | go.Set} or {@link List} of {@link Part}s.
      * @param options - Potential options for the collection computation. If not specified, this uses the DraggingTool's drag options.
      * @returns a Map mapping {@link Part}s to DraggingInfo Objects
      *         that have a "point" property remembering the original location of that Part.
@@ -17276,16 +17373,15 @@ export class Brush {
      * Example usage:
      * ```js
      * myDiagram.nodeTemplate =
-     *   $(go.Node, "Auto",
-     *     $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
-     *       new go.Binding("fill", "color")),
-     *     $(go.TextBlock,
-     *       { margin: 8 },
-     *       // Dark nodes use white text, light nodes use black text
-     *       new go.Binding("stroke", "color", c => go.Brush.isDark(c) ? "white" : "black"),
-     *       new go.Binding("text", "key")
-     *     )
-     *   );
+     *  new go.Node('Auto')
+     *    .add(
+     *      new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+     *        .bind('fill', 'color'),
+     *      new go.TextBlock({ margin: 8 })
+     *        // Dark nodes use white text, light nodes use black text
+     *        .bind('stroke', 'color', c => go.Brush.isDark(c) ? 'white' : 'black')
+     *        .bind('text', 'key')
+     *    );
      * ```
      * @param color - A valid CSS color string or a Brush.
      * @since 2.0
@@ -18196,23 +18292,21 @@ export class Panel extends GraphObject {
      * that depend on its position in the item Array.
      * For example:
      * ```js
-     *  $(go.Panel, // the item Panel
-     *    . . .,
-     *    new go.Binding("itemArray", "someProperty"),
-     *    {
-     *      itemTemplate:
-     *        $(go.Panel,
-     *          // set Panel.background to a color based on the Panel.itemIndex
-     *          new go.Binding("background", "itemIndex",
-     *                         // using this conversion function
-     *                         i => return (i%2 === 0) ? "lightgreen" : "lightyellow")
-     *                   // bound to this Panel itself, not to the Panel.data item
-     *                   .ofObject(),
-     *          $(go.TextBlock,  // a trivial item template, just showing some text
-     *            new go.Binding("text"))  // sets TextBlock.text = data.text
-     *        )
-     *    }
-     *  )
+     * new go.Panel('Vertical', { // the item Panel
+     *   itemTemplate:
+     *     new go.Panel()
+     *       // set Panel.background to a color based on the Panel.itemIndex
+     *       // bound to this Panel itself, not to the Panel.data item
+     *       .bindObject("background", "itemIndex",
+     *         // using this conversion function
+     *         i => (i%2 === 0) ? "lightgreen" : "lightyellow"
+     *       )
+     *       .add(
+     *         new go.TextBlock()  // a trivial item template, just showing some text
+     *           .bind("text", '')  // sets TextBlock.text = data.items[itemIndex]
+     *       )
+     * })
+     *   .bind("itemArray", "items")
      * ```
      *
      * The main element of a Spot or Auto or Link Panel, or the first TableRow or TableColumn element of a Table Panel
@@ -18328,14 +18422,14 @@ export class Panel extends GraphObject {
     get itemTemplate(): Panel;
     set itemTemplate(value: Panel);
     /**
-     * Gets or sets a {@link Map} mapping template names to {@link Panel}s.
+     * Gets or sets a {@link Map | go.Map} mapping template names to {@link Panel}s.
      * One of these Panels is copied for each item data that is in the {@link itemArray}.
      * Replacing this map will automatically rebuild all of the elements in this Panel.
      *
      * By default this property is null.
-     * All values in the {@link Map} must be {@link Panel}s but not {@link Part}s.
+     * All values in the {@link Map | go.Map} must be {@link Panel}s but not {@link Part}s.
      *
-     * If you modify this {@link Map}, by replacing a {@link Panel} or by adding or
+     * If you modify this {@link Map | go.Map}, by replacing a {@link Panel} or by adding or
      * removing a map entry, you need to explicitly call {@link rebuildItemElements} afterwards.
      *
      * {@link GraphObject.copy} when copying a panel will share the {@link itemTemplateMap}
@@ -19010,11 +19104,11 @@ export class RowColumnDefinition {
  *
  * All of the predefined figures are shown in the <a href="../../samples/shapes.html">Shapes sample</a>.
  * You can define your own named figures by calling the static function {@link Shape.defineFigureGenerator}.
- * Get a {@link Map} of named figures by calling the static function {@link Shape.getFigureGenerators}.
+ * Get a {@link Map | go.Map} of named figures by calling the static function {@link Shape.getFigureGenerators}.
  *
  * All of the predefined arrowheads are shown in the <a href="../../samples/arrowheads.html">Arrowheads sample</a>.
  * You can define your own named arrowheads by calling the static function {@link Shape.defineArrowheadGeometry}.
- * Get a {@link Map} of named arrowheads by calling the static function {@link Shape.getArrowheadGeometries}.
+ * Get a {@link Map | go.Map} of named arrowheads by calling the static function {@link Shape.getArrowheadGeometries}.
  *
  * You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.
  *
@@ -20156,10 +20250,12 @@ export class Picture extends GraphObject {
      * if you want images to complete a cross-origin request.
      * Example:
      * ```js
-     *    $(go.Picture,
-     *      { width: 64, height: 64 },
-     *      { sourceCrossOrigin: pict => "use-credentials" },
-     *      new go.Binding("source", "path"))
+     * new go.Picture({
+     *   width: 64,
+     *   height: 64,
+     *   sourceCrossOrigin: pict => 'anonymous'
+     * })
+     *   .bind('source', 'path')
      * ```
      */
     get sourceCrossOrigin(): ((a: Picture) => string) | null;
@@ -25066,18 +25162,16 @@ export class GridLayout extends Layout {
      * The default value is a case-insensitive alphabetic comparison
      * using the {@link Part.text} property of each part.
      * ```js
-     *   $(go.GridLayout,
-     *     {
-     *       sorting: go.GridSorting.Ascending,
-     *       comparer: (pa, pb) => {
-     *         const da = pa.data;
-     *         const db = pb.data;
-     *         if (da.someProperty < db.someProperty) return -1;
-     *         if (da.someProperty > db.someProperty) return 1;
-     *         return 0;
-     *       }
+     *   new go.GridLayout({
+     *     sorting: go.GridSorting.Ascending,
+     *     comparer: (pa, pb) => {
+     *       const da = pa.data;
+     *       const db = pb.data;
+     *       if (da.someProperty < db.someProperty) return -1;
+     *       if (da.someProperty > db.someProperty) return 1;
+     *       return 0;
      *     }
-     *   )
+     *   })
      * ```
      */
     get comparer(): ((a: Part, b: Part) => number);
@@ -25376,16 +25470,15 @@ export declare enum BindingMode {
  *
  * And if your node template included something like:
  * ```js
- *     $(go.Panel, "Vertical",
- *       new go.Binding("itemArray", "items"),
- *       {
- *         itemTemplate:
- *           $(go.Panel,
- *             $(go.TextBlock, { editable: true },
- *               new go.Binding("text", "").makeTwoWay())
+ *     new go.Panel("Vertical", {
+ *       itemTemplate:
+ *         new go.Panel()
+ *           .add(
+ *             new go.TextBlock({ editable: true })
+ *               .bindTwoWay("text", "")
  *           )
- *       }
- *     )
+ *     })
+ *       .bind("itemArray", "items")
  * ```
  *
  * Then the user would be able to edit any of the {@link TextBlock}s, causing the item Array to be modified,
@@ -25986,7 +26079,6 @@ export class Model {
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * Only override this method when the default behavior doesn't suit the data.
-     * When cloning objects, we recommend skipping the `__gohashid` property, which is used internally.
      * @virtual
      * @param obj
      * @since 2.1
@@ -26641,7 +26733,7 @@ export class Model {
      * This function (if not null) is called towards the end of {@link Diagram.copyParts}
      * in order to support custom data copying operations that depend on references between the parts.
      *
-     * The first argument to the function is a {@link Map} mapping original data objects to copied data objects.
+     * The first argument to the function is a {@link Map | go.Map} mapping original data objects to copied data objects.
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
@@ -29833,7 +29925,7 @@ export class TreeLayout extends Layout {
     /**
      * Gets or sets the collection of root vertexes.
      *
-     * Initially this will be an empty {@link Set}.
+     * Initially this will be an empty {@link Set | go.Set}.
      *
      * If the {@link path} is either {@link TreePath.Destination|Destination} or
      * {@link TreePath.Source|Source}, this layout can easily
@@ -29937,18 +30029,16 @@ export class TreeLayout extends Layout {
      * This sets the {@link rootDefaults}' property of the same name.
      * Whether this comparison function is used is determined by the value of {@link sorting}.
      * ```js
-     *   $(go.TreeLayout,
-     *     {
-     *       sorting: go.TreeSorting.Ascending,
-     *       comparer: (va, vb) => {
-     *         const da = va.node.data;
-     *         const db = vb.node.data;
-     *         if (da.someProperty < db.someProperty) return -1;
-     *         if (da.someProperty > db.someProperty) return 1;
-     *         return 0;
-     *       }
-     *     }
-     *   )
+     * new go.TreeLayout({
+     *   sorting: go.TreeSorting.Ascending,
+     *   comparer: (va, vb) => {
+     *     const da = va.node.data;
+     *     const db = vb.node.data;
+     *     if (da.someProperty < db.someProperty) return -1;
+     *     if (da.someProperty > db.someProperty) return 1;
+     *     return 0;
+     *   }
+     * })
      * ```
      */
     get comparer(): ((a: TreeVertex, b: TreeVertex) => number);

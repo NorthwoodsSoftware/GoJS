@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,68 +124,58 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform, // an initial automatic zoom-to-fit
-        contentAlignment: go.Spot.Center, // align document to the center of the viewport
-        layout: $(go.ForceDirectedLayout, // automatically spread nodes apart
-          { defaultElectricalCharge: 300, defaultSpringLength: 150 }
-        ),
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform, // an initial automatic zoom-to-fit
+      contentAlignment: go.Spot.Center, // align document to the center of the viewport
+      layout: new go.ForceDirectedLayout({ // automatically spread nodes apart
+        defaultElectricalCharge: 300,
+        defaultSpringLength: 150
+      }),
+      'undoManager.isEnabled': true
+    });
 
     // define each Node's appearance
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto', // the whole node panel
-      { locationSpot: go.Spot.Center },
-      // define the node's outer shape, which will surround the TextBlock
-      $(go.Shape, 'Rectangle', { fill: $(go.Brush, 'Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }), stroke: 'black' }),
-      $(go.TextBlock, { font: 'bold 10pt helvetica, bold arial, sans-serif', margin: new go.Margin(4, 4, 3, 20) }, new go.Binding('text', 'text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', { // the whole node panel
+      locationSpot: go.Spot.Center
+    })
+      .add(
+        // define the node's outer shape, which will surround the TextBlock
+        new go.Shape('Rectangle', { fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }), stroke: 'black' }),
+        new go.TextBlock({ font: 'bold 10pt helvetica, bold arial, sans-serif', margin: new go.Margin(4, 4, 3, 20) }).bind('text', 'text')
+      );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      // path animation works with these kinds of links too:
-      //{ routing: go.Routing.AvoidsNodes },
-      //{ curve: go.Curve.Bezier },
-      $(go.Shape, // the link shape
-        { stroke: 'black' }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'standard', stroke: null }
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, // the label background, which becomes transparent around the edges
-          {
-            fill: $(go.Brush, 'Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-            stroke: null,
-          }
-        ),
-        $(go.TextBlock, // the label text
-          {
-            textAlign: 'center',
-            font: '10pt helvetica, arial, sans-serif',
-            stroke: '#555555',
-            margin: 4,
-          },
-          new go.Binding('text', 'text')
-        )
-      )
-    );
+    myDiagram.linkTemplate = new go.Link( // the whole link panel
+      {
+        // path animation works with these kinds of links too:
+        // routing: go.Routing.AvoidsNodes,
+        // curve: go.Curve.Bezier,
+      })
+        .add(
+          new go.Shape({ stroke: 'black' }), // the link shape
+          new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ // the label background, which becomes transparent around the edges
+                fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+                stroke: null
+              }),
+              new go.TextBlock({ // the label text
+                textAlign: 'center',
+                font: '10pt helvetica, arial, sans-serif',
+                stroke: '#555555',
+                margin: 4
+              })
+                .bind('text')
+            )
+        );
 
     myDiagram.nodeTemplateMap.add(
       'token',
-      $(go.Part,
-        { locationSpot: go.Spot.Center, layerName: 'Foreground' },
-        $(go.Shape, 'Circle', { width: 12, height: 12, fill: 'green', strokeWidth: 0 }, new go.Binding('fill', 'color'))
-      )
+      new go.Part({ locationSpot: go.Spot.Center, layerName: 'Foreground' })
+        .add(
+          new go.Shape('Circle', { width: 12, height: 12, fill: 'green', strokeWidth: 0 }).bind('fill', 'color')
+        )
     );
 
     // create the model for the concept map
@@ -210,7 +199,7 @@
       { key: 17, text: 'Creativity' },
       { key: 18, text: 'Interrelationships' },
       { key: 19, text: 'Infants' },
-      { key: 20, text: 'Different Map Segments' },
+      { key: 20, text: 'Different Map Segments' }
     ];
     var linkDataArray = [
       { from: 1, to: 2, text: 'represent' },
@@ -236,7 +225,7 @@
       { from: 11, to: 18, text: 'show' },
       { from: 12, to: 19, text: 'begins\nwith' },
       { from: 17, to: 18, text: 'needed\nto see' },
-      { from: 18, to: 20, text: 'between' },
+      { from: 18, to: 20, text: 'between' }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
@@ -257,7 +246,7 @@
       { category: 'token', at: 11, color: 'blue' },
       { category: 'token', at: 12, color: 'yellow' },
       { category: 'token', at: 17, color: 'purple' },
-      { category: 'token', at: 18, color: 'red' },
+      { category: 'token', at: 18, color: 'red' }
     ]);
     myDiagram.skipsUndoManager = oldskips;
     window.requestAnimationFrame(updateTokens);

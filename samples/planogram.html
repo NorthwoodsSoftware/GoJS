@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -191,14 +190,13 @@
   var CellSize = new go.Size(50, 50);
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      grid: $(go.Panel, 'Grid', { gridCellSize: CellSize }, $(go.Shape, 'LineH', { stroke: 'lightgray' }), $(go.Shape, 'LineV', { stroke: 'lightgray' })),
+      grid: new go.Panel('Grid', { gridCellSize: CellSize })
+        .add(
+          new go.Shape('LineH', { stroke: 'lightgray' }),
+          new go.Shape('LineV', { stroke: 'lightgray' })
+        ),
       // support grid snapping when dragging and when resizing
       'draggingTool.isGridSnapEnabled': true,
       'draggingTool.gridSnapCellSpot': go.Spot.Center,
@@ -210,46 +208,45 @@
         }
       },
       'animationManager.isEnabled': false,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // Regular Nodes represent items to be put onto racks.
     // Nodes are currently resizable, but if that is not desired, just set resizable to false.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        resizable: true,
-        resizeObjectName: 'SHAPE',
-        // because the gridSnapCellSpot is Center, offset the Node's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
-        // provide a visual warning about dropping anything onto an "item"
-        mouseDragEnter: (e, node) => {
-          e.handled = true;
-          node.findObject('SHAPE').fill = 'red';
-          e.diagram.currentCursor = 'not-allowed';
-          highlightGroup(node.containingGroup, false);
-        },
-        mouseDragLeave: (e, node) => node.updateTargetBindings(),
-        // disallow dropping anything onto an "item"
-        mouseDrop: (e, node) => node.diagram.currentTool.doCancel(),
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      resizable: true,
+      resizeObjectName: 'SHAPE',
+      // because the gridSnapCellSpot is Center, offset the Node's location
+      locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+      // provide a visual warning about dropping anything onto an "item"
+      mouseDragEnter: (e, node) => {
+        e.handled = true;
+        node.findObject('SHAPE').fill = 'red';
+        e.diagram.currentCursor = 'not-allowed';
+        highlightGroup(node.containingGroup, false);
       },
+      mouseDragLeave: (e, node) => node.updateTargetBindings(),
+      // disallow dropping anything onto an "item"
+      mouseDrop: (e, node) => node.diagram.currentTool.doCancel()
+    })
       // always save/load the point that is the top-left corner of the node, not the location
-      new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
+      .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
       // this is the primary thing people see
-      $(go.Shape,
-        'Rectangle',
-        {
+      .add(
+        new go.Shape('Rectangle', {
           name: 'SHAPE',
           fill: 'white',
           minSize: CellSize,
-          desiredSize: CellSize, // initially 1x1 cell
-        },
-        new go.Binding('fill', 'color'),
-        new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)
-      ),
-      // with the textual key in the middle
-      $(go.TextBlock, { alignment: go.Spot.Center, font: 'bold 16px sans-serif' }, new go.Binding('text', 'key'))
-    ); // end Node
+          desiredSize: CellSize // initially 1x1 cell
+        })
+          .bind('fill', 'color')
+          .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify),
+        // with the textual key in the middle
+        new go.TextBlock({
+          alignment: go.Spot.Center,
+          font: 'bold 16px sans-serif'
+        }).bind('text', 'key')
+      ); // end Node
 
     // Groups represent racks where items (Nodes) can be placed.
     // Currently they are movable and resizable, but you can change that
@@ -269,41 +266,36 @@
     var dropFill = 'rgba(128,255,255,0.2)';
     var dropStroke = 'red';
 
-    myDiagram.groupTemplate = $(go.Group,
-      {
-        layerName: 'Background',
-        resizable: true,
-        resizeObjectName: 'SHAPE',
-        // because the gridSnapCellSpot is Center, offset the Group's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+    myDiagram.groupTemplate = new go.Group({
+      layerName: 'Background',
+      resizable: true,
+      resizeObjectName: 'SHAPE',
+      // because the gridSnapCellSpot is Center, offset the Group's location
+      locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+      // what to do when a drag-over or a drag-drop occurs on a Group
+      mouseDragEnter: (e, grp, prev) => {
+        if (!highlightGroup(grp, true)) e.diagram.currentCursor = 'not-allowed';
+        else e.diagram.currentCursor = '';
       },
+      mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
+      mouseDrop: (e, grp) => {
+        var ok = grp.addMembers(grp.diagram.selection, true);
+        if (!ok) grp.diagram.currentTool.doCancel();
+      }
+    })
       // always save/load the point that is the top-left corner of the node, not the location
-      new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
-      {
-        // what to do when a drag-over or a drag-drop occurs on a Group
-        mouseDragEnter: (e, grp, prev) => {
-          if (!highlightGroup(grp, true)) e.diagram.currentCursor = 'not-allowed';
-          else e.diagram.currentCursor = '';
-        },
-        mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
-        mouseDrop: (e, grp) => {
-          var ok = grp.addMembers(grp.diagram.selection, true);
-          if (!ok) grp.diagram.currentTool.doCancel();
-        },
-      },
-      $(go.Shape,
-        'Rectangle', // the rectangular shape around the members
-        {
+      .bind('position', 'pos', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape('Rectangle', { // the rectangular shape around the members
           name: 'SHAPE',
           fill: groupFill,
           stroke: groupStroke,
-          minSize: new go.Size(CellSize.width * 2, CellSize.height * 2),
-        },
-        new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-        new go.Binding('fill', 'isHighlighted', (h) => (h ? dropFill : groupFill)).ofObject(),
-        new go.Binding('stroke', 'isHighlighted', (h) => (h ? dropStroke : groupStroke)).ofObject()
-      )
-    );
+          minSize: new go.Size(CellSize.width * 2, CellSize.height * 2)
+        })
+          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+          .bindObject('fill', 'isHighlighted', (h) => (h ? dropFill : groupFill))
+          .bindObject('stroke', 'isHighlighted', (h) => (h ? dropStroke : groupStroke))
+      );
 
     // decide what kinds of Parts can be added to a Group
     myDiagram.commandHandler.memberValidation = (grp, node) => {
@@ -350,7 +342,7 @@
       { key: 'G1', isGroup: true, pos: '0 0', size: '200 200' },
       { key: 'G2', isGroup: true, pos: '200 0', size: '200 200' },
       { key: 'G3', isGroup: true, pos: '0 200', size: '200 200' },
-      { key: 'G4', isGroup: true, pos: '200 200', size: '200 200' },
+      { key: 'G4', isGroup: true, pos: '200 200', size: '200 200' }
     ]);
     // this sample does not make use of any links
 
@@ -358,7 +350,7 @@
     myPaletteSmall = new go.Palette('myPaletteSmall', {
       // share the templates with the main Diagram
       nodeTemplate: myDiagram.nodeTemplate,
-      groupTemplate: myDiagram.groupTemplate,
+      groupTemplate: myDiagram.groupTemplate
     });
 
     var green = '#B2FF59';
@@ -369,49 +361,49 @@
     myPaletteSmall.model = new go.GraphLinksModel([
       { key: 'g', color: green },
       { key: 'b', color: blue },
-      { key: 'y', color: yellow },
+      { key: 'y', color: yellow }
     ]);
 
     // initialize the second Palette, of tall items
     myPaletteTall = new go.Palette('myPaletteTall', {
       // share the templates with the main Diagram
       nodeTemplate: myDiagram.nodeTemplate,
-      groupTemplate: myDiagram.groupTemplate,
+      groupTemplate: myDiagram.groupTemplate
     });
 
     // specify the contents of the Palette
     myPaletteTall.model = new go.GraphLinksModel([
       { key: 'g', color: green, size: '50 100' },
       { key: 'b', color: blue, size: '50 100' },
-      { key: 'y', color: yellow, size: '50 100' },
+      { key: 'y', color: yellow, size: '50 100' }
     ]);
 
     // initialize the third Palette, of wide items
     myPaletteWide = new go.Palette('myPaletteWide', {
       // share the templates with the main Diagram
       nodeTemplate: myDiagram.nodeTemplate,
-      groupTemplate: myDiagram.groupTemplate,
+      groupTemplate: myDiagram.groupTemplate
     });
 
     // specify the contents of the Palette
     myPaletteWide.model = new go.GraphLinksModel([
       { key: 'g', color: green, size: '100 50' },
       { key: 'b', color: blue, size: '100 50' },
-      { key: 'y', color: yellow, size: '100 50' },
+      { key: 'y', color: yellow, size: '100 50' }
     ]);
 
     // initialize the fourth Palette, of big items
     myPaletteBig = new go.Palette('myPaletteBig', {
       // share the templates with the main Diagram
       nodeTemplate: myDiagram.nodeTemplate,
-      groupTemplate: myDiagram.groupTemplate,
+      groupTemplate: myDiagram.groupTemplate
     });
 
     // specify the contents of the Palette
     myPaletteBig.model = new go.GraphLinksModel([
       { key: 'g', color: green, size: '100 100' },
       { key: 'b', color: blue, size: '100 100' },
-      { key: 'y', color: yellow, size: '100 100' },
+      { key: 'y', color: yellow, size: '100 100' }
     ]);
   }
   window.addEventListener('DOMContentLoaded', init);

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,81 +125,82 @@
 <script src="../extensions/HyperlinkText.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', { isReadOnly: true, allowSelect: false, contentAlignment: go.Spot.Center });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('location', 'loc', go.Point.parse),
-      $(go.Shape,
-        'Ellipse',
-        { fill: 'transparent' },
-        new go.Binding('stroke', 'color'),
-        new go.Binding('strokeWidth', 'width'),
-        new go.Binding('strokeDashArray', 'dash')
-      ),
-      $('HyperlinkText',
-        (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
-        (node) => node.data.text,
-        { margin: 1, maxSize: new go.Size(80, 80), textAlign: 'center' }
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'center',
-      $(go.Node,
-        'Spot',
-        { locationSpot: go.Spot.Center },
-        new go.Binding('location', 'loc', go.Point.parse),
-        $(go.Shape, 'Circle', {
-          fill: 'rgba(128,128,128,0.1)',
-          stroke: null,
-          width: 550,
-          height: 550,
-        }),
-        $(go.Shape, 'Circle', {
-          fill: 'rgba(128,128,128,0.05)',
-          stroke: null,
-          width: 400,
-          height: 400,
-        }),
-        $(go.Shape, 'Circle', {
-          fill: 'rgba(128,128,128,0.033)',
-          stroke: null,
-          width: 250,
-          height: 250,
-        }),
-        $(go.Panel,
-          'Spot',
-          $(go.Shape,
-            'Circle',
-            { isPanelMain: true, fill: 'transparent', portId: '' },
-            new go.Binding('stroke', 'hicolor'),
-            new go.Binding('strokeWidth', 'hiwidth')
-          ),
-          $(go.Shape,
-            'Circle',
-            { isPanelMain: true, fill: 'transparent' },
-            new go.Binding('stroke', 'color'),
-            new go.Binding('strokeWidth', 'width'),
-            new go.Binding('strokeDashArray', 'dash')
-          ),
-          $('HyperlinkText',
-            (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
-            (node) => node.data.text,
-            { margin: 1, maxSize: new go.Size(80, 80), textAlign: 'center' }
-          )
+    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .bind('location', 'loc', go.Point.parse)
+      .add(
+        new go.Shape('Ellipse', { fill: 'transparent' })
+          .bind('stroke', 'color')
+          .bind('strokeWidth', 'width')
+          .bind('strokeDashArray', 'dash'),
+        go.GraphObject.build('HyperlinkText', {
+            margin: 1,
+            maxSize: new go.Size(80, 80),
+            textAlign: 'center'
+          },
+          (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
+          (node) => node.data.text
         )
-      )
+      );
+
+    myDiagram.nodeTemplateMap.add('center',
+      new go.Node('Spot', { locationSpot: go.Spot.Center })
+        .bind('location', 'loc', go.Point.parse)
+        .add(
+          new go.Shape('Circle', {
+            fill: 'rgba(128,128,128,0.1)',
+            stroke: null,
+            width: 550,
+            height: 550
+          }),
+          new go.Shape('Circle', {
+            fill: 'rgba(128,128,128,0.05)',
+            stroke: null,
+            width: 400,
+            height: 400
+          }),
+          new go.Shape('Circle', {
+            fill: 'rgba(128,128,128,0.033)',
+            stroke: null,
+            width: 250,
+            height: 250
+          }),
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Circle', {
+                isPanelMain: true,
+                fill: 'transparent',
+                portId: ''
+              })
+                .bind('stroke', 'hicolor')
+                .bind('strokeWidth', 'hiwidth'),
+              new go.Shape('Circle', {
+                isPanelMain: true,
+                fill: 'transparent'
+              })
+                .bind('stroke', 'color')
+                .bind('strokeWidth', 'width')
+                .bind('strokeDashArray', 'dash'),
+              go.GraphObject.build('HyperlinkText', {
+                  margin: 1,
+                  maxSize: new go.Size(80, 80),
+                  textAlign: 'center'
+                },
+                (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
+                (node) => node.data.text
+              )
+            )
+        )
     );
 
-    myDiagram.linkTemplate = $(go.Link,
-      $(go.Shape, new go.Binding('stroke', 'color'), new go.Binding('strokeWidth', 'width'), new go.Binding('strokeDashArray', 'dash'))
-    );
+    myDiagram.linkTemplate = new go.Link()
+      .add(
+        new go.Shape()
+          .bind('stroke', 'color')
+          .bind('strokeWidth', 'width')
+          .bind('strokeDashArray', 'dash')
+      );
 
     var nodeDataArray = [
       { key: 1, text: 'Cognitive Procedural', loc: '300 300', category: 'center' },
@@ -211,7 +211,7 @@
       { key: 21, text: 'Training Wheels', loc: '325 125' },
       { key: 22, text: 'Exploratory Learning', loc: '250 150' },
       { key: 23, text: 'Learner Control', loc: '650 150' },
-      { key: 31, text: 'Overlearning', loc: '450 475' },
+      { key: 31, text: 'Overlearning', loc: '450 475' }
     ];
     var linkDataArray = [
       { from: 1, to: 11, color: 'gray' },
@@ -227,7 +227,7 @@
       { from: 2, to: 21, color: 'crimson', width: 2 },
       { from: 2, to: 22, color: 'crimson', width: 2 },
       { from: 2, to: 23, color: 'black', width: 3 },
-      { from: 2, to: 31, color: 'black', dash: [3, 2] },
+      { from: 2, to: 31, color: 'black', dash: [3, 2] }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }

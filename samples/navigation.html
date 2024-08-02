@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,98 +124,80 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // Diagram refers to its DIV HTML element by id
-      {
-        maxSelectionCount: 1, // no more than 1 element can be selected at a time
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      maxSelectionCount: 1 // no more than 1 element can be selected at a time
+    });
 
     // define the node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location').makeTwoWay(),
-      {
-        locationSpot: go.Spot.Center,
-        toEndSegmentLength: 30,
-        fromEndSegmentLength: 30,
-      },
-      $(go.Shape, 'Rectangle', {
-        name: 'OBJSHAPE',
-        fill: 'white',
-        desiredSize: new go.Size(30, 30),
-      }),
-      $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key')),
-      {
-        //  define a tooltip for each node that displays its information
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', getInfo))),
-      }
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      locationSpot: go.Spot.Center,
+      toEndSegmentLength: 30,
+      fromEndSegmentLength: 30,
+      //  define a tooltip for each node that displays its information
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
+    })
+      .bindTwoWay('location')
+      .add(
+        new go.Shape('Rectangle', {
+          name: 'OBJSHAPE',
+          fill: 'white',
+          desiredSize: new go.Size(30, 30)
+        }),
+        new go.TextBlock({ margin: 4 }).bind('text', 'key')
+      );
 
     // define the link template
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        selectionAdornmentTemplate: $(go.Adornment,
-          $(go.Shape, { isPanelMain: true, stroke: 'dodgerblue', strokeWidth: 3 }),
-          $(go.Shape, { toArrow: 'Standard', fill: 'dodgerblue', stroke: null, scale: 1 })
+    myDiagram.linkTemplate = new go.Link({
+      selectionAdornmentTemplate: new go.Adornment()
+        .add(
+          new go.Shape({ isPanelMain: true, stroke: 'dodgerblue', strokeWidth: 3 }),
+          new go.Shape({ toArrow: 'Standard', fill: 'dodgerblue', stroke: null, scale: 1 })
         ),
-        routing: go.Routing.Normal,
-        curve: go.Curve.Bezier,
-        toShortLength: 2,
-      },
-      $(go.Shape, //  the link shape
-        { name: 'OBJSHAPE' }
-      ),
-      $(go.Shape, //  the arrowhead
-        { name: 'ARWSHAPE', toArrow: 'Standard' }
-      ),
-      {
-        //  define a tooltip for each link that displays its information
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', getInfo))),
-      }
-    );
+      routing: go.Routing.Normal,
+      curve: go.Curve.Bezier,
+      toShortLength: 2,
+      //  define a tooltip for each link that displays its information
+      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
+    })
+      .add(
+        new go.Shape({ name: 'OBJSHAPE' }), //  the link shape
+        new go.Shape({ name: 'ARWSHAPE', toArrow: 'Standard' }) //  the arrowhead
+      );
 
     // define the group template
-    myDiagram.groupTemplate = $(go.Group,
-      'Spot',
-      {
-        // adornment when a group is selected
-        selectionAdornmentTemplate: $(go.Adornment, 'Auto', $(go.Shape, 'Rectangle', { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }), $(go.Placeholder)),
-        toSpot: go.Spot.AllSides, // links coming into groups at any side
-        toEndSegmentLength: 30,
-        fromEndSegmentLength: 30,
-      },
-      $(go.Panel,
-        'Auto',
-        $(go.Shape,
-          'Rectangle',
-          {
-            name: 'OBJSHAPE',
-            parameter1: 14,
-            fill: 'rgba(255,0,0,0.10)',
-          },
-          new go.Binding('desiredSize', 'ds')
+    myDiagram.groupTemplate = new go.Group('Spot', {
+      // adornment when a group is selected
+      selectionAdornmentTemplate: new go.Adornment('Auto')
+        .add(
+          new go.Shape('Rectangle', { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
+          new go.Placeholder()
         ),
-        $(go.Placeholder, { padding: 16 })
-      ),
-      $(go.TextBlock,
-        {
+      toSpot: go.Spot.AllSides, // links coming into groups at any side
+      toEndSegmentLength: 30,
+      fromEndSegmentLength: 30,
+      //  define a tooltip for each group that displays its information
+      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
+    })
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('Rectangle', {
+              name: 'OBJSHAPE',
+              parameter1: 14,
+              fill: 'rgba(255,0,0,0.10)'
+            })
+              .bind('desiredSize', 'ds'),
+            new go.Placeholder({ padding: 16 })
+          ),
+        new go.TextBlock({
           name: 'GROUPTEXT',
           alignment: go.Spot.TopLeft,
           alignmentFocus: new go.Spot(0, 0, -4, -4),
-          font: 'Bold 10pt Sans-Serif',
-        },
-        new go.Binding('text', 'key')
-      ),
-      {
-        //  define a tooltip for each group that displays its information
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', getInfo))),
-      }
-    );
+          font: 'Bold 10pt Sans-Serif'
+        })
+          .bind('text', 'key')
+      );
 
     // add nodes, including groups, and links to the model
     myDiagram.model = new go.GraphLinksModel(
@@ -232,7 +213,7 @@
         { key: 'Chi', isGroup: true },
         { key: 'Psi', isGroup: true, group: 'Chi' },
         { key: 'Phi', isGroup: true, group: 'Psi' },
-        { key: 'Omega', isGroup: true, group: 'Psi' },
+        { key: 'Omega', isGroup: true, group: 'Psi' }
       ],
       [
         // link data
@@ -247,7 +228,7 @@
         { from: 'C', to: 'D' },
         { from: 'D', to: 'F' },
         { from: 'E', to: 'F' },
-        { from: 'F', to: 'G' },
+        { from: 'F', to: 'G' }
       ]
     );
 
@@ -580,9 +561,9 @@
 </script>
 
 <div id="sample">
-  <div id="displays" style="width: 100%; white-space: nowrap">
+  <div id="displays" style="width: 100%; white-space: nowrap;">
     <div id="myDiagramDiv" style="border: solid 1px black; height: 560px; display: inline-block; vertical-align: top; width: 70%"></div>
-    <div id="controls" style="border: solid 1px black; height: 560px; width: 200px; display: inline-block; vertical-align: top">
+    <div id="controls" style="border: solid 1px black; display: inline-block; vertical-align: top">
       <div id="buttons" style="border-radius: 10px; border: solid 1px gray; background-color: #eaeaea; margin: 5px">
         <b style="margin: 5px">Related Parts Highlighted</b> <br />
         <label><input type="radio" name="highlight" onclick="updateHighlights(this)" id="None" />Unhighlight All</label><br />

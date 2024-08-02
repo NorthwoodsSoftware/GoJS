@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -123,14 +122,13 @@
             
             
 
+<!-- <script src="https://unpkg.com/gojs/release/go-debug.js"></script> -->
 <script src="../extensions/Robot.js"></script>
 
 <script id="code">
   var myRobot; // this global variable will hold an instance of the Robot class for myDiagram
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make; // for conciseness in defining templates
 
     function showProperties(e, obj) {
       // executed by ContextMenuButton
@@ -152,45 +150,53 @@
       document.getElementById('myStatus').textContent = msg;
     }
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        nodeTemplate: $(go.Node,
-          'Auto',
-          {
-            click: nodeClicked,
-            doubleClick: nodeClicked,
-            contextMenu: $('ContextMenu', $('ContextMenuButton', $(go.TextBlock, 'Properties'), { click: showProperties })),
-          },
-          $(go.Shape, 'Rectangle', { fill: 'lightgray' }, { portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }),
-          $(go.TextBlock, { margin: 3 }, new go.Binding('text', 'key'))
+    myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
+      nodeTemplate: new go.Node('Auto', {
+        click: nodeClicked,
+        doubleClick: nodeClicked,
+        contextMenu: go.GraphObject.build('ContextMenu')
+          .add(
+            go.GraphObject.build('ContextMenuButton', {
+              click: showProperties
+            })
+              .add(
+                new go.TextBlock('Properties')
+              )
+          )
+      })
+        .add(
+          new go.Shape('Rectangle', {
+            fill: 'lightgray',
+            portId: '',
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          }),
+          new go.TextBlock({ margin: 3 })
+            .bind('text', 'key')
         ),
-        model: new go.GraphLinksModel({
-          copiesKey: true, // so that the newly dropped node will have key == "Alpha"
-          nodeDataArray: [{ key: 'Lambda' }, { key: 'Mu' }],
-          linkDataArray: [{ from: 'Lambda', to: 'Mu' }],
-        }),
-        'undoManager.isEnabled': true,
-      }
-    );
+      model: new go.GraphLinksModel({
+        copiesKey: true, // so that the newly dropped node will have key == "Alpha"
+        nodeDataArray: [{ key: 'Lambda' }, { key: 'Mu' }],
+        linkDataArray: [{ from: 'Lambda', to: 'Mu' }]
+      }),
+      'undoManager.isEnabled': true
+    });
 
     // a shared Robot that can be used by all commands for this one Diagram
     myRobot = new Robot(myDiagram); // defined in Robot.js
 
     // initialize the Palette that is on the left side of the page
-    myPalette = new go.Palette(
-      'myPaletteDiv', // must name or refer to the DIV HTML element
-      {
-        nodeTemplate: myDiagram.nodeTemplate,
-        model: new go.GraphLinksModel([
-          // specify the contents of the Palette
-          { key: 'Alpha' },
-          { key: 'Beta' },
-          { key: 'Gamma' },
-          { key: 'Delta' },
-        ]),
-      }
-    );
+    myPalette = new go.Palette('myPaletteDiv', {
+      nodeTemplate: myDiagram.nodeTemplate,
+      model: new go.GraphLinksModel([
+        // specify the contents of the Palette
+        { key: 'Alpha' },
+        { key: 'Beta' },
+        { key: 'Gamma' },
+        { key: 'Delta' }
+      ])
+    });
   }
 
   function dragFromPalette() {
@@ -271,6 +277,8 @@
     // Simulate clicking the "Delete" key:
     myRobot.keyDown('Delete');
     myRobot.keyUp('Delete');
+    // myRobot.keyDown('Escape');
+    // myRobot.keyUp('Escape');
     // Now the selected Nodes are deleted.
 
     // Alternatively you could invoke the Delete command directly:

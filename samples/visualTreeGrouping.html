@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,34 +124,44 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // define the "sample" Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape,
-        'RoundedRectangle', // define the node's outer shape
-        { fill: 'white', stroke: 'black' },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, // define the node's text
-        { margin: 5 },
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', { // define the node's outer shape
+          fill: 'rgb(150, 60, 60)',
+          stroke: 'rgb(235, 194, 117)',
+          strokeWidth: 2,
+        })
+          .bind('fill', 'color')
+          .bind('stroke'),
+        new go.TextBlock({ // define the node's text
+          margin: 7
+        })
+          .bind('text')
+          .bind('stroke')
+      );
 
-    // use the default link template
+    myDiagram.linkTemplate = new go.Link()
+      .add(
+        new go.Shape({
+            stroke: "rgb(150, 60, 60)",
+            strokeWidth: 2,
+          }),  // the link shape
+        new go.Shape({   // the arrowhead
+            toArrow: "OpenTriangle",
+            stroke: "rgb(150, 60, 60)",
+            strokeWidth: 2,
+          })
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: 1, text: 'Alpha', color: 'lightblue' },
-        { key: 2, text: 'Beta', color: 'pink' },
+        { key: 1, text: 'Alpha', color: 'rgba(243, 153, 73, 0.2)', stroke: 'rgb(150, 60, 60)'},
+        { key: 2, text: 'Beta', color: 'rgba(243, 153, 73, 0.2)', stroke: 'rgb(243, 153, 73)'}
       ],
       [{ from: 1, to: 2 }]
     );
@@ -161,36 +170,33 @@
     myVisualTree = new go.Diagram('myVisualTree', {
       isReadOnly: true, // do not allow users to modify or select in this view
       allowSelect: false,
-      layout: $(go.TreeLayout, { nodeSpacing: 5 }), // automatically laid out as a tree
+      layout: new go.TreeLayout({ nodeSpacing: 5 }) // automatically laid out as a tree
     });
 
     // use Groups, not regular Nodes or Links, to show relationship of GraphObjects in myDiagram
-    myVisualTree.groupTemplate = $(go.Group,
-      'Auto',
-      {
-        layout: $(go.GridLayout, {
-          wrappingColumn: 2,
-          alignment: go.GridAlignment.Position,
-          cellSize: new go.Size(1, 1),
-        }),
-      },
-      $(go.Shape, { fill: 'rgba(99,99,99,0.1)', strokeWidth: 0.5 }),
-      $(go.Panel,
-        'Spot',
-        $(go.Placeholder, { padding: new go.Margin(15, 5, 5, 5) }),
-        $(go.TextBlock,
-          {
-            font: 'bold 13px Helvetica, bold Arial, sans-serif',
-            stroke: 'black',
-            margin: 3,
-            alignment: go.Spot.Top,
-            alignmentFocus: go.Spot.Top,
-          },
-          // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
-          new go.Binding('text', '', (x) => x.toString())
-        )
-      )
-    );
+    myVisualTree.groupTemplate = new go.Group('Auto', {
+      layout: new go.GridLayout({
+        wrappingColumn: 2,
+        alignment: go.GridAlignment.Position,
+        cellSize: new go.Size(1, 1)
+      })
+    })
+      .add(
+        new go.Shape({ fill: "rgba(243, 153, 73, 0.2)", stroke: "rgb(150, 60, 60)", strokeWidth: 2 }),
+        new go.Panel('Spot')
+          .add(
+            new go.Placeholder({ padding: new go.Margin(15, 5, 5, 5) }),
+            new go.TextBlock({
+              font: 'bold 13px monospace',
+              stroke: 'rgb(150, 60, 60)',
+              margin: 5,
+              alignment: go.Spot.Top,
+              alignmentFocus: go.Spot.Top
+            })
+              // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+              .bind('text', '', (x) => x.toString())
+          )
+      );
 
     drawVisualTree();
   }
@@ -224,7 +230,7 @@
       nodeGroupKeyProperty: 'parentKey',
       // always return true so that all node data is represented by groups
       nodeIsGroupProperty: (data) => true,
-      nodeDataArray: visualNodeDataArray,
+      nodeDataArray: visualNodeDataArray
     });
   }
   window.addEventListener('DOMContentLoaded', init);

@@ -24,7 +24,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -151,10 +150,7 @@
 <script type="module" id="code">
   import * as go from 'gojs';
   import { PackedLayout, PackShape, SortMode } from '../extensionsJSM/PackedLayout.js';
-
-  if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
-  const $ = go.GraphObject.make; // for conciseness in defining templates
-
+  
   // subclass PackedLayout to change default properties and override commitLayout function
   class HierarchyLayout extends PackedLayout {
     constructor(init /*?: Partial<HierarchyLayout>*/) {
@@ -192,64 +188,67 @@
     }
   } // end HierarchyLayout
 
-  const myDiagram = new go.Diagram(
-    'myDiagramDiv', // must be the ID or reference to div
-    {
-      layout: $(HierarchyLayout), // defined above
-      'animationManager.isEnabled': false,
-      isReadOnly: true,
-      initialAutoScale: go.AutoScale.Uniform,
-    }
-  );
+  const myDiagram = new go.Diagram('myDiagramDiv', {
+    layout: new HierarchyLayout(), // defined above
+    'animationManager.isEnabled': false,
+    isReadOnly: true,
+    initialAutoScale: go.AutoScale.Uniform
+  });
 
   // common definitions for both Nodes and Groups
-  const toolTipTemplate = $(go.Adornment, 'Auto', $(go.Shape, { fill: 'white' }), $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'tooltip')));
+  const toolTipTemplate = new go.Adornment('Auto')
+    .add(
+      new go.Shape({ fill: 'white' }),
+      new go.TextBlock({ margin: 4 })
+        .bind('text', 'tooltip')
+    );
 
-  const selectionAdornmentTemplate = $(go.Adornment,
-    'Auto',
-    $(go.Shape, 'Circle', {
-      fill: null,
-      stroke: 'dodgerblue',
-      strokeWidth: 3,
-      spot1: go.Spot.TopLeft,
-      spot2: go.Spot.BottomRight,
-    }),
-    new go.Placeholder()
-  );
+  const selectionAdornmentTemplate = new go.Adornment('Auto')
+    .add(
+      new go.Shape('Circle', {
+        fill: null,
+        stroke: 'dodgerblue',
+        strokeWidth: 3,
+        spot1: go.Spot.TopLeft,
+        spot2: go.Spot.BottomRight
+      }),
+      new go.Placeholder()
+    );
 
-  function commonStyle() {
-    return [
-      {
-        toolTip: toolTipTemplate,
-        selectionAdornmentTemplate: selectionAdornmentTemplate,
-        doubleClick: (e, node) => {
-          const url = '../../api/symbols/' + node.data.key + '.html';
-          window.open(url, '_blank');
-        },
-      },
-    ];
+  function commonStyle(obj) {
+    return Object.assign({
+      toolTip: toolTipTemplate,
+      selectionAdornmentTemplate: selectionAdornmentTemplate,
+      doubleClick: (e, node) => {
+        const url = '../../api/symbols/' + node.data.key + '.html';
+        window.open(url, '_blank');
+      }
+    }, obj || {});
   }
 
-  myDiagram.nodeTemplate = $(go.Node,
-    'Auto',
-    commonStyle(),
-    new go.Binding('width', 'diameter'),
-    new go.Binding('height', 'diameter'),
-    $(go.Shape, { figure: 'Circle', fill: '#1F4963', strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }, new go.Binding('fill')),
-    $(go.TextBlock,
-      { font: '10px Helvetica, Arial, sans-serif', stroke: 'white', maxLines: 1 },
-      new go.Binding('text'),
-      new go.Binding('font'),
-      new go.Binding('stroke', 'fill', (f) => (go.Brush.isDark(f) ? 'white' : 'black'))
-    )
-  );
+  myDiagram.nodeTemplate = new go.Node('Auto', commonStyle())
+    .bind('width', 'diameter')
+    .bind('height', 'diameter')
+    .add(
+      new go.Shape({
+        figure: 'Circle',
+        fill: '#1F4963',
+        strokeWidth: 0,
+        spot1: go.Spot.TopLeft,
+        spot2: go.Spot.BottomRight
+      })
+        .bind('fill'),
+      new go.TextBlock({ font: '10px Helvetica, Arial, sans-serif', stroke: 'white', maxLines: 1 })
+        .bind('text')
+        .bind('font')
+        .bind('stroke', 'fill', (f) => (go.Brush.isDark(f) ? 'white' : 'black'))
+    );
 
-  myDiagram.groupTemplate = $(go.Group,
-    commonStyle(),
-    { layout: $(HierarchyLayout) }, // defined above
-    $(go.Shape, 'Circle', { fill: 'rgba(128,128,128,0.33)' }, new go.Binding('desiredSize', 'size'), new go.Binding('position')),
-    new go.Placeholder() // represents area for all member parts
-  );
+  myDiagram.groupTemplate = new go.Group(commonStyle({ layout: new HierarchyLayout() }))
+    .add(
+      new go.Shape('Circle', { fill: 'rgba(128,128,128,0.33)' }).bind('desiredSize', 'size').bind('position'),
+      new go.Placeholder() // represents area for all member parts
+    );
 
   // Collect all of the data for the model of the class hierarchy
   const nodeDataArray = [
@@ -263,8 +262,8 @@
       fill: null,
       font: '64px Helvetica, bold Arial, sans-serif',
       isLabel: true,
-      children: [],
-    },
+      children: []
+    }
   ];
 
   const keyToNodeDataMap = new go.Map();
@@ -339,7 +338,7 @@
         tooltip: n.tooltip,
         group: n.key,
         fill: null,
-        font: '20px Helvetica, bold Arial, sans-serif',
+        font: '20px Helvetica, bold Arial, sans-serif'
       });
     }
 

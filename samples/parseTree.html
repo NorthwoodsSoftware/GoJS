@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,47 +125,42 @@
     <script id="code">
     function init() {
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
+      myDiagram = new go.Diagram('myDiagramDiv', {
+        allowCopy: false,
+        allowDelete: false,
+        allowMove: false,
+        initialAutoScale: go.AutoScale.Uniform,
+        layout: new FlatTreeLayout({  // custom Layout, defined below
+          angle: 90,
+          compaction: go.TreeCompaction.None,
+          arrangement: go.TreeArrangement.FixedRoots
+        }),
+        'undoManager.isEnabled': true
+      });
 
-      myDiagram =
-        new go.Diagram("myDiagramDiv",
-          {
-            allowCopy: false,
-            allowDelete: false,
-            allowMove: false,
-            initialAutoScale: go.AutoScale.Uniform,
-            layout:
-              $(FlatTreeLayout,  // custom Layout, defined below
-                {
-                  angle: 90,
-                  compaction: go.TreeCompaction.None,
-                  arrangement: go.TreeArrangement.FixedRoots
-                }),
-            "undoManager.isEnabled": true
-          });
-
-      myDiagram.nodeTemplate =
-        $(go.Node, "Vertical",
-          { selectionObjectName: "BODY" },
-          $(go.Panel, "Auto", { name: "BODY" },
-            $(go.Shape, "RoundedRectangle",
-              new go.Binding("fill"),
-              new go.Binding("stroke")),
-            $(go.TextBlock,
-              { font: "bold 12pt Arial, sans-serif", margin: new go.Margin(4, 2, 2, 2) },
-              new go.Binding("text"))
-          ),
-          $(go.Panel,  // this is underneath the "BODY"
-            { height: 17 },  // always this height, even if the TreeExpanderButton is not visible
-            $("TreeExpanderButton")
-          )
+      myDiagram.nodeTemplate = new go.Node('Vertical', { selectionObjectName: 'BODY' })
+        .add(
+          new go.Panel('Auto', { name: 'BODY' })
+            .add(
+              new go.Shape('RoundedRectangle')
+                .bind('fill')
+                .bind('stroke'),
+              new go.TextBlock({
+                font: 'bold 12pt Arial, sans-serif',
+                margin: new go.Margin(4, 2, 2, 2)
+              })
+                .bind('text')
+            ),
+          new go.Panel({ height: 17 }) // always this height, even if the TreeExpanderButton is not visible
+            .add(
+              go.GraphObject.build('TreeExpanderButton')
+            )
         );
 
-      myDiagram.linkTemplate =
-        $(go.Link,
-          $(go.Shape, { strokeWidth: 1.5 }));
+      myDiagram.linkTemplate = new go.Link()
+        .add(
+          new go.Shape({ strokeWidth: 1.5 })
+        );
 
       // set up the nodeDataArray, describing each part of the sentence
       var nodeDataArray = [

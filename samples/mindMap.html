@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,9 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       // when the user drags a node, also move/copy/delete the whole subtree starting with that node
@@ -135,7 +131,7 @@
       'commandHandler.copiesParentKey': true,
       'commandHandler.deletesTree': true,
       'draggingTool.dragsTree': true,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -151,126 +147,156 @@
     });
 
     // a node consists of some text with a line shape underneath
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      { selectionObjectName: 'TEXT' },
-      $(go.TextBlock,
-        {
+    myDiagram.nodeTemplate = new go.Node('Vertical', { selectionObjectName: 'TEXT' })
+      // remember the locations of each node in the node data
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      // make sure text "grows" in the desired direction
+      .bind('locationSpot', 'dir', (d) => spotConverter(d, false))
+      .add(
+        new go.TextBlock({
           name: 'TEXT',
           minSize: new go.Size(30, 15),
-          editable: true,
-        },
-        // remember not only the text string but the scale and the font in the node data
-        new go.Binding('text', 'text').makeTwoWay(),
-        new go.Binding('scale', 'scale').makeTwoWay(),
-        new go.Binding('font', 'font').makeTwoWay()
-      ),
-      $(go.Shape,
-        'LineH',
-        {
+          editable: true
+        })
+          .bindTwoWay('text')
+          .bindTwoWay('scale')
+          .bindTwoWay('font'),
+        new go.Shape('LineH', {
           stretch: go.Stretch.Horizontal,
           strokeWidth: 3,
           height: 3,
           // this line shape is the port -- what links connect with
           portId: '',
           fromSpot: go.Spot.LeftRightSides,
-          toSpot: go.Spot.LeftRightSides,
-        },
-        new go.Binding('stroke', 'brush'),
-        // make sure links come in from the proper direction and go out appropriately
-        new go.Binding('fromSpot', 'dir', (d) => spotConverter(d, true)),
-        new go.Binding('toSpot', 'dir', (d) => spotConverter(d, false))
-      ),
-      // remember the locations of each node in the node data
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      // make sure text "grows" in the desired direction
-      new go.Binding('locationSpot', 'dir', (d) => spotConverter(d, false))
-    );
+          toSpot: go.Spot.LeftRightSides
+        })
+          .bind('stroke', 'brush')
+          // make sure links come in from the proper direction and go out appropriately
+          .bind('fromSpot', 'dir', (d) => spotConverter(d, true))
+          .bind('toSpot', 'dir', (d) => spotConverter(d, false))
+      );
 
     // selected nodes show a button for adding children
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = $(go.Adornment,
-      'Spot',
-      $(go.Panel,
-        'Auto',
-        // this Adornment has a rectangular blue Shape around the selected node
-        $(go.Shape, { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
-        $(go.Placeholder, { margin: new go.Margin(4, 4, 0, 4) })
-      ),
-      // and this Adornment has a Button to the right of the selected node
-      $('Button',
-        {
+    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            // this Adornment has a rectangular blue Shape around the selected node
+            new go.Shape({
+              fill: null,
+              stroke: 'dodgerblue',
+              strokeWidth: 3
+            }),
+            new go.Placeholder({ margin: new go.Margin(4, 4, 0, 4) })
+          ),
+        // and this Adornment has a Button to the right of the selected node
+        go.GraphObject.build('Button', {
           alignment: go.Spot.Right,
           alignmentFocus: go.Spot.Left,
-          click: addNodeAndLink, // define click behavior for this Button in the Adornment
-        },
-        $(go.TextBlock,
-          '+', // the Button content
-          { font: 'bold 8pt sans-serif' }
-        )
-      )
-    );
+          click: addNodeAndLink // define click behavior for this Button in the Adornment
+        })
+          .add( // the Button content
+            new go.TextBlock('+', { font: 'bold 8pt sans-serif' })
+          )
+      );
 
     // the context menu allows users to change the font size and weight,
     // and to perform a limited tree layout starting at that node
-    myDiagram.nodeTemplate.contextMenu = $('ContextMenu',
-      $('ContextMenuButton', $(go.TextBlock, 'Bigger'), { click: (e, obj) => changeTextSize(obj, 1.1) }),
-      $('ContextMenuButton', $(go.TextBlock, 'Smaller'), { click: (e, obj) => changeTextSize(obj, 1 / 1.1) }),
-      $('ContextMenuButton', $(go.TextBlock, 'Bold/Normal'), { click: (e, obj) => toggleTextWeight(obj) }),
-      $('ContextMenuButton', $(go.TextBlock, 'Copy'), { click: (e, obj) => e.diagram.commandHandler.copySelection() }),
-      $('ContextMenuButton', $(go.TextBlock, 'Delete'), { click: (e, obj) => e.diagram.commandHandler.deleteSelection() }),
-      $('ContextMenuButton', $(go.TextBlock, 'Undo'), { click: (e, obj) => e.diagram.commandHandler.undo() }),
-      $('ContextMenuButton', $(go.TextBlock, 'Redo'), { click: (e, obj) => e.diagram.commandHandler.redo() }),
-      $('ContextMenuButton', $(go.TextBlock, 'Layout'), {
-        click: (e, obj) => {
-          var adorn = obj.part;
-          adorn.diagram.startTransaction('Subtree Layout');
-          layoutTree(adorn.adornedPart);
-          adorn.diagram.commitTransaction('Subtree Layout');
-        },
-      })
-    );
+    myDiagram.nodeTemplate.contextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Bigger', { click: (e, obj) => changeTextSize(obj, 1.1) })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Smaller', { click: (e, obj) => changeTextSize(obj, 1 / 1.1) })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Bold/Normal', { click: (e, obj) => toggleTextWeight(obj) })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Copy', { click: (e, obj) => e.diagram.commandHandler.copySelection() })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Delete', { click: (e, obj) => e.diagram.commandHandler.deleteSelection() })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Undo', { click: (e, obj) => e.diagram.commandHandler.undo() })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Redo', { click: (e, obj) => e.diagram.commandHandler.redo() })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Layout', {
+              click: (e, obj) => {
+                var adorn = obj.part;
+                adorn.diagram.startTransaction('Subtree Layout');
+                layoutTree(adorn.adornedPart);
+                adorn.diagram.commitTransaction('Subtree Layout');
+              }
+            })
+          )
+      );
 
     // a link is just a Bezier-curved line of the same color as the node to which it is connected
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        curve: go.Curve.Bezier,
-        fromShortLength: -2,
-        toShortLength: -2,
-        selectable: false,
-      },
-      $(go.Shape,
-        { strokeWidth: 3 },
-        new go.Binding('stroke', 'toNode', (n) => {
-          if (n.data.brush) return n.data.brush;
-          return 'black';
-        }).ofObject()
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({
+      curve: go.Curve.Bezier,
+      fromShortLength: -2,
+      toShortLength: -2,
+      selectable: false
+    })
+      .add(
+        new go.Shape({ strokeWidth: 3 })
+          .bindObject('stroke', 'toNode', (n) => {
+            if (n.data.brush) return n.data.brush;
+            return 'black';
+          })
+      );
 
     // the Diagram's context menu just displays commands for general functionality
-    myDiagram.contextMenu = $('ContextMenu',
-      $('ContextMenuButton',
-        $(go.TextBlock, 'Paste'),
-        { click: (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint) },
-        new go.Binding(
-          'visible',
-          '',
-          (o) => o.diagram && o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
-        ).ofObject()
-      ),
-      $('ContextMenuButton',
-        $(go.TextBlock, 'Undo'),
-        { click: (e, obj) => e.diagram.commandHandler.undo() },
-        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canUndo()).ofObject()
-      ),
-      $('ContextMenuButton',
-        $(go.TextBlock, 'Redo'),
-        { click: (e, obj) => e.diagram.commandHandler.redo() },
-        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canRedo()).ofObject()
-      ),
-      $('ContextMenuButton', $(go.TextBlock, 'Save'), { click: (e, obj) => save() }),
-      $('ContextMenuButton', $(go.TextBlock, 'Load'), { click: (e, obj) => load() })
-    );
+    myDiagram.contextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        go.GraphObject.build('ContextMenuButton', {
+            click: (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint)
+          })
+          .bindObject('visible', '',
+            (o) => {
+              return o.diagram && o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)
+            }
+          )
+          .add(
+            new go.TextBlock('Paste')
+          ),
+        go.GraphObject.build('ContextMenuButton', {
+            click: (e, obj) => e.diagram.commandHandler.undo()
+          })
+          .bindObject('visible', '', (o) => o.diagram && o.diagram.commandHandler.canUndo())
+          .add(
+            new go.TextBlock('Undo')
+          ),
+        go.GraphObject.build('ContextMenuButton', {
+            click: (e, obj) => e.diagram.commandHandler.redo()
+          })
+          .bindObject('visible', '', (o) => o.diagram && o.diagram.commandHandler.canRedo())
+          .add(
+            new go.TextBlock('Redo')
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Save', { click: (e, obj) => save() })
+          ),
+        go.GraphObject.build('ContextMenuButton')
+          .add(
+            new go.TextBlock('Load', { click: (e, obj) => load() })
+          )
+      );
 
     myDiagram.addDiagramListener('SelectionMoved', (e) => {
       var rootX = myDiagram.findNodeForKey(0).location.x;
@@ -366,7 +392,7 @@
       nodeSpacing: 5,
       layerSpacing: 20,
       setsPortSpot: false, // don't set port spots since we're managing them with our spotConverter function
-      setsChildPortSpot: false,
+      setsChildPortSpot: false
     });
     layout.doLayout(parts);
   }
@@ -411,6 +437,7 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 300px"></div>
+  <button onclick="layoutAll()">Diagram Layout</button>
   <p>A mind map is a kind of spider diagram that organizes information around a central concept, with connecting branches.</p>
   <p>
     The layout is controlled by moving the nodes closest to the tree's root node. When one of these nodes is moved horizontally to the other side of the root,
@@ -431,7 +458,6 @@
 
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
-  <button onclick="layoutAll()">Layout</button>
   Diagram Model saved in JSON format:
   <br />
   <textarea id="mySavedModel" style="width: 100%; height: 400px">

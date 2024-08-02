@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,13 +125,9 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -149,114 +144,104 @@
 
     myDiagram.nodeTemplateMap.add(
       'Generator',
-      $(go.Node,
-        'Spot',
-        { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' },
-        new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, 'ACVoltageSource', {
-          name: 'BODY',
-          stroke: 'white',
-          strokeWidth: 3,
-          fill: 'transparent',
-          background: 'darkblue',
-          width: 40,
-          height: 40,
-          margin: 5,
-          portId: '',
-          fromLinkable: true,
-          cursor: 'pointer',
-          fromSpot: go.Spot.TopBottomSides,
-          toSpot: go.Spot.TopBottomSides,
-        }),
-        $(go.TextBlock, { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }, new go.Binding('text').makeTwoWay())
-      )
+      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('ACVoltageSource', {
+            name: 'BODY',
+            stroke: 'white',
+            strokeWidth: 3,
+            fill: 'transparent',
+            background: 'darkblue',
+            width: 40,
+            height: 40,
+            margin: 5,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
+        )
     );
 
     myDiagram.nodeTemplateMap.add(
       'Connector',
-      $(go.Node,
-        'Spot',
-        { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' },
-        new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, 'Circle', {
-          name: 'BODY',
-          stroke: null,
-          fill: $(go.Brush, 'Linear', { 0: 'lightgray', 1: 'gray' }),
-          background: 'gray',
-          width: 20,
-          height: 20,
-          margin: 2,
-          portId: '',
-          fromLinkable: true,
-          cursor: 'pointer',
-          fromSpot: go.Spot.TopBottomSides,
-          toSpot: go.Spot.TopBottomSides,
-        }),
-        $(go.TextBlock, { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }, new go.Binding('text').makeTwoWay())
-      )
+      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Circle', {
+            name: 'BODY',
+            stroke: null,
+            fill: new go.Brush('Linear', { 0: 'lightgray', 1: 'gray' }),
+            background: 'gray',
+            width: 20,
+            height: 20,
+            margin: 2,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
+        )
     );
 
     myDiagram.nodeTemplateMap.add(
       'Consumer',
-      $(go.Node,
-        'Spot',
-        {
-          locationSpot: go.Spot.Center,
-          locationObjectName: 'BODY',
-          selectionObjectName: 'BODY',
-        },
-        new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Picture, 'images/pc.jpg', {
-          name: 'BODY',
-          width: 50,
-          height: 40,
-          margin: 2,
-          portId: '',
-          fromLinkable: true,
-          cursor: 'pointer',
-          fromSpot: go.Spot.TopBottomSides,
-          toSpot: go.Spot.TopBottomSides,
-        }),
-        $(go.TextBlock, { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }, new go.Binding('text').makeTwoWay())
-      )
+      new go.Node('Spot', {
+        locationSpot: go.Spot.Center,
+        locationObjectName: 'BODY',
+        selectionObjectName: 'BODY'
+      })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Picture('images/pc.jpg', {
+            name: 'BODY',
+            width: 50,
+            height: 40,
+            margin: 2,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
+        )
     );
 
     myDiagram.nodeTemplateMap.add(
       'HBar',
-      $(go.Node,
-        'Spot',
-        new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-        {
-          layerName: 'Background',
-          // special resizing: just at the ends
-          resizable: true,
-          resizeObjectName: 'SHAPE',
-          resizeAdornmentTemplate: $(go.Adornment,
-            'Spot',
-            $(go.Placeholder),
-            $(go.Shape, // left resize handle
-              {
-                alignment: go.Spot.Left,
-                cursor: 'col-resize',
-                desiredSize: new go.Size(6, 6),
-                fill: 'lightblue',
-                stroke: 'dodgerblue',
-              }
-            ),
-            $(go.Shape, // right resize handle
-              {
-                alignment: go.Spot.Right,
-                cursor: 'col-resize',
-                desiredSize: new go.Size(6, 6),
-                fill: 'lightblue',
-                stroke: 'dodgerblue',
-              }
-            )
-          ),
-        },
-        $(go.Shape,
-          'Rectangle',
-          {
+      new go.Node('Spot', {
+        layerName: 'Background',
+        // special resizing: just at the ends
+        resizable: true,
+        resizeObjectName: 'SHAPE',
+        resizeAdornmentTemplate: new go.Adornment('Spot')
+          .add(
+            new go.Placeholder(),
+            new go.Shape({ // left resize handle
+              alignment: go.Spot.Left,
+              cursor: 'col-resize',
+              desiredSize: new go.Size(6, 6),
+              fill: 'lightblue',
+              stroke: 'dodgerblue'
+            }),
+            new go.Shape({ // right resize handle
+              alignment: go.Spot.Right,
+              cursor: 'col-resize',
+              desiredSize: new go.Size(6, 6),
+              fill: 'lightblue',
+              stroke: 'dodgerblue'
+            })
+          )
+      })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Rectangle', {
             name: 'SHAPE',
             fill: 'black',
             stroke: null,
@@ -265,25 +250,24 @@
             height: 4,
             minSize: new go.Size(100, 4),
             maxSize: new go.Size(Infinity, 4),
-          },
-          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-          new go.Binding('fill'),
-          { portId: '', toLinkable: true }
-        ),
-        $(go.TextBlock, { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }, new go.Binding('text').makeTwoWay())
-      )
+            portId: '',
+            toLinkable: true
+          })
+            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bind('fill'),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
+        )
     );
 
-    myDiagram.linkTemplate = $(BarLink, // subclass defined below
-      {
-        routing: go.Routing.Orthogonal,
-        relinkableFrom: true,
-        relinkableTo: true,
-        toPortChanged: (link, oldport, newport) => {
-          if (newport instanceof go.Shape) link.path.stroke = newport.fill;
-        },
-      },
-      $(go.Shape, { strokeWidth: 2 })
+    myDiagram.linkTemplate = new BarLink({ // subclass defined below
+      routing: go.Routing.Orthogonal,
+      relinkableFrom: true,
+      relinkableTo: true,
+      toPortChanged: (link, oldport, newport) => {
+        if (newport instanceof go.Shape) link.path.stroke = newport.fill;
+      }
+    })
+      .add(new go.Shape({ strokeWidth: 2 })
     );
 
     // start off with a simple diagram
@@ -292,17 +276,17 @@
     // initialize Palette
     myPalette = new go.Palette('myPaletteDiv', {
       nodeTemplateMap: myDiagram.nodeTemplateMap,
-      layout: $(go.GridLayout, {
+      layout: new go.GridLayout({
         cellSize: new go.Size(2, 2),
-        isViewportSized: true,
-      }),
+        isViewportSized: true
+      })
     });
 
     myPalette.model.nodeDataArray = [
       { text: 'Generator', category: 'Generator' },
       { text: 'Consumer', category: 'Consumer' },
       { text: 'Connector', category: 'Connector' },
-      { text: 'Bar', category: 'HBar', size: '100 4' },
+      { text: 'Bar', category: 'HBar', size: '100 4' }
     ];
 
     // remove cursors on all ports in the Palette
@@ -317,7 +301,7 @@
     // initialize Overview
     myOverview = new go.Overview('myOverviewDiv', {
       observed: myDiagram,
-      contentAlignment: go.Spot.Center,
+      contentAlignment: go.Spot.Center
     });
   }
 
@@ -376,6 +360,14 @@
     </div>
     <div id="myDiagramDiv" style="flex-grow: 1; height: 400px; border: solid 1px black"></div>
   </div>
+
+  <p>
+    This sample creates and uses a custom <a>Link</a> class <code>BarLink</code>.
+    It draws the perpendicular line between the <a>Node</a> and the HBar
+    <a>Node</a>. When the <a>Node</a> doesn't line up horizontally with the HBAR
+    it will draw an Orthogonal <a>Link</a> at close between them as possible.
+  </p>
+
   <div id="buttons">
     <button id="loadModel" onclick="load()">Load</button>
     <button id="saveModel" onclick="save()">Save</button>

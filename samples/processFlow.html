@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,10 +125,18 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for more concise visual tree definitions
-
+		go.Shape.defineFigureGenerator('Wave', (shape, w, h) => {
+			const geo = new go.Geometry();
+			const fig = new go.PathFigure(0, 0, true);
+      const param1 = shape?.parameter1 ?? 0;
+			geo.add(fig);
+			fig.add(new go.PathSegment(go.SegmentType.Line, w, 0));
+			fig.add(new go.PathSegment(go.SegmentType.Line, w, h*3/4));
+			fig.add(new go.PathSegment(go.SegmentType.QuadraticBezier, 0, h*3/4, w/2, h/4 + h*param1));
+			fig.add(new go.PathSegment(go.SegmentType.Line, 0, 0));
+			return geo;
+		});
+		
     myDiagram = new go.Diagram('myDiagramDiv', {
       'grid.visible': true,
       'grid.gridCellSize': new go.Size(30, 20),
@@ -140,7 +147,7 @@
       'undoManager.isEnabled': true,
       ModelChanged: (e) => {
         if (e.isTransactionFinished) updateAnimation();
-      },
+      }
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -155,102 +162,318 @@
       }
     });
 
+    var WAVE_WIDTH = 50;
+		var WAVE_HEIGHT = 10;
+		var ORIGINAL_WIDTH = 100 * WAVE_WIDTH;
     myDiagram.nodeTemplateMap.add(
-      'Process',
-      $(go.Node,
-        'Auto',
-        {
-          locationSpot: new go.Spot(0.5, 0.5),
-          locationObjectName: 'SHAPE',
-          resizable: true,
-          resizeObjectName: 'SHAPE',
-        },
-        new go.Binding('location', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape,
-          'Cylinder1',
-          {
-            name: 'SHAPE',
-            strokeWidth: 2,
-            fill: $(go.Brush, 'Linear', {
-              start: go.Spot.Left,
-              end: go.Spot.Right,
-              0: 'gray',
-              0.5: 'white',
-              1: 'gray',
-            }),
-            minSize: new go.Size(50, 50),
-            portId: '',
-            fromSpot: go.Spot.AllSides,
-            toSpot: go.Spot.AllSides,
-          },
-          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)
-        ),
-        $(go.TextBlock,
-          {
+      'Tank',
+      new go.Node('Spot', {
+        resizable: true,
+        resizeObjectName: 'WAVE_PANEL',
+        locationSpot: go.Spot.Center,
+      })
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Capsule', {fill: 'white', stroke: 'black', strokeWidth: 2})
+            .bindTwoWay('height', 'height', (value) => (value + 2))
+            .bindTwoWay('width', 'width', (value) => (value + 2)),
+          new go.Panel('Spot', {isClipping: true})
+            .add(
+              new go.Shape('Capsule')
+                .bindTwoWay('height')
+                .bindTwoWay('width'),
+              new go.Panel('Spot', {name: 'WAVE_PANEL'})
+                .bindTwoWay('height')
+                .bindTwoWay('width')
+                .add(
+                  new go.Shape({fill: 'white', strokeWidth: 0}),
+                  new go.Panel('Vertical', {
+                    alignmentFocus: go.Spot.BottomCenter,
+                    alignment: go.Spot.BottomCenter,
+                    stretch: go.Stretch.Horizontal
+                  })
+                    .add(
+                      new go.Panel('Graduated', {
+                        background: 'transparent',
+                        graduatedMin: 0,
+                        graduatedMax: 100,
+                        graduatedTickBase: 0,
+                        graduatedTickUnit: 1,
+                        width: ORIGINAL_WIDTH,
+                        margin: 0,
+                        stretch: go.Stretch.Horizontal,
+                        name: 'WAVE_GRADUATED_PANEL'
+                      })
+                        .add(
+                          new go.Shape({
+                            name: 'line',
+                            geometryString: 'M0 0 H-' + ORIGINAL_WIDTH,
+                            stroke: 'gray',
+                            strokeWidth: 0
+                          }),
+                          new go.Shape('Wave', {
+                            interval: 1,
+                            parameter1: 0,
+                            name: 'WAVE1',
+                            fill: new go.Brush('Linear', {
+                              0: '#a3b7ca',
+                              1: '#d1dbe4',
+                              start: go.Spot.Top,
+                              end: go.Spot.Bottom
+                            }),
+                            strokeWidth: 0,
+                            desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
+                            graduatedSkip: (n) => (n % 2),
+                          }),
+                          new go.Shape('Wave', {
+                            interval: 1,
+                            parameter1: 1,
+                            name: 'WAVE2',
+                            graduatedSkip: (n) => (!(n % 2)),
+                            desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
+                            fill: new go.Brush('Linear', {
+                              0: '#a3b7ca',
+                              1: '#d1dbe4',
+                              start: go.Spot.Top,
+                              end: go.Spot.Bottom
+                            }),
+                            strokeWidth: 0
+                          }),
+                        ),
+                      new go.Shape({
+                        fill: new go.Brush('Linear', {
+                          0: '#a3b7ca',
+                          0.25: '#7593af',
+                          0.5: '#476f95',
+                          0.75: '#194a7a',
+                          start: go.Spot.Top,
+                          end: go.Spot.Bottom,
+                        }),
+                        margin: new go.Margin(-1, 0, 0, 0),
+                        strokeWidth: 0,
+                        stretch: go.Stretch.Horizontal
+                      })
+                        .bind('height', '', (data) => {
+                          let fill_height = data.fillLevel * data.height;
+                          return fill_height - (WAVE_HEIGHT / 2);
+                        })
+                    )
+                )
+            ),
+            new go.Panel('Auto')
+              .add(
+                new go.Shape({fill: 'white', stroke: 'black'}),
+                new go.TextBlock('test', {stroke: 'black', margin: 3})
+                  .bind('text')
+              )
+        )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'Pump',
+      new go.Node('Vertical')
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel('Vertical', {portId: ''})
+            .add(
+              new go.Shape('Circle', {
+                desiredSize: new go.Size(25, 25),
+                fill: 'transparent',
+                strokeWidth: 2,
+                margin: new go.Margin(0, 0, -2, 0)
+              }),
+              new go.Shape({
+                desiredSize: new go.Size(30, 8),
+                fill: 'transparent',
+                strokeWidth: 2
+              })
+            ),
+          new go.TextBlock({
             alignment: go.Spot.Center,
             textAlign: 'center',
             margin: 5,
-            editable: true,
-          },
-          new go.Binding('text').makeTwoWay()
+            editable: true
+          })
+          .bindTwoWay('text')
         )
-      )
+    );
+
+
+    myDiagram.nodeTemplateMap.add(
+      'Condenser',
+      new go.Node('Vertical')
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Circle', {
+                desiredSize: new go.Size(32, 32),
+                fill: 'transparent',
+                strokeWidth: 2,
+                portId: '',
+                fromSpot: go.Spot.Right,
+                toSpot: go.Spot.Left
+              }),
+              new go.Shape({
+                geometryString: 'F M0 36 L0 40 4 40 0 40 20 16 20 24 40 0',
+                desiredSize: new go.Size(35, 35),
+                strokeWidth: 2,
+                fill: 'transparent'
+              })
+            ),
+          new go.TextBlock({
+            alignment: go.Spot.Center,
+            textAlign: 'center',
+            margin: 5,
+            editable: true
+          })
+          .bindTwoWay('text')
+        )
     );
 
     myDiagram.nodeTemplateMap.add(
       'Valve',
-      $(go.Node,
-        'Vertical',
-        {
-          locationSpot: new go.Spot(0.5, 1, 0, -21),
-          locationObjectName: 'SHAPE',
-          selectionObjectName: 'SHAPE',
-          rotatable: true,
-        },
-        new go.Binding('angle').makeTwoWay(),
-        new go.Binding('location', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.TextBlock,
-          { alignment: go.Spot.Center, textAlign: 'center', margin: 5, editable: true },
-          new go.Binding('text').makeTwoWay(),
-          // keep the text upright, even when the whole node has been rotated upside down
-          new go.Binding('angle', 'angle', (a) => (a === 180 ? 180 : 0)).ofObject()
-        ),
-        $(go.Shape, {
-          name: 'SHAPE',
-          geometryString: 'F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30',
-          strokeWidth: 2,
-          fill: $(go.Brush, 'Linear', { 0: 'gray', 0.35: 'white', 0.7: 'gray' }),
-          portId: '',
-          fromSpot: new go.Spot(1, 0.35),
-          toSpot: new go.Spot(0, 0.35),
-        })
-      )
+      new go.Node('Vertical', {
+        locationSpot: new go.Spot(0.5, 1, 0, -21),
+        locationObjectName: 'SHAPE',
+        selectionObjectName: 'SHAPE',
+        rotatable: true
+      })
+        .bindTwoWay('angle')
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.TextBlock({
+            alignment: go.Spot.Center,
+            textAlign: 'center',
+            margin: 5,
+            editable: true
+          })
+            .bindTwoWay('text')
+            // keep the text upright, even when the whole node has been rotated upside down
+            .bindObject('angle', 'angle', (a) => (a === 180 ? 180 : 0)),
+          new go.Shape({
+            name: 'SHAPE',
+            geometryString: 'F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30',
+            strokeWidth: 2,
+            fill: 'white',
+            portId: '',
+            fromSpot: new go.Spot(1, 0.35),
+            toSpot: new go.Spot(0, 0.35)
+          })
+        )
     );
 
-    myDiagram.linkTemplate = $(go.Link,
-      { routing: go.Routing.AvoidsNodes, curve: go.Curve.JumpGap, corner: 10, reshapable: true, toShortLength: 7 },
-      new go.Binding('points').makeTwoWay(),
-      // mark each Shape to get the link geometry with isPanelMain: true
-      $(go.Shape, { isPanelMain: true, stroke: 'black', strokeWidth: 7 }),
-      $(go.Shape, { isPanelMain: true, stroke: 'gray', strokeWidth: 5 }),
-      $(go.Shape, { isPanelMain: true, stroke: 'white', strokeWidth: 3, name: 'PIPE', strokeDashArray: [10, 10] }),
-      $(go.Shape, { toArrow: 'Triangle', scale: 1.3, fill: 'gray', stroke: null })
+    myDiagram.nodeTemplateMap.add(
+      'Boiler',
+      new go.Node('Vertical')
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Circle', {
+                desiredSize: new go.Size(32, 32),
+                portId: '',
+                fill: 'transparent',
+                strokeWidth: 2
+              }),
+              new go.Shape("Circle", {
+                desiredSize: new go.Size(16, 16),
+                strokeWidth: 2,
+                alignment: go.Spot.BottomCenter,
+                alignmentFocus: go.Spot.BottomCenter,
+                fill: 'transparent'
+              })
+            ),
+          new go.TextBlock({
+            alignment: go.Spot.Center,
+            textAlign: 'center',
+            margin: 5,
+            editable: true
+          })
+          .bindTwoWay('text')
+        )
     );
+
+    myDiagram.nodeTemplateMap.add(
+      'Label',
+      new go.Node('Auto')
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({fill: 'white', stroke: 'black'}),
+          new go.TextBlock('test', {stroke: 'black', margin: 3})
+            .bind('text')
+        )
+    );
+
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.AvoidsNodes,
+      curve: go.Curve.JumpGap,
+      corner: 10,
+      reshapable: true,
+      toShortLength: 7
+    })
+      .bindTwoWay('points')
+      .add(
+        // mark each Shape to get the link geometry with isPanelMain: true
+        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 7 }),
+        new go.Shape({ isPanelMain: true, stroke: '#aaa', strokeWidth: 5 })
+          .bind('stroke'),
+        new go.Shape({
+          isPanelMain: true,
+          stroke: 'white',
+          strokeWidth: 3,
+          name: 'PIPE',
+          strokeDashArray: [10, 10]
+        }),
+        new go.Shape({ toArrow: 'Triangle', scale: 1.3, fill: 'white', stroke: 'black' })
+      );
 
     load();
   }
 
   var myAnimation = null;
+  var myWaterAnimation = null;
+
+  //parameter1 isn't something you can animate by default :(
+
+  go.AnimationManager.defineAnimationEffect('waves', (obj, startValue, endValue, easing, currentTime, duration, animation) => {
+    let value = easing(currentTime, startValue, endValue - startValue, duration);
+    obj.parameter1 = value;
+  });
+
+  go.AnimationManager.defineAnimationEffect('offset', (obj, startValue, endValue, easing, currentTime, duration, animation) => {
+    let value = easing(currentTime, startValue, endValue - startValue, duration);
+    obj.alignment = new go.Spot(0, 0, value, 0);
+  });
 
   function updateAnimation() {
+    //for the flow in the pipes
     if (myAnimation) myAnimation.stop();
     // Animate the flow in the pipes
     myAnimation = new go.Animation();
     myAnimation.easing = go.Animation.EaseLinear;
-    myDiagram.links.each((link) => myAnimation.add(link.findObject('PIPE'), 'strokeDashOffset', 20, 0));
+    myDiagram.links.each((link) =>
+      myAnimation.add(link.findObject('PIPE'), 'strokeDashOffset', 20, 0)
+    );
     // Run indefinitely
     myAnimation.runCount = Infinity;
     myAnimation.start();
+    //for the water movement
+    if (myWaterAnimation) myWaterAnimation.stop();
+    myWaterAnimation = new go.Animation();
+    myWaterAnimation.easing = go.Animation.EaseInOutQuad;
+    myWaterAnimation.reversible = true;
+    myWaterAnimation.duration = 2000;
+    myDiagram.nodes.each((node) => {
+      let wave1 = node.findObject('WAVE1');
+      let wave2 = node.findObject('WAVE2');
+      let waveGraduatedPanel = node.findObject('WAVE_GRADUATED_PANEL');
+      if (wave1) myWaterAnimation.add(wave1, 'waves', 0, 1);
+      if (wave2) myWaterAnimation.add(wave2, 'waves', 1, 0);
+      if (waveGraduatedPanel) myWaterAnimation.add(waveGraduatedPanel, 'offset', -30, 0);
+    });
+    myWaterAnimation.runCount = Infinity;
+    myWaterAnimation.start();
   }
 
   function save() {
@@ -267,15 +490,21 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
   <p>
-    A <em>process flow diagram</em> is commonly used in chemical and process engineering to indicate the general flow of plant processes and equipment. A simple
-    SCADA diagram, with animation of the flow along the pipes, is implemented here.
+    A <em>process flow diagram</em> is commonly used in chemical and process engineering to indicate
+    the general flow of plant processes and equipment. A simple SCADA diagram, with animation of the
+    flow along the pipes, is implemented here. It shows a basic distillation process--more information available on
+    <a href='https://en.wikipedia.org/wiki/Reflux'>Wikipedia</a>.
   </p>
   <p>
-    The diagram displays the background grid layer by setting <b>grid.visible</b> to true, and also allows snapping to the grid using
-    <a>DraggingTool.isGridSnapEnabled</a>, <a>ResizingTool.isGridSnapEnabled</a>, and <a>RotatingTool.snapAngleMultiple</a> alongside
-    <a>RotatingTool.snapAngleEpsilon</a>.
+    The diagram displays the background grid layer by setting <b>grid.visible</b> to true, and also
+    allows snapping to the grid using <a>DraggingTool.isGridSnapEnabled</a>,
+    <a>ResizingTool.isGridSnapEnabled</a>, and <a>RotatingTool.snapAngleMultiple</a> alongside
+    <a>RotatingTool.snapAngleEpsilon</a>. It also makes use of
+    <a href="../intro/graduatedPanels.html">Graduated Panels</a> for the water effect inside the tanks.
   </p>
-  <p>There is also a custom animation that modifies the <a>Shape.strokeDashOffset</a> for each link.</p>
+  <p>
+    There is also a custom animation that modifies the <a>Shape.strokeDashOffset</a> for each link.
+  </p>
   <div>
     <div>
       <button id="SaveButton" onclick="save()">Save</button>
@@ -283,30 +512,34 @@
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 300px">
-{ "class": "go.GraphLinksModel",
-  "nodeDataArray": [
-{"key":"P1", "category":"Process", "pos":"150 120", "text":"Process"},
-{"key":"P2", "category":"Process", "pos":"330 320", "text":"Tank"},
-{"key":"V1", "category":"Valve", "pos":"270 120", "text":"V1"},
-{"key":"P3", "category":"Process", "pos":"150 420", "text":"Pump"},
-{"key":"V2", "category":"Valve", "pos":"150 280", "text":"VM", "angle":270},
-{"key":"V3", "category":"Valve", "pos":"270 420", "text":"V2", "angle":180},
-{"key":"P4", "category":"Process", "pos":"450 140", "text":"Reserve Tank"},
-{"key":"V4", "category":"Valve", "pos":"390 60", "text":"VA"},
-{"key":"V5", "category":"Valve", "pos":"450 260", "text":"VB", "angle":90}
- ],
-  "linkDataArray": [
-{"from":"P1", "to":"V1"},
-{"from":"P3", "to":"V2"},
-{"from":"V2", "to":"P1"},
-{"from":"P2", "to":"V3"},
-{"from":"V3", "to":"P3"},
-{"from":"V1", "to":"V4"},
-{"from":"V4", "to":"P4"},
-{"from":"V1", "to":"P2"},
-{"from":"P4", "to":"V5"},
-{"from":"V5", "to":"P2"}
- ]}
+      {"class": "go.GraphLinksModel",
+        "nodeDataArray": [
+          {"key":"Tank1", "category":"Tank", "pos":"0 200", "text":"Feed Tank", "height": 100, "width": 200, "fillLevel": "0.8"},
+          {"key":"Valve1", "category":"Valve", "pos":"170 200", "text":"Valve", "angle":0},
+          {"key":"Tank2", "category":"Tank", "pos":"300 200", "text":"Distillation Column", "height": 275, "width": 75, "fillLevel": "0.3"},
+          {"key":"Condenser1", "category": "Condenser", "pos":"400 0", "text": "Condenser"},
+          {"key":"Tank3", "category":"Tank", "pos":"600 20", "text":"Reflux Drum", "height":75, "width":150, "fillLevel": "0.5"},
+          {"key":"Pump1", "category":"Pump", "pos":"550 100", "text":"Pump"},
+          {"key":"Boiler1", "category":"Boiler", "pos":"400 405", "text":"Reboiler"},
+          {"key":"Valve2", "category":"Valve", "pos":"550 350", "text":"Valve", "angle":270},
+          {"key":"Label1", "category":"Label", "pos":"700 100", "text":"Overhead product"},
+          {"key":"Label2", "category":"Label", "pos":"0 420", "text":"Bottom product"}
+
+        ],
+        "linkDataArray": [
+          {"from":"Tank1", "to":"Valve1", "stroke":"#7593af"},
+          {"from":"Valve1", "to":"Tank2", "stroke":"#7593af"},
+          {"from":"Tank2", "to":"Condenser1"},
+          {"from":"Condenser1", "to":"Tank3", "stroke":"#7593af"},
+          {"from":"Tank3", "to":"Pump1", "stroke":"#7593af"},
+          {"from":"Pump1", "to":"Tank2", "stroke":"#7593af"},
+          {"from":"Pump1", "to":"Label1", "stroke":"#7593af"},
+          {"from":"Tank2", "to":"Boiler1", "stroke":"#7593af"},
+          {"from":"Boiler1", "to":"Valve2"},
+          {"from":"Valve2", "to":"Tank2"},
+          {"from":"Boiler1", "to":"Label2", "stroke":"#7593af"}
+        ]
+      }
     </textarea>
   </div>
 </div>

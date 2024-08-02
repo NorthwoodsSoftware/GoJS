@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,39 +124,34 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // define the "sample" Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location').makeTwoWay(),
-      $(go.Shape,
-        'RoundedRectangle', // define the node's outer shape
-        { fill: 'white', strokeWidth: 0 },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, // define the node's text
-        { margin: 5 },
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bindTwoWay('location')
+      .add(
+        new go.Shape('RoundedRectangle', { fill: 'white', strokeWidth: 0 }) // define the node's outer shape
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 }) // define the node's text
+          .bind('text')
+      );
 
-    myDiagram.linkTemplate = $(go.Link, { curve: go.Curve.Bezier }, $(go.Shape, { strokeWidth: 1.5 }), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.linkTemplate = new go.Link({curve: go.Curve.Bezier})
+      .add(
+        new go.Shape({ strokeWidth: 1.5 }),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', color: 'lightblue', location: new go.Point(0, 0) },
-        { key: 2, text: 'Beta', color: 'pink', location: new go.Point(60, 80) },
+        { key: 2, text: 'Beta', color: 'pink', location: new go.Point(60, 80) }
       ],
       [
         { from: 1, to: 2 },
-        { from: 2, to: 1 },
+        { from: 2, to: 1 }
       ]
     );
 
@@ -167,31 +161,32 @@
       initialAutoScale: go.AutoScale.Uniform,
       isReadOnly: true, // do not allow users to modify or select in this view
       allowSelect: false,
-      layout: $(go.TreeLayout, { nodeSpacing: 5 }), // automatically laid out as a tree
+      layout: new go.TreeLayout({ nodeSpacing: 5 }) // automatically laid out as a tree
     });
 
-    myVisualTree.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, { fill: 'darkkhaki', stroke: null }), // assume a dark background
-      $(go.TextBlock,
-        {
-          font: 'bold 13px Helvetica, bold Arial, sans-serif',
+    myVisualTree.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape({ fill: 'white', stroke: null }), // assume a dark background
+        new go.TextBlock({
+          font: 'bold 13px monospace',
           stroke: 'black',
-          margin: 3,
-        },
-        // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
-        new go.Binding('text', '', (x) => {
-          // if the node represents a link, be sure to include the "to/from" data for that link
-          if (x instanceof go.Link) {
-            var s = 'Link#' + x.data.__gohashid;
-            s += '(' + x.data.from + ' to ' + x.data.to + ')';
-            return s;
-          } else return x.toString();
+          margin: 3
         })
-      )
-    );
+          // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+          .bind('text', '', (x) => {
+            // if the node represents a link, be sure to include the "to/from" data for that link
+            if (x instanceof go.Link) {
+              var s = 'Link#' + x.data.__gohashid;
+              s += '(' + x.data.from + ' to ' + x.data.to + ')';
+              return s;
+            } else return x.toString();
+          })
+      );
 
-    myVisualTree.linkTemplate = $(go.Link, $(go.Shape, { stroke: 'darkkhaki', strokeWidth: 2 }));
+    myVisualTree.linkTemplate = new go.Link()
+      .add(
+        new go.Shape({ stroke: 'white', strokeWidth: 2 })
+      );
 
     drawVisualTree();
   }
@@ -223,7 +218,7 @@
     myVisualTree.model = new go.TreeModel({
       nodeKeyProperty: 'vtkey',
       nodeParentKeyProperty: 'parentKey',
-      nodeDataArray: visualNodeDataArray,
+      nodeDataArray: visualNodeDataArray
     });
   }
   window.addEventListener('DOMContentLoaded', init);

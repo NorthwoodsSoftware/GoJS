@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,16 +125,16 @@
 <script src="../extensions/ScrollingTable.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       LayoutCompleted: (e) => {
-        e.diagram.nodes.each((n) => {
-          var table = n.findObject('TABLE');
-          if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
-        });
-      },
+        if (e.diagram.nodes.length > 0) {
+          e.diagram.nodes.each((n) => {
+            var table = n.findObject('TABLE');
+            if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
+          });
+        }
+      }
     });
 
     // support mouse wheel scrolling of table when the mouse is in the table
@@ -158,53 +157,60 @@
       go.ToolManager.prototype.doMouseWheel.call(this);
     };
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      {
-        selectionObjectName: 'SCROLLER',
-        resizable: true,
-        resizeObjectName: 'SCROLLER',
-        portSpreading: go.PortSpreading.None,
-      },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.TextBlock, { font: 'bold 14px sans-serif' }, new go.Binding('text', 'key')),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, { fill: 'white' }),
-        $('ScrollingTable',
-          {
-            name: 'SCROLLER',
-            desiredSize: new go.Size(NaN, 60), // fixed width
-            stretch: go.Stretch.Fill, // but stretches vertically
-            defaultColumnSeparatorStroke: 'gray',
-            defaultColumnSeparatorStrokeWidth: 0.5,
-          },
-          new go.Binding('TABLE.itemArray', 'items'),
-          new go.Binding('TABLE.column', 'left', (left) => (left ? 2 : 0)),
-          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-          {
-            'TABLE.itemTemplate': $(go.Panel,
-              'TableRow',
-              {
-                defaultStretch: go.Stretch.Horizontal,
-                fromSpot: go.Spot.LeftRightSides,
-                toSpot: go.Spot.LeftRightSides,
-                fromLinkable: true,
-                toLinkable: true,
-              },
-              new go.Binding('portId', 'name'),
-              $(go.TextBlock, { column: 0 }, new go.Binding('text', 'name')),
-              $(go.TextBlock, { column: 1 }, new go.Binding('text', 'value'))
-            ),
-            'TABLE.defaultColumnSeparatorStroke': 'gray',
-            'TABLE.defaultColumnSeparatorStrokeWidth': 0.5,
-            'TABLE.defaultRowSeparatorStroke': 'gray',
-            'TABLE.defaultRowSeparatorStrokeWidth': 0.5,
-            'TABLE.defaultSeparatorPadding': new go.Margin(1, 3, 0, 3),
-          }
-        )
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      selectionObjectName: 'SCROLLER',
+      resizable: true,
+      resizeObjectName: 'SCROLLER',
+      portSpreading: go.PortSpreading.None
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.TextBlock({ font: 'bold 14px sans-serif' })
+          .bind('text', 'key'),
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: 'white' }),
+            go.GraphObject.build('ScrollingTable', {
+              name: 'SCROLLER',
+              desiredSize: new go.Size(NaN, 60), // fixed width
+              stretch: go.Stretch.Fill, // but stretches vertically
+              defaultColumnSeparatorStroke: 'gray',
+              defaultColumnSeparatorStrokeWidth: 0.5
+            })
+              .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+          )
+      );
+
+    //for some unknown reason this doesn't work if you do it in the actual node template so it's here instead
+    myDiagram.nodeTemplate.findObject('TABLE')
+      ?.setProperties({
+        itemTemplate: new go.Panel('TableRow', {
+          defaultStretch: go.Stretch.Horizontal,
+          fromSpot: go.Spot.LeftRightSides,
+          toSpot: go.Spot.LeftRightSides,
+          fromLinkable: true,
+          toLinkable: true
+        })
+          .bind('portId', 'name')
+          .add(
+            new go.TextBlock({ column: 0 }).bind('text', 'name'),
+            new go.TextBlock({ column: 1 }).bind('text', 'value')
+          ),
+        defaultColumnSeparatorStroke: 'gray',
+        defaultColumnSeparatorStrokeWidth: 0.5,
+        defaultRowSeparatorStroke: 'gray',
+        defaultRowSeparatorStrokeWidth: 0.5,
+        defaultSeparatorPadding: new go.Margin(1, 3, 0, 3)
+      })
+      .bind('itemArray', 'items')
+      .bind('column', 'left', (left) => (left ? 1 : 0));
+
+    //this and the other column binding swap the columns of the scrollbar and table
+    //if you look at the ScrollingTable extension source, the scrolling table itself is implemented as a table with the
+    //scrollbar usually in column 1 to the right of the table content in column 0, this simply switches them to make
+    //the scrollbar appear on the left
+    myDiagram.nodeTemplate.findObject('SCROLLBAR')
+      ?.bind('column', 'left', (left) => (left ? 0 : 1));
 
     myDiagram.model = new go.GraphLinksModel({
       linkFromPortIdProperty: 'fromPort',
@@ -222,8 +228,8 @@
             { name: 'D', value: 4 },
             { name: 'E', value: 5 },
             { name: 'F', value: 6 },
-            { name: 'G', value: 7 },
-          ],
+            { name: 'G', value: 7 }
+          ]
         },
         {
           key: 'Beta',
@@ -243,15 +249,15 @@
             { name: 'Kk', value: 11 },
             { name: 'Ll', value: 12 },
             { name: 'Mm', value: 13 },
-            { name: 'Nn', value: 14 },
-          ],
-        },
+            { name: 'Nn', value: 14 }
+          ]
+        }
       ],
       linkDataArray: [
         { from: 'Alpha', fromPort: 'D', to: 'Beta', toPort: 'Ff' },
         { from: 'Alpha', fromPort: 'A', to: 'Beta', toPort: 'Nn' },
-        { from: 'Alpha', fromPort: 'G', to: 'Beta', toPort: 'Aa' },
-      ],
+        { from: 'Alpha', fromPort: 'G', to: 'Beta', toPort: 'Aa' }
+      ]
     });
   }
   window.addEventListener('DOMContentLoaded', init);

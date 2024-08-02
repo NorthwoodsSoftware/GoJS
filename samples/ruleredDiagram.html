@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -123,192 +122,207 @@
             
             
 
-  <script id="code">
-    function init() {
-      myDiagram =
-        new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-          {
-            layout: new go.ForceDirectedLayout(),
-            "undoManager.isEnabled": true,  // enable undo & redo
-            scrollMode: go.ScrollMode.Infinite,  // allow the diagram to be scrolled beyond content
-            "grid.visible": true  // show that the ticks of the rulers always line up with the grid lines
-          });
 
-      // the templates don't really matter for this sample
-      myDiagram.nodeTemplate =
-        new go.Node("Auto").add(
-          new go.Shape("RoundedRectangle",
-              { strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true })
-            .bind("fill", "color"),
-          new go.TextBlock({ margin: 8 })
-            .bind("text")
+<script id="code">
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true,  // enable undo & redo
+      scrollMode: go.ScrollMode.Infinite,  // allow the diagram to be scrolled beyond content
+      'grid.visible': true , // show that the ticks of the rulers always line up with the grid lines
+      layout: new go.ForceDirectedLayout()
+    });
+
+    // the templates don't really matter for this sample
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', {
+          strokeWidth: 0,
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 })
+          .bind('text')
+      );
+
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue' },
+        { key: 2, text: 'Beta', color: 'orange' },
+        { key: 3, text: 'Gamma', color: 'lightgreen' },
+        { key: 4, text: 'Delta', color: 'pink' }
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 }
+      ]);
+
+    // Keep references to the scales and indicators to easily update them
+    const gradScaleHoriz =
+      new go.Part('Graduated', {
+        graduatedTickUnit: 10,
+        layerName: 'ViewportBackground',
+        alignment: go.Spot.TopLeft,
+        isAnimated: false
+      })
+        .add(
+          new go.Shape({ geometryString: 'M0 0 H400' }),
+          new go.Shape({ geometryString: 'M0 0 V4', interval: 1 }),
+          new go.Shape({ geometryString: 'M0 0 V7', interval: 5 }),
+          new go.Shape({ geometryString: 'M0 0 V15', interval: 10 }),
+          new go.TextBlock({
+            font: '10px sans-serif',
+            interval: 10,
+            alignmentFocus: go.Spot.TopLeft,
+            segmentOffset: new go.Point(0, 7)
+          })
         );
 
-      myDiagram.model = new go.GraphLinksModel(
-        [
-          { key: 1, text: "Alpha", color: "lightblue" },
-          { key: 2, text: "Beta", color: "orange" },
-          { key: 3, text: "Gamma", color: "lightgreen" },
-          { key: 4, text: "Delta", color: "pink" }
-        ],
-        [
-          { from: 1, to: 2 },
-          { from: 1, to: 3 },
-          { from: 2, to: 2 },
-          { from: 3, to: 4 },
-          { from: 4, to: 1 }
-        ]);
-
-      // Keep references to the scales and indicators to easily update them
-      const gradScaleHoriz =
-        new go.Part("Graduated",
-            { graduatedTickUnit: 10, layerName: "ViewportBackground", alignment: go.Spot.TopLeft, isAnimated: false })
-          .add(
-            new go.Shape({ geometryString: "M0 0 H400" }),
-            new go.Shape({ geometryString: "M0 0 V4", interval: 1 }),
-            new go.Shape({ geometryString: "M0 0 V7", interval: 5 }),
-            new go.Shape({ geometryString: "M0 0 V15", interval: 10 }),
-            new go.TextBlock(
-              {
-                font: "10px sans-serif",
-                interval: 10,
-                alignmentFocus: go.Spot.TopLeft,
-                segmentOffset: new go.Point(0, 7)
-              })
-          );
-
-      const gradScaleVert =
-        new go.Part("Graduated",
-            { graduatedTickUnit: 10, layerName: "ViewportBackground", alignment: go.Spot.TopLeft, isAnimated: false })
-          .add(
-            new go.Shape({ geometryString: "M0 0 V400" }),
-            new go.Shape({ geometryString: "M0 0 V4", interval: 1, alignmentFocus: go.Spot.Bottom }),
-            new go.Shape({ geometryString: "M0 0 V7", interval: 5, alignmentFocus: go.Spot.Bottom }),
-            new go.Shape({ geometryString: "M0 0 V15", interval: 10, alignmentFocus: go.Spot.Bottom }),
-            new go.TextBlock(
-              {
-                font: "10px sans-serif",
-                segmentOrientation: go.Orientation.Opposite,
-                interval: 10,
-                alignmentFocus: go.Spot.BottomLeft,
-                segmentOffset: new go.Point(0, -7)
-              })
-          );
-
-      const gradIndicatorHoriz =
-        new go.Part(
-          {
-            pickable: false, layerName: "Grid", visible: false,
-            isAnimated: false, locationSpot: go.Spot.Top
-          }).add(
-          new go.Shape({ geometryString: "M0 0 V20", strokeWidth: 2, stroke: "red" })
+    const gradScaleVert =
+      new go.Part('Graduated', {
+        graduatedTickUnit: 10,
+        layerName: 'ViewportBackground',
+        alignment: go.Spot.TopLeft,
+        isAnimated: false
+      })
+        .add(
+          new go.Shape({ geometryString: 'M0 0 V400' }),
+          new go.Shape({ geometryString: 'M0 0 V4', interval: 1, alignmentFocus: go.Spot.Bottom }),
+          new go.Shape({ geometryString: 'M0 0 V7', interval: 5, alignmentFocus: go.Spot.Bottom }),
+          new go.Shape({ geometryString: 'M0 0 V15', interval: 10, alignmentFocus: go.Spot.Bottom }),
+          new go.TextBlock({
+            font: '10px sans-serif',
+            segmentOrientation: go.Orientation.Opposite,
+            interval: 10,
+            alignmentFocus: go.Spot.BottomLeft,
+            segmentOffset: new go.Point(0, -7)
+          })
         );
 
-      const gradIndicatorVert =
-        new go.Part(
-          {
-            pickable: false, layerName: "Grid", visible: false,
-            isAnimated: false, locationSpot: go.Spot.Left
-          }).add(
-          new go.Shape({ geometryString: "M0 0 H20", strokeWidth: 2, stroke: "red" })
+    const gradIndicatorHoriz =
+      new go.Part({
+        pickable: false,
+        layerName: 'Grid',
+        visible: false,
+        isAnimated: false,
+        locationSpot: go.Spot.Top
+      })
+        .add(
+          new go.Shape({ geometryString: 'M0 0 V20', strokeWidth: 2, stroke: 'red' })
         );
 
-      // Add listeners to keep the scales/indicators in sync with the viewport
-      myDiagram.addDiagramListener("InitialLayoutCompleted", setupScalesAndIndicators);
-      myDiagram.addDiagramListener("ViewportBoundsChanged", e => { updateScales(); updateIndicators(); });
-      myDiagram.mouseEnter = () => showIndicators(true);
-      myDiagram.mouseLeave = () => showIndicators(false);
-      // Override doMouseMove to keep indicators in sync
-      myDiagram.doMouseMove = function() {  // method override must be function, not =>
-        go.Diagram.prototype.doMouseMove.call(this);
-        updateIndicators();
-      }
+    const gradIndicatorVert =
+      new go.Part({
+        pickable: false,
+        layerName: 'Grid',
+        visible: false,
+        isAnimated: false,
+        locationSpot: go.Spot.Left
+      })
+        .add(
+          new go.Shape({ geometryString: 'M0 0 H20', strokeWidth: 2, stroke: 'red' })
+        );
 
-      function setupScalesAndIndicators() {
-        myDiagram.commit(d => {
-          // Add each node to the diagram
-          d.add(gradScaleHoriz);
-          d.add(gradScaleVert);
-          d.add(gradIndicatorHoriz);
-          d.add(gradIndicatorVert);
-          updateScales();
-          updateIndicators();
-        }, null);  // null says to skip UndoManager recording of changes
-      }
-
-      function updateScales(vb) {
-        if (!vb) vb = myDiagram.viewportBounds;
-        if (!vb.isReal()) return;
-        myDiagram.commit(diag => {
-          // Update properties of horizontal scale to reflect viewport
-          gradScaleHoriz.elt(0).width = vb.width * diag.scale;
-          gradScaleHoriz.graduatedMin = vb.x;
-          gradScaleHoriz.graduatedMax = vb.right;
-          // Update properties of vertical scale to reflect viewport
-          gradScaleVert.elt(0).height = vb.height * diag.scale;
-          gradScaleVert.graduatedMin = vb.y;
-          gradScaleVert.graduatedMax = vb.bottom;
-        }, null);
-      }
-
-      function updateIndicators() {
-        const vb = myDiagram.viewportBounds;
-        if (!vb.isReal()) return;
-        myDiagram.commit(diag => {
-          const mouseCoords = diag.lastInput.documentPoint;
-          // Keep the indicators in line with the mouse as viewport changes or mouse moves
-          gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
-          gradIndicatorHoriz.scale = 1 / diag.scale;
-          gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
-          gradIndicatorVert.scale = 1 / diag.scale;
-        }, null);
-      }
-
-      // Show indicators on mouseEnter of the diagram div; hide on mouseLeave
-      function showIndicators(show) {
-        myDiagram.commit(diag => {
-          gradIndicatorHoriz.visible = show;
-          gradIndicatorVert.visible = show;
-        }, null);
-      }
-
-
-      // print the diagram by opening a new window holding SVG images of the diagram contents for each page
-      function printDiagram() {
-        const svgWindow = window.open();
-        if (!svgWindow) return;  // failure to open a new Window
-        svgWindow.document.title = "GoJS Rulered Diagram";
-        svgWindow.document.body.style.margin = "0px";
-        const printSize = new go.Size(700, 960);
-        const bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
-        let x = bnds.x;
-        let y = bnds.y;
-        while (y < bnds.bottom) {
-          while (x < bnds.right) {
-            const pagerect = new go.Rect(x, y, printSize.width, printSize.height);
-            updateScales(pagerect);
-            const svg = myDiagram.makeSvg({
-              scale: 1.0,
-              position: new go.Point(x, y),
-              size: printSize,
-              showGrid: true,
-              showTemporary: true
-            });
-            svgWindow.document.body.appendChild(svg);
-            x += printSize.width;
-          }
-          x = bnds.x;
-          y += printSize.height;
-        }
-        // invoke the browser's print command
-        setTimeout(() => { svgWindow.print(); svgWindow.updateScales(); svgWindow.close(); }, 1);
-      }
-
-      document.getElementById("myPrintButton").addEventListener("click", printDiagram);
+    // Add listeners to keep the scales/indicators in sync with the viewport
+    myDiagram.addDiagramListener('InitialLayoutCompleted', setupScalesAndIndicators);
+    myDiagram.addDiagramListener('ViewportBoundsChanged', e => { updateScales(); updateIndicators(); });
+    myDiagram.mouseEnter = () => showIndicators(true);
+    myDiagram.mouseLeave = () => showIndicators(false);
+    // Override doMouseMove to keep indicators in sync
+    myDiagram.doMouseMove = function() {  // method override must be function, not =>
+      go.Diagram.prototype.doMouseMove.call(this);
+      updateIndicators();
     }
 
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+    function setupScalesAndIndicators() {
+      myDiagram.commit(d => {
+        // Add each node to the diagram
+        d.add(gradScaleHoriz);
+        d.add(gradScaleVert);
+        d.add(gradIndicatorHoriz);
+        d.add(gradIndicatorVert);
+        updateScales();
+        updateIndicators();
+      }, null);  // null says to skip UndoManager recording of changes
+    }
+
+    function updateScales(vb) {
+      if (!vb) vb = myDiagram.viewportBounds;
+      if (!vb.isReal()) return;
+      myDiagram.commit(diag => {
+        // Update properties of horizontal scale to reflect viewport
+        gradScaleHoriz.elt(0).width = vb.width * diag.scale;
+        gradScaleHoriz.graduatedMin = vb.x;
+        gradScaleHoriz.graduatedMax = vb.right;
+        // Update properties of vertical scale to reflect viewport
+        gradScaleVert.elt(0).height = vb.height * diag.scale;
+        gradScaleVert.graduatedMin = vb.y;
+        gradScaleVert.graduatedMax = vb.bottom;
+      }, null);
+    }
+
+    function updateIndicators() {
+      const vb = myDiagram.viewportBounds;
+      if (!vb.isReal()) return;
+      myDiagram.commit(diag => {
+        const mouseCoords = diag.lastInput.documentPoint;
+        // Keep the indicators in line with the mouse as viewport changes or mouse moves
+        gradIndicatorHoriz.location = new go.Point(Math.max(mouseCoords.x, vb.x), vb.y);
+        gradIndicatorHoriz.scale = 1 / diag.scale;
+        gradIndicatorVert.location = new go.Point(vb.x, Math.max(mouseCoords.y, vb.y));
+        gradIndicatorVert.scale = 1 / diag.scale;
+      }, null);
+    }
+
+    // Show indicators on mouseEnter of the diagram div; hide on mouseLeave
+    function showIndicators(show) {
+      myDiagram.commit(diag => {
+        gradIndicatorHoriz.visible = show;
+        gradIndicatorVert.visible = show;
+      }, null);
+    }
+
+
+    // print the diagram by opening a new window holding SVG images of the diagram contents for each page
+    function printDiagram() {
+      const svgWindow = window.open();
+      if (!svgWindow) return;  // failure to open a new Window
+      svgWindow.document.title = 'GoJS Rulered Diagram';
+      svgWindow.document.body.style.margin = '0px';
+      const printSize = new go.Size(700, 960);
+      const bnds = myDiagram.documentBounds.copy().unionRect(myDiagram.viewportBounds);
+      let x = bnds.x;
+      let y = bnds.y;
+      while (y < bnds.bottom) {
+        while (x < bnds.right) {
+          const pagerect = new go.Rect(x, y, printSize.width, printSize.height);
+          updateScales(pagerect);
+          const svg = myDiagram.makeSvg({
+            scale: 1.0,
+            position: new go.Point(x, y),
+            size: printSize,
+            showGrid: true,
+            showTemporary: true
+          });
+          svgWindow.document.body.appendChild(svg);
+          x += printSize.width;
+        }
+        x = bnds.x;
+        y += printSize.height;
+      }
+      // invoke the browser's print command
+      setTimeout(() => { svgWindow.print(); svgWindow.updateScales(); svgWindow.close(); }, 1);
+    }
+
+    document.getElementById('myPrintButton').addEventListener('click', printDiagram);
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:400px"></div>

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,10 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for more concise visual tree definitions
-
     // colors used, named for easier identification
     var blue = '#0288D1';
     var pink = '#B71C1C';
@@ -137,7 +132,7 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       initialAutoScale: go.AutoScale.Uniform,
-      layout: $(go.LayeredDigraphLayout),
+      layout: new go.LayeredDigraphLayout()
     });
 
     // The node template shows the activity name in the middle as well as
@@ -145,54 +140,41 @@
     // The border's color is determined by the node data's ".critical" property.
     // Some information is not available as properties on the node data,
     // but must be computed -- we use converter functions for that.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape,
-        'Rectangle', // the border
-        { fill: 'white', strokeWidth: 2 },
-        new go.Binding('fill', 'critical', (b) => (b ? pinkfill : bluefill)),
-        new go.Binding('stroke', 'critical', (b) => (b ? pink : blue))
-      ),
-      $(go.Panel,
-        'Table',
-        { padding: 0.5 },
-        $(go.RowColumnDefinition, { column: 1, separatorStroke: 'black' }),
-        $(go.RowColumnDefinition, { column: 2, separatorStroke: 'black' }),
-        $(go.RowColumnDefinition, { row: 1, separatorStroke: 'black', background: 'white', coversSeparators: true }),
-        $(go.RowColumnDefinition, { row: 2, separatorStroke: 'black' }),
-        $(go.TextBlock, // earlyStart
-          new go.Binding('text', 'earlyStart'),
-          { row: 0, column: 0, margin: 5, textAlign: 'center' }
-        ),
-        $(go.TextBlock, new go.Binding('text', 'length'), { row: 0, column: 1, margin: 5, textAlign: 'center' }),
-        $(go.TextBlock, // earlyFinish
-          new go.Binding('text', '', (d) => (d.earlyStart + d.length).toFixed(2)),
-          { row: 0, column: 2, margin: 5, textAlign: 'center' }
-        ),
-
-        $(go.TextBlock, new go.Binding('text', 'text'), {
-          row: 1,
-          column: 0,
-          columnSpan: 3,
-          margin: 5,
-          textAlign: 'center',
-          font: 'bold 14px sans-serif',
-        }),
-
-        $(go.TextBlock, // lateStart
-          new go.Binding('text', '', (d) => (d.lateFinish - d.length).toFixed(2)),
-          { row: 2, column: 0, margin: 5, textAlign: 'center' }
-        ),
-        $(go.TextBlock, // slack
-          new go.Binding('text', '', (d) => (d.lateFinish - (d.earlyStart + d.length)).toFixed(2)),
-          { row: 2, column: 1, margin: 5, textAlign: 'center' }
-        ),
-        $(go.TextBlock, // lateFinish
-          new go.Binding('text', 'lateFinish'),
-          { row: 2, column: 2, margin: 5, textAlign: 'center' }
-        )
-      ) // end Table Panel
-    ); // end Node
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('Rectangle', { fill: 'white', strokeWidth: 2 }) // the border
+          .bind('fill', 'critical', (b) => (b ? pinkfill : bluefill))
+          .bind('stroke', 'critical', (b) => (b ? pink : blue)),
+        new go.Panel('Table', { padding: 0.5 })
+          .addColumnDefinition(1, { separatorStroke: 'black' })
+          .addColumnDefinition(2, { separatorStroke: 'black' })
+          .addRowDefinition(1, { separatorStroke: 'black', background: 'white', coversSeparators: true })
+          .addRowDefinition(2, { separatorStroke: 'black' })
+          .add(
+             // earlyStart
+            new go.TextBlock({ row: 0, column: 0, margin: 5, textAlign: 'center' })
+              .bind('text', 'earlyStart'),
+            new go.TextBlock({ row: 0, column: 1, margin: 5, textAlign: 'center' })
+              .bind('text', 'length'),
+            new go.TextBlock({ row: 0, column: 2, margin: 5, textAlign: 'center' })
+              .bind('text', '', (d) => (d.earlyStart + d.length).toFixed(2)),// earlyFinish
+            new go.TextBlock(
+            {
+              row: 1,
+              column: 0,
+              columnSpan: 3,
+              margin: 5,
+              textAlign: 'center',
+              font: 'bold 14px sans-serif'
+            }).bind('text'),
+            new go.TextBlock({ row: 2, column: 0, margin: 5, textAlign: 'center' }) // lateStart
+              .bind('text', '', (d) => (d.lateFinish - d.length).toFixed(2)),
+            new go.TextBlock({ row: 2, column: 1, margin: 5, textAlign: 'center' }) // slack
+              .bind('text', '', (d) => (d.lateFinish - (d.earlyStart + d.length)).toFixed(2)),
+            new go.TextBlock({ row: 2, column: 2, margin: 5, textAlign: 'center' }) // lateFinish
+              .bind('text', 'lateFinish')
+          ) // end Table Panel
+      ); // end Node
 
     // The link data object does not have direct access to both nodes
     // (although it does have references to their keys: .from and .to).
@@ -216,14 +198,13 @@
     // The color of a link (including its arrowhead) is red only when both
     // connected nodes have data that is ".critical"; otherwise it is blue.
     // This is computed by the binding converter function.
-    myDiagram.linkTemplate = $(go.Link,
-      { toShortLength: 6, toEndSegmentLength: 20 },
-      $(go.Shape, { strokeWidth: 4 }, new go.Binding('stroke', '', linkColorConverter)),
-      $(go.Shape, // arrowhead
-        { toArrow: 'Triangle', stroke: null, scale: 1.5 },
-        new go.Binding('fill', '', linkColorConverter)
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({ toShortLength: 6, toEndSegmentLength: 20 })
+      .add(  
+        new go.Shape({ strokeWidth: 4 }).bind('stroke', '', linkColorConverter),
+        new go.Shape( // arrowhead
+          { toArrow: 'Triangle', stroke: null, scale: 1.5 })
+          .bind('fill', '', linkColorConverter)
+      );
 
     // here's the data defining the graph
     var nodeDataArray = [
@@ -235,7 +216,7 @@
       { key: 6, text: 'e', length: 5.17, earlyStart: 9.17, lateFinish: 14.34, critical: true },
       { key: 7, text: 'f', length: 4.5, earlyStart: 10.33, lateFinish: 19.51, critical: false },
       { key: 8, text: 'g', length: 5.17, earlyStart: 14.34, lateFinish: 19.51, critical: true },
-      { key: 9, text: 'Finish', length: 0, earlyStart: 19.51, lateFinish: 19.51, critical: true },
+      { key: 9, text: 'Finish', length: 0, earlyStart: 19.51, lateFinish: 19.51, critical: true }
     ];
     var linkDataArray = [
       { from: 1, to: 2 },
@@ -247,43 +228,39 @@
       { from: 5, to: 7 },
       { from: 6, to: 8 },
       { from: 7, to: 9 },
-      { from: 8, to: 9 },
+      { from: 8, to: 9 }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
     // create an unbound Part that acts as a "legend" for the diagram
     myDiagram.add(
-      $(go.Node,
-        'Auto',
-        { layerName: 'ViewportBackground' },
-        $(go.Shape,
-          'Rectangle', // the border
-          { fill: '#EEEEEE' }
-        ),
-        $(go.Panel,
-          'Table',
-          $(go.RowColumnDefinition, { column: 1, separatorStroke: 'black' }),
-          $(go.RowColumnDefinition, { column: 2, separatorStroke: 'black' }),
-          $(go.RowColumnDefinition, { row: 1, separatorStroke: 'black', background: '#EEEEEE', coversSeparators: true }),
-          $(go.RowColumnDefinition, { row: 2, separatorStroke: 'black' }),
-          $(go.TextBlock, 'Early Start', { row: 0, column: 0, margin: 5, textAlign: 'center' }),
-          $(go.TextBlock, 'Length', { row: 0, column: 1, margin: 5, textAlign: 'center' }),
-          $(go.TextBlock, 'Early Finish', { row: 0, column: 2, margin: 5, textAlign: 'center' }),
+      new go.Node('Auto', { layerName: 'ViewportBackground' })
+        .add(
+          new go.Shape('Rectangle', { fill: '#EEEEEE' }), // the border
+          new go.Panel('Table')
+            .addColumnDefinition(1, { separatorStroke: 'black' })
+            .addColumnDefinition(2, { separatorStroke: 'black' })
+            .addRowDefinition(1, { separatorStroke: 'black', background: '#EEEEEE', coversSeparators: true })
+            .addRowDefinition(2, { separatorStroke: 'black' })
+            .add(
+              new go.TextBlock('Early Start', { row: 0, column: 0, margin: 5, textAlign: 'center' }),
+              new go.TextBlock('Length', { row: 0, column: 1, margin: 5, textAlign: 'center' }),
+              new go.TextBlock('Early Finish', { row: 0, column: 2, margin: 5, textAlign: 'center' }),
 
-          $(go.TextBlock, 'Activity Name', {
-            row: 1,
-            column: 0,
-            columnSpan: 3,
-            margin: 5,
-            textAlign: 'center',
-            font: 'bold 14px sans-serif',
-          }),
+              new go.TextBlock('Activity Name', {
+                row: 1,
+                column: 0,
+                columnSpan: 3,
+                margin: 5,
+                textAlign: 'center',
+                font: 'bold 14px sans-serif'
+              }),
 
-          $(go.TextBlock, 'Late Start', { row: 2, column: 0, margin: 5, textAlign: 'center' }),
-          $(go.TextBlock, 'Slack', { row: 2, column: 1, margin: 5, textAlign: 'center' }),
-          $(go.TextBlock, 'Late Finish', { row: 2, column: 2, margin: 5, textAlign: 'center' })
-        ) // end Table Panel
-      )
+              new go.TextBlock('Late Start', { row: 2, column: 0, margin: 5, textAlign: 'center' }),
+              new go.TextBlock('Slack', { row: 2, column: 1, margin: 5, textAlign: 'center' }),
+              new go.TextBlock('Late Finish', { row: 2, column: 2, margin: 5, textAlign: 'center' })
+            ) // end Table Panel
+        )
     );
   }
   window.addEventListener('DOMContentLoaded', init);

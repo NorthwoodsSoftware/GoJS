@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,12 +124,6 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       InitialLayoutCompleted: (e) => {
         updateBelts(); // changes the bounds of the "Belt"s
@@ -144,69 +137,96 @@
         // method override must be function, not =>
         go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
         updateBelts(); // this is inefficient if there are a lot of belts
-      },
+      }
     });
 
     function commonStyle() {
-      return [
-        new go.Binding('location', 'xy', go.Point.parse).makeTwoWay(go.Point.stringify),
-        {
-          locationSpot: go.Spot.Center,
-          locationObjectName: 'GUIDE',
-          selectionAdorned: false,
-          dragComputation: (node, newloc, snaploc) => {
-            // don't allow rollers or drums to overlap each other
-            var oldloc = node.location;
-            var noderad = node.findObject('GUIDE').actualBounds.width / 2;
-            var ok = true;
-            var it = node.diagram.nodes.iterator;
-            while (it.next()) {
-              var n = it.value;
-              if (n === node || n.category === 'Belt') continue;
-              var dist2 = newloc.distanceSquaredPoint(n.location);
-              var rad = n.findObject('GUIDE').actualBounds.width / 2;
-              if (dist2 < (noderad + rad) * (noderad + rad)) {
-                ok = false;
-                break;
-              }
+      return {
+        locationSpot: go.Spot.Center,
+        locationObjectName: 'GUIDE',
+        selectionAdorned: false,
+        dragComputation: (node, newloc, snaploc) => {
+          // don't allow rollers or drums to overlap each other
+          var oldloc = node.location;
+          var noderad = node.findObject('GUIDE').actualBounds.width / 2;
+          var ok = true;
+          var it = node.diagram.nodes.iterator;
+          while (it.next()) {
+            var n = it.value;
+            if (n === node || n.category === 'Belt') continue;
+            var dist2 = newloc.distanceSquaredPoint(n.location);
+            var rad = n.findObject('GUIDE').actualBounds.width / 2;
+            if (dist2 < (noderad + rad) * (noderad + rad)) {
+              ok = false;
+              break;
             }
-            return ok ? newloc : oldloc;
-          },
-        },
-      ];
+          }
+          return ok ? newloc : oldloc;
+        }
+      };
+    }
+
+    function applyCommonStyleBindings(object) {
+      object.bindTwoWay('location', 'xy', go.Point.parse, go.Point.stringify);
+      return object;
     }
 
     myDiagram.nodeTemplateMap.add(
       'Roller',
-      $(go.Node,
-        'Spot',
-        commonStyle(),
-        $(go.Shape,
-          'Circle',
-          { name: 'GUIDE', fill: 'lightgray', strokeWidth: 0, width: 20, height: 20 },
-          new go.Binding('width', 'diameter').makeTwoWay(),
-          new go.Binding('height', 'diameter')
-        ),
-        $(go.TextBlock, { font: '6pt sans-serif', stroke: 'black' }, new go.Binding('text', 'key'))
+      applyCommonStyleBindings(
+        new go.Node('Spot', commonStyle())
+          .add(
+            new go.Shape('Circle', {
+              name: 'GUIDE',
+              fill: 'lightgray',
+              strokeWidth: 0,
+              width: 20,
+              height: 20
+            })
+              .bindTwoWay('width', 'diameter')
+              .bind('height', 'diameter'),
+            new go.TextBlock({ font: '6pt sans-serif', stroke: 'black' }).bind('text', 'key')
+          )
       )
     );
 
     myDiagram.nodeTemplateMap.add(
       'Drum',
-      $(go.Node,
-        'Spot',
-        commonStyle(),
-        $(go.Shape, 'Circle', { name: 'GUIDE', fill: 'lightgray', stroke: 'gray', width: 80, height: 80 }, new go.Binding('fill', 'color')),
-        $(go.TextBlock, { font: '6pt sans-serif', stroke: 'darkblue' }, new go.Binding('text', 'key'))
+      applyCommonStyleBindings(
+        new go.Node('Spot', commonStyle())
+          .add(
+            new go.Shape('Circle', {
+              name: 'GUIDE',
+              fill: 'lightgray',
+              stroke: 'gray',
+              width: 80,
+              height: 80
+            }).bind('fill', 'color'),
+            new go.TextBlock({
+              font: '6pt sans-serif',
+              stroke: 'darkblue'
+            }).bind('text', 'key')
+          )
       )
     );
 
     myDiagram.nodeTemplateMap.add(
       'Belt',
-      $(go.Node,
-        { selectionAdorned: false, layerName: 'Foreground', copyable: false, movable: false },
-        $(go.Shape, { name: 'BELT', fill: null, stroke: 'gray', strokeWidth: 2, strokeDashArray: [4, 2] }, new go.Binding('stroke', 'color'))
-      )
+      new go.Node({
+        selectionAdorned: false,
+        layerName: 'Foreground',
+        copyable: false,
+        movable: false
+      })
+        .add(
+          new go.Shape({
+            name: 'BELT',
+            fill: null,
+            stroke: 'gray',
+            strokeWidth: 2,
+            strokeDashArray: [4, 2]
+          }).bind('stroke', 'color')
+        )
     );
 
     load();
@@ -224,7 +244,8 @@
     var belt = node.findObject('BELT');
     var diagram = node.diagram;
     var guideinfos = node.data.guides;
-    if (!Array.isArray(guideinfos)) throw new Error('data.guides is not an Array for Belt node: ' + node.data.key);
+    if (!Array.isArray(guideinfos))
+      throw new Error('data.guides is not an Array for Belt node: ' + node.data.key);
 
     // gather basic information about each guide node
     var guides = []; // holds Objects with handy information
@@ -255,7 +276,7 @@
           radius: radius + belt.strokeWidth / 2,
           outside: !!info.outside,
           from: null, // these Points will be computed by computeContacts
-          to: null,
+          to: null
         });
       }
     }
@@ -319,10 +340,30 @@
       var sweep = endang > startang ? endang - startang : 360 - startang + endang;
       if (next.outside) {
         // go counter-clockwise
-        fig.add(new go.PathSegment(go.SegmentType.Arc, startang, sweep - 360, next.location.x, next.location.y, next.radius, next.radius));
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            startang,
+            sweep - 360,
+            next.location.x,
+            next.location.y,
+            next.radius,
+            next.radius
+          )
+        );
       } else {
         // positive sweep angle
-        fig.add(new go.PathSegment(go.SegmentType.Arc, startang, sweep, next.location.x, next.location.y, next.radius, next.radius));
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            startang,
+            sweep,
+            next.location.x,
+            next.location.y,
+            next.radius,
+            next.radius
+          )
+        );
       }
     }
 
@@ -418,6 +459,13 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
+  <p>
+    This sample uses <a>Animation</a>s and <a>Node</a>s to give the illusion of
+    a continuous belt. The belt is guided by rollers which it bends around using
+    custom <a>Geometry</a>. It is assumed that the <a>Node</a>s will be arranged in order
+    going clockwise. When the <a>Node</a>s are moved around outside this expected order
+    the belt can behave strangely.
+  </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:

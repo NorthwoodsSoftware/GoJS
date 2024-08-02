@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,41 +125,27 @@
 <script src="../extensions/LocalStorageCommandHandler.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
 
-    var $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      commandHandler: new LocalStorageCommandHandler(), // defined in DrawCommandHandler.js
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        commandHandler: new LocalStorageCommandHandler(), // defined in DrawCommandHandler.js
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
-
-    myDiagram2 = new go.Diagram(
-      'myDiagramDiv2', // create a Diagram for the DIV HTML element
-      {
-        commandHandler: new LocalStorageCommandHandler(), // defined in DrawCommandHandler.js
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram2 = new go.Diagram('myDiagramDiv2', {
+      commandHandler: new LocalStorageCommandHandler(), // defined in DrawCommandHandler.js
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto', // the Shape will go around the TextBlock
-      $(go.Shape,
-        'RoundedRectangle',
-        { strokeWidth: 0 },
-        // Shape.fill is bound to Node.data.color
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        { margin: 8 }, // some room around the text
-        // TextBlock.text is bound to Node.data.text
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock
+      .add(
+        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+          // Shape.fill is bound to Node.data.color
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 }) // some room around the text
+          // TextBlock.text is bound to Node.data.text
+          .bind('text')
+      );
 
     myDiagram2.nodeTemplate = myDiagram.nodeTemplate;
 
@@ -170,14 +155,14 @@
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
 
@@ -186,14 +171,14 @@
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
   }
@@ -207,12 +192,16 @@
     <div id="myDiagramDiv2" style="border: solid 1px black; width: 300px; height: 300px"></div>
   </span>
   <p>
-    This example demonstrates a custom <a>CommandHandler</a>. It uses localStorage as the repository for the clipboard, rather than an in-memory global
-    variable. It is defined in its own file, as <a href="LocalStorageCommandHandler.js">LocalStorageCommandHandler.js</a>.
+    This example demonstrates a custom <a>CommandHandler</a>. It uses
+    localStorage as the repository for the clipboard, rather than an in-memory
+    global variable. It is defined in its own file, as
+    <a href="LocalStorageCommandHandler.js">LocalStorageCommandHandler.js</a>.
   </p>
   <p>
-    Try copying and pasting between the above Diagrams, or between tabs/windows that contain Diagrams using LocalStorageCommandHandler. Note that when copying
-    and pasting between Diagrams, it will work best if they have similar templates.
+    Try copying and pasting between the above Diagrams, or between tabs/windows
+    that contain Diagrams using LocalStorageCommandHandler. Note that when
+    copying and pasting between Diagrams, it will work best if they have similar
+    templates.
   </p>
 </div>
 

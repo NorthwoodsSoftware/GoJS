@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -128,11 +127,6 @@
   const HORIZONTAL = true;
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     // The Diagram just shows what should be visible in the viewport.
     // Its model does NOT include node data for the whole graph, but only that
@@ -143,29 +137,28 @@
 
       // Use a virtualized TreeLayout which does not require
       // that the Nodes and Links exist first for an accurate layout
-      layout: $(VirtualizedTreeLayout, { angle: HORIZONTAL ? 0 : 90, nodeSpacing: 10 }),
+      layout: new VirtualizedTreeLayout({ angle: HORIZONTAL ? 0 : 90, nodeSpacing: 10 }),
 
       // Define the template for Nodes, used by virtualization.
-      nodeTemplate: $(go.Node,
-        'Auto',
-        { isLayoutPositioned: false }, // optimization
-        new go.Binding('position', 'bounds', (b) => b.position).makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
-        { width: 70, height: 20 }, // in cooperation with the load function, below
-        $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color')),
-        {
-          toolTip: $('ToolTip', $(go.TextBlock, { margin: 3 }, new go.Binding('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString()))),
-        }
-      ),
+      nodeTemplate: new go.Node('Auto', {
+        isLayoutPositioned: false,
+        width: 70, height: 20, // in cooperation with the load function, below
+        toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 3 }).bind('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString()))
+      }) // optimization
+        .bindTwoWay('position', 'bounds', (b) => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
+        .add(
+          new go.Shape('Rectangle').bind('fill', 'color'),
+          new go.TextBlock({ margin: 2 }).bind('text', 'color')
+        ),
 
       // Define the template for Links
-      linkTemplate: $(go.Link,
-        {
-          fromSpot: HORIZONTAL ? go.Spot.Right : go.Spot.Bottom,
-          toSpot: HORIZONTAL ? go.Spot.Left : go.Spot.Top,
-        },
-        $(go.Shape)
-      ),
+      linkTemplate: new go.Link({
+        fromSpot: HORIZONTAL ? go.Spot.Right : go.Spot.Bottom,
+        toSpot: HORIZONTAL ? go.Spot.Left : go.Spot.Top
+      })
+        .add(
+          new go.Shape()
+        ),
 
       SelectionMoved: (e) => {
         e.subject.each((n) => {
@@ -173,7 +166,7 @@
         });
       },
 
-      'animationManager.isEnabled': false,
+      'animationManager.isEnabled': false
     });
 
     // This model includes all of the data
@@ -226,7 +219,7 @@
       const d = {
         key: i, // this node data's key
         color: go.Brush.randomColor(), // the node's color
-        parent: i > 0 ? Math.floor((Math.random() * i) / 2) : undefined, // the random parent's key
+        parent: i > 0 ? Math.floor((Math.random() * i) / 2) : undefined // the random parent's key
       };
       //!!!???@@@ this needs to be customized to account for your chosen Node template
       d.bounds = new go.Rect(0, 0, 70, 20);
@@ -593,7 +586,10 @@
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 600px"></div>
   <img id="mySpinner" src="images/spinner.png" />
   <div id="description">
-    <p>This uses a <a>TreeModel</a> and a virtualized <a>TreeLayout</a>.</p>
+    <p>
+      This uses a <a>TreeModel</a> and a virtualized <a>TreeLayout</a>. The virtualized layout lets the <a>Diagram</a>
+      draw only necessary <a>Node</a>s and <a>Link</a>s, improving performance.
+    </p>
     Node data in Model: <span id="myMessage1"></span>. Actual Nodes in Diagram: <span id="myMessage2"></span>. Actual Links in Diagram:
     <span id="myMessage4"></span>.
   </div>

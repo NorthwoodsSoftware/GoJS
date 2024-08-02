@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,38 +124,35 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     // The Diagram just shows what should be visible in the viewport.
     // Its model does NOT include node data for the whole graph, but only that
     // which might be visible in the viewport.
     myDiagram = new go.Diagram('myDiagramDiv', {
       // use a virtualized ForceDirectedLayout which does not require
       // that the Nodes and Links exist first for an accurate layout
-      layout: $(VirtualizedForceDirectedLayout, { maxIterations: 200 }),
+      layout: new VirtualizedForceDirectedLayout({ maxIterations: 200 }),
 
       // Define the template for Nodes, used by virtualization.
-      nodeTemplate: $(go.Node,
-        'Auto',
-        { isLayoutPositioned: false }, // optimization
-        new go.Binding('position', 'bounds', (b) => b.position).makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
-        { width: 70, height: 20 }, // in cooperation with the load function, below
-        $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color')),
-        {
-          toolTip: $('ToolTip', $(go.TextBlock, { margin: 3 }, new go.Binding('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString()))),
-        }
-      ),
+      nodeTemplate: new go.Node('Auto', { 
+        isLayoutPositioned: false,  // optimization
+        width: 70, 
+        height: 20, 
+        toolTip: go.GraphObject.build("ToolTip")
+          .add(
+            new go.TextBlock({ margin: 3 }).bind('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString())
+          )
+      })
+        .bindTwoWay('position', 'bounds', (b) => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
+        .add(
+          new go.Shape('Rectangle').bind('fill', 'color'),
+          new go.TextBlock({ margin: 2 }).bind('text', 'color')
+        ),
 
       // Define the template for Links
-      linkTemplate: $(go.Link,
-        { isLayoutPositioned: false }, // optimization
-        $(go.Shape)
-      ),
+      linkTemplate: new go.Link({ isLayoutPositioned: false }) // optimization
+        .add(new go.Shape()),
 
-      'animationManager.isEnabled': false,
+      'animationManager.isEnabled': false
     });
 
     // This model includes all of the data
@@ -225,7 +221,7 @@
     for (var i = 0; i < numNodes; i++) {
       var d = {
         key: i,
-        color: go.Brush.randomColor(), // the node's color
+        color: go.Brush.randomColor() // the node's color
       };
       //!!!???@@@ this needs to be customized to account for your chosen Node template
       d.bounds = new go.Rect(0, 0, 70, 20);
@@ -257,7 +253,7 @@
         available.delete(to);
         linkArray.push({
           from: next.key,
-          to: to.key,
+          to: to.key
         });
       }
     }
@@ -548,6 +544,10 @@
     Node data in Model: <span id="myMessage1"></span>. Actual Nodes in Diagram: <span id="myMessage2"></span>.<br />
     Link data in model: <span id="myMessage3"></span>. Actual Links in Diagram: <span id="myMessage4"></span>.
   </div>
+  <br>
+  <p>
+    See also <a href="./virtualized.html">Virtualized</a>.
+  </p>
 </div>
 
           

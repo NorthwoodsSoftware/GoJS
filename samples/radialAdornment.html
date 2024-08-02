@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -165,30 +164,28 @@
       if (obj instanceof go.GraphObject) obj.alignment = align;
     });
 
-    var button = new go.Panel('Spot',
-        {
-          isActionable: true, // needed so that the ActionTool intercepts mouse events
-          enabledChanged: (button, enabled) => {
-            const shape = button.findObject('ButtonBorder');
-            if (shape !== null) {
-              shape.fill = enabled ? button['_buttonFillNormal'] : button['_buttonFillDisabled'];
-            }
-          },
-          // save these values for the mouseEnter and mouseLeave event handlers
-          _buttonFillNormal: buttonFillNormal,
-          _buttonStrokeNormal: buttonStrokeNormal,
-          _buttonFillOver: buttonFillOver,
-          _buttonStrokeOver: buttonStrokeOver,
-          _buttonFillDisabled: buttonFillDisabled,
-        })
+    var button = new go.Panel('Spot', {
+      isActionable: true, // needed so that the ActionTool intercepts mouse events
+      enabledChanged: (button, enabled) => {
+        const shape = button.findObject('ButtonBorder');
+        if (shape !== null) {
+          shape.fill = enabled ? button['_buttonFillNormal'] : button['_buttonFillDisabled'];
+        }
+      },
+      // save these values for the mouseEnter and mouseLeave event handlers
+      _buttonFillNormal: buttonFillNormal,
+      _buttonStrokeNormal: buttonStrokeNormal,
+      _buttonFillOver: buttonFillOver,
+      _buttonStrokeOver: buttonStrokeOver,
+      _buttonFillDisabled: buttonFillDisabled
+    })
       .add(
-        new go.Shape(  // the border
-          {
-            name: 'ButtonBorder',
-            fill: buttonFillNormal,
-            stroke: buttonStrokeNormal,
-            geometry: geo,
-          })
+        new go.Shape({ // the border
+          name: 'ButtonBorder',
+          fill: buttonFillNormal,
+          stroke: buttonStrokeNormal,
+          geometry: geo
+        })
       );
 
     // There's no GraphObject inside the button shape -- it must be added as part of the button definition.
@@ -219,11 +216,6 @@
   });
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       // show the selection Adornment only on the first selection if it is a Node
@@ -242,85 +234,122 @@
         // show the adornment on the "Beta" node
         e.diagram.select(e.diagram.findNodeForKey(2));
       },
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { resizable: true },
-      new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-      $(go.Shape, { portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text').makeTwoWay())
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', { resizable: true })
+      .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+      .add(
+        new go.Shape({
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({
+          margin: 8,
+          editable: true
+        })
+          .bindTwoWay('text')
+      );
+
+    // prevent the tool from starting on without radial menu
+    myDiagram.toolManager.linkingTool.canStart = () => false;
 
     // Show a radial Adornment holding buttons when a node is selected.
     // This is not a template, so there is only one instance of it that can be shown at a time.
     // If you want every selected node to have their own copy of this adornment,
     // set Node.selectionAdornmentTemplate to this and remove the "ChangedSelection" DiagramEvent listener.
-    var selectionAdornment = $(go.Adornment,
-      'Spot',
-      { layerName: 'Tool' }, // so that it's in front of other Adornments
-      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'dodgerblue', strokeWidth: 4, pickable: false }), $(go.Placeholder, { margin: 2 })),
-      $(go.Panel,
-        $('SectorButton',
-          0,
-          90, // start angle, sweep angle,
-          $(go.TextBlock, 'New\nLink'),
-          {
-            // start drawing a new link from this node
-            click: (e, button) => {
-              var node = button.part.adornedPart; // this Node
-              e.diagram.clearSelection(); // hide all Adornments for clarity
-              var tool = e.diagram.toolManager.linkingTool; // the LinkingTool
-              tool.startObject = node.port; // the default port of the Node
-              e.diagram.currentTool = tool; // start the LinkingTool
-              tool.doActivate(); // and activate it
-            },
-          }
-        ),
-        $('SectorButton',
-          90,
-          90,
-          $(go.Shape, {
-            geometryString:
-              'F1 M29.181 19.070c-1.679-2.908-0.669-6.634 2.255-8.328l-3.145-5.447c-0.898 0.527-1.943 0.829-3.058 0.829-3.361 0-6.085-2.742-6.085-6.125h-6.289c0.008 1.044-0.252 2.103-0.811 3.070-1.679 2.908-5.411 3.897-8.339 2.211l-3.144 5.447c0.905 0.515 1.689 1.268 2.246 2.234 1.676 2.903 0.672 6.623-2.241 8.319l3.145 5.447c0.895-0.522 1.935-0.82 3.044-0.82 3.35 0 6.067 2.725 6.084 6.092h6.289c-0.003-1.034 0.259-2.080 0.811-3.038 1.676-2.903 5.399-3.894 8.325-2.219l3.145-5.447c-0.899-0.515-1.678-1.266-2.232-2.226zM16 22.479c-3.578 0-6.479-2.901-6.479-6.479s2.901-6.479 6.479-6.479c3.578 0 6.479 2.901 6.479 6.479s-2.901 6.479-6.479 6.479z',
-          }),
-          {
-            click: (e, button) => {
-              // maybe use a DataInspector?
-              alert('Show Settings for ' + button.part.adornedPart.data.text);
-            },
-          }
-        ),
-        $('SectorButton', 180, 90, $(go.TextBlock, '?', { font: 'bold 14pt sans-serif' }), {
-          click: (e, button) => {
-            // maybe show some info in HTML?
-            alert('Show Information about ' + button.part.adornedPart.data.text);
-          },
-        }),
-        $('SectorButton', 270, 90, $(go.Shape, 'XLine', { stroke: 'red', strokeWidth: 4, width: 16, height: 16 }), {
-          click: (e, button) => {
-            // this is different from CommandHandler.deleteSelection because this
-            // only deletes the one node, not all selected parts
-            e.diagram.commit((d) => d.remove(button.part.adornedPart), 'deleted node');
-          },
-        })
-      )
-    );
+    var selectionAdornment = new go.Adornment('Spot', { layerName: 'Tool' }) // so that it's in front of other Adornments
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({
+              fill: null,
+              stroke: 'dodgerblue',
+              strokeWidth: 4,
+              pickable: false
+            }),
+            new go.Placeholder({ margin: 2 })
+          ),
+        new go.Panel()
+          .add(
+            go.GraphObject.build('SectorButton', {
+              // start drawing a new link from this node
+              click: (e, button) => {
+                var node = button.part.adornedPart; // this Node
+                e.diagram.clearSelection(); // hide all Adornments for clarity
+                var tool = e.diagram.toolManager.linkingTool; // the LinkingTool
+                tool.startObject = node.port; // the default port of the Node
+                e.diagram.currentTool = tool; // start the LinkingTool
+                tool.doActivate(); // and activate it
+              }
+            }, 0, 90) // start angle, sweep angle,
+              .add(
+                new go.TextBlock('New\nLink', {
+                  alignment: new go.Spot(0.95, 0.5),
+                  alignmentFocus: go.Spot.Right
+                })
+              ),
+            go.GraphObject.build('SectorButton', {
+              click: (e, button) => {
+                // maybe use a DataInspector?
+                alert('Show Settings for ' + button.part.adornedPart.data.text);
+              }
+            }, 90, 90)
+              .add(
+                new go.Shape({
+                  alignment: new go.Spot(0.5, 0.97),
+                  alignmentFocus: go.Spot.Bottom,
+                  geometryString: 'F1 M29.181 19.070c-1.679-2.908-0.669-6.634 2.255-8.328l-3.145-5.447c-0.898 0.527-1.943 0.829-3.058 0.829-3.361 0-6.085-2.742-6.085-6.125h-6.289c0.008 1.044-0.252 2.103-0.811 3.070-1.679 2.908-5.411 3.897-8.339 2.211l-3.144 5.447c0.905 0.515 1.689 1.268 2.246 2.234 1.676 2.903 0.672 6.623-2.241 8.319l3.145 5.447c0.895-0.522 1.935-0.82 3.044-0.82 3.35 0 6.067 2.725 6.084 6.092h6.289c-0.003-1.034 0.259-2.080 0.811-3.038 1.676-2.903 5.399-3.894 8.325-2.219l3.145-5.447c-0.899-0.515-1.678-1.266-2.232-2.226zM16 22.479c-3.578 0-6.479-2.901-6.479-6.479s2.901-6.479 6.479-6.479c3.578 0 6.479 2.901 6.479 6.479s-2.901 6.479-6.479 6.479z'
+                })
+              ),
+            go.GraphObject.build('SectorButton', {
+              click: (e, button) => {
+                // maybe show some info in HTML?
+                alert('Show Information about ' + button.part.adornedPart.data.text);
+              }
+            }, 180, 90)
+              .add(
+                new go.TextBlock('?', {
+                  font: 'bold 14pt sans-serif',
+                  alignment: new go.Spot(0.1, 0.5),
+                  alignmentFocus: go.Spot.Left
+                })
+              ),
+            go.GraphObject.build('SectorButton', {
+              click: (e, button) => {
+                // this is different from CommandHandler.deleteSelection because this
+                // only deletes the one node, not all selected parts
+                e.diagram.commit((d) => d.remove(button.part.adornedPart), 'deleted node');
+              }
+            }, 270, 90)
+              .add(
+                new go.Shape('XLine', {
+                  stroke: 'red',
+                  strokeWidth: 4,
+                  width: 16,
+                  height: 16,
+                  alignment: new go.Spot(0.5, 0.07),
+                  alignmentFocus: go.Spot.Top
+                })
+              )
+          )
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
   }

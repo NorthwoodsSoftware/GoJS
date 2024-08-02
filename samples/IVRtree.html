@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,29 +126,26 @@
 <script src="../extensions/Themes.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowCopy: false,
       'draggingTool.dragsTree': true,
       'commandHandler.deletesTree': true,
-      layout: $(go.TreeLayout, { angle: 90, arrangement: go.TreeArrangement.FixedRoots }),
+      layout: new go.TreeLayout({ angle: 90, arrangement: go.TreeArrangement.FixedRoots }),
       'undoManager.isEnabled': true,
       // use "Modern" themes from extensions/Themes
       'themeManager.themeMap': new go.Map([
         { key: 'light', value: Modern },
-        { key: 'dark', value: ModernDark },
+        { key: 'dark', value: ModernDark }
       ]),
       'themeManager.changesDivBackground': true,
-      'themeManager.currentTheme': document.getElementById('theme').value,
+      'themeManager.currentTheme': document.getElementById('theme').value
     });
 
     myDiagram.themeManager.set('', {
       colors: {
         primary: '#155e75',
-        terminal: '#047857',
-      },
+        terminal: '#047857'
+      }
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -184,108 +180,97 @@
     });
 
     // each action is represented by a shape and some text
-    var actionTemplate = $(go.Panel,
-      'TableRow',
-      $(go.Shape, { column: 0, width: 20, height: 20, fill: null }, new go.Binding('figure'), new go.ThemeBinding('stroke', 'text')),
-      $(go.TextBlock, { column: 1 }, { font: '11pt Verdana, sans-serif' }, new go.Binding('text'), new go.ThemeBinding('stroke', 'text')),
-      $(go.TextBlock,
-        { column: 2 },
-        { font: '11pt Verdana, sans-serif' },
-        new go.Binding('text', 'itemIndex', (i) => `[${i}]`).ofObject(),
-        new go.ThemeBinding('stroke', 'text')
-      )
-    );
+    var actionTemplate = new go.Panel('TableRow')
+      .add(
+        new go.Shape({ column: 0, width: 20, height: 20, fill: null }).bind('figure').theme('stroke', 'text'),
+        new go.TextBlock({ column: 1 }, { font: '11pt Verdana, sans-serif' }).bind('text').theme('stroke', 'text'),
+        new go.TextBlock({ column: 2, font: '11pt Verdana, sans-serif' })
+          .bindObject('text', 'itemIndex', (i) => `[${i}]`)
+          .theme('stroke', 'text')
+      );
 
     // each regular Node has body consisting of a title followed by a collapsible list of actions,
     // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
     myDiagram.nodeTemplate = // the default node template
-      $(go.Node,
-        'Vertical',
-        new go.Binding('isTreeExpanded').makeTwoWay(), // remember the expansion state for
-        new go.Binding('wasTreeExpanded').makeTwoWay(), //   when the model is re-loaded
-        { selectionObjectName: 'BODY' },
-        // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
-        $(go.Panel,
-          'Auto',
-          { name: 'BODY' },
-          $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, new go.ThemeBinding('fill', 'primary')),
-          $(go.Panel,
-            'Vertical',
-            { margin: 3 },
-            // the title
-            $(go.TextBlock,
-              {
-                stretch: go.Stretch.Horizontal,
-                font: 'bold 12pt Verdana, sans-serif',
-                stroke: 'white',
-              },
-              new go.Binding('text', 'question')
-            ),
-            // the optional list of actions
-            $(go.Panel,
-              'Vertical',
-              { stretch: go.Stretch.Horizontal, visible: false }, // not visible unless there is at least one action
-              new go.Binding('visible', 'actions', (acts) => Array.isArray(acts) && acts.length > 0),
-              // headered by a label and a PanelExpanderButton inside a Table
-              $(go.Panel,
-                'Table',
-                { stretch: go.Stretch.Horizontal },
-                $(go.TextBlock, 'Choices', {
-                  alignment: go.Spot.Left,
-                  font: '10pt Verdana, sans-serif',
-                  stroke: 'white',
-                }),
-                $('PanelExpanderButton',
-                  'COLLAPSIBLE', // name of the object to make visible or invisible
-                  {
-                    column: 1,
-                    alignment: go.Spot.Right,
-                    'ButtonIcon.stroke': 'white',
-                  }
-                )
-              ), // end Table panel
-              // with the list data bound in the Table Panel
-              $(go.Panel,
-                'Table',
-                {
-                  name: 'COLLAPSIBLE', // identify to the PanelExpanderButton
-                  padding: 2,
-                  stretch: go.Stretch.Horizontal, // take up whole available width
-                  defaultAlignment: go.Spot.Left, // thus no need to specify alignment on each element
-                  defaultSeparatorPadding: 3,
-                  itemTemplate: actionTemplate, // the Panel created for each item in Panel.itemArray
-                },
-                new go.ThemeBinding('background', 'div'),
-                new go.Binding('itemArray', 'actions')
-                // bind Panel.itemArray to nodedata.actions
-              ) // end action list Table Panel
-            ) // end optional Vertical Panel
-          ) // end outer Vertical Panel
-        ), // end "BODY"  Auto Panel
-        $(go.Panel, // this is underneath the "BODY"
-          { height: 17 }, // always this height, even if the TreeExpanderButton is not visible
-          $('TreeExpanderButton')
-        )
+      new go.Node('Vertical', { selectionObjectName: 'BODY' })
+      // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
+      .bindTwoWay('isTreeExpanded') // remember the expansion state for
+      .bindTwoWay('wasTreeExpanded') //   when the model is re-loaded
+      .add(
+        new go.Panel('Auto', { name: 'BODY' })
+          .add(
+            new go.Shape('RoundedRectangle', { strokeWidth: 0 }).theme('fill', 'primary'),
+            new go.Panel('Vertical', { margin: 3 })
+              .add(
+                // the title
+                new go.TextBlock({
+                  stretch: go.Stretch.Horizontal,
+                  font: 'bold 12pt Verdana, sans-serif',
+                  stroke: 'white'
+                })
+                  .bind('text', 'question'),
+                // the optional list of actions
+                new go.Panel('Vertical', {
+                  stretch: go.Stretch.Horizontal,
+                  visible: false
+                }) // not visible unless there is at least one action
+                  .bind('visible', 'actions', (acts) => Array.isArray(acts) && acts.length > 0)
+                  .add(
+                    // headered by a label and a PanelExpanderButton inside a Table
+                    new go.Panel('Table', { stretch: go.Stretch.Horizontal })
+                      .add(
+                        new go.TextBlock('Choices', {
+                          alignment: go.Spot.Left,
+                          font: '10pt Verdana, sans-serif',
+                          stroke: 'white'
+                        }),
+                        go.GraphObject.build('PanelExpanderButton',
+                          {
+                            column: 1,
+                            alignment: go.Spot.Right,
+                            'ButtonIcon.stroke': 'white'
+                          },
+                          'COLLAPSIBLE' // name of the object to make visible or invisible
+                        )
+                      ), // end Table panel
+                    // with the list data bound in the Table Panel
+                    new go.Panel('Table', {
+                      name: 'COLLAPSIBLE', // identify to the PanelExpanderButton
+                      padding: 2,
+                      stretch: go.Stretch.Horizontal, // take up whole available width
+                      defaultAlignment: go.Spot.Left, // thus no need to specify alignment on each element
+                      defaultSeparatorPadding: 3,
+                      itemTemplate: actionTemplate // the Panel created for each item in Panel.itemArray
+                    })
+                      .theme('background', 'div')
+                      .bind('itemArray', 'actions')
+                      // bind Panel.itemArray to nodedata.actions
+                  ) // end optional Vertical Panel
+              ) // end outer Vertical Panel
+          ), // end "BODY"  Auto Panel
+        new go.Panel( // this is underneath the "BODY"
+          { height: 17 }) // always this height, even if the TreeExpanderButton is not visible
+          .add(go.GraphObject.build('TreeExpanderButton'))
       );
 
     // define a second kind of Node:
     myDiagram.nodeTemplateMap.add(
       'Terminal',
-      $(go.Node,
-        'Spot',
-        $(go.Shape, 'Circle', { width: 55, height: 55, strokeWidth: 0 }, new go.ThemeBinding('fill', 'terminal')),
-        $(go.TextBlock, { font: '10pt Verdana, sans-serif', stroke: 'white' }, new go.Binding('text'))
-      )
+      new go.Node('Spot')
+        .add(
+          new go.Shape('Circle', { width: 55, height: 55, strokeWidth: 0 }).theme('fill', 'terminal'),
+          new go.TextBlock({ font: '10pt Verdana, sans-serif', stroke: 'white' }).bind('text')
+        )
     );
 
-    myDiagram.linkTemplate = $(go.Link,
-      { routing: go.Routing.Orthogonal, deletable: false, corner: 10, toShortLength: 4 },
-      $(go.Shape, { strokeWidth: 2 }, new go.ThemeBinding('stroke', 'link')),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'Standard', strokeWidth: 0 },
-        new go.ThemeBinding('fill', 'link')
-      )
-    );
+    myDiagram.linkTemplate = new go.Link(
+      { routing: go.Routing.Orthogonal, deletable: false, corner: 10, toShortLength: 4 }
+    )
+      .add(
+        new go.Shape({ strokeWidth: 2 }).theme('stroke', 'link'),
+        new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }) // the arrowhead
+          .theme('fill', 'link')
+      );
 
     var nodeDataArray = [
       {
@@ -294,8 +279,8 @@
         actions: [
           { text: 'Sales', figure: 'BpmnEventConditional' },
           { text: 'Parts and Services', figure: 'Gear' },
-          { text: 'Representative', figure: 'BpmnTaskUser' },
-        ],
+          { text: 'Representative', figure: 'BpmnTaskUser' }
+        ]
       },
       {
         key: 2,
@@ -303,8 +288,8 @@
         actions: [
           { text: 'Compact', figure: 'RailShipment' },
           { text: 'Mid-Size', figure: 'Forklift' },
-          { text: 'Large', figure: 'TruckShipment' },
-        ],
+          { text: 'Large', figure: 'TruckShipment' }
+        ]
       },
       {
         key: 3,
@@ -312,8 +297,8 @@
         actions: [
           { text: 'Maintenance', figure: 'Hammer' },
           { text: 'Repairs', figure: 'Caution' },
-          { text: 'State Inspection', figure: 'BpmnTaskMessage' },
-        ],
+          { text: 'State Inspection', figure: 'BpmnTaskMessage' }
+        ]
       },
       { key: 4, question: 'Representative' },
       { key: 5, question: 'Compact' },
@@ -323,8 +308,8 @@
         question: 'Large',
         actions: [
           { text: 'SUV', figure: 'SUV' },
-          { text: 'Van', figure: 'Van' },
-        ],
+          { text: 'Van', figure: 'Van' }
+        ]
       },
       { key: 8, question: 'Maintenance' },
       { key: 9, question: 'Repairs' },
@@ -340,7 +325,7 @@
       { key: 19, category: 'Terminal', text: 'Ken' },
       { key: 20, category: 'Terminal', text: 'Rachel' },
       { key: 21, category: 'Terminal', text: 'John' },
-      { key: 22, category: 'Terminal', text: 'Jake' },
+      { key: 22, category: 'Terminal', text: 'Jake' }
     ];
     var linkDataArray = [
       { from: 1, to: 2, answer: 1 },
@@ -363,7 +348,7 @@
       { from: 10, to: 19 },
       { from: 4, to: 20 },
       { from: 4, to: 21 },
-      { from: 8, to: 22 },
+      { from: 8, to: 22 }
     ];
 
     // create the Model with the above data, and assign to the Diagram
@@ -371,7 +356,7 @@
       copiesArrays: true,
       copiesArrayObjects: true,
       nodeDataArray: nodeDataArray,
-      linkDataArray: linkDataArray,
+      linkDataArray: linkDataArray
     });
   }
 

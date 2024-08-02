@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,67 +124,64 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     var blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
+    myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
         initialContentAlignment: go.Spot.Center,
-        layout: $(go.ForceDirectedLayout),
+        layout: new go.ForceDirectedLayout(),
         // moving and copying nodes also moves and copies their subtrees
         'commandHandler.copiesTree': true, // for the copy command
         'commandHandler.deletesTree': true, // for the delete command
         'draggingTool.dragsTree': true, // dragging for both move and copy
-        'undoManager.isEnabled': true,
+        'undoManager.isEnabled': true
       }
     );
 
     // Define the Node template.
     // This uses a Spot Panel to position a button relative
     // to the ellipse surrounding the text.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      {
-        selectionObjectName: 'PANEL',
-        isTreeExpanded: false,
-        isTreeLeaf: false,
-      },
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      selectionObjectName: 'PANEL',
+      isTreeExpanded: false,
+      isTreeLeaf: false
+    })
       // the node's outer shape, which will surround the text
-      $(go.Panel,
-        'Auto',
-        { name: 'PANEL' },
-        $(go.Shape,
-          'Circle',
-          { fill: 'whitesmoke', stroke: 'black' },
-          new go.Binding('fill', 'rootdistance', (dist) => {
-            dist = Math.min(blues.length - 1, dist);
-            return blues[dist];
-          })
-        ),
-        $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))
-      ),
-      // the expand/collapse button, at the top-right corner
-      $('TreeExpanderButton', {
-        name: 'TREEBUTTON',
-        width: 20,
-        height: 20,
-        alignment: go.Spot.TopRight,
-        alignmentFocus: go.Spot.Center,
-        // customize the expander behavior to
-        // create children if the node has never been expanded
-        click: (e, obj) => {
-          // OBJ is the Button
-          var node = obj.part; // get the Node containing this Button
-          if (node === null) return;
-          e.handled = true;
-          expandNode(node);
-        },
-      }) // end TreeExpanderButton
-    ); // end Node
+      .add(
+        new go.Panel('Auto', { name: 'PANEL' })
+          .add(
+            new go.Shape('Circle', {
+              fill: 'whitesmoke',
+              stroke: 'black'
+            })
+              .bind('fill', 'rootdistance', (dist) => {
+                dist = Math.min(blues.length - 1, dist);
+                return blues[dist];
+              }),
+            new go.TextBlock({
+              font: '12pt sans-serif',
+              margin: 5
+            })
+              .bind('text', 'key')
+          ),
+        // the expand/collapse button, at the top-right corner
+        go.GraphObject.build('TreeExpanderButton', {
+          name: 'TREEBUTTON',
+          width: 20,
+          height: 20,
+          alignment: go.Spot.TopRight,
+          alignmentFocus: go.Spot.Center,
+          // customize the expander behavior to
+          // create children if the node has never been expanded
+          click: (e, obj) => {
+            // OBJ is the Button
+            var node = obj.part; // get the Node containing this Button
+            if (node === null) return;
+            e.handled = true;
+            expandNode(node);
+          }
+        }) // end TreeExpanderButton
+      ); // end Node
 
     // create the model with a root node data
     myDiagram.model = new go.TreeModel([{ key: 0, color: blues[0], everExpanded: false }]);
@@ -243,7 +239,7 @@
       var childdata = {
         key: model.nodeDataArray.length,
         parent: parentdata.key,
-        rootdistance: degrees,
+        rootdistance: degrees
       };
       // add to model.nodeDataArray and create a Node
       model.addNodeData(childdata);

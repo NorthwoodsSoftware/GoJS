@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -141,39 +140,30 @@
   // end DemoForceDirectedLayout class
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        initialAutoScale: go.AutoScale.Uniform, // zoom to make everything fit in the viewport
-        layout: new DemoForceDirectedLayout(), // use custom layout
-        // other Layout properties are set by the layout function, defined below
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform, // zoom to make everything fit in the viewport
+      layout: new DemoForceDirectedLayout() // use custom layout
+      // other Layout properties are set by the layout function, defined below
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
+    myDiagram.nodeTemplate = new go.Node('Spot', {
       // make sure the Node.location is different from the Node.position
-      { locationSpot: go.Spot.Center },
-      new go.Binding('text', 'text'), // for sorting
-      $(go.Shape,
-        'Ellipse',
-        {
+      locationSpot: go.Spot.Center
+    })
+      .bind('text', 'text') // for sorting
+      .add(
+        new go.Shape('Ellipse', {
           fill: 'lightgray',
           stroke: null,
-          desiredSize: new go.Size(30, 30),
-        },
-        new go.Binding('fill', 'fill')
-      ),
-      $(go.TextBlock, new go.Binding('text', 'text'))
-    );
+          desiredSize: new go.Size(30, 30)
+        })
+          .bind('fill', 'fill'),
+        new go.TextBlock().bind('text', 'text')
+      )
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link, { selectable: false }, $(go.Shape, { strokeWidth: 3, stroke: '#333' }));
+    myDiagram.linkTemplate = new go.Link({ selectable: false }).add(new go.Shape({ strokeWidth: 3, stroke: '#333' }));
 
     // generate a tree using the default values
     rebuildGraph();
@@ -216,7 +206,7 @@
       nodeArray.push({
         key: i,
         text: i.toString(),
-        fill: go.Brush.randomColor(),
+        fill: go.Brush.randomColor()
       });
     }
 

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -128,7 +127,7 @@
     // override makeNetwork to set the diameter of each node and ignore the TextBlock label
     makeNetwork(coll) {
       const net = super.makeNetwork(coll);
-      net.vertexes.each((cv) => (cv.diameter = 20)); // because our desiredSize for nodes is (20, 20)
+      net.vertexes.each(v => v.diameter = 25); // pretend nodes are 25x25 in size
       return net;
     }
 
@@ -136,15 +135,17 @@
     // and flip text if it would be upside-down
     commitNodes() {
       super.commitNodes();
-      this.network.vertexes.each((v) => {
+      const num = this.network.vertexes.count;
+      if (num < 2) return;
+      this.network.vertexes.each(v => {
         const node = v.node;
         if (node === null) return;
         // get the angle of the node towards the center, and rotate it accordingly
         const a = v.actualAngle;
-        if (a > 90 && a < 270) {
-          // make sure the text isn't upside down
-          const textBlock = node.findObject('TEXTBLOCK');
-          textBlock.angle = 180;
+        // make sure the text isn't upside down
+        const textBlock = node.findObject('TEXTBLOCK');
+        if (textBlock !== null) {
+          textBlock.angle = (a > 90 && a < 270) ? 180 : 0;
         }
         node.angle = a;
       });
@@ -154,18 +155,18 @@
     // this helps avoid links crossing over any other nodes
     commitLinks() {
       super.commitLinks();
-      if (this.network.vertexes.count > 4) {
-        this.network.vertexes.each((v) => {
-          v.destinationEdges.each((de) => {
-            const dv = de.toVertex;
-            let da = dv.actualAngle;
-            let sa = v.actualAngle;
-            if (da - sa > 180) da -= 360;
-            else if (sa - da > 180) sa -= 360;
-            de.link.curviness = sa > da ? 160 : -160;
-          });
-        });
-      }
+      this.network.edges.each(e => {
+        const link = e.link;
+        if (link === null) return;
+        let da = e.toVertex.actualAngle;
+        let sa = e.fromVertex.actualAngle;
+        if (da - sa > 180) da -= 360;
+        else if (sa - da > 180) sa -= 360;
+        let c = sa - da;
+        if (c < 0) c = Math.max(-60, Math.min(c, -30));
+        else c = Math.max(30, Math.min(c, 60));
+        link.curviness = c;
+      });
     }
   }
   // end WheelLayout class
@@ -173,76 +174,59 @@
   const highlightColor = 'red'; // color parameterization
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        'animationManager.isEnabled': false,
-        initialAutoScale: go.AutoScale.Uniform,
-        padding: 10,
-        contentAlignment: go.Spot.Center,
-        layout: $(WheelLayout, // set up a custom CircularLayout
-          // set some properties appropriate for this sample
-          {
-            arrangement: go.CircularArrangement.ConstantDistance,
-            nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular,
-            spacing: 10,
-            aspectRatio: 0.7,
-            sorting: go.CircularSorting.Optimized,
-          }
-        ),
-        isReadOnly: true,
-        click: (e) => {
-          // background click clears any remaining highlighteds
-          e.diagram.startTransaction('clear');
-          e.diagram.clearHighlighteds();
-          e.diagram.commitTransaction('clear');
-        },
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      initialAutoScale: go.AutoScale.Uniform,
+      padding: 10,
+      contentAlignment: go.Spot.Center,
+      layout: new WheelLayout({ // set up a custom CircularLayout
+        // set some properties appropriate for this sample
+        arrangement: go.CircularArrangement.ConstantDistance,
+        nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular,
+        spacing: 10,
+        aspectRatio: 0.7,
+        sorting: go.CircularSorting.Optimized
+      }),
+      isReadOnly: true,
+      click: e => {
+        // background click clears any remaining highlighteds
+        e.diagram.commit(d => d.clearHighlighteds());
       }
-    );
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Horizontal',
-      {
-        selectionAdorned: false,
-        locationSpot: go.Spot.Center, // Node.location is the center of the Shape
-        locationObjectName: 'SHAPE',
-        mouseEnter: (e, node) => {
-          node.diagram.clearHighlighteds();
-          node.linksConnected.each((l) => highlightLink(l, true));
-          node.isHighlighted = true;
-          const tb = node.findObject('TEXTBLOCK');
-          if (tb !== null) tb.stroke = highlightColor;
-        },
-        mouseLeave: (e, node) => {
-          node.diagram.clearHighlighteds();
-          const tb = node.findObject('TEXTBLOCK');
-          if (tb !== null) tb.stroke = 'black';
-        },
+    myDiagram.nodeTemplate = new go.Node('Horizontal', {
+      selectionAdorned: false,
+      locationSpot: go.Spot.Center, // Node.location is the center of the Shape
+      locationObjectName: 'SHAPE',
+      mouseEnter: (e, node) => {
+        e.diagram.clearHighlighteds();
+        node.linksConnected.each(l => highlightLink(l, true));
+        node.isHighlighted = true;
+        const tb = node.findObject('TEXTBLOCK');
+        if (tb !== null) tb.stroke = highlightColor;
       },
-      new go.Binding('text', 'text'), // for sorting the nodes
-      $(go.Shape,
-        'Rectangle',
-        {
+      mouseLeave: (e, node) => {
+        e.diagram.clearHighlighteds();
+        const tb = node.findObject('TEXTBLOCK');
+        if (tb !== null) tb.stroke = 'black';
+      }
+    })
+      .bind('text', 'text') // for sorting the nodes
+      .add(
+        new go.Shape('Circle', {
           name: 'SHAPE',
           fill: 'lightgray', // default value, but also data-bound
           stroke: 'transparent', // modified by highlighting
           strokeWidth: 2,
           desiredSize: new go.Size(25, 25),
-          portId: '',
-        }, // so links will go to the shape, not the whole node
-        new go.Binding('fill', 'color'),
-        new go.Binding('stroke', 'isHighlighted', (h) => (h ? highlightColor : 'transparent')).ofObject()
-      ),
-      $(go.TextBlock,
-        { name: 'TEXTBLOCK' }, // for search
-        new go.Binding('text', 'text')
-      )
-    );
+          portId: ''
+        }) // so links will go to the shape, not the whole node
+          .bind('fill', 'color')
+          .bindObject('stroke', 'isHighlighted', h => h ? highlightColor : 'transparent'),
+        new go.TextBlock({ name: 'TEXTBLOCK' }) // for search
+          .bind('text', 'text')
+      );
 
     function highlightLink(link, show) {
       link.isHighlighted = show;
@@ -251,20 +235,19 @@
     }
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        // routing: go.Routing.Orthogonal,
-        curve: go.Curve.Bezier,
-        selectionAdorned: false,
-        mouseEnter: (e, link) => highlightLink(link, true),
-        mouseLeave: (e, link) => highlightLink(link, false),
-      },
-      $(go.Shape,
-        new go.Binding('stroke', 'isHighlighted', (h, shape) => (h ? highlightColor : shape.part.data.color)).ofObject(),
-        new go.Binding('strokeWidth', 'isHighlighted', (h) => (h ? 3 : 1.5)).ofObject()
-      )
-      // no arrowhead -- assume directionality of relationship need not be shown
-    );
+    myDiagram.linkTemplate = new go.Link({
+      // routing: go.Routing.Orthogonal,
+      curve: go.Curve.Bezier,
+      selectionAdorned: false,
+      mouseEnter: (e, link) => highlightLink(link, true),
+      mouseLeave: (e, link) => highlightLink(link, false)
+    })
+      .add(
+        new go.Shape()
+          .bindObject('stroke', 'isHighlighted', (h, shape) => (h ? highlightColor : go.Brush.darken(shape.part.data.color)))
+          .bindObject('strokeWidth', 'isHighlighted', h => h ? 3 : 1.5)
+        // no arrowhead -- assume directionality of relationship need not be shown
+      );
 
     generateGraph();
   }
@@ -330,7 +313,7 @@
       'Samuel',
       'Tyler',
       'Dylan',
-      'Jonathan',
+      'Jonathan'
     ];
 
     const colors = ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#f7f7f7', '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061'];

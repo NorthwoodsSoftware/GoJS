@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,24 +126,31 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        isTreePathToChildren: false, // links go from child to parent
-        layout: $(SerpentineLayout), // defined in SerpentineLayout.js
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      isTreePathToChildren: false, // links go from child to parent
+      layout: new SerpentineLayout() // defined in SerpentineLayout.js
+    });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Auto,
-      $(go.Shape, { figure: 'RoundedRectangle', fill: 'white' }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape({
+          figure: 'RoundedRectangle',
+          fill: 'white'
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 4 })
+          .bind('text', 'key')
+      );
 
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, corner: 10 }, $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      corner: 10
+    })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     var model = new go.TreeModel();
     model.nodeParentKeyProperty = 'next';
@@ -172,7 +178,7 @@
       { key: 'Phi', next: 'Chi', color: 'coral' },
       { key: 'Chi', next: 'Psi', color: 'tomato' },
       { key: 'Psi', next: 'Omega', color: 'goldenrod' },
-      { key: 'Omega', color: 'orange' },
+      { key: 'Omega', color: 'orange' }
     ];
     myDiagram.model = model;
   }
@@ -183,10 +189,24 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px; min-width: 200px"></div>
   <p>
-    This sample demonstrates a custom Layout, SerpentineLayout, which assumes the graph consists of a chain of nodes. The layout is defined in its own file, as
+    This sample demonstrates a custom <a>Layout</a>, SerpentineLayout, which
+    assumes the graph consists of a single chain of <a>Node</a>s. The
+    <a>Layout</a> is defined in its own file, as
     <a href="../extensions/SerpentineLayout.js">SerpentineLayout.js</a>.
   </p>
-  <p>It also has <a>Layout.isViewportSized</a> set to true, so that resizing the Diagram DIV will automatically re-layout.</p>
+  <p>
+    This <a>Layout</a> makes the <a>Node</a>s span out horizontally, left to
+    right, until they hit the edge of the viewport. Then it moves down and
+    switches directions.
+  </p>
+  <p>
+    It also has <a>Layout.isViewportSized</a> set to true, so that resizing the
+    <a>Diagram</a> or <a>Diagram.div</a> will automatically re-layout. Try
+    zooming in and out to see how the <a>Layout</a> works.
+  </p>
+  <p>
+    See also <a href="./Spiral.html">Spiral Layout</a>.
+  </p>
 </div>
 
           

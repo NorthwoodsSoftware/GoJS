@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,19 +126,19 @@
   // This button assumes data binding to the "checked" property.
   go.GraphObject.defineBuilder('TriStateCheckBoxButton', (args) => {
     const button = go.GraphObject.build('Button', {
-        width: 14, height: 14,
-        'ButtonBorder.fill': 'white'
-      })
+      width: 14, height: 14,
+      'ButtonBorder.fill': 'white'
+    })
       .add(
         new go.Shape({
-            name: 'ButtonIcon',
-            geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
-            strokeWidth: 2,
-            stretch: go.Stretch.Fill, // this Shape expands to fill the Button
-            geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
-            background: null,
-            visible: false, // visible set to false: not checked, unless data.checked is true
-          })
+          name: 'ButtonIcon',
+          geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
+          strokeWidth: 2,
+          stretch: go.Stretch.Fill, // this Shape expands to fill the Button
+          geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
+          background: null,
+          visible: false // visible set to false: not checked, unless data.checked is true
+        })
           .bind('visible', 'checked', (p) => p === true || p === null)
           .bind('stroke', 'checked', (p) => (p === null ? null : 'black'))
           .bind('background', 'checked', (p) => (p === null ? 'gray' : null))
@@ -185,16 +184,12 @@
   });
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowMove: false,
       allowCopy: false,
       allowDelete: false,
       allowHorizontalScroll: false,
-      layout: $(go.TreeLayout, {
+      layout: new go.TreeLayout({
         alignment: go.TreeAlignment.Start,
         angle: 0,
         compaction: go.TreeCompaction.None,
@@ -203,63 +198,65 @@
         nodeIndentPastParent: 1.0,
         nodeSpacing: 0,
         setsPortSpot: false,
-        setsChildPortSpot: false,
-      }),
+        setsChildPortSpot: false
+      })
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      {
-        // no Adornment: instead change panel background color by binding to Node.isSelected
-        selectionAdorned: false,
-        // a custom function to allow expanding/collapsing on double-click
-        // this uses similar logic to a TreeExpanderButton
-        doubleClick: (e, node) => {
-          var cmd = myDiagram.commandHandler;
-          if (node.isTreeExpanded) {
-            if (!cmd.canCollapseTree(node)) return;
-          } else {
-            if (!cmd.canExpandTree(node)) return;
-          }
-          e.handled = true;
-          if (node.isTreeExpanded) {
-            cmd.collapseTree(node);
-          } else {
-            cmd.expandTree(node);
-          }
-        },
-      },
-      $('TreeExpanderButton', {
-        width: 14,
-        'ButtonBorder.fill': 'whitesmoke',
-        'ButtonBorder.stroke': 'lightgray',
-        _buttonFillOver: 'rgba(0,128,255,0.25)',
-        _buttonStrokeOver: null,
-        _buttonFillPressed: 'rgba(0,128,255,0.4)',
-      }),
-      $(go.Panel,
-        'Horizontal',
-        { position: new go.Point(16, 0), margin: new go.Margin(0, 2, 0, 0), defaultAlignment: go.Spot.Center },
-        new go.Binding('background', 'isSelected', (s) => (s ? 'lightblue' : 'white')).ofObject(),
-        $('TriStateCheckBoxButton'),
-        $(go.TextBlock, { font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) }, new go.Binding('text', 'key', (s) => 'item ' + s))
-      ) // end Horizontal Panel
+    myDiagram.nodeTemplate = new go.Node({
+      // no Adornment: instead change panel background color by binding to Node.isSelected
+      selectionAdorned: false,
+      // a custom function to allow expanding/collapsing on double-click
+      // this uses similar logic to a TreeExpanderButton
+      doubleClick: (e, node) => {
+        var cmd = myDiagram.commandHandler;
+        if (node.isTreeExpanded) {
+          if (!cmd.canCollapseTree(node)) return;
+        } else {
+          if (!cmd.canExpandTree(node)) return;
+        }
+        e.handled = true;
+        if (node.isTreeExpanded) {
+          cmd.collapseTree(node);
+        } else {
+          cmd.expandTree(node);
+        }
+      }
+    })
+      .add(
+        go.GraphObject.build("TreeExpanderButton", {
+          width: 14,
+          'ButtonBorder.fill': 'whitesmoke',
+          'ButtonBorder.stroke': 'lightgray',
+          _buttonFillOver: 'rgba(0,128,255,0.25)',
+          _buttonStrokeOver: null,
+          _buttonFillPressed: 'rgba(0,128,255,0.4)'
+        }),
+        new go.Panel('Horizontal', {
+          position: new go.Point(16, 0),
+          margin: new go.Margin(0, 2, 0, 0),
+          defaultAlignment: go.Spot.Center
+        })
+          .bindObject('background', 'isSelected', (s) => (s ? 'lightblue' : 'white'))
+          .add(
+            go.GraphObject.build("TriStateCheckBoxButton"),
+            new go.TextBlock({ font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) })
+              .bind('text', 'key', (s) => 'item ' + s)
+          ) // end Horizontal Panel
     ); // end Node
 
-    // without lines
-    //myDiagram.linkTemplate = $(go.Link);
 
     // with lines
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        selectable: false,
-        routing: go.Routing.Orthogonal,
-        fromEndSegmentLength: 4,
-        toEndSegmentLength: 4,
-        fromSpot: new go.Spot(0.001, 1, 7, 0),
-        toSpot: go.Spot.Left,
-      },
-      $(go.Shape, { stroke: 'gray', strokeDashArray: [1, 2] })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      selectable: false,
+      routing: go.Routing.Orthogonal,
+      fromEndSegmentLength: 4,
+      toEndSegmentLength: 4,
+      fromSpot: new go.Spot(0.001, 1, 7, 0),
+      toSpot: go.Spot.Left
+    })
+      .add(
+        new go.Shape({ stroke: 'gray', strokeDashArray: [1, 2] })
+      );
 
     // create a random tree
     var nodeDataArray = [{ key: 0 }];
@@ -292,6 +289,10 @@
   <p>
     This sample is derived from the <a href="treeView.html" target="_blank">Tree View</a> sample. It adds the definition of the "TriStateCheckBoxButton" which
     is defined only to be used in a tree.
+  </p>
+  <p>
+    Each <a>Node</a> in the tree has a checkbox. Try checking them and see how 
+    it affects the <a>Node</a>s parent.
   </p>
 </div>
 

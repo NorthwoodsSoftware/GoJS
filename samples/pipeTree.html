@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,36 +124,29 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // Diagram refers to its DIV HTML element by id
-      {
-        isReadOnly: true,
-        // define a TreeLayout where alternating layers of nodes grow in different directions
-        // child and parent nodes have no space between them.
-        layout: $(go.TreeLayout, {
-          treeStyle: go.TreeStyle.Alternating,
-          angle: 90,
-          layerSpacing: 0,
-          alternateAngle: 0,
-          alternateLayerSpacing: 0,
-        }),
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      isReadOnly: true,
+      // define a TreeLayout where alternating layers of nodes grow in different directions
+      // child and parent nodes have no space between them.
+      layout: new go.TreeLayout({
+        treeStyle: go.TreeStyle.Alternating,
+        angle: 90,
+        layerSpacing: 0,
+        alternateAngle: 0,
+        alternateLayerSpacing: 0
+      })
+    });
 
     // the node template
     // the shape will be resized appropriately when the model is set up
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, 'Rectangle', { name: 'SHAPE', width: 30, height: 30 }, new go.Binding('fill', 'color'), new go.Binding('stroke', 'color')),
-      $(go.TextBlock, { name: 'TEXTBLOCK', margin: 5 }, new go.Binding('text', 'flow', (flow) => getText(flow)))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('Rectangle', { name: 'SHAPE', width: 30, height: 30 }).bind('fill', 'color').bind('stroke', 'color'),
+        new go.TextBlock({ name: 'TEXTBLOCK', margin: 5 }).bind('text', 'flow', (flow) => getText(flow))
+      );
 
     // the Links should have no graphical representation
-    myDiagram.linkTemplate = $(go.Link);
+    myDiagram.linkTemplate = new go.Link();
 
     myDiagram.model = new go.TreeModel([
       { key: 1, flow: 92, color: '#808080' },
@@ -167,7 +159,7 @@
       { key: 8, parent: 5, flow: 9, color: '#FF0000' },
       { key: 9, parent: 6, flow: 5, color: '#808080' },
       { key: 10, parent: 6, flow: 5, color: '#808080' },
-      { key: 11, parent: 6, flow: 5, color: '#808080' },
+      { key: 11, parent: 6, flow: 5, color: '#808080' }
     ]);
 
     myDiagram.delayInitialization(updatePipes);

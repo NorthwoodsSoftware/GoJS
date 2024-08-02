@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,23 +125,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
-      layout: $(go.TreeLayout),
+      layout: new go.TreeLayout()
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, { fill: 'transparent' }, new go.Binding('stroke', 'color')),
-        $(go.Picture, { width: 300, height: 150, portId: '' }, new go.Binding('element', 'datasets', makeLineChart))
-      ),
-      $(go.TextBlock, { margin: 8 }, new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: 'transparent' }).bind('stroke', 'color'),
+            new go.Picture({ width: 300, height: 150, portId: '' }).bind(
+              'element',
+              'datasets',
+              makeLineChart
+            )
+          ),
+        new go.TextBlock({ margin: 8 }).bind('text')
+      );
 
     // This Binding conversion function creates a Canvas element for a Picture
     // that has a rendering of a line chart drawn by Chart.js.
@@ -165,7 +164,7 @@
         type: 'line',
         data: {
           labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-          datasets: datasets,
+          datasets: datasets
         },
         options: {
           animation: {
@@ -177,9 +176,9 @@
                 canvases.removeChild(div);
               }
               picture.redraw();
-            },
-          },
-        },
+            }
+          }
+        }
       };
 
       new Chart(canv, config);
@@ -198,9 +197,9 @@
             {
               label: 'Random data',
               borderColor: 'black',
-              data: makeRandomPoints(8, 10),
-            },
-          ],
+              data: makeRandomPoints(8, 10)
+            }
+          ]
         },
         {
           key: 2,
@@ -211,16 +210,16 @@
               fill: false,
               backgroundColor: 'red',
               borderColor: 'red',
-              data: makeRandomPoints(8),
+              data: makeRandomPoints(8)
             },
             {
               label: 'Second dataset',
               fill: false,
               backgroundColor: 'blue',
               borderColor: 'blue',
-              data: makeRandomPoints(8),
-            },
-          ],
+              data: makeRandomPoints(8)
+            }
+          ]
         },
         {
           key: 3,
@@ -232,15 +231,15 @@
               fill: false,
               backgroundColor: 'green',
               borderColor: 'green',
-              data: makeRandomPoints(),
-            },
-          ],
-        },
+              data: makeRandomPoints()
+            }
+          ]
+        }
       ],
       linkDataArray: [
         { from: 1, to: 2 },
-        { from: 1, to: 3 },
-      ],
+        { from: 1, to: 3 }
+      ]
     });
   }
 
@@ -267,9 +266,9 @@
             fill: false,
             backgroundColor: color,
             borderColor: color,
-            data: makeRandomPoints(),
-          },
-        ],
+            data: makeRandomPoints()
+          }
+        ]
       };
       m.addNodeData(data);
       if (firstnode) {
@@ -292,8 +291,8 @@
             fill: false,
             backgroundColor: oldset[0].backgroundColor,
             borderColor: oldset[0].borderColor,
-            data: makeRandomPoints(),
-          },
+            data: makeRandomPoints()
+          }
         ]);
       });
     }, 'modified selected nodes');
@@ -305,19 +304,28 @@
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <button onclick="addNode()">Add Chart</button>
   <button onclick="modifyNodes()">Modify Charts of Selected Nodes</button>
-  <p>This app demonstrates using a popular charting library, <a href="https://chartjs.org">Chart.js</a>, for rendering charts within nodes.</p>
   <p>
-    The data for each chart is stored on the node data in the model. In this case the <code>datasets</code>
-    property value has the same properties that are expected by the Chart.js configuration, but you could organize the data however you want.
+    This app demonstrates using a popular charting library,
+    <a href="https://chartjs.org">Chart.js</a>, for rendering charts within nodes.
   </p>
   <p>
-    The <code>makeLineChart</code> conversion function is used by a <a>Binding</a> on <a>Picture.element</a> to generate a Canvas element that can be shown in
-    the node. Most of the implementation of that function is specific to Chart.js. The rendering requires the Canvas to be in the HTML DOM. To avoid
-    accumulating resources, the configuration of the chart defines an <code>onComplete</code> event handler to remove the Canvas element from the DOM. That
-    allows any future removal of the Node from the Diagram not to leave an unused Canvas element behind.
+    The data for each chart is stored on the node data in the model. In this case the
+    <code>datasets</code>
+    property value has the same properties that are expected by the Chart.js configuration, but you
+    could organize the data however you want.
+  </p>
+  <p>
+    The <code>makeLineChart</code> conversion function is used by a <a>Binding</a> on
+    <a>Picture.element</a> to generate a Canvas element that can be shown in the node. Most of the
+    implementation of that function is specific to Chart.js. The rendering requires the Canvas to be
+    in the HTML DOM. To avoid accumulating resources, the configuration of the chart defines an
+    <code>onComplete</code> event handler to remove the Canvas element from the DOM. That allows any
+    future removal of the Node from the Diagram not to leave an unused Canvas element behind.
   </p>
   <!-- myCanvases is used by makeLineChart, but need not be seen by the user -->
-  <div id="myCanvases" style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px; opacity: 0"></div>
+  <div
+    id="myCanvases"
+    style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px; opacity: 0"></div>
 </div>
 
           

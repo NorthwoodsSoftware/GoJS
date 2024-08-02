@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,9 +125,6 @@
 <script id="code">
   var isDarkMode = false; // is accessed by html elements (button) so must be declared in script scope
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     // colors are almost entirely defined up here to allow for easier theming
     var yellow = '#FFB400';
@@ -163,7 +159,7 @@
         wrap: go.Wrap.Fit,
         textAlign: 'center',
         editable: true,
-        font: bigfont,
+        font: bigfont
       };
     }
 
@@ -172,12 +168,12 @@
       'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
       initialAutoScale: go.AutoScale.Uniform,
       'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
-      layout: $(go.LayeredDigraphLayout, {
+      layout: new go.LayeredDigraphLayout({
         isInitial: false,
         isOngoing: false,
-        layerSpacing: 100,
+        layerSpacing: 100
       }),
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -192,199 +188,206 @@
       }
     });
 
-    var defaultAdornment = $(go.Adornment,
-      'Spot',
-      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 3 }), $(go.Placeholder)),
-      // the button to create a "next" node, at the top-right corner
-      $('Button',
-        {
+    var defaultAdornment = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({
+              fill: null,
+              stroke: selectColor,
+              strokeWidth: 3
+            }),
+            new go.Placeholder()
+          ),
+        // the button to create a "next" node, at the top-right corner
+        go.GraphObject.build('Button', {
           alignment: new go.Spot(1, 0, -5, 5),
-          click: addNodeAndLink,
-        }, // this function is defined below
-        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
-        $(go.Shape, 'PlusLine', { desiredSize: new go.Size(6, 6) })
-      )
-    );
+          click: addNodeAndLink
+        }) // this function is defined below
+          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
+          .add(
+            new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
+          )
+      );
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        selectionAdornmentTemplate: defaultAdornment,
-        isShadowed: true,
-        shadowBlur: 2,
-        shadowColor: yellowShadow,
-        shadowOffset: new go.Point(4, 6),
-      },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Shape, 'Rectangle', {
-        fill: yellow,
-        stroke: 'rgba(0, 0, 0, 0)',
-        portId: '',
-        fromLinkable: true,
-        toLinkable: true,
-        cursor: 'pointer',
-        toEndSegmentLength: 50,
-        fromEndSegmentLength: 40,
-      }),
-      $(go.TextBlock,
-        'Page',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      selectionAdornmentTemplate: defaultAdornment,
+      isShadowed: true,
+      shadowBlur: 2,
+      shadowColor: yellowShadow,
+      shadowOffset: new go.Point(4, 6)
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape('Rectangle', {
+          fill: yellow,
+          stroke: 'rgba(0, 0, 0, 0)',
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true,
+          cursor: 'pointer',
+          toEndSegmentLength: 50,
+          fromEndSegmentLength: 40
+        }),
+        new go.TextBlock('Page', {
           margin: 10,
           font: bigfont,
-          editable: true,
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      )
-    );
+          editable: true
+        })
+          .bindTwoWay('text')
+      );
 
-    myDiagram.nodeTemplateMap.add(
-      'Source',
-      $(go.Node,
-        'Auto',
-        {
-          isShadowed: true,
-          shadowBlur: 2,
-          shadowColor: blueShadow,
-          shadowOffset: new go.Point(4, 6),
-        },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape,
-          'RoundedRectangle',
-          {
+    myDiagram.nodeTemplateMap.add('Source',
+      new go.Node('Auto', {
+        isShadowed: true,
+        shadowBlur: 2,
+        shadowColor: blueShadow,
+        shadowOffset: new go.Point(4, 6)
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
             name: 'SHAPE',
             fill: blue,
             stroke: 'rgba(0, 0, 0, 0)',
             portId: '',
             fromLinkable: true,
             cursor: 'pointer',
-            fromEndSegmentLength: 40,
-          },
-          new go.Binding('fill', 'color')
-        ),
-        $(go.TextBlock, 'Source', textStyle(), new go.Binding('text', 'text').makeTwoWay())
-      )
+            fromEndSegmentLength: 40
+          })
+            .bind('fill', 'color'),
+          new go.TextBlock('Source', textStyle())
+            .bindTwoWay('text')
+        )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'DesiredEvent',
-      $(go.Node,
-        'Auto',
-        {
-          isShadowed: true,
-          shadowBlur: 2,
-          shadowColor: greenShadow,
-          shadowOffset: new go.Point(4, 6),
-        },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, 'RoundedRectangle', { fill: green, stroke: null, portId: '', toLinkable: true, toEndSegmentLength: 50 }, new go.Binding('fill', 'color')),
-        $(go.TextBlock, 'Success!', textStyle(), new go.Binding('text', 'text').makeTwoWay())
-      )
+    myDiagram.nodeTemplateMap.add('DesiredEvent',
+      new go.Node('Auto', {
+        isShadowed: true,
+        shadowBlur: 2,
+        shadowColor: greenShadow,
+        shadowOffset: new go.Point(4, 6)
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: green,
+            stroke: null,
+            portId: '',
+            toLinkable: true,
+            toEndSegmentLength: 50
+          })
+            .bind('fill', 'color'),
+          new go.TextBlock('Success!', textStyle())
+            .bindTwoWay('text')
+        )
     );
 
     // Undesired events have special adornments that allows adding and removing additional "reasons"
-    var UndesiredEventAdornmentModify = $(go.Adornment,
-      'Spot',
-      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: selectColor, strokeWidth: 4 }), $(go.Placeholder)),
-      // the button to create a new reason, at the bottom-left corner
-      $('Button',
-        {
+    var UndesiredEventAdornmentModify = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({
+              fill: null,
+              stroke: selectColor,
+              strokeWidth: 4
+            }),
+            new go.Placeholder()
+          ),
+        // the button to create a new reason, at the bottom-left corner
+        go.GraphObject.build('Button', {
           alignment: new go.Spot(1, 1, -5, -5),
-          click: addReason,
-        }, // this function is defined below
-        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
-        $(go.Shape, 'TriangleDown', { desiredSize: new go.Size(10, 10) })
-      ),
-      //the button to remove the most recent reason, above the "create" button
-      $('Button',
-        {
+          click: addReason
+        }) // this function is defined below
+          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
+          .add(
+            new go.Shape('TriangleDown', { desiredSize: new go.Size(10, 10) })
+          ),
+        //the button to remove the most recent reason, above the "create" button
+        go.GraphObject.build('Button', {
           alignment: new go.Spot(1, 1, -5, -22),
-          click: removeReason,
-        }, //this function is also defined below
-        new go.Binding('visible', '', (a) => !a.diagram.isReadOnly).ofObject(),
-        $(go.Shape, 'TriangleUp', { desiredSize: new go.Size(10, 10) })
-      )
-    );
+          click: removeReason
+        }) //this function is also defined below
+          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
+          .add(
+            new go.Shape('TriangleUp', { desiredSize: new go.Size(10, 10) })
+          )
+      );
 
-    var reasonTemplate = $(go.Panel,
-      'Horizontal',
-      $(go.TextBlock, '•', {
-        margin: 4,
-        stroke: undesiredEventTextColor,
-        font: smallfont,
-      }),
-      $(go.TextBlock,
-        'Reason',
-        {
+    var reasonTemplate = new go.Panel('Horizontal')
+      .add(
+        new go.TextBlock('•', {
+          margin: 4,
+          stroke: undesiredEventTextColor,
+          font: smallfont
+        }),
+        new go.TextBlock('Reason', {
           margin: 4,
           maxSize: new go.Size(200, NaN),
           wrap: go.Wrap.Fit,
           stroke: undesiredEventTextColor,
           editable: true,
-          font: smallfont,
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      )
-    );
+          font: smallfont
+        })
+          .bindTwoWay('text')
+      );
 
-    myDiagram.nodeTemplateMap.add(
-      'UndesiredEvent',
-      $(go.Node,
-        'Auto',
-        {
-          isShadowed: true,
-          shadowBlur: 2,
-          shadowColor: redShadow,
-          shadowOffset: new go.Point(4, 6),
-        },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        { selectionAdornmentTemplate: UndesiredEventAdornmentModify },
-        $(go.Shape, 'RoundedRectangle', { fill: red, stroke: null, portId: '', toLinkable: true, toEndSegmentLength: 50 }),
-        $(go.Panel,
-          'Vertical',
-          { defaultAlignment: go.Spot.Top },
-
-          $(go.TextBlock,
-            'Drop',
-            textStyle(),
-            {
-              stroke: undesiredEventTextColor,
-              minSize: new go.Size(80, NaN),
-            },
-            new go.Binding('text', 'text').makeTwoWay()
-          ),
-
-          $(go.Panel,
-            'Vertical',
-            {
-              defaultAlignment: go.Spot.TopLeft,
-              itemTemplate: reasonTemplate,
-            },
-            new go.Binding('itemArray', 'reasonsList').makeTwoWay()
-          )
+    myDiagram.nodeTemplateMap.add('UndesiredEvent',
+      new go.Node('Auto', {
+        isShadowed: true,
+        shadowBlur: 2,
+        shadowColor: redShadow,
+        shadowOffset: new go.Point(4, 6),
+        selectionAdornmentTemplate: UndesiredEventAdornmentModify
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: red,
+            stroke: null,
+            portId: '',
+            toLinkable: true,
+            toEndSegmentLength: 50
+          }),
+          new go.Panel('Vertical', { defaultAlignment: go.Spot.Top })
+            .add(
+              new go.TextBlock('Drop', {
+                ...textStyle(),
+                stroke: undesiredEventTextColor,
+                minSize: new go.Size(80, NaN)
+              })
+                .bindTwoWay('text'),
+              new go.Panel('Vertical', {
+                defaultAlignment: go.Spot.TopLeft,
+                itemTemplate: reasonTemplate
+              })
+                .bindTwoWay('itemArray', 'reasonsList')
+            )
         )
-      )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Comment',
-      $(go.Node,
-        'Auto',
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, 'Rectangle', { portId: '', fill: white, stroke: null, fromLinkable: true }),
-        $(go.TextBlock,
-          'A comment',
-          {
+    myDiagram.nodeTemplateMap.add('Comment',
+      new go.Node('Auto')
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Rectangle', {
+            portId: '',
+            fill: white,
+            stroke: null,
+            fromLinkable: true
+          }),
+          new go.TextBlock('A comment', {
             margin: 10,
             maxSize: new go.Size(200, NaN),
             wrap: go.Wrap.Fit,
             editable: true,
-            font: smallfont,
-          },
-          new go.Binding('text', 'text').makeTwoWay()
+            font: smallfont
+          })
+            .bindTwoWay('text')
+          // no ports, because no links are allowed to connect with a comment
         )
-        // no ports, because no links are allowed to connect with a comment
-      )
     );
 
     // clicking the add button on an UndesiredEvent node inserts a new text object into the panel
@@ -440,26 +443,37 @@
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      { curve: go.Curve.Bezier, toShortLength: 5, fromSpot: go.Spot.Right, toSpot: go.Spot.Left },
-      $(go.Shape, // the link shape
-        { stroke: lineColor, strokeWidth: 2.5 }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'Kite', fill: lineColor, stroke: lineColor, scale: 1.5 }
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({ // the whole link panel
+        curve: go.Curve.Bezier,
+        toShortLength: 5,
+        fromSpot: go.Spot.Right,
+        toSpot: go.Spot.Left
+      })
+      .add(
+        new go.Shape({ // the link shape
+          stroke: lineColor,
+          strokeWidth: 2.5
+        }),
+        new go.Shape({ // the arrowhead
+          toArrow: 'Kite',
+          fill: lineColor,
+          stroke: lineColor,
+          scale: 1.5
+        })
+      );
 
     // comments will have different links
-    myDiagram.linkTemplateMap.add(
-      'Comment',
-      $(go.Link,
-        {
-          fromSpot: go.Spot.Center,
-          toSpot: go.Spot.Center,
-        },
-        $(go.Shape, { strokeWidth: 1.5, stroke: 'darkgreen' })
-      )
+    myDiagram.linkTemplateMap.add('Comment',
+      new go.Link({
+        fromSpot: go.Spot.Center,
+        toSpot: go.Spot.Center
+      })
+        .add(
+          new go.Shape({
+            strokeWidth: 1.5,
+            stroke: 'darkgreen'
+          })
+        )
     );
 
     // when a new link is created, determine what template to use
@@ -470,21 +484,18 @@
       }
     });
 
-    var palette = new go.Palette(
-      'myPaletteDiv', // create a new Palette in the HTML DIV element
-      {
-        // share the template map with the Palette
-        nodeTemplateMap: myDiagram.nodeTemplateMap,
-        autoScale: go.AutoScale.Uniform, // everything always fits in viewport
-      }
-    );
+    var palette = new go.Palette('myPaletteDiv', {
+      // share the template map with the Palette
+      nodeTemplateMap: myDiagram.nodeTemplateMap,
+      autoScale: go.AutoScale.Uniform // everything always fits in viewport
+    });
 
     palette.model.nodeDataArray = [
       { category: 'Source' },
       {}, // default node
       { category: 'DesiredEvent' },
       { category: 'UndesiredEvent', reasonsList: [{}] },
-      { category: 'Comment' },
+      { category: 'Comment' }
     ];
 
     // read in the JSON-format data from the "mySavedModel" element
@@ -535,6 +546,7 @@
       </div>
     </div>
   </div>
+  <button onclick="layout()">Diagram Layout</button>
   <p>
     This workflow diagram uses the <a href="../api/symbols/LayeredDigraphLayout.html" target="api">LayeredDigraphLayout</a> to display some data about the flow
     of a fictional web site. You can add to the Diagram by dragging Nodes from the <a href="../api/symbols/Palette.html" target="api">Palette</a> and by buttons
@@ -557,7 +569,6 @@
 
   <button id="SaveButton" onclick="save()" disabled="">Save</button>
   <button onclick="load()">Load</button>
-  <button onclick="layout()">Layout</button>
   Diagram Model saved in JSON format:
   <br />
   <textarea id="mySavedModel" style="width: 100%; height: 300px">

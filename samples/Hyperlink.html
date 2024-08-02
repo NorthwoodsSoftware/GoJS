@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,25 +125,23 @@
 <script src="../extensions/HyperlinkText.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv');
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, 'Ellipse', { fill: 'lightskyblue' }),
-      $('HyperlinkText',
-        (node) => 'https://gojs.net/' + node.data.version,
-        (node) => 'Visit GoJS ' + node.data.version,
-        { margin: 10 }
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('Ellipse', { fill: 'lightskyblue' }),
+        go.GraphObject.build('HyperlinkText',
+          { margin: 10 },
+          (node) => 'https://gojs.net/' + node.data.version,
+          (node) => 'Visit GoJS ' + node.data.version
+        )
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: 1, version: 'beta' },
-        { key: 2, version: 'latest' },
+        { key: 1, version: '2.2.23' },
+        { key: 2, version: 'latest' }
       ],
       [{ from: 1, to: 2 }]
     );

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,36 +125,34 @@
 <script src="../extensions/LinkShiftingTool.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
-    myDiagram.toolManager.mouseDownTools.add($(LinkShiftingTool));
+    myDiagram.toolManager.mouseDownTools.add(new LinkShiftingTool());
 
     myDiagram.nodeTemplate =
       new go.Node('Auto', { locationSpot: go.Spot.Center })
         .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({
-              fill: 'lightgray',
-              portId: '', cursor: 'pointer',
-              fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
-              fromLinkable: true, toLinkable: true
-            }),
+            fill: 'lightgray',
+            portId: '', cursor: 'pointer',
+            fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
+            fromLinkable: true, toLinkable: true
+          }),
           new go.TextBlock({ margin: 10 })
             .bind('text')
         );
 
     myDiagram.linkTemplate =
       new go.Link({
-          reshapable: true,
-          resegmentable: true,
-          relinkableFrom: true,
-          relinkableTo: true,
-          adjusting: go.LinkAdjusting.Stretch,
-        })
+        reshapable: true,
+        resegmentable: true,
+        relinkableFrom: true,
+        relinkableTo: true,
+        adjusting: go.LinkAdjusting.Stretch
+      })
         // remember the (potentially) user-modified route
         .bindTwoWay('points')
         // remember any spots modified by LinkShiftingTool
@@ -171,7 +168,7 @@
         { key: 1, text: 'Alpha', location: '0 0' },
         { key: 2, text: 'Beta', location: '0 100' },
         { key: 3, text: 'Gamma', location: '-100 50' },
-        { key: 4, text: 'Delta', location: '100 50' },
+        { key: 4, text: 'Delta', location: '100 50' }
       ],
       [{ from: 1, to: 2 }]
     );

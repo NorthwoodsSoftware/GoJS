@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -178,20 +177,13 @@
   integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
   crossorigin="anonymous"></script>
 <script src="../extensions/Figures.js"></script>
-<link rel="stylesheet" href="../extensions/DataInspector.css" />
 <script src="../extensions/DataInspector.js"></script>
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
 
-    // Note that we do not use $ here as an alias for go.GraphObject.make because we are using $ for jQuery
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    var GO = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = GO(go.Diagram, 'myDiagramDiv', {
-      'undoManager.isEnabled': true,
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true
     });
 
     // define several shared Brushes
@@ -209,33 +201,24 @@
 
     myDiagram.nodeTemplateMap.add(
       '', // default category
-      GO(
-        go.Node,
-        'Auto',
-        { locationSpot: go.Spot.Center },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        GO(
-          go.Shape,
-          'Ellipse',
-          { strokeWidth: 2, fill: fill1, name: 'SHAPE' },
-          new go.Binding('figure', 'figure'),
-          new go.Binding('fill', 'fill'),
-          new go.Binding('stroke', 'stroke')
-        ),
-        GO(
-          go.TextBlock,
-          {
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Ellipse', { strokeWidth: 2, fill: fill1, name: 'SHAPE' })
+            .bind('figure', 'figure')
+            .bind('fill', 'fill')
+            .bind('stroke', 'stroke'),
+          new go.TextBlock({
             margin: 5,
             maxSize: new go.Size(200, NaN),
             wrap: go.Wrap.Fit,
             textAlign: 'center',
             editable: true,
             font: 'bold 9pt Helvetica, Arial, sans-serif',
-            name: 'TEXT',
-          },
-          new go.Binding('text', 'text').makeTwoWay()
+            name: 'TEXT'
+          })
+            .bindTwoWay('text')
         )
-      )
     );
 
     // On selection changed, make sure infoDraggable will resize as necessary
@@ -248,19 +231,19 @@
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Ocean', fill: fill1, stroke: brush1, figure: 'Hexagon' },
-        { key: 2, text: 'Lake', fill: fill2, stroke: brush2, figure: 'Diamond' },
+        { key: 2, text: 'Lake', fill: fill2, stroke: brush2, figure: 'Diamond' }
       ],
       [{ from: 1, to: 2 }]
     );
 
     // initialize the Palette that is in a floating, draggable HTML container
-    myPalette = new go.Palette('myPaletteDiv'); // must name or refer to the DIV HTML element
+    myPalette = new go.Palette('myPaletteDiv');
     myPalette.nodeTemplateMap = myDiagram.nodeTemplateMap;
     myPalette.model = new go.GraphLinksModel([
       { text: 'Lake', fill: fill1, stroke: brush1, figure: 'Hexagon' },
       { text: 'Ocean', fill: fill2, stroke: brush2, figure: 'Rectangle' },
       { text: 'Sand', fill: fill3, stroke: brush3, figure: 'Diamond' },
-      { text: 'Goldfish', fill: fill4, stroke: brush4, figure: 'Octagon' },
+      { text: 'Goldfish', fill: fill4, stroke: brush4, figure: 'Octagon' }
     ]);
 
     myPalette.addDiagramListener('InitialLayoutCompleted', (diagramEvent) => {
@@ -275,7 +258,7 @@
         .draggable({ handle: '#paletteDraggableHandle' })
         .resizable({
           // After resizing, perform another layout to fit everything in the palette's viewport
-          stop: () => myPalette.layoutDiagram(true),
+          stop: () => myPalette.layoutDiagram(true)
         });
 
       $('#infoDraggable').draggable({ handle: '#infoDraggableHandle' });
@@ -286,8 +269,8 @@
           key: { readOnly: true, show: Inspector.showIfPresent },
           // fill and stroke would be automatically added for nodes, but we want to declare it a color also:
           fill: { show: Inspector.showIfPresent, type: 'color' },
-          stroke: { show: Inspector.showIfPresent, type: 'color' },
-        },
+          stroke: { show: Inspector.showIfPresent, type: 'color' }
+        }
       });
 
       myDiagram.select(myDiagram.nodes.first());

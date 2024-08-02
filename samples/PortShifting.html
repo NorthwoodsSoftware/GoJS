@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -130,16 +129,11 @@
   var green = 'forestgreen'; // 1 or true
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a new Diagram in the HTML DIV element "myDiagramDiv"
-      {
-        'draggingTool.isGridSnapEnabled': true, // dragged nodes will snap to a grid of 10x10 cells
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'draggingTool.isGridSnapEnabled': true, // dragged nodes will snap to a grid of 10x10 cells
+      'undoManager.isEnabled': true
+    });
 
     // install the PortShiftingTool as a "mouse move" tool
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool());
@@ -159,56 +153,56 @@
     var palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
 
     // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        routing: go.Routing.AvoidsNodes,
-        curve: go.Curve.JumpOver,
-        corner: 3,
-        relinkableFrom: true,
-        relinkableTo: true,
-        selectionAdorned: false, // Links are not adorned when selected so that their color remains visible.
-        shadowOffset: new go.Point(0, 0),
-        shadowBlur: 5,
-        shadowColor: 'blue',
-      },
-      new go.Binding('isShadowed', 'isSelected').ofObject(),
-      $(go.Shape, { name: 'SHAPE', strokeWidth: 2, stroke: red })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.AvoidsNodes,
+      curve: go.Curve.JumpOver,
+      corner: 3,
+      relinkableFrom: true,
+      relinkableTo: true,
+      selectionAdorned: false, // Links are not adorned when selected so that their color remains visible.
+      shadowOffset: new go.Point(0, 0),
+      shadowBlur: 5,
+      shadowColor: 'blue'
+    })
+      .bindObject('isShadowed', 'isSelected')
+      .add(
+        new go.Shape({ name: 'SHAPE', strokeWidth: 2, stroke: red })
+      );
 
     // node template helpers
-    var sharedToolTip = $('ToolTip', { 'Border.figure': 'RoundedRectangle' }, $(go.TextBlock, { margin: 2 }, new go.Binding('text', '', (d) => d.category)));
+    var sharedToolTip = go.GraphObject.build('ToolTip', { 'Border.figure': 'RoundedRectangle' })
+      .add(new go.TextBlock({ margin: 2 }).bind('text', '', (d) => d.category));
 
     // define some common property settings
-    function nodeStyle() {
-      return [
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        new go.Binding('isShadowed', 'isSelected').ofObject(),
-        {
-          selectionAdorned: false,
-          shadowOffset: new go.Point(0, 0),
-          shadowBlur: 15,
-          shadowColor: 'blue',
-          resizable: true,
-          resizeObjectName: 'NODESHAPE',
-          toolTip: sharedToolTip,
-        },
-      ];
+    function nodeStyle(graphObj) {
+      Object.assign(graphObj, {
+        selectionAdorned: false,
+        shadowOffset: new go.Point(0, 0),
+        shadowBlur: 15,
+        shadowColor: 'blue',
+        resizable: true,
+        resizeObjectName: 'NODESHAPE',
+        toolTip: sharedToolTip
+      });
+      graphObj.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
+      graphObj.bindObject('isShadowed', 'isSelected');
     }
 
-    function shapeStyle() {
-      return {
+    function shapeStyle(graphObj) {
+      Object.assign(graphObj, {
         name: 'NODESHAPE',
         fill: 'lightgray',
         stroke: 'darkslategray',
         desiredSize: new go.Size(40, 40),
-        strokeWidth: 2,
-      };
+        strokeWidth: 2
+      })
     }
 
     function portStyle(id, input, align) {
-      return [
-        new go.Binding('alignment', id + 'Spot', go.Spot.parse).makeTwoWay(go.Spot.stringify),
-        {
+      return (graphObj) => {
+        graphObj.bindTwoWay('alignment', id + 'Spot', go.Spot.parse, go.Spot.stringify)
+
+        Object.assign(graphObj, {
           portId: id,
           desiredSize: new go.Size(6, 6),
           alignment: align,
@@ -218,97 +212,96 @@
           toSpot: go.Spot.Left,
           toLinkable: input,
           toMaxLinks: 1,
-          cursor: 'pointer',
-        },
-      ];
+          cursor: 'pointer'
+        });
+      };
     }
 
     // define templates for each type of node
-    const inputTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'Circle', shapeStyle(), { fill: red }), // override the default fill (from shapeStyle()) to be red
-      $(go.Shape, 'Rectangle', portStyle('', false, new go.Spot(1, 0.5))), // the only port
-      {
-        doubleClick: (e, obj) => {
-          if (!(obj instanceof go.Node)) return;
-          e.diagram.startTransaction('Toggle Input');
-          const shp = obj.findObject('NODESHAPE');
-          shp.fill = shp.fill === green ? red : green;
-          updateStates();
-          e.diagram.commitTransaction('Toggle Input');
-        },
+    const inputTemplate = new go.Node('Spot', {
+      doubleClick: (e, obj) => {
+        if (!(obj instanceof go.Node)) return;
+        e.diagram.startTransaction('Toggle Input');
+        const shp = obj.findObject('NODESHAPE');
+        shp.fill = shp.fill === green ? red : green;
+        updateStates();
+        e.diagram.commitTransaction('Toggle Input');
       }
-    );
+    })
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('Circle', { fill: red }).apply(shapeStyle), // override the default fill (from shapeStyle()) to be red
+        new go.Shape('Rectangle').apply(portStyle('', false, new go.Spot(1, 0.5))) // the only port
+      );
 
-    const outputTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'Rectangle', shapeStyle(), { fill: green }), // override the default fill (from shapeStyle()) to be green
-      $(go.Shape, 'Rectangle', portStyle('', true, new go.Spot(0, 0.5)))
-    ); // the only port
+    const outputTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('Rectangle', { fill: green }).apply(shapeStyle), // override the default fill (from shapeStyle()) to be green
+        new go.Shape('Rectangle').apply(portStyle('', true, new go.Spot(0, 0.5)))
+      ); // the only port
 
-    const andTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'AndGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const andTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('AndGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const orTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'OrGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0.16, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0.16, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const orTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('OrGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.16, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.16, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const xorTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'XorGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0.26, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0.26, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const xorTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('XorGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.26, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.26, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const norTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'NorGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0.16, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0.16, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const norTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('NorGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.16, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.16, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const xnorTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'XnorGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0.26, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0.26, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const xnorTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('XnorGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.26, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.26, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const nandTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'NandGate', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in1', true, new go.Spot(0, 0.3))),
-      $(go.Shape, 'Rectangle', portStyle('in2', true, new go.Spot(0, 0.7))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const nandTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('NandGate').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0, 0.3))),
+        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0, 0.7))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
-    const notTemplate = $(go.Node,
-      'Spot',
-      nodeStyle(),
-      $(go.Shape, 'Inverter', shapeStyle()),
-      $(go.Shape, 'Rectangle', portStyle('in', true, new go.Spot(0, 0.5))),
-      $(go.Shape, 'Rectangle', portStyle('out', false, new go.Spot(1, 0.5)))
-    );
+    const notTemplate = new go.Node('Spot')
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('Inverter').apply(shapeStyle),
+        new go.Shape('Rectangle').apply(portStyle('in', true, new go.Spot(0, 0.5))),
+        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
+      );
 
     // add the templates created above to myDiagram and palette
     myDiagram.nodeTemplateMap.add('input', inputTemplate);
@@ -333,7 +326,7 @@
       { category: 'not' },
       { category: 'nand' },
       { category: 'nor' },
-      { category: 'xnor' },
+      { category: 'xnor' }
     ];
 
     // load the initial diagram

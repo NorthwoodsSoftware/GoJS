@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,17 +124,14 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        layout: $(go.GridLayout, { wrappingColumn: 2, isOngoing: false }),
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: new go.GridLayout({
+        wrappingColumn: 2,
+        isOngoing: false
+      }),
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
     var SPARK_STROKEWIDTH = 1;
     var SPARK_INTERVAL = 3;
@@ -167,53 +163,59 @@
       return new go.Spot(0, 1, 0, -y);
     }
 
-    var sparkLine = $(go.Panel,
-      'Horizontal',
-      {
-        alignment: go.Spot.Left,
-        alignmentFocusName: 'spark',
-      },
-      new go.Binding('alignmentFocus', 'values', makeAlignmentFromValues),
-
-      $(go.TextBlock,
-        { visible: false, margin: 1, font: '11px sans-serif', background: 'white' },
-        new go.Binding('alignment', 'values', (values) => {
-          var min = Infinity;
-          var max = -Infinity;
-          for (var i = 0; i < values.length; i++) {
-            min = Math.min(min, values[i]);
-            max = Math.max(max, values[i]);
-          }
-          if (max - min === 0) return go.Spot.Center;
-          return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
-        }),
-        new go.Binding('stroke', 'color'),
-        new go.Binding('text', 'label'),
-        new go.Binding('visible', 'label', (l) => true)
-      ),
-
-      $(go.Shape,
-        {
+    var sparkLine = new go.Panel('Horizontal', {
+      alignment: go.Spot.Left,
+      alignmentFocusName: 'spark'
+    })
+      .bind('alignmentFocus', 'values', makeAlignmentFromValues)
+      .add(
+        new go.TextBlock({
+          visible: false,
+          margin: 1,
+          font: '11px sans-serif',
+          background: 'white'
+        })
+          .bind('alignment', 'values', (values) => {
+            var min = Infinity;
+            var max = -Infinity;
+            for (var i = 0; i < values.length; i++) {
+              min = Math.min(min, values[i]);
+              max = Math.max(max, values[i]);
+            }
+            if (max - min === 0) return go.Spot.Center;
+            return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
+          })
+          .bind('stroke', 'color')
+          .bind('text', 'label')
+          .bind('visible', 'label', (l) => true),
+        new go.Shape({
           fill: null,
           strokeWidth: SPARK_STROKEWIDTH,
           stroke: 'gray',
-          name: 'spark',
-        },
-        new go.Binding('stroke', 'color'),
-        new go.Binding('geometryString', 'values', makeStringFromValues)
-      )
-    ); // end sparkLine itemTemplate
+          name: 'spark'
+        })
+          .bind('stroke', 'color')
+          .bind('geometryString', 'values', makeStringFromValues)
+      );
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, { fill: 'rgba(200,200,255,.3)', strokeWidth: 0 }),
-      $(go.Panel,
-        'Spot',
-        { itemTemplate: sparkLine },
-        new go.Binding('itemArray', 'items'),
-        $(go.Shape, { width: 1, height: 200, fill: 'red', stroke: null, strokeWidth: 0 })
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape({
+          fill: 'rgba(200,200,255,.3)',
+          strokeWidth: 0
+        }),
+        new go.Panel('Spot', { itemTemplate: sparkLine })
+          .bind('itemArray', 'items')
+          .add(
+            new go.Shape({
+              width: 1,
+              height: 200,
+              fill: 'red',
+              stroke: null,
+              strokeWidth: 0
+            })
+          )
+      );
 
     function rand(min, max) {
       return Math.random() * (max - min) + min;
@@ -242,8 +244,8 @@
             { color: '#FFB6C1', values: makeRandomValues(50) },
             { color: '#FF69B4', values: makeRandomValues(50) },
             { color: '#C71585', values: makeRandomValues(50, -20) },
-            { color: 'gray', values: [0] },
-          ],
+            { color: 'gray', values: [0] }
+          ]
         },
 
         {
@@ -253,8 +255,8 @@
             { color: 'rgba(0,0,255,.6)', values: makeRandomValues(50), label: 'long label B' },
             { color: 'darkgray', values: makeRandomValues(50), label: 'label C' },
             { color: 'lime', values: makeRandomValues(50), label: 'label D' },
-            { color: 'gray', values: [0] },
-          ],
+            { color: 'gray', values: [0] }
+          ]
         },
 
         {
@@ -264,10 +266,10 @@
             { color: 'gray', values: makeRandomValues(20, 30) },
             { color: 'gray', values: makeRandomValues(40, 30) },
             { color: 'gray', values: makeRandomValues(50, 30) },
-            { color: 'gray', values: [0] },
-          ],
-        },
-      ],
+            { color: 'gray', values: [0] }
+          ]
+        }
+      ]
     });
   }
   window.addEventListener('DOMContentLoaded', init);

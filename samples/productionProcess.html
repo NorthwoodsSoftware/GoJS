@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -123,7 +122,10 @@
             
             
 
-<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css" />
+<link
+  href="https://fonts.googleapis.com/css?family=Lato:400,700"
+  rel="stylesheet"
+  type="text/css" />
 <script id="code">
   function init() {
     // Abstract colors
@@ -136,7 +138,7 @@
       lightgreen: '#b9e986',
       pink: '#faadc1',
       purple: '#d689ff',
-      orange: '#f08c00',
+      orange: '#f08c00'
     };
 
     var ColorNames = [];
@@ -223,74 +225,66 @@
       return geo;
     }
 
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform, // scale to show all of the contents
-        ChangedSelection: onSelectionChanged, // view additional information
-        maxSelectionCount: 1, // don't allow users to select more than one thing at a time
-        isReadOnly: true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform, // scale to show all of the contents
+      ChangedSelection: onSelectionChanged, // view additional information
+      maxSelectionCount: 1, // don't allow users to select more than one thing at a time
+      isReadOnly: true
+    });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      {
-        locationObjectName: 'PORT',
-        locationSpot: go.Spot.Top, // location point is the middle top of the PORT
-        linkConnected: updatePortHeight,
-        linkDisconnected: updatePortHeight,
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4, width: 140 }, new go.Binding('text', '', (data) => data.text + ':\n\n' + data.description))),
-      },
-      new go.Binding('location', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
-      // The main element of the Spot panel is a vertical panel housing an optional icon,
-      // plus a rectangle that acts as the port
-      $(go.Panel,
-        'Vertical',
-        $(go.Shape,
-          {
-            width: 40,
-            height: 0,
-            stroke: null,
-            strokeWidth: 0,
-            fill: 'gray',
-          },
-          new go.Binding('height', 'icon', () => 40),
-          new go.Binding('fill', 'color', colorFunc),
-          new go.Binding('geometry', 'icon', geoFunc)
-        ),
-        $(go.Shape,
-          {
-            name: 'PORT',
-            width: 40,
-            height: 24,
-            margin: new go.Margin(-1, 0, 0, 0),
-            stroke: null,
-            strokeWidth: 0,
-            fill: 'gray',
-            portId: '',
-            fromLinkable: true,
-            toLinkable: true,
-          },
-          new go.Binding('fill', 'color', colorFunc)
-        ),
-        $(go.TextBlock,
-          {
-            font: 'Bold 14px Lato, sans-serif',
-            textAlign: 'center',
-            margin: 3,
-            maxSize: new go.Size(100, NaN),
-            alignment: go.Spot.Top,
-            alignmentFocus: go.Spot.Bottom,
-            editable: true,
-          },
-          new go.Binding('text').makeTwoWay()
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      locationObjectName: 'PORT',
+      locationSpot: go.Spot.Top, // location point is the middle top of the PORT
+      linkConnected: updatePortHeight,
+      linkDisconnected: updatePortHeight,
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4, width: 140 }).bind(
+            'text',
+            '',
+            (data) => data.text + ':\n\n' + data.description
+          )
         )
-      )
-    );
+    })
+      .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+      .add(
+        // The main element of the Spot panel is a vertical panel housing an optional icon,
+        // plus a rectangle that acts as the port
+        new go.Panel('Vertical')
+          .add(
+            new go.Shape({
+              width: 40,
+              height: 0,
+              stroke: null,
+              strokeWidth: 0,
+              fill: 'gray'
+            })
+              .bind('height', 'icon', () => 40)
+              .bind('fill', 'color', colorFunc)
+              .bind('geometry', 'icon', geoFunc),
+            new go.Shape({
+              name: 'PORT',
+              width: 40,
+              height: 24,
+              margin: new go.Margin(-1, 0, 0, 0),
+              stroke: null,
+              strokeWidth: 0,
+              fill: 'gray',
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true
+            }).bind('fill', 'color', colorFunc),
+            new go.TextBlock({
+              font: 'Bold 14px Lato, sans-serif',
+              textAlign: 'center',
+              margin: 3,
+              maxSize: new go.Size(100, NaN),
+              alignment: go.Spot.Top,
+              alignmentFocus: go.Spot.Bottom,
+              editable: true
+            }).bindTwoWay('text')
+          )
+      );
 
     function updatePortHeight(node, link, port) {
       var sideinputs = 0;
@@ -304,32 +298,47 @@
       port.height = tot * (10 + 2) + 2; // where 10 is the link path's strokeWidth
     }
 
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        layerName: 'Background',
-        routing: go.Routing.Orthogonal,
-        corner: 15,
-        reshapable: true,
-        resegmentable: true,
-        fromSpot: go.Spot.RightSide,
-        toSpot: go.Spot.LeftSide,
-      },
+    myDiagram.linkTemplate = new go.Link({
+      layerName: 'Background',
+      routing: go.Routing.Orthogonal,
+      corner: 15,
+      reshapable: true,
+      resegmentable: true,
+      fromSpot: go.Spot.RightSide,
+      toSpot: go.Spot.LeftSide
+    })
       // make sure links come in from the proper direction and go out appropriately
-      new go.Binding('fromSpot', 'fromSpot', go.Spot.parse),
-      new go.Binding('toSpot', 'toSpot', go.Spot.parse),
-      new go.Binding('points').makeTwoWay(),
-      // mark each Shape to get the link geometry with isPanelMain: true
-      $(go.Shape,
-        { isPanelMain: true, stroke: 'gray', strokeWidth: 10 },
-        // get the default stroke color from the fromNode
-        new go.Binding('stroke', 'fromNode', (n) => go.Brush.lighten((n && Colors[n.data.color]) || 'gray')).ofObject(),
-        // but use the link's data.color if it is set
-        new go.Binding('stroke', 'color', colorFunc)
-      ),
-      $(go.Shape, { isPanelMain: true, stroke: 'white', strokeWidth: 3, name: 'PIPE', strokeDashArray: [20, 40] })
-    );
+      .bind('fromSpot', 'fromSpot', go.Spot.parse)
+      .bind('toSpot', 'toSpot', go.Spot.parse)
+      .bindTwoWay('points')
+      .add(
+        // mark each Shape to get the link geometry with isPanelMain: true
+        new go.Shape({ isPanelMain: true, stroke: 'gray', strokeWidth: 10 })
+          // get the default stroke color from the fromNode
+          .bindObject('stroke', 'fromNode', (n) =>
+            go.Brush.lighten((n && Colors[n.data.color]) || 'gray')
+          )
+          // but use the link's data.color if it is set
+          .bind('stroke', 'color', colorFunc),
+        new go.Shape({
+          isPanelMain: true,
+          stroke: 'white',
+          strokeWidth: 3,
+          name: 'PIPE',
+          strokeDashArray: [20, 40]
+        })
+      );
 
-    var SpotNames = ['Top', 'Left', 'Right', 'Bottom', 'TopSide', 'LeftSide', 'RightSide', 'BottomSide'];
+    var SpotNames = [
+      'Top',
+      'Left',
+      'Right',
+      'Bottom',
+      'TopSide',
+      'LeftSide',
+      'RightSide',
+      'BottomSide'
+    ];
 
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').textContent);
 
@@ -389,22 +398,45 @@
 
 <div id="sample">
   <div style="width: 100%">
-    <div id="myDiagramDiv" style="border: solid 1px black; width: 70%; height: 550px; display: inline-block; vertical-align: top"></div>
-    <div id="infobox" style="display: inline-block; vertical-align: top; width: 256px; background: #757575; color: #fff; padding: 20px">
+    <div
+      id="myDiagramDiv"
+      style="
+        border: solid 1px black;
+        width: 70%;
+        height: 550px;
+        display: inline-block;
+        vertical-align: top;
+      "></div>
+    <div
+      id="infobox"
+      style="
+        display: inline-block;
+        vertical-align: top;
+        width: 256px;
+        background: #757575;
+        color: #fff;
+        padding: 20px;
+      ">
       <img id="Image" width="216" alt="" src="" />
       <h3 id="Title"></h3>
       <p id="Description">Select a node to see more information.</p>
     </div>
   </div>
   <div>
-    <p>This process flow diagram partially simulates the production process for gas and oil byproducts into their end products.</p>
     <p>
-      This diagram cannot be modified by the user, but its model was created in the corresponding editor:
-      <a href="productionEditor.html">Production Process Editor</a>, which shares the same templates and has additional tools for editing diagrams.
+      This process flow diagram partially simulates the production process for gas and oil
+      byproducts into their end products.
     </p>
     <p>
-      This viewer also has some animation of the pipes (links) that the editor does not show, to avoid distractions. A real application would also show
-      additional information about the nodes and the links.
+      This diagram cannot be modified by the user, but its model was created in the corresponding
+      editor:
+      <a href="productionEditor.html">Production Process Editor</a>, which shares the same templates
+      and has additional tools for editing diagrams.
+    </p>
+    <p>
+      This viewer also has some animation of the pipes (links) that the editor does not show, to
+      avoid distractions. A real application would also show additional information about the nodes
+      and the links.
     </p>
     <textarea id="mySavedModel" style="display: none">
 { "class": "GraphLinksModel",

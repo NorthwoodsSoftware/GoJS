@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -151,10 +150,6 @@
 
   <script src="../extensions/Quadtree.js"></script>
   <script id="code">
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     // The Diagram just shows what should be visible in the viewport.
     // Its model does NOT include node data for the whole graph, but only that
     // which might be visible in the viewport.
@@ -163,34 +158,31 @@
       initialViewportSpot: go.Spot.Center,
 
       // Assume there's no Layout -- all data.bounds are provided
-      layout: $(go.Layout, { isInitial: false, isOngoing: false }), // never invalidates
+      layout: new go.Layout({ isInitial: false, isOngoing: false }), // never invalidates
 
       // Define the template for Nodes, used by virtualization.
-      nodeTemplate: $(go.Node,
-        'Auto',
-        { isLayoutPositioned: false }, // optimization
-        new go.Binding('position', 'bounds', (b) => b.position).makeTwoWay((p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height)),
-        { width: 70, height: 70 }, // in cooperation with the load function, below
-        $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color')),
-        {
-          toolTip: $('ToolTip',
-            $(go.TextBlock,
-              { margin: 3 },
-              new go.Binding('text', '', (d) => `key: ${d.key}\nbounds: ${d.bounds}\ntext: ${d.text}\nprop1: ${d.prop1}\nprop2: ${d.prop2}`)
-            )
-          ),
-        }
-      ),
-
+      nodeTemplate: new go.Node('Auto', { 
+        isLayoutPositioned: false,  
+        width: 70, 
+        height: 70, 
+        toolTip: go.GraphObject.build("ToolTip")
+          .add(
+            new go.TextBlock({ margin: 3 }).bind('text', '', (d) => `key: ${d.key}\nbounds: ${d.bounds}\ntext: ${d.text}\nprop1: ${d.prop1}\nprop2: ${d.prop2}`)
+          )
+      })
+        .bindTwoWay('position', 'bounds', (b) => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
+        .add(
+          new go.Shape('Rectangle').bind('fill', 'color'),
+          new go.TextBlock({ margin: 2 }).bind('text', 'color')
+        ),
       // Define the template for Links
-      linkTemplate: $(go.Link,
-        { isLayoutPositioned: false }, // optimization
-        $(go.Shape, { strokeWidth: 2 }, new go.Binding('stroke', 'state', (s) => LinkColors[s])),
-        $(go.Shape, { toArrow: 'OpenTriangle', strokeWidth: 2 }, new go.Binding('stroke', 'state', (s) => LinkColors[s]))
-      ),
+      linkTemplate: new go.Link({ isLayoutPositioned: false })
+        .add( // optimization
+          new go.Shape({ strokeWidth: 2 }).bind('stroke', 'state', (s) => LinkColors[s]),
+          new go.Shape({ toArrow: 'OpenTriangle', strokeWidth: 2 }).bind('stroke', 'state', (s) => LinkColors[s])
+        ),
 
-      'animationManager.isEnabled': false,
+      'animationManager.isEnabled': false
     });
 
     const LinkColors = ['black', 'green', 'blue', 'red'];
@@ -254,7 +246,7 @@
           bounds: new go.Rect((i % sqrt) * 140, Math.floor(i / sqrt) * 140, 70, 70),
           text: 'Node ' + i.toString(),
           prop1: Math.random() * 100,
-          prop2: Math.random() * 100,
+          prop2: Math.random() * 100
         };
         data.push(nd);
         myWholeQuadtree.add(nd, nd.bounds);
@@ -264,7 +256,7 @@
           const ld = {
             from: i - 1,
             to: i,
-            state: Math.floor(Math.random() * 4),
+            state: Math.floor(Math.random() * 4)
           };
           ldata.push(ld);
         }
@@ -273,7 +265,7 @@
           const ld = {
             from: i - sqrt,
             to: i,
-            state: Math.floor(Math.random() * 4),
+            state: Math.floor(Math.random() * 4)
           };
           ldata.push(ld);
         }

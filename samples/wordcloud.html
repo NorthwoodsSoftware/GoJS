@@ -24,7 +24,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -190,21 +189,34 @@ You can explore the newest features and samples in the GoJS Beta for the next ve
   </p>
 </div>
 
-<script type="module">
+<script type="module" id="code">
   import * as go from 'gojs';
-  import { PackedLayout } from '../extensionsJSM/PackedLayout.js';
+  import { PackedLayout } from 'https://unpkg.com/create-gojs-kit@3.0.8/dist/extensionsJSM/PackedLayout.js';
 
-  const myDiagram = new go.Diagram(
-    'myDiagramDiv', // must be the ID or reference to div
-    {
-      'animationManager.isEnabled': true,
-      isReadOnly: true,
-      autoScale: go.AutoScale.Uniform,
-    }
-  );
+  //"SLSO8" palette by Luis Miguel Maldonado on lospec.com 
+  const colors = [
+    '#0d2b45',
+    '#203c56',
+    '#544e68',
+    '#8d697a',
+    '#d08159',
+  ];
+
+  const myDiagram = new go.Diagram('myDiagramDiv', {
+    'animationManager.isEnabled': true,
+    isReadOnly: true,
+    autoScale: go.AutoScale.Uniform
+  });
 
   // Nodes just show text with bindings for scale and font
-  myDiagram.nodeTemplate = new go.Node().bind('scale').add(new go.TextBlock().bind('text').bind('font'));
+  myDiagram.nodeTemplate = new go.Node()
+    .bind('scale')
+    .add(
+      new go.TextBlock()
+        .bind('text')
+        .bind('font')
+        .bind('stroke')
+    );
 
   // create a layout with the default values
   rebuildGraph();
@@ -408,7 +420,7 @@ You can explore the newest features and samples in the GoJS Beta for the next ve
       'say',
       'says',
       'said',
-      'shall',
+      'shall'
     ];
 
     var word = /[@a-z0-9]+([-.:/'’\u2032\u00A0\u200C\u200D~]+[@a-z0-9]+)*/gi;
@@ -456,7 +468,7 @@ You can explore the newest features and samples in the GoJS Beta for the next ve
       }
       // scale node size logarithmically with frequency
       var scale = 2 * Math.log(freqArr[i].freq) + 1;
-      nodes.push({ text: freqArr[i].word, scale: scale });
+      nodes.push({ text: freqArr[i].word, scale: scale, stroke: colors[Math.floor(Math.random() * colors.length)] });
     }
 
     // randomize order if checkbox is checked

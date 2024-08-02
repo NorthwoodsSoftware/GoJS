@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -140,7 +139,6 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
 
     /* Leaflet init */
 
@@ -155,10 +153,11 @@
       tileSize: 512,
       zoomOffset: -1,
       id: 'mapbox/streets-v11',
-      accessToken: 'pk.eyJ1IjoiZ29qcyIsImEiOiJjbHMyN3QxcnIwZ2ZoMmxvMzVvNGg3MTRrIn0.8u9prGrtYU2zmuFhxsr76g',
+      accessToken: 'pk.eyJ1IjoiZ29qcyIsImEiOiJjbHMyN3QxcnIwZ2ZoMmxvMzVvNGg3MTRrIn0.8u9prGrtYU2zmuFhxsr76g' //this doesn't work, ask about it probably
     }).addTo(myLeafletMap);
 
     myLeafletMap.on('zoomend', updateNodes);
+    //myLeafletMap.on('zoom', updateNodes); //maybe this is slow? who knows...
     myLeafletMap.on('move', updatePosition);
     myLeafletMap.on('moveend', updatePosition);
 
@@ -179,10 +178,6 @@
     }
 
     /* GoJS init */
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
     myDiagram = new go.Diagram('myDiagramDiv', {
       InitialLayoutCompleted: (e) => updatePosition(),
       'dragSelectingTool.isEnabled': false,
@@ -201,36 +196,27 @@
         if (e.change === go.ChangeType.Transaction && (e.propertyName === 'FinishedUndo' || e.propertyName === 'FinishedRedo')) {
           setTimeout(() => updateNodes());
         }
-      },
+      }
     });
 
     // the node template describes how each Node should be constructed
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        locationSpot: go.Spot.Center,
-        cursor: 'pointer',
-        toolTip: $('ToolTip',
-          $(go.TextBlock,
-            { margin: 4, textAlign: 'center' },
-            new go.Binding('text', '', (d) => `${d.key}\n[${d.latlong[0].toFixed(6)}, ${d.latlong[1].toFixed(6)}]`)
-          )
-        ),
-      },
-      $(go.Shape, 'Circle', {
-        fill: 'rgba(0, 255, 0, .4)',
-        stroke: '#082D47',
-        strokeWidth: 1,
-        width: 7,
-        height: 7,
-      }),
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      locationSpot: go.Spot.Center,
+      cursor: 'pointer',
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock(
+            { margin: 4, textAlign: 'center' })
+            .bind('text', '', (d) => `${d.key}\n[${d.latlong[0].toFixed(6)}, ${d.latlong[1].toFixed(6)}]`)
+        )
+    })
       // A two-way data binding with an Array of latitude,longitude numbers.
       // We have to explicitly avoid updating the source data Array
       // when myUpdatingGoJS is true; otherwise there would be accumulating errors.
-      new go.Binding('location', 'latlong', (data) => {
+      .bindTwoWay('location', 'latlong', (data) => {
         const pos = myLeafletMap.project(data, myLeafletMap.getZoom());
         return new go.Point(pos.x, pos.y);
-      }).makeTwoWay((pt, data) => {
+      }, (pt, data) => {
         if (myUpdatingGoJS) {
           return data.latlong; // no-op
         } else {
@@ -238,17 +224,25 @@
           return [ll.lat, ll.lng];
         }
       })
-    );
+      .add(
+        new go.Shape('Circle', {
+          fill: 'rgba(0, 255, 0, .4)',
+          stroke: '#082D47',
+          strokeWidth: 1,
+          width: 7,
+          height: 7
+        })
+      );
 
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        layerName: 'Background',
-        curve: go.Curve.Bezier,
-        curviness: 5,
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4, textAlign: 'center' }, new go.Binding('text', '', (d) => `${d.from} -- ${d.to}`))),
-      },
-      $(go.Shape, { strokeWidth: 3, stroke: 'rgba(100,100,255,.7)' })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      layerName: 'Background',
+      curve: go.Curve.Bezier,
+      curviness: 5,
+      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4, textAlign: 'center' }).bind('text', '', (d) => `${d.from} -- ${d.to}`))
+    })
+      .add(
+        new go.Shape({ strokeWidth: 3, stroke: 'rgba(100,100,255,.7)' })
+      );
 
     // DraggingTool needs to disable panning of Leaflet map
     myDiagram.toolManager.draggingTool.doActivate = function () {
@@ -289,7 +283,7 @@
         { key: 'Liverpool', latlong: [53.408396, -2.978809] },
         { key: 'Manchester', latlong: [53.476346, -2.229651] },
         { key: 'Leeds', latlong: [53.79548, -1.548345] },
-        { key: 'Glasgow', latlong: [55.863287, -4.250989] },
+        { key: 'Glasgow', latlong: [55.863287, -4.250989] }
       ],
       [
         { from: 'Brest', to: 'Rennes' },
@@ -313,7 +307,9 @@
         { from: 'Manchester', to: 'Liverpool' },
         { from: 'Manchester', to: 'Leeds' },
         { from: 'Glasgow', to: 'Manchester' },
-        { from: 'Glasgow', to: 'Leeds' },
+        { from: 'Glasgow', to: 'Leeds' }
+
+        //more here later
       ]
     );
   } // end init

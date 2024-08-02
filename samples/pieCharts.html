@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,25 +124,23 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
-      nodeTemplate: $(go.Node,
-        'Vertical',
-        $(go.Panel, new go.Binding('itemArray', 'slices'), {
-          itemTemplate: $(go.Panel,
-            $(go.Shape, { fill: 'lightgreen', isGeometryPositioned: true }, new go.Binding('fill', 'color'), new go.Binding('geometry', '', makeGeo)),
-            {
-              toolTip: $('ToolTip',
-                $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', (data) => data.color + ': ' + data.start + ' to ' + (data.start + data.sweep)))
-              ),
-            }
-          ),
-        }),
-        $(go.TextBlock, new go.Binding('text'))
-      ),
+      nodeTemplate: new go.Node('Vertical')
+        .add(
+          new go.Panel({
+            itemTemplate: new go.Panel({
+              toolTip: go.GraphObject.build('ToolTip')
+                .add(
+                  new go.TextBlock({ margin: 4 }).bind('text', '', (data) => data.color + ': ' + data.start + ' to ' + (data.start + data.sweep))
+                )
+            })
+              .add(
+                new go.Shape({ fill: 'lightgreen', isGeometryPositioned: true }).bind('fill', 'color').bind('geometry', '', makeGeo)
+              )
+          })
+            .bind('itemArray', 'slices'),
+          new go.TextBlock().bind('text')
+        ),
       model: new go.GraphLinksModel({
         copiesArrays: true,
         copiesArrayObjects: true,
@@ -154,8 +151,8 @@
             text: 'full circle',
             slices: [
               { start: -30, sweep: 60, color: 'white' },
-              { start: 30, sweep: 300, color: 'red' },
-            ],
+              { start: 30, sweep: 300, color: 'red' }
+            ]
           },
           {
             key: 2,
@@ -163,19 +160,18 @@
             slices: [
               { start: 0, sweep: 120, color: 'lightgreen' },
               { start: 120, sweep: 70, color: 'blue' },
-              { start: 250, sweep: 20, color: 'yellow' },
-            ],
-          },
+              { start: 250, sweep: 20, color: 'yellow' }
+            ]
+          }
         ],
         linkDataArray: [
           // link data
-          { from: 1, to: 2 },
-        ],
-      }),
+          { from: 1, to: 2 }
+        ]
+      })
     });
 
     function makeGeo(data) {
-      // this is much more efficient than calling go.GraphObject.make:
       return new go.Geometry().add(
         new go.PathFigure(50, 50) // start point
           .add(

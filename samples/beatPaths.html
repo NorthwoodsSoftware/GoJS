@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,10 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     // Must name or refer to the DIV HTML element
     myDiagram = new go.Diagram('myDiagramDiv', {
       // automatically scale the diagram to fit the viewport's size
@@ -136,38 +131,34 @@
       // disable user copying of parts
       allowCopy: false,
       // position all of the nodes and route all of the links
-      layout: $(go.LayeredDigraphLayout, {
+      layout: new go.LayeredDigraphLayout({
         direction: 90,
         layerSpacing: 10,
         columnSpacing: 15,
-        setsPortSpots: false,
-      }),
+        setsPortSpots: false
+      })
     });
 
     // replace the default Node template in the nodeTemplateMap
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical', // the whole node panel
-      $(go.TextBlock, // the text label
-        new go.Binding('text', 'key')
-      ),
-      $(go.Picture, // the icon showing the logo
-        // You should set the desiredSize (or width and height)
-        // whenever you know what size the Picture should be.
-        { desiredSize: new go.Size(75, 50) },
-        new go.Binding('source', 'key', convertKeyImage)
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical') // the whole node panel
+      .add(
+        new go.TextBlock().bind('text', 'key'),
+        new go.Picture( // the icon showing the logo
+          // You should set the desiredSize (or width and height)
+          // whenever you know what size the Picture should be.
+          { desiredSize: new go.Size(75, 50) }
+        ).bind('source', 'key', convertKeyImage)
+      );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      { curve: go.Curve.Bezier, toShortLength: 2 },
-      $(go.Shape, // the link shape
-        { strokeWidth: 1.5 }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'Standard', stroke: null }
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({ curve: go.Curve.Bezier, toShortLength: 2 }) // the whole link panel
+      .add(
+        new go.Shape({ strokeWidth: 1.5 }), // the link shape
+        new go.Shape({ // the arrowhead
+          toArrow: 'Standard',
+          stroke: null
+        })
+      );
 
     // the array of link data objects: the relationships between the nodes
     var linkDataArray = [
@@ -215,7 +206,7 @@
       { from: 'ATL', to: 'JAC' },
       { from: 'CLE', to: 'TEN' },
       { from: 'DAL', to: 'MIA' },
-      { from: 'MIA', to: 'TEN' },
+      { from: 'MIA', to: 'TEN' }
     ];
 
     // create the model and assign it to the Diagram
@@ -224,7 +215,7 @@
       // (set this property before setting the linkDataArray)
       archetypeNodeData: {},
       // process all of the link relationship data
-      linkDataArray: linkDataArray,
+      linkDataArray: linkDataArray
     });
   }
 
@@ -238,14 +229,20 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; margin: 10px; height: 700px"></div>
   <p>
-    This sample demonstrates reading JSON data describing the relative rankings of NFL teams during the 2015 season and generating a diagram from that data. The
-    ranking information came from beatgraphs.com.
+    This sample demonstrates reading JSON data describing the relative rankings of NFL teams during
+    the 2015 season and generating a diagram from that data. The ranking information came from
+    beatgraphs.com.
   </p>
   <p>
-    The JSON data is basically just a list of relationships. Unlike most model data, there are no elements describing the nodes -- the node definitions are
-    implicit in the references from the links. Hence the <a>Diagram.model</a> has <a>GraphLinksModel.archetypeNodeData</a> set to a JavaScript object.
+    The JSON data is basically just a list of relationships. Unlike most model data, there are no
+    elements describing the nodes -- the node definitions are implicit in the references from the
+    links. Hence the <a>Diagram.model</a> has <a>GraphLinksModel.archetypeNodeData</a> set to a
+    JavaScript object.
   </p>
-  <p>The node template uses the <b>convertKeyImage</b> function to convert the team name into a URI referring to an image on our web site.</p>
+  <p>
+    The node template uses the <b>convertKeyImage</b> function to convert the team name into a URI
+    referring to an image on our web site.
+  </p>
 </div>
 
           

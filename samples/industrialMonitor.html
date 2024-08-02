@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -139,17 +138,12 @@
 
 <script id="code">
   function init() {
-    var $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the HTML Div element
-      {
-        'animationManager.isEnabled': false,
-        'undoManager.isEnabled': true,
-        "rotatingTool.snapAngleMultiple": 90,
-        "rotatingTool.snapAngleEpsilon": 45
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      'undoManager.isEnabled': true,
+      "rotatingTool.snapAngleMultiple": 90,
+      "rotatingTool.snapAngleEpsilon": 45
+    });
 
     // This sample defines several custom Shape geometries
     const tank1 = 'F M 0 0 L 0 75 25 100 50 75 50 0z' // 50x100 sized-shape
@@ -175,7 +169,7 @@
       red: '#ed2d44'
     }
 
-    const textDefaults = { font: '10px Inter, sans-serif', stroke: colors.white };
+    const textDefaults = { font: '10px InterVariable, sans-serif', stroke: colors.white };
 
     // Tanks have a variable number of connection ports.
     // Each port must specify its location on the tank (alignment spot)
@@ -192,7 +186,8 @@
       // Outer spot panel holding inner spot panel (main element) and ports
       new go.Node('Spot', {
         itemTemplate: tankPort
-      }).bind("location", "pos", go.Point.parse, go.Point.stringify)
+      })
+        .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .bind('itemArray', 'ports')
         .add(
           // Inner spot panel holding Shape and Text label
@@ -208,10 +203,8 @@
                   0.5: go.Brush.lightenBy(colors.gray, 0.5),
                   1.0: colors.gray,
                   start: go.Spot.Left, end: go.Spot.Right
-                }),
-
+                })
               })
-
                 .bind('width').bind('height')
                 .bind('geometryString', 'tankType')
                 // .bind('stroke', 'color')
@@ -221,14 +214,16 @@
                   1.0: c,
                   start: go.Spot.Left, end: go.Spot.Right
                 })),
-              new go.TextBlock({ font: 'bold 13px Inter, sans-serif', stroke: colors.black }).bind(
+              new go.TextBlock({ font: 'bold 13px InterVariable, sans-serif', stroke: colors.black }).bind(
                 'text',
                 'key'
               )
-            )));
+            )
+        )
+    );
 
     myDiagram.nodeTemplateMap.add('label',
-      new go.Node('Auto', {}).bind("location", "pos", go.Point.parse, go.Point.stringify)
+      new go.Node('Auto').bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({
             portId: '',
@@ -237,7 +232,9 @@
             strokeWidth: 4,
             // width: 100, height: 40,
             fill: colors.gray
-          }).bind('width').bind('height')
+          })
+            .bind('width')
+            .bind('height')
             .bind('geometryString', 'direction', (d) => d === 'right' ? labelRight : labelLeft)
             .bind('stroke', 'color'),
           new go.TextBlock({
@@ -253,53 +250,59 @@
         ));
 
     myDiagram.nodeTemplateMap.add("valve",
-      new go.Node("Vertical",
-        {
-          locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
-          selectionObjectName: "SHAPE", rotatable: true
-        })
+      new go.Node("Vertical", {
+        locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+        selectionObjectName: "SHAPE", rotatable: true
+      })
         .bindTwoWay("angle")
         .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
-          new go.TextBlock(
-            { background: colors.gray, alignment: go.Spot.Center, textAlign: "center", margin: 2, editable: true })
+          new go.TextBlock({
+            background: colors.gray,
+            alignment: go.Spot.Center,
+            textAlign: "center",
+            margin: 2,
+            editable: true
+          })
             .set(textDefaults)
             .bind("text", 'key')
             // keep the text upright, even when the whole node has been rotated upside down
             .bindObject("angle", "angle", a => a === 180 ? 180 : 0),
-          new go.Shape(
-            {
-              name: "SHAPE",
-              geometryString: valve,
-              strokeWidth: 2,
-              portId: "", fromSpot: new go.Spot(1, 0.35), toSpot: new go.Spot(0, 0.35)
-            }).bind('fill', 'color').bind('stroke', 'color', (c) => go.Brush.darkenBy(c, 0.3))
+          new go.Shape({
+            name: "SHAPE",
+            geometryString: valve,
+            strokeWidth: 2,
+            portId: "", fromSpot: new go.Spot(1, 0.35), toSpot: new go.Spot(0, 0.35)
+          }).bind('fill', 'color').bind('stroke', 'color', (c) => go.Brush.darkenBy(c, 0.3))
         )
     );
 
     myDiagram.nodeTemplateMap.add("pump",
-      new go.Node("Vertical",
-        {
-          locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
-          selectionObjectName: "SHAPE", rotatable: true
-        })
+      new go.Node("Vertical", {
+        locationSpot: new go.Spot(0.5, 1, 0, -21), locationObjectName: "SHAPE",
+        selectionObjectName: "SHAPE", rotatable: true
+      })
         .bindTwoWay("angle")
         .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
-          new go.TextBlock(
-            { background: colors.gray, alignment: go.Spot.Center, textAlign: "center", margin: 2, editable: true })
+          new go.TextBlock({
+            background: colors.gray,
+            alignment: go.Spot.Center,
+            textAlign: "center",
+            margin: 2,
+            editable: true
+          })
             .set(textDefaults)
             .bind("text", 'key')
             // keep the text upright, even when the whole node has been rotated upside down
             .bindObject("angle", "angle", a => a === 180 ? 180 : 0),
-          new go.Shape(
-            {
-              name: "SHAPE",
-              geometryString: pump,
-              width: 45, height: 40,
-              strokeWidth: 2,
-              portId: "", fromSpot: new go.Spot(1, 0.25), toSpot: new go.Spot(0, 0.5)
-            }).bind('fill', 'color').bind('stroke', 'color', (c) => Brush.darkenBy(c, 0.3))
+          new go.Shape({
+            name: "SHAPE",
+            geometryString: pump,
+            width: 45, height: 40,
+            strokeWidth: 2,
+            portId: "", fromSpot: new go.Spot(1, 0.25), toSpot: new go.Spot(0, 0.5)
+          }).bind('fill', 'color').bind('stroke', 'color', (c) => Brush.darkenBy(c, 0.3))
         )
     );
 
@@ -312,10 +315,9 @@
             new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
             new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
           ),
-        new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit'),
+        new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit')
       )
-    const valuesTable = new go.Panel("Table",
-      { strech: go.Stretch.Horizontal, itemTemplate: valuesTableItem })
+    const valuesTable = new go.Panel("Table", { strech: go.Stretch.Horizontal, itemTemplate: valuesTableItem })
       .bind('itemArray', 'values');
 
     // This is a component of the "monitor" node template, showing a dynamic number of status blocks
@@ -337,12 +339,14 @@
         .add(
           new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2 }),
           new go.Panel("Vertical", { margin: 4 })
-            // Title
-            .add(new go.TextBlock("Title", { strech: go.Stretch.Horizontal }).set(textDefaults).bind('text', 'title'))
-            // Notifications
-            .add(statusPanel)
-            // Values
-            .add(valuesTable)
+            .add(
+              // Title
+              new go.TextBlock("Title", { strech: go.Stretch.Horizontal }).set(textDefaults).bind('text', 'title'),
+              // Notifications
+              statusPanel,
+              // Values
+              valuesTable
+            )
         )
     );
 
@@ -353,7 +357,7 @@
         .add(
           new go.Panel("Horizontal", { margin: 4 })
             .add(
-              new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2, geometryString: sensor, portId: '', fromSpot: new go.Spot(0, 0.4, 0, 0), }),
+              new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2, geometryString: sensor, portId: '', fromSpot: new go.Spot(0, 0.4, 0, 0) }),
               new go.TextBlock({ margin: 2 }).set(textDefaults).bind('text', 'key')
             ),
           new go.Panel("Horizontal")
@@ -363,7 +367,7 @@
                   new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
                   new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
                 ),
-              new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit'),
+              new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit')
             )
         )
     );
@@ -372,17 +376,17 @@
     myDiagram.linkTemplateMap.add('',
       new go.Link({
         routing: go.Routing.AvoidsNodes, corner: 12, layerName: 'Background',
-        toShortLength: 3,
+        toShortLength: 3
       })
         .bind('fromEndSegmentLength', 'fromEndSeg')
         .bind('toEndSegmentLength', 'toEndSeg')
-        .add(new go.Shape({ strokeWidth: 7, stroke: colors.gray, isPanelMain: true }))
         .add(
+          new go.Shape({ strokeWidth: 7, stroke: colors.gray, isPanelMain: true }),
           new go.Shape({ strokeWidth: 3, stroke: colors.green, isPanelMain: true })
-            .bind('stroke', 'color')
+            .bind('stroke', 'color'),
+          new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' }).bind('stroke', 'color').bind('fill', 'color'),
+          new go.TextBlock({ segmentOffset: new go.Point(0, -10), background: colors.gray }).set(textDefaults).bind('text')
         )
-        .add(new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' }).bind('stroke', 'color').bind('fill', 'color'))
-        .add(new go.TextBlock({ segmentOffset: new go.Point(0, -10), background: colors.gray }).set(textDefaults).bind('text'))
     )
 
     myDiagram.linkTemplateMap.add('monitor',
@@ -400,7 +404,7 @@
 
     myDiagram.linkTemplateMap.add('sensor',
       new go.Link({
-        layerName: 'Background',
+        layerName: 'Background'
       })
         .add(
           new go.Shape({ strokeWidth: 1.5, stroke: colors.red, strokeDashArray: [2, 2] })
@@ -445,7 +449,7 @@
               { p: 'TL', a: new go.Spot(0, 0, 0, 30) },
               { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
               { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30) },
-              { p: 'BR', ts: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) },
+              { p: 'BR', ts: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) }
             ]
           },
           {
@@ -453,18 +457,18 @@
               { p: 'T1', a: new go.Spot(0, 0, 10, 0), ts: go.Spot.Top },
               { p: 'T2', a: new go.Spot(0, 0, 30, 0), ts: go.Spot.Top },
               { p: 'T3', a: new go.Spot(0, 0, 50, 0), ts: go.Spot.Top },
-              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom }
             ]
           },
           {
             key: 'MZM', color: colors.gray, pos: "680 440", width: 50, height: 80, ports: [
               { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
-              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), ts: go.Spot.Bottom },
+              { p: 'B', a: new go.Spot(0.5, 1, 0, 0), ts: go.Spot.Bottom }
             ]
           },
           {
             key: 'MPAT', color: colors.gray, pos: "865 30", ports: [
-              { p: 'L', a: new go.Spot(0, 0.5, 0, 0), fs: go.Spot.Left },
+              { p: 'L', a: new go.Spot(0, 0.5, 0, 0), fs: go.Spot.Left }
             ]
           },
           {
@@ -472,14 +476,14 @@
               { p: 'TL', a: new go.Spot(0, 0, 0, 30), fs: go.Spot.LeftSide },
               { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
               { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30), ts: go.Spot.RightSide },
-              { p: 'BR', fs: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) },
+              { p: 'BR', fs: go.Spot.RightSide, a: new go.Spot(1, 1, 0, -30) }
             ]
           },
           {
             key: 'MHT', color: colors.gray, pos: "769 440", ports: [
               { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
               { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom },
-              { p: 'SensorB', a: new go.Spot(1, 0.7, 0, 0), type: 'sensor', ts: go.Spot.RightSide, },
+              { p: 'SensorB', a: new go.Spot(1, 0.7, 0, 0), type: 'sensor', ts: go.Spot.RightSide }
             ]
           },
           // VALVES
@@ -526,7 +530,7 @@
             ],
             statuses: [
               { fill: colors.white },
-              { fill: colors.white },
+              { fill: colors.white }
             ]
           },
           {
@@ -543,7 +547,7 @@
           },
           // SENSORS:
           { key: 'S1', category: 'sensor', value: '12.0', pos: "385 68", unit: '°C' },
-          { key: 'S2', category: 'sensor', value: '12.0', pos: "870 515", unit: '°C' },
+          { key: 'S2', category: 'sensor', value: '12.0', pos: "870 515", unit: '°C' }
         ],
       linkDataArray:
         [
@@ -584,7 +588,7 @@
           { category: 'monitor', from: 'FM103', to: 'cFM103', fs: go.Spot.Bottom, ts: go.Spot.Bottom },
           // sensor links (same category)
           { category: 'sensor', from: 'S1', to: 'MHWT', toPort: 'SensorR' },
-          { category: 'sensor', from: 'S2', to: 'MHT', toPort: 'SensorB' },
+          { category: 'sensor', from: 'S2', to: 'MHT', toPort: 'SensorB' }
         ]
     }
     ); // end model assignment

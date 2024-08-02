@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,9 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowLink: false, // linking is only started via buttons, not modelessly;
@@ -135,7 +131,7 @@
       // double-click in the background creates a new "Start" node
       'clickCreatingTool.archetypeNodeData': { category: 'Start', step: 1, text: 'Action' },
       linkingTool: new CustomLinkingTool(), // defined below to automatically turn on allowLink
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -155,73 +151,100 @@
     // Each button has a click function to execute the command, a tooltip for a textual description,
     // and a Binding of "visible" to hide the button if it cannot be executed for that particular node.
 
-    const commandsAdornment = $('ContextMenu',
-      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'deepskyblue', strokeWidth: 2, shadowVisible: false }), $(go.Placeholder)),
-      $(go.Panel,
-        'Horizontal',
-        { defaultStretch: go.Stretch.Vertical },
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 L10 0',
-            fill: null,
-            stroke: 'red',
-            margin: 3,
-          }),
-          { click: addExclusive, toolTip: makeTooltip('Add Exclusive') },
-          new go.Binding('visible', '', canAddSplit).ofObject()
-        ),
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 L10 0 M0 3 10 3',
-            fill: null,
-            stroke: 'red',
-            margin: 3,
-          }),
-          { click: addParallel, toolTip: makeTooltip('Add Parallel') },
-          new go.Binding('visible', '', canAddSplit).ofObject()
-        ),
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 L10 0 10 6 0 6z',
-            fill: 'lightyellow',
-            margin: 3,
-          }),
-          { click: addStep, toolTip: makeTooltip('Add Step') },
-          new go.Binding('visible', '', canAddStep).ofObject()
-        ),
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 M5 0 L5 10 M3 8 5 10 7 8 M10 0',
-            fill: null,
-            margin: 3,
-          }),
-          { click: startLinkDown, toolTip: makeTooltip('Draw Link Down') },
-          new go.Binding('visible', '', canStartLink).ofObject()
-        ),
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 M3 0 L3 2 7 2 7 6 3 6 3 10 M1 8 3 10 5 8 M10 0',
-            fill: null,
-            margin: 3,
-          }),
-          { click: startLinkAround, toolTip: makeTooltip('Draw Link Skip') },
-          new go.Binding('visible', '', canStartLink).ofObject()
-        ),
-        $('Button',
-          $(go.Shape, {
-            geometryString: 'M0 0 M3 2 L3 0 7 0 7 10 3 10 3 8 M5 6 7 4 9 6 M10 0',
-            fill: null,
-            margin: 3,
-          }),
-          { click: startLinkUp, toolTip: makeTooltip('Draw Link Repeat') },
-          new go.Binding('visible', '', canStartLink).ofObject()
-        )
-      )
-    );
+    const commandsAdornment = go.GraphObject.build('ContextMenu')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({
+              fill: null,
+              stroke: 'deepskyblue',
+              strokeWidth: 2,
+              shadowVisible: false
+            }),
+            new go.Placeholder()
+          ),
+        new go.Panel('Horizontal', { defaultStretch: go.Stretch.Vertical })
+          .add(
+            go.GraphObject.build('Button', {
+              click: addExclusive,
+              toolTip: makeTooltip('Add Exclusive')
+            })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 L10 0',
+                  fill: null,
+                  stroke: 'red',
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canAddSplit),
+            go.GraphObject.build('Button', {
+                click: addParallel,
+                toolTip: makeTooltip('Add Parallel')
+              })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 L10 0 M0 3 10 3',
+                  fill: null,
+                  stroke: 'red',
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canAddSplit),
+            go.GraphObject.build('Button', {
+              click: addStep,
+              toolTip: makeTooltip('Add Step')
+            })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 L10 0 10 6 0 6z',
+                  fill: 'lightyellow',
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canAddStep),
+            go.GraphObject.build('Button', {
+              click: startLinkDown,
+              toolTip: makeTooltip('Draw Link Down')
+            })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 M5 0 L5 10 M3 8 5 10 7 8 M10 0',
+                  fill: null,
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canStartLink),
+            go.GraphObject.build('Button', {
+              click: startLinkAround,
+              toolTip: makeTooltip('Draw Link Skip')
+            })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 M3 0 L3 2 7 2 7 6 3 6 3 10 M1 8 3 10 5 8 M10 0',
+                  fill: null,
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canStartLink),
+            go.GraphObject.build('Button', {
+              click: startLinkUp,
+              toolTip: makeTooltip('Draw Link Repeat')
+            })
+              .add(
+                new go.Shape({
+                  geometryString: 'M0 0 M3 2 L3 0 7 0 7 10 3 10 3 8 M5 6 7 4 9 6 M10 0',
+                  fill: null,
+                  margin: 3
+                })
+              )
+              .bindObject('visible', '', canStartLink)
+          )
+      );
 
     function makeTooltip(str) {
       // a helper function for defining tooltips for buttons
-      return $('ToolTip', $(go.TextBlock, str));
+      return go.GraphObject.build('ToolTip').add(new go.TextBlock(str));
     }
 
     // Commands for adding new Nodes
@@ -317,221 +340,249 @@
 
     // a helper function that declares common properties for all kinds of nodes
     function commonNodeStyle() {
-      return [
-        {
-          locationSpot: go.Spot.Center,
-          selectionAdornmentTemplate: commandsAdornment, // shared selection Adornment
-        },
-        new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-      ];
+      return {
+        locationSpot: go.Spot.Center,
+        selectionAdornmentTemplate: commandsAdornment // shared selection Adornment
+      };
     }
 
-    myDiagram.nodeTemplateMap.add(
-      'Start',
-      $(go.Node,
-        'Horizontal',
-        commonNodeStyle(),
-        { locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' },
-        $(go.Panel,
-          'Auto',
-          {
-            // this is the port element, not the whole Node
-            name: 'STEPPANEL',
-            portId: '',
-            fromSpot: go.Spot.Bottom,
-            fromLinkable: true,
-          },
-          $(go.Shape, { fill: 'lightgreen' }),
-          $(go.Panel,
-            'Auto',
-            { margin: 3 },
-            $(go.Shape, { fill: null, minSize: new go.Size(20, 20) }),
-            $(go.TextBlock, 'Start', { margin: 3, editable: true }, new go.Binding('text', 'step').makeTwoWay())
-          )
-        ),
-        // a connector line between the texts
-        $(go.Shape, 'LineH', { width: 10, height: 1 }),
-        // the boxed, editable text on the side
-        $(go.Panel,
-          'Auto',
-          $(go.Shape, { fill: 'white' }),
-          $(go.TextBlock, 'Action', { margin: 3, editable: true }, new go.Binding('text', 'text').makeTwoWay())
+    function applyCommonNodeBindings(node) {
+      node.bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify);
+      return node;
+    }
+
+    myDiagram.nodeTemplateMap.add('Start',
+      applyCommonNodeBindings(new go.Node('Horizontal', {
+          ...commonNodeStyle(),
+          ...{ locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' }
+        })
+        .add(
+          new go.Panel('Auto', {
+              // this is the port element, not the whole Node
+              name: 'STEPPANEL',
+              portId: '',
+              fromSpot: go.Spot.Bottom,
+              fromLinkable: true
+            })
+            .add(
+              new go.Shape({ fill: 'lightgreen' }),
+              new go.Panel('Auto', { margin: 3 })
+                .add(
+                  new go.Shape({
+                      fill: null,
+                      minSize: new go.Size(20, 20)
+                    }),
+                  new go.TextBlock('Start', {
+                      margin: 3,
+                      editable: true
+                    })
+                    .bindTwoWay('text', 'step')
+                )
+            ),
+          // a connector line between the texts
+          new go.Shape('LineH', { width: 10, height: 1 }),
+          // the boxed, editable text on the side
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: 'white' }),
+              new go.TextBlock('Action', {
+                  margin: 3,
+                  editable: true
+                })
+                .bindTwoWay('text')
+            )
         )
       )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      '',
-      $(go.Node,
-        'Horizontal',
-        commonNodeStyle(),
-        { locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' },
-        $(go.Panel,
-          'Auto',
-          {
-            // this is the port element, not the whole Node
-            name: 'STEPPANEL',
-            portId: '',
-            fromSpot: go.Spot.Bottom,
-            fromLinkable: true,
-            toSpot: go.Spot.Top,
-            toLinkable: true,
-          },
-          $(go.Shape, { fill: 'lightyellow', minSize: new go.Size(20, 20) }),
-          $(go.TextBlock, 'Step', { margin: 3, editable: true }, new go.Binding('text', 'step').makeTwoWay())
-        ),
-        $(go.Shape, 'LineH', { width: 10, height: 1 }),
-        $(go.Panel,
-          'Auto',
-          $(go.Shape, { fill: 'white' }),
-          $(go.TextBlock, 'Action', { margin: 3, editable: true }, new go.Binding('text', 'text').makeTwoWay())
+    myDiagram.nodeTemplateMap.add('',
+      applyCommonNodeBindings(new go.Node('Horizontal', {
+          ...commonNodeStyle(),
+          ...{ locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' }
+        })
+        .add(
+          new go.Panel('Auto', {
+              // this is the port element, not the whole Node
+              name: 'STEPPANEL',
+              portId: '',
+              fromSpot: go.Spot.Bottom,
+              fromLinkable: true,
+              toSpot: go.Spot.Top,
+              toLinkable: true
+            })
+            .add(
+              new go.Shape({
+                  fill: 'lightyellow',
+                  minSize: new go.Size(20, 20)
+                }),
+              new go.TextBlock('Step', {
+                  margin: 3,
+                  editable: true
+                })
+                .bindTwoWay('text', 'step')
+            ),
+          new go.Shape('LineH', {
+              width: 10,
+              height: 1
+            }),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: 'white' }),
+              new go.TextBlock('Action', {
+                  margin: 3,
+                  editable: true
+                })
+                .bindTwoWay('text')
+            )
         )
       )
     );
 
-    const resizeAdornment = $(go.Adornment,
-      go.Panel.Spot,
-      $(go.Placeholder),
-      $(go.Shape, // left resize handle
-        {
-          alignment: go.Spot.Left,
-          cursor: 'col-resize',
-          desiredSize: new go.Size(6, 6),
-          fill: 'lightblue',
-          stroke: 'dodgerblue',
-        }
-      ),
-      $(go.Shape, // right resize handle
-        {
-          alignment: go.Spot.Right,
-          cursor: 'col-resize',
-          desiredSize: new go.Size(6, 6),
-          fill: 'lightblue',
-          stroke: 'dodgerblue',
-        }
-      )
-    );
+    const resizeAdornment = new go.Adornment("Spot")
+      .add(
+        new go.Placeholder(),
+        new go.Shape({ // left resize handle
+            alignment: go.Spot.Left,
+            cursor: 'col-resize',
+            desiredSize: new go.Size(6, 6),
+            fill: 'lightblue',
+            stroke: 'dodgerblue'
+          }),
+        new go.Shape({ // right resize handle
+            alignment: go.Spot.Right,
+            cursor: 'col-resize',
+            desiredSize: new go.Size(6, 6),
+            fill: 'lightblue',
+            stroke: 'dodgerblue'
+          })
+      );
 
-    myDiagram.nodeTemplateMap.add(
-      'Parallel',
-      $(go.Node,
-        commonNodeStyle(),
-        {
+    myDiagram.nodeTemplateMap.add('Parallel',
+      applyCommonNodeBindings(new go.Node({
+          ...commonNodeStyle(),
           // special resizing: just at the ends
           resizable: true,
           resizeObjectName: 'SHAPE',
           resizeAdornmentTemplate: resizeAdornment,
           fromLinkable: true,
-          toLinkable: true,
-        },
-        $(go.Shape,
-          {
-            // horizontal pair of lines stretched to an initial width of 200
-            name: 'SHAPE',
-            geometryString: 'M0 0 L100 0 M0 4 L100 4',
-            fill: 'transparent',
-            stroke: 'red',
-            width: 200,
-          },
-          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)
+          toLinkable: true
+        })
+        .add(
+          new go.Shape({
+              // horizontal pair of lines stretched to an initial width of 200
+              name: 'SHAPE',
+              geometryString: 'M0 0 L100 0 M0 4 L100 4',
+              fill: 'transparent',
+              stroke: 'red',
+              width: 200
+            })
+            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         )
       )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Exclusive',
-      $(go.Node,
-        commonNodeStyle(),
-        {
+    myDiagram.nodeTemplateMap.add('Exclusive',
+      applyCommonNodeBindings(new go.Node({
+          ...commonNodeStyle(),
           // special resizing: just at the ends
           resizable: true,
           resizeObjectName: 'SHAPE',
           resizeAdornmentTemplate: resizeAdornment,
           fromLinkable: true,
-          toLinkable: true,
-        },
-        $(go.Shape,
-          {
-            // horizontal line stretched to an initial width of 200
-            name: 'SHAPE',
-            geometryString: 'M0 0 L100 0',
-            fill: 'transparent',
-            stroke: 'red',
-            width: 200,
-          },
-          new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify)
+          toLinkable: true
+        })
+        .add(
+          new go.Shape({
+              // horizontal line stretched to an initial width of 200
+              name: 'SHAPE',
+              geometryString: 'M0 0 L100 0',
+              fill: 'transparent',
+              stroke: 'red',
+              width: 200
+            })
+            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         )
       )
     );
 
     // the various kinds of Links
 
-    myDiagram.linkTemplateMap.add(
-      '',
-      $(BarLink, // subclass defined below
-        { routing: go.Routing.Orthogonal },
-        $(go.Shape, { strokeWidth: 1.5 }),
-        $(go.Shape,
-          'LineH', // only visible when there is text
-          { width: 20, height: 1, visible: false },
-          new go.Binding('visible', 'text', (t) => t !== '')
-        ),
-        $(go.TextBlock, // only visible when there is text
-          { alignmentFocus: new go.Spot(0, 0.5, -12, 0), editable: true },
-          new go.Binding('text', 'text').makeTwoWay(),
-          new go.Binding('visible', 'text', (t) => t !== '')
+    myDiagram.linkTemplateMap.add('',
+      new BarLink({ routing: go.Routing.Orthogonal }) // subclass defined below
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape('LineH', { // only visible when there is text
+              width: 20,
+              height: 1,
+              visible: false
+            })
+            .bind('visible', 'text', (t) => t !== ''),
+          new go.TextBlock({  // only visible when there is text
+              alignmentFocus: new go.Spot(0, 0.5, -12, 0),
+              editable: true
+            })
+            .bindTwoWay('text')
+            .bind('visible', 'text', (t) => t !== '')
         )
-      )
     );
 
-    myDiagram.linkTemplateMap.add(
-      'Skip',
-      $(go.Link,
-        {
+    myDiagram.linkTemplateMap.add('Skip',
+      new go.Link({
           routing: go.Routing.AvoidsNodes,
           fromSpot: go.Spot.Bottom,
           toSpot: go.Spot.Top,
           fromEndSegmentLength: 4,
-          toEndSegmentLength: 4,
-        },
-        $(go.Shape, { strokeWidth: 1.5 }),
-        $(go.Shape,
-          'LineH', // only visible when there is text
-          { width: 20, height: 1, visible: false },
-          new go.Binding('visible', 'text', (t) => t !== '')
-        ),
-        $(go.TextBlock, // only visible when there is text
-          { alignmentFocus: new go.Spot(1, 0.5, 12, 0), editable: true },
-          new go.Binding('text', 'text').makeTwoWay(),
-          new go.Binding('visible', 'text', (t) => t !== '')
+          toEndSegmentLength: 4
+        })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape('LineH', { // only visible when there is text
+              width: 20,
+              height: 1,
+              visible: false
+            })
+            .bind('visible', 'text', (t) => t !== ''),
+          new go.TextBlock({ // only visible when there is text
+              alignmentFocus: new go.Spot(1, 0.5, 12, 0),
+              editable: true
+            })
+            .bindTwoWay('text')
+            .bind('visible', 'text', (t) => t !== '')
         )
-      )
     );
 
-    myDiagram.linkTemplateMap.add(
-      'Repeat',
-      $(go.Link,
-        {
+    myDiagram.linkTemplateMap.add('Repeat',
+      new go.Link({
           routing: go.Routing.AvoidsNodes,
           fromSpot: go.Spot.Bottom,
           toSpot: go.Spot.Top,
           fromEndSegmentLength: 4,
-          toEndSegmentLength: 4,
-        },
-        $(go.Shape, { strokeWidth: 1.5 }),
-        $(go.Shape, { toArrow: 'OpenTriangle', segmentIndex: 3, segmentFraction: 0.75 }),
-        $(go.Shape, { toArrow: 'OpenTriangle', segmentIndex: 3, segmentFraction: 0.25 }),
-        $(go.Shape,
-          'LineH', // only visible when there is text
-          { width: 20, height: 1, visible: false },
-          new go.Binding('visible', 'text', (t) => t !== '')
-        ),
-        $(go.TextBlock, // only visible when there is text
-          { alignmentFocus: new go.Spot(1, 0.5, 12, 0), editable: true },
-          new go.Binding('text', 'text').makeTwoWay(),
-          new go.Binding('visible', 'text', (t) => t !== '')
+          toEndSegmentLength: 4
+        })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({
+              toArrow: 'OpenTriangle',
+              segmentIndex: 3,
+              segmentFraction: 0.75
+            }),
+          new go.Shape({
+              toArrow: 'OpenTriangle',
+              segmentIndex: 3,
+              segmentFraction: 0.25
+            }),
+          new go.Shape('LineH', { // only visible when there is text
+              width: 20,
+              height: 1,
+              visible: false
+            }).bind('visible', 'text', (t) => t !== ''),
+          new go.TextBlock({ // only visible when there is text
+              alignmentFocus: new go.Spot(1, 0.5, 12, 0),
+              editable: true
+            })
+            .bindTwoWay('text')
+            .bind('visible', 'text', (t) => t !== '')
         )
-      )
     );
 
     // start off with a simple diagram
@@ -595,6 +646,9 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 800px; height: 600px"></div>
   <p>A grafcet diagram is similar to a <a href="sequentialFunction.html">sequential function chart</a>.</p>
+  <p>
+    All the <a>TextBlock</a>s in this sample are editable on double click.
+  </p>
   <p>
     Select a Node to show a list of Buttons that enable creating new Nodes or drawing new Links. These buttons are defined as an adornment that is used in a
     common <a>Part.selectionAdornmentTemplate</a>. This diagram uses many custom functions, including an overridden <a>LinkingTool</a> and a special Link class,

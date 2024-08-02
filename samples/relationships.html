@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,48 +124,64 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      layout: $(go.TreeLayout, { layerSpacing: 150, arrangementSpacing: new go.Size(2, 2), setsPortSpot: false, setsChildPortSpot: false }),
+      layout: new go.TreeLayout({
+        layerSpacing: 150,
+        arrangementSpacing: new go.Size(2, 2),
+        setsPortSpot: false,
+        setsChildPortSpot: false
+      })
     });
 
     // this typically represents a person
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      $(go.Shape, 'Circle', { desiredSize: new go.Size(28, 28), fill: 'white', strokeWidth: 1.5, portId: '' }, new go.Binding('figure')),
-      $(go.TextBlock, 'name', new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical')
+      .add(
+        new go.Shape('Circle', {
+          desiredSize: new go.Size(28, 28),
+          fill: 'white',
+          strokeWidth: 1.5,
+          portId: ''
+        })
+          .bind('figure'),
+        new go.TextBlock('name')
+          .bind('text')
+      );
 
     // this template works for all kinds of relationships
-    myDiagram.linkTemplate = $(go.Link,
-      { curve: go.Curve.Bezier }, // slightly curved, by default
-      { reshapable: true }, // users can reshape the link route
-      $(go.Shape, // the link's path shape
-        { isPanelMain: true, stroke: 'transparent' },
-        new go.Binding('stroke', 'patt', (f) => (f === '' ? 'black' : 'transparent')),
-        new go.Binding('pathPattern', 'patt', convertPathPatternToShape)
-      ),
-      $(go.Shape, // the link's path shape
-        { isPanelMain: true, stroke: 'transparent', strokeWidth: 3 },
-        new go.Binding('pathPattern', 'patt2', convertPathPatternToShape)
-      ),
-      $(go.Shape, // the "to" arrowhead
-        { toArrow: '', fill: null, scale: 1.2 },
-        new go.Binding('toArrow'),
-        new go.Binding('stroke', 'patt', convertPathPatternToColor)
-      ),
-      $(go.TextBlock, // show the path object name
-        { segmentOffset: new go.Point(0, 12) },
-        new go.Binding('text', 'patt')
-      ),
-      $(go.TextBlock, // show the second path object name, if any
-        { segmentOffset: new go.Point(0, -12) },
-        new go.Binding('text', 'patt2')
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({
+      curve: go.Curve.Bezier, // slightly curved, by default
+      reshapable: true
+    }) // users can reshape the link route
+      .add(
+        new go.Shape({ // the link's path shape
+          isPanelMain: true,
+          stroke: 'transparent'
+        })
+          .bind('stroke', 'patt', (f) => (f === '' ? 'black' : 'transparent'))
+          .bind('pathPattern', 'patt', convertPathPatternToShape),
+        new go.Shape({ // the link's path shape
+          isPanelMain: true,
+          stroke: 'transparent',
+          strokeWidth: 3
+        })
+          .bind('pathPattern', 'patt2', convertPathPatternToShape),
+        new go.Shape({ // the "to" arrowhead
+          toArrow: '',
+          fill: null,
+          scale: 1.2
+        })
+          .bind('toArrow')
+          .bind('stroke', 'patt', convertPathPatternToColor),
+        new go.TextBlock({ // show the path object name
+          segmentOffset: new go.Point(0, 12)
+        })
+          .bind('text', 'patt'),
+        new go.TextBlock({ // show the second path object name, if any
+          segmentOffset: new go.Point(0, -12)
+        })
+          .bind('text', 'patt2')
+      );
 
     // Conversion functions that make use of the PathPatterns store of pattern Shapes
     function convertPathPatternToShape(name) {
@@ -189,12 +204,12 @@
       if (cap === undefined) cap = 'square';
       PathPatterns.set(
         name,
-        $(go.Shape, {
+        new go.Shape({
           geometryString: geostr,
           fill: 'transparent',
           stroke: color,
           strokeWidth: width,
-          strokeCap: cap,
+          strokeCap: cap
         })
       );
     }

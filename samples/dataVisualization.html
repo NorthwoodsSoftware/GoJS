@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -128,23 +127,6 @@
   Lets also add a border to help see the edges.
   -->
 <style type="text/css">
-  #myDiagramDiv {
-    border: solid 1px black;
-    width: 400px;
-    height: 400px;
-    margin-right: 12px;
-    float: left;
-    background-color: whitesmoke;
-  }
-
-  #controls {
-    border: solid 1px gray;
-    width: 250px;
-    background: #ffffff;
-    padding: 5px;
-    float: left;
-  }
-
   #infoBoxHolder {
     z-index: 300;
     position: absolute;
@@ -165,7 +147,7 @@
 
   /* this is known as the "clearfix" hack to allow
      floated objects to add to the height of a div */
-  #infoBox:after {
+  #infoBox:after, #controls::after {
     visibility: hidden;
     display: block;
     font-size: 0;
@@ -195,59 +177,50 @@
 </style>
 <script src="../extensions/Figures.js"></script>
 <script id="code">
-  var myDiagram;
   var myLocation = {
     // this controls the data properties used by data binding conversions
     x: 'sepalLength',
-    y: 'sepalWidth',
+    y: 'sepalWidth'
   };
   var lastStroked = null; // this remembers the last highlight Shape
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    var myToolTip = $(go.HTMLInfo, {
-      show: showToolTip,
+    var myToolTip = new go.HTMLInfo({
+      show: showToolTip
       // do nothing on hide: This tooltip doesn't hide unless the mouse leaves the diagram
     });
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        'animationManager.initialAnimationStyle': go.AnimationStyle.AnimateLocations,
-        contentAlignment: go.Spot.Center, // content is always centered in the viewport
-        autoScale: go.AutoScale.Uniform, // scale always has all content fitting in the viewport
-        'toolManager.hoverDelay': 10, // how quickly tooltips are shown
-        isReadOnly: true, // don't let users modify anything
-        mouseOver: doMouseOver, // this event handler is defined below
-        click: doMouseOver, // this event handler is defined below
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.initialAnimationStyle':
+        go.AnimationStyle.AnimateLocations,
+      contentAlignment: go.Spot.Center, // content is always centered in the viewport
+      autoScale: go.AutoScale.Uniform, // scale always has all content fitting in the viewport
+      'toolManager.hoverDelay': 10, // how quickly tooltips are shown
+      isReadOnly: true, // don't let users modify anything
+      mouseOver: doMouseOver, // this event handler is defined below
+      click: doMouseOver // this event handler is defined below
+    });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        selectable: false,
-        toolTip: myToolTip,
-      },
-      new go.Binding('location', '', (nothing, elt) => {
-        return new go.Point(elt.data[myLocation.x] * 200, elt.data[myLocation.y] * 200);
-      }),
-      new go.AnimationTrigger('position', null, go.TriggerStart.Bundled),
-
-      $(go.Shape,
-        'Hexagon',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      selectable: false,
+      toolTip: myToolTip
+    })
+      //.trigger('position', null, go.TriggerStart.Bundled)
+      .bind('location', '', (nothing, elt) => {
+        return new go.Point(
+          elt.data[myLocation.x] * 200,
+          elt.data[myLocation.y] * 200
+        );
+      })
+      .add(
+        new go.Shape('Hexagon', {
           name: 'SHAPE',
           width: 20,
           height: 20,
           strokeWidth: 4,
-          stroke: null,
-        },
-        new go.Binding('fill', 'species', (name) => {
+          stroke: null
+        }).bind('fill', 'species', (name) => {
           switch (name) {
             case 'Iris-setosa':
               return 'rgba(240, 120,  50, .6)';
@@ -258,8 +231,7 @@
           }
           return 'black';
         })
-      )
-    );
+      );
 
     // This is the fundamental data set, taken from:
     // https://en.wikipedia.org/wiki/Iris_flower_data_set
@@ -413,7 +385,7 @@
       [6.3, 2.5, 5.0, 1.9, 'Iris-virginica'],
       [6.5, 3.0, 5.2, 2.0, 'Iris-virginica'],
       [6.2, 3.4, 5.4, 2.3, 'Iris-virginica'],
-      [5.9, 3.0, 5.1, 1.8, 'Iris-virginica'],
+      [5.9, 3.0, 5.1, 1.8, 'Iris-virginica']
     ];
 
     // now convert that data into an Array of JavaScript Objects,
@@ -426,7 +398,7 @@
         sepalWidth: line[1],
         petalLength: line[2],
         petalWidth: line[3],
-        species: line[4],
+        species: line[4]
       };
       array.push(data);
     }
@@ -436,31 +408,42 @@
 
     // Called when the mouse is over the diagram's background
     function doMouseOver(e) {
+      if (performance.now() - e.timestamp > 200) return; // ignore old events
       if (e === undefined) e = myDiagram.lastInput;
       var doc = e.documentPoint;
       // find all Nodes that are within 100 units
-      var list = myDiagram.findObjectsNear(doc, 100, null, (x) => x instanceof go.Node);
+      var list = myDiagram.findObjectsNear(
+        doc,
+        100,
+        null,
+        (x) => x instanceof go.Node
+      );
       // now find the one that is closest to e.documentPoint
       var closest = null;
       var closestDist = 999999999;
       list.each((node) => {
-        var dist = doc.distanceSquaredPoint(node.getDocumentPoint(go.Spot.Center));
+        var dist = doc.distanceSquaredPoint(
+          node.getDocumentPoint(go.Spot.Center)
+        );
         if (dist < closestDist) {
           closestDist = dist;
           closest = node;
         }
       });
+      console.log('mouse over');
       showToolTip(closest, myDiagram);
     }
 
     // Called with a Node (or null) that the mouse is over or near
     function showToolTip(obj, diagram) {
       if (obj !== null) {
+        console.log('show tool tip');
         var node = obj.part;
         var e = diagram.lastInput;
         var shape = node.findObject('SHAPE');
         shape.stroke = 'white';
-        if (lastStroked !== null && lastStroked !== shape) lastStroked.stroke = null;
+        if (lastStroked !== null && lastStroked !== shape)
+          lastStroked.stroke = null;
         lastStroked = shape;
         updateInfoBox(e.viewPoint, node.data);
       } else {
@@ -492,7 +475,10 @@
 
         var infoBox = document.getElementById('infoBox');
         var elem = document.elementFromPoint(e.clientX, e.clientY);
-        if (elem !== null && (elem === infoBox || elem.parentNode === infoBox)) {
+        if (
+          elem !== null &&
+          (elem === infoBox || elem.parentNode === infoBox)
+        ) {
           var box = document.getElementById('infoBoxHolder');
           box.style.left = parseInt(box.style.left) + 'px';
           box.style.top = parseInt(box.style.top) + 30 + 'px';
@@ -578,47 +564,111 @@
 <div id="sample">
   <div style="display: inline-block; position: relative">
     <!--The DIV for the Diagram needs an explicit size or else we won't see anything.
-         Also add a border to help see the edges. -->
-    <div id="myDiagramDiv" style="background-color: #3d3d3d; border: solid 1px black; width: 500px; height: 500px"></div>
+        Also add a border to help see the edges. -->
+    <div
+      id="myDiagramDiv"
+      style="
+        background-color: #3d3d3d;
+        border: solid 1px black;
+        width: 500px;
+        height: 500px;
+        float: left;
+        margin-right: 10px;
+      "></div>
     <!-- This sibling of the Diagram provides information when the mouse is near a Diagram Node -->
     <div id="infoBoxHolder">
       <!-- Initially Empty, it is populated when updateInfoBox is called -->
     </div>
 
     <div id="controls">
-      <div style="border: solid 1px gray; float: left; padding: 2px">
+      <div style="border: solid 1px gray; float: left; padding: 2px; margin-right: 10px; margin-bottom: 10px;">
         <p style="text-align: center">X-axis</p>
         <hr />
-        <input type="radio" name="X" onclick="changeAxes(this)" value="sepalLength" id="SLx" checked />
+        <input
+          type="radio"
+          name="X"
+          onclick="changeAxes(this)"
+          value="sepalLength"
+          id="SLx"
+          checked />
         <label for="SLx">Sepal Length</label><br />
-        <input type="radio" name="X" onclick="changeAxes(this)" value="sepalWidth" id="SWx" />
+        <input
+          type="radio"
+          name="X"
+          onclick="changeAxes(this)"
+          value="sepalWidth"
+          id="SWx" />
         <label for="SWx">Sepal Width</label><br />
-        <input type="radio" name="X" onclick="changeAxes(this)" value="petalLength" id="PLx" />
+        <input
+          type="radio"
+          name="X"
+          onclick="changeAxes(this)"
+          value="petalLength"
+          id="PLx" />
         <label for="PLx">Petal Length</label><br />
-        <input type="radio" name="X" onclick="changeAxes(this)" value="petalWidth" id="PWx" />
+        <input
+          type="radio"
+          name="X"
+          onclick="changeAxes(this)"
+          value="petalWidth"
+          id="PWx" />
         <label for="PWx">Petal Width</label><br />
       </div>
-      <div style="border: solid 1px gray; float: left; margin-left: 10px; padding: 2px">
+      <div
+        style="
+          border: solid 1px gray;
+          float: left;
+          padding: 2px;
+        ">
         <p style="text-align: center">Y-axis</p>
         <hr />
-        <input type="radio" name="Y" onclick="changeAxes(this)" value="sepalLength" id="SLy" />
+        <input
+          type="radio"
+          name="Y"
+          onclick="changeAxes(this)"
+          value="sepalLength"
+          id="SLy" />
         <label for="SLy">Sepal Length</label><br />
-        <input type="radio" name="Y" onclick="changeAxes(this)" value="sepalWidth" id="SWy" checked />
+        <input
+          type="radio"
+          name="Y"
+          onclick="changeAxes(this)"
+          value="sepalWidth"
+          id="SWy"
+          checked />
         <label for="SWy">Sepal Width</label><br />
-        <input type="radio" name="Y" onclick="changeAxes(this)" value="petalLength" id="PLy" />
+        <input
+          type="radio"
+          name="Y"
+          onclick="changeAxes(this)"
+          value="petalLength"
+          id="PLy" />
         <label for="PLy">Petal Length</label><br />
-        <input type="radio" name="Y" onclick="changeAxes(this)" value="petalWidth" id="PWy" />
+        <input
+          type="radio"
+          name="Y"
+          onclick="changeAxes(this)"
+          value="petalWidth"
+          id="PWy" />
         <label for="PWy">Petal Width</label><br />
       </div>
-
-      <div id="description" style="float: left">
-        <p>This sample gives an example of a Diagram interacting with other HTML elements on the page.</p>
-        <p>As the mouse moves over the diagram, a formatted HTML DIV element displays information about the nearest Node.</p>
-        <p>
-          The data displayed is from the <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">Iris flower data set</a>, describing the variations in
-          dimensions of three related flower species.
-        </p>
-      </div>
+    </div>
+    <div id="description">
+      <p>
+        This sample gives an example of a Diagram interacting with other HTML
+        elements on the page.
+      </p>
+      <p>
+        As the mouse moves over the diagram, a formatted HTML DIV element
+        displays information about the nearest Node.
+      </p>
+      <p>
+        The data displayed is from the
+        <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set"
+          >Iris flower data set</a
+        >, describing the variations in dimensions of three related flower
+        species.
+      </p>
     </div>
   </div>
 </div>

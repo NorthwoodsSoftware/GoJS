@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,48 +124,33 @@
 
 <script id="code">
   function init() {
-    // As of 2.2, you can also author concise templates with method chaining
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'linkingTool.isEnabled': false, // invoked explicitly by drawLink function, below
+      'linkingTool.direction': go.LinkingDirection.ForwardsOnly, // only draw "from" towards "to"
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.AvoidsNodes, corner: 5 })
+      .add(new go.Shape({ strokeWidth: 1.5 }), new go.Shape({ toArrow: 'OpenTriangle' }));
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        'linkingTool.isEnabled': false, // invoked explicitly by drawLink function, below
-        'linkingTool.direction': go.LinkingDirection.ForwardsOnly, // only draw "from" towards "to"
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
-
-    myDiagram.linkTemplate = $(go.Link,
-      { routing: go.Routing.AvoidsNodes, corner: 5 },
-      $(go.Shape, { strokeWidth: 1.5 }),
-      $(go.Shape, { toArrow: 'OpenTriangle' })
-    );
-
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        desiredSize: new go.Size(80, 80),
-        // rearrange the link points evenly along the sides of the nodes as links are
-        // drawn or reconnected -- these event handlers only make sense when the fromSpot
-        // and toSpot are Spot.xxxSides
-        linkConnected: (node, link, port) => {
-          if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-          if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-        },
-        linkDisconnected: (node, link, port) => {
-          if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-          if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-        },
-        locationSpot: go.Spot.Center,
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      desiredSize: new go.Size(80, 80),
+      // rearrange the link points evenly along the sides of the nodes as links are
+      // drawn or reconnected -- these event handlers only make sense when the fromSpot
+      // and toSpot are Spot.xxxSides
+      linkConnected: (node, link, port) => {
+        if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+        if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
       },
-      new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Shape,
-        {
+      linkDisconnected: (node, link, port) => {
+        if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+        if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
+      },
+      locationSpot: go.Spot.Center
+    })
+      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape({
           name: 'SHAPE', // named so that changeColor can modify it
           strokeWidth: 0, // no border
           fill: 'lightgray', // default fill color
@@ -182,59 +166,63 @@
           toSpot: go.Spot.AllSides,
           toLinkable: true,
           toLinkableDuplicates: true,
-          toLinkableSelfNode: true,
-        },
-        new go.Binding('fill', 'color').makeTwoWay()
-      ),
-      $(go.TextBlock,
-        {
+          toLinkableSelfNode: true
+        }).bindTwoWay('fill', 'color'),
+        new go.TextBlock({
           name: 'TEXTBLOCK', // named so that editText can start editing it
           margin: 3,
           // use the following property if you want users to interactively start
           // editing the text by clicking on it or by F2 if the node is selected:
           //editable: true,
           overflow: go.TextOverflow.Ellipsis,
-          maxLines: 5,
-        },
-        new go.Binding('text').makeTwoWay()
-      )
-    );
+          maxLines: 5
+        }).bindTwoWay('text')
+      );
 
     // a selected node shows an Adornment that includes both a blue border
     // and a row of Buttons above the node
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = $(go.Adornment,
-      'Spot',
-      $(go.Panel, 'Auto', $(go.Shape, { stroke: 'dodgerblue', strokeWidth: 2, fill: null }), $(go.Placeholder)),
-      $(go.Panel,
-        'Horizontal',
-        { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom },
-        $('Button',
-          { click: editText }, // defined below, to support editing the text of the node
-          $(go.TextBlock, 't', { font: 'bold 10pt sans-serif', desiredSize: new go.Size(15, 15), textAlign: 'center' })
-        ),
-        $('Button',
-          { click: changeColor, _buttonFillOver: 'transparent' }, // defined below, to support changing the color of the node
-          new go.Binding('ButtonBorder.fill', 'color', nextColor),
-          $(go.Shape, { fill: null, stroke: null, desiredSize: new go.Size(14, 14) })
-        ),
-        $('Button',
-          {
-            // drawLink is defined below, to support interactively drawing new links
-            click: drawLink, // click on Button and then click on target node
-            actionMove: drawLink, // drag from Button to the target node
-          },
-          $(go.Shape, { geometryString: 'M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14' })
-        ),
-        $('Button',
-          {
-            actionMove: dragNewNode, // defined below, to support dragging from the button
-            _dragData: { text: 'a Node', color: 'lightgray' }, // node data to copy
-            click: clickNewNode, // defined below, to support a click on the button
-          },
-          $(go.Shape, { geometryString: 'M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z', fill: 'gray' })
-        )
-      )
-    );
+    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ stroke: 'dodgerblue', strokeWidth: 2, fill: null }),
+            new go.Placeholder()
+          ),
+        new go.Panel('Horizontal', { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom })
+          .add(
+            go.GraphObject.build('Button', {
+              click: editText
+            }) // defined below, to support editing the text of the node
+              .add(
+                new go.TextBlock('t', {
+                  font: 'bold 10pt sans-serif',
+                  desiredSize: new go.Size(15, 15),
+                  textAlign: 'center'
+                })
+              ),
+            go.GraphObject.build('Button', {
+              click: changeColor,
+              _buttonFillOver: 'transparent'
+            }) // defined below, to support changing the color of the node
+              .bind('ButtonBorder.fill', 'color', nextColor)
+              .add(new go.Shape({ fill: null, stroke: null, desiredSize: new go.Size(14, 14) })),
+            go.GraphObject.build('Button', {
+              // drawLink is defined below, to support interactively drawing new links
+              click: drawLink, // click on Button and then click on target node
+              actionMove: drawLink // drag from Button to the target node
+            }).add(new go.Shape({ geometryString: 'M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14' })),
+            go.GraphObject.build('Button', {
+              actionMove: dragNewNode, // defined below, to support dragging from the button
+              _dragData: { text: 'a Node', color: 'lightgray' }, // node data to copy
+              click: clickNewNode // defined below, to support a click on the button
+            }).add(
+              new go.Shape({
+                geometryString: 'M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z',
+                fill: 'gray'
+              })
+            )
+          )
+      );
 
     function editText(e, button) {
       var node = button.part.adornedPart;
@@ -331,7 +319,7 @@
         { key: 1, text: 'Alpha', color: 'lightblue', location: '0 0' },
         { key: 2, text: 'Beta', color: 'orange', location: '140 0' },
         { key: 3, text: 'Gamma', color: 'lightgreen', location: '0 140' },
-        { key: 4, text: 'Delta', color: 'pink', location: '140 140' },
+        { key: 4, text: 'Delta', color: 'pink', location: '140 140' }
       ],
       [{ from: 1, to: 2 }]
     );
@@ -344,15 +332,22 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    The node template uses a custom <a>Part.selectionAdornmentTemplate</a> to add a row of Buttons when the node is selected. Select a node and you will see the
-    Buttons for the node.
+    The node template uses a custom <a>Part.selectionAdornmentTemplate</a> to add a row of Buttons
+    when the node is selected. Select a node and you will see the Buttons for the node.
   </p>
   <p>The first button, "T", when clicked, starts in-place editing of the text.</p>
-  <p>The second button, "C", when clicked, changes the color of the node, rotating through a list of colors.</p>
-  <p>The third button, "L", when clicked or dragged, starts the <a>LinkingTool</a>, drawing a new link starting at the selected node.</p>
   <p>
-    The fourth button, "N", when clicked, adds a new node and creates a link from the selected node to the new node. Dragging from the fourth button does the
-    same thing as a click but also activates the <a>DraggingTool</a>, allowing the user to drag the new node where they like.
+    The second button, "C", when clicked, changes the color of the node, rotating through a list of
+    colors.
+  </p>
+  <p>
+    The third button, "L", when clicked or dragged, starts the <a>LinkingTool</a>, drawing a new
+    link starting at the selected node.
+  </p>
+  <p>
+    The fourth button, "N", when clicked, adds a new node and creates a link from the selected node
+    to the new node. Dragging from the fourth button does the same thing as a click but also
+    activates the <a>DraggingTool</a>, allowing the user to drag the new node where they like.
   </p>
 </div>
 

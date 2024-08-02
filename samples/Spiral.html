@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,26 +126,24 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform,
-        isTreePathToChildren: false, // links go from child to parent
-        layout: $(SpiralLayout), // defined in SpiralLayout.js
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform,
+      isTreePathToChildren: false, // links go from child to parent
+      layout: new SpiralLayout() // defined in SpiralLayout.js
+    });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      $(go.Shape, { figure: 'Circle', fill: 'white' }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'key'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape({ figure: 'Circle', fill: 'white' }).bind('fill', 'color'),
+        new go.TextBlock({ margin: 4 }).bind('text', 'key')
+      );
 
-    myDiagram.linkTemplate = $(go.Link, { curve: go.Curve.Bezier, curviness: 10 }, $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.linkTemplate = new go.Link({ curve: go.Curve.Bezier, curviness: 10 })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     var model = new go.TreeModel();
     model.nodeParentKeyProperty = 'next';
@@ -198,7 +195,7 @@
       { key: 'Phi2', next: 'Chi2', color: 'coral' },
       { key: 'Chi2', next: 'Psi2', color: 'tomato' },
       { key: 'Psi2', next: 'Omega2', color: 'goldenrod' },
-      { key: 'Omega2', color: 'orange' },
+      { key: 'Omega2', color: 'orange' }
     ];
     myDiagram.model = model;
   }
@@ -208,8 +205,13 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 700px; min-width: 200px"></div>
   <p>
-    This sample demonstrates a custom Layout, SpiralLayout, which assumes the graph consists of a chain of nodes. The layout is defined in its own file, as
-    <a href="../extensions/SpiralLayout.js">SpiralLayout.js</a>.
+    This sample demonstrates a custom Layout, SpiralLayout, which assumes the
+    graph consists of a single chain of nodes. The layout is defined in its own
+    file, as <a href="../extensions/SpiralLayout.js">SpiralLayout.js</a>.
+  </p>
+
+  <p>
+    See also <a href="./Serpentine.html">Serpentine Layout</a>.
   </p>
 </div>
 

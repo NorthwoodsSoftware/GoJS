@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="GoJS diagram demonstrating the versatility of the available tools. Using the avoid nodes link router to give nodes path finding for navigating through a house with fluid movements from animations." />
+<meta itemprop="description" content="GoJS diagram demonstrating the versatility of the available tools. Using the avoid nodes link router to give nodes path finding for navigating through a house with fluid movements from animations." />
+<meta property="og:description" content="GoJS diagram demonstrating the versatility of the available tools. Using the avoid nodes link router to give nodes path finding for navigating through a house with fluid movements from animations." />
+<meta name="twitter:description" content="GoJS diagram demonstrating the versatility of the available tools. Using the avoid nodes link router to give nodes path finding for navigating through a house with fluid movements from animations." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Path Finder" />
+<meta property="og:title" content="Path Finder" />
+<meta name="twitter:title" content="Path Finder" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/pathFinder.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/pathFinder.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/pathFinder.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/pathFinder.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/pathFinder.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Path Finder | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<script id="code">
+  class Person {
+    static #nPeople = 0;
+    static activites = [];
+
+    #activity = null;
+    #prevActivity = null;
+
+    speed = 75 + Math.random() * 50; // document units per seconds
+    dia = null;
+    number = -1;
+    data = {};
+    node = null;
+
+    constructor(diagram, color) {
+      this.dia = diagram;
+      this.number = Person.#nPeople++;
+      this.data = {
+        key: 'person' + this.number,
+        color: color,
+        // loc: new go.Point(500, 300), // inside "Formal Living"
+        loc: new go.Point(415 + Math.random() * 10 - 5, 630 + Math.random() * 10 - 5) // under the front door
+      };
+
+      this.dia.model.addNodeData(this.data);
+      this.node = this.dia.findNodeForKey(this.data.key);
+
+      let _loop = (act) => {
+        this.doActivity(_loop);
+        // if (act) console.log('finished ' + act.name);
+      };
+
+      // pause for a moment before starting the loop
+      setTimeout(() => {
+        _loop();
+      }, 750);
+      // this.doActivity(act => console.log('done ' + act.name));
+    }
+
+    // used for debugging
+    // str=activity name, idx=if multiple results which to look at, default 0
+    static findActivityForString(str, idx) {
+      str = str.toLowerCase();
+      return Person.activites.filter((act) => act.name.toLowerCase() == str)[idx || 0];
+    }
+
+    // do specified activity, or a random one if none are specified
+    doActivity(onComplete, activity, idx) {
+      // get the activity, specified by string or activity object, otherwise pick a random one
+      const act =
+        (typeof activity == 'string' ? Person.findActivityForString(activity, idx) : activity) ||
+        this.pickRandomActivity();
+
+      const toNodeData = {
+        key: 'to' + this.number,
+        color: null,
+        loc: act.loc,
+        avoidable: true
+      };
+      const fromNodeData = {
+        key: 'from' + this.number,
+        color: null,
+        loc: this.node.location,
+        avoidable: true
+      };
+
+      const linkData = {
+        from: fromNodeData.key,
+        to: toNodeData.key
+      };
+
+      // remove the old nodes if they are still present
+      if (this.dia.findNodeForKey(toNodeData.key)) {
+        const pre_existing = this.dia.findNodeForKey(toNodeData.key);
+        this.dia.remove(pre_existing);
+        const pre_existing2 = this.dia.findNodeForKey(fromNodeData.key);
+        this.dia.remove(pre_existing2);
+      }
+
+      const dir_dict = {
+        LEFT: go.Spot.Left,
+        RIGHT: go.Spot.Right,
+        UP: go.Spot.Top,
+        DOWN: go.Spot.Bottom
+      };
+
+      this.dia.model.addNodeData(toNodeData);
+      this.dia.model.addNodeData(fromNodeData);
+
+      // set toSpot and fromSpot so people go the correct direction more often
+      this.dia.findNodeForKey(toNodeData.key).toSpot = dir_dict[act.dir];
+      if (this.#prevActivity)
+        this.dia.findNodeForKey(fromNodeData.key).fromSpot = dir_dict[this.#prevActivity.dir];
+
+      // create a link between hidden nodes at the current position and end position
+      this.dia.model.addLinkData(linkData);
+
+      const link = this.dia.findLinkForData(linkData);
+
+      // follow the points in the link
+      let points;
+      const nextStep = (i) => {
+        if (i >= points.length) {
+          // once we reach the final point remove the hidden nodes
+          const toNode = this.dia.findNodeForKey(toNodeData.key);
+          this.dia.remove(toNode);
+          const fromNode = this.dia.findNodeForKey(fromNodeData.key);
+          this.dia.remove(fromNode);
+
+          // "do" the activity (wait specified time)
+          setTimeout(
+            () => {
+              this.completeActivity();
+              if (onComplete) onComplete(this.#prevActivity); // call the callback function if one is supplied
+            },
+            this.#activity.time * 1000 * 0.4 * (Math.random() + 0.5)
+          );
+          return;
+        }
+
+        // animate the motion between link points
+        const anim = new go.Animation();
+        anim.add(this.node, 'location', this.node.location, points[i]);
+        anim.easing = go.Animation.EaseLinear;
+        let dur =
+          (Math.sqrt(this.node.location.distanceSquaredPoint(points[i])) / this.speed) * 1000;
+        anim.duration = dur >= 1 ? dur : 1;
+        anim.finished = () => nextStep(++i);
+        anim.start();
+      };
+
+      // this makes sure the router finished before looking at the link points
+      window.requestAnimationFrame(() => {
+        points = [...link.points.iterator];
+        points.push(toNodeData.loc);
+        nextStep(0);
+      });
+    }
+
+    pickRandomActivity() {
+      let act = null;
+      do {
+        act = Person.activites[parseInt(Math.random() * Person.activites.length)];
+      } while (!act.isOpen || this.#prevActivity == act || this.#prevActivity?.name == act?.name);
+
+      this.#activity = act;
+      this.#activity.isOpen = false;
+      return this.#activity;
+    }
+
+    completeActivity() {
+      this.#activity.isOpen = true;
+      this.#prevActivity = this.#activity;
+      this.#activity = null;
+    }
+  }
+
+  const houseBounds = [
+    // main house bounds
+    { angle: 0, x: 540, y: 110, width: 250, height: 30 },
+    { angle: 0, x: 760, y: 130, width: 30, height: 430 },
+    { angle: 0, x: 20, y: 540, width: 370, height: 20 },
+    { angle: 0, x: 20, y: 120, width: 20, height: 420 },
+    { angle: 0, x: 20, y: 80, width: 80, height: 50 },
+    { angle: 0, x: 270, y: 90, width: 270, height: 80 },
+    { angle: 0, x: 130, y: 10, width: 110, height: 30 },
+    { angle: 53, x: 245, y: 2, width: 110, height: 30 },
+    { angle: 303, x: 70, y: 90, width: 100, height: 30 },
+    { angle: 0, x: 290, y: 170, width: 10, height: 240 },
+    { angle: 0, x: 300, y: 360, width: 30, height: 10 },
+    { angle: 0, x: 370, y: 360, width: 200, height: 10 },
+    { angle: 0, x: 610, y: 360, width: 160, height: 10 },
+    { angle: 0, x: 530, y: 370, width: 10, height: 170 },
+    { angle: 0, x: 290, y: 440, width: 10, height: 100 },
+    { angle: 0, x: 230, y: 440, width: 60, height: 10 },
+    { angle: 0, x: 150, y: 440, width: 50, height: 10 },
+    { angle: 0, x: 150, y: 450, width: 10, height: 90 },
+    { angle: 0, x: 170, y: 340, width: 10, height: 60 },
+    { angle: 0, x: 40, y: 340, width: 130, height: 10 },
+    { angle: 0, x: 40, y: 300, width: 170, height: 10 },
+    { angle: 0, x: 250, y: 300, width: 40, height: 10 },
+    { angle: 0, x: 170, y: 430, width: 10, height: 11 },
+    { angle: 0, x: 440, y: 540, width: 320, height: 20 },
+    { angle: 0, x: 130, y: 170, width: 40, height: 130 },
+
+    // chairs
+    { angle: 0, x: 570, y: 200, width: 10, height: 60 },
+
+    // tables
+    { angle: 0, x: 350, y: 240, width: 80, height: 40 },
+    { angle: 0, x: 630, y: 210, width: 40, height: 40 },
+    { angle: 0, x: 160, y: 80, width: 50, height: 50 },
+
+    // activites
+    {"angle":0,"x":163.66663074493408,"y":507.3333282470703,"width":10,"height":10,"data":{"type":"interactable","name":"toilet","time":15,"dir":"RIGHT"}},{"angle":0,"x":78.33332538604736,"y":323.3333282470703,"width":10,"height":10,"data":{"type":"interactable","name":"pantry","time":3,"dir":"RIGHT"}},{"angle":0,"x":256.20492238352756,"y":501.9566044981982,"width":10,"height":10,"data":{"type":"interactable","name":"sink","time":5,"dir":"LEFT"}},{"angle":0,"x":79.40614297593106,"y":511.17083706622554,"width":10,"height":10,"data":{"type":"interactable","name":"washer","time":15,"dir":"UP"}},{"angle":0,"x":52.915132075042955,"y":510.5949804835129,"width":10,"height":10,"data":{"type":"interactable","name":"dryer","time":15,"dir":"UP"}},{"angle":0,"x":63.857079383480226,"y":240.50174043451716,"width":10,"height":10,"data":{"type":"interactable","name":"oven","time":10,"dir":"RIGHT"}},{"angle":0,"x":632.3606159295472,"y":460.8227113576087,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"LEFT"}},{"angle":0,"x":633.5123818194348,"y":506.31817578842066,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"LEFT"}},{"angle":0,"x":583.4098011046093,"y":236.65353268663625,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"RIGHT"}},{"angle":0,"x":583.0509459583972,"y":213.7596303763082,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"RIGHT"}},{"angle":0,"x":629.5424521622729,"y":163.2627625730647,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"DOWN"}},{"angle":0,"x":653.5933070668215,"y":162.62140154911776,"width":10,"height":10,"data":{"type":"interactable","name":"chair","time":30,"dir":"DOWN"}},{"angle":0,"x":62.13561526324199,"y":188.17259680012856,"width":10,"height":10,"data":{"type":"interactable","name":"sink","time":8,"dir":"RIGHT"}}
+
+  ];
+
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': true
+    });
+
+    // Create the Diagram's Model:
+    myDiagram.model = new go.GraphLinksModel([], []);
+    myDiagram.model.modelData = {
+      isLinkVisible: false,
+      isActivityVisible: false,
+      isBoundaryVisible: false
+    };
+
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.AvoidsNodes, // this is what performs the "path finding"
+      pickable: false,
+      layername: 'Background'
+    })
+      .add(
+        new go.Shape({
+          name: 'SHAPE',
+          strokeWidth: 2,
+          strokeDashArray: [10, 6]
+        })
+          .bindObject('stroke', 'fromNode', (fromNode) => { // make the link the same color as the person
+            return myDiagram.findNodeForKey('person' + fromNode.key.slice(4)).data.color;
+          })
+          .bindModel('opacity', 'isLinkVisible', (isVisisble) => (isVisisble ? 1 : 0))
+      );
+
+    // the background image, a floor plan
+    myDiagram.add(
+      new go.Part({
+        // this Part is not bound to any model data
+        width: 840,
+        height: 570,
+        layerName: 'Background',
+        position: new go.Point(0, 0),
+        selectable: false,
+        pickable: false,
+        avoidable: false
+      })
+        .add(
+          new go.Picture('https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
+        )
+    );
+
+    // the Node representation of an activity
+    myDiagram.nodeTemplateMap.add(
+      'activity',
+      new go.Node({
+        layerName: 'Background',
+        pickable: false,
+        avoidable: false
+      })
+        .bind('location')
+        .bind('angle')
+        .add(
+          new go.Shape({
+            strokeWidth: 0,
+            fill: 'blue'
+          })
+            .bindModel('opacity', 'isActivityVisible', (isVisible) => (isVisible ? 0.5 : 0))
+            .bind('width')
+            .bind('height')
+        )
+    );
+
+    // the Node representation of a boundary
+    myDiagram.nodeTemplateMap.add(
+      'bound',
+      new go.Node({
+        layerName: 'Background',
+        pickable: false,
+        avoidable: true
+      })
+        .bind('location')
+        .bind('angle')
+        .add(
+          new go.Shape({
+            strokeWidth: 0,
+            fill: 'black'
+          })
+            .bindModel('opacity', 'isBoundaryVisible', (isVisible) => (isVisible ? 0.5 : 0))
+            .bind('width')
+            .bind('height')
+        )
+    );
+
+    // load all of the activites and boundaries
+    houseBounds.forEach((b) => {
+      let nodeData = {
+        width: b.width,
+        height: b.height,
+        location: new go.Point(b.x, b.y),
+        angle: b.angle,
+        category: b.data?.type == 'interactable' ? 'activity' : 'bound'
+      };
+
+      if (b.data?.type == 'interactable') {
+        Person.activites.push(
+          Object.assign(
+            {
+              isOpen: true,
+              loc: new go.Point(b.x + b.width / 2, b.y + b.height / 2)
+            },
+            b.data
+          )
+        );
+      }
+
+      myDiagram.model.addNodeData(nodeData);
+    });
+
+    // default template for people
+    myDiagram.nodeTemplateMap.add(
+      '',
+      new go.Node({
+        locationSpot: go.Spot.Center,
+        avoidable: false,
+        layerName: 'Foreground'
+      })
+        .bindTwoWay('location', 'loc')
+        .bind('avoidable')
+        .bind('fromSpot')
+        .bind('toSpot')
+        .add(
+          new go.Shape('Ellipse', {
+            width: 18,
+            height: 18,
+            strokeWidth: 2
+          })
+            .bind('fill', 'color')
+            .bind('stroke', 'color', c => {
+              if (!c || c == 'rgba(0,0,0,0)') return null;
+              const br = typeof c == 'string' ? new go.Brush(c) : c;
+              br.isDark() ? br.lightenBy(0.3) : br.darkenBy(0.2);
+              return br;
+            })
+        )
+    );
+
+    ['red', 'green', 'blue', 'pink', 'lightgreen', 'lightblue'].forEach((c) => {
+      new Person(myDiagram, c);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', init);
+
+  function toggleButton(elem, isSelected) {
+    elem.style.filter = isSelected ? 'brightness(180%)' : '';
+  }
+
+  function toggleBounds(elem) {
+    isVisible = !myDiagram.model.modelData.isBoundaryVisible;
+    toggleButton(elem, isVisible);
+    myDiagram.model.setDataProperty(myDiagram.model.modelData, 'isBoundaryVisible', isVisible);
+  }
+
+  function toggleActivities(elem) {
+    isVisible = !myDiagram.model.modelData.isActivityVisible;
+    toggleButton(elem, isVisible);
+    myDiagram.model.setDataProperty(myDiagram.model.modelData, 'isActivityVisible', isVisible);
+  }
+
+  function toggleLinks(elem) {
+    isVisible = !myDiagram.model.modelData.isLinkVisible;
+    toggleButton(elem, isVisible);
+    myDiagram.model.setDataProperty(myDiagram.model.modelData, 'isLinkVisible', isVisible);
+  }
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 720px"></div>
+  <button onclick="toggleBounds(this)">Toggle Boundaries</button>
+  <button onclick="toggleActivities(this)">Toggle Activities</button>
+  <button onclick="toggleLinks(this)">Toggle Links</button>
+  <br /><br />
+  <p>
+    This sample uses the <a>Routing.AvoidsNodes</a> as a form of rudimentary path finding with
+    hidden <a>Link</a>s and <a>Node</a>s to move simulated people around a house. Each person will
+    pick a random unique activity and then add a new <a>Link</a> to the diagram between them and the
+    activity. Then the <a>Node</a> representing the person has their location changed to each point
+    in <a>Link.Points</a>, this change uses an <a>Animation</a> with the easing function
+    <a>Animation.EaseLinear</a> to appear like constant fluid motion.
+  </p>
+  <p>
+    Each activity also has a direction associated with it. So when a <a>Link</a> is created between
+    two <a>Node</a>s they will have their <a>GraphObject.toSpot</a> and
+    <a>GraphObject.fromSpot</a> properties set so that the <a>Link</a> will go in the correct
+    direction. This is important for the chairs so that people always get in and out of them without
+    going through the back of the chair. This also helps with small spaces like the pantry.
+  </p>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Animation</h4>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
+  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Links</h4>
+<p>
+The <a href="../api/symbols/Link.html" target="api">Link</a> class is used to implement a visual relationship between nodes.
+Links are normally created by the presence of link data objects in the <a href="../api/symbols/GraphLinksModel.html#linkDataArray" target="api">GraphLinksModel.linkDataArray</a>
+or by a parent key reference as the value of the <a href="../api/symbols/TreeModel.html#nodeParentKeyProperty" target="api">TreeModel.nodeParentKeyProperty</a> of a node data object
+in a <a href="../api/symbols/TreeModel.html" target="api">TreeModel</a>.
+More information can be found in the <a href="../intro/links.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#links">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

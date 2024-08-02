@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,17 +125,13 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create the Diagram for the HTML DIV element
-      {
-        layout: $(go.GridLayout, { cellSize: new go.Size(1, 1), sorting: go.GridSorting.Forwards }), // use a GridLayout
-        padding: new go.Margin(5, 5, 25, 5), // to see the names of shapes on the bottom row
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: new go.GridLayout({
+        cellSize: new go.Size(1, 1),
+        sorting: go.GridSorting.Forwards
+      }), // use a GridLayout
+      padding: new go.Margin(5, 5, 25, 5) // to see the names of shapes on the bottom row
+    });
 
     // Names of the built in shapes, which we will color green instead of pink.
     // The pink shapes are instead defined in the "../extensions/Figures.js" file.
@@ -176,55 +171,48 @@
       return builtIn.indexOf(shapeName) >= 0;
     }
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      {
-        mouseEnter: (e, node) => (node.isHighlighted = true),
-        mouseLeave: (e, node) => (node.isHighlighted = false),
-        locationSpot: go.Spot.Center, // the location is the center of the Shape
-        locationObjectName: 'SHAPE',
-        selectionAdorned: false, // no selection handle when selected
-        resizable: true,
-        resizeObjectName: 'SHAPE', // user can resize the Shape
-        rotatable: true,
-        rotateObjectName: 'SHAPE', // rotate the Shape without rotating the label
-        // don't re-layout when node changes size
-        layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized,
-      },
-      new go.Binding('layerName', 'isHighlighted', (h) => (h ? 'Foreground' : '')).ofObject(),
-      $(go.Shape,
-        {
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      mouseEnter: (e, node) => (node.isHighlighted = true),
+      mouseLeave: (e, node) => (node.isHighlighted = false),
+      locationSpot: go.Spot.Center, // the location is the center of the Shape
+      locationObjectName: 'SHAPE',
+      selectionAdorned: false, // no selection handle when selected
+      resizable: true,
+      resizeObjectName: 'SHAPE', // user can resize the Shape
+      rotatable: true,
+      rotateObjectName: 'SHAPE', // rotate the Shape without rotating the label
+      // don't re-layout when node changes size
+      layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized
+    })
+      .bindObject('layerName', 'isHighlighted', (h) => (h ? 'Foreground' : ''))
+      .add(
+        new go.Shape({
           name: 'SHAPE', // named so that the above properties can refer to this GraphObject
           width: 70,
           height: 70,
-          strokeWidth: 3,
-        },
-        // Color the built in shapes green, and the figures.js shapes Pink
-        new go.Binding('fill', 'key', (k) => (isBuiltIn(k) ? 'palegreen' : 'lightpink')),
-        new go.Binding('stroke', 'key', (k) => (isBuiltIn(k) ? 'darkgreen' : '#C2185B')),
-        // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
-        new go.Binding('figure', 'key')
-      ),
-      $(go.TextBlock, // the label
-        {
+          strokeWidth: 3
+        })
+          // Color the built in shapes green, and the figures.js shapes Pink
+          .bind('fill', 'key', (k) => (isBuiltIn(k) ? 'palegreen' : 'lightpink'))
+          .bind('stroke', 'key', (k) => (isBuiltIn(k) ? 'darkgreen' : '#C2185B'))
+          // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
+          .bind('figure', 'key'),
+        new go.TextBlock({ // the label
           margin: 4,
           font: 'bold 18px sans-serif',
-          background: 'white',
-        },
-        new go.Binding('visible', 'isHighlighted').ofObject(),
-        new go.Binding('text', 'key')
-      )
-    );
+          background: 'white'
+        })
+          .bindObject('visible', 'isHighlighted')
+          .bind('text', 'key')
+      );
 
     // initialize the model
     myDiagram.model.nodeDataArray = go.Shape.getFigureGenerators().toArray();
 
-    myDiagram2 = new go.Diagram(
-      'myDiagramDiv2', // create the Diagram for the HTML DIV element
-      {
-        layout: $(go.GridLayout, { sorting: go.GridSorting.Forwards }), // use a GridLayout
-      }
-    );
+    myDiagram2 = new go.Diagram('myDiagramDiv2', {
+      layout: new go.GridLayout({ sorting: go.GridSorting.Forwards }) // use a GridLayout
+    });
+    
     myDiagram2.nodeTemplate = new go.Node('Vertical')
       .add(
         new go.Shape('RoundedRectangle', {
@@ -233,53 +221,69 @@
           strokeWidth: 2,
           fill: 'palegreen',
           stroke: 'darkgreen',
-          parameter1: 30,
+          parameter1: 30
         })
           .bind('parameter1')
           .bind('parameter2')
       )
-      .add(new go.TextBlock({ margin: 12, font: 'bold 12px monospace' }).bind('text', 'text', (val) => 'parameter2: ' + val));
+      .add(
+        new go.TextBlock({ margin: 12, font: 'bold 12px monospace' }).bind(
+          'text',
+          'text',
+          (val) => 'parameter2: ' + val
+        )
+      );
     myDiagram2.model.nodeDataArray = [
       { parameter2: 1 | 2, text: '1 | 2' },
       { parameter2: 4 | 8, text: '4 | 8' },
       { parameter2: 2 | 4, text: '2 | 4' },
-      { parameter2: 1 | 8, text: '1 | 8' },
+      { parameter2: 1 | 8, text: '1 | 8' }
     ];
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; height: 600px"></div>
+  <div id="myDiagramDiv" style="height: 600px;background-color: #ffffff;" class="border border-black border-solid"></div>
   <p>
-    This sample showcases all predefined <b>GoJS</b> figures. This sample also makes use of <a href="../intro/highlighting.html">GoJS Highlighting</a> data
-    bindings: Mouse-hover over a shape to see its name.
+    This sample showcases all predefined <b>GoJS</b> figures. This sample also makes use of
+    <a href="../intro/highlighting.html">GoJS Highlighting</a> data bindings: Mouse-hover over a
+    shape to see its name.
   </p>
-  <p>You can specify a predefined geometry for a <a>Shape</a> by setting its <a>Shape.figure</a>.</p>
   <p>
-    In order to reduce the size of the GoJS library, most predefined figures are in the <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file.
-    You can load this file or simply load only those figures that you want to use by copying their definitions into your code.
+    You can specify a predefined geometry for a <a>Shape</a> by setting its <a>Shape.figure</a>.
+  </p>
+  <p>
+    In order to reduce the size of the GoJS library, most predefined figures are in the
+    <a href="../extensions/Figures.js" target="_blank">Figures.js</a> file. You can load this file
+    or simply load only those figures that you want to use by copying their definitions into your
+    code.
   </p>
   <p>
     A number of very common figures are predefined in go.js:
     <code
-      >"Rectangle", "Square", "RoundedRectangle", "RoundedTopRectangle", "RoundedBottomRectangle", "RoundedLeftRectangle", "RoundedRightRectangle", "Border",
-      "Ellipse", "Circle", "TriangleRight", "TriangleDown", "TriangleLeft", "TriangleUp", "Triangle", "Diamond", "LineH", "LineV", "None", "BarH", "BarV",
-      "MinusLine", "PlusLine", "XLine", "LineRight", "LineDown", "LineLeft", "LineUp", "Capsule"</code
+      >"Rectangle", "Square", "RoundedRectangle", "RoundedTopRectangle", "RoundedBottomRectangle",
+      "RoundedLeftRectangle", "RoundedRightRectangle", "Border", "Ellipse", "Circle",
+      "TriangleRight", "TriangleDown", "TriangleLeft", "TriangleUp", "Triangle", "Diamond", "LineH",
+      "LineV", "None", "BarH", "BarV", "MinusLine", "PlusLine", "XLine", "LineRight", "LineDown",
+      "LineLeft", "LineUp", "Capsule"</code
     >. These figures are filled green above, instead of pink.
   </p>
   <p>
-    With GoJS you can also define your own custom shapes with SVG-like path syntax, see the <a href="icons.html">SVG icons</a> sample for examples or the
+    With GoJS you can also define your own custom shapes with SVG-like path syntax, see the
+    <a href="icons.html">SVG icons</a> sample for examples or the
     <a href="../intro/geometry.html">Geometry Path Strings intro page</a> to learn more.
   </p>
   <p>For predefined arrowheads, see the <a href="arrowheads.html">Arrowheads</a> sample.</p>
   <p>
-    For the "RoundedRectangle" figure, you can set the <a>Shape.parameter1</a> and <a>Shape.parameter2</a>
+    For the "RoundedRectangle" figure, you can set the <a>Shape.parameter1</a> and
+    <a>Shape.parameter2</a>
     values to modify the corner radius and which corners are rounded, respectively.
   </p>
   <p>
-    <code>parameter2</code> is a number that is specified by four bit flags (1, 2, 4, 8), describing the top-left, top-right, bottom-right, and bottom-left
-    corners respectively. The flags can be defined to specify which corners to round:
+    <code>parameter2</code> is a number that is specified by four bit flags (1, 2, 4, 8), describing
+    the top-left, top-right, bottom-right, and bottom-left corners respectively. The flags can be
+    defined to specify which corners to round:
   </p>
   <div id="myDiagramDiv2" style="border: solid 1px black; height: 130px"></div>
 </div>

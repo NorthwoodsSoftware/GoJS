@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,104 +125,99 @@
     <script id="code">
     function init() {
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-
-      myDiagram =
-        new go.Diagram("myDiagramDiv", // must be the ID or reference to an HTML DIV
-          {
-            layout: $(go.LayeredDigraphLayout,
-              {
-                direction: 90,
-                layerSpacing: 10,
-                setsPortSpots: false
-              }),
-            "undoManager.isEnabled": true  // enable undo & redo
-          });
+      myDiagram = new go.Diagram('myDiagramDiv', {
+        layout: new go.LayeredDigraphLayout({
+          direction: 90,
+          layerSpacing: 10,
+          setsPortSpots: false
+        }),
+        'undoManager.isEnabled': true  // enable undo & redo
+      });
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", e => {
-        var button = document.getElementById("SaveButton");
+      myDiagram.addDiagramListener('Modified', e => {
+        var button = document.getElementById('SaveButton');
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
+        var idx = document.title.indexOf('*');
         if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
+          if (idx < 0) document.title += '*';
         } else {
           if (idx >= 0) document.title = document.title.slice(0, idx);
         }
       });
 
       // define the step Node template
-      myDiagram.nodeTemplateMap.add("step",
-        $(go.Node, "Spot",
-          { locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Shape, "Rectangle",
-            {
-              fill: "whitesmoke",
-              stroke: "gray",
+      myDiagram.nodeTemplateMap.add('step',
+        new go.Node('Spot', { locationSpot: go.Spot.Center })
+          .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+          .add(
+            new go.Shape('Rectangle', {
+              fill: 'whitesmoke',
+              stroke: 'gray',
               strokeWidth: 2,
               desiredSize: new go.Size(160, 60),
-              portId: "",  // so that links connect to the Shape, not to the whole Node
+              portId: '',  // so that links connect to the Shape, not to the whole Node
               fromSpot: go.Spot.BottomSide,
               toSpot: go.Spot.TopSide,
               alignment: go.Spot.Center
             }),
-          $(go.TextBlock,
-            {
-              font: "bold 16px sans-serif",
+            new go.TextBlock({
+              font: 'bold 16px sans-serif',
               alignment: go.Spot.Center,
               wrap: go.Wrap.Fit,
               editable: true
-            },
-            new go.Binding("text", "text").makeTwoWay())
-        ));
+            })
+              .bindTwoWay('text')
+          )
+      );
 
       // define the transition Node template.
-      myDiagram.nodeTemplateMap.add("transition",
-        $(go.Node, "Horizontal",
-          { locationSpot: go.Spot.Center, locationObjectName: "BAR" },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Shape, "Rectangle",
-            {
-              name: "BAR",
-              fill: "black",
+      myDiagram.nodeTemplateMap.add('transition',
+        new go.Node('Horizontal', {
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'BAR'
+        })
+          .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+          .add(
+            new go.Shape('Rectangle', {
+              name: 'BAR',
+              fill: 'black',
               stroke: null,
               desiredSize: new go.Size(60, 8),
-              portId: "",
+              portId: '',
               fromSpot: go.Spot.BottomSide,
               toSpot: go.Spot.TopSide
             }),
-          $(go.TextBlock,
-            { editable: true, margin: 3 },
-            new go.Binding("text", "text").makeTwoWay())
-        ));
+            new go.TextBlock({
+              editable: true,
+              margin: 3
+            })
+              .bindTwoWay('text')
+          )
+      );
 
       // define the parallel Node template.
-      myDiagram.nodeTemplateMap.add("parallel",
-        $(go.Node,
-          { locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          $(go.Shape, "Rectangle",
-            {
-              fill: "whitesmoke",
-              stroke: "black",
+      myDiagram.nodeTemplateMap.add('parallel',
+        new go.Node({ locationSpot: go.Spot.Center })
+          .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+          .add(
+            new go.Shape('Rectangle', {
+              fill: 'whitesmoke',
+              stroke: 'black',
               fromSpot: go.Spot.Bottom,
               toSpot: go.Spot.Top,
               desiredSize: new go.Size(200, 6),
-              portId: "",
+              portId: '',
               fromSpot: go.Spot.BottomSide,
               toSpot: go.Spot.TopSide
             })
-        ));
+          )
+      );
 
       // define the Link template
-      myDiagram.linkTemplate =
-        $(go.Link,
-          { routing: go.Routing.Orthogonal },
-          $(go.Shape,
-            { stroke: "black", strokeWidth: 2 })
+      myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal })
+        .add(
+          new go.Shape({ stroke: 'black', strokeWidth: 2 })
         );
 
       // create the graph by reading the JSON data saved in "mySavedModel" textarea element
@@ -232,11 +226,11 @@
 
     // Show the diagram's model in JSON format
     function save() {
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      document.getElementById('mySavedModel').value = myDiagram.model.toJson();
       myDiagram.isModified = false;
     }
     function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+      myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
     }
     window.addEventListener('DOMContentLoaded', init);
   </script>

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -215,10 +214,6 @@
   });
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     // initialize main Diagram
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowMove: false,
@@ -228,7 +223,7 @@
         // handle deletions by excising the node and reconnecting the link where the node had been
         new go.List(e.diagram.selection).each((part) => deletingNode(part));
       },
-      layout: $(ParallelLayout, { angle: 90, layerSpacing: 21, nodeSpacing: 30 }),
+      layout: new ParallelLayout({ angle: 90, layerSpacing: 21, nodeSpacing: 30 }),
       ExternalObjectsDropped: (e) => {
         // handle drops from the Palette
         var newnode = e.diagram.selection.first();
@@ -240,15 +235,15 @@
           e.diagram.commandHandler.scrollToPart(newnode);
         }
       },
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // dragged nodes are translucent so that the user can see highlighting of links and nodes
     myDiagram.findLayer('Tool').opacity = 0.5;
 
     // some common styles for most of the node templates
-    function nodeStyle() {
-      return {
+    function nodeStyle(obj={}) {
+      return Object.assign({
         deletable: false,
         locationSpot: go.Spot.Center,
         mouseDragEnter: (e, node) => {
@@ -259,89 +254,95 @@
           var sh = node.findObject('SHAPE');
           if (sh) sh.fill = 'white';
         },
-        mouseDrop: dropOntoNode,
-      };
+        mouseDrop: dropOntoNode
+      }, obj);
     }
 
-    function shapeStyle() {
-      return { name: 'SHAPE', fill: 'white' };
+    function shapeStyle(obj={}) {
+      return Object.assign({ name: 'SHAPE', fill: 'white' }, obj);
     }
 
     function textStyle() {
-      return [{ name: 'TEXTBLOCK', textAlign: 'center', editable: true }, new go.Binding('text').makeTwoWay()];
+      return { name: 'TEXTBLOCK', textAlign: 'center', editable: true };
     }
 
     // define the Node templates
     myDiagram.nodeTemplate = // regular action steps
-      $(go.Node,
-        'Auto',
-        nodeStyle(),
-        { deletable: true }, // override nodeStyle()
-        { minSize: new go.Size(10, 20) },
-        $(go.Shape, shapeStyle()),
-        $(go.TextBlock, textStyle(), { margin: 4 })
-      );
+      new go.Node('Auto',
+        nodeStyle({ deletable: true, minSize: new go.Size(10, 20) }))
+        .add(
+          new go.Shape(shapeStyle()),
+          new go.TextBlock(textStyle(), { margin: 4 }).bindTwoWay('text')
+        );
 
-    myDiagram.nodeTemplateMap.add(
-      'Start',
-      $(go.Node, 'Auto', nodeStyle(), { desiredSize: new go.Size(32, 32) }, $(go.Shape, 'Circle', shapeStyle()), $(go.TextBlock, textStyle(), 'Start'))
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'End',
-      $(go.Node, 'Auto', nodeStyle(), { desiredSize: new go.Size(32, 32) }, $(go.Shape, 'Circle', shapeStyle()), $(go.TextBlock, textStyle(), 'End'))
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'For',
-      $(go.Node,
-        'Auto',
-        nodeStyle(),
-        { minSize: new go.Size(64, 32) },
-        $(go.Shape, 'ForEach', shapeStyle()),
-        $(go.TextBlock, textStyle(), 'For Each', { margin: 4 })
+    myDiagram.nodeTemplateMap.add('Start', new go.Node('Auto',
+      nodeStyle({ desiredSize: new go.Size(32, 32)})
+    )
+      .add(
+        new go.Shape('Circle', shapeStyle()),
+        new go.TextBlock(textStyle(), 'Start').bindTwoWay('text')
       )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'EndFor',
-      $(go.Node, nodeStyle(), { avoidable: false }, $(go.Shape, 'EndForEach', shapeStyle(), { desiredSize: new go.Size(4, 4) }))
+    myDiagram.nodeTemplateMap.add('End', new go.Node('Auto',
+        nodeStyle({ desiredSize: new go.Size(32, 32) })
+      )
+      .add(
+        new go.Shape('Circle', shapeStyle()),
+        new go.TextBlock(textStyle(), 'End').bindTwoWay('text')
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add('For', new go.Node('Auto',
+        nodeStyle({ minSize: new go.Size(64, 32) })
+      )
+      .add(
+        new go.Shape('ForEach', shapeStyle()),
+        new go.TextBlock(textStyle(), 'For Each', { margin: 4 }).bindTwoWay('text')
+      )
+    );
+
+    myDiagram.nodeTemplateMap.add('EndFor', new go.Node(
+        nodeStyle({ avoidable: false }))
+        .add(new go.Shape('EndForEach', shapeStyle({ desiredSize: new go.Size(4, 4) }))
+      )
     );
 
     myDiagram.nodeTemplateMap.add(
       'While',
-      $(go.Node,
+      new go.Node(
         'Auto',
-        nodeStyle(),
-        { minSize: new go.Size(32, 32) },
-        $(go.Shape, 'ForEach', shapeStyle(), { angle: -90, spot2: new go.Spot(1, 1, -6, 0) }),
-        $(go.TextBlock, textStyle(), 'While', { margin: 4 })
+        nodeStyle({ minSize: new go.Size(32, 32) })
       )
+        .add(
+          new go.Shape('ForEach', shapeStyle(), { angle: -90, spot2: new go.Spot(1, 1, -6, 0) }),
+          new go.TextBlock(textStyle(), 'While', { margin: 4 }).bindTwoWay('text')
+        )
     );
 
     myDiagram.nodeTemplateMap.add(
       'EndWhile',
-      $(go.Node, nodeStyle(), { avoidable: false }, $(go.Shape, 'Circle', shapeStyle(), { desiredSize: new go.Size(4, 4) }))
+      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('Circle', shapeStyle({ desiredSize: new go.Size(4, 4) })))
     );
 
     myDiagram.nodeTemplateMap.add(
       'If',
-      $(go.Node, 'Auto', nodeStyle(), { minSize: new go.Size(64, 32) }, $(go.Shape, 'Diamond', shapeStyle()), $(go.TextBlock, textStyle(), 'If'))
+      new go.Node('Auto', nodeStyle({ minSize: new go.Size(64, 32) })).add(new go.Shape('Diamond', shapeStyle()), new go.TextBlock('If', textStyle()).bindTwoWay('text'))
     );
 
     myDiagram.nodeTemplateMap.add(
       'EndIf',
-      $(go.Node, nodeStyle(), { avoidable: false }, $(go.Shape, 'Diamond', shapeStyle(), { desiredSize: new go.Size(4, 4) }))
+      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('Diamond', shapeStyle({ desiredSize: new go.Size(4, 4) })))
     );
 
     myDiagram.nodeTemplateMap.add(
       'Switch',
-      $(go.Node, 'Auto', nodeStyle(), { minSize: new go.Size(64, 32) }, $(go.Shape, 'TriangleUp', shapeStyle()), $(go.TextBlock, textStyle(), 'Switch'))
+      new go.Node('Auto', nodeStyle({ minSize: new go.Size(64, 32) })).add(new go.Shape('TriangleUp', shapeStyle()), new go.TextBlock('Switch', textStyle()))
     );
 
     myDiagram.nodeTemplateMap.add(
       'Merge',
-      $(go.Node, nodeStyle(), { avoidable: false }, $(go.Shape, 'TriangleDown', shapeStyle(), { desiredSize: new go.Size(4, 4) }))
+      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('TriangleDown', shapeStyle({ desiredSize: new go.Size(4, 4) })))
     );
 
     function groupColor(cat) {
@@ -358,81 +359,81 @@
     }
 
     // define the Group template, required but unseen
-    myDiagram.groupTemplate = $(go.Group,
-      'Spot',
-      {
-        locationSpot: go.Spot.Center,
-        layout: $(ParallelLayout, { angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
-        mouseDragEnter: (e, group) => {
-          var sh = group.findObject('SHAPE');
-          if (sh) sh.stroke = 'lime';
-        },
-        mouseDragLeave: (e, group) => {
-          var sh = group.findObject('SHAPE');
-          if (sh) sh.stroke = null;
-        },
-        mouseDrop: dropOntoNode,
+    myDiagram.groupTemplate = new go.Group('Spot', {
+      locationSpot: go.Spot.Center,
+      layout: new ParallelLayout({ angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
+      mouseDragEnter: (e, group) => {
+        var sh = group.findObject('SHAPE');
+        if (sh) sh.stroke = 'lime';
       },
-      new go.Binding('isSubGraphExpanded').makeTwoWay(),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape,
-          'RoundedRectangle',
-          { fill: 'rgba(0,0,0,0.05)', strokeWidth: 0, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight },
-          new go.Binding('fill', 'cat', groupColor)
-        ),
-        $(go.Panel,
-          'Vertical',
-          $(go.Panel,
-            'Horizontal',
-            { alignment: go.Spot.Left },
-            $('SubGraphExpanderButton'),
-            $(go.TextBlock, { editable: true }, new go.Binding('text').makeTwoWay())
+      mouseDragLeave: (e, group) => {
+        var sh = group.findObject('SHAPE');
+        if (sh) sh.stroke = null;
+      },
+      mouseDrop: dropOntoNode
+    })
+      .bindTwoWay('isSubGraphExpanded')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', {
+              fill: 'rgba(0,0,0,0.05)',
+              strokeWidth: 0,
+              spot1: go.Spot.TopLeft,
+              spot2: go.Spot.BottomRight
+            })
+              .bind('fill', 'cat', groupColor),
+            new go.Panel('Vertical')
+              .add(
+                new go.Panel('Horizontal', { alignment: go.Spot.Left })
+                  .add(
+                    go.GraphObject.build('SubGraphExpanderButton'),
+                    new go.TextBlock({ editable: true }).bindTwoWay('text')
+                  ),
+                new go.Placeholder({ padding: new go.Margin(0, 10) })
+              )
           ),
-          $(go.Placeholder, { padding: new go.Margin(0, 10) })
-        )
-      ),
-      $(go.Shape, 'LineH', {
-        name: 'SHAPE',
-        alignment: go.Spot.Bottom,
-        height: 0,
-        stretch: go.Stretch.Horizontal,
-        stroke: null,
-        strokeWidth: 8,
-      })
-    );
+        new go.Shape('LineH', {
+          name: 'SHAPE',
+          alignment: go.Spot.Bottom,
+          height: 0,
+          stretch: go.Stretch.Horizontal,
+          stroke: null,
+          strokeWidth: 8
+        })
+      );
 
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        selectable: false,
-        deletable: false,
-        routing: go.Routing.AvoidsNodes,
-        corner: 5,
-        toShortLength: 2,
-        // links cannot be deleted
-        // If a node from the Palette is dragged over this node, its outline will turn green
-        mouseDragEnter: (e, link) => {
-          if (!isLoopBack(link)) link.isHighlighted = true;
-        },
-        mouseDragLeave: (e, link) => {
-          link.isHighlighted = false;
-        },
-        // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
-        mouseDrop: dropOntoLink,
+    myDiagram.linkTemplate = new go.Link({
+      selectable: false,
+      deletable: false,
+      routing: go.Routing.AvoidsNodes,
+      corner: 5,
+      toShortLength: 2,
+      // links cannot be deleted
+      // If a node from the Palette is dragged over this node, its outline will turn green
+      mouseDragEnter: (e, link) => {
+        if (!isLoopBack(link)) link.isHighlighted = true;
       },
-      $(go.Shape,
-        { isPanelMain: true, stroke: 'transparent', strokeWidth: 8 },
-        new go.Binding('stroke', 'isHighlighted', (h) => (h ? 'lime' : 'transparent')).ofObject()
-      ),
-      $(go.Shape, { isPanelMain: true, stroke: 'black', strokeWidth: 1.5 }),
-      $(go.Shape, { toArrow: 'Standard', strokeWidth: 0 }),
-      $(go.TextBlock,
-        { segmentFraction: 0.5, segmentOffset: new go.Point(-10, 0), editable: true },
-        new go.Binding('text').makeTwoWay(),
-        new go.Binding('background', 'text', (t) => (t ? 'white' : null)),
-        new go.Binding('segmentIndex', 'fromNode', (n) => (n.category === 'If' ? 1 : n.category === 'Switch' ? -2 : -Infinity)).ofObject()
-      )
-    );
+      mouseDragLeave: (e, link) => {
+        link.isHighlighted = false;
+      },
+      // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
+      mouseDrop: dropOntoLink
+    })
+      .add(
+        new go.Shape({ isPanelMain: true, stroke: 'transparent', strokeWidth: 8 })
+          .bindObject('stroke', 'isHighlighted', (h) => (h ? 'lime' : 'transparent')),
+        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 1.5 }),
+        new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }),
+        new go.TextBlock({
+          segmentFraction: 0.5,
+          segmentOffset: new go.Point(-10, 0),
+          editable: true
+        })
+          .bindTwoWay('text')
+          .bind('background', 'text', (t) => (t ? 'white' : null))
+          .bindObject('segmentIndex', 'fromNode', (n) => (n.category === 'If' ? 1 : n.category === 'Switch' ? -2 : -Infinity))
+      );
 
     function isLoopBack(link) {
       if (!link || !link.fromNode || !link.toNode) return false;
@@ -629,14 +630,14 @@
         { text: 'For Each', category: 'For' },
         { text: 'While', category: 'While' },
         { text: 'If', category: 'If' },
-        { text: 'Switch', category: 'Switch' },
-      ]),
+        { text: 'Switch', category: 'Switch' }
+      ])
     });
 
     // initialize Overview
     myOverview = new go.Overview('myOverviewDiv', {
       observed: myDiagram,
-      contentAlignment: go.Spot.Center,
+      contentAlignment: go.Spot.Center
     });
 
     load();
@@ -655,9 +656,9 @@
     myDiagram.model = new go.GraphLinksModel({
       nodeDataArray: [
         { key: 1, text: 'S', category: 'Start' },
-        { key: 2, text: 'E', category: 'End' },
+        { key: 2, text: 'E', category: 'End' }
       ],
-      linkDataArray: [{ from: 1, to: 2 }],
+      linkDataArray: [{ from: 1, to: 2 }]
     });
   }
 

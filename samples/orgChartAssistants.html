@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -124,38 +123,30 @@
             
 
 
-<link rel="stylesheet" href="../extensions/DataInspector.css" />
 <script src="../extensions/DataInspector.js"></script>
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        allowCopy: false,
-        allowDelete: false,
-        initialAutoScale: go.AutoScale.Uniform,
-        maxSelectionCount: 1, // users can select only one part at a time
-        validCycle: go.CycleMode.DestinationTree, // make sure users can only create trees
-        layout: $(SideTreeLayout, {
-          treeStyle: go.TreeStyle.LastParents,
-          arrangement: go.TreeArrangement.Horizontal,
-          // properties for most of the tree:
-          angle: 90,
-          layerSpacing: 35,
-          // properties for the "last parents":
-          alternateAngle: 90,
-          alternateLayerSpacing: 35,
-          alternateAlignment: go.TreeAlignment.Bus,
-          alternateNodeSpacing: 20,
-        }),
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      allowDelete: false,
+      initialAutoScale: go.AutoScale.Uniform,
+      maxSelectionCount: 1, // users can select only one part at a time
+      validCycle: go.CycleMode.DestinationTree, // make sure users can only create trees
+      layout: new SideTreeLayout({
+        treeStyle: go.TreeStyle.LastParents,
+        arrangement: go.TreeArrangement.Horizontal,
+        // properties for most of the tree:
+        angle: 90,
+        layerSpacing: 35,
+        // properties for the "last parents":
+        alternateAngle: 90,
+        alternateLayerSpacing: 35,
+        alternateAlignment: go.TreeAlignment.Bus,
+        alternateNodeSpacing: 20
+      }),
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
@@ -171,8 +162,8 @@
 
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
-    function textStyle() {
-      return { font: '9pt Segoe UI,sans-serif' };
+    function textStyle(obj) {
+      return Object.assign({ font: '9pt Segoe UI,sans-serif' }, obj || {});
     }
 
     // This converter is used by the Picture.
@@ -182,122 +173,122 @@
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
+    myDiagram.nodeTemplate = new go.Node('Auto')
       // for sorting, have the Node.text be the data.name
-      new go.Binding('text', 'name'),
+      .bind('text', 'name')
       // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-      new go.Binding('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : '')).ofObject(),
-      // define the node's outer shape
-      $(go.Shape, 'Rectangle', {
-        name: 'SHAPE',
-        fill: 'white',
-        stroke: null,
-      }),
-      $(go.Panel,
-        'Horizontal',
-        $(go.Picture,
-          {
-            name: 'Picture',
-            desiredSize: new go.Size(39, 50),
-            margin: new go.Margin(6, 8, 6, 10),
-            source: 'images/user.svg', // the default image
-          },
-          new go.Binding('source', 'pic', findHeadShot)
-        ),
-        // define the panel where the text will appear
-        $(go.Panel,
-          'Table',
-          {
-            maxSize: new go.Size(150, 999),
-            margin: new go.Margin(6, 10, 0, 3),
-            defaultAlignment: go.Spot.Left,
-          },
-          $(go.RowColumnDefinition, { column: 2, width: 4 }),
-          $(go.TextBlock,
-            textStyle(), // the name
-            {
-              name: 'NAMETB',
-              row: 0,
-              column: 0,
-              columnSpan: 5,
-              font: '12pt Segoe UI, sans-serif',
-              editable: true,
-              isMultiline: false,
-              minSize: new go.Size(10, 16),
-            },
-            new go.Binding('text', 'name').makeTwoWay()
-          ),
-          $(go.TextBlock, 'Title: ', textStyle(), { row: 1, column: 0 }),
-          $(go.TextBlock,
-            textStyle(),
-            {
-              row: 1,
-              column: 1,
-              columnSpan: 4,
-              editable: true,
-              isMultiline: false,
-              minSize: new go.Size(10, 14),
-              margin: new go.Margin(0, 0, 0, 3),
-            },
-            new go.Binding('text', 'title').makeTwoWay()
-          ),
-          $(go.TextBlock, textStyle(), { row: 2, column: 0 }, new go.Binding('text', 'key', (v) => 'ID: ' + v)),
-          $(go.TextBlock,
-            textStyle(),
-            { name: 'boss', row: 2, column: 3 }, // we include a name so we can access this TextBlock when deleting Nodes/Links
-            new go.Binding('text', 'parent', (v) => 'Boss: ' + v)
-          ),
-          $(go.TextBlock,
-            textStyle(), // the comments
-            {
-              row: 3,
-              column: 0,
-              columnSpan: 5,
-              font: 'italic 9pt sans-serif',
-              wrap: go.Wrap.Fit,
-              editable: true, // by default newlines are allowed
-              minSize: new go.Size(10, 14),
-            },
-            new go.Binding('text', 'comments').makeTwoWay()
-          )
-        ) // end Table Panel
-      ) // end Horizontal Panel
-    ); // end Node
+      .bindObject('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : ''))
+      .add(
+        // define the node's outer shape
+        new go.Shape('Rectangle', {
+          name: 'SHAPE',
+          fill: 'white',
+          stroke: null
+        }),
+        new go.Panel('Horizontal')
+          .add(
+            new go.Picture({
+              name: 'Picture',
+              desiredSize: new go.Size(39, 50),
+              margin: new go.Margin(6, 8, 6, 10),
+              source: 'images/user.svg' // the default image
+            })
+              .bind('source', 'pic', findHeadShot),
+            // define the panel where the text will appear
+            new go.Panel('Table', {
+              maxSize: new go.Size(150, 999),
+              margin: new go.Margin(6, 10, 0, 3),
+              defaultAlignment: go.Spot.Left
+            })
+              .addColumnDefinition(2, { width: 4 })
+              .add(
+                new go.TextBlock(
+                  textStyle(
+                    {
+                      name: 'NAMETB',
+                      row: 0,
+                      column: 0,
+                      columnSpan: 5,
+                      font: '12pt Segoe UI, sans-serif',
+                      editable: true,
+                      isMultiline: false,
+                      minSize: new go.Size(10, 16)
+                    }
+                  )) // the name
+                  .bindTwoWay('text', 'name'),
+                new go.TextBlock('Title: ', textStyle({ row: 1, column: 0 })),
+                new go.TextBlock(
+                  textStyle(
+                    {
+                      row: 1,
+                      column: 1,
+                      columnSpan: 4,
+                      editable: true,
+                      isMultiline: false,
+                      minSize: new go.Size(10, 14),
+                      margin: new go.Margin(0, 0, 0, 3)
+                    }
+                  ))
+                  .bindTwoWay('text', 'title'),
+                new go.TextBlock(textStyle({ row: 2, column: 0 })).bind('text', 'key', (v) => 'ID: ' + v),
+                new go.TextBlock(
+                  textStyle({ name: 'boss', row: 2, column: 3 }) // we include a name so we can access this TextBlock when deleting Nodes/Links
+                )
+                  .bind('text', 'parent', (v) => 'Boss: ' + v),
+                new go.TextBlock(
+                  textStyle(
+                    {
+                      row: 3,
+                      column: 0,
+                      columnSpan: 5,
+                      font: 'italic 9pt sans-serif',
+                      wrap: go.Wrap.Fit,
+                      editable: true, // by default newlines are allowed
+                      minSize: new go.Size(10, 14)
+                    }
+                  )) // the comments
+                  .bindTwoWay('text', 'comments')
+              ) // end Table Panel
+          ) // end Horizontal Panel
+      ); // end Node
 
     // the context menu allows users to make a position vacant,
     // remove a role and reassign the subtree, or remove a department
-    myDiagram.nodeTemplate.contextMenu = $('ContextMenu',
-      $('ContextMenuButton', $(go.TextBlock, 'Add Employee'), {
-        click: (e, button) => {
-          const node = button.part.adornedPart;
-          if (node !== null) {
-            const thisemp = node.data;
-            myDiagram.startTransaction('add employee');
-            const newemp = { name: '(new person)', title: '', comments: '', parent: thisemp.key };
-            myDiagram.model.addNodeData(newemp);
-            const newnode = myDiagram.findNodeForData(newemp);
-            if (newnode) newnode.location = node.location;
-            myDiagram.commitTransaction('add employee');
+    myDiagram.nodeTemplate.contextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        go.GraphObject.build('ContextMenuButton', {
+          click: (e, button) => {
+            const node = button.part.adornedPart;
+            if (node !== null) {
+              const thisemp = node.data;
+              myDiagram.startTransaction('add employee');
+              const newemp = { name: '(new person)', title: '', comments: '', parent: thisemp.key };
+              myDiagram.model.addNodeData(newemp);
+              const newnode = myDiagram.findNodeForData(newemp);
+              if (newnode) newnode.location = node.location;
+              myDiagram.commitTransaction('add employee');
+            }
           }
-        },
-      }),
-      $('ContextMenuButton', $(go.TextBlock, 'Toggle Assistant'), {
-        click: (e, button) => {
-          // remove the whole subtree, including the node itself
-          const node = button.part.adornedPart;
-          if (node !== null) {
-            myDiagram.startTransaction('toggle assistant');
-            myDiagram.model.setDataProperty(node.data, 'isAssistant', !node.data.isAssistant);
-            myDiagram.layout.invalidateLayout();
-            myDiagram.commitTransaction('toggle assistant');
+        })
+          .add(new go.TextBlock('Add Employee')),
+        go.GraphObject.build('ContextMenuButton', {
+          click: (e, button) => {
+            // remove the whole subtree, including the node itself
+            const node = button.part.adornedPart;
+            if (node !== null) {
+              myDiagram.startTransaction('toggle assistant');
+              myDiagram.model.setDataProperty(node.data, 'isAssistant', !node.data.isAssistant);
+              myDiagram.layout.invalidateLayout();
+              myDiagram.commitTransaction('toggle assistant');
+            }
           }
-        },
-      })
-    );
+        })
+          .add(new go.TextBlock('Toggle Assistant'))
+      );
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, corner: 5 }, $(go.Shape, { strokeWidth: 4, stroke: '#00a4a4' })); // the link shape
+    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+      .add(new go.Shape({ strokeWidth: 4, stroke: '#00a4a4' })); // the link shape
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -307,11 +298,11 @@
       properties: {
         key: { readOnly: true },
         comments: {},
-        isAssistant: { type: 'boolean', defaultValue: false },
+        isAssistant: { type: 'boolean', defaultValue: false }
       },
       propertyModified: (name, val) => {
         if (name === 'isAssistant') myDiagram.layout.invalidateLayout();
-      },
+      }
     });
   } // end init
 

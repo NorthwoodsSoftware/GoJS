@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,89 +125,120 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      layout: $(go.TreeLayout, { setsPortSpot: false, setsChildPortSpot: false, isRealtime: false }),
+      layout: new go.TreeLayout({
+        setsPortSpot: false,
+        setsChildPortSpot: false,
+        isRealtime: false
+      })
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      { defaultStretch: go.Stretch.Horizontal },
-      { fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, 'RoundedTopRectangle', { fill: 'white' }, new go.Binding('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white'))),
-        $(go.TextBlock, { margin: new go.Margin(2, 2, 0, 2), textAlign: 'center' }, new go.Binding('text', 'header'))
-      ),
-      $(go.Panel,
-        'Auto',
-        { minSize: new go.Size(NaN, 70) },
-        $(go.Shape, 'Rectangle', { fill: 'white' }),
-        $(go.TextBlock, { width: 120 }, { margin: new go.Margin(2, 2, 0, 2), textAlign: 'center' }, new go.Binding('text', 'text')),
-        $(go.Shape,
-          'BpmnActivityLoop',
-          {
-            visible: false,
-            width: 10,
-            height: 10,
-            alignment: new go.Spot(0.5, 1, 0, -3),
-            alignmentFocus: go.Spot.Bottom,
-          },
-          new go.Binding('visible', 'loop')
-        )
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, 'RoundedBottomRectangle', { fill: 'white' }, new go.Binding('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white'))),
-        $(go.TextBlock, { margin: new go.Margin(2, 2, 0, 2), textAlign: 'center' }, new go.Binding('text', 'footer'))
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      defaultStretch: go.Stretch.Horizontal,
+      fromSpot: go.Spot.RightSide,
+      toSpot: go.Spot.LeftSide
+    })
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedTopRectangle', { fill: 'white' })
+              .bind('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white')),
+            new go.TextBlock({
+              margin: new go.Margin(2, 2, 0, 2),
+              textAlign: 'center'
+            })
+              .bind('text', 'header')
+          ),
+        new go.Panel('Auto', { minSize: new go.Size(NaN, 70) })
+          .add(
+            new go.Shape('Rectangle', { fill: 'white' }),
+            new go.TextBlock({
+              width: 120,
+              margin: new go.Margin(2, 2, 0, 2),
+              textAlign: 'center'
+            })
+              .bind('text'),
+            new go.Shape('BpmnActivityLoop', {
+              visible: false,
+              width: 10,
+              height: 10,
+              alignment: new go.Spot(0.5, 1, 0, -3),
+              alignmentFocus: go.Spot.Bottom
+            })
+              .bind('visible', 'loop')
+          ),
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedBottomRectangle', { fill: 'white' })
+              .bind('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white')),
+            new go.TextBlock({
+              margin: new go.Margin(2, 2, 0, 2),
+              textAlign: 'center'
+            })
+              .bind('text', 'footer')
+          )
+      );
 
-    myDiagram.groupTemplate = $(go.Group,
-      'Vertical',
-      { layout: $(go.TreeLayout, { setsPortSpot: false, setsChildPortSpot: false }) },
-      { defaultStretch: go.Stretch.Horizontal },
-      { fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
-      $(go.Panel,
-        'Auto',
-        $(go.Shape,
-          'RoundedRectangle', // Rounded top rectangle via parameter2
-          { fill: 'white', parameter2: 1 | 2 },
-          new go.Binding('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white'))
-        ),
-        $(go.TextBlock, { margin: new go.Margin(2, 2, 0, 2), textAlign: 'center' }, new go.Binding('text', 'header'))
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, { fill: 'white' }),
-        $(go.Placeholder, { padding: 20 }),
-        $(go.Shape,
-          'BpmnActivityLoop',
-          {
-            visible: false,
-            width: 10,
-            height: 10,
-            alignment: new go.Spot(0.5, 1, 0, -3),
-            alignmentFocus: go.Spot.Bottom,
-          },
-          new go.Binding('visible', 'loop')
-        )
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape,
-          'RoundedRectangle', // Rounded bottom rectangle via parameter2
-          { fill: 'white', parameter2: 4 | 8 },
-          new go.Binding('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white'))
-        ),
-        $(go.TextBlock, { margin: new go.Margin(2, 2, 0, 2), textAlign: 'center' }, new go.Binding('text', 'footer'))
-      )
-    );
+    myDiagram.groupTemplate = new go.Group('Vertical', {
+      layout: new go.TreeLayout({
+        setsPortSpot: false,
+        setsChildPortSpot: false
+      }),
+      defaultStretch: go.Stretch.Horizontal,
+      fromSpot: go.Spot.RightSide,
+      toSpot: go.Spot.LeftSide
+    })
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', { // Rounded top rectangle via parameter2
+              fill: 'white',
+              parameter2: 1 | 2
+            })
+              .bind('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white')),
+            new go.TextBlock({
+              margin: new go.Margin(2, 2, 0, 2),
+              textAlign: 'center'
+            })
+              .bind('text', 'header')
+          ),
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: 'white' }),
+            new go.Placeholder({ padding: 20 }),
+            new go.Shape('BpmnActivityLoop', {
+              visible: false,
+              width: 10,
+              height: 10,
+              alignment: new go.Spot(0.5, 1, 0, -3),
+              alignmentFocus: go.Spot.Bottom
+            })
+              .bind('visible', 'loop')
+          ),
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', { // Rounded bottom rectangle via parameter2
+              fill: 'white',
+              parameter2: 4 | 8
+            })
+              .bind('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white')),
+            new go.TextBlock({
+              margin: new go.Margin(2, 2, 0, 2),
+              textAlign: 'center'
+            })
+              .bind('text', 'footer')
+          )
+      );
 
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, corner: 5 }, $(go.Shape), $(go.Shape, { toArrow: 'Triangle' }));
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      corner: 5
+    })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'Triangle' })
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -219,14 +249,14 @@
         { key: 5, header: 'Supplier', text: 'Order & Delivery Variations', footer: 'Retailer', role: 't', group: 3 },
         { key: 13, header: 'Supplier', isGroup: true, footer: 'Shipper', role: 'b', loop: true },
         { key: 14, header: 'Supplier', text: 'Planned Order Variations', footer: 'Retailer', role: 'b', group: 13 },
-        { key: 15, header: 'Supplier', text: 'Order & Delivery Variations', footer: 'Retailer', role: 't', group: 13 },
+        { key: 15, header: 'Supplier', text: 'Order & Delivery Variations', footer: 'Retailer', role: 't', group: 13 }
       ],
       [
         { from: 1, to: 2 },
         { from: 2, to: 3 },
         { from: 2, to: 13 },
         { from: 4, to: 5 },
-        { from: 14, to: 15 },
+        { from: 14, to: 15 }
       ]
     );
   }

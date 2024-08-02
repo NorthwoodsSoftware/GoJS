@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,9 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
     var animationDiagram = null;
     // Sliders for customizing the links and duration of the animation
     var durationSlider = document.getElementById('duration');
@@ -156,29 +152,32 @@
       // Disable the diagram during the animation so that the links cannot be moved, which would call compute points
       // The Diagram is reset to enabled when the animation is finished
       isEnabled: false,
-      layout: $(go.ForceDirectedLayout, {
+      layout: new go.ForceDirectedLayout({
         defaultSpringLength: 20, // forces nodes closer together (default: 50)
         defaultSpringStiffness: 0.2, // forces nodes closer together (default: 0.05)
         isOngoing: false,
-        isRealtime: false,
-      }),
+        isRealtime: false
+      })
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        locationSpot: go.Spot.Center,
-        resizable: true,
-        rotatable: true,
-        opacity: 0,
-      },
-      new go.Binding('location').makeTwoWay(),
-      new go.Binding('desiredSize'),
-      $(go.Shape, 'RoundedRectangle', { fill: 'lightBlue' }),
-      $(go.TextBlock, new go.Binding('text', 'key'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      locationSpot: go.Spot.Center,
+      resizable: true,
+      rotatable: true,
+      opacity: 0
+    })
+      .bindTwoWay('location')
+      .bind('desiredSize')
+      .add(
+        new go.Shape('RoundedRectangle', { fill: 'lightBlue' }),
+        new go.TextBlock().bind('text', 'key')
+      );
 
-    myDiagram.linkTemplate = $(go.Link, { opacity: 0 }, $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.linkTemplate = new go.Link({ opacity: 0 })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     // Generate a tree
     var treeArr = [{ key: 0 }];
@@ -187,7 +186,7 @@
     for (var i = 1; i < 100; i++) {
       var newNode = {
         key: i,
-        parent: treeArr[currParent].key,
+        parent: treeArr[currParent].key
       };
       treeArr.push(newNode);
       childCount++;
@@ -228,7 +227,7 @@
               link: link,
               makeGeometry: link.makeGeometry,
               oldPoints: link.points,
-              geometry: link.elt(0).geometry.copy(),
+              geometry: link.elt(0).geometry.copy()
             });
             // If there is an arrow, record the initial segment index and orientation to reset at the end, then animate the scale with the link
             if (link.elements.count > 1) {
@@ -297,15 +296,15 @@
 
     function orthog() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = $(go.Link,
-        {
-          opacity: 0, // links start out invisible
-          routing: go.Routing.Orthogonal,
-          corner: Number(cornerSlider.value),
-        },
-        $(go.Shape),
-        $(go.Shape, { toArrow: 'Standard' })
-      );
+      myDiagram.linkTemplate = new go.Link({
+        opacity: 0, // links start out invisible
+        routing: go.Routing.Orthogonal,
+        corner: Number(cornerSlider.value)
+      })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -318,15 +317,15 @@
 
     function bezierLinks() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = $(go.Link,
-        {
-          opacity: 0, // links start out invisible
-          curve: go.Curve.Bezier,
-          curviness: Number(curvatureSlider.value),
-        },
-        $(go.Shape),
-        $(go.Shape, { toArrow: 'Standard' })
-      );
+      myDiagram.linkTemplate = new go.Link({
+        opacity: 0, // links start out invisible
+        curve: go.Curve.Bezier,
+        curviness: Number(curvatureSlider.value)
+      })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -339,11 +338,13 @@
 
     function linearLinks() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = $(go.Link,
-        { opacity: 0 }, // links start out invisible
-        $(go.Shape),
-        $(go.Shape, { toArrow: 'Standard' })
-      );
+      myDiagram.linkTemplate = new go.Link({
+        opacity: 0 // links start out invisible
+      })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -579,10 +580,10 @@
       var shouldPop = true;
       var scaledTime = animationState.currentTime - animationState.elaDuration;
       /*
-          Because multiple segments are being modified in order in this animation and each one has a separate duration, the time used in the
-				  easing functions must be at or below the duration. Usually the animation would stop if the current time exceeded the duration but
-				  because it is continuing to animate other segments after, the time has to be brought within the duration of the current segment being modified
-        */
+        Because multiple segments are being modified in order in this animation and each one has a separate duration, the time used in the
+        easing functions must be at or below the duration. Usually the animation would stop if the current time exceeded the duration but
+        because it is continuing to animate other segments after, the time has to be brought within the duration of the current segment being modified
+      */
       var usedTime = scaledTime;
       if (scaledTime > animationState.duration) {
         usedTime = animationState.duration;
@@ -719,7 +720,7 @@
 
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
-           This also adds a border to help see the edges of the viewport. -->
+       This also adds a border to help see the edges of the viewport. -->
   <div id="myDiagramDiv" style="border: solid 1px black; width: 800px; height: 800px"></div>
   <button id="orth">Load Orthogonal Links</button>
   <button id="bez">Load Bezier Links</button>

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,15 +124,16 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       // what to do when a drag-drop occurs in the Diagram's background
       mouseDrop: (e) => finishDrop(e, null),
       // Diagram has simple horizontal layout
-      layout: $(go.GridLayout, { wrappingWidth: Infinity, alignment: go.GridAlignment.Position, cellSize: new go.Size(1, 1) }),
+      layout: new go.GridLayout({
+          wrappingWidth: Infinity,
+          alignment: go.GridAlignment.Position,
+          cellSize: new go.Size(1, 1)
+        }),
       'commandHandler.archetypeGroupData': { isGroup: true, category: 'OfNodes' },
       'undoManager.isEnabled': true,
       // when a node is selected in the main Diagram, select the corresponding tree node
@@ -145,7 +145,7 @@
         myTreeView.clearSelection();
         myTreeView.selectCollection(diagnodes);
         myChangingSelection = false;
-      },
+      }
     });
 
     var myChangingSelection = false; // to protect against recursive selection changes
@@ -190,119 +190,132 @@
       if (!ok) e.diagram.currentTool.doCancel();
     }
 
-    myDiagram.groupTemplateMap.add(
-      'OfGroups',
-      $(go.Group,
-        go.Panel.Auto,
-        {
-          background: 'transparent',
-          // highlight when dragging into the Group
-          mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
-          mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
-          computesBoundsAfterDrag: true,
-          computesBoundsIncludingLocation: true,
-          // when the selection is dropped into a Group, add the selected Parts into that Group;
-          // if it fails, cancel the tool, rolling back any changes
-          mouseDrop: finishDrop,
-          handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
-          // Groups containing Groups lay out their members horizontally
-          layout: $(go.GridLayout, {
-            wrappingWidth: Infinity,
-            alignment: go.GridAlignment.Position,
-            cellSize: new go.Size(1, 1),
-            spacing: new go.Size(4, 4),
-          }),
-        },
-        new go.Binding('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent')).ofObject(),
-        $(go.Shape, 'Rectangle', { fill: null, stroke: '#E69900', strokeWidth: 2 }),
-        $(go.Panel,
-          go.Panel.Vertical, // title above Placeholder
-          $(go.Panel,
-            go.Panel.Horizontal, // button next to TextBlock
-            { stretch: go.Stretch.Horizontal, background: '#FFDD33', margin: 1 },
-            $('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
-            $(go.TextBlock,
-              {
-                alignment: go.Spot.Left,
-                editable: true,
-                margin: 5,
-                font: 'bold 18px sans-serif',
-                stroke: '#9A6600',
-              },
-              new go.Binding('text', 'text').makeTwoWay()
-            )
-          ), // end Horizontal Panel
-          $(go.Placeholder, { padding: 5, alignment: go.Spot.TopLeft })
-        ) // end Vertical Panel
-      )
+    myDiagram.groupTemplateMap.add('OfGroups',
+      new go.Group("Auto", {
+        background: 'transparent',
+        // highlight when dragging into the Group
+        mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+        mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
+        computesBoundsAfterDrag: true,
+        computesBoundsIncludingLocation: true,
+        // when the selection is dropped into a Group, add the selected Parts into that Group;
+        // if it fails, cancel the tool, rolling back any changes
+        mouseDrop: finishDrop,
+        handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
+        // Groups containing Groups lay out their members horizontally
+        layout: new go.GridLayout({
+          wrappingWidth: Infinity,
+          alignment: go.GridAlignment.Position,
+          cellSize: new go.Size(1, 1),
+          spacing: new go.Size(4, 4)
+        })
+      })
+        .bindObject('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent'))
+        .add(
+          new go.Shape('Rectangle', { fill: null, stroke: '#E69900', strokeWidth: 2 }),
+          new go.Panel('Vertical') // title above Placeholder
+            .add(
+              new go.Panel('Horizontal', { // button next to TextBlock
+                stretch: go.Stretch.Horizontal,
+                background: '#FFDD33',
+                margin: 1
+              })
+                .add(
+                  go.GraphObject.build('SubGraphExpanderButton', {
+                    alignment: go.Spot.Right,
+                    margin: 5
+                  }),
+                  new go.TextBlock({
+                    alignment: go.Spot.Left,
+                    editable: true,
+                    margin: 5,
+                    font: 'bold 18px sans-serif',
+                    stroke: '#9A6600'
+                  })
+                    .bindTwoWay('text')
+                ), // end Horizontal Panel
+              new go.Placeholder({
+                padding: 5,
+                alignment: go.Spot.TopLeft
+              })
+            ) // end Vertical Panel
+        )
     ); // end Group and call to add to template Map
 
-    myDiagram.groupTemplateMap.add(
-      'OfNodes',
-      $(go.Group,
-        go.Panel.Auto,
-        {
-          background: 'transparent',
-          ungroupable: true,
-          // highlight when dragging into the Group
-          mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
-          mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
-          computesBoundsAfterDrag: true,
-          computesBoundsIncludingLocation: true,
-          // when the selection is dropped into a Group, add the selected Parts into that Group;
-          // if it fails, cancel the tool, rolling back any changes
-          mouseDrop: finishDrop,
-          handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
-          // Groups containing Nodes lay out their members vertically
-          layout: $(go.GridLayout, {
-            wrappingColumn: 1,
-            alignment: go.GridAlignment.Position,
-            cellSize: new go.Size(1, 1),
-            spacing: new go.Size(4, 4),
+    myDiagram.groupTemplateMap.add('OfNodes',
+      new go.Group("Auto", {
+        background: 'transparent',
+        ungroupable: true,
+        // highlight when dragging into the Group
+        mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+        mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
+        computesBoundsAfterDrag: true,
+        computesBoundsIncludingLocation: true,
+        // when the selection is dropped into a Group, add the selected Parts into that Group;
+        // if it fails, cancel the tool, rolling back any changes
+        mouseDrop: finishDrop,
+        handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
+        // Groups containing Nodes lay out their members vertically
+        layout: new go.GridLayout({
+          wrappingColumn: 1,
+          alignment: go.GridAlignment.Position,
+          cellSize: new go.Size(1, 1),
+          spacing: new go.Size(4, 4)
+        })
+      })
+        .bindObject('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent'))
+        .add(
+          new go.Shape('Rectangle', {
+            fill: null,
+            stroke: '#0099CC',
+            strokeWidth: 2
           }),
-        },
-        new go.Binding('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent')).ofObject(),
-        $(go.Shape, 'Rectangle', { fill: null, stroke: '#0099CC', strokeWidth: 2 }),
-        $(go.Panel,
-          go.Panel.Vertical, // title above Placeholder
-          $(go.Panel,
-            go.Panel.Horizontal, // button next to TextBlock
-            { stretch: go.Stretch.Horizontal, background: '#33D3E5', margin: 1 },
-            $('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
-            $(go.TextBlock,
-              {
-                alignment: go.Spot.Left,
-                editable: true,
-                margin: 5,
-                font: 'bold 16px sans-serif',
-                stroke: '#006080',
-              },
-              new go.Binding('text', 'text').makeTwoWay()
-            )
-          ), // end Horizontal Panel
-          $(go.Placeholder, { padding: 5, alignment: go.Spot.TopLeft })
-        ) // end Vertical Panel
-      )
+          new go.Panel('Vertical') // title above Placeholder
+            .add(
+              new go.Panel('Horizontal', { // button next to TextBlock
+                stretch: go.Stretch.Horizontal,
+                background: '#33D3E5',
+                margin: 1
+              })
+                .add(
+                  go.GraphObject.build('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
+                  new go.TextBlock({
+                    alignment: go.Spot.Left,
+                    editable: true,
+                    margin: 5,
+                    font: 'bold 16px sans-serif',
+                    stroke: '#006080'
+                  })
+                    .bindTwoWay('text')
+                ), // end Horizontal Panel
+              new go.Placeholder({
+                padding: 5,
+                alignment: go.Spot.TopLeft
+              })
+            ) // end Vertical Panel
+        )
     ); // end Group and call to add to template Map
 
     // Nodes have a trivial definition
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Auto,
-      {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
         // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-        mouseDrop: (e, nod) => finishDrop(e, nod.containingGroup),
-      },
-      $(go.Shape, 'Rectangle', { fill: '#ACE600', stroke: '#558000', strokeWidth: 2 }, new go.Binding('fill', 'color')),
-      $(go.TextBlock,
-        {
+        mouseDrop: (e, nod) => finishDrop(e, nod.containingGroup)
+      })
+      .add(
+        new go.Shape('Rectangle', {
+          fill: '#ACE600',
+          stroke: '#558000',
+          strokeWidth: 2
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({
           margin: 5,
           editable: true,
           font: 'bold 13px sans-serif',
-          stroke: '#446700',
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      )
-    );
+          stroke: '#446700'
+        })
+          .bindTwoWay('text')
+      );
 
     var myChangingModel = false; // to protect against recursive model changes
 
@@ -341,7 +354,7 @@
       allowDelete: true, // but you might want this to be false
       'commandHandler.deletesTree': true,
       allowHorizontalScroll: false,
-      layout: $(go.TreeLayout, {
+      layout: new go.TreeLayout({
         alignment: go.TreeAlignment.Start,
         angle: 0,
         compaction: go.TreeCompaction.None,
@@ -351,7 +364,7 @@
         nodeSpacing: 0,
         setsPortSpot: false,
         setsChildPortSpot: false,
-        arrangementSpacing: new go.Size(0, 0),
+        arrangementSpacing: new go.Size(0, 0)
       }),
       // when a node is selected in the tree, select the corresponding node in the main diagram
       ChangedSelection: (e) => {
@@ -362,37 +375,37 @@
         myDiagram.clearSelection();
         myDiagram.selectCollection(diagnodes);
         myChangingSelection = false;
-      },
+      }
     });
 
-    myTreeView.nodeTemplate = $(go.Node,
-      // no Adornment: instead change panel background color by binding to Node.isSelected
-      { selectionAdorned: false },
-      $('TreeExpanderButton', {
-        width: 14,
-        'ButtonBorder.fill': 'white',
-        'ButtonBorder.stroke': null,
-        _buttonFillOver: 'rgba(0,128,255,0.25)',
-        _buttonStrokeOver: null,
-      }),
-      $(go.Panel,
-        'Horizontal',
-        { position: new go.Point(16, 0) },
-        new go.Binding('background', 'isSelected', (s) => (s ? 'lightblue' : 'white')).ofObject(),
-        // Icon is not needed?
-        //$(go.Picture,
-        //  {
-        //    width: 14, height: 14,
-        //    margin: new go.Margin(0, 4, 0, 0),
-        //    imageStretch: go.ImageStretch.Uniform,
-        //    source: "images/50x40.png"
-        //  }),
-        $(go.TextBlock, { editable: true }, new go.Binding('text').makeTwoWay())
-      ) // end Horizontal Panel
-    ); // end Node
+    myTreeView.nodeTemplate = new go.Node({ selectionAdorned: false })
+      .add(
+        // no Adornment: instead change panel background color by binding to Node.isSelected
+        go.GraphObject.build('TreeExpanderButton', {
+          width: 14,
+          'ButtonBorder.fill': 'white',
+          'ButtonBorder.stroke': null,
+          _buttonFillOver: 'rgba(0,128,255,0.25)',
+          _buttonStrokeOver: null
+        }),
+        new go.Panel('Horizontal', { position: new go.Point(16, 0) })
+          .bindObject('background', 'isSelected', (s) => (s ? 'lightblue' : 'white'))
+          .add(
+            // Icon is not needed?
+            //new go.Picture(
+            //  {
+            //    width: 14, height: 14,
+            //    margin: new go.Margin(0, 4, 0, 0),
+            //    imageStretch: go.ImageStretch.Uniform,
+            //    source: "images/50x40.png"
+            //  }),
+            new go.TextBlock({ editable: true })
+              .bindTwoWay('text')
+          ) // end Horizontal Panel
+      ); // end Node
 
     // without lines
-    myTreeView.linkTemplate = $(go.Link);
+    myTreeView.linkTemplate = new go.Link();
 
     // cannot share the model itself, but can share all of the node data from the main Diagram,
     // pretending the "group" relationship is the "tree parent" relationship

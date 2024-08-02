@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,42 +124,35 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      // create a TreeLayout for the family tree
+      layout: new go.TreeLayout({ angle: 90, nodeSpacing: 5 })
+    });
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        allowCopy: false,
-        // create a TreeLayout for the family tree
-        layout: $(go.TreeLayout, { angle: 90, nodeSpacing: 5 }),
-      }
-    );
-
-    var bluegrad = $(go.Brush, 'Linear', { 0: 'rgb(60, 204, 254)', 1: 'rgb(70, 172, 254)' });
-    var pinkgrad = $(go.Brush, 'Linear', { 0: 'rgb(255, 192, 203)', 1: 'rgb(255, 142, 203)' });
+    var bluegrad = new go.Brush('Linear', { 0: 'rgb(60, 204, 254)', 1: 'rgb(70, 172, 254)' });
+    var pinkgrad = new go.Brush('Linear', { 0: 'rgb(255, 192, 203)', 1: 'rgb(255, 142, 203)' });
 
     // Set up a Part as a legend, and place it directly on the diagram
     myDiagram.add(
-      $(go.Part,
-        'Table',
-        { layerName: 'ViewportBackground', alignment: new go.Spot(0, 0, 20, 20) },
-        $(go.TextBlock, 'Key', { row: 0, font: 'bold 10pt Helvetica, Arial, sans-serif' }), // end row 0
-        $(go.Panel,
-          'Horizontal',
-          { row: 1, alignment: go.Spot.Left },
-          $(go.Shape, 'Rectangle', { desiredSize: new go.Size(30, 30), fill: bluegrad, margin: 5 }),
-          $(go.TextBlock, 'Males', { font: 'bold 8pt Helvetica, bold Arial, sans-serif' })
-        ), // end row 1
-        $(go.Panel,
-          'Horizontal',
-          { row: 2, alignment: go.Spot.Left },
-          $(go.Shape, 'Rectangle', { desiredSize: new go.Size(30, 30), fill: pinkgrad, margin: 5 }),
-          $(go.TextBlock, 'Females', { font: 'bold 8pt Helvetica, bold Arial, sans-serif' })
-        ) // end row 2
-      )
-    );
+      new go.Part('Table', {
+        layerName: 'ViewportBackground',
+        alignment: new go.Spot(0, 0, 20, 20)
+      })
+        .add(
+          new go.TextBlock('Key', { row: 0, font: 'bold 10pt Helvetica, Arial, sans-serif' }), // end row 0
+          new go.Panel('Horizontal', { row: 1, alignment: go.Spot.Left })
+            .add(
+              new go.Shape('Rectangle', { desiredSize: new go.Size(30, 30), fill: bluegrad, margin: 5 }),
+              new go.TextBlock('Males', { font: 'bold 8pt Helvetica, bold Arial, sans-serif' })
+            ), // end row 1
+          new go.Panel('Horizontal', { row: 2, alignment: go.Spot.Left })
+            .add(
+              new go.Shape('Rectangle', { desiredSize: new go.Size(30, 30), fill: pinkgrad, margin: 5 }),
+              new go.TextBlock('Females', { font: 'bold 8pt Helvetica, bold Arial, sans-serif' })
+            ) // end row 2
+        )
+      );
 
     // get tooltip text from the object's data
     function tooltipTextConverter(person) {
@@ -172,17 +164,18 @@
     }
 
     // define tooltips for nodes
-    var tooltiptemplate = $('ToolTip',
-      { 'Border.fill': 'whitesmoke', 'Border.stroke': 'black' },
-      $(go.TextBlock,
-        {
+    var tooltiptemplate = go.GraphObject.build('ToolTip', {
+      'Border.fill':'whitesmoke',
+      'Border.stroke': 'black'
+    })
+      .add(
+        new go.TextBlock({
           font: 'bold 8pt Helvetica, bold Arial, sans-serif',
           wrap: go.Wrap.Fit,
-          margin: 5,
-        },
-        new go.Binding('text', '', tooltipTextConverter)
-      )
-    );
+          margin: 5
+        })
+          .bind('text', '', tooltipTextConverter)
+      );
 
     // define Converters to be used for Bindings
     function genderBrushConverter(gender) {
@@ -192,39 +185,39 @@
     }
 
     // replace the default Node template in the nodeTemplateMap
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { deletable: false, toolTip: tooltiptemplate },
-      new go.Binding('text', 'name'),
-      $(go.Shape,
-        'Rectangle',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      deletable: false,
+      toolTip: tooltiptemplate
+    })
+      .bind('text', 'name')
+      .add(
+        new go.Shape('Rectangle', {
           fill: 'orange',
           stroke: 'black',
           stretch: go.Stretch.Fill,
-          alignment: go.Spot.Center,
-        },
-        new go.Binding('fill', 'gender', genderBrushConverter)
-      ),
-      $(go.Panel,
-        'Vertical',
-        $(go.TextBlock,
-          {
-            font: 'bold 8pt Helvetica, bold Arial, sans-serif',
-            alignment: go.Spot.Center,
-            margin: 6,
-          },
-          new go.Binding('text', 'name')
-        ),
-        $(go.TextBlock, new go.Binding('text', 'kanjiName'))
-      )
-    );
+          alignment: go.Spot.Center
+        })
+          .bind('fill', 'gender', genderBrushConverter),
+        new go.Panel('Vertical')
+          .add(
+            new go.TextBlock({
+              font: 'bold 8pt Helvetica, bold Arial, sans-serif',
+              alignment: go.Spot.Center,
+              margin: 6
+            })
+              .bind('text', 'name'),
+            new go.TextBlock().bind('text', 'kanjiName')
+          )
+      );
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      { routing: go.Routing.Orthogonal, corner: 5, selectable: false },
-      $(go.Shape)
-    ); // the default black link shape
+    myDiagram.linkTemplate = new go.Link({ // the whole link panel
+      routing: go.Routing.Orthogonal,
+      corner: 5, selectable: false
+    })
+      .add(
+        new go.Shape()
+      ); // the default black link shape
 
     // here's the family data
     var nodeDataArray = [
@@ -236,7 +229,7 @@
         kanjiName: '統仁 孝明天皇',
         posthumousName: 'Komei',
         birthYear: '1831',
-        deathYear: '1867',
+        deathYear: '1867'
       },
       {
         key: 1,
@@ -247,7 +240,7 @@
         kanjiName: '睦仁 明治天皇',
         posthumousName: 'Meiji',
         birthYear: '1852',
-        deathYear: '1912',
+        deathYear: '1912'
       },
       {
         key: 2,
@@ -257,7 +250,7 @@
         fullTitle: 'Princess Yasu-no-Miya Toshiko',
         birthYear: '1896',
         deathYear: '1978',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 3,
@@ -268,7 +261,7 @@
         kanjiName: '東久邇宮 盛厚王',
         birthYear: '1916',
         deathYear: '1969',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 4, parent: 3, name: 'See spouse for descendants' },
       { key: 5, parent: 2, name: 'Moromasa', gender: 'M', fullTitle: 'Prince Moromasa', kanjiName: '師正王', birthYear: '1917', deathYear: '1923' },
@@ -281,7 +274,7 @@
         kanjiName: '彰常王',
         birthYear: '1920',
         deathYear: '2006',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 7,
@@ -291,7 +284,7 @@
         fullTitle: 'Prince Toshihiko',
         kanjiName: '俊彦王',
         birthYear: '1929',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 8,
@@ -302,7 +295,7 @@
         kanjiName: '嘉仁 大正天皇,',
         posthumousName: 'Taisho',
         birthYear: '1879',
-        deathYear: '1926',
+        deathYear: '1926'
       },
       {
         key: 9,
@@ -313,7 +306,7 @@
         kanjiName: '裕仁 昭和天皇',
         posthumousName: 'Showa',
         birthYear: '1901',
-        deathYear: '1989',
+        deathYear: '1989'
       },
       {
         key: 10,
@@ -326,7 +319,7 @@
         kanjiName: '東久邇成子',
         birthYear: '1925',
         deathYear: '1961',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 11,
@@ -336,7 +329,7 @@
         fullTitle: 'Prince Higashikuni Nobuhiko',
         kanjiName: '東久邇宮 信彦王',
         birthYear: '1945',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 12, parent: 11, name: 'Higashikuni Yukihiko', gender: 'M', fullTitle: 'No Title', birthYear: '1974' },
       {
@@ -347,7 +340,7 @@
         fullTitle: 'Princess Higashikuni Fumiko',
         kanjiName: '文子女王',
         birthYear: '1946',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 14, parent: 10, name: 'Higashikuni Naohiko', gender: 'M', fullTitle: 'No Title', kanjiName: '東久邇真彦', birthYear: '1948' },
       { key: 15, parent: 14, name: 'Higashikuni Teruhiko', gender: 'M', fullTitle: 'No Title' },
@@ -364,7 +357,7 @@
         kanjiName: '鷹司 和子',
         birthYear: '1929',
         deathYear: '1989',
-        statusChange: 'In 1950, lost imperial family status by marrying a commoner',
+        statusChange: 'In 1950, lost imperial family status by marrying a commoner'
       },
       {
         key: 21,
@@ -374,7 +367,7 @@
         fullTitle: 'Atsuko, Princess Yori',
         kanjiName: '池田厚子',
         birthYear: '1931',
-        statusChange: 'In 1952, lost imperial family status by marrying a commoner',
+        statusChange: 'In 1952, lost imperial family status by marrying a commoner'
       },
       {
         key: 22,
@@ -384,7 +377,7 @@
         fullTitle: 'Reigning Emperor of Japan; Tennō',
         kanjiName: '明仁 今上天皇',
         posthumousName: 'Heisei',
-        birthYear: '1933',
+        birthYear: '1933'
       },
       {
         key: 23,
@@ -394,7 +387,7 @@
         fullTitle: 'Naruhito, Crown Prince of Japan',
         kanjiName: '皇太子徳仁親王',
         orderInSuccession: '1',
-        birthYear: '1960',
+        birthYear: '1960'
       },
       { key: 24, parent: 23, name: 'Aiko', gender: 'F', fullTitle: 'Aiko, Princess Toshi', kanjiName: '敬宮愛子内親王', birthYear: '2001' },
       {
@@ -405,7 +398,7 @@
         fullTitle: 'Fumihito, Prince Akishino',
         kanjiName: '秋篠宮文仁親王',
         orderInSuccession: '2',
-        birthYear: '1965',
+        birthYear: '1965'
       },
       { key: 26, parent: 25, name: 'Mako', gender: 'F', fullTitle: 'Princess Mako of Akishino', kanjiName: '眞子内親王', birthYear: '1991' },
       { key: 27, parent: 25, name: 'Kako', gender: 'F', fullTitle: 'Princess Kako of Akishino', kanjiName: '佳子内親王', birthYear: '1994' },
@@ -417,7 +410,7 @@
         fullTitle: 'Prince Hisahito of Akishino',
         kanjiName: '悠仁親王',
         orderInSuccession: '3',
-        birthYear: '2006',
+        birthYear: '2006'
       },
       {
         key: 29,
@@ -427,7 +420,7 @@
         fullTitle: 'Princess Sayako of Japan',
         kanjiName: '黒田清子',
         birthYear: '1969',
-        statusChange: 'In 2005, lost imperial family status by marrying a commoner',
+        statusChange: 'In 2005, lost imperial family status by marrying a commoner'
       },
       {
         key: 30,
@@ -437,7 +430,7 @@
         fullTitle: 'Masahito, Prince Hitachi',
         kanjiName: '常陸宮正仁親王',
         orderInSuccession: '4',
-        birthYear: '1935',
+        birthYear: '1935'
       },
       {
         key: 31,
@@ -447,7 +440,7 @@
         fullTitle: 'Princess Takako',
         kanjiName: '島津貴子',
         birthYear: '1939',
-        statusChange: 'In 1960, lost imperial family status by marrying a commoner',
+        statusChange: 'In 1960, lost imperial family status by marrying a commoner'
       },
       { key: 32, parent: 31, name: 'Yorihisa Shimazu', gender: 'M', fullTitle: 'No Title', birthYear: '1962' },
       {
@@ -458,7 +451,7 @@
         fullTitle: 'Yasuhito, Prince Chichibu of Japan',
         kanjiName: '秩父宮 雍仁',
         birthYear: '1902',
-        deathYear: '1953',
+        deathYear: '1953'
       },
       {
         key: 34,
@@ -468,7 +461,7 @@
         fullTitle: 'Nobuhito, Prince Takamatsu',
         kanjiName: '高松宮宣仁親王',
         birthYear: '1905',
-        deathYear: '1987',
+        deathYear: '1987'
       },
       {
         key: 35,
@@ -478,7 +471,7 @@
         fullTitle: 'Takahito, Prince Mikasa',
         kanjiName: '三笠宮崇仁親王',
         orderInSuccession: '5',
-        birthYear: '1915',
+        birthYear: '1915'
       },
       {
         key: 36,
@@ -488,7 +481,7 @@
         fullTitle: 'Princess Yasuko of Mikasa',
         kanjiName: '甯子内親王',
         birthYear: '1944',
-        statusChange: 'In 1966, lost imperial family stutus by marrying a commoner',
+        statusChange: 'In 1966, lost imperial family stutus by marrying a commoner'
       },
       { key: 37, parent: 36, name: 'Tadahiro', gender: 'M', fullTitle: 'None' },
       {
@@ -499,7 +492,7 @@
         fullTitle: 'Prince Tomohito of Mikasa',
         kanjiName: '三笠宮寬仁',
         orderInSuccession: '6',
-        birthYear: '1946',
+        birthYear: '1946'
       },
       { key: 39, parent: 38, name: 'Akiko', gender: 'F', fullTitle: 'Princess Akiko of Mikasa', kanjiName: '彬子女王', birthYear: '1981' },
       { key: 40, parent: 38, name: 'Yoko', gender: 'F', fullTitle: 'Princess Yoko of Mikasa', kanjiName: '瑶子女王', birthYear: '1983' },
@@ -511,7 +504,7 @@
         fullTitle: 'Yoshihito, Prince Katsura',
         kanjiName: '桂宮 宜仁親王',
         orderInSuccession: '7',
-        birthYear: '1948',
+        birthYear: '1948'
       },
       {
         key: 42,
@@ -521,7 +514,7 @@
         fullTitle: 'Princess Masako of Mikasa',
         kanjiName: '容子内親王',
         birthYear: '1951',
-        statusChange: 'In 1983, lost imperial family status by marrying a commoner',
+        statusChange: 'In 1983, lost imperial family status by marrying a commoner'
       },
       { key: 43, parent: 42, name: 'Akifumi', gender: 'M', fullTitle: 'No Title' },
       { key: 44, parent: 42, name: 'Takafumi', gender: 'M', fullTitle: 'No Title' },
@@ -534,7 +527,7 @@
         fullTitle: 'Norihito, Prince Takamado',
         kanjiName: '高円宮憲仁親王',
         birthYear: '1954',
-        deathYear: '2002',
+        deathYear: '2002'
       },
       { key: 47, parent: 46, name: 'Tsuguko', gender: 'F', fullTitle: 'Princess Tsuguko of Takamado', kanjiName: '承子女王', birthYear: '1986' },
       { key: 48, parent: 46, name: 'Noriko', gender: 'F', fullTitle: 'Princess Noriko of Takamado', kanjiName: '典子女王', birthYear: '1988' },
@@ -549,7 +542,7 @@
         kanjiName: '竹田宮恒徳王',
         birthYear: '1909',
         deathYear: '1992',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 52,
@@ -559,7 +552,7 @@
         fullTitle: 'Prince Takeda Tsunetada',
         kanjiName: '竹田恒正王',
         birthYear: '1940',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 53, parent: 52, name: 'Takeda Tsunetaka', gender: 'M', fullTitle: 'No Title', birthYear: '1967' },
       { key: 54, parent: 52, name: 'Takeda Hiroko', gender: 'M', fullTitle: 'No Title', birthYear: '1971' },
@@ -571,7 +564,7 @@
         fullTitle: 'Princess Takeda Motoko',
         kanjiName: '素子女王',
         birthYear: '1942',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 56,
@@ -581,7 +574,7 @@
         fullTitle: 'No Title',
         kanjiName: '竹田恒和王',
         birthYear: '1944',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 57,
@@ -591,7 +584,7 @@
         fullTitle: 'Princess Takeda Noriko',
         kanjiName: '紀子女王',
         birthYear: '1943',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 58,
@@ -601,7 +594,7 @@
         fullTitle: 'Prince Tsuneharu Takeda',
         kanjiName: '竹田恒治王',
         birthYear: '1945',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 59,
@@ -611,7 +604,7 @@
         fullTitle: 'Princess Tsune-no-Miya Takeda Ayako',
         kanjiName: '禮子女王',
         birthYear: '1911',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 60, parent: 1, name: 'Fusako', gender: 'F', fullTitle: 'Princess Fusako of Kane', birthYear: '1890', deathYear: '1974' },
       {
@@ -622,7 +615,7 @@
         fullTitle: 'Prince Kitashirakawa Nagahisa',
         kanjiName: '北白川宮永久王',
         birthYear: '1910',
-        deathYear: '1940',
+        deathYear: '1940'
       },
       {
         key: 62,
@@ -631,7 +624,7 @@
         gender: 'M',
         fullTitle: 'Prince Kitashirakawa Michihisa',
         birthYear: '1937',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 63, parent: 62, name: 'Kitashirakawa Naoko', gender: 'F', fullTitle: 'No Title', birthYear: '1969' },
       { key: 64, parent: 62, name: 'Kitashirakawa Nobuko', gender: 'F', fullTitle: 'No Title', birthYear: '1971' },
@@ -643,7 +636,7 @@
         gender: 'F',
         fullTitle: 'Princess Hatsuko',
         birthYear: '1939',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 67,
@@ -654,7 +647,7 @@
         kanjiName: '美年子女王',
         birthYear: '1910',
         deathYear: '1970',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 68,
@@ -665,7 +658,7 @@
         kanjiName: '佐和子女王',
         birthYear: '1913',
         deathYear: '2001',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 69,
@@ -676,7 +669,7 @@
         kanjiName: '多惠子女王',
         birthYear: '1920',
         deathYear: '1954',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 70, parent: 1, name: 'Nobuko', gender: 'F', fullTitle: 'Princess Fumi-no-Miya Nobuko', birthYear: '1891', deathYear: '1933' },
       {
@@ -688,7 +681,7 @@
         kanjiName: '紀久子',
         birthYear: '1911',
         deathYear: '1989',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       {
         key: 72,
@@ -699,7 +692,7 @@
         kanjiName: '朝香 孚彦',
         birthYear: '1913',
         deathYear: '1994',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 73, parent: 72, name: 'Fukuko', gender: 'F', fullTitle: 'No Title' },
       { key: 74, parent: 72, name: 'Minoko', gender: 'F', fullTitle: 'No Title' },
@@ -712,7 +705,7 @@
         fullTitle: 'Prince Asaka Tadahito',
         kanjiName: '朝香正彦',
         birthYear: '1914',
-        deathYear: '1944',
+        deathYear: '1944'
       },
       {
         key: 77,
@@ -722,10 +715,10 @@
         fullTitle: 'Princess Asaka Kiyoko',
         kanjiName: '湛子',
         birthYear: '1919',
-        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility',
+        statusChange: 'In 1947, lost imperial family status due to American abrogation of Japanese nobility'
       },
       { key: 78, parent: 1, name: 'Ten Other Children Not Surviving Infancy' },
-      { key: 79, parent: 0, name: 'Five Other Children Not Surviving Infancy' },
+      { key: 79, parent: 0, name: 'Five Other Children Not Surviving Infancy' }
     ];
 
     // create the model for the family tree

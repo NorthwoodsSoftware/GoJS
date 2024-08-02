@@ -18,7 +18,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="./assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -142,7 +141,14 @@
   backwards-compatible.
 </p>
 
-<p>There are a number of other changes, detailed below.</p>
+<p>There are a number of other changes, <a href="#3.0">detailed below.</a></p>
+
+<h3 id="3.0.9">Changes for 3.0.9</h3>
+<ul>
+  <li>
+    Fixed updating Bindings in Adornments when data in itemArrays change.
+  </li>
+</ul>
 
 <h3 id="3.0.8">Changes for 3.0.8</h3>
 <ul>
@@ -152,7 +158,7 @@
     depending on the value of <a>Diagram.isTreePathToChildren</a>.
   </li>
   <li>
-    Fixed toggling the <a>Diagram.grid</a> visibility - which would in some cases fail to update the grid.
+    Fixed setting the visibility of <a>Diagram.grid</a> in certain circumstances when initializing a Diagram.
   </li>
   <li>
     Fixed confusion with <a>InputEvent</a>s when calling <a>CommandHandler.showContextMenu</a> during a
@@ -262,11 +268,11 @@
     Fixed some initial positions when <a>Diagram.autoScale</a> scales initial contents, but a scrollbar is still required.
   </li>
   <li>
-    Fixed some <a>Iterator</a>s returned by GoJS (such as from <a>Node.findLinksInto</a>) returning faulty values from
-    use of <code>Symbol.iterator</code>.
+    Fixed some <a>Iterator</a>s returned by GoJS (such as from <a>Node.findLinksInto</a>) returning faulty values when
+    using <code>Symbol.iterator</code>.
   </li>
   <li>
-    Fixed a bug where large nodes in a <a>ForceDirectedLayout</a> would sometimes overlap.
+    Fixed a bug where large nodes in a <a>ForceDirectedLayout</a> would sometimes overlap unnecessarily.
   </li>
 </ul>
 
@@ -275,7 +281,9 @@
 <h3 id="npmpackages">New npm packages</h3>
 <p>For 3.0, the <code>gojs</code> npm package contains only the release libraries, and no extensions, documentation or
   sample code.
-  The documentation, sample, and extensions code can be downloaded separately, via <code>npm create gojs-kit@latest</code>.
+  The documentation, sample, and extensions code can be downloaded separately, via <code>npm create gojs-kit@latest</code>,
+  or from our <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub repository</a>,
+  or from our <a href="download.html">web site</a>.
 </p>
 
 
@@ -394,7 +402,7 @@
     which additionally call <a>Binding.ofModel</a>, <a>Binding.ofObject</a>, and <a>Binding.makeTwoWay</a>,
     respectively.
     The fourth argument to <a>GraphObject.bind</a> has been deprecated -- if you want a TwoWay Binding,
-    call <a>GraphObject.makeTwoWay</a>, which is a clearer declaration of intent.
+    call <a>GraphObject.bindTwoWay</a>, which is a clearer declaration of intent.
   </li>
   <li>
     The <a>ForceDirectedLayout</a> class has been rewritten, although the API remains compatible.
@@ -652,14 +660,20 @@
   </li>
 </ul>
 
+<h3 id="Fixes">Fixes</h3>
+<ul>
+  <li>Moving a collection of Parts no longer invalidates the Link routes in the collection.</li>
+  <li>Scrollbars no longer flicker on completion of initial animation.</li>
+  <li>Reduced possible duplicate LayoutCompleted events in diagrams with multiple Group layouts.</li>
+</ul>
 
 <h3 id="ExtensionsSamples">Changes to Extensions and Samples</h3>
 <p>
   All extensions and samples are now in the <code>create-gojs-kit</code> npm package rather than in the
   <code>gojs</code> package.
   We suggest that you download them by executing <code>npm create gojs-kit@latest</code>.
-  However you can continue to download everything from the GoJS <a
-    href="https://github.com/NorthwoodsSoftware/GoJS">GitHub repository</a>
+  However you can continue to download everything from the GoJS
+  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub repository</a>
   or from our <a href="download.html">web site</a>.
 </p>
 <p>
@@ -674,10 +688,10 @@
   for links that are unrelated to each other.
   It is demonstrated in the <a href="./samples/AvoidsLinksRouter.html">AvoidsLinksRouter sample</a>.
 </p>
-<!-- <p>
+<p>
   There is now an <a>LinkLabelRouter</a> extension.
   It is demonstrated in the <a href="./samples/LinkLabelRouter.html">LinkLabelRouter sample</a>.
-</p> -->
+</p>
 <p>
   There is now an <a>AriaCommandHandler</a> extension.
   We have added an <a href="./samples/Accessibility.html">Accessibility extension sample</a> to demonstrate
@@ -717,10 +731,6 @@
   which reduces the potential variation in functionality between the two extensions directories.
 </p>
 <p>
-  We have deleted the <code>RoundedRectangles.js</code> file from the extensions and extensionsJSM directories.
-  The figures that had been defined there are now predefined in the GoJS library.
-</p>
-<p>
   The sample HTML pages in both <code>extensions</code> and <code>extensionsJSM</code>
   have been moved to the <code>samples</code> subdirectory, thereby removing duplicate samples.
 </p>
@@ -729,23 +739,19 @@
   The <code>projects</code> subdirectory has been deleted.
 </p>
 <p>
+  We have deleted the <code>RoundedRectangles.js</code> file from the extensions and extensionsJSM directories.
+  The figures that had been defined there are now predefined in the GoJS library.
+</p>
+<p>
   We have deleted the Storage extensions. If you need them, copy the code from version 2.
 </p>
-
-
-<h3 id="Fixes">Fixes</h3>
-<ul>
-  <li>Moving a collection of Parts no longer invalidates the Link routes in the collection.</li>
-  <li>Scrollbars no longer flicker on completion of initial animation.</li>
-  <li>Reduced possible duplicate LayoutCompleted events in diagrams with multiple Group layouts.</li>
-</ul>
 
 <hr />
 
 
 
 <h3 id="OldChangeLogs">Old Change Logs</h3>
-<h4><a href="../2.3.16/changelog.html">Change log for 2.3</a></h4>
+<h4><a href="../2.3.17/changelog.html">Change log for 2.3</a></h4>
 <h4><a href="../2.2.23/changelog.html">Change log for 2.2</a></h4>
 <h4><a href="../2.1.56/changelog.html">Change log for 2.1</a></h4>
 <h4><a href="../2.0.21/changelog.html">Change log for 2.0</a></h4>

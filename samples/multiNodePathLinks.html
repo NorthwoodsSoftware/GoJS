@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,34 +125,47 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // the ID of the DIV HTML element
-      {
-        allowCopy: false, // would need to copy linkdata.path and update all of the refenced node keys
-        allowDelete: false, // would need to update linkdata.path for all links going through that node
-        Changed: invalidateLinkRoutes,
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false, // would need to copy linkdata.path and update all of the refenced node keys
+      allowDelete: false, // would need to update linkdata.path for all links going through that node
+      Changed: invalidateLinkRoutes,
+      'undoManager.isEnabled': true
+    });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Auto,
-      { locationSpot: go.Spot.Center },
-      new go.Binding('location', 'loc', go.Point.parse),
-      $(go.Shape, { figure: 'Circle', fill: 'white' }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { font: 'bold 11pt sans-serif' }, new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node("Auto", {
+      locationSpot: go.Spot.Center
+    })
+      .bind('location', 'loc', go.Point.parse)
+      .add(
+        new go.Shape({
+          figure: 'Circle',
+          fill: 'white'
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({
+          font: 'bold 11pt sans-serif'
+        })
+          .bind('text')
+      );
 
-    myDiagram.linkTemplate = $(MultiNodePathLink, // subclass of Link, defined below
-      { curve: go.Curve.Bezier },
-      { layerName: 'Background', toShortLength: 4 },
-      $(go.Shape, { strokeWidth: 4 }, new go.Binding('stroke', 'color')),
-      $(go.Shape, { toArrow: 'Standard', scale: 3, strokeWidth: 0 }, new go.Binding('fill', 'color'))
-    );
+    myDiagram.linkTemplate = new MultiNodePathLink({ // subclass of Link, defined below
+      curve: go.Curve.Bezier,
+      layerName: 'Background',
+      toShortLength: 4
+    })
+      .add(
+        new go.Shape({
+            strokeWidth: 4
+          })
+          .bind('stroke', 'color'),
+        new go.Shape({
+            toArrow: 'Standard',
+            scale: 3,
+            strokeWidth: 0
+          })
+          .bind('fill', 'color')
+      );
 
     function invalidateLinkRoutes(e) {
       // when a Node is moved, invalidate the route for all MultiNodePathLinks that go through it
@@ -195,11 +207,11 @@
         { key: 5, text: 'Epsilon', color: 'aquamarine', loc: '300 350' },
         { key: 6, text: 'Zeta', color: 'tomato', loc: '0 100' },
         { key: 7, text: 'Eta', color: 'goldenrod', loc: '0 300' },
-        { key: 8, text: 'Theta', color: 'orange', loc: '300 200' },
+        { key: 8, text: 'Theta', color: 'orange', loc: '300 200' }
       ],
       [
         { from: 1, to: 5, path: [2, 3, 4], color: 'blue' },
-        { from: 6, to: 5, path: [7, 4, 8], color: 'red' },
+        { from: 6, to: 5, path: [7, 4, 8], color: 'red' }
       ]
     );
   }

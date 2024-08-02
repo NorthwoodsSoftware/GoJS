@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -123,7 +122,6 @@
             
             
 
-
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 650px"></div>
   <p>This pretends to show a sheet of paper with the diagram on it.</p>
@@ -138,10 +136,6 @@
 </div>
 
 <script id="code">
-  // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-  // For details, see https://gojs.net/latest/intro/buildingObjects.html
-  const $ = go.GraphObject.make;
-
   const pageSize = new go.Size(792, 612); // landscape, or new go.Size(612, 792) for portrait
   const pageMargin = new go.Margin(8); // margin around the sheet
   const usableMargin = new go.Margin(16); // padding inside sheet border
@@ -178,24 +172,23 @@
       node.ensureBounds(); // has been resized, compute its new bounds
       var pt = limitPoint(node.location);
       node.location = stayInFixedArea(node, pt, pt);
-    },
+    }
   });
 
   // The background Part showing the sheet of paper;
   // it includes the fixed bounds of the diagram contents
   myDiagram.add(
-    $(go.Part,
-      'Grid',
-      {
-        layerName: 'Grid',
-        position: pageBounds.position,
-        desiredSize: pageSize,
-        isShadowed: true,
-        background: 'floralwhite',
-      },
-      $(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.5 }),
-      $(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.5 })
-    )
+    new go.Part('Grid', {
+      layerName: 'Grid',
+      position: pageBounds.position,
+      desiredSize: pageSize,
+      isShadowed: true,
+      background: 'floralwhite'
+    })
+      .add(
+        new go.Shape('LineH', { stroke: 'lightgray', strokeWidth: 0.5 }),
+        new go.Shape('LineV', { stroke: 'lightgray', strokeWidth: 0.5 })
+      )
   );
 
   // This function is the Node.dragComputation, to limit the movement of the parts.
@@ -238,24 +231,26 @@
     return new go.Point(Math.max(usableArea.left, Math.min(p.x, usableArea.right)), Math.max(usableArea.top, Math.min(p.y, usableArea.bottom)));
   }
 
-  myDiagram.nodeTemplate = $(go.Node,
-    'Auto',
-    {
-      resizable: true, // but limited by overrides of ResizingTool methods, above
-      dragComputation: stayInFixedArea, // this limits the DraggingTool
-    },
-    $(go.Shape, { fill: 'white', portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }, new go.Binding('fill', 'color')),
-    $(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text').makeTwoWay())
-  );
+  myDiagram.nodeTemplate = new go.Node('Auto', {
+    resizable: true, // but limited by overrides of ResizingTool methods, above
+    dragComputation: stayInFixedArea // this limits the DraggingTool
+  })
+    .add(
+      new go.Shape({ fill: 'white', portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }).bind('fill', 'color'),
+      new go.TextBlock({ margin: 8, editable: true }).bindTwoWay('text')
+    );
 
-  myDiagram.linkTemplate = $(go.Link, { relinkableFrom: true, relinkableTo: true }, $(go.Shape), $(go.Shape, { toArrow: 'OpenTriangle' }));
-
+  myDiagram.linkTemplate = new go.Link({ relinkableFrom: true, relinkableTo: true })
+    .add(
+      new go.Shape(),
+      new go.Shape({ toArrow: 'OpenTriangle' })
+    );
   // The Legend Part, presumably a singleton
 
   function makeField(name, propname, row, col, span) {
     if (!span) span = 1;
     return [
-      $(go.TextBlock, name, {
+      new go.TextBlock( name, {
         row: row,
         column: col,
         columnSpan: span,
@@ -263,50 +258,45 @@
         margin: new go.Margin(2, 0, 16, 2),
         stroke: 'gray',
         font: '9pt sans-serif',
-        isMultiline: false,
+        isMultiline: false
       }),
-      $(go.TextBlock,
-        {
-          row: row,
-          column: col,
-          columnSpan: span,
-          alignment: go.Spot.Center,
-          margin: new go.Margin(16, 4, 1, 4),
-          textAlign: 'center',
-          editable: true,
-        },
-        new go.Binding('text', propname).makeTwoWay()
-      ),
+      new go.TextBlock({
+        row: row,
+        column: col,
+        columnSpan: span,
+        alignment: go.Spot.Center,
+        margin: new go.Margin(16, 4, 1, 4),
+        textAlign: 'center',
+        editable: true
+      }).bindTwoWay('text', propname)
     ];
   }
 
   function makeSeparator(row, col) {
-    return $(go.Shape, 'LineV', { row: row, column: col, width: 0, stretch: go.Stretch.Vertical, stroke: 'gray' });
+    return new go.Shape('LineV', { row: row, column: col, width: 0, stretch: go.Stretch.Vertical, stroke: 'gray' });
   }
 
   myDiagram.nodeTemplateMap.add(
     'Legend',
-    $(go.Part,
-      'Auto',
-      {
-        layerName: 'Background',
-        locationSpot: go.Spot.BottomRight,
-        location: new go.Point().setRectSpot(usableArea, go.Spot.BottomRight),
-        deletable: false,
-        movable: false,
-        copyable: false,
-        selectionAdorned: false,
-      },
-      $(go.Shape, { fill: 'white', stroke: 'gray' }),
-      $(go.Panel,
-        'Table',
-        { defaultRowSeparatorStroke: 'gray' },
-        makeField('Title:', 'title', 0, 0, 5),
-        makeField('Project:', 'name', 1, 0, 3),
-        makeSeparator(1, 3),
-        makeField('Number:', 'number', 1, 4)
+    new go.Part('Auto', {
+      layerName: 'Background',
+      locationSpot: go.Spot.BottomRight,
+      location: new go.Point().setRectSpot(usableArea, go.Spot.BottomRight),
+      deletable: false,
+      movable: false,
+      copyable: false,
+      selectionAdorned: false
+    })
+      .add(
+        new go.Shape({ fill: 'white', stroke: 'gray' }),
+        new go.Panel('Table', { defaultRowSeparatorStroke: 'gray' })
+          .add(
+            ...makeField('Title:', 'title', 0, 0, 5),
+            ...makeField('Project:', 'name', 1, 0, 3),
+            makeSeparator(1, 3),
+            ...makeField('Number:', 'number', 1, 4)
+          )
       )
-    )
   );
 
   myDiagram.model = new go.GraphLinksModel(
@@ -315,14 +305,14 @@
       { key: 1, text: 'Alpha', color: 'lightblue' },
       { key: 2, text: 'Beta', color: 'orange' },
       { key: 3, text: 'Gamma', color: 'lightgreen' },
-      { key: 4, text: 'Delta', color: 'pink' },
+      { key: 4, text: 'Delta', color: 'pink' }
     ],
     [
       { from: 1, to: 2 },
       { from: 1, to: 3 },
       { from: 2, to: 2 },
       { from: 3, to: 4 },
-      { from: 4, to: 1 },
+      { from: 4, to: 1 }
     ]
   );
 </script>

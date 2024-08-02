@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,15 +125,17 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowCopy: false,
       allowDelete: false,
       'draggingTool.dragsTree': true,
-      layout: $(go.TreeLayout, { angle: 90, layerSpacing: 30, arrangement: go.TreeArrangement.FixedRoots }),
-      'undoManager.isEnabled': true,
+      layout: new go.TreeLayout({
+          angle: 90,
+          layerSpacing: 30,
+          arrangement: go.TreeArrangement.FixedRoots
+        }),
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -153,73 +154,104 @@
       switch (figure) {
         case 'AndGate':
           // right to left so when it's rotated, it goes from top to bottom
-          return $(go.Brush, 'Linear', { 0: '#EA8100', 1: '#C66D00', start: go.Spot.Right, end: go.Spot.Left });
+          return new go.Brush('Linear', {
+              0: '#EA8100',
+              1: '#C66D00',
+              start: go.Spot.Right,
+              end: go.Spot.Left
+            });
         case 'OrGate':
-          return $(go.Brush, 'Linear', { 0: '#0058D3', 1: '#004FB7', start: go.Spot.Right, end: go.Spot.Left });
+          return new go.Brush('Linear', {
+              0: '#0058D3',
+              1: '#004FB7',
+              start: go.Spot.Right,
+              end: go.Spot.Left
+            });
         case 'Circle':
-          return $(go.Brush, 'Linear', { 0: '#009620', 1: '#007717' });
+          return new go.Brush('Linear', {
+              0: '#009620',
+              1: '#007717'
+            });
         case 'Triangle':
-          return $(go.Brush, 'Linear', { 0: '#7A0099', 1: '#63007F' });
+          return new go.Brush('Linear', {
+              0: '#7A0099', 
+              1: '#63007F'
+            });
         default:
           return 'whitesmoke';
       }
     }
 
-    myDiagram.nodeTemplate = // the default node template
-      $(go.Node,
-        'Spot',
-        { selectionObjectName: 'BODY', locationSpot: go.Spot.Center, locationObjectName: 'BODY' },
+    myDiagram.nodeTemplate = new go.Node('Spot', { // the default node template
+        selectionObjectName: 'BODY',
+        locationSpot: go.Spot.Center,
+        locationObjectName: 'BODY'
+      })
         // the main "BODY" consists of a Rectangle surrounding some text
-        $(go.Panel,
-          'Auto',
-          { name: 'BODY', portId: '' },
-          $(go.Shape, { fill: $(go.Brush, 'Linear', { 0: '#770000', 1: '#600000' }), stroke: null }),
-          $(go.TextBlock,
-            {
-              margin: new go.Margin(2, 10, 1, 10),
-              maxSize: new go.Size(100, NaN),
-              stroke: 'whitesmoke',
-              font: '10pt Segoe UI, sans-serif',
-            },
-            new go.Binding('text')
-          )
-        ), // end "BODY", an Auto Panel
-        $('TreeExpanderButton', { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, 'ButtonBorder.figure': 'Rectangle' }),
-        $(go.Shape, 'LineV', new go.Binding('visible', 'figure', (f) => f !== 'None'), {
-          strokeWidth: 1.5,
-          height: 20,
-          alignment: new go.Spot(0.5, 1, 0, -1),
-          alignmentFocus: go.Spot.Top,
-        }),
-        $(go.Shape,
-          new go.Binding('visible', 'figure', (f) => f !== 'None'),
-          {
+        .add(
+          new go.Panel('Auto', {
+            name: 'BODY',
+            portId: ''
+          })
+            .add(
+              new go.Shape({
+                fill: new go.Brush('Linear', {
+                  0: '#770000',
+                  1: '#600000'
+                }),
+                stroke: null
+              }),
+              new go.TextBlock({
+                margin: new go.Margin(2, 10, 1, 10),
+                maxSize: new go.Size(100, NaN),
+                stroke: 'whitesmoke',
+                font: '10pt Segoe UI, sans-serif'
+              })
+                .bind('text')
+            ), // end "BODY", an Auto Panel
+          go.GraphObject.build('TreeExpanderButton', {
+            alignment: go.Spot.Right,
+            alignmentFocus: go.Spot.Left,
+            'ButtonBorder.figure': 'Rectangle'
+          }),
+          new go.Shape('LineV', {
+            strokeWidth: 1.5,
+            height: 20,
+            alignment: new go.Spot(0.5, 1, 0, -1),
+            alignmentFocus: go.Spot.Top
+          })
+            .bind('visible', 'figure', (f) => f !== 'None'),
+          new go.Shape({
             alignment: new go.Spot(0.5, 1, 0, 5),
             alignmentFocus: go.Spot.Top,
             width: 30,
             height: 30,
-            stroke: null,
-          },
-          new go.Binding('figure'),
-          new go.Binding('fill', 'figure', nodeFillConverter),
-          new go.Binding('angle', 'figure', (f) => (f === 'OrGate' || f === 'AndGate' ? -90 : 0))
-        ), // ORs and ANDs should point upwards
-        $(go.TextBlock,
-          new go.Binding('visible', 'figure', (f) => f !== 'None'), // if we don't have a figure, don't display any choice text
-          {
+            stroke: null
+          })
+            .bind('visible', 'figure', (f) => f !== 'None')
+            .bind('figure')
+            .bind('fill', 'figure', nodeFillConverter)
+            // ORs and ANDs should point upwards
+            .bind('angle', 'figure', (f) => (f === 'OrGate' || f === 'AndGate' ? -90 : 0)),
+          new go.TextBlock({
             alignment: new go.Spot(0.5, 1, 20, 20),
             alignmentFocus: go.Spot.Left,
             stroke: 'black',
-            font: '10pt Segoe UI, sans-serif',
-          },
-          new go.Binding('text', 'choice')
-        )
-      );
+            font: '10pt Segoe UI, sans-serif'
+          })
+            .bind('text', 'choice')
+            .bind('visible', 'figure', (f) => f !== 'None') // if we don't have a figure, don't display any choice text
+        );
 
-    myDiagram.linkTemplate = $(go.Link,
-      { routing: go.Routing.Orthogonal, layerName: 'Background', curviness: 20, corner: 5 },
-      $(go.Shape, { strokeWidth: 1.5 })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      layerName: 'Background',
+      curviness: 20,
+      corner: 5
+    })
+      .add(
+        new go.Shape({ strokeWidth: 1.5 })
+      );
 
     load();
   }

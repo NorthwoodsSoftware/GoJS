@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,65 +124,55 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or a reference to a DIV
-      {
-        initialAutoScale: go.AutoScale.Uniform,
-        contentAlignment: go.Spot.Center,
-        layout: $(go.ForceDirectedLayout, { }),
-        maxSelectionCount: 2,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform,
+      contentAlignment: go.Spot.Center,
+      layout: new go.ForceDirectedLayout(),
+      maxSelectionCount: 2
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Horizontal',
-      {
+    myDiagram.nodeTemplate = new go.Node('Horizontal', {
         locationSpot: go.Spot.Center, // Node.location is the center of the Shape
         locationObjectName: 'SHAPE',
         selectionAdorned: false,
-        selectionChanged: nodeSelectionChanged, // defined below
-      },
-      $(go.Panel,
-        'Spot',
-        $(go.Shape,
-          'Circle',
-          {
-            name: 'SHAPE',
-            fill: 'lightgray', // default value, but also data-bound
-            strokeWidth: 0,
-            desiredSize: new go.Size(30, 30),
-            portId: '', // so links will go to the shape, not the whole node
-          },
-          new go.Binding('fill', 'isSelected', (s, obj) => (s ? 'red' : obj.part.data.color)).ofObject()
-        ),
-        $(go.TextBlock, new go.Binding('text', 'distance', (d) => (d === Infinity ? 'INF' : d | 0)))
-      ),
-      $(go.TextBlock, new go.Binding('text'))
-    );
+        selectionChanged: nodeSelectionChanged // defined below
+      }
+    )
+      .add(
+        new go.Panel('Spot')
+          .add(
+            new go.Shape('Circle', {
+              name: 'SHAPE',
+              fill: 'lightgray', // default value, but also data-bound
+              strokeWidth: 0,
+              desiredSize: new go.Size(30, 30),
+              portId: '' // so links will go to the shape, not the whole node
+            }).bindObject('fill', 'isSelected', (s, obj) => (s ? 'red' : obj.part.data.color)),
+            new go.TextBlock().bind('text', 'distance', (d) => (d === Infinity ? 'INF' : d | 0))
+          ),
+        new go.TextBlock().bind('text')
+      );
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        selectable: false, // links cannot be selected by the user
-        curve: go.Curve.Bezier,
-        layerName: 'Background', // don't cross in front of any nodes
-      },
-      $(go.Shape, // this shape only shows when it isHighlighted
-        { isPanelMain: true, stroke: null, strokeWidth: 5 },
-        new go.Binding('stroke', 'isHighlighted', (h) => (h ? 'red' : null)).ofObject()
-      ),
-      $(go.Shape,
-        // mark each Shape to get the link geometry with isPanelMain: true
-        { isPanelMain: true, stroke: 'black', strokeWidth: 1 },
-        new go.Binding('stroke', 'color')
-      ),
-      $(go.Shape, { toArrow: 'Standard' })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      selectable: false, // links cannot be selected by the user
+      curve: go.Curve.Bezier,
+      layerName: 'Background' // don't cross in front of any nodes
+    })
+      .add(
+        new go.Shape({ // this shape only shows when it isHighlighted
+          isPanelMain: true,
+          stroke: null,
+          strokeWidth: 5
+        }).bindObject('stroke', 'isHighlighted', (h) => (h ? 'red' : null)),
+        new go.Shape({ // mark each Shape to get the link geometry with isPanelMain: true
+          isPanelMain: true,
+          stroke: 'black',
+          strokeWidth: 1
+        }).bind('stroke', 'color'),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     // Override the clickSelectingTool's standardMouseSelect
     // If less than 2 nodes are selected, always add to the selection
@@ -241,7 +230,7 @@
       'Natalie',
       'Grace',
       'Ashley',
-      'Dylan',
+      'Dylan'
     ];
 
     var nodeDataArray = [];

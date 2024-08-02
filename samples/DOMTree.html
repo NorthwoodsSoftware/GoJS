@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,43 +126,44 @@
   var names = {}; // hash to keep track of what names have been used
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       initialAutoScale: go.AutoScale.UniformToFill,
       // define the layout for the diagram
-      layout: $(go.TreeLayout, { nodeSpacing: 5, layerSpacing: 30, arrangement: go.TreeArrangement.FixedRoots }),
+      layout: new go.TreeLayout({
+        nodeSpacing: 5,
+        layerSpacing: 30,
+        arrangement: go.TreeArrangement.FixedRoots
+      })
     });
 
     // Define a simple node template consisting of text followed by an expand/collapse button
-    myDiagram.nodeTemplate = $(go.Node,
-      'Horizontal',
-      { selectionChanged: nodeSelectionChanged }, // this event handler is defined below
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, { fill: '#1F4963', stroke: null }),
-        $(go.TextBlock,
-          {
-            font: 'bold 13px Helvetica, bold Arial, sans-serif',
-            stroke: 'white',
-            margin: 3,
-          },
-          new go.Binding('text', 'key')
-        )
-      ),
-      $('TreeExpanderButton')
-    );
+    myDiagram.nodeTemplate = new go.Node('Horizontal', {
+      selectionChanged: nodeSelectionChanged
+    }) // this event handler is defined below
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: '#1F4963', stroke: null }),
+            new go.TextBlock({
+              font: 'bold 13px Helvetica, bold Arial, sans-serif',
+              stroke: 'white',
+              margin: 3
+            }).bind('text', 'key')
+          ),
+        go.GraphObject.build('TreeExpanderButton')
+      );
 
     // Define a trivial link template with no arrowhead.
-    myDiagram.linkTemplate = $(go.Link, { selectable: false }, $(go.Shape)); // the link shape
+    myDiagram.linkTemplate = new go.Link({ selectable: false })
+      .add(
+        new go.Shape()
+      ); // the link shape
 
     // create the model for the DOM tree
     myDiagram.model = new go.TreeModel({
       isReadOnly: true, // don't allow the user to delete or copy nodes
       // build up the tree in an Array of node data
-      nodeDataArray: traverseDom(document.activeElement),
+      nodeDataArray: traverseDom(document.activeElement)
     });
   }
 
@@ -220,17 +220,25 @@
 
 <div id="sample">
   <!-- The DIV needs an explicit size or else we won't see anything. -->
-  <div id="myDiagramDiv" style="border: 1px solid black; width: 100%; height: 300px"></div>
+  <div
+    id="myDiagramDiv"
+    style="border: 1px solid black; width: 100%; height: 300px"></div>
   <p>
-    This sample shows the DOM (Document Object Model) of this webpage displayed as a tree. Each Node in the Diagram shows information about the corresponding
-    HTML element in the DOM.
+    This sample shows the DOM (Document Object Model) of this webpage displayed
+    as a tree. Each Node in the Diagram shows information about the
+    corresponding HTML element in the DOM.
   </p>
   <p>
-    When a node is selected, the background color of the corresponding HTML Element changes to lightblue. Below the diagram are some more HTML elements to
-    illustrate the effect. This sample also makes use of the <a href="../intro/buttons.html" target="_blank">TreeExpanderButton</a>, which allows for parent
-    nodes to expand and collapse their child nodes. Buttons are defined in <a href="../extensions/Buttons.js">Buttons.js</a>.
+    When a node is selected, the background color of the corresponding HTML
+    Element changes to lightblue. Below the diagram are some more HTML elements
+    to illustrate the effect. This sample also makes use of the
+    <a href="../intro/buttons.html" target="_blank">TreeExpanderButton</a>,
+    which allows for parent nodes to expand and collapse their child nodes.
+    Buttons are defined in <a href="../extensions/Buttons.js">Buttons.js</a>.
   </p>
-  <p id="lastParagraph">Elements with an id attribute are noted in parenthesis.</p>
+  <p id="lastParagraph">
+    Elements with an id attribute are noted in parenthesis.
+  </p>
   <div id="otherInfo">
     <div id="tableContainer" style="display: inline-block">
       <table style="border: 1px; border-collapse: collapse">
@@ -248,7 +256,14 @@
         </tr>
       </table>
     </div>
-    <div id="listContainer" style="display: inline-block; border: 1px solid gray; margin-left: 10px; width: 100px">
+    <div
+      id="listContainer"
+      style="
+        display: inline-block;
+        border: 1px solid gray;
+        margin-left: 10px;
+        padding: 4px;
+      ">
       <p>My grocery list</p>
       <ul id="groceryList">
         <li>Coffee</li>
@@ -256,7 +271,11 @@
         <li>Bread</li>
       </ul>
     </div>
-    <p>For more uses of the <a>TreeLayout</a> see the <a href="DOMTree.html">DOM Tree</a> and <a href="visualTree.html">Visual Tree</a> samples.</p>
+    <p>
+      For more uses of the <a>TreeLayout</a> see the
+      <a href="DOMTree.html">DOM Tree</a> and
+      <a href="visualTree.html">Visual Tree</a> samples.
+    </p>
   </div>
 </div>
 

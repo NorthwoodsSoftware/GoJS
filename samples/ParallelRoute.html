@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,46 +125,44 @@
 <script src="../extensions/ParallelRouteLink.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Shape,
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape({
           portId: '',
           fromLinkable: true,
           toLinkable: true,
           fromLinkableDuplicates: true,
           toLinkableDuplicates: true,
-          cursor: 'pointer',
-        },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, { margin: 8 }, new go.Binding('text'))
-    );
+          cursor: 'pointer'
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 })
+          .bind('text')
+      );
 
-    myDiagram.linkTemplate = $(ParallelRouteLink,
-      {
-        relinkableFrom: true,
-        relinkableTo: true,
-        reshapable: true, //, resegmentable: true
-      },
-      $(go.Shape, { strokeWidth: 2 }, new go.Binding('stroke', 'fromNode', (node) => node.port.fill).ofObject()),
-      $(go.Shape, { toArrow: 'OpenTriangle', strokeWidth: 1.5 }, new go.Binding('stroke', 'fromNode', (node) => node.port.fill).ofObject())
-    );
+    myDiagram.linkTemplate = new ParallelRouteLink({
+      relinkableFrom: true,
+      relinkableTo: true,
+      reshapable: true //, resegmentable: true
+    })
+      .add(
+        new go.Shape({ strokeWidth: 2 })
+          .bindObject('stroke', 'fromNode', (node) => node.port.fill),
+        new go.Shape({ toArrow: 'OpenTriangle', strokeWidth: 1.5 })
+          .bindObject('stroke', 'fromNode', (node) => node.port.fill)
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', color: 'lightblue', loc: '0 0' },
         { key: 2, text: 'Beta', color: 'orange', loc: '130 70' },
-        { key: 3, text: 'Gamma', color: 'lightgreen', loc: '0 130' },
+        { key: 3, text: 'Gamma', color: 'lightgreen', loc: '0 130' }
       ],
       [
         { from: 1, to: 2 },
@@ -174,7 +171,7 @@
         { from: 1, to: 3 },
         { from: 3, to: 1 },
         { from: 1, to: 3 },
-        { from: 1, to: 3 },
+        { from: 1, to: 3 }
       ]
     );
   }

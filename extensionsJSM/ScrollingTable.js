@@ -81,6 +81,7 @@ go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
         if (btncancel)
             btncancel(e, btn);
     };
+    go.GraphObject.build("Button").add(new go.Panel());
     return button;
 });
 // Create a "Table" Panel that supports scrolling.
@@ -98,8 +99,8 @@ go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
 // Note that if you have more than one of these in a Part,
 // you'll want to make sure each one has a unique name.
 go.GraphObject.defineBuilder('ScrollingTable', (args) => {
-    const $ = go.GraphObject.make;
     const tablename = go.GraphObject.takeBuilderArgument(args, 'TABLE');
+    const isShowingButtons = new WeakMap();
     // an internal helper function used by the THUMB for scrolling to a Y-axis point in local coordinates
     function setScrollIndexLocal(bar, y) {
         // may be called with the "SCROLLBAR" panel or any element within it
@@ -203,13 +204,13 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         const up = bar.findObject('UP');
         let uph = 0;
         if (up) {
-            up.opacity = 0.0; //(idx > 0) ? 1.0 : 0.3;
+            up.opacity = table.panel && isShowingButtons.get(table.panel) ? 1 : 0.0; //(idx > 0) ? 1.0 : 0.3;
             uph = up.actualBounds.height;
         }
         const down = bar.findObject('DOWN');
         let downh = 0;
         if (down) {
-            down.opacity = 0.0; //(idx < table.rowCount - 1) ? 1.0 : 0.3;
+            down.opacity = table.panel && isShowingButtons.get(table.panel) ? 1 : 0.0; //(idx < table.rowCount - 1) ? 1.0 : 0.3;
             downh = down.actualBounds.height;
         }
         const thumb = bar.findObject('THUMB');
@@ -228,7 +229,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
                 Math.max((getVisibleRows(table) / table.rowCount) * availh, Math.min(availh, 10)) -
                     (thumb instanceof go.Shape ? thumb.strokeWidth : 0);
             const spotY = maxIdx === 0 ? 0.5 : idx / maxIdx;
-            thumb.alignment = new go.Spot(0.5, Math.min(table.rowCount, spotY), 0, 0);
+            thumb.alignment = new go.Spot(0.5, Math.min(table.rowCount, spotY, 1), 0, 0);
         }
     }
     // must be called with the "SCROLLBAR" panel
@@ -248,6 +249,8 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         const thumb = bar.findObject('THUMB');
         if (thumb)
             thumb.opacity = table.rowCount > 0 ? 1.0 : 0.0;
+        if (bar.panel)
+            isShowingButtons.set(bar.panel, show);
     }
     function getVisibleRows(table) {
         if (!table)
@@ -256,7 +259,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             table.part.ensureBounds();
         const tabh = table.actualBounds.height;
         const pad = table.defaultSeparatorPadding;
-        const rowh = table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
+        const rowh = table.elements.count == 0 || table.elements.count < table.topIndex ? 0 : table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
         if (rowh === 0)
             return table.rowCount;
         return Math.min(table.rowCount, Math.floor(tabh / rowh));
@@ -266,32 +269,69 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             return 0;
         return table.rowCount - getVisibleRows(table);
     }
-    return $(go.Panel, 'Table', {
+    const scrollingTablePanel = new go.Panel('Table')
+        .attach({
         // in case external code wants to update the scrollbar
         _scrollTable: scrollTable,
         _updateScrollBar: updateScrollBar
         //mouseEnter: (e, table) => (table as any)._updateScrollBar(table)
-    }, 
+    })
+        .addRowColumnDefinition(new go.RowColumnDefinition({ column: 1, sizing: go.Sizing.None }))
+        .add(
     // this actually holds the item elements
-    $(go.Panel, 'Table', {
+    new go.Panel('Table', {
         name: tablename,
         column: 0,
         stretch: go.Stretch.Fill,
         background: 'whitesmoke',
-        rowSizing: go.Sizing.None,
+        rowSizing: go.Sizing.ProportionalExtra,
+        columnSizing: go.Sizing.ProportionalExtra,
         defaultAlignment: go.Spot.Top
     }), 
     // this is the scrollbar
-    $(go.RowColumnDefinition, { column: 1, sizing: go.Sizing.None }), $(go.Panel, 'Table', {
+    new go.Panel('Table', {
         name: 'SCROLLBAR',
         column: 1,
         stretch: go.Stretch.Vertical,
         background: '#DDDDDD',
         mouseEnter: (e, bar) => showScrollButtons(bar, true),
-        mouseLeave: (e, bar) => showScrollButtons(bar, false)
-    }, 
+        mouseLeave: (e, bar) => showScrollButtons(bar, false),
+        // clicking in the bar scrolls directly to that point in the list of items
+        click: (e, bar) => {
+            e.handled = true;
+            const local = bar.getLocalPoint(e.documentPoint);
+            setScrollIndexLocal(bar, local.y);
+        }
+    })
+        .bindObject('', 'desiredSize', (_, obj) => {
+        // console.log('resize');
+        // console.log('resize', _);
+        console.log('----------------');
+        if (window.__prev) {
+            // const desc = Object.getOwnPropertyDescriptors(_);
+            // for (const k in desc) {
+            //   // if (typeof desc[k].get != 'function') return;
+            //   if (_[k] !== (window as any).__prev[k])
+            //     console.log(k, _[k], (window as any).__prev[k]);
+            // }
+            Object.keys(_).forEach(key => {
+                const descriptor = Object.getOwnPropertyDescriptor(_, key);
+                if (descriptor && typeof descriptor.get === 'function') {
+                    console.log(`Getter found: ${key}`);
+                }
+            });
+        }
+        window.__prev = _;
+        updateScrollBar(obj);
+        return _;
+        // return 'red';
+    }, undefined, 'SCROLLBAR')
+        .addRowColumnDefinition(new go.RowColumnDefinition({ row: 0, sizing: go.Sizing.None }))
+        .addRowColumnDefinition(new go.RowColumnDefinition({ row: 1, stretch: go.Stretch.Vertical }))
+        .addRowColumnDefinition(new go.RowColumnDefinition({ row: 2, sizing: go.Sizing.None }))
+        .add(
     // the scroll up button
-    $('AutoRepeatButton', {
+    go.GraphObject.build('AutoRepeatButton', {
         name: 'UP',
         row: 0,
         opacity: 0.0,
@@ -299,16 +339,13 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             e.handled = true;
             incrTableIndex(obj, -1);
         }
-    }, $(go.Shape, 'TriangleUp', { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 0, sizing: go.Sizing.None }), {
-        // clicking in the bar scrolls directly to that point in the list of items
-        click: (e, bar) => {
-            e.handled = true;
-            const local = bar.getLocalPoint(e.documentPoint);
-            setScrollIndexLocal(bar, local.y);
-        }
-    }, 
+    })
+        .add(new go.Shape('TriangleUp', {
+        stroke: null,
+        desiredSize: new go.Size(6, 6),
+    })), 
     // the scroll thumb, gets all available extra height
-    $(go.Shape, {
+    new go.Shape({
         name: 'THUMB',
         row: 1,
         stretch: go.Stretch.Horizontal,
@@ -325,9 +362,9 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             const local = thumb.panel.getLocalPoint(e.documentPoint);
             setScrollIndexLocal(thumb, local.y);
         }
-    }), $(go.RowColumnDefinition, { row: 1, stretch: go.Stretch.Vertical }), 
+    }), 
     // the scroll down button
-    $('AutoRepeatButton', {
+    go.GraphObject.build('AutoRepeatButton', {
         name: 'DOWN',
         row: 2,
         opacity: 0.0,
@@ -335,5 +372,33 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             e.handled = true;
             incrTableIndex(obj, +1);
         }
-    }, $(go.Shape, 'TriangleDown', { stroke: null, desiredSize: new go.Size(6, 6) })), $(go.RowColumnDefinition, { row: 2, sizing: go.Sizing.None })));
+    })
+        .add(new go.Shape('TriangleDown', {
+        stroke: null,
+        desiredSize: new go.Size(6, 6),
+    }))));
+    // keep track of the diagrams which already have listeners
+    // let listener = new WeakSet();
+    // const copy = scrollingTablePanel.copy;
+    // scrollingTablePanel.copy = function (...rest) {
+    //   console.log('real build2');
+    //   const p = copy.apply(scrollingTablePanel, rest);
+    //   // wait for this to get added to a diagram
+    //   const int = setInterval(() => {
+    //     const dia = p.diagram;
+    //     if (!dia) return;
+    //     if (listener.has(dia)) {clearInterval(int);return;}
+    //     console.log('found dia');
+    //     dia.addDiagramListener('PartResized', e => {
+    //       console.log('resize');
+    //       let obj = e.subject.findObject('TABLE');
+    //       if (obj) updateScrollBar(obj);
+    //     });
+    //     listener.add(dia);
+    //     clearInterval(int);
+    //   }, 150);
+    //   return p;
+    // };
+    console.log('built');
+    return scrollingTablePanel;
 });

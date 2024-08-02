@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -137,22 +136,15 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        'clickCreatingTool.archetypeNodeData': {
-          color: 'palegreen',
-          text: 'node',
-        },
-        'undoManager.isEnabled': true,
-        'animationManager.isInitial': false, // To use custom initial animation instead
-        InitialLayoutCompleted: animateFadeIn, // animate with this function
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'clickCreatingTool.archetypeNodeData': {
+        color: 'palegreen',
+        text: 'node'
+      },
+      'undoManager.isEnabled': true,
+      'animationManager.isInitial': false, // To use custom initial animation instead
+      InitialLayoutCompleted: animateFadeIn // animate with this function
+    });
 
     function animateFadeIn(e) {
       var diagram = e.diagram;
@@ -165,29 +157,30 @@
       animation.start();
     }
 
-    var addNodeAdornment = $(go.Adornment,
-      'Spot',
-      $(go.Panel, 'Auto', $(go.Shape, { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }), $(go.Placeholder)),
-      // the button to create a "next" node, at the top-right corner
-      $('Button',
-        {
+    var addNodeAdornment = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
+            new go.Placeholder()
+          ),
+        // the button to create a "next" node, at the top-right corner
+        go.GraphObject.build('Button', {
           alignment: go.Spot.TopRight,
-          click: addNode, // this function is defined below
-        },
-        $(go.Shape, 'PlusLine', { desiredSize: new go.Size(6, 6) })
-      )
-    );
+          click: addNode // this function is defined below
+        })
+          .add(
+            new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
+          )
+      );
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      {
-        selectionAdornmentTemplate: addNodeAdornment,
-        locationSpot: go.Spot.Center,
-      },
-      new go.Binding('location', 'loc').makeTwoWay(),
-      $(go.Shape,
-        'RoundedRectangle',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      selectionAdornmentTemplate: addNodeAdornment,
+      locationSpot: go.Spot.Center
+    })
+      .bindTwoWay('location', 'loc')
+      .add(
+        new go.Shape('RoundedRectangle', {
           strokeWidth: 2,
           portId: '', // this Shape is the Node's port, not the whole Node
           fromLinkable: true,
@@ -196,19 +189,18 @@
           toLinkable: true,
           toLinkableSelfNode: true,
           toLinkableDuplicates: true,
-          cursor: 'pointer',
-        },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, { margin: 10, font: '14px sans-serif' }, new go.Binding('text'))
-    );
+          cursor: 'pointer'
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 10, font: '14px sans-serif' }).bind('text')
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', loc: new go.Point(0, 0), color: 'lightblue' },
         { key: 2, text: 'Beta', loc: new go.Point(150, 0), color: 'orange' },
         { key: 3, text: 'Gamma', loc: new go.Point(0, 150), color: 'lightgreen' },
-        { key: 4, text: 'Delta', loc: new go.Point(150, 150), color: 'pink' },
+        { key: 4, text: 'Delta', loc: new go.Point(150, 150), color: 'pink' }
       ],
       [
         // No links to start
@@ -459,7 +451,7 @@
         // create a link data from the old node data to the new node data
         var linkdata = {
           from: model.getKeyForNodeData(fromData), // or just: fromData.key
-          to: model.getKeyForNodeData(toData),
+          to: model.getKeyForNodeData(toData)
         };
         // and add the link data to the model
         model.addLinkData(linkdata);

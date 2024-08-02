@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -137,37 +136,31 @@
 </style>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform,
-        layout: $(go.TreeLayout, // use a TreeLayout to position all of the nodes
-          {
-            treeStyle: go.TreeStyle.LastParents,
-            angle: 90,
-            layerSpacing: 80,
-            alternateAngle: 0,
-            alternateAlignment: go.TreeAlignment.Start,
-            alternateNodeIndent: 20,
-            alternateNodeIndentPastParent: 1,
-            alternateNodeSpacing: 20,
-            alternateLayerSpacing: 40,
-            alternateLayerSpacingParentOverlap: 1,
-            alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
-            alternateChildPortSpot: go.Spot.Left,
-          }
-        ),
-        'commandHandler.doKeyDown': function () {
-          // method override must be function, not =>
-          if (this.diagram.lastInput.commandKey === 'Escape') clearMagnifier();
-          go.CommandHandler.prototype.doKeyDown.call(this);
-        },
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform,
+      layout: new go.TreeLayout({ // use a TreeLayout to position all of the nodes
+          treeStyle: go.TreeStyle.LastParents,
+          angle: 90,
+          layerSpacing: 80,
+          alternateAngle: 0,
+          alternateAlignment: go.TreeAlignment.Start,
+          alternateNodeIndent: 20,
+          alternateNodeIndentPastParent: 1,
+          alternateNodeSpacing: 20,
+          alternateLayerSpacing: 40,
+          alternateLayerSpacingParentOverlap: 1,
+          alternatePortSpot: new go.Spot(0, 0.999, 20, 0),
+          alternateChildPortSpot: go.Spot.Left
+        }),
+      'commandHandler.doKeyDown': function () {
+        // method override must be function, not =>
+        // if (this.diagram.lastInput.key === 'Escape' || this.diagram.lastInput.key === 'Esc') clearMagnifier();
+        // if (this.diagram.lastInput.key === 'Escape' || this.diagram.lastInput.key === 'Esc') clearMagnifier();
+        if (this.diagram.lastInput.commandKey === 'Escape') clearMagnifier();
+        go.CommandHandler.prototype.doKeyDown.call(this);
       }
-    );
+    });
 
     // define Converters to be used for Bindings
     function theNationFlagConverter(nation) {
@@ -188,61 +181,62 @@
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { isShadowed: true },
-      // the outer shape for the node, surrounding the Table
-      $(go.Shape, 'Rectangle', new go.Binding('fill', 'isHighlighted', (h) => (h ? 'red' : 'azure')).ofObject()),
-      // a table to contain the different parts of the node
-      $(go.Panel,
-        'Table',
-        { margin: 4, maxSize: new go.Size(150, NaN) },
-        // the two TextBlocks in column 0 both stretch in width
-        // but align on the left side
-        $(go.RowColumnDefinition, {
-          column: 0,
-          stretch: go.Stretch.Horizontal,
-          alignment: go.Spot.Left,
-        }),
-        // the name
-        $(go.TextBlock,
-          {
-            row: 0,
-            column: 0,
-            maxSize: new go.Size(120, NaN),
-            margin: 2,
-            font: 'bold 8pt sans-serif',
-            alignment: go.Spot.Top,
-          },
-          new go.Binding('text', 'name')
-        ),
-        // the country flag
-        $(go.Picture,
-          {
-            row: 0,
-            column: 1,
-            desiredSize: new go.Size(34, 26),
-            margin: 2,
-            imageStretch: go.ImageStretch.Uniform,
-            alignment: go.Spot.TopRight,
-          },
-          new go.Binding('source', 'nation', theNationFlagConverter)
-        ),
-        // the additional textual information
-        $(go.TextBlock,
-          {
-            row: 1,
-            column: 0,
-            columnSpan: 2,
-            font: '8pt sans-serif',
-          },
-          new go.Binding('text', '', theInfoTextConverter)
-        )
-      ) // end Table Panel
-    ); // end Node
+    myDiagram.nodeTemplate = new go.Node('Auto', { isShadowed: true })
+      .add(
+        // the outer shape for the node, surrounding the Table
+        new go.Shape('Rectangle')
+          .bindObject('fill', 'isHighlighted', (h) => (h ? 'red' : 'azure')),
+        // a table to contain the different parts of the node
+        new go.Panel('Table', {
+          margin: 4,
+          maxSize: new go.Size(150, NaN)
+        })
+          // the two TextBlocks in column 0 both stretch in width
+          // but align on the left side
+          .addColumnDefinition(0, {
+            stretch: go.Stretch.Horizontal,
+            alignment: go.Spot.Left
+          })
+          .add(
+            // the name
+            new go.TextBlock({
+              row: 0,
+              column: 0,
+              maxSize: new go.Size(120, NaN),
+              margin: 2,
+              font: 'bold 8pt sans-serif',
+              alignment: go.Spot.Top
+            })
+              .bind('text', 'name'),
+            // the country flag
+            new go.Picture({
+              row: 0,
+              column: 1,
+              desiredSize: new go.Size(34, 26),
+              margin: 2,
+              imageStretch: go.ImageStretch.Uniform,
+              alignment: go.Spot.TopRight
+            })
+              .bind('source', 'nation', theNationFlagConverter),
+            // the additional textual information
+            new go.TextBlock({
+              row: 1,
+              column: 0,
+              columnSpan: 2,
+              font: '8pt sans-serif'
+            })
+              .bind('text', '', theInfoTextConverter)
+          )
+      );
 
     // define the Link template, a simple orthogonal line
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, selectable: false }, $(go.Shape, { stroke: '#222' })); // the default black link shape
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      selectable: false
+    })
+      .add(
+        new go.Shape({ stroke: '#222' })
+      ); // the default black link shape
 
     // set up the nodeDataArray, describing each person/position
     var nodeDataArray = [
@@ -253,7 +247,7 @@
         name: "Patricia O'Brien",
         nation: 'Ireland',
         title: 'Under-Secretary-General for Legal Affairs and United Nations Legal Counsel',
-        headOf: 'Office of Legal Affairs',
+        headOf: 'Office of Legal Affairs'
       },
       { key: 3, boss: 1, name: 'Peter Taksøe-Jensen', nation: 'Denmark', title: 'Assistant Secretary-General for Legal Affairs' },
       { key: 9, boss: 3, name: 'Other Employees' },
@@ -267,7 +261,7 @@
         name: 'Sergei Tarassenko',
         nation: 'Russia',
         title: 'Division for Ocean Affairs and the Law of the Sea Director',
-        headOf: 'Division for Ocean Affairs and the Law of the Sea',
+        headOf: 'Division for Ocean Affairs and the Law of the Sea'
       },
       {
         key: 12,
@@ -275,7 +269,7 @@
         name: 'Alexandre Tagore Medeiros de Albuquerque',
         nation: 'Brazil',
         title: 'Chairman of the Commission on the Limits of the Continental Shelf',
-        headOf: 'The Commission on the Limits of the Continental Shelf',
+        headOf: 'The Commission on the Limits of the Continental Shelf'
       },
       {
         key: 17,
@@ -283,7 +277,7 @@
         name: 'Peter F. Croker',
         nation: 'Ireland',
         title: 'Chairman of the Committee on Confidentiality',
-        headOf: 'The Committee on Confidentiality',
+        headOf: 'The Committee on Confidentiality'
       },
       { key: 31, boss: 17, name: 'Michael Anselme Marc Rosette', nation: 'Seychelles', title: 'Vice Chairman of the Committee on Confidentiality' },
       { key: 32, boss: 17, name: 'Kensaku Tamaki', nation: 'Japan', title: 'Vice Chairman of the Committee on Confidentiality' },
@@ -295,42 +289,42 @@
         name: 'Philip Alexander Symonds',
         nation: 'Australia',
         title: 'Chairman of the Committee on provision of scientific and technical advice to coastal States',
-        headOf: 'Committee on provision of scientific and technical advice to coastal States',
+        headOf: 'Committee on provision of scientific and technical advice to coastal States'
       },
       {
         key: 35,
         boss: 18,
         name: 'Emmanuel Kalngui',
         nation: 'Cameroon',
-        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States',
+        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States'
       },
       {
         key: 36,
         boss: 18,
         name: 'Sivaramakrishnan Rajan',
         nation: 'India',
-        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States',
+        title: 'Vice Chairman of the Committee on provision of scientific and technical advice to coastal States'
       },
       {
         key: 37,
         boss: 18,
         name: 'Francis L. Charles',
         nation: 'Trinidad and Tobago',
-        title: 'Member of the Committee on provision of scientific and technical advice to costal States',
+        title: 'Member of the Committee on provision of scientific and technical advice to costal States'
       },
       {
         key: 38,
         boss: 18,
         name: 'Mihai Silviu German',
         nation: 'Romania',
-        title: 'Member of the Committee on provision of scientific and technical advice to costal States',
+        title: 'Member of the Committee on provision of scientific and technical advice to costal States'
       },
       {
         key: 19,
         boss: 12,
         name: 'Lawrence Folajimi Awosika',
         nation: 'Nigeria',
-        title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf',
+        title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf'
       },
       { key: 20, boss: 12, name: 'Harald Brekke', nation: 'Norway', title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf' },
       { key: 21, boss: 12, name: 'Yong-Ahn Park', nation: 'South Korea', title: 'Vice Chairman of the Commission on the Limits of the Continental Shelf' },
@@ -345,7 +339,7 @@
         boss: 12,
         name: 'Fernando Manuel Maia Pimentel',
         nation: 'Portugal',
-        title: 'Member of the Commission on the Limits of the Continental Shelf',
+        title: 'Member of the Commission on the Limits of the Continental Shelf'
       },
       {
         key: 7,
@@ -353,7 +347,7 @@
         name: 'Renaud Sorieul',
         nation: 'France',
         title: 'International Trade Law Division Director',
-        headOf: 'International Trade Law Division',
+        headOf: 'International Trade Law Division'
       },
       { key: 13, boss: 7, name: 'Other Employees' },
       { key: 8, boss: 1, name: 'Annebeth Rosenboom', nation: 'Netherlands', title: 'Treaty Section Chief', headOf: 'Treaty Section' },
@@ -362,13 +356,13 @@
       { key: 15, boss: 8, name: 'Andrei Kolomoets', nation: 'Russia', title: 'Technical/Legal Issues Head', headOf: 'Technical/Legal Issues' },
       { key: 30, boss: 15, name: 'Other Employees' },
       { key: 16, boss: 8, name: 'Other Employees' },
-      { key: 2, boss: 0, name: 'Heads of Other Offices/Departments' },
+      { key: 2, boss: 0, name: 'Heads of Other Offices/Departments' }
     ];
 
     // create the Model with data for the tree, and assign to the Diagram
     myDiagram.model = new go.TreeModel({
       nodeParentKeyProperty: 'boss', // this property refers to the parent node data
-      nodeDataArray: nodeDataArray,
+      nodeDataArray: nodeDataArray
     });
   }
 
@@ -379,6 +373,7 @@
     var myOverviewDiv = document.getElementById('myOverviewDiv');
     if (myOverview === null || myOverviewDiv.style.display === 'none') {
       // show DIV
+      console.log('show');
       myOverviewDiv.style.display = 'inline';
       myOverviewDiv.style.left = '0px';
       myOverviewDiv.style.top = myDiagram.div.scrollHeight - myOverviewDiv.scrollHeight + 'px';
@@ -389,17 +384,16 @@
       }
 
       // create Overview
-      myOverview = new go.Overview(myOverviewDiv, // the HTML DIV element for the Overview
-        {
-          scrollMode: go.ScrollMode.Infinite,
-          'box.visible': false,
-          observed: myDiagram, // tell it which Diagram to show
-          // disable normal Overview functionality to make it act as a magnifying glass:
-          initialScale: 2, // zoom in even more than normal
-          autoScale: go.AutoScale.None, // don't show whole observed Diagram
-          hasHorizontalScrollbar: false, // don't show any scrollbars
-          hasVerticalScrollbar: false,
-        });
+      myOverview = new go.Overview(myOverviewDiv, {
+        scrollMode: go.ScrollMode.Infinite,
+        'box.visible': false,
+        observed: myDiagram, // tell it which Diagram to show
+        // disable normal Overview functionality to make it act as a magnifying glass:
+        initialScale: 2, // zoom in even more than normal
+        autoScale: go.AutoScale.None, // don't show whole observed Diagram
+        hasHorizontalScrollbar: false, // don't show any scrollbars
+        hasVerticalScrollbar: false
+      });
 
       // implement the magnifying glass functionality, to have the Overview show part of the Diagram where the mouse is
       myDiagram.toolManager.doMouseMove = function () {

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -132,15 +131,16 @@
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       'animationManager.isEnabled': false,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .bind('position', 'pos', go.Point.parse)
+    myDiagram.nodeTemplate = new go.Node('Auto').bind('position', 'pos', go.Point.parse)
       .add(
         new go.Shape({
-          fill: 'white', portId: '',
-          fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides
+          fill: 'white',
+          portId: '',
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides
         }).bind('fill', 'color'),
         new go.TextBlock({ font: '15px serif', margin: 8 }).bind('text')
       );
@@ -150,7 +150,8 @@
     myDiagram.nodeTemplateMap.add(
       'Block',
       new go.Node({
-        layerName: 'Background', background: '#6e6e6e'
+        layerName: 'Background',
+        background: '#6e6e6e'
       })
         .bind('desiredSize', 'size', go.Size.parse)
         .bind('position', 'pos', go.Point.parse)
@@ -162,27 +163,28 @@
       .add(
         // use a binding to create a different color for each node
         new go.Shape({ strokeWidth: 1 }).bind('stroke', '', linkStroke),
-        new go.Shape({ toArrow: 'Triangle', scale: 0.4 }));
+        new go.Shape({ toArrow: 'Triangle', scale: 0.4 })
+      );
 
     let lastColor = 'red';
     let colors = 0;
     function linkStroke() {
-      lastColor = go.Brush.lightenBy(lastColor, 0.05)
+      lastColor = go.Brush.lightenBy(lastColor, 0.05);
       colors++;
       if (colors > 10) {
         colors = 0;
         lastColor = 'blue';
       }
-      return lastColor;//go.Brush.randomColor();
+      return lastColor; //go.Brush.randomColor();
     }
 
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: 1, text: 'Alpha', color: go.Brush.lightenBy('red', .7), pos: '-100 0' },
-        { key: 2, text: 'Beta', color: go.Brush.lightenBy('red', .6), pos: '100 0' },
-        { key: 3, text: 'Gamma', color: go.Brush.lightenBy('red', .5), pos: '-100 60' },
-        { key: 4, text: 'Delta', color: go.Brush.lightenBy('red', .4), pos: '182 60' },
-        { key: 5, text: 'Epsilon', color: go.Brush.lightenBy('red', .3), pos: '100 260' },
+        { key: 1, text: 'Alpha', color: go.Brush.lightenBy('red', 0.7), pos: '-100 0' },
+        { key: 2, text: 'Beta', color: go.Brush.lightenBy('red', 0.6), pos: '100 0' },
+        { key: 3, text: 'Gamma', color: go.Brush.lightenBy('red', 0.5), pos: '-100 60' },
+        { key: 4, text: 'Delta', color: go.Brush.lightenBy('red', 0.4), pos: '182 60' },
+        { key: 5, text: 'Epsilon', color: go.Brush.lightenBy('red', 0.3), pos: '100 260' },
         { key: 6, text: 'Zeta', color: go.Brush.lightenBy('red', 0.2), pos: '210 260' },
         { category: 'Block', pos: '0 60', size: '40 140' },
         { category: 'Block', pos: '20 140', size: '140 40' },
@@ -192,7 +194,7 @@
         { key: 12, text: 'S3', pos: '-100 -190' },
         { key: 22, text: 'S4', pos: '120 -190' },
         { category: 'Block', pos: '0 -100', size: '40 140' },
-        { category: 'Block', pos: '0 -280', size: '40 140' },
+        { category: 'Block', pos: '0 -280', size: '40 140' }
       ],
       [
         { from: 1, to: 2 },
@@ -220,7 +222,7 @@
         { from: 12, to: 22, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
         { from: 12, to: 22, fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide },
         { from: 12, to: 22, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
-        { from: 12, to: 22, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide },
+        { from: 12, to: 22, fromSpot: go.Spot.BottomSide, toSpot: go.Spot.BottomSide }
       ]
     );
   }
@@ -244,16 +246,22 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 500px; height: 600px"></div>
-  <p>The AvoidsLinksRouter attempts to reduce overlapping links. To see its function more clearly, try disabling it:</p>
+  <p>
+    The AvoidsLinksRouter attempts to reduce overlapping links. To see its function more clearly,
+    try dragging the nodes around or disabling it:
+  </p>
   <button onclick="toggleRouter()">Toggle AvoidsLinksRouter</button>
-  <p>The <a>Diagram.router</a> is an instance of the <a>AvoidsLinksRouter</a> extension router, defined in
-    <a href="../extensions/AvoidsLinksRouter.js">extensions/AvoidsLinksRouter.js</a>.
+  <br><br>
+  <p>
+    The <a>Diagram.router</a> is an instance of the <a>AvoidsLinksRouter</a> extension router,
+    defined in <a href="../extensions/AvoidsLinksRouter.js">extensions/AvoidsLinksRouter.js</a>.
   </p>
   <p>
     The TypeScript source is at
     <a href="../extensionsJSM/AvoidsLinksRouter.ts">extensionsJSM/AvoidsLinksRouter.ts</a>.
   </p>
 </div>
+
           
         </div>
         <!-- * * * * * * * * * * * * * -->

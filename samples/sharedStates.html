@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,70 +124,68 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        allowCopy: false,
-        allowDelete: false,
-        draggingTool: $(CustomDraggingTool),
-        layout: $(CustomLayout),
-        // enable undo & redo
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
+      allowCopy: false,
+      allowDelete: false,
+      draggingTool: new CustomDraggingTool(),
+      layout: new CustomLayout(),
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      // define the node's outer shape, which will surround the TextBlock
-      $(go.Shape, 'RoundedRectangle', {
-        fill: 'rgb(254, 201, 0)',
-        stroke: 'black',
-        parameter1: 20, // the corner has a large radius
-        portId: '',
-        fromSpot: go.Spot.AllSides,
-        toSpot: go.Spot.AllSides,
-      }),
-      $(go.TextBlock, new go.Binding('text', 'text').makeTwoWay())
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Super',
-      $(go.Node,
-        'Auto',
-        { locationObjectName: 'BODY' },
-        $(go.Shape, 'RoundedRectangle', {
-          fill: 'rgba(128, 128, 64, 0.5)',
-          strokeWidth: 1.5,
-          parameter1: 20,
-          spot1: go.Spot.TopLeft,
-          spot2: go.Spot.BottomRight,
-          minSize: new go.Size(30, 30),
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        // define the node's outer shape, which will surround the TextBlock
+        new go.Shape('RoundedRectangle', {
+          fill: 'rgb(254, 201, 0)',
+          stroke: 'black',
+          parameter1: 20, // the corner has a large radius
+          portId: '',
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides
         }),
-        $(go.Panel,
-          'Vertical',
-          { margin: 10 },
-          $(go.TextBlock, { font: 'bold 10pt sans-serif', margin: new go.Margin(0, 0, 5, 0) }, new go.Binding('text')),
-          $(go.Shape, { name: 'BODY', opacity: 0 })
+        new go.TextBlock()
+          .bindTwoWay('text')
+      );
+
+    myDiagram.nodeTemplateMap.add('Super',
+      new go.Node('Auto', { locationObjectName: 'BODY' })
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: 'rgba(128, 128, 64, 0.5)',
+            strokeWidth: 1.5,
+            parameter1: 20,
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight,
+            minSize: new go.Size(30, 30)
+          }),
+          new go.Panel('Vertical', { margin: 10 })
+            .add(
+              new go.TextBlock({
+                font: 'bold 10pt sans-serif',
+                margin: new go.Margin(0, 0, 5, 0)
+              })
+                .bind('text'),
+              new go.Shape({ name: 'BODY', opacity: 0 })
+            )
         )
-      )
     );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      { routing: go.Routing.Orthogonal, corner: 10 },
-      $(go.Shape, // the link shape
-        { strokeWidth: 1.5 }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'Standard', stroke: null }
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({ // the whole link panel
+      routing: go.Routing.Orthogonal,
+      corner: 10
+    })
+      .add(
+        new go.Shape({ strokeWidth: 1.5 }), // the link shape  
+        new go.Shape({ // the arrowhead
+          toArrow: 'Standard',
+          stroke: null
+        })
+      );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -327,9 +324,13 @@
     custom <a>Layout</a> and a custom <a>DraggingTool</a>.
   </p>
   <p>
-    The CustomLayout assumes regular nodes already have real locations, and only assigns <a>Part.location</a> to "Super" nodes. It also sets the
-    <a>GraphObject.desiredSize</a> on the "BODY" element of each "Super" node, based on the area occupied by all of its member nodes. The CustomDraggingTool
-    overrides the <a>DraggingTool.computeEffectiveCollection</a> method to determine what nodes to drag around.
+    The CustomLayout assumes regular nodes already have real locations, and only 
+    assigns <a>Part.location</a> to "Super" nodes. These are the nodes that 
+    represent <a>Group</a>s. It also sets the <a>GraphObject.desiredSize</a> on 
+    the "BODY" element of each "Super" node, based on the area occupied by all 
+    of its member nodes. The CustomDraggingTool overrides the 
+    <a>DraggingTool.computeEffectiveCollection</a> method to determine what 
+    nodes to drag around.
   </p>
   <p>This sample does not support dynamic restructuring of the relationships in the graph.</p>
   <button id="SaveButton" onclick="save()">Save</button>

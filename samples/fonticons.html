@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="An example of how to use icon fonts with GOJS, making sure the fonts load fully before creating the diagram." />
+<meta itemprop="description" content="An example of how to use icon fonts with GOJS, making sure the fonts load fully before creating the diagram." />
+<meta property="og:description" content="An example of how to use icon fonts with GOJS, making sure the fonts load fully before creating the diagram." />
+<meta name="twitter:description" content="An example of how to use icon fonts with GOJS, making sure the fonts load fully before creating the diagram." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Font Icons" />
+<meta property="og:title" content="Font Icons" />
+<meta name="twitter:title" content="Font Icons" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/fontIcons.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/fontIcons.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/fontIcons.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/fonticons.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/fonticons.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Font Icons | GoJS
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+
+<div id="sample">
+  Currently viewing icons from font:
+  <select id="fontSelector" onchange="changeFont()"></select>
+  <div class="flex flex-row flex-wrap">
+    <div class="mr-2 flex-none">
+      <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+           This also adds a border to help see the edges of the viewport. -->
+      <div
+        id="myDiagramDiv"
+        style="width: 575px; height: 575px"
+        class="mb-2 border border-solid border-black"></div>
+      <div id="propmenu" class="mb-10 w-fit rounded-md border border-solid border-black">
+        <!-- Properties card -->
+        <table class="mr-2">
+          <tr>
+            <td class="min-w-[102px]">
+              <p
+                id="char"
+                class="m-0 border-collapse rounded-md border-r border-solid border-black text-center"></p>
+            </td>
+            <td class="max-w-[400px] pl-2">
+              <h5 id="unicode"></h5>
+              <a id="fontpage">Official Font Page</a><br />
+              <a id="alturl">Font Stylesheet URL</a><br />
+              <a id="url">Font URL</a><br />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="min-w-[600px] flex-1">
+      <p>
+        This <a>Diagram</a> uses custom icon fonts in <a>TextBlock</a>s to display symbols.
+        Alternatively this could be done using SVG <a>Shape</a>s, which can be seen in the
+        <a href="icons.html">Icons sample</a>.
+      </p>
+      <p>
+        There are a few example fonts in this page -- to switch between them use the dropdown above
+        the <a>Diagram</a>.
+        To see all of the icons available in the <i>Google Material</i> font, visit
+        <a href="https://fonts.google.com/icons">fonts.google.com/icons</a>.
+        For <i>Font Awesome</i>, visit
+        <a href="https://fontawesome.com/search">fontawesome.com/search</a>.
+        For <i>Phosphor Icons</i>, visit <a href="https://phosphoricons.com/">phosphoricons.com</a>.
+      </p>
+      <p>
+        When clicking on these <a>Node</a>s some sample code will be generated
+        showing how these fonts can be used in your own <a>Diagram</a>.
+      </p>
+
+      <pre><code id="codeBox1" class="lang-js"></code></pre>
+      <p>
+        This is a simple example <a>Diagram.nodeTemplate</a> with the necessary <a>Binding</a>s for
+        font, text, and color. We also set <a>Textblock.spacingBelow</a> so that there is an equal
+        margin above and below the text.
+      </p>
+
+      <pre><code id="codeBox2" class="lang-js"></code></pre>
+      <p>
+        Here we set the <a>Diagram.model</a> inside a function <code>init()</code>, this way it can
+        be called later once the font has been loaded. You may want to create your
+        <a>Diagram</a> and <a>Diagram.nodeTemplate</a> inside this <code>init()</code>
+        function too.
+      </p>
+    </div>
+  </div>
+  <pre><code id="codeBox3" class="lang-js"></code></pre>
+  <p>
+    This creates the font, then after it has loaded, adds it to the document fonts before
+    calling <code>init()</code>.
+  </p>
+
+  <pre>
+    <code id="codeBox4a" class="lang-html"></code><br>
+    <code class="lang-html">&lt;script&gt;</code><br>
+    <code id="codeBox4b" class="lang-js"></code><br>
+    <code class="lang-html">&lt;\script&gt;</code>
+  </pre>
+  <p>
+    Using FontFace comes with limitations in font formats. Another option is to make sure all
+    fonts are loaded before
+    <code>init()</code> is called. Normally fonts aren't loaded until they are used which causes
+    them to not be in the <a>Diagram</a> on the first render.
+  </p>
+</div>
+
+<script id="code">
+  // this is used to generate the example code
+  const TEMPLATE = `myDiagram.nodeTemplate = new go.Node('Auto')
+  .add(
+    new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' })
+      .bind('fill', 'color'),
+    new go.TextBlock({ margin: 8, stroke: '#333', spacingBelow: {SPACING} })
+      .bind('text')
+      .bind('font')
+  );
+
+function init() {
+  // construct the Diagram first; then assign the model:
+  myDiagram.model = new go.GraphLinksModel(
+    [
+      { font: "14pt {FONTNAME}", text: '{CHAR}', color: '{COLOR}' },
+    ]
+  );
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new FontFace("{FONTNAME}", "url({FONTURL})").load().then(
+    (font) => {
+      document.fonts.add(font);
+      init();
+    },
+    (err) => {
+      console.error(err);
+    }
+  )
+});
+
+<link rel="stylesheet" href="{ALTLINK}" />
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.fonts.values().forEach(f => f.load());
+  document.fonts.ready.then(() => {
+    init();
+  });
+});`;
+
+  // list of example fonts
+  const Fonts = [
+    {
+      name: 'Material Symbols Outlined',
+      color: '#D6DBDF',
+      spaceingBelow: -8,
+      samples: ['e84d', 100],
+      skip: ['e88f'],
+      officialurl: 'https://fonts.google.com/icons',
+      url: 'https://fonts.gstatic.com/s/materialsymbolsoutlined/v183/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2',
+      alturl: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0'
+    },
+    {
+      name: 'FontAwesome',
+      color: '#D6EAF8',
+      spaceingBelow: -4,
+      samples: ['f007', 100],
+      skip: ['f00f', 'f01f', 'f020', 'f03f', 'f04f', 'f05f', 'f06f'],
+      officialurl: 'https://fontawesome.com/search',
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-solid-900.woff2',
+      alturl: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css'
+    },
+    {
+      name: 'Phosphor',
+      color: 'linen',
+      spaceingBelow: -4,
+      samples: ['eb9a', 100],
+      skip: ['eb9f'],
+      officialurl: 'https://phosphoricons.com/',
+      url: 'https://unpkg.com/phosphor-icons@1.4.2/src/fonts/Phosphor.woff2',
+      alturl: 'https://cdn.jsdelivr.net/npm/phosphor-icons@1.4.2/src/css/icons.min.css'
+    }
+  ];
+
+  // re-generate the Nodes when the font is changed
+  function changeFont() {
+    let ani_old_value = myDiagram.animationManager.isEnabled;
+    myDiagram.animationManager.isEnabled = false;
+
+    let f = Fonts[document.getElementById('fontSelector').value];
+
+    myDiagram.model.commit((m) => {
+      m.set(m.modelData, 'color', f.color);
+    });
+    myDiagram.setDivBackground(f.color);
+
+    linkArr = [];
+
+    let stop_char = parseInt(f.samples[0], 16) + f.samples[1];
+    for (let i = parseInt(f.samples[0], 16); i < stop_char; i++) {
+      let char = String.fromCharCode(i);
+      let codePoint = char.charCodeAt(0);
+      let hexString = codePoint.toString(16);
+      while (hexString.length < 4) {
+        hexString = '0' + hexString;
+      }
+      let ucode = '\\u' + hexString;
+
+      // some characters are not included in the free versions of the used fonts
+      // so they must be skipped
+      if (f.skip.includes(hexString)) {
+        stop_char += 1;
+        continue;
+      }
+
+      linkArr.push({
+        font: `14pt ${f.name}`,
+        text: char,
+        fill: f.color,
+        spacing: f.spaceingBelow,
+        unicode: ucode,
+        fonturl: f.url,
+        fonturl2: f.alturl,
+        officialurl: f.officialurl
+      });
+    }
+
+    myDiagram.model.nodeDataArray = linkArr;
+
+    // select the first node in the diagram
+    updateSelection({ subject: { part: myDiagram.nodes.first() } });
+    myDiagram.select(myDiagram.nodes.first());
+
+    myDiagram.animationManager.isEnabled = ani_old_value;
+  }
+
+  // generate the example code for the selected Node
+  function updateSelection(e) {
+    let part = e.subject.part;
+
+    // find the parent node
+    while ((part.panel || part.part) != part) {
+      part = part.panel || part.part;
+    }
+
+    let data = part.data;
+
+    // get data on selected node
+    let fontname = data.font.split(' ').slice(1).join(' ');
+    let f = Fonts.filter((f) => f.name == fontname)[0];
+    let fonturl = data.fonturl;
+    let alturl = f.alturl;
+    let color = f.color;
+    let char = data.unicode;
+
+    // update properties menu
+    let prop_div = document.getElementById('propmenu');
+    prop_div.style.backgroundColor = new go.Brush(color).lightenBy(0.1).color;
+
+    let ele_char = document.getElementById('char');
+    ele_char.style.fontFamily = fontname;
+    ele_char.style.fontSize = '50pt';
+    ele_char.innerText = data.text;
+    ele_char.style.backgroundColor = color;
+
+    document.getElementById('unicode').innerText = char;
+    document.getElementById('url').href = fonturl;
+    document.getElementById('alturl').href = alturl;
+    document.getElementById('fontpage').href = data.officialurl;
+
+    // fill out the template code with information from the selected node
+    templates = TEMPLATE.replaceAll('{FONTNAME}', fontname)
+      .replaceAll('{CHAR}', char)
+      .replaceAll('{FONTURL}', fonturl)
+      .replaceAll('{COLOR}', color)
+      .replaceAll('{ALTLINK}', alturl)
+      .replaceAll('{SPACING}', f.spaceingBelow)
+      .split('\n\n');
+
+    document.getElementById('codeBox1').textContent = templates[0];
+    document.getElementById('codeBox2').textContent = templates[1];
+    document.getElementById('codeBox3').textContent = templates[2];
+    document.getElementById('codeBox4a').textContent = templates[3];
+    document.getElementById('codeBox4b').textContent = templates[4];
+    const box4b = document.getElementById('codeBox4b');
+    if (window.Prism) {
+      // Give the code syntax highlighting
+      window.Prism.highlightAll();
+    }
+  }
+
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': true,
+      'animationManager.initialAnimationStyle': go.AnimationStyle.None,
+      'dragSelectingTool.isEnabled': false,
+      'undoManager.isEnabled': false,
+      'panningTool.isEnabled': false,
+      isReadOnly: true,
+      allowZoom: false,
+
+      // pack the Nodes together
+      layout: new go.GridLayout({ spacing: new go.Size(0, 0) })
+    });
+
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      selectionAdorned: false,
+      mouseEnter: (e, obj) => {
+        // lighten the Node on hover
+        if (obj.part.isSelected) return;
+        let br = new go.Brush(myDiagram.model.modelData.color);
+        br.lightenBy(0.1);
+        obj.part.elt(0).fill = br.color;
+      },
+      mouseLeave: (e, obj) => {
+        if (obj.part.isSelected) return;
+        obj.part.elt(0).fill = myDiagram.model.modelData.color;
+      }
+    })
+      .add(
+        new go.Shape('RoundedRectangle', {
+          strokeWidth: 0,
+          width: 56,
+          height: 56
+        })
+          .trigger(
+            new go.AnimationTrigger(
+              'fill', // animate the color change
+              { duration: 200 }
+            )
+          )
+          .bindObject('fill', 'isSelected', (isSelected, obj) => {
+            return !isSelected ? myDiagram.model.modelData.color : 'white';
+          }),
+        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' })
+          .bind('text')
+          .bind('font')
+          .bind('spacingBelow', 'spacing')
+      );
+
+    // add all font options to drop down
+    let fontSelector = document.getElementById('fontSelector');
+    Fonts.forEach((f, i) => {
+      let opt = document.createElement('option');
+      opt.innerText = f.name;
+      opt.value = i;
+      if (i == 0) fontSelector.value = opt.value;
+      fontSelector.appendChild(opt);
+    });
+
+    changeFont();
+    myDiagram.addDiagramListener('ObjectSingleClicked', updateSelection);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    let n_loaded = 0;
+
+    Fonts.forEach((f) => {
+      // load each fonts
+      new FontFace(f.name, `url(${f.url})`).load().then(
+        (font) => {
+          document.fonts.add(font);
+
+          // call init once all fonts have been loaded
+          if (++n_loaded == Fonts.length) {
+            init();
+          }
+        },
+        (err) => {
+          console.error(f.name + '\n' + err);
+        }
+      );
+    });
+  });
+</script>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Exporting SVGs</h4>
+<p>
+<b>GoJS</b> has one function for creating SVG: <a href="../api/symbols/Diagram.html#makeSVG" target="api">Diagram.makeSVG</a>, which returns a new SVGElement with a representation of a GoJS Diagram. The method has a single argument, a JavaScript Object that contains several definable properties, enumerated in the documentation.
+More information can be found in the <a href="../intro/makingSVG.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#svg">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Grid Layouts</h4>
+<p>
+This predefined layout is used for placing Nodes in a grid-like arrangement.
+Nodes can be ordered, spaced apart, and wrapped as needed. This Layout ignores any Links connecting the nodes being laid out. 
+More information can be found in the <a href="../intro/layouts.html#GridLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#gridlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Animation</h4>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
+  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

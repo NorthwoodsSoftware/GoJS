@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,44 +125,37 @@
 <script src="../extensions/RescalingTool.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        layout: $(go.TreeLayout),
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true, // enable undo & redo
+      layout: new go.TreeLayout()
+    });
 
     // install the RescalingTool as a mouse-down tool
     myDiagram.toolManager.mouseDownTools.add(new RescalingTool());
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('scale').makeTwoWay(),
-      $(go.Shape, 'RoundedRectangle', { strokeWidth: 0 }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 8 }, new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', { strokeWidth: 0 }).bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 }).bind('text')
+      ).bindTwoWay('scale');
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
     // create the model data that will be represented by Nodes and Links
-    myDiagram.model = new go.GraphLinksModel(
-      [
+    myDiagram.model = new go.GraphLinksModel({
+      nodeDataArray: [
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
-      [
+      linkDataArray: [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
-        { from: 3, to: 4 },
+        { from: 3, to: 4 }
       ]
-    );
+  });
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -174,21 +173,15 @@
   // end ContinuousForceDirectedLayout
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform, // an initial automatic zoom-to-fit
-        contentAlignment: go.Spot.Center, // align document to the center of the viewport
-        layout: new ContinuousForceDirectedLayout( // automatically spread nodes apart while dragging
-          { defaultSpringLength: 150 }),
-        // do an extra layout at the end of a move
-        SelectionMoved: (e) => e.diagram.layout.invalidateLayout(),
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform, // an initial automatic zoom-to-fit
+      contentAlignment: go.Spot.Center, // align document to the center of the viewport
+      layout: new ContinuousForceDirectedLayout({ // automatically spread nodes apart while dragging
+        defaultSpringLength: 150
+      }),
+      // do an extra layout at the end of a move
+      SelectionMoved: (e) => e.diagram.layout.invalidateLayout()
+    });
 
     // dragging a node invalidates the Diagram.layout, causing a layout during the drag
     myDiagram.toolManager.draggingTool.doMouseMove = function () {
@@ -198,44 +191,44 @@
     };
 
     // define each Node's appearance
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto', // the whole node panel
+    myDiagram.nodeTemplate = new go.Node('Auto') // the whole node panel
       // define the node's outer shape, which will surround the TextBlock
-      $(go.Shape, 'Circle', { fill: 'CornflowerBlue', stroke: 'black', spot1: new go.Spot(0, 0, 5, 5), spot2: new go.Spot(1, 1, -5, -5) }),
-      $(go.TextBlock,
-        { font: 'bold 10pt helvetica, bold arial, sans-serif', textAlign: 'center', maxSize: new go.Size(100, NaN) },
-        new go.Binding('text', 'text')
-      )
-    );
+      .add(
+        new go.Shape('Circle', {
+          fill: 'CornflowerBlue',
+          stroke: 'black',
+          spot1: new go.Spot(0, 0, 5, 5),
+          spot2: new go.Spot(1, 1, -5, -5)
+        }),
+        new go.TextBlock({
+          font: 'bold 10pt helvetica, bold arial, sans-serif',
+          textAlign: 'center',
+          maxSize: new go.Size(100, NaN)
+        })
+          .bind('text')
+      );
     // the rest of this app is the same as samples/conceptMap.html
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      $(go.Shape, // the link shape
-        { stroke: 'black' }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'standard', stroke: null }
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, // the label background, which becomes transparent around the edges
-          {
-            fill: $(go.Brush, 'Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-            stroke: null,
-          }
-        ),
-        $(go.TextBlock, // the label text
-          {
-            textAlign: 'center',
-            font: '10pt helvetica, arial, sans-serif',
-            stroke: '#555555',
-            margin: 4,
-          },
-          new go.Binding('text', 'text')
-        )
-      )
-    );
+    myDiagram.linkTemplate = new go.Link() // the whole link panel
+      .add(
+        new go.Shape({ stroke: 'black' }), // the link shape
+        new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ // the label background, which becomes transparent around the edges
+              fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+              stroke: null
+            }),
+            new go.TextBlock({ // the label text
+              textAlign: 'center',
+              font: '10pt helvetica, arial, sans-serif',
+              stroke: '#555555',
+              margin: 4
+            })
+              .bind('text')
+          )
+      );
 
     // create the model for the concept map
     var nodeDataArray = [
@@ -258,7 +251,7 @@
       { key: 17, text: 'Creativity' },
       { key: 18, text: 'Interrelationships' },
       { key: 19, text: 'Infants' },
-      { key: 20, text: 'Different Map Segments' },
+      { key: 20, text: 'Different Map Segments' }
     ];
     var linkDataArray = [
       { from: 1, to: 2, text: 'represent' },
@@ -284,7 +277,7 @@
       { from: 11, to: 18, text: 'show' },
       { from: 12, to: 19, text: 'begins\nwith' },
       { from: 17, to: 18, text: 'needed\nto see' },
-      { from: 18, to: 20, text: 'between' },
+      { from: 18, to: 20, text: 'between' }
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }

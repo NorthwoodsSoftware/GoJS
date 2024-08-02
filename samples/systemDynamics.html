@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -122,38 +121,6 @@
           
             
             
-<style>
-  .pointer_normal {
-    font-weight: normal;
-    background: #f0f0f0;
-  }
-
-  .pointer_selected {
-    font-weight: bold;
-    background: yellow;
-  }
-
-  .node_normal {
-    font-weight: normal;
-    background: #fff0f0;
-  }
-
-  .node_selected {
-    font-weight: bold;
-    background: #ff8080;
-  }
-
-  .link_normal {
-    font-weight: normal;
-    background: #f0fff0;
-  }
-
-  .link_selected {
-    font-weight: bold;
-    background: #80ff80;
-  }
-</style>
-
 
 <script src="../extensions/Figures.js"></script>
 <script src="../extensions/NodeLabelDraggingTool.js"></script>
@@ -161,300 +128,367 @@
   // SD is a global variable, to avoid polluting global namespace and to make the global
   // nature of the individual variables obvious.
   var SD = {
-    mode: "pointer",   // Set to default mode.  Alternatives are "node" and "link", for
+    mode: 'pointer', // Set to default mode.  Alternatives are "node" and "link", for
     // adding a new node or a new link respectively.
-    itemType: "pointer",    // Set when user clicks on a node or link button.
+    itemType: 'pointer', // Set when user clicks on a node or link button.
     nodeCounter: { stock: 0, cloud: 0, variable: 0, valve: 0 }
   };
-  var myDiagram;   // Declared as global
+  var myDiagram; // Declared as global
 
   function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true,
+      allowLink: false, // linking is only started via buttons, not modelessly
+      'animationManager.isEnabled': false,
 
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
+      'linkingTool.portGravity': 0, // no snapping while drawing new links
+      'linkingTool.doActivate': function () {
+        // an override must be function, not using an arrow
+        // change the curve of the LinkingTool.temporaryLink
+        this.temporaryLink.curve = SD.itemType === 'flow' ? go.Curve.None : go.Curve.Bezier;
+        this.temporaryLink.path.stroke = SD.itemType === 'flow' ? 'blue' : 'green';
+        this.temporaryLink.path.strokeWidth = SD.itemType === 'flow' ? 5 : 1;
+        go.LinkingTool.prototype.doActivate.call(this);
+      },
+      // override the link creation process
+      'linkingTool.insertLink': function (fromnode, fromport, tonode, toport) {
+        // method override must be function, not =>
+        // to control what kind of Link is created,
+        // change the LinkingTool.archetypeLinkData's category
+        myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
+        // Whenever a new Link is drawn by the LinkingTool, it also adds a node data object
+        // that acts as the label node for the link, to allow links to be drawn to/from the link.
+        this.archetypeLabelNodeData = SD.itemType === 'flow' ? { category: 'valve' } : null;
+        // also change the text indicating the condition, which the user can edit
+        this.archetypeLinkData.text = SD.itemType;
+        return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+      },
 
-    myDiagram = new go.Diagram("myDiagram",
-      {
-        "undoManager.isEnabled": true,
-        allowLink: false,  // linking is only started via buttons, not modelessly
-        "animationManager.isEnabled": false,
-
-        "linkingTool.portGravity": 0,  // no snapping while drawing new links
-        "linkingTool.doActivate": function () {  // an override must be function, not using an arrow
-          // change the curve of the LinkingTool.temporaryLink
-          this.temporaryLink.curve = (SD.itemType === "flow") ? go.Curve.None : go.Curve.Bezier;
-          this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "blue" : "green";
-          this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
-          go.LinkingTool.prototype.doActivate.call(this);
-        },
-        // override the link creation process
-        "linkingTool.insertLink": function (fromnode, fromport, tonode, toport) {  // method override must be function, not =>
-          // to control what kind of Link is created,
-          // change the LinkingTool.archetypeLinkData's category
-          myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
-          // Whenever a new Link is drawn by the LinkingTool, it also adds a node data object
-          // that acts as the label node for the link, to allow links to be drawn to/from the link.
-          this.archetypeLabelNodeData = (SD.itemType === "flow") ? { category: "valve" } : null;
-          // also change the text indicating the condition, which the user can edit
-          this.archetypeLinkData.text = SD.itemType;
-          return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
-        },
-
-        "clickCreatingTool.archetypeNodeData": {},  // enable ClickCreatingTool
-        "clickCreatingTool.isDoubleClick": false,   // operates on a single click in background
-        // but only in "node" creation mode
-        "clickCreatingTool.canStart": function () {  // method override must be function, not =>
-          return SD.mode === "node" && go.ClickCreatingTool.prototype.canStart.call(this);
-        },
-        // customize the data for the new node
-        "clickCreatingTool.insertPart": function (loc) {  // method override must be function, not =>
-          SD.nodeCounter[SD.itemType] += 1;
-          var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
-          this.archetypeNodeData = {
-            key: newNodeId,
-            category: SD.itemType,
-            label: newNodeId
-          };
-          return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
-        }
-      });
+      'clickCreatingTool.archetypeNodeData': {}, // enable ClickCreatingTool
+      'clickCreatingTool.isDoubleClick': false, // operates on a single click in background
+      // but only in "node" creation mode
+      'clickCreatingTool.canStart': function () {
+        // method override must be function, not =>
+        return SD.mode === 'node' && go.ClickCreatingTool.prototype.canStart.call(this);
+      },
+      // customize the data for the new node
+      'clickCreatingTool.insertPart': function (loc) {
+        // method override must be function, not =>
+        SD.nodeCounter[SD.itemType] += 1;
+        var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
+        this.archetypeNodeData = {
+          key: newNodeId,
+          category: SD.itemType,
+          label: newNodeId
+        };
+        return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
+      }
+    });
 
     // install the NodeLabelDraggingTool as a "mouse move" tool
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener("Modified", e => {
-      var button = document.getElementById("SaveButton");
+    myDiagram.addDiagramListener('Modified', (e) => {
+      var button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf("*");
+      var idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
-        if (idx < 0) document.title += "*";
+        if (idx < 0) document.title += '*';
       } else {
         if (idx >= 0) document.title = document.title.slice(0, idx);
       }
     });
 
     // generate unique label for valve on newly-created flow link
-    myDiagram.addDiagramListener("LinkDrawn", e => {
+    myDiagram.addDiagramListener('LinkDrawn', (e) => {
       var link = e.subject;
-      if (link.category === "flow") {
-        myDiagram.startTransaction("updateNode");
+      if (link.category === 'flow') {
+        myDiagram.startTransaction('updateNode');
         SD.nodeCounter.valve += 1;
-        var newNodeId = "flow" + SD.nodeCounter.valve;
+        var newNodeId = 'flow' + SD.nodeCounter.valve;
         var labelNode = link.labelNodes.first();
-        myDiagram.model.setDataProperty(labelNode.data, "label", newNodeId);
-        myDiagram.commitTransaction("updateNode");
+        myDiagram.model.setDataProperty(labelNode.data, 'label', newNodeId);
+        myDiagram.commitTransaction('updateNode');
       }
     });
 
     buildTemplates();
 
     load();
+    setMode('pointer', 'pointer');
   }
 
   function buildTemplates() {
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     // helper functions for the templates
-    function nodeStyle() {
-      return [
-        {
-          type: go.Panel.Spot,
-          layerName: "Background",
-          locationObjectName: "SHAPE",
-          selectionObjectName: "SHAPE",
-          locationSpot: go.Spot.Center
-        },
-        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
-      ];
+    function nodeStyle(obj) {
+      const partial = {
+        type: go.Panel.Spot,
+        layerName: 'Background',
+        locationObjectName: 'SHAPE',
+        selectionObjectName: 'SHAPE',
+        locationSpot: go.Spot.Center
+      };
+
+      if (!obj) return partial;
+      Object.entries(partial).forEach(([prop, val]) => {
+        obj[prop] ??= val;
+      });
+
+      return obj;
     }
 
-    function shapeStyle() {
-      return {
-        name: "SHAPE",
-        stroke: "black",
-        fill: "#f0f0f0",
-        portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
+    function shapeStyle(obj) {
+      const partial = {
+        name: 'SHAPE',
+        stroke: 'black',
+        fill: '#f0f0f0',
+        portId: '', // So a link can be dragged from the Node: see /GraphObject.html#portId
         fromLinkable: true,
         toLinkable: true
       };
+      if (!obj) return partial;
+      Object.entries(partial).forEach(([prop, val]) => {
+        if (obj[prop] !== undefined) return; // some properties may intentionally be set to null
+        obj[prop] = val;
+      });
+
+      return obj;
     }
 
-    function textStyle() {
-      return [
-        {
-          font: "bold 11pt helvetica, bold arial, sans-serif",
-          margin: 2,
-          editable: true
-        },
-        new go.Binding("text", "label").makeTwoWay()
-      ];
+    function textStyle(obj) {
+      Object.assign(obj, {
+        font: 'bold 11pt helvetica, bold arial, sans-serif',
+        margin: 2,
+        editable: true
+      });
+      obj.bindTwoWay('text', 'label');
+
+      return obj;
     }
 
     // Node templates
-    myDiagram.nodeTemplateMap.add("stock",
-      $(go.Node, nodeStyle(),
-        $(go.Shape, shapeStyle(),
-          { desiredSize: new go.Size(50, 30) }),
-        $(go.TextBlock, textStyle(),
-          {
-            _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-            alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
-          },
-          new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-      ));
+    myDiagram.nodeTemplateMap.add(
+      'stock',
+      new go.Node(nodeStyle())
+        .add(
+          new go.Shape({ desiredSize: new go.Size(50, 30) }).set(shapeStyle()),
+          textStyle(
+            new go.TextBlock({
+              _isNodeLabel: true, // declare draggable by NodeLabelDraggingTool
+              alignment: new go.Spot(0.5, 0.5, 0, 30) // initial value
+            }).bindTwoWay('alignment', 'label_offset', go.Spot.parse, go.Spot.stringify)
+          )
+        )
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+    );
 
-    myDiagram.nodeTemplateMap.add("cloud",
-      $(go.Node, nodeStyle(),
-        $(go.Shape, shapeStyle(),
-          {
-            figure: "Cloud",
+    myDiagram.nodeTemplateMap.add(
+      'cloud',
+      new go.Node(nodeStyle())
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape(shapeStyle(), {
+            figure: 'Cloud',
             desiredSize: new go.Size(35, 35)
           })
-      ));
+        )
+    );
 
-    myDiagram.nodeTemplateMap.add("valve",
-      $(go.Node, nodeStyle(),
-        {
+    myDiagram.nodeTemplateMap.add(
+      'valve',
+      new go.Node(
+        nodeStyle({
           movable: false,
-          layerName: "Foreground",
+          layerName: 'Foreground',
           alignmentFocus: go.Spot.None
-        },
-        $(go.Shape, shapeStyle(),
-          {
-            figure: "Ellipse",
+        })
+      )
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({
+            figure: 'Ellipse',
             desiredSize: new go.Size(20, 20)
-          }),
-        $(go.TextBlock, textStyle(),
-          {
-            _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-            alignment: new go.Spot(0.5, 0.5, 0, 20)    // initial value
-          },
-          new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-      ));
+          }).set(shapeStyle()),
+          textStyle(
+            new go.TextBlock({
+              _isNodeLabel: true, // declare draggable by NodeLabelDraggingTool
+              alignment: new go.Spot(0.5, 0.5, 0, 20) // initial value
+            }).bindTwoWay('alignment', 'label_offset', go.Spot.parse, go.Spot.stringify)
+          )
+        )
+    );
 
-    myDiagram.nodeTemplateMap.add("variable",
-      $(go.Node, nodeStyle(),
-        { type: go.Panel.Auto },
-        $(go.TextBlock, textStyle(),
-          { isMultiline: false }),
-        $(go.Shape, shapeStyle(),
-          // the port is in front and transparent, even though it goes around the text;
-          // in "link" mode will support drawing a new link
-          { isPanelMain: true, stroke: null, fill: "transparent" })
-      ));
+    myDiagram.nodeTemplateMap.add(
+      'variable',
+      new go.Node(nodeStyle({ type: go.Panel.Auto }))
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          textStyle(new go.TextBlock({ isMultiline: false })),
+          new go.Shape(
+            // the port is in front and transparent, even though it goes around the text;
+            // in "link" mode will support drawing a new link
+            shapeStyle({ isPanelMain: true, stroke: null, fill: 'transparent' })
+          )
+        )
+    );
 
     // Link templates
-    myDiagram.linkTemplateMap.add("flow",
-      $(go.Link,
-        { toShortLength: 8 },
-        $(go.Shape,
-          { stroke: "blue", strokeWidth: 5 }),
-        $(go.Shape,
-          {
-            fill: "blue",
+    myDiagram.linkTemplateMap.add(
+      'flow',
+      new go.Link({ toShortLength: 8 })
+        .add(
+          new go.Shape({ stroke: 'blue', strokeWidth: 5 }),
+          new go.Shape({
+            fill: 'blue',
             stroke: null,
-            toArrow: "Standard",
+            toArrow: 'Standard',
             scale: 2.5
           })
-      ));
+        )
+    );
 
-    myDiagram.linkTemplateMap.add("influence",
-      $(go.Link,
-        { curve: go.Curve.Bezier, toShortLength: 8 },
-        $(go.Shape,
-          { stroke: "green", strokeWidth: 1.5 }),
-        $(go.Shape,
-          {
-            fill: "green",
+    myDiagram.linkTemplateMap.add(
+      'influence',
+      new go.Link({ curve: go.Curve.Bezier, toShortLength: 8 })
+        .add(
+          new go.Shape({ stroke: 'green', strokeWidth: 1.5 }),
+          new go.Shape({
+            fill: 'green',
             stroke: null,
-            toArrow: "Standard",
+            toArrow: 'Standard',
             scale: 1.5
           })
-      ));
+        )
+    );
   }
 
   function setMode(mode, itemType) {
     myDiagram.startTransaction();
-    document.getElementById(SD.itemType + "_button").className = SD.mode + "_normal";
-    document.getElementById(itemType + "_button").className = mode + "_selected";
+    document.getElementById(SD.itemType + '_button').style.filter = 'brightness(100%)';
+    document.getElementById(itemType + '_button').style.filter = 'brightness(180%)';
     SD.mode = mode;
     SD.itemType = itemType;
-    if (mode === "pointer") {
+    if (mode === 'pointer') {
       myDiagram.allowLink = false;
-      myDiagram.nodes.each(n => n.port.cursor = "");
-    } else if (mode === "node") {
+      myDiagram.nodes.each((n) => (n.port.cursor = ''));
+    } else if (mode === 'node') {
       myDiagram.allowLink = false;
-      myDiagram.nodes.each(n => n.port.cursor = "");
-    } else if (mode === "link") {
+      myDiagram.nodes.each((n) => (n.port.cursor = ''));
+    } else if (mode === 'link') {
       myDiagram.allowLink = true;
-      myDiagram.nodes.each(n => n.port.cursor = "pointer");
+      myDiagram.nodes.each((n) => (n.port.cursor = 'pointer'));
     }
-    myDiagram.commitTransaction("mode changed");
+    myDiagram.commitTransaction('mode changed');
   }
 
   // Show the diagram's model in JSON format that the user may edit
   function save() {
-    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
     myDiagram.isModified = false;
   }
   function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagram" style="width:600px; height:500px; border:solid 1px black"></div>
-  <button id="pointer_button" class="pointer_selected" onclick="setMode('pointer','pointer');">Pointer</button>
-  <button id="stock_button" class="node_normal" onclick="setMode('node','stock');"
-    style="margin-left:20px;">Stock</button>
-  <button id="cloud_button" class="node_normal" onclick="setMode('node','cloud');">Cloud</button>
-  <button id="variable_button" class="node_normal" onclick="setMode('node','variable');">Variable</button>
-  <button id="flow_button" class="link_normal" onclick="setMode('link','flow');" style="margin-left:20px;">Flow</button>
-  <button id="influence_button" class="link_normal" onclick="setMode('link','influence');">Influence</button>
+  <div class="flex flex-row flex-wrap">
+    <div
+      id="myDiagramDiv"
+      class="mb-2 mr-2 min-w-[400px]"
+      style="width: 600px; height: 500px; border: solid 1px black"></div>
+    <div
+      class="mb-2 h-fit w-fit flex-none rounded-md border-x border-t border-black"
+      style="background-color: rgb(31, 73, 99)">
+      <div>
+        <h3 class="text-center text-white">On Click...</h3>
+      </div>
+      <table class="table" style="background-color: white">
+        <tbody>
+          <th>Do Default</th>
+          <tr>
+            <td>
+              <button id="pointer_button" onclick="setMode('pointer','pointer');">Pointer</button>
+            </td>
+          </tr>
+
+          <th>Create ______ Node</th>
+          <tr>
+            <td>
+              <button id="stock_button" class="node_normal" onclick="setMode('node','stock');">
+                Stock
+              </button>
+              <button id="cloud_button" class="node_normal" onclick="setMode('node','cloud');">
+                Cloud
+              </button>
+              <button
+                id="variable_button"
+                class="node_normal"
+                onclick="setMode('node','variable');">
+                Variable
+              </button>
+            </td>
+          </tr>
+
+          <th>Create ______ Link</th>
+          <tr>
+            <td>
+              <button id="flow_button" class="link_normal" onclick="setMode('link','flow');">
+                Flow
+              </button>
+              <button
+                id="influence_button"
+                class="link_normal"
+                onclick="setMode('link','influence');">
+                Influence
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div
+        class="rounded-b-md border-b border-black"
+        style="background-color: white; height: 0.5rem"></div>
+    </div>
+  </div>
   <p>
-    A <em>system dynamics diagram</em> shows the storages (stocks) and flows of material in some system,
-    and the factors that influence the rates of flow.
-    It is usually a cosmetic interface for building mathematical models --
-    you provide values and equations for the stocks and flows,
-    and appropriate software can then simulate the system's behaiour.
+    A <em>system dynamics diagram</em> shows the storages (stocks) and flows of material in some
+    system, and the factors that influence the rates of flow. It is usually a cosmetic interface for
+    building mathematical models -- you provide values and equations for the stocks and flows, and
+    appropriate software can then simulate the system's behavior.
   </p>
   <p>
-    The diagram has two types of link: flow links and influence links.
-    In additon to the node attached to each flow, there are 3 types of node:
+    The diagram has two types of link: flow links and influence links. In additon to the node
+    attached to each flow, there are 3 types of node:
+  </p>
+
   <ul>
     <li><b>stocks</b>, the amount of some substance</li>
     <li><b>clouds</b>, like stocks, but outside the system of interest</li>
     <li><b>variables</b>, either numeric constants or calculated from other elements</li>
   </ul>
+  <p>
+    The conventional user interface for building system dynamics diagrams is modal -- you select a
+    tool in the toolbar, then either click in an empty part of the diagram to add a node or drag
+    from one node to another to add a link. That is the approach used in this example, accomplished
+    with the <a>clickCreatingTool</a> and <a>linkingTool</a>. Note that you need to click on the
+    Pointer tool to revert to the normal mode.
   </p>
   <p>
-    The conventional user interface for building system dynamics diagrams is modal --
-    you select a tool in the toolbar, then either click in an empty part of the diagram to add a node
-    or drag from one node to another to add a link.
-    That is the approach used in this example, accomplished with the <a>clickCreatingTool</a> and <a>linkingTool</a>.
-    Note that you need to click on the Pointer tool to revert to the normal mode.
+    In addition to the above, the diagram also installs the
+    <a href="../samples/NodeLabelDragging.html">NodeLabelDraggingTool</a> extension into
+    <a>ToolManager.mouseMoveTools</a>.
   </p>
-  <p>
-    In addition to the above, the diagram also installs the <a
-      href="../samples/NodeLabelDragging.html">NodeLabelDraggingTool</a>
-    extension into <a>ToolManager.mouseMoveTools</a>.
-  </p>
-  <p>
-    This sample is based on a prototype developed by Robert Muetzelfeldt.
-  </p>
+  <p>This sample is based on a prototype developed by Robert Muetzelfeldt.</p>
   <div>
     <div>
       <button id="SaveButton" onclick="save()">Save</button>
       <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
-    <textarea id="mySavedModel" style="width:100%; height:400px">
+    <textarea id="mySavedModel" style="width: 100%; height: 400px">
 { "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [
@@ -487,7 +521,8 @@
 {"from":"k3", "to":"sheep_loss", "category":"influence"}
   ]
 }
-      </textarea>
+      </textarea
+    >
   </div>
 </div>
 
@@ -501,6 +536,30 @@
         <hr/>
         <h3 class="text-xl">GoJS Features in this sample</h3>
         <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
           
         </div>
     </div>

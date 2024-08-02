@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -139,10 +138,6 @@
   var myDiagram;
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       'animationManager.isEnabled': false,
       // disable movement/edit controls, since the myDiagram is a static grid
@@ -152,7 +147,7 @@
       allowSelect: false,
       hasHorizontalScrollbar: false,
       hasVerticalScrollbar: false,
-      initialAutoScale: go.AutoScale.Uniform,
+      initialAutoScale: go.AutoScale.Uniform
     });
 
     var nodeSize = 25;
@@ -171,60 +166,60 @@
     var gridStrokeWidth = 1;
 
     // define the node template, which also includes interactive functionality, such as clicking to toggle a node's state
-    myDiagram.nodeTemplate = $(go.Part,
-      {
-        isLayoutPositioned: false,
-        mouseEnter: (e, part, prev) => {
-          // set mouseover border
-          if (!initializing && !enabled) {
-            var shape = part.elt(0);
-            if (shape) {
-              shape.stroke = 'steelblue';
-              shape.strokeWidth = 3;
-            }
-            part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
-
-            // drag with a button down to add or erase cells
-            if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
-              select(part);
-            }
-          }
-        },
-        mouseLeave: (e, part, next) => {
-          // restore to original borders
+    myDiagram.nodeTemplate = new go.Part({
+      isLayoutPositioned: false,
+      mouseEnter: (e, part, prev) => {
+        // set mouseover border
+        if (!initializing && !enabled) {
           var shape = part.elt(0);
           if (shape) {
-            shape.stroke = gridStroke;
-            shape.strokeWidth = gridStrokeWidth;
+            shape.stroke = 'steelblue';
+            shape.strokeWidth = 3;
           }
-          part.zOrder = 1;
-        },
-        click: (e, part) => {
-          // left click to toggle cell
-          initializing = false;
-          if (!enabled) {
+          part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
+
+          // drag with a button down to add or erase cells
+          if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
             select(part);
           }
-        },
-        contextClick: (e, part) => {
-          // right click to clear cell
-          initializing = false;
-          if (!enabled && part.data.isAlive) {
-            select(part);
-          }
-        },
-        zOrder: 1,
+        }
       },
-      $(go.Shape, {
-        figure: 'Rectangle',
-        fill: 'white',
-        stroke: gridStroke,
-        strokeWidth: gridStrokeWidth,
-        width: nodeSize,
-        height: nodeSize,
-      }),
-      new go.Binding('location')
-    );
+      mouseLeave: (e, part, next) => {
+        // restore to original borders
+        var shape = part.elt(0);
+        if (shape) {
+          shape.stroke = gridStroke;
+          shape.strokeWidth = gridStrokeWidth;
+        }
+        part.zOrder = 1;
+      },
+      click: (e, part) => {
+        // left click to toggle cell
+        initializing = false;
+        if (!enabled) {
+          select(part);
+        }
+      },
+      contextClick: (e, part) => {
+        // right click to clear cell
+        initializing = false;
+        if (!enabled && part.data.isAlive) {
+          select(part);
+        }
+      },
+      zOrder: 1
+    })
+      .bind('location')
+      .add(
+        new go.Shape({
+          figure: 'Rectangle',
+          fill: 'white',
+          stroke: gridStroke,
+          strokeWidth: gridStrokeWidth,
+          width: nodeSize,
+          height: nodeSize
+        })
+      );
 
     // use a simple model for our node data
     myDiagram.model = new go.Model(nodeDataArray);
@@ -271,9 +266,8 @@
   // the callback for the step button, only steps forward if the simulation is currently stopped
   function stepOnclick() {
     initializing = false;
-    if (!enabled) {
-      goLStep(true);
-    }
+    if (enabled) {toggleSimulation();return;}
+    goLStep(true);
   }
 
   // performs a single step in the Game of Life
@@ -381,7 +375,7 @@
           [, , , , , , , 1, 1, , , , , , , , , , , , 0],
           [, , , , , , , 1, , , 1, , , , , , , , , , 0],
           [, , , , , , , 1, , , 1, , , , , , , , , , 0],
-          [, , , , , , , , 1, 1, 1, , , , , , , , , , 0],
+          [, , , , , , , , 1, 1, 1, , , , , , , , , , 0]
         ];
         break;
       case 'pulsar':
@@ -396,7 +390,7 @@
           [1, , , , 1, , 1, , , , 1],
           [1, , , , 1, , 1, , , , 1],
           [1, , , , 1, , 1, , , , 1],
-          [, 1, 1, 1, , , , 1, 1, 1, 0],
+          [, 1, 1, 1, , , , 1, 1, 1, 0]
         ];
         break;
       case 'spaceships':
@@ -430,7 +424,7 @@
           [1, 1, , 1, , , , , , 1, 1, , , , , , 0],
           [, , , 1, 1, , , , 1, , , 1, , , , , 0],
           [, , , , 1, , , , , , , 1, , , , , 0],
-          [, , , , , 1, , 1, 1, , , , , , , , 0],
+          [, , , , , 1, , 1, 1, , , , , , , , 0]
         ];
         break;
       case 'bigGliders':
@@ -461,7 +455,7 @@
           [1, 1, , , , , , 1, , , , , , , , , , , , , , , , , , , , 0],
           [, , 1, , , , , 1, , 1, , , , , , , , , , , , , , , , , , 0],
           [, , , , 1, 1, , , 1, , , , , , , , , , , , , , , , , , , 0],
-          [, , , , 1, 1, , , , , , , , , , , , , , , , , , , , , , 0],
+          [, , , , 1, 1, , , , , , , , , , , , , , , , , , , , , , 0]
         ];
         break;
     }

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -134,39 +133,75 @@
 </style>
 
 <script id="code">
-  function init() {
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the HTML Div element
-      {
-        commandHandler: new AriaCommandHandler(),
-        'animationManager.isEnabled': false,
-        'undoManager.isEnabled': true,
-      }
-    );
+  // Graph model for the default diagram with four nodes
+  var defaultModel = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange" },
+      { key: 3, text: "Gamma", color: "lightgreen" },
+      { key: 4, text: "Delta", color: "pink" }
+    ]
+  );
+  // Graph model for the links diagram with seven nodes and ten links
+  var linkModel = new go.GraphLinksModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange" },
+      { key: 3, text: "Gamma", color: "lightgreen" },
+      { key: 4, text: "Delta", color: "pink" },
+      { key: 5, text: "Omega", color: "lightgrey"},
+      { key: 6, text: "Sigma", color: "tan"}, 
+      { key: 7, text: "Epsilon", color: "yellow", parent: 3}
+    ],
+    [
+      { from: 1, to: 2 },
+      { from: 1, to: 3 },
+      { from: 3, to: 4 },
+      { from: 4, to: 1 },
+      { from: 5, to: 2 },
+      { from: 6, to: 3 },
+      { from: 7, to: 2 },
+      { from: 4, to: 5},
+      { from: 4, to: 6},
+      { from: 4, to: 7}
+    ]
+  );
 
+  // Tree model for the tree diagram with nodes with parent properties
+  var treeModel = new go.TreeModel(
+    [
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange", parent: 1},
+      { key: 3, text: "Gamma", color: "lightgreen", parent: 1},
+      { key: 4, text: "Delta", color: "pink", parent: 2},
+      { key: 5, text: "Omega", color: "lightgrey", parent: 2},
+      { key: 6, text: "Sigma", color: "tan", parent: 2},
+      { key: 7, text: "Epsilon", color: "yellow", parent: 3}
+    ]
+  );
+
+
+  function init() {
+    // Basic node template for all of the diagrams
+    var myNodeTemplate = new go.Node("Auto")
+      .add(
+        new go.Shape("RoundedRectangle", { strokeWidth: 0, width: 70, height: 50})
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 8 })
+          .bind("text")
+      ).bind("text"); // binding the text value onto the node itself so that Aria can read it as the Part.text value
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      model: defaultModel,
+      commandHandler: new AriaCommandHandler('default'),
+      'animationManager.isEnabled': false,
+      'undoManager.isEnabled': true,
+      initialContentAlignment: go.Spot.Center,
+      nodeTemplate: myNodeTemplate
+    });
     const liveRegion = myDiagram.commandHandler.liveRegion;
     liveRegion.classList.add('ariaStyling');
     document.getElementById('myDiagramDiv').after(liveRegion);
-
-    myDiagram.nodeTemplate = new go.Node('Vertical').add(
-      new go.Shape('RoundedRectangle', {
-        strokeWidth: 0,
-        fill: 'white',
-        width: 50,
-        height: 50,
-      }).bind('fill', 'color'),
-      new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }).bind('text', 'key')
-    );
-
-    myDiagram.model = new go.GraphLinksModel(
-      [
-        { key: 'Alpha', color: 'lightblue' },
-        { key: 'Beta', color: 'orange' },
-        { key: 'Gamma', color: 'lightgreen' },
-        { key: 'Delta', color: 'pink' },
-      ],
-      []
-    );
 
     // Select the first node to start the Aria narration
     myDiagram.select(myDiagram.nodes.first());
@@ -178,28 +213,78 @@
     }, 1000);
   } // end init
 
+  const changeMode = () => {
+    // Gets rid of old Aria div
+    let e = document.querySelector('div.ariaStyling[aria-live="polite"]');
+    if (e) e.remove(); 
+    
+    // Gets change from html dropdown
+    const mode = document.getElementById('mode').value;
+
+    // Changes the model and layout based on the dropdown selection
+    if (mode === 'default') {
+      myDiagram.model = defaultModel;
+      myDiagram.layout = new go.Layout();
+    } else if (mode === 'links') {
+      myDiagram.model = linkModel;
+      myDiagram.layout = new go.CircularLayout({radius: 120});
+    } else if (mode === 'tree') {
+      myDiagram.model = treeModel;
+      myDiagram.layout = new go.TreeLayout({angle: 90});
+    }
+    // Changes the command handler based on the dropdown selection
+    myDiagram.commandHandler = new AriaCommandHandler(mode);
+    // Creates new Aria div for the new command handler
+    const liveRegion = myDiagram.commandHandler.liveRegion;
+    liveRegion.classList.add('ariaStyling');
+    document.getElementById('myDiagramDiv').after(liveRegion);
+  };
+  
+
   document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 300px; height: 300px"></div>
-  <p>This sample demonstrates a custom CommandHandler, AriaCommandHandler, that updates a DIV for screen reader accessibility.</p>
+  <div
+    id="myDiagramDiv"
+    style="border: solid 1px black; width: 500px; height: 300px"></div>
+
+    Mode:
+  <select id="mode" onchange="changeMode()">
+    <option value="default">Default</option>
+    <option value="tree">Tree</option>
+    <option value="links">Links</option>
+  </select>
+  <p>
+    This sample demonstrates a custom CommandHandler, AriaCommandHandler, that
+    updates a DIV for screen reader accessibility.
+  </p>
   <p>This AriaCommandHandler adds more key commands for a user:</p>
   <ul>
-    <li>Arrow keys: Change selection to a new node, if possible, based on direction. This is added to an internal navigation history.</li>
+    <li>
+      Arrow keys: Change selection to a new node, if possible, based on
+      direction. This is added to an internal navigation history.
+    </li>
 
-    <li><code>B</code>: Give a description of which nodes are adjacent to the currently selected node</li>
+    <li>
+      <code>B</code>: Give a description of which nodes are adjacent to the
+      currently selected node
+    </li>
     <li><code>X</code>: Go backwards in the navigation history</li>
     <li><code>C</code>: Go forwards in the navigation history</li>
   </ul>
 
   <p>
-    As these commands are executed, the AriaCommandHandler updates a DIV that has <code>aria-live="polite"</code>
+    As these commands are executed, the AriaCommandHandler updates a DIV that
+    has
+    <code>aria-live="polite"</code>
     set with relevant text.
   </p>
   <p>
-    This is meant as a starting point to create a more individualized extention for your unique use case. Certain data and attributes of nodes that may be
-    different between diagrams may be important to the accessibility interpretation.
+    This is meant as a starting point to create a more individualized extention
+    for your unique use case. Certain data and attributes of nodes that may be
+    different between diagrams may be important to the accessibility
+    interpretation.
   </p>
 </div>
 

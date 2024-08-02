@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,67 +125,55 @@
 <script src="../extensions/OverviewResizingTool.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) window.goSamples(); // init for these samples -- you don't need to call this
-
-    var $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        layout: $(go.ForceDirectedLayout),
-        'undoManager.isEnabled': true, // enable undo & redo
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: new go.ForceDirectedLayout(),
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
     // Define the Node template.
     // This uses a Spot Panel to position a button relative
     // to the ellipse surrounding the text.
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      {
-        selectionObjectName: 'PANEL',
-        isTreeExpanded: false,
-        isTreeLeaf: false,
-      },
-      // the node's outer shape, which will surround the text
-      $(go.Panel,
-        'Auto',
-        { name: 'PANEL' },
-        $(go.Shape, 'Circle', { fill: '#03A9F4', stroke: 'black' }),
-        $(go.TextBlock, { font: '12pt sans-serif', margin: 5 }, new go.Binding('text', 'key'))
-      ),
-      // the expand/collapse button, at the top-right corner
-      $('TreeExpanderButton', {
-        name: 'TREEBUTTON',
-        width: 20,
-        height: 20,
-        alignment: go.Spot.TopRight,
-        alignmentFocus: go.Spot.Center,
-        // customize the expander behavior to
-        // create children if the node has never been expanded
-        click: (e, obj) => {
-          // OBJ is the Button
-          var node = obj.part; // get the Node containing this Button
-          if (node === null) return;
-          e.handled = true;
-          expandNode(node);
-        },
-      }) // end TreeExpanderButton
-    ); // end Node
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      selectionObjectName: 'PANEL',
+      isTreeExpanded: false,
+      isTreeLeaf: false
+    })
+      .add(
+        // the node's outer shape, which will surround the text
+        new go.Panel('Auto', { name: 'PANEL' })
+          .add(
+            new go.Shape('Circle', { fill: '#03A9F4', stroke: 'black' }),
+            new go.TextBlock({ font: '12pt sans-serif', margin: 5 }).bind('text', 'key')
+          ),
+        // the expand/collapse button, at the top-right corner
+        go.GraphObject.build('TreeExpanderButton', {
+          name: 'TREEBUTTON',
+          width: 20,
+          height: 20,
+          alignment: go.Spot.TopRight,
+          alignmentFocus: go.Spot.Center,
+          // customize the expander behavior to
+          // create children if the node has never been expanded
+          click: (e, obj) => {
+            // OBJ is the Button
+            var node = obj.part; // get the Node containing this Button
+            if (node === null) return;
+            e.handled = true;
+            expandNode(node);
+          }
+        }) // end TreeExpanderButton
+      ); // end Node
 
     // create the model with a root node data
     myDiagram.model = new go.TreeModel([{ key: 0, everExpanded: false }]);
 
     // Overview
-    myOverview = new go.Overview(
-      'myOverviewDiv', // the HTML DIV element for the Overview
-      {
-        observed: myDiagram,
-        contentAlignment: go.Spot.Center,
-        'box.resizable': true,
-        resizingTool: new OverviewResizingTool(),
-      }
-    );
+    myOverview = new go.Overview('myOverviewDiv', {
+      observed: myDiagram,
+      contentAlignment: go.Spot.Center,
+      'box.resizable': true,
+      resizingTool: new OverviewResizingTool()
+    });
 
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.zoomToFit());
 
@@ -240,7 +227,7 @@
       var childdata = {
         key: model.nodeDataArray.length,
         parent: parentdata.key,
-        rootdistance: degrees,
+        rootdistance: degrees
       };
       // add to model.nodeDataArray and create a Node
       model.addNodeData(childdata);
@@ -266,6 +253,9 @@
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <div id="myOverviewDiv" style="border: solid 1px black; width: 250px; height: 200px"></div>
   <p><button id="zoomToFit">Zoom to Fit</button><button id="expandAtRandom">Expand random Node</button></p>
+  <p>
+    Try resizing the diagram, the overview will change its size in response.
+  </p>
   <p>
     This sample demonstrates a custom <a>ResizingTool</a> which allows the user to resize the overview box. It is defined in its own file, as
     <a href="../extensions/OverviewResizingTool.js">OverviewResizingTool.js</a>.

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,16 +124,12 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowMove: false,
       allowCopy: false,
       allowDelete: false,
       allowHorizontalScroll: false,
-      layout: $(go.TreeLayout, {
+      layout: new go.TreeLayout({
         alignment: go.TreeAlignment.Start,
         angle: 0,
         compaction: go.TreeCompaction.None,
@@ -143,74 +138,78 @@
         nodeIndentPastParent: 1.0,
         nodeSpacing: 0,
         setsPortSpot: false,
-        setsChildPortSpot: false,
-      }),
+        setsChildPortSpot: false
+      })
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      {
-        // no Adornment: instead change panel background color by binding to Node.isSelected
-        selectionAdorned: false,
-        // a custom function to allow expanding/collapsing on double-click
-        // this uses similar logic to a TreeExpanderButton
-        doubleClick: (e, node) => {
-          var cmd = myDiagram.commandHandler;
-          if (node.isTreeExpanded) {
-            if (!cmd.canCollapseTree(node)) return;
-          } else {
-            if (!cmd.canExpandTree(node)) return;
-          }
-          e.handled = true;
-          if (node.isTreeExpanded) {
-            cmd.collapseTree(node);
-          } else {
-            cmd.expandTree(node);
-          }
-        },
-      },
-      $('TreeExpanderButton', {
-        // customize the button's appearance
-        _treeExpandedFigure: 'LineDown',
-        _treeCollapsedFigure: 'LineRight',
-        'ButtonBorder.fill': 'whitesmoke',
-        'ButtonBorder.stroke': null,
-        _buttonFillOver: 'rgba(0,128,255,0.25)',
-        _buttonStrokeOver: null,
-      }),
-      $(go.Panel,
-        'Horizontal',
-        { position: new go.Point(18, 0) },
-        new go.Binding('background', 'isSelected', (s) => (s ? 'lightblue' : 'white')).ofObject(),
-        $(go.Picture,
-          {
-            width: 18,
-            height: 18,
-            margin: new go.Margin(0, 4, 0, 0),
-            imageStretch: go.ImageStretch.Uniform,
-          },
-          // bind the picture source on two properties of the Node
-          // to display open folder, closed folder, or document
-          new go.Binding('source', 'isTreeExpanded', imageConverter).ofObject(),
-          new go.Binding('source', 'isTreeLeaf', imageConverter).ofObject()
-        ),
-        $(go.TextBlock, { font: '9pt Verdana, sans-serif' }, new go.Binding('text', 'key', (s) => 'item ' + s))
-      ) // end Horizontal Panel
-    ); // end Node
+    myDiagram.nodeTemplate = new go.Node({
+      // no Adornment: instead change panel background color by binding to Node.isSelected
+      selectionAdorned: false,
+      // a custom function to allow expanding/collapsing on double-click
+      // this uses similar logic to a TreeExpanderButton
+      doubleClick: (e, node) => {
+        var cmd = myDiagram.commandHandler;
+        if (node.isTreeExpanded) {
+          if (!cmd.canCollapseTree(node)) return;
+        } else {
+          if (!cmd.canExpandTree(node)) return;
+        }
+        e.handled = true;
+        if (node.isTreeExpanded) {
+          cmd.collapseTree(node);
+        } else {
+          cmd.expandTree(node);
+        }
+      }
+    })
+      .add(
+        go.GraphObject.build('TreeExpanderButton', {
+          // customize the button's appearance
+          _treeExpandedFigure: 'LineDown',
+          _treeCollapsedFigure: 'LineRight',
+          'ButtonBorder.fill': 'whitesmoke',
+          'ButtonBorder.stroke': null,
+          _buttonFillOver: 'rgba(0,128,255,0.25)',
+          _buttonStrokeOver: null
+        })
+      )
+      .add(
+        new go.Panel('Horizontal', { position: new go.Point(18, 0) })
+          .bindObject('background', 'isSelected', (s) => (s ? 'lightblue' : 'white'))
+          .add(
+            new go.Picture({
+              width: 18,
+              height: 18,
+              margin: new go.Margin(0, 4, 0, 0),
+              imageStretch: go.ImageStretch.Uniform
+            })
+              // bind the picture source on two properties of the Node
+              // to display open folder, closed folder, or document
+              .bindObject('source', 'isTreeExpanded', imageConverter)
+              .bindObject('source', 'isTreeLeaf', imageConverter)
+          )
+          .add(
+            new go.TextBlock({ font: '9pt Verdana, sans-serif' }).bind(
+              'text',
+              'key',
+              (s) => 'item ' + s
+            )
+          )
+      );
 
     // without lines
-    myDiagram.linkTemplate = $(go.Link);
+    myDiagram.linkTemplate = new go.Link();
 
-    // // with lines
+    // with lines
     // myDiagram.linkTemplate =
-    //   $(go.Link,
-    //     { selectable: false,
-    //       routing: go.Routing.Orthogonal,
-    //       fromEndSegmentLength: 4,
-    //       toEndSegmentLength: 4,
-    //       fromSpot: new go.Spot(0.001, 1, 7, 0),
-    //       toSpot: go.Spot.Left },
-    //     $(go.Shape,
-    //       { stroke: 'gray', strokeDashArray: [1,2] }));
+    //   new go.Link({
+    //     selectable: false,
+    //     routing: go.Routing.Orthogonal,
+    //     fromEndSegmentLength: 4,
+    //     toEndSegmentLength: 4,
+    //     fromSpot: new go.Spot(0.001, 1, 7, 0),
+    //     toSpot: go.Spot.Left }
+    //   ).add(new go.Shape({ stroke: 'gray', strokeDashArray: [1,2] }));
 
     // create a random tree
     var nodeDataArray = [{ key: 0 }];
@@ -254,21 +253,36 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: 1px solid black; width: 300px; height: 500px"></div>
-  <p>This shows how to create a traditional "TreeView" in a <b>GoJS</b> diagram. There are 500 nodes in the tree.</p>
+  <p>
+    This shows how to create a traditional "TreeView" in a <b>GoJS</b> diagram. There are 500 nodes
+    in the tree.
+  </p>
   <p>Look at this page's source code to see how the properties on the <a>TreeLayout</a> are set.</p>
   <p>
-    The node template makes use of a "TreeExpanderButton" panel to implement the expand/collapse button. It also implements a custom doubleClick function to
-    allow nodes to be expanded/collapsed on double-click. Lastly, the source of the picture on each node is bound to two different properties,
-    <a>Node.isTreeLeaf</a> and <a>Node.isTreeExpanded</a>; the <b>imageConverter</b> function is used to select the correct image based on these properties.
+    The node template makes use of a "TreeExpanderButton" panel to implement the expand/collapse
+    button. It also implements a custom doubleClick function to allow nodes to be expanded/collapsed
+    on double-click. Lastly, the source of the picture on each node is bound to two different
+    properties,
+    <a>Node.isTreeLeaf</a> and <a>Node.isTreeExpanded</a>; the <b>imageConverter</b> function is
+    used to select the correct image based on these properties.
   </p>
-  <p>There are two link templates in the source code, one which uses no lines, and one which connects the items with dotted lines.</p>
   <p>
-    See the <a href="../intro/buttons.html" target="_blank">Intro page on Buttons</a> for more GoJS button information. The
-    <a href="triStateCheckBoxTree.html" target="_blank">Tri-state CheckBox Tree</a> sample demonstrates a "tree view" where each item has a three-state
-    checkbox. The <a href="treeMapper.html" target="_blank">Tree Mapper</a> sample demonstrates how to map (draw associations) between items in two trees. The
-    <a href="updateDemo.html" target="_blank">Update Demo</a> sample also uses a "tree view" for its own purposes.
+    There are two link templates in the source code, one which uses no lines, and one which connects
+    the items with dotted lines.
   </p>
-  <p>The icons in this sample are from <a href="https://icons8.com/" target="blank">icons8.com</a></p>
+  <p>
+    See the <a href="../intro/buttons.html" target="_blank">Intro page on Buttons</a> for more GoJS
+    button information. The
+    <a href="triStateCheckBoxTree.html" target="_blank">Tri-state CheckBox Tree</a> sample
+    demonstrates a "tree view" where each item has a three-state checkbox. The
+    <a href="treeMapper.html" target="_blank">Tree Mapper</a> sample demonstrates how to map (draw
+    associations) between items in two trees. The
+    <a href="updateDemo.html" target="_blank">Update Demo</a> sample also uses a "tree view" for its
+    own purposes.
+  </p>
+  <p>
+    The icons in this sample are from <a href="https://icons8.com/" target="blank">icons8.com</a>
+  </p>
 </div>
 
           

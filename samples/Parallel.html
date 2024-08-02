@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,69 +126,86 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
+    myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
         allowCopy: false, // would need to merge copied nodes and links to
         allowDelete: false, //   use the single "Split" and "Merge" nodes
-        layout: $(ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 }),
-      }
-    );
+        layout: new ParallelLayout({
+            layerSpacing: 20,
+            nodeSpacing: 10
+          })
+      });
 
     // define the Node templates
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      $(go.Shape, 'Rectangle', { fill: 'wheat', stroke: null, strokeWidth: 0 }),
-      $(go.TextBlock, { margin: 3 }, new go.Binding('text'))
+    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape('Rectangle', {
+          fill: 'wheat',
+          stroke: null,
+          strokeWidth: 0
+        }),
+        new go.TextBlock({ margin: 3 })
+          .bind('text')
+      );
+
+    myDiagram.nodeTemplateMap.add('Split',
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Diamond', {
+            fill: 'deepskyblue',
+            stroke: null,
+            strokeWidth: 0,
+            desiredSize: new go.Size(28, 28)
+          }),
+          new go.TextBlock()
+            .bind('text')
+        )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Split',
-      $(go.Node,
-        'Auto',
-        { locationSpot: go.Spot.Center },
-        $(go.Shape, 'Diamond', {
-          fill: 'deepskyblue',
-          stroke: null,
-          strokeWidth: 0,
-          desiredSize: new go.Size(28, 28),
-        }),
-        $(go.TextBlock, new go.Binding('text'))
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Merge',
-      $(go.Node,
-        'Auto',
-        { locationSpot: go.Spot.Center },
-        $(go.Shape, 'Circle', {
-          fill: 'deepskyblue',
-          stroke: null,
-          strokeWidth: 0,
-          desiredSize: new go.Size(28, 28),
-        }),
-        $(go.TextBlock, new go.Binding('text'))
-      )
+    myDiagram.nodeTemplateMap.add('Merge',
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Circle', {
+            fill: 'deepskyblue',
+            stroke: null,
+            strokeWidth: 0,
+            desiredSize: new go.Size(28, 28)
+          }),
+          new go.TextBlock()
+            .bind('text')
+        )
     );
 
     // define the Link template to be minimal
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, corner: 5 }, $(go.Shape, { stroke: 'gray', strokeWidth: 1.5 }));
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      corner: 5
+    })
+      .add(
+        new go.Shape({
+          stroke: 'gray',
+          strokeWidth: 1.5
+        })
+      );
 
     // define the Group template to be fairly simple
-    myDiagram.groupTemplate = $(go.Group,
-      'Auto',
-      {
-        layout: $(ParallelLayout, { layerSpacing: 20, nodeSpacing: 10 }),
-      },
-      $(go.Shape, { fill: 'transparent', stroke: 'darkgoldenrod' }),
-      $(go.Placeholder, { padding: 10 }),
-      $('SubGraphExpanderButton', { alignment: go.Spot.TopLeft, 'ButtonBorder.figure': 'Rectangle' })
-    );
+    myDiagram.groupTemplate = new go.Group('Auto', {
+      layout: new ParallelLayout({
+        layerSpacing: 20,
+        nodeSpacing: 10
+      })
+    })
+      .add(
+        new go.Shape({
+          fill: 'transparent',
+          stroke: 'darkgoldenrod'
+        }),
+        new go.Placeholder({ padding: 10 }),
+        go.GraphObject.build('SubGraphExpanderButton', {
+          alignment: go.Spot.TopLeft,
+          'ButtonBorder.figure': 'Rectangle'
+        })
+      );
 
     var model = new go.GraphLinksModel();
     model.nodeDataArray = [
@@ -221,7 +237,7 @@
       { key: 29, text: 'L', category: 'Merge', group: -3 },
       { key: 101, text: '0', category: 'Split' },
       { key: 107, text: 'ABCDEFG' },
-      { key: 109, text: '*', category: 'Merge' },
+      { key: 109, text: '*', category: 'Merge' }
     ];
     model.linkDataArray = [
       { from: 1, to: 2 },
@@ -252,7 +268,7 @@
       { from: 101, to: 1 },
       { from: 19, to: 109 },
       { from: 29, to: 107 },
-      { from: 107, to: 109 },
+      { from: 107, to: 109 }
     ];
     myDiagram.model = model;
   }

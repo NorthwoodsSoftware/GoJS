@@ -267,10 +267,8 @@ class PackedLayout extends go.Layout {
         return this._packShape;
     }
     set packShape(value) {
-        if (this._packShape !== value &&
-            (value === PackShape.Elliptical ||
-                value === PackShape.Rectangular ||
-                value === PackShape.Spiral)) {
+        if ((value === PackShape.Elliptical || value === PackShape.Rectangular || value === PackShape.Spiral)
+            && this.packShape !== value) {
             this._packShape = value;
             this.invalidateLayout();
         }
@@ -286,7 +284,8 @@ class PackedLayout extends go.Layout {
         return this._packMode;
     }
     set packMode(value) {
-        if (value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit) {
+        if ((value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit)
+            && this.packMode !== value) {
             this._packMode = value;
             this.invalidateLayout();
         }
@@ -301,7 +300,8 @@ class PackedLayout extends go.Layout {
         return this._sortMode;
     }
     set sortMode(value) {
-        if (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area) {
+        if ((value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area)
+            && this.sortMode !== value) {
             this._sortMode = value;
             this.invalidateLayout();
         }
@@ -316,7 +316,8 @@ class PackedLayout extends go.Layout {
         return this._sortOrder;
     }
     set sortOrder(value) {
-        if (value === SortOrder.Descending || value === SortOrder.Ascending) {
+        if ((value === SortOrder.Descending || value === SortOrder.Ascending)
+            && this.sortOrder !== value) {
             this._sortOrder = value;
             this.invalidateLayout();
         }
@@ -346,7 +347,7 @@ class PackedLayout extends go.Layout {
         return this._comparer;
     }
     set comparer(value) {
-        if (typeof value === 'function') {
+        if (typeof value === 'function' && this.comparer !== value) {
             this._comparer = value;
         }
     }
@@ -364,7 +365,7 @@ class PackedLayout extends go.Layout {
         return this._aspectRatio;
     }
     set aspectRatio(value) {
-        if (this.isNumeric(value) && isFinite(value) && value > 0) {
+        if (this.isNumeric(value) && isFinite(value) && value > 0 && this.aspectRatio !== value) {
             this._aspectRatio = value;
             this.invalidateLayout();
         }
@@ -419,7 +420,7 @@ class PackedLayout extends go.Layout {
         return this._spacing;
     }
     set spacing(value) {
-        if (this.isNumeric(value) && isFinite(value)) {
+        if (this.isNumeric(value) && isFinite(value) && this.spacing !== value) {
             this._spacing = value;
             this.invalidateLayout();
         }
@@ -439,7 +440,7 @@ class PackedLayout extends go.Layout {
         return this._hasCircularNodes;
     }
     set hasCircularNodes(value) {
-        if (typeof value === typeof true && value !== this._hasCircularNodes) {
+        if (typeof value === typeof true && this.hasCircularNodes !== value) {
             this._hasCircularNodes = value;
             this.invalidateLayout();
         }
@@ -517,7 +518,7 @@ class PackedLayout extends go.Layout {
         return this._arrangesToOrigin;
     }
     set arrangesToOrigin(value) {
-        if (typeof value === typeof true && value !== this._arrangesToOrigin) {
+        if (typeof value === typeof true && this.arrangesToOrigin !== value) {
             this._arrangesToOrigin = value;
             this.invalidateLayout();
         }
@@ -557,10 +558,11 @@ class PackedLayout extends go.Layout {
         }
         this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
         if (this.sortMode !== SortMode.None) {
-            if (!this.comparer) {
+            let comp = this.comparer;
+            if (!comp) {
                 const sortOrder = this.sortOrder;
                 const sortMode = this.sortMode;
-                this.comparer = (a, b) => {
+                comp = (a, b) => {
                     const sortVal = sortOrder === SortOrder.Ascending ? 1 : -1;
                     if (sortMode === SortMode.MaxSide) {
                         const aMax = Math.max(a.actualBounds.width, a.actualBounds.height);
@@ -587,7 +589,7 @@ class PackedLayout extends go.Layout {
                     return 0;
                 };
             }
-            nodes.sort(this.comparer);
+            nodes.sort(comp);
         }
         let targetWidth = this.size.width !== 0 ? this.size.width : 1;
         let targetHeight = this.size.height !== 0 ? this.size.height : 1;

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,13 +125,10 @@
 <script src="../extensions/SectorReshapingTool.js"></script>
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       'animationManager.isEnabled': false,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // install the SectorReshapingTool as a mouse-down tool
@@ -144,7 +140,7 @@
       var angle = SectorReshapingTool.getAngle(data);
       var sweep = SectorReshapingTool.getSweep(data);
       var start = new go.Point(radius, 0).rotate(angle);
-      // this is much more efficient than calling go.GraphObject.make:
+      // this is much more efficient than using make:
       var geo = new go.Geometry()
         .add(
           new go.PathFigure(radius + start.x, radius + start.y) // start point
@@ -166,41 +162,35 @@
       return geo;
     }
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      {
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'LAMP',
-        selectionObjectName: 'LAMP',
-        selectionAdorned: false,
-      },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      locationSpot: go.Spot.Center,
+      locationObjectName: 'LAMP',
+      selectionObjectName: 'LAMP',
+      selectionAdorned: false
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       // selecting a Node brings it forward in the z-order
-      new go.Binding('layerName', 'isSelected', (s) => (s ? 'Foreground' : '')).ofObject(),
-      $(go.Panel,
-        'Spot',
-        { name: 'LAMP' },
-        $(go.Shape, // arc
-          { fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 },
-          new go.Binding('geometry', '', makeSector)
-        ),
-        $(go.Shape, 'Circle', { name: 'SHAPE', width: 6, height: 6 })
-      ),
-      $(go.TextBlock,
-        {
+      .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
+      .add(
+        new go.Panel('Spot', { name: 'LAMP' })
+          .add(
+            new go.Shape({ fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 }) // arc
+              .bind('geometry', '', makeSector),
+            new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 })
+          ),
+        new go.TextBlock({
           alignment: new go.Spot(0.5, 0.5, 0, 3),
           alignmentFocus: go.Spot.Top,
           stroke: 'blue',
-          background: 'rgba(255,255,255,0.3)',
-        },
-        new go.Binding('alignment', 'spot', go.Spot.parse).makeTwoWay(go.Spot.stringify),
-        new go.Binding('text', 'name')
-      )
-    );
+          background: 'rgba(255,255,255,0.3)'
+        })
+          .bindTwoWay('alignment', 'spot', go.Spot.parse, go.Spot.stringify)
+          .bind('text', 'name')
+      );
 
     myDiagram.model = new go.GraphLinksModel([
       { name: 'Alpha', radius: 70, sweep: 120 },
-      { name: 'Beta', radius: 70, sweep: 80, angle: 200 },
+      { name: 'Beta', radius: 70, sweep: 80, angle: 200 }
     ]);
 
     myDiagram.commandHandler.selectAll(); // to show the tool handles

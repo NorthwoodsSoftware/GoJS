@@ -103,48 +103,86 @@ function _traverseDOM(node) {
 
 function goViewSource() {
   // load prism for code highlighting
-  var elem = document.createElement('link');
-  elem.rel = 'stylesheet';
-  elem.href = '../assets/css/prism.css';
-  document.head.appendChild(elem);
-  var prism = document.createElement('script');
-  prism.onload = () => {
+  const updateText = () => {
     var script = byId('code');
     if (!script) return;
+    if (ele=document.getElementById('goViewSource')) {
+      ele.style.display = ele.style.display ? '' : 'none';
+      return;
+    }
     var sp1 = document.createElement('pre');
+    sp1.id = 'goViewSource';
     sp1.classList.add('lang-js');
-    sp1.innerHTML = script.innerHTML;
+    let text = script.innerHTML
+      // .replaceAll('&', '&amp;')
+      // .replaceAll('"', '&quot;')
+      // .replaceAll(`'`, '&apos;')
+      .replaceAll('<', '&lt;') // fixes tiger.html
+      .replaceAll('>', '&gt;')
+    sp1.innerHTML = text;
     var samplediv = byId('sample') || document.body;
     samplediv.parentElement.appendChild(sp1);
     Prism.highlightElement(sp1);
     window.scrollBy(0, 100);
   };
-  prism.src = '../assets/js/prism.js';
-  document.head.appendChild(prism);
+  if (typeof Prism === 'undefined') {
+    var elem = document.createElement('link');
+    elem.rel = 'stylesheet';
+    elem.href = '../assets/css/prism.css';
+    document.head.appendChild(elem);
+    var prism = document.createElement('script');
+    prism.onload = updateText;
+    prism.src = '../assets/js/prism.js';
+    document.head.appendChild(prism);
+  } else updateText();
 }
 
-function goDownload() {
-  var sampleHTML = byId('allSampleContent'); // or "sample" + "code", but this contains both and more
+// dontDownload=true will return the html that was meants to be downloaded
+// instead of actually downloading it
+async function goDownload(dontDownload) {
+  const res = await fetch(location.href); // fetch this sample again
+  const fullSampleHTML = await res.text();
+  const iframe = document.createElement('iframe');
+  document.body.append(iframe);
+  iframe.sandbox = ''; // disable js in this iframe
+  iframe.style.display = 'none'; // make sure this doesn't change the page height
+  await new Promise((resolve) => {
+    iframe.onload = () => {resolve()};
+    setTimeout(resolve, 100); // wait at most 100ms
+  });
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  iframeDoc.documentElement.innerHTML = '<body>' + fullSampleHTML.split('<body>')[1];
+  const sampleHTML = iframeDoc.getElementById('allSampleContent').outerHTML;  // or "sample" + "code", but this contains both and more
+  iframe.remove();
+
   var title = location.href.substring(location.href.lastIndexOf('/') + 1);
   var sampleParent = byId('sample').parentElement;
-  sampleParent.removeChild(b1);
-  sampleParent.removeChild(b2);
-  var text = `
-  <!DOCTYPE html>
-  <html lang="en">
-  <body>
-  <script src="https://unpkg.com/gojs@${go.version}/release/go.js"><\/script>
-  <p>
-    This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
-    <a href="https://gojs.net/latest/${samplePath}">${title}<\/a>. It was automatically generated from a button on the sample page,
-    and does not contain the full HTML. It is intended as a starting point to adapt for your own usage.
-    For many samples, you may need to inspect the
-    <a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/${samplePath}">full source on Github<\/a>
-    and copy other files or scripts.
-  <\/p>
-  ${sampleHTML.outerHTML}
-  </body>
-  </html>`;
+  // sampleParent.removeChild(b1);
+  // sampleParent.removeChild(b2);
+  b1.remove();
+  b2.remove();
+  const hasPrism = typeof window.Prism !== 'undefined';
+
+  const prismImport = 
+`<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>`;
+
+  var text = 
+`<!DOCTYPE html>
+<html lang="en">
+<body>
+<script src="https://unpkg.com/gojs@${go.version}/release/go.js"><\/script>${hasPrism ? `\n${prismImport}` : ''}
+<p>
+  This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
+  <a href="https://gojs.net/latest/${samplePath}">${title}<\/a>. It was automatically generated from a button on the sample page,
+  and does not contain the full HTML. It is intended as a starting point to adapt for your own usage.
+  For many samples, you may need to inspect the
+  <a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/${samplePath}">full source on Github<\/a>
+  and copy other files or scripts.
+<\/p>
+${sampleHTML}
+</body>
+</html>`;
   // replace all uses of '../extensions' with unpkg equivalent
   text = text.replace(
     /\.\.\/extensions/g,
@@ -155,16 +193,23 @@ function goDownload() {
     /<script src="(?:(?!http))+/g,
     `https://unpkg.com/gojs@${go.version}/${dirName}`
   );
-  var element = document.createElement('a');
-  element.setAttribute(
-    'href',
-    'data:text/html;charset=utf-8,' + encodeURIComponent(text)
-  );
-  element.setAttribute('download', title);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
-  sampleParent.appendChild(b1);
-  sampleParent.appendChild(b2);
+
+  if (dontDownload === true) {
+    // sampleParent.appendChild(b1);
+    // sampleParent.appendChild(b2);
+    return text;
+  } else {
+    var element = document.createElement('a');
+    element.setAttribute(
+      'href',
+      'data:text/html;charset=utf-8,' + encodeURIComponent(text)
+    );
+    element.setAttribute('download', title);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    sampleParent.appendChild(b1);
+    sampleParent.appendChild(b2);
+  }
 }

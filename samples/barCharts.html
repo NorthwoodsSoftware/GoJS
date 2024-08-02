@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,36 +124,41 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv');
 
     // the template for each item in a node's array of item data
-    var itemTempl = $(go.Panel,
-      'TableColumn',
-      $(go.Shape,
-        { row: 0, alignment: go.Spot.Bottom },
-        { fill: 'slateblue', stroke: null, width: 40 },
-        new go.Binding('height', 'val'),
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, { row: 1 }, new go.Binding('text')),
-      {
-        toolTip: $('ToolTip', $(go.TextBlock, { margin: 4 }, new go.Binding('text', 'val'))),
-      }
-    );
+    var itemTempl = new go.Panel('TableColumn')
+      .add(
+        new go.Shape({
+          row: 0,
+          alignment: go.Spot.Bottom,
+          fill: 'slateblue',
+          stroke: null,
+          width: 40,
+          toolTip: go.GraphObject.build('ToolTip')
+            .add(
+              new go.TextBlock({ margin: 4 }).bind('text', 'val')
+            )
+        })
+          .bind('height', 'val')
+          .bind('fill', 'color'),
+        new go.TextBlock({
+          row: 1
+        }).bind('text')
+      );
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, { fill: 'white' }),
-      $(go.Panel,
-        'Vertical',
-        $(go.Panel, 'Table', { margin: 6, itemTemplate: itemTempl }, new go.Binding('itemArray', 'items')),
-        $(go.TextBlock, { font: 'bold 12pt sans-serif' }, new go.Binding('text'))
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape({ fill: 'white' }),
+        new go.Panel('Vertical')
+          .add(
+            new go.Panel('Table', {
+              margin: 6,
+              itemTemplate: itemTempl
+            }).bind('itemArray', 'items'),
+            new go.TextBlock({ font: 'bold 12pt sans-serif' }).bind('text')
+          )
+      );
 
     var nodeDataArray = [
       {
@@ -164,8 +168,8 @@
           { text: 'first', val: 50 },
           { text: 'second', val: 70 },
           { text: 'third', val: 60 },
-          { text: 'fourth', val: 80 },
-        ],
+          { text: 'fourth', val: 80 }
+        ]
       },
       {
         key: 2,
@@ -174,29 +178,35 @@
           { text: 'first', val: 50 },
           { text: 'second', val: 70 },
           { text: 'third', val: 75, color: 'red' },
-          { text: 'fourth', val: 80 },
-        ],
-      },
+          { text: 'fourth', val: 80 }
+        ]
+      }
     ];
     var linkDataArray = [{ from: 1, to: 2 }];
     myDiagram.model = new go.GraphLinksModel({
       copiesArrays: true,
       copiesArrayObjects: true,
       nodeDataArray: nodeDataArray,
-      linkDataArray: linkDataArray,
+      linkDataArray: linkDataArray
     });
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+  <div
+    id="myDiagramDiv"
+    style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
   <p>
-    Each node contains a Table Panel whose <a>Panel.itemArray</a> is data bound to the "items" property which holds an Array of data objects. That Table Panel
-    has an <a>Panel.itemTemplate</a> which creates a bar (a rectangular Shape) and a TextBlock label for each item. Each bar also has a tooltip showing the
-    value.
+    Each node contains a Table Panel whose <a>Panel.itemArray</a> is data bound to the "items"
+    property which holds an Array of data objects. That Table Panel has an
+    <a>Panel.itemTemplate</a> which creates a bar (a rectangular Shape) and a TextBlock label for
+    each item. Each bar also has a tooltip showing the value.
   </p>
-  <p>For more sophisticated charts within nodes, see the <a href="canvases.html">Canvas Charts</a> sample.</p>
+  <p>
+    For more sophisticated charts within nodes, see the
+    <a href="canvases.html">Canvas Charts</a> sample.
+  </p>
 </div>
 
           

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -128,72 +127,66 @@
   var layerThickness = 70; // how thick each ring should be
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        initialAutoScale: go.AutoScale.Uniform,
-        isReadOnly: true,
-        maxSelectionCount: 1,
-        layout: $(RadialLayout, {
-          maxLayers: 5,
-          layerThickness: layerThickness,
-          rotateNode: function (node, angle, sweep, radius) {
-            // method override must be function, not =>
-            // all nodes are centered at the origin
-            node.location = this.arrangementOrigin;
-            // because the Shape.geometry will be centered at the origin --
-            // see makeAnnularWedge, below
-            node.diagram.model.setDataProperty(node.data, 'angle', angle);
-            node.diagram.model.setDataProperty(node.data, 'sweep', sweep);
-            node.diagram.model.setDataProperty(node.data, 'radius', radius);
-          },
-        }),
-        'animationManager.isEnabled': false,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform,
+      isReadOnly: true,
+      maxSelectionCount: 1,
+      layout: new RadialLayout({
+        maxLayers: 5,
+        layerThickness: layerThickness,
+        rotateNode: function (node, angle, sweep, radius) {
+          // method override must be function, not =>
+          // all nodes are centered at the origin
+          node.location = this.arrangementOrigin;
+          // because the Shape.geometry will be centered at the origin --
+          // see makeAnnularWedge, below
+          node.diagram.model.setDataProperty(node.data, 'angle', angle);
+          node.diagram.model.setDataProperty(node.data, 'sweep', sweep);
+          node.diagram.model.setDataProperty(node.data, 'radius', radius);
+        }
+      }),
+      'animationManager.isEnabled': false
+    });
 
-    var commonToolTip = $('ToolTip',
-      $(go.Panel,
-        'Vertical',
-        { margin: 3 },
-        $(go.TextBlock, // bound to node data
-          { margin: 4, font: 'bold 12pt sans-serif' },
-          new go.Binding('text')
-        ),
-        $(go.TextBlock, // bound to node data
-          new go.Binding('text', 'color', (c) => 'Color: ' + c)
-        ),
-        $(go.TextBlock, // bound to Adornment because of call to Binding.ofObject
-          new go.Binding('text', '', (ad) => 'Connections: ' + ad.adornedPart.linksConnected.count).ofObject()
-        )
-      ) // end Vertical Panel
-    ); // end Adornment
+    var commonToolTip = go.GraphObject.build('ToolTip')
+      .add(
+        new go.Panel('Vertical', { margin: 3 })
+          .add(
+            new go.TextBlock({ // bound to node data
+              margin: 4,
+              font: 'bold 12pt sans-serif'
+            })
+              .bind('text'),
+            new go.TextBlock() // bound to node data
+              .bind('text', 'color', (c) => 'Color: ' + c),
+            new go.TextBlock() // bound to Adornment because of call to Binding.ofObject
+              .bindObject('text', '', (ad) => 'Connections: ' + ad.adornedPart.linksConnected.count)
+          ) // end Vertical Panel
+      ); // end Adornment
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      {
-        locationSpot: go.Spot.Center,
-        selectionAdorned: false,
-        click: nodeClicked,
-        toolTip: commonToolTip,
-      },
-      $(go.Shape, // this always occupies the full circle
-        { fill: 'lightgray', strokeWidth: 0 },
-        new go.Binding('geometry', '', makeAnnularWedge),
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        { width: layerThickness, textAlign: 'center' },
-        new go.Binding('alignment', '', computeTextAlignment),
-        new go.Binding('angle', 'angle', ensureUpright),
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Spot', {
+      locationSpot: go.Spot.Center,
+      selectionAdorned: false,
+      click: nodeClicked,
+      toolTip: commonToolTip
+    })
+      .add(
+        new go.Shape({ // this always occupies the full circle
+          fill: 'lightgray',
+          strokeWidth: 0
+        })
+          .bind('geometry', '', makeAnnularWedge)
+          .bind('fill', 'color'),
+        new go.TextBlock({
+          width: layerThickness,
+          textAlign: 'center'
+        })
+          .bind('alignment', '', computeTextAlignment)
+          .bind('angle', 'angle', ensureUpright)
+          .bind('text')
+      );
 
     function makeAnnularWedge(data) {
       var angle = data.angle;
@@ -232,24 +225,31 @@
     }
 
     // this is the root node, at the center of the circular layers
-    myDiagram.nodeTemplateMap.add(
-      'Root',
-      $(go.Node,
-        'Auto',
-        {
-          locationSpot: go.Spot.Center,
-          selectionAdorned: false,
-          toolTip: commonToolTip,
-          width: layerThickness * 2,
-          height: layerThickness * 2,
-        },
-        $(go.Shape, 'Circle', { fill: 'white', strokeWidth: 0.5, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }),
-        $(go.TextBlock, { font: 'bold 14pt sans-serif', textAlign: 'center' }, new go.Binding('text'))
-      )
+    myDiagram.nodeTemplateMap.add('Root',
+      new go.Node('Auto', {
+        locationSpot: go.Spot.Center,
+        selectionAdorned: false,
+        toolTip: commonToolTip,
+        width: layerThickness * 2,
+        height: layerThickness * 2
+      })
+        .add(
+          new go.Shape('Circle', {
+            fill: 'white',
+            strokeWidth: 0.5,
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight
+          }),
+          new go.TextBlock({
+            font: 'bold 14pt sans-serif',
+            textAlign: 'center'
+          })
+            .bind('text')
+        )
     );
 
     // define the Link template -- don't show anything!
-    myDiagram.linkTemplate = $(go.Link);
+    myDiagram.linkTemplate = new go.Link();
 
     generateGraph();
   }
@@ -315,7 +315,7 @@
       'Samuel',
       'Tyler',
       'Dylan',
-      'Jonathan',
+      'Jonathan'
     ];
 
     var nodeDataArray = [];

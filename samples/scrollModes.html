@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -126,41 +128,36 @@
     <script id="code">
     function init() {
 
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          minScale: 0.25,  // so that the contents and the grid cannot appear too small
-          grid: $(go.Panel, "Grid",
-            $(go.Shape, "LineH", { stroke: "gray", strokeWidth: .5 }),
-            $(go.Shape, "LineH", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 }),
-            $(go.Shape, "LineV", { stroke: "gray", strokeWidth: .5 }),
-            $(go.Shape, "LineV", { stroke: "darkslategray", strokeWidth: 1.5, interval: 10 })
+      myDiagram = new go.Diagram('myDiagramDiv', {
+        minScale: 0.25,  // so that the contents and the grid cannot appear too small
+        grid: new go.Panel('Grid')
+          .add(
+            new go.Shape('LineH', { stroke: 'gray', strokeWidth: .5 }),
+            new go.Shape('LineH', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 }),
+            new go.Shape('LineV', { stroke: 'gray', strokeWidth: .5 }),
+            new go.Shape('LineV', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 })
           ),
-          "draggingTool.isGridSnapEnabled": true,
-          "undoManager.isEnabled": true  // enable undo & redo
-        });
+        'draggingTool.isGridSnapEnabled': true,
+        'undoManager.isEnabled': true  // enable undo & redo
+      });
 
-      myDiagram.nodeTemplate =
-        $(go.Node, "Auto",  // the Shape will go around the TextBlock
-          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
+      myDiagram.nodeTemplate = new go.Node('Auto')  // the Shape will go around the TextBlock
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
             // Shape.fill is bound to Node.data.color
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 8 },  // some room around the text
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 })  // some room around the text
             // TextBlock.text is bound to Node.data.text
-            new go.Binding("text"))
+            .bind('text')
         );
 
       // create the model data that will be represented by Nodes and Links
       myDiagram.model = new go.GraphLinksModel(
         [
-          { key: 1, text: "Alpha", color: "lightblue" },
-          { key: 2, text: "Beta", color: "orange" },
-          { key: 3, text: "Gamma", color: "lightgreen" },
-          { key: 4, text: "Delta", color: "pink" }
+          { key: 1, text: 'Alpha', color: 'lightblue' },
+          { key: 2, text: 'Beta', color: 'orange' },
+          { key: 3, text: 'Gamma', color: 'lightgreen' },
+          { key: 4, text: 'Delta', color: 'pink' }
         ],
         [
           { from: 1, to: 2 },
@@ -214,42 +211,48 @@
 
 <div id="sample">
 
-  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px;margin-bottom: 1rem;"></div>
+
+  <p>
+    This sample demonstrates the scrolling and scaling options that have been 
+    available since <strong style="display: inline-block;">GoJS 1.5</strong>. 
+    Enable and disable the options and interact with the <a>Diagram</a> to see 
+    how they work.
+  </p>
+
   <p>
     <label><input id="infscroll" type="checkbox" />Enable Infinite Scrolling, setting <a>Diagram.scrollMode</a></label>
-    <pre>
-      myDiagram.scrollMode = checked ? go.ScrollMode.Infinite : go.ScrollMode.Document;
-    </pre>
+    <pre class="lang-js"><code>
+myDiagram.scrollMode = checked ? go.ScrollMode.Infinite : go.ScrollMode.Document;
+    </code></pre>
   </p>
 
   <p>
     <label><input id="poscomp" type="checkbox" />Enable <a>Diagram.positionComputation</a> function</label>
-    <pre>
-      function positionfunc(diagram, pos) {
-        var size = diagram.grid.gridCellSize;
-        return new go.Point(
-          Math.round(pos.x / size.width) * size.width,
-          Math.round(pos.y / size.height) * size.height);
-      }
-    </pre>
+    <pre class="lang-js"><code>
+function positionfunc(diagram, pos) {
+  var size = diagram.grid.gridCellSize;
+  return new go.Point(
+    Math.round(pos.x / size.width) * size.width,
+    Math.round(pos.y / size.height) * size.height);
+}
+    </code></pre>
   </p>
 
   <p>
     <label><input id="scalecomp" type="checkbox" />Enable <a>Diagram.scaleComputation</a> function</label>
-    <pre>
-      function scalefunc(diagram, scale) {
-        var oldscale = diagram.scale;
-        if (scale > oldscale) {
-          return oldscale + 0.25;
-        } else if (scale < oldscale) {
-          return oldscale - 0.25;
-        }
-        return oldscale;
-      }
-    </pre>
+    <pre class="lang-js"><code>
+function scalefunc(diagram, scale) {
+  var oldscale = diagram.scale;
+  if (scale > oldscale) {
+    return oldscale + 0.25;
+  } else if (scale < oldscale) {
+    return oldscale - 0.25;
+  }
+  return oldscale;
+}
+    </code></pre>
   </p>
-
-  <p>This demonstrates new scrolling and scaling options available in <strong>GoJS 1.5</strong>.</p>
 
 </div>
 

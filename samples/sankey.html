@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -137,7 +139,10 @@
         if (shape) shape.height = height;
         const text = node.findObject('TEXT');
         const ltext = node.findObject('LTEXT');
-        const font = 'bold ' + Math.max(12, Math.round(height / 8)) + 'pt Segoe UI, Roboto, Helvetica Neue, Noto Sans, sans-serif';
+        const font =
+          'bold ' +
+          Math.max(12, Math.round(height / 8)) +
+          'pt Segoe UI, Roboto, Helvetica Neue, Noto Sans, sans-serif';
         if (text) text.font = font;
         if (ltext) ltext.font = font;
         // and update the vertex's dimensions accordingly
@@ -229,22 +234,15 @@
   // end of SankeyLayout
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // the ID of the DIV HTML element
-      {
-        initialAutoScale: go.AutoScale.Uniform,
-        'animationManager.isEnabled': false,
-        layout: $(SankeyLayout, {
-          setsPortSpots: false, // to allow the "Side" spots on the nodes to take effect
-          layerSpacing: 200, // lots of space between layers, for nicer thick links
-          columnSpacing: 1,
-        }),
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.Uniform,
+      'animationManager.isEnabled': false,
+      layout: new SankeyLayout({
+        setsPortSpots: false, // to allow the "Side" spots on the nodes to take effect
+        layerSpacing: 200, // lots of space between layers, for nicer thick links
+        columnSpacing: 1
+      })
+    });
 
     // this function provides a common style for the TextBlocks
     function textStyle() {
@@ -252,16 +250,14 @@
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Horizontal,
-      {
-        locationObjectName: 'SHAPE',
-        locationSpot: go.Spot.Left,
-        portSpreading: go.PortSpreading.Packed, // rather than the default go.PortSpreading.Evenly
-      },
-      $(go.TextBlock, textStyle(), { name: 'LTEXT' }, new go.Binding('text', 'ltext')),
-      $(go.Shape,
-        {
+    myDiagram.nodeTemplate = new go.Node(go.Panel.Horizontal, {
+      locationObjectName: 'SHAPE',
+      locationSpot: go.Spot.Left,
+      portSpreading: go.PortSpreading.Packed // rather than the default go.PortSpreading.Evenly
+    })
+      .add(
+        new go.TextBlock(textStyle(), { name: 'LTEXT' }).bind('text', 'ltext'),
+        new go.Shape({
           name: 'SHAPE',
           fill: '#2E8DEF', // default fill color
           strokeWidth: 0,
@@ -269,12 +265,10 @@
           fromSpot: go.Spot.RightSide,
           toSpot: go.Spot.LeftSide,
           height: 10,
-          width: 20,
-        },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, textStyle(), { name: 'TEXT' }, new go.Binding('text'))
-    );
+          width: 20
+        }).bind('fill', 'color'),
+        new go.TextBlock(textStyle(), { name: 'TEXT' }).bind('text')
+      );
 
     function getAutoLinkColor(data) {
       const nodedata = myDiagram.model.findNodeDataForKey(data.from);
@@ -283,46 +277,54 @@
     }
 
     // define the Link template
-    const linkSelectionAdornmentTemplate = $(go.Adornment,
-      'Link',
-      $(go.Shape, { isPanelMain: true, fill: null, stroke: 'rgba(0, 0, 255, 0.3)', strokeWidth: 0 }) // use selection object's strokeWidth
-    );
+    const linkSelectionAdornmentTemplate = new go.Adornment('Link')
+      .add(
+        new go.Shape({
+          isPanelMain: true,
+          fill: null,
+          stroke: 'rgba(0, 0, 255, 0.3)',
+          strokeWidth: 0
+        }) // use selection object's strokeWidth
+      );
 
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        curve: go.Curve.Bezier,
-        selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
-        layerName: 'Background',
-        fromEndSegmentLength: 150,
-        toEndSegmentLength: 150,
-        adjusting: go.LinkAdjusting.End,
-      },
-      $(go.Shape,
-        { strokeWidth: 4, stroke: 'rgba(173, 173, 173, 0.25)', opacity: 0.65 },
-        new go.Binding('stroke', '', getAutoLinkColor),
-        new go.Binding('strokeWidth', 'width')
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({
+      curve: go.Curve.Bezier,
+      selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
+      layerName: 'Background',
+      fromEndSegmentLength: 150,
+      toEndSegmentLength: 150,
+      adjusting: go.LinkAdjusting.End
+    })
+      .add(
+        new go.Shape({ strokeWidth: 4, stroke: 'rgba(173, 173, 173, 0.25)', opacity: 0.65 })
+          .bind('stroke', '', getAutoLinkColor)
+          .bind('strokeWidth', 'width')
+      );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
   }
 
   function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').textContent);
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 99%; height: 850px; background-color: #f2e9da"></div>
-  <p>A Sankey diagram is a type of flow diagram where the Link thickness is proportional to the flow quantity.</p>
+  <div
+    id="myDiagramDiv"
+    style="border: solid 1px black; width: 99%; height: 850px; background-color: #f2e9da"></div>
+  <p>
+    A Sankey diagram is a type of flow diagram where the Link thickness is proportional to the flow
+    quantity.
+  </p>
   <p>This sample customizes LayeredDigraphLayout.</p>
   <div>
     <div>
-      <button onclick="load()">Read</button>
+      <button onclick="load()">Load</button>
     </div>
-    <textarea id="mySavedModel" style="width: 100%; height: 250px">
+    <pre class="lang-js" style="max-height: 250px"><code id="mySavedModel">
 { "class": "go.GraphLinksModel",
   "nodeDataArray": [
 {"key":"Coal reserves", "text":"Coal reserves", "color":"#562038"},
@@ -467,7 +469,7 @@
 {"from":"Electricity grid", "to":"Geosequestration", "width":1},
 {"from":"Gas", "to":"Losses", "width":2}
  ]}
-    </textarea>
+    </code></pre>
   </div>
   This sample demonstrates one way of generating a Sankey or flow diagram. The data was derived from
   <a href="https://tamc.github.io/Sankey/">https://tamc.github.io/Sankey/</a>.

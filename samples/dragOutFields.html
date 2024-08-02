@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -196,7 +195,7 @@
           img.style.zIndex = 999;
           document.body.appendChild(img);
           this.temporaryPart.opacity = 0;
-        },
+        }
       });
     }
 
@@ -253,74 +252,66 @@
   // end of FieldDraggingTool
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       validCycle: go.CycleMode.NotDirected, // don't allow loops
-      draggingTool: $(FieldDraggingTool), // use custom DraggingTool
-      'undoManager.isEnabled': true,
+      draggingTool: new FieldDraggingTool(), // use custom DraggingTool
+      'undoManager.isEnabled': true
     });
 
     // This template is a Panel that is used to represent each item in a Panel.itemArray.
     // The Panel is data bound to the item object.
-    const fieldTemplate = $(go.Panel,
-      'TableRow', // this Panel is a row in the containing Table
-      new go.Binding('portId', 'name'), // this Panel is a "port"
-      {
-        background: 'transparent', // so this port's background can be picked by the mouse
-        fromSpot: go.Spot.Right, // links only go from the right side to the left side
-        toSpot: go.Spot.Left,
-      }, // allow drawing links from or to this port
-      $(go.Shape, { width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 }, new go.Binding('figure', 'figure'), new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: new go.Margin(0, 2), column: 1, font: 'bold 13px sans-serif' }, new go.Binding('text', 'name')),
-      $(go.TextBlock, { margin: new go.Margin(0, 2), column: 2, font: '13px sans-serif' }, new go.Binding('text', 'info'))
-    );
+    const fieldTemplate = new go.Panel('TableRow', { // this Panel is a row in the containing Table
+      background: 'transparent', // so this port's background can be picked by the mouse
+      fromSpot: go.Spot.Right, // links only go from the right side to the left side
+      toSpot: go.Spot.Left
+    }) // allow drawing links from or to this port
+      .bind('portId', 'name') // this Panel is a "port"
+      .add(
+        new go.Shape({ width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 })
+          .bind('figure')
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: new go.Margin(0, 2), column: 1, font: 'bold 13px sans-serif' })
+          .bind('text', 'name'),
+        new go.TextBlock({ margin: new go.Margin(0, 2), column: 2, font: '13px sans-serif' })
+          .bind('text', 'info')
+      );
 
     // the FieldDraggingTool needs a template for what to show while dragging
     myDiagram.toolManager.draggingTool.fieldTemplate = fieldTemplate;
 
     // This template represents a whole "record".
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      // this rectangular shape surrounds the content of the node
-      $(go.Shape, { fill: '#EEEEEE' }),
-      // the content consists of a header and a list of items
-      $(go.Panel,
-        'Vertical',
-        // this is the header for the whole node
-        $(go.Panel,
-          'Auto',
-          { stretch: go.Stretch.Horizontal }, // as wide as the whole node
-          $(go.Shape, { fill: '#1570A6', stroke: null }),
-          $(go.TextBlock,
-            {
-              alignment: go.Spot.Center,
-              margin: 3,
-              stroke: 'white',
-              textAlign: 'center',
-              font: 'bold 12pt sans-serif',
-            },
-            new go.Binding('text', 'key')
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        // this rectangular shape surrounds the content of the node
+        new go.Shape({ fill: '#EEEEEE' }),
+        // the content consists of a header and a list of items
+        new go.Panel('Vertical')
+          .add(
+            // this is the header for the whole node
+            new go.Panel('Auto', { stretch: go.Stretch.Horizontal }) // as wide as the whole node
+              .add(
+                new go.Shape({ fill: '#1570A6', stroke: null }),
+                new go.TextBlock({
+                  alignment: go.Spot.Center,
+                  margin: 3,
+                  stroke: 'white',
+                  textAlign: 'center',
+                  font: 'bold 12pt sans-serif'
+                })
+                  .bind('text', 'key')
+              ),
+            // this Panel holds a Panel for each item object in the itemArray;
+            // each item Panel is defined by the itemTemplate to be a TableRow in this Table
+            new go.Panel('Table', {
+              name: 'TABLE',
+              padding: 2,
+              minSize: new go.Size(100, 10),
+              defaultStretch: go.Stretch.Horizontal,
+              itemTemplate: fieldTemplate
+            }).bind('itemArray', 'fields')
           )
-        ),
-        // this Panel holds a Panel for each item object in the itemArray;
-        // each item Panel is defined by the itemTemplate to be a TableRow in this Table
-        $(go.Panel,
-          'Table',
-          {
-            name: 'TABLE',
-            padding: 2,
-            minSize: new go.Size(100, 10),
-            defaultStretch: go.Stretch.Horizontal,
-            itemTemplate: fieldTemplate,
-          },
-          new go.Binding('itemArray', 'fields')
-        ) // end Table Panel of items
-      ) // end Vertical Panel
-    ); // end Node
+      );
 
     myDiagram.model = new go.GraphLinksModel({
       linkFromPortIdProperty: 'fromPort',
@@ -333,9 +324,9 @@
           fields: [
             { name: 'field1', info: '', color: '#F7B84B', figure: 'Ellipse' },
             { name: 'field2', info: 'the second one', color: '#F25022', figure: 'Ellipse' },
-            { name: 'fieldThree', info: '3rd', color: '#00BCF2' },
+            { name: 'fieldThree', info: '3rd', color: '#00BCF2' }
           ],
-          loc: '0 0',
+          loc: '0 0'
         },
         {
           key: 'Record2',
@@ -343,11 +334,11 @@
             { name: 'fieldA', info: '', color: '#FFB900', figure: 'Diamond', info: 'diamond' },
             { name: 'fieldB', info: '', color: 'green', figure: 'Circle', info: 'circle' },
             { name: 'fieldC', info: '', color: 'red', figure: 'Triangle', info: 'triangle' },
-            { name: 'fieldD', info: '', figure: 'XLine', info: 'X' },
+            { name: 'fieldD', info: '', figure: 'XLine', info: 'X' }
           ],
-          loc: '250 0',
-        },
-      ],
+          loc: '250 0'
+        }
+      ]
     });
   }
   window.addEventListener('DOMContentLoaded', init);
@@ -358,6 +349,9 @@
   <p>Drag a field from one of the record nodes and drop onto the PRE element below.</p>
   <p>Here you can drop a field from one of the records above:</p>
   <pre id="myDroppedFields" style="padding: 5px; width: 200px; height: 300px; border: dashed; font: bold 11pt sans-serif"></pre>
+  <p>
+    See also <a href="../samples/dragDropFields.html">Drag and Drop Fields</a>.
+  </p>
 </div>
 
           

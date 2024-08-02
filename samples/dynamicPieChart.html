@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,15 +124,12 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
     var pieRadius = 100;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       'textEditingTool.starting': go.TextEditingStarting.SingleClick,
       ModelChanged: onModelChanged,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // When a count changes in our model, ensure we trigger a redrawing of each slice in the pie
@@ -154,136 +150,127 @@
       }
     }
 
-    var sliceTemplate = $(go.Panel,
-      $(go.Shape,
-        {
+    var sliceTemplate = new go.Panel({
+      // Allow the user to "select" slices when clicking them
+      click: (e, slice) => {
+        var sliceShape = slice.findObject('SLICE');
+        var oldskips = slice.diagram.skipsUndoManager;
+        slice.diagram.skipsUndoManager = true;
+        if (sliceShape.stroke === 'transparent') {
+          sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
+          // Move the slice out from the pie when selected
+          var nodedata = findNodeDataForSlice(slice.data);
+          if (nodedata) {
+            var sliceindex = nodedata.slices.indexOf(slice.data);
+            var angles = getAngles(nodedata, sliceindex);
+            if (angles.sweep !== 360) {
+              var angle = angles.start + angles.sweep / 2;
+              var offsetPoint = new go.Point(pieRadius / 10, 0);
+              slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
+            }
+          }
+        } else {
+          sliceShape.stroke = 'transparent';
+          slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
+        }
+        slice.diagram.skipsUndoManager = oldskips;
+      },
+      toolTip: go.GraphObject.build('ToolTip', {
+        'Border.fill': 'lightgray'
+      })
+        .add(
+          new go.TextBlock({
+            font: '10pt Verdana, sans-serif',
+            margin: 4
+          }).bind('text', '', (data) => {
+            // Display text and percentage rounded to 2 decimals
+            var nodedata = findNodeDataForSlice(data);
+            if (nodedata) {
+              var percent = Math.round((data.count / getTotalCount(nodedata)) * 100 * 100) / 100;
+              return data.text + ': ' + percent + '%';
+            }
+            return '';
+          })
+        )
+    })
+      .bind('position', '', positionSlice)
+      .add(
+        new go.Shape({
           name: 'SLICE',
           strokeWidth: 2,
           stroke: 'transparent',
-          isGeometryPositioned: true,
-        },
-        new go.Binding('fill', 'color'),
-        new go.Binding('geometry', '', makeGeo)
-      ),
-      new go.Binding('position', '', positionSlice),
-      {
-        // Allow the user to "select" slices when clicking them
-        click: (e, slice) => {
-          var sliceShape = slice.findObject('SLICE');
-          var oldskips = slice.diagram.skipsUndoManager;
-          slice.diagram.skipsUndoManager = true;
-          if (sliceShape.stroke === 'transparent') {
-            sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
-            // Move the slice out from the pie when selected
-            var nodedata = findNodeDataForSlice(slice.data);
-            if (nodedata) {
-              var sliceindex = nodedata.slices.indexOf(slice.data);
-              var angles = getAngles(nodedata, sliceindex);
-              if (angles.sweep !== 360) {
-                var angle = angles.start + angles.sweep / 2;
-                var offsetPoint = new go.Point(pieRadius / 10, 0);
-                slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
-              }
-            }
-          } else {
-            sliceShape.stroke = 'transparent';
-            slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
-          }
-          slice.diagram.skipsUndoManager = oldskips;
-        },
-      },
-      {
-        toolTip: $('ToolTip',
-          { 'Border.fill': 'lightgray' },
-          $(go.TextBlock,
-            { font: '10pt Verdana, sans-serif', margin: 4 },
-            new go.Binding('text', '', (data) => {
-              // Display text and percentage rounded to 2 decimals
-              var nodedata = findNodeDataForSlice(data);
-              if (nodedata) {
-                var percent = Math.round((data.count / getTotalCount(nodedata)) * 100 * 100) / 100;
-                return data.text + ': ' + percent + '%';
-              }
-              return '';
-            })
-          )
-        ),
-      }
-    );
+          isGeometryPositioned: true
+        })
+          .bind('fill', 'color')
+          .bind('geometry', '', makeGeo)
+      );
 
-    var optionTemplate = $(go.Panel,
-      'TableRow',
-      $(go.TextBlock,
-        {
+    var optionTemplate = new go.Panel('TableRow')
+      .add(
+        new go.TextBlock({
           column: 0,
           font: '10pt Verdana, sans-serif',
           alignment: go.Spot.Left,
-          margin: 5,
-        },
-        new go.Binding('text')
-      ),
-      $(go.Panel,
-        'Auto',
-        { column: 1 },
-        $(go.Shape, { fill: '#F2F2F2' }),
-        $(go.TextBlock,
-          {
-            font: '10pt Verdana, sans-serif',
-            textAlign: 'right',
-            margin: 2,
-            wrap: go.Wrap.None,
-            width: 40,
-            editable: true,
-            isMultiline: false,
-            textValidation: isValidCount,
-          },
-          new go.Binding('text', 'count').makeTwoWay((count) => parseInt(count, 10))
-        )
-      ),
-      $(go.Panel,
-        'Horizontal',
-        { column: 2 },
-        $('Button',
-          {
-            click: incrementCount,
-          },
-          $(go.Shape, 'PlusLine', { margin: 3, desiredSize: new go.Size(7, 7) })
-        ),
-        $('Button',
-          {
-            click: decrementCount,
-          },
-          $(go.Shape, 'MinusLine', { margin: 3, desiredSize: new go.Size(7, 7) })
-        )
-      )
-    );
+          margin: 5
+        }).bind('text'),
+        new go.Panel('Auto', {
+          column: 1
+        })
+          .add(
+            new go.Shape({ fill: '#F2F2F2' }),
+            new go.TextBlock({
+              font: '10pt Verdana, sans-serif',
+              textAlign: 'right',
+              margin: 2,
+              wrap: go.Wrap.None,
+              width: 40,
+              editable: true,
+              isMultiline: false,
+              textValidation: isValidCount
+            })
+              .bindTwoWay('text', 'count', null, (count) => parseInt(count, 10))
+          ),
+        new go.Panel('Horizontal', { column: 2 })
+          .add(
+            go.GraphObject.build('Button', { click: incrementCount })
+              .add(
+                new go.Shape('PlusLine', {
+                  margin: 3,
+                  desiredSize: new go.Size(7, 7)
+                })
+              ),
+            go.GraphObject.build('Button', { click: decrementCount })
+              .add(
+                new go.Shape('MinusLine', {
+                  margin: 3,
+                  desiredSize: new go.Size(7, 7)
+                })
+              )
+          )
+      );
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      { deletable: false },
-      $(go.TextBlock, { font: '11pt Verdana, sans-serif', margin: 5 }, new go.Binding('text')),
-      $(go.Panel,
-        'Horizontal',
-        $(go.Panel,
-          'Position',
-          {
-            name: 'PIE',
-            // account for slices offsetting when selected so the node won't change size
-            desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
-            itemTemplate: sliceTemplate,
-          },
-          new go.Binding('itemArray', 'slices')
-        ),
-        $(go.Panel,
-          'Table',
-          {
-            margin: 5,
-            itemTemplate: optionTemplate,
-          },
-          new go.Binding('itemArray', 'slices')
-        )
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Vertical', { deletable: false })
+      .add(
+        new go.TextBlock({
+          font: '11pt Verdana, sans-serif',
+          margin: 5
+        }).bind('text'),
+        new go.Panel('Horizontal')
+          .add(
+            new go.Panel('Position', {
+              name: 'PIE',
+              // account for slices offsetting when selected so the node won't change size
+              desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
+              itemTemplate: sliceTemplate
+            })
+              .bind('itemArray', 'slices'),
+            new go.Panel('Table', {
+              margin: 5,
+              itemTemplate: optionTemplate
+            })
+              .bind('itemArray', 'slices')
+          )    
+      );
 
     myDiagram.model = new go.Model({
       copiesArrays: true,
@@ -297,10 +284,10 @@
             { text: 'Option 2', count: 11, color: '#F25F5C' },
             { text: 'Option 3', count: 5, color: '#FFE066' },
             { text: 'Option 4', count: 2, color: '#2B98C5' },
-            { text: 'Option 5', count: 1, color: '#70C1B3' },
-          ],
-        },
-      ],
+            { text: 'Option 5', count: 1, color: '#70C1B3' }
+          ]
+        }
+      ]
     });
 
     // Validation function for editing text
@@ -326,7 +313,7 @@
       var sliceindex = nodedata.slices.indexOf(data);
       var angles = getAngles(nodedata, sliceindex);
 
-      // Constructing the Geomtery this way is much more efficient than calling go.GraphObject.make:
+      // Constructing the Geomtery this way is much more efficient than calling go.GraphObject.ma ke:
       return new go.Geometry().add(
         new go.PathFigure(pieRadius, pieRadius) // start point
           .add(

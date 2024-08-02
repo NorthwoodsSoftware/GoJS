@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -178,31 +177,22 @@
   var myDiagram = null;
 
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     // Initialize the Diagram
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      { 'undoManager.isEnabled': true }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
+    
     // define a simple Node template (but use the default Link template)
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { contextMenu: window.myHTMLLightBox }, // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
-      $(go.Shape,
-        'RoundedRectangle',
-        { strokeWidth: 0 },
-        // Shape.fill is bound to Node.data.color
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock,
-        { margin: 8 }, // some room around the text
-        // TextBlock.text is bound to Node.data.text
-        new go.Binding('text')
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      contextMenu: window.myHTMLLightBox // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
+    })
+      .add(
+        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+          // Shape.fill is bound to Node.data.color
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8 }) // some room around the text
+          // TextBlock.text is bound to Node.data.text
+          .bind('text')
+      );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
@@ -210,14 +200,14 @@
         { key: 1, text: 'Alpha', color: 'lightblue' },
         { key: 2, text: 'Beta', color: 'orange' },
         { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' },
+        { key: 4, text: 'Delta', color: 'pink' }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 2, to: 2 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
 

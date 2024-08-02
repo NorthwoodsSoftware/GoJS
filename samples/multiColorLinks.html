@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -164,44 +163,51 @@
   // end of MultiColorLink class
 
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      layout: $(go.ForceDirectedLayout),
-      'undoManager.isEnabled': true,
+      layout: new go.ForceDirectedLayout(),
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides },
-      $(go.Shape, { fill: 'white', strokeWidth: 0 }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 12 }, new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      fromSpot: go.Spot.AllSides,
+      toSpot: go.Spot.AllSides
+    })
+        .add(
+          new go.Shape({
+            fill: 'white',
+            strokeWidth: 0
+          })
+            .bind('fill', 'color'),
+          new go.TextBlock({
+            margin: 12
+          })
+            .bind('text')
+        );
 
     function linkPath() {
       // common styling for each colored section, each rendered by a different Shape
-      return $(go.Shape, { isPanelMain: true, strokeWidth: 5 });
+      return new go.Shape({
+        isPanelMain: true,
+        strokeWidth: 5
+      });
     }
 
-    myDiagram.linkTemplate = $(MultiColorLink,
-      {
-        routing: go.Routing.AvoidsNodes,
-        corner: 10,
-        relinkableFrom: true,
-        relinkableTo: true,
-        reshapable: true,
-        resegmentable: true,
-      },
-      linkPath(), // this template can show at most 5 colors,
-      linkPath(), // one for each link path Shape
-      linkPath(),
-      linkPath(),
-      linkPath() // remove any unneeded path Shapes here, if you never need to show 5 colors at once in a single link
-    );
+    myDiagram.linkTemplate = new MultiColorLink({
+      routing: go.Routing.AvoidsNodes,
+      corner: 10,
+      relinkableFrom: true,
+      relinkableTo: true,
+      reshapable: true,
+      resegmentable: true
+    })
+      .add(
+        linkPath(), // this template can show at most 5 colors,
+        linkPath(), // one for each link path Shape
+        linkPath(),
+        linkPath(),
+        linkPath() // remove any unneeded path Shapes here, if you never need to show 5 colors at once in a single link
+      );
 
     load();
   }
@@ -219,6 +225,13 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px; background: #444"></div>
+  <p>
+    The Link template depends on a custom <b>MultiColorLink</b> class to render sections of each of the path Shapes that it has in a different color. The colors
+    are specified in the link data object's <b>colors</b> property, an Array of CSS color strings. The template must have as many
+    <a>GraphObject.isPanelMain</a> Shapes in it as the maximum length of the Arrays of colors. This sample's template has five path Shapes in it so that it can
+    render in five different colors. But if for example you need to show at most two colors, for efficiency you should change the template to have only two path
+    Shapes in it.
+  </p>
   <button onclick="load()">Load</button>
   <button onclick="save()">Save</button>
   <textarea id="mySavedModel" style="width: 100%; height: 250px">
@@ -237,15 +250,7 @@
 {"from":4, "to":5, "colors":[ "fuchsia" ]},
 {"from":5, "to":2}
  ]}
-    </textarea
-  >
-  <p>
-    The Link template depends on a custom <b>MultiColorLink</b> class to render sections of each of the path Shapes that it has in a different color. The colors
-    are specified in the link data object's <b>colors</b> property, an Array of CSS color strings. The template must have as many
-    <a>GraphObject.isPanelMain</a> Shapes in it as the maximum length of the Arrays of colors. This sample's template has five path Shapes in it so that it can
-    render in five different colors. But if for example you need to show at most two colors, for efficiency you should change the template to have only two path
-    Shapes in it.
-  </p>
+  </textarea>
 </div>
 
           

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,200 +126,184 @@
 <script src="../extensions/LinkLabelRouter.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; //for conciseness in defining node templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', //Diagram refers to its DIV HTML element by id
-      { 'undoManager.isEnabled': true }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
+    
     myDiagram.routers.add(new AvoidsLinksRouter());
     myDiagram.routers.add(new LinkLabelRouter());
 
     // Use some colors for ports
     portColors = ['black', 'red', 'green', 'gray'];
     myDiagram.themeManager.set('', {
-      colors: { ports: portColors },
+      colors: { ports: portColors }
     });
 
     const portSize = new go.Size(8, 8);
 
     // the node template
     // includes a panel on each side with an itemArray of panels containing ports
-    myDiagram.nodeTemplate = $(go.Node,
-      'Table',
-      {
-        locationObjectName: 'BODY',
-        locationSpot: go.Spot.Center,
-        selectionObjectName: 'BODY'
-      },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-
-      // the body
-      $(go.Panel,
-        'Auto',
-        {
+    myDiagram.nodeTemplate = new go.Node('Table', {
+      locationObjectName: 'BODY',
+      locationSpot: go.Spot.Center,
+      selectionObjectName: 'BODY'
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        // the body
+        new go.Panel('Auto', {
           row: 1,
           column: 1,
           name: 'BODY',
-          stretch: go.Stretch.Fill,
-        },
-        $(go.Shape, 'Rectangle', {
-          fill: 'lightgray',
-          stroke: 'gray',
-          strokeWidth: 0.5,
-          minSize: new go.Size(60, 60),
-        }),
-        $(go.TextBlock,
-          { margin: 10, textAlign: 'center', font: 'bold 14px Segoe UI,sans-serif', stroke: '#484848', editable: true },
-          new go.Binding('text', 'name').makeTwoWay()
-        )
-      ), // end Auto Panel body
+          stretch: go.Stretch.Fill
+        })
+          .add(
+            new go.Shape('Rectangle', {
+              fill: 'lightgray',
+              stroke: 'gray',
+              strokeWidth: 0.5,
+              minSize: new go.Size(60, 60)
+            }),
+            new go.TextBlock({
+              margin: 10,
+              textAlign: 'center',
+              font: 'bold 14px Segoe UI,sans-serif',
+              stroke: '#484848',
+              editable: true
+            })
+              .bindTwoWay('text', 'name')
+          ), // end Auto Panel body
 
-      // the Panel holding the left port elements, which are themselves Panels,
-      // created for each item in the itemArray, bound to data.leftArray
-      $(go.Panel, 'Vertical', new go.Binding('itemArray', 'leftArray'), {
-        row: 1,
-        column: 0,
-        itemTemplate: $(go.Panel,
-          {
+        // the Panel holding the left port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.leftArray
+        new go.Panel('Vertical', {
+          row: 1,
+          column: 0,
+          itemTemplate: new go.Panel({
             _side: 'left', // internal property to make it easier to tell which side it's on
             fromSpot: go.Spot.Left,
             toSpot: go.Spot.Left,
             fromLinkable: true,
             toLinkable: true,
             cursor: 'pointer'
-          },
-          new go.Binding('portId', 'portId'),
-          $(go.Shape,
-            'Rectangle',
-            {
-              stroke: null,
-              strokeWidth: 0,
-              desiredSize: portSize,
-              margin: new go.Margin(1, 0),
-            },
-            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
-          )
-        ), // end itemTemplate
-      }), // end Vertical Panel
+          })
+            .bind('portId')
+            .add(
+              new go.Shape('Rectangle', {
+                stroke: null,
+                strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(1, 0)
+              })
+                .themeData('fill', 'portColor', 'ports')
+            ) // end itemTemplate
+        }) // end Vertical Panel
+          .bind('itemArray', 'leftArray'),
 
-      // the Panel holding the top port elements, which are themselves Panels,
-      // created for each item in the itemArray, bound to data.topArray
-      $(go.Panel, 'Horizontal', new go.Binding('itemArray', 'topArray'), {
-        row: 0,
-        column: 1,
-        itemTemplate: $(go.Panel,
-          {
-            _side: 'top',
+        // the Panel holding the top port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.topArray
+        new go.Panel('Horizontal', {
+          row: 0,
+          column: 1,
+          itemTemplate: new go.Panel({
+            _side: 'top', // internal property to make it easier to tell which side it's on
             fromSpot: go.Spot.Top,
             toSpot: go.Spot.Top,
             fromLinkable: true,
             toLinkable: true,
             cursor: 'pointer'
-          },
-          new go.Binding('portId', 'portId'),
-          $(go.Shape,
-            'Rectangle',
-            {
-              stroke: null,
-              strokeWidth: 0,
-              desiredSize: portSize,
-              margin: new go.Margin(0, 1),
-            },
-            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
-          )
-        ), // end itemTemplate
-      }), // end Horizontal Panel
+          })
+            .bind('portId')
+            .add(
+              new go.Shape('Rectangle', {
+                stroke: null,
+                strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(0, 1)
+              })
+                .themeData('fill', 'portColor', 'ports')
+            ) // end itemTemplate
+        }) // end Horizontal Panel
+          .bind('itemArray', 'topArray'),
 
-      // the Panel holding the right port elements, which are themselves Panels,
-      // created for each item in the itemArray, bound to data.rightArray
-      $(go.Panel, 'Vertical', new go.Binding('itemArray', 'rightArray'), {
-        row: 1,
-        column: 2,
-        itemTemplate: $(go.Panel,
-          {
-            _side: 'right',
+        // the Panel holding the right port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.rightArray
+        new go.Panel('Vertical', {
+          row: 1,
+          column: 2,
+          itemTemplate: new go.Panel({
+            _side: 'right', // internal property to make it easier to tell which side it's on
             fromSpot: go.Spot.Right,
             toSpot: go.Spot.Right,
             fromLinkable: true,
             toLinkable: true,
             cursor: 'pointer'
-          },
-          new go.Binding('portId', 'portId'),
-          $(go.Shape,
-            'Rectangle',
-            {
-              stroke: null,
-              strokeWidth: 0,
-              desiredSize: portSize,
-              margin: new go.Margin(1, 0),
-            },
-            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
-          )
-        ), // end itemTemplate
-      }), // end Vertical Panel
+          })
+            .bind('portId')
+            .add(
+              new go.Shape('Rectangle', {
+                stroke: null,
+                strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(1, 0)
+              })
+                .themeData('fill', 'portColor', 'ports')
+            ) // end itemTemplate
+        }) // end Vertical Panel
+          .bind('itemArray', 'rightArray'),
 
-      // the Panel holding the bottom port elements, which are themselves Panels,
-      // created for each item in the itemArray, bound to data.bottomArray
-      $(go.Panel, 'Horizontal', new go.Binding('itemArray', 'bottomArray'), {
-        row: 2,
-        column: 1,
-        itemTemplate: $(go.Panel,
-          {
-            _side: 'bottom',
+        // the Panel holding the bottom port elements, which are themselves Panels,
+        // created for each item in the itemArray, bound to data.bottomArray
+        new go.Panel('Horizontal', {
+          row: 2,
+          column: 1,
+          itemTemplate: new go.Panel({
+            _side: 'bottom', // internal property to make it easier to tell which side it's on
             fromSpot: go.Spot.Bottom,
             toSpot: go.Spot.Bottom,
             fromLinkable: true,
             toLinkable: true,
             cursor: 'pointer'
-          },
-          new go.Binding('portId', 'portId'),
-          $(go.Shape,
-            'Rectangle',
-            {
-              stroke: null,
-              strokeWidth: 0,
-              desiredSize: portSize,
-              margin: new go.Margin(0, 1),
-            },
-            new go.ThemeBinding('fill', 'portColor', 'ports').ofData()
-          )
-        ), // end itemTemplate
-      }) // end Horizontal Panel
-    ); // end Node
+          })
+            .bind('portId')
+            .add(
+              new go.Shape('Rectangle', {
+                stroke: null,
+                strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(0, 1)
+              })
+                .themeData('fill', 'portColor', 'ports')
+            ) // end itemTemplate
+        }) // end Horizontal Panel
+        .bind('itemArray', 'bottomArray')
+      );
 
     // an orthogonal link template, reshapable and relinkable
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        routing: go.Routing.AvoidsNodes,
-        corner: 4,
-        curve: go.Curve.JumpGap,
-        reshapable: true,
-        resegmentable: true,
-        relinkableFrom: true,
-        relinkableTo: true
-      },
-      new go.Binding('points').makeTwoWay(),
-      $(go.Shape, { stroke: '#2F4F4F', strokeWidth: 1.5 }),
-      $(go.Panel, "Auto",
-        $(go.Shape, "RoundedRectangle", {
-          fill: "white"
-        },
-        new go.Binding("fill", "labelColor"),
-        new go.Binding("width", "labelWidth"),
-        new go.Binding("height", "labelHeight")
-        ),
-        $(go.TextBlock, {
-          font: "bold 10px Segoe UI,sans-serif",
-          stroke: '#484848',
-          margin: 2
-        },
-        new go.Binding("text", "labelText")
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.AvoidsNodes,
+      corner: 4,
+      curve: go.Curve.JumpGap,
+      reshapable: true,
+      resegmentable: true,
+      relinkableFrom: true,
+      relinkableTo: true
+    })
+      .bindTwoWay('points')
+      .add(
+        new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 }),
+        new go.Panel("Auto")
+        .add(
+          new go.Shape("RoundedRectangle", { fill: "white" })
+            .bind("fill", "labelColor")
+            .bind("width", "labelWidth")
+            .bind("height", "labelHeight"),
+          new go.TextBlock({
+            font: "bold 10px Segoe UI,sans-serif",
+            stroke: '#484848',
+            margin: 2
+          })
+            .bind("text", "labelText")
         )
-      )
-    );
+      );
 
     myDiagram.toolManager.linkingTool.archetypeLinkData = {
       labelColor: "lightblue",
@@ -349,6 +332,19 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="width: 600px; height: 500px; border: 1px solid black"></div>
+  <p>
+    The <a>Diagram.routers</a> <a>List</a> has both the
+    <a href="../extensions/LinkLabelRouter.js">Link Label Router</a> and
+    <a href="./AvoidsLinksRouter.html">Avoids Links Router</a>, this way <a>Link</a>s
+    and labels won't overlap allowing the <a>Diagram</a> be more readable.
+  </p>
+  <p>
+    The <a href="./AvoidsLinksRouter.html">Avoids Links Router</a>
+    live updates while <a>Node</a>s are being dragged, after the <a>Node</a> is
+    released the <a href="../extensions/LinkLabelRouter.js">Link Label Router</a>
+    will adjust the labels to prevent overlapping when possible.
+  </p>
+  <p>See <a href="../extensionsJSM/AvoidsLinksRouter.ts">AvoidsLinksRouter.ts</a> for the TypeScript source.</p>
   <p>See the <a href="../intro/ports.html">Ports Intro page</a> for an explanation of GoJS ports.</p>
   <div>
     <div>

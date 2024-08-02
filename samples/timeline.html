@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,27 +124,21 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        'animationManager.isEnabled': false,
-        'commandHandler.decreaseZoom': function () {
-          changeScale(1 / 1.05);
-        }, // method override must be function, not =>
-        'commandHandler.increaseZoom': function () {
-          changeScale(1.05);
-        }, // method override must be function, not =>
-        'commandHandler.resetZoom': function () {
-          setScale(1.0);
-        }, // method override must be function, not =>
-        layout: $(TimelineLayout),
-        isTreePathToChildren: false, // arrows from children (events) to the parent (timeline bar)
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'animationManager.isEnabled': false,
+      'commandHandler.decreaseZoom': function () {
+        changeScale(1 / 1.05);
+      }, // method override must be function, not =>
+      'commandHandler.increaseZoom': function () {
+        changeScale(1.05);
+      }, // method override must be function, not =>
+      'commandHandler.resetZoom': function () {
+        setScale(1.0);
+      }, // method override must be function, not =>
+      layout: new TimelineLayout(),
+      isTreePathToChildren: false // arrows from children (events) to the parent (timeline bar)
+    });
 
     function changeScale(factor) {
       const oldscale = myDiagram.model.modelData.scale || 1.0;
@@ -171,81 +164,92 @@
       }
     }
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Table',
-      { locationSpot: go.Spot.Center, movable: false },
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, 'RoundedRectangle', { fill: '#252526', stroke: '#519ABA', strokeWidth: 3 }),
-        $(go.Panel,
-          'Table',
-          $(go.TextBlock,
-            {
-              row: 0,
-              stroke: '#CCCCCC',
-              wrap: go.Wrap.Fit,
-              font: 'bold 12pt sans-serif',
-              textAlign: 'center',
-              margin: 4,
-            },
-            new go.Binding('text', 'event')
-          ),
-          $(go.TextBlock,
-            {
-              row: 1,
-              stroke: '#A074C4',
-              textAlign: 'center',
-              margin: 4,
-            },
-            new go.Binding('text', 'date', (d) => d.toLocaleDateString())
+    myDiagram.nodeTemplate = new go.Node('Table', {
+      locationSpot: go.Spot.Center,
+      movable: false
+    })
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', {
+              fill: '#252526',
+              stroke: '#519ABA',
+              strokeWidth: 3
+            }),
+            new go.Panel('Table')
+              .add(
+                new go.TextBlock({
+                  row: 0,
+                  stroke: '#CCCCCC',
+                  wrap: go.Wrap.Fit,
+                  font: 'bold 12pt sans-serif',
+                  textAlign: 'center',
+                  margin: 4
+                })
+                  .bind('text', 'event'),
+                new go.TextBlock({
+                  row: 1,
+                  stroke: '#A074C4',
+                  textAlign: 'center',
+                  margin: 4
+                })
+                  .bind('text', 'date', (d) => d.toLocaleDateString())
+              )
           )
-        )
-      )
-    );
+      );
 
-    myDiagram.nodeTemplateMap.add(
-      'Line',
-      $(go.Node,
-        'Graduated',
-        {
-          movable: false,
-          copyable: false,
-          resizable: true,
-          resizeObjectName: 'MAIN',
-          background: 'transparent',
-          graduatedMin: 0,
-          graduatedMax: 365,
-          graduatedTickUnit: 1,
-          // only resizing at right end
-          resizeAdornmentTemplate: $(go.Adornment,
-            'Spot',
-            $(go.Placeholder),
-            $(go.Shape, { alignment: go.Spot.Right, cursor: 'e-resize', desiredSize: new go.Size(4, 16), fill: 'lightblue', stroke: 'deepskyblue' })
-          ),
-        },
-        new go.Binding('graduatedMax', '', timelineDays),
-        $(go.Shape,
-          'LineH',
-          { name: 'MAIN', stroke: '#519ABA', height: 1, strokeWidth: 3 },
-          new go.Binding('width', 'length', (l, shape) => l * (shape.diagram.model.modelData.scale || 1.0)).makeTwoWay(
-            (w, data, model) => w / (model.modelData.scale || 1.0)
+    myDiagram.nodeTemplateMap.add('Line',
+      new go.Node('Graduated', {
+        movable: false,
+        copyable: false,
+        resizable: true,
+        resizeObjectName: 'MAIN',
+        background: 'transparent',
+        graduatedMin: 0,
+        graduatedMax: 365,
+        graduatedTickUnit: 1,
+        // only resizing at right end
+        resizeAdornmentTemplate: new go.Adornment('Spot')
+          .add(
+            new go.Placeholder(),
+            new go.Shape({
+              alignment: go.Spot.Right,
+              cursor: 'e-resize',
+              desiredSize: new go.Size(4, 16),
+              fill: 'lightblue',
+              stroke: 'deepskyblue'
+            })
           )
-        ),
-        $(go.Shape, { geometryString: 'M0 0 V10', interval: 7, stroke: '#519ABA', strokeWidth: 2 }),
-        $(go.TextBlock,
-          {
+      })
+        .bind('graduatedMax', '', timelineDays)
+        .add(
+          new go.Shape('LineH', {
+            name: 'MAIN',
+            stroke: '#519ABA',
+            height: 1,
+            strokeWidth: 3
+          })
+            .bindTwoWay('width', 'length', (l, shape) => l * (shape.diagram.model.modelData.scale || 1.0),
+              (w, data, model) => w / (model.modelData.scale || 1.0)
+            ),
+          new go.Shape({
+            geometryString: 'M0 0 V10',
+            interval: 7,
+            stroke: '#519ABA',
+            strokeWidth: 2
+          }),
+          new go.TextBlock({
             font: '10pt sans-serif',
             stroke: '#CCCCCC',
             interval: 14,
             alignmentFocus: go.Spot.Right,
             segmentOrientation: go.Orientation.Minus90,
             segmentOffset: new go.Point(0, 12),
-            graduatedFunction: valueToDate,
-          },
-          new go.Binding('interval', 'length', calculateLabelInterval)
+            graduatedFunction: valueToDate
+          })
+            .bind('interval', 'length', calculateLabelInterval)
         )
-      )
-    );
+      );
 
     function calculateLabelInterval(len) {
       if (len >= 800) return 7;
@@ -257,10 +261,16 @@
     }
 
     // The template for the link connecting the event node with the timeline bar node:
-    myDiagram.linkTemplate = $(BarLink, // defined below
-      { toShortLength: 2, layerName: 'Background' },
-      $(go.Shape, { stroke: '#E37933', strokeWidth: 2 })
-    );
+    myDiagram.linkTemplate = new BarLink({ // defined below
+        toShortLength: 2,
+        layerName: 'Background'
+      })
+      .add(
+        new go.Shape({
+          stroke: '#E37933',
+          strokeWidth: 2
+        })
+      );
 
     // Setup the model data -- an object describing the timeline bar node
     // and an object for each event node:
@@ -272,7 +282,7 @@
         lineSpacing: 30, // distance between timeline and event nodes
         length: 700, // the width of the timeline
         start: new Date('1 Jan 2016'),
-        end: new Date('31 Dec 2016'),
+        end: new Date('31 Dec 2016')
       },
 
       // the rest are just "events" --
@@ -287,7 +297,7 @@
       { event: 'Columbus Day', date: new Date('10 Oct 2016') },
       { event: 'Veterans Day', date: new Date('11 Nov 2016') },
       { event: 'Thanksgiving', date: new Date('24 Nov 2016') },
-      { event: 'Christmas', date: new Date('25 Dec 2016') },
+      { event: 'Christmas', date: new Date('25 Dec 2016') }
     ];
 
     // prepare the model by adding links to the Line

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -165,33 +164,31 @@
 <script id="code">
   function init() {
     const CellSize = new go.Size(20, 20);
-    const myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the HTML Div element
-      {
-        contentAlignment: go.Spot.Center,
-        grid: new go.Panel('Grid', { gridCellSize: CellSize })
-          .add(new go.Shape('LineH', { strokeWidth: 0.5, stroke: 'lightgray' }))
-          .add(new go.Shape('LineV', { strokeWidth: 0.5, stroke: 'lightgray' })),
-        'animationManager.isEnabled': false,
-        'undoManager.isEnabled': true,
-        'draggingTool.dragsLink': true,
-        'relinkingTool.isUnconnectedLinkValid': true,
-        'linkingTool.isUnconnectedLinkValid': true,
-        'draggingTool.isGridSnapEnabled': true,
-        'draggingTool.gridSnapCellSpot': go.Spot.Center,
-        'resizingTool.isGridSnapEnabled': true,
-        ModelChanged: (e) => {
-          // just for demonstration purposes,
-          if (e.isTransactionFinished) {
-            // show the model data in the page's TextArea
-            const modelDiv = document.getElementById('modelJson');
-            modelDiv.textContent = e.model.toJson();
-            if (window.Prism) window.Prism.highlightElement(modelDiv);
-          }
-        },
+    const myDiagram = new go.Diagram('myDiagramDiv', {
+      contentAlignment: go.Spot.Center,
+      grid: new go.Panel('Grid', { gridCellSize: CellSize })
+        .add(
+          new go.Shape('LineH', { strokeWidth: 0.5, stroke: 'lightgray' }),
+          new go.Shape('LineV', { strokeWidth: 0.5, stroke: 'lightgray' })
+        ),
+      'animationManager.isEnabled': false,
+      'undoManager.isEnabled': true,
+      'draggingTool.dragsLink': true,
+      'relinkingTool.isUnconnectedLinkValid': true,
+      'linkingTool.isUnconnectedLinkValid': true,
+      'draggingTool.isGridSnapEnabled': true,
+      'draggingTool.gridSnapCellSpot': go.Spot.Center,
+      'resizingTool.isGridSnapEnabled': true,
+      ModelChanged: (e) => {
+        // just for demonstration purposes,
+        if (e.isTransactionFinished) {
+          // show the model data in the page's TextArea
+          const modelDiv = document.getElementById('modelJson');
+          modelDiv.textContent = e.model.toJson();
+          if (window.Prism) window.Prism.highlightElement(modelDiv);
+        }
       }
-    );
-    window.myDiagram = myDiagram; // only for easy sample inspection and debugging
+    });
 
     // The default template (empty-string name) represents racks, shelves, or tables
     myDiagram.nodeTemplateMap.add(
@@ -200,7 +197,7 @@
         resizable: true,
         resizeObjectName: 'mainShape',
         // because the gridSnapCellSpot is Center, offset the Node's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
       })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
@@ -209,14 +206,12 @@
             name: 'mainShape',
             opacity: 0.7,
             minSize: CellSize,
-            desiredSize: CellSize, // defaults to 1x1 cell
+            desiredSize: CellSize // defaults to 1x1 cell
           })
             .bind('fill', 'color')
-            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-        )
-        .add(
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
           new go.TextBlock({
-            font: 'italic 11pt Verdana',
+            font: 'italic 11pt Verdana'
           }).bind('text', 'label')
         )
     );
@@ -228,7 +223,7 @@
         resizable: true,
         resizeObjectName: 'mainShape',
         // because the gridSnapCellSpot is Center, offset the Node's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
       })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
@@ -239,14 +234,12 @@
             fill: null,
             strokeWidth: 1.5,
             minSize: CellSize,
-            desiredSize: CellSize, // defaults to 1x1 cell
+            desiredSize: CellSize // defaults to 1x1 cell
           })
             .bind('fill', 'color')
-            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-        )
-        .add(
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
           new go.TextBlock('label', {
-            font: 'italic 11pt Georgia',
+            font: 'italic 11pt Georgia'
           }).bind('text', 'label')
         )
     );
@@ -259,7 +252,7 @@
         layerName: 'Background',
         locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
         selectable: false,
-        pickable: false,
+        pickable: false
       })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
@@ -269,7 +262,7 @@
             fill: 'rgba(0, 0, 0, 0.05)',
             strokeWidth: 2,
             minSize: CellSize,
-            desiredSize: CellSize, // defaults to 1x1 cell
+            desiredSize: CellSize // defaults to 1x1 cell
           }).bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         )
     );
@@ -281,20 +274,22 @@
       // routing: go.Routing.AvoidsNodes,
       // curve: go.Curve.JumpOver,
       corner: 5,
-      toShortLength: 4,
+      toShortLength: 4
     })
       .bindTwoWay('points')
-      .add(new go.Shape({ stroke: '#555', strokeDashArray: [12, 8], isPanelMain: true, strokeWidth: 3 }))
-      .add(new go.Shape({ stroke: '#555', fill: '#555', toArrow: 'Triangle', scale: 2 }))
       .add(
-        new go.Panel('Auto').add(new go.Shape('RoundedRectangle', { fill: '#F8F8F8', stroke: null })).add(
+        new go.Shape({ stroke: '#555', strokeDashArray: [12, 8], isPanelMain: true, strokeWidth: 3 }),
+        new go.Shape({ stroke: '#555', fill: '#555', toArrow: 'Triangle', scale: 2 }),
+        new go.Panel('Auto')
+          .add(
+            new go.Shape('RoundedRectangle', { fill: '#F8F8F8', stroke: null }),
           new go.TextBlock({
             textAlign: 'center',
             font: '10pt helvetica, arial, sans-serif',
             stroke: '#919191',
             margin: 2,
             minSize: new go.Size(10, NaN),
-            editable: true,
+            editable: true
           }).bindTwoWay('text')
         )
       );

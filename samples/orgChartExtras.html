@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,50 +124,43 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        // make sure users can only create trees
-        validCycle: go.CycleMode.DestinationTree,
-        // users can select only one part at a time
-        maxSelectionCount: 1,
-        layout: $(go.TreeLayout, {
-          treeStyle: go.TreeStyle.LastParents,
-          arrangement: go.TreeArrangement.Horizontal,
-          // properties for most of the tree:
-          angle: 90,
-          layerSpacing: 35,
-          // properties for the "last parents":
-          alternateAngle: 0,
-          alternateLayerSpacing: 35,
-          alternateAlignment: go.TreeAlignment.Start,
-          alternateNodeIndent: 10,
-          alternateNodeIndentPastParent: 1.0,
-          alternateNodeSpacing: 10,
-          alternateLayerSpacing: 30,
-          alternateLayerSpacingParentOverlap: 1.0,
-          alternatePortSpot: new go.Spot(0.01, 1, 10, 0),
-          alternateChildPortSpot: go.Spot.Left,
-        }),
-        // support editing the properties of the selected person in HTML
-        ChangedSelection: onSelectionChanged,
-        TextEdited: onTextEdited,
-        // newly drawn links are of type "Support" -- not a regular boss-employee relationship
-        'linkingTool.archetypeLinkData': { category: 'Support', text: '100%' },
-        // enable undo & redo
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      // make sure users can only create trees
+      validCycle: go.CycleMode.DestinationTree,
+      // users can select only one part at a time
+      maxSelectionCount: 1,
+      layout: new go.TreeLayout({
+        treeStyle: go.TreeStyle.LastParents,
+        arrangement: go.TreeArrangement.Horizontal,
+        // properties for most of the tree:
+        angle: 90,
+        layerSpacing: 35,
+        // properties for the "last parents":
+        alternateAngle: 0,
+        alternateLayerSpacing: 35,
+        alternateAlignment: go.TreeAlignment.Start,
+        alternateNodeIndent: 10,
+        alternateNodeIndentPastParent: 1.0,
+        alternateNodeSpacing: 10,
+        alternateLayerSpacing: 30,
+        alternateLayerSpacingParentOverlap: 1.0,
+        alternatePortSpot: new go.Spot(0.01, 1, 10, 0),
+        alternateChildPortSpot: go.Spot.Left
+      }),
+      // support editing the properties of the selected person in HTML
+      ChangedSelection: onSelectionChanged,
+      TextEdited: onTextEdited,
+      // newly drawn links are of type "Support" -- not a regular boss-employee relationship
+      'linkingTool.archetypeLinkData': { category: 'Support', text: '100%' },
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -176,16 +168,16 @@
       }
     });
 
-    var graygrad = $(go.Brush, 'Linear', { 0: 'rgb(125, 125, 125)', 0.5: 'rgb(86, 86, 86)', 1: 'rgb(86, 86, 86)' });
+    const graygrad = new go.Brush('Linear', { 0: 'rgb(125, 125, 125)', 0.5: 'rgb(86, 86, 86)', 1: 'rgb(86, 86, 86)' });
 
     // when a node is double-clicked, add a child to it
     function nodeDoubleClick(e, obj) {
-      var clicked = obj.part;
+      const clicked = obj.part;
       if (clicked !== null) {
-        var thisemp = clicked.data;
+        const thisemp = clicked.data;
         myDiagram.startTransaction('add employee');
-        var nextkey = (myDiagram.model.nodeDataArray.length + 1).toString();
-        var newemp = { key: nextkey, name: '(new person)', title: '' };
+        const nextkey = (myDiagram.model.nodeDataArray.length + 1).toString();
+        const newemp = { key: nextkey, name: '(new person)', title: '' };
         myDiagram.model.addNodeData(newemp);
         myDiagram.model.addLinkData({ from: thisemp.key, to: nextkey });
         myDiagram.commitTransaction('add employee');
@@ -202,155 +194,155 @@
 
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
-    function textStyle() {
-      return { font: '9pt sans-serif', stroke: 'white' };
+    function textStyle(obj) {
+      return Object.assign({ font: '9pt sans-serif', stroke: 'white' }, obj || {});
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { doubleClick: nodeDoubleClick },
-      {
-        // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-        mouseDragEnter: (e, node, prev) => {
-          var diagram = node.diagram;
-          var selnode = diagram.selection.first();
-          if (!mayWorkFor(selnode, node)) return;
-          var shape = node.findObject('SHAPE');
-          if (shape) shape.fill = 'darkred';
-        },
-        mouseDragLeave: (e, node, next) => {
-          var shape = node.findObject('SHAPE');
-          if (shape) shape.fill = graygrad;
-        },
-        mouseDrop: (e, node) => {
-          var diagram = node.diagram;
-          var selnode = diagram.selection.first(); // assume just one Node in selection
-          if (mayWorkFor(selnode, node)) {
-            // find any existing link into the selected node
-            var link = selnode.findTreeParentLink();
-            if (link !== null) {
-              // reconnect any existing link
-              link.fromNode = node;
-            } else {
-              // else create a new link
-              diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
-            }
-          }
-        },
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      doubleClick: nodeDoubleClick,
+      // handle dragging a Node onto a Node to (maybe) change the reporting relationship
+      mouseDragEnter: (e, node, prev) => {
+        const diagram = node.diagram;
+        const selnode = diagram.selection.first();
+        if (!mayWorkFor(selnode, node)) return;
+        const shape = node.findObject('SHAPE');
+        if (shape) shape.fill = 'darkred';
       },
+      mouseDragLeave: (e, node, next) => {
+        const shape = node.findObject('SHAPE');
+        if (shape) shape.fill = graygrad;
+      },
+      mouseDrop: (e, node) => {
+        const diagram = node.diagram;
+        const selnode = diagram.selection.first(); // assume just one Node in selection
+        if (mayWorkFor(selnode, node)) {
+          // find any existing link into the selected node
+          const link = selnode.findTreeParentLink();
+          if (link !== null) {
+            // reconnect any existing link
+            link.fromNode = node;
+          } else {
+            // else create a new link
+            diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
+          }
+        }
+      }
+    })
       // for sorting, have the Node.text be the data.name
-      new go.Binding('text', 'name'),
+      .bind('text', 'name')
       // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-      new go.Binding('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : '')).ofObject(),
-      // define the node's outer shape
-      $(go.Shape, 'RoundedRectangle', {
-        name: 'SHAPE',
-        fill: graygrad,
-        stroke: 'black',
-        portId: '',
-        fromLinkable: true,
-        toLinkable: true,
-        cursor: 'pointer',
-      }),
-      // define the panel where the text will appear
-      $(go.Panel,
-        'Table',
-        {
+      .bindObject('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : ''))
+      .add(
+        // define the node's outer shape
+        new go.Shape('RoundedRectangle', {
+          name: 'SHAPE',
+          fill: graygrad,
+          stroke: 'black',
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true,
+          cursor: 'pointer'
+        }),
+        // define the panel where the text will appear
+        new go.Panel('Table', {
           maxSize: new go.Size(150, 999),
           margin: new go.Margin(3, 3, 0, 3),
-          defaultAlignment: go.Spot.Left,
-        },
-        $(go.RowColumnDefinition, { column: 2, width: 4 }),
-        $(go.TextBlock, // the name
-          {
-            row: 0,
-            column: 0,
-            columnSpan: 5,
-            font: 'bold 9pt sans-serif',
-            editable: true,
-            isMultiline: false,
-            stroke: 'white',
-            minSize: new go.Size(10, 14),
-            name: 'name',
-          },
-          new go.Binding('text', 'name').makeTwoWay()
-        ),
-        $(go.TextBlock, 'Title: ', textStyle(), { row: 1, column: 0 }),
-        $(go.TextBlock,
-          textStyle(),
-          {
-            row: 1,
-            column: 1,
-            columnSpan: 4,
-            editable: true,
-            isMultiline: false,
-            minSize: new go.Size(10, 14),
-            margin: new go.Margin(0, 0, 0, 3),
-            name: 'title',
-          },
-          new go.Binding('text', 'title').makeTwoWay()
-        ),
-        $(go.TextBlock,
-          'ID: ',
-          textStyle(), // the ID and the boss
-          { row: 2, column: 0 }
-        ),
-        $(go.TextBlock, textStyle(), { row: 2, column: 1 }, new go.Binding('text', 'key')),
-        $(go.TextBlock, 'Boss: ', textStyle(), { row: 2, column: 3 }),
-        $(go.TextBlock, textStyle(), { row: 2, column: 4 }, new go.Binding('text', 'parent')),
-        $(go.TextBlock, // the comments
-          {
-            row: 3,
-            column: 0,
-            columnSpan: 5,
-            font: 'italic 9pt sans-serif',
-            wrap: go.Wrap.Fit,
-            editable: true, // by default newlines are allowed
-            stroke: 'white',
-            minSize: new go.Size(10, 14),
-            name: 'comments',
-          },
-          new go.Binding('text', 'comments').makeTwoWay()
-        ),
-        $('TreeExpanderButton', { row: 4, columnSpan: 99, alignment: go.Spot.Center })
-      ) // end Table Panel
-    ); // end Node
+          defaultAlignment: go.Spot.Left
+        })
+          .addColumnDefinition(2, { width: 4 })
+          .add(
+            new go.TextBlock({ // the name
+              row: 0,
+              column: 0,
+              columnSpan: 5,
+              font: 'bold 9pt sans-serif',
+              editable: true,
+              isMultiline: false,
+              stroke: 'white',
+              minSize: new go.Size(10, 14),
+              name: 'name'
+            })
+              .bindTwoWay('text', 'name'),
+            new go.TextBlock('Title: ', textStyle({ row: 1, column: 0 })),
+            new go.TextBlock(
+              textStyle(
+                {
+                  row: 1,
+                  column: 1,
+                  columnSpan: 4,
+                  editable: true,
+                  isMultiline: false,
+                  minSize: new go.Size(10, 14),
+                  margin: new go.Margin(0, 0, 0, 3),
+                  name: 'title'
+                }
+              ))
+              .bindTwoWay('text', 'title'),
+            new go.TextBlock('ID: ', textStyle({ row: 2, column: 0 })), // the ID and the boss
+            new go.TextBlock(textStyle({ row: 2, column: 1 })).bind('text', 'key'),
+            new go.TextBlock('Boss: ', textStyle({ row: 2, column: 3 })),
+            new go.TextBlock(textStyle({ row: 2, column: 4 })).bind('text', 'parent'),
+            new go.TextBlock({ // the comments
+              row: 3,
+              column: 0,
+              columnSpan: 5,
+              font: 'italic 9pt sans-serif',
+              wrap: go.Wrap.Fit,
+              editable: true, // by default newlines are allowed
+              stroke: 'white',
+              minSize: new go.Size(10, 14),
+              name: 'comments'
+            })
+              .bind('text', 'comments'),
+            go.GraphObject.build('TreeExpanderButton', { row: 4, columnSpan: 99, alignment: go.Spot.Center })
+          ) // end Table Panel
+      ); // end Node
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link, { routing: go.Routing.Orthogonal, corner: 5 }, $(go.Shape, { strokeWidth: 2 })); // the link shape
+    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, corner: 5 }).add(new go.Shape({ strokeWidth: 2 })); // the link shape
 
     myDiagram.linkTemplateMap.add(
       'Support',
-      $(go.Link,
-        { curve: go.Curve.Bezier },
-        { isLayoutPositioned: false, isTreeLink: false, curviness: -50 },
-        { relinkableFrom: true, relinkableTo: true },
-        $(go.Shape, { stroke: 'green', strokeWidth: 2 }),
-        $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'green', strokeWidth: 2 }),
-        $(go.TextBlock, new go.Binding('text').makeTwoWay(), {
-          stroke: 'green',
-          background: 'rgba(255,255,255,0.75)',
-          maxSize: new go.Size(80, NaN),
-          editable: true,
-        })
+      new go.Link({ 
+        curve: go.Curve.Bezier, 
+        isLayoutPositioned: false,
+        isTreeLink: false,
+        curviness: -50, 
+        relinkableFrom: true,
+        relinkableTo: true
+      })
+        .add(
+          new go.Shape({ stroke: 'green', strokeWidth: 2 }),
+          new go.Shape({ toArrow: 'OpenTriangle', stroke: 'green', strokeWidth: 2 }),
+          new go.TextBlock({
+            stroke: 'green',
+            background: 'rgba(255,255,255,0.75)',
+            maxSize: new go.Size(80, NaN),
+            editable: true
+          }).bindTwoWay('text')
       )
     );
 
     myDiagram.linkTemplateMap.add(
       'Motion',
-      $(go.Link,
-        { curve: go.Curve.Bezier },
-        { isLayoutPositioned: false, isTreeLink: false, curviness: -50 },
-        { relinkableFrom: true, relinkableTo: true },
-        $(go.Shape, { stroke: 'orange', strokeWidth: 2 }),
-        $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'orange', strokeWidth: 2 }),
-        $(go.TextBlock, new go.Binding('text').makeTwoWay(), {
-          stroke: 'orange',
+      new go.Link({
+        curve: go.Curve.Bezier, 
+        isLayoutPositioned: false, 
+        isTreeLink: false,
+        curviness: -50, 
+        relinkableFrom: true,
+        relinkableTo: true
+      })
+        .add(
+          new go.Shape({ stroke: 'orange', strokeWidth: 2 }),
+          new go.Shape({ toArrow: 'OpenTriangle', stroke: 'orange', strokeWidth: 2 }),
+          new go.TextBlock({
+            stroke: 'orange',
           background: 'rgba(255,255,255,0.75)',
           maxSize: new go.Size(80, NaN),
-          editable: true,
-        })
+          editable: true
+        }).bindTwoWay('text')
       )
     );
 
@@ -360,7 +352,7 @@
 
   // Allow the user to edit text when a single node is selected
   function onSelectionChanged(e) {
-    var node = e.diagram.selection.first();
+    const node = e.diagram.selection.first();
     if (node instanceof go.Node) {
       updateProperties(node.data);
     } else {
@@ -385,9 +377,9 @@
 
   // This is called when the user has finished inline text-editing
   function onTextEdited(e) {
-    var tb = e.subject;
+    const tb = e.subject;
     if (tb === null || !tb.name) return;
-    var node = tb.part;
+    const node = tb.part;
     if (node instanceof go.Node) {
       updateData(tb.text, tb.name);
       updateProperties(node.data);
@@ -396,11 +388,11 @@
 
   // Update the data fields when the text is changed
   function updateData(text, field) {
-    var node = myDiagram.selection.first();
+    const node = myDiagram.selection.first();
     // maxSelectionCount = 1, so there can only be one Part in this collection
-    var data = node.data;
+    const data = node.data;
     if (node instanceof go.Node && data !== null) {
-      var model = myDiagram.model;
+      const model = myDiagram.model;
       model.startTransaction('modified ' + field);
       if (field === 'name') {
         model.setDataProperty(data, 'name', text);
@@ -441,8 +433,8 @@
   </p>
   <div>
     <div>
-      <button id="SaveButton" onclick="save()">Write</button>
-      <button onclick="load()">Read</button>
+      <button id="SaveButton" onclick="save()">Save</button>
+      <button onclick="load()">Load</button>
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 300px">

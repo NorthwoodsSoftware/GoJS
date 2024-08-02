@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,35 +126,39 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       initialDocumentSpot: go.Spot.Center,
       initialViewportSpot: go.Spot.Center,
 
       // Define the template for Nodes, just some text inside a colored rectangle
-      nodeTemplate: $(go.Node,
-        'Spot',
-        { width: 70, height: 20 },
-        $(go.Shape, 'Rectangle', new go.Binding('fill', 'c')),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'c'))
-      ),
+      nodeTemplate: new go.Node('Spot', {
+        width: 70,
+        height: 20
+      })
+        .add(
+          new go.Shape('Rectangle')
+            .bind('fill', 'c'),
+          new go.TextBlock({ margin: 2 })
+            .bind('text', 'c')
+        ),
 
       // Define the template for Links, just a simple line
-      linkTemplate: $(go.Link, $(go.Shape, { stroke: 'black' })),
+      linkTemplate: new go.Link()
+        .add(
+          new go.Shape({ stroke: 'black' })
+        ),
 
-      layout: $(go.TreeLayout, {
+      layout: new go.TreeLayout({
         angle: 90,
         nodeSpacing: 4,
-        compaction: go.TreeCompaction.None,
+        compaction: go.TreeCompaction.None
       }),
 
       model: new go.TreeModel({
         // we use single character property names, to save space if rendered as JSON
         nodeKeyProperty: 'k',
-        nodeParentKeyProperty: 'p',
-      }),
+        nodeParentKeyProperty: 'p'
+      })
     });
 
     // Add an instance of the custom tool defined in DragZoomingTool.js.
@@ -164,7 +167,16 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool());
 
     // This is a status message
-    myLoading = $(go.Part, { selectable: false, location: new go.Point(0, 0) }, $(go.TextBlock, 'loading...', { stroke: 'red', font: '20pt sans-serif' }));
+    myLoading = new go.Part({
+      selectable: false,
+      location: new go.Point(0, 0)
+    })
+      .add(
+        new go.TextBlock('loading...', {
+          stroke: 'red',
+          font: '20pt sans-serif'
+        })
+      );
 
     // temporarily add the status indicator
     myDiagram.add(myLoading);
@@ -183,7 +195,7 @@
       var d = {
         k: i, // this node data's key
         c: go.Brush.randomColor(), // the node's color
-        p: i > 0 ? Math.floor((Math.random() * i) / 2) : undefined, // the random parent's key
+        p: i > 0 ? Math.floor((Math.random() * i) / 2) : undefined // the random parent's key
       };
       treedata.push(d);
     }

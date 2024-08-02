@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,40 +124,45 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv');
 
     const Inner = 40; // inner radius
     const Thickness = 30; // Inner + Thickness is outer radius
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      $(go.Panel, new go.Binding('itemArray', 'values', normalizeData), {
-        itemTemplate: $(go.Panel,
-          'Spot',
-          $(go.Shape, // this always occupies the full circle
-            { fill: '#00000020', stroke: 'white' },
-            new go.Binding('geometry', '', makeAnnularWedge),
-            new go.Binding('fill', 'color')
-          ),
-          $(go.TextBlock,
-            { width: Thickness, textAlign: 'center', font: '8pt sans-serif' },
-            new go.Binding('alignment', '', computeTextAlignment),
-            //new go.Binding("angle", "", ensureUpright),  // does the text need to be rotated?
-            new go.Binding('text', '', (d) => d.value + '\n' + Math.round(d.sweep / 3.6) + '%')
-          ),
-          {
-            toolTip: $('ToolTip', $(go.TextBlock, new go.Binding('text', '', (d) => `${d.text}\n#: ${d.value}\n${(d.sweep / 3.6).toFixed(1)}%`))),
-          }
-        ),
-      }),
-      $(go.TextBlock, { maxSize: new go.Size(2 * Inner, 2 * Inner), font: 'bold 10pt sans-serif' }, new go.Binding('text'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Spot')
+      .add(
+        new go.Panel({
+          itemTemplate: new go.Panel('Spot', {
+            toolTip: go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock().bind('text', '', (d) => {
+                  return `${d.text}\n#: ${d.value}\n${(d.sweep / 3.6).toFixed(1)}%`;
+                })
+              )
+          })
+            .add(
+              new go.Shape({ fill: '#00000020', stroke: 'white' }) // this always occupies the full circle
+                .bind('geometry', '', makeAnnularWedge)
+                .bind('fill', 'color'),
+              new go.TextBlock({
+                width: Thickness,
+                textAlign: 'center',
+                font: '8pt sans-serif'
+              })
+                .bind('alignment', '', computeTextAlignment)
+                //.bind("angle", "", ensureUpright),  // does the text need to be rotated?
+                .bind(
+                  'text',
+                  '',
+                  (d) => d.value + '\n' + Math.round(d.sweep / 3.6) + '%'
+                )
+            )
+        }).bind('itemArray', 'values', normalizeData),
+        new go.TextBlock({
+          maxSize: new go.Size(2 * Inner, 2 * Inner),
+          font: 'bold 10pt sans-serif'
+        }).bind('text')
+      );
 
     function normalizeData(arr) {
       const details = [];
@@ -201,9 +205,29 @@
         .add(new go.PathFigure(rad, rad)) // and the bottom right corner of the whole circular area
         .add(
           new go.PathFigure(p.x, p.y) // start at outer corner, go clockwise
-            .add(new go.PathSegment(go.SegmentType.Arc, angle, sweep, 0, 0, outer, outer))
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                angle,
+                sweep,
+                0,
+                0,
+                outer,
+                outer
+              )
+            )
             .add(new go.PathSegment(go.SegmentType.Line, q.x, q.y)) // to opposite inner corner, then anticlockwise
-            .add(new go.PathSegment(go.SegmentType.Arc, angle + sweep, -sweep, 0, 0, inner, inner).close())
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                angle + sweep,
+                -sweep,
+                0,
+                0,
+                inner,
+                inner
+              ).close()
+            )
         );
       return geo;
     }
@@ -237,23 +261,23 @@
             { value: 3, color: '#EFFFFD' },
             { value: 9, color: '#B8FFF9' },
             { value: 12, color: '#85F4FF' },
-            { value: 7, color: '#42C2FF' },
-          ],
+            { value: 7, color: '#42C2FF' }
+          ]
         },
         {
           key: 4,
           text: 'Delta',
           values: [
             { value: 30, color: 'pink' },
-            { value: 90, color: 'lightgreen' },
-          ],
-        },
+            { value: 90, color: 'lightgreen' }
+          ]
+        }
       ],
       [
         { from: 1, to: 2 },
         { from: 1, to: 3 },
         { from: 3, to: 4 },
-        { from: 4, to: 1 },
+        { from: 4, to: 1 }
       ]
     );
   }
@@ -261,13 +285,21 @@
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
+  <div
+    id="myDiagramDiv"
+    style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>
-    Each node contains a Position Panel containing a variable number of elements that get Geometry values such that each shows a data value as an annular bar in
-    a circle. One can also specify the colors of the bars. The <a>Panel.itemTemplate</a> also includes a <a>TextBlock</a> that shows its actual value as well as
-    the percentage that it represents of the whole Array of data values.
+    Each node contains a Position Panel containing a variable number of elements
+    that get Geometry values such that each shows a data value as an annular bar
+    in a circle. One can also specify the colors of the bars. The
+    <a>Panel.itemTemplate</a> also includes a <a>TextBlock</a> that shows its
+    actual value as well as the percentage that it represents of the whole Array
+    of data values.
   </p>
-  <p>For more sophisticated charts within nodes, see the <a href="canvases.html">Canvas Charts</a> sample.</p>
+  <p>
+    For more sophisticated charts within nodes, see the
+    <a href="canvases.html">Canvas Charts</a> sample.
+  </p>
 </div>
 
           

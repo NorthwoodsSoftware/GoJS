@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,28 +124,22 @@
 
     <script id="code">
     function init() {
-
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;  // for conciseness in defining templates
-
+      
       // define a simple Node template
-      var myNodeTemplate =
-        $(go.Node, "Auto",
-          $(go.Shape, "RoundedRectangle", { strokeWidth: 0 },
-            new go.Binding("fill", "color")),
-          $(go.TextBlock,
-            { margin: 8 },
-            new go.Binding("text"))
+      var myNodeTemplate = new go.Node('Auto')
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 })
+            .bind('text')
         );
 
       var myModel = new go.GraphLinksModel(
         [
-          { key: 1, text: "Alpha", color: "lightblue" },
-          { key: 2, text: "Beta", color: "orange" },
-          { key: 3, text: "Gamma", color: "lightgreen" },
-          { key: 4, text: "Delta", color: "pink" }
+          { key: 1, text: 'Alpha', color: 'lightblue' },
+          { key: 2, text: 'Beta', color: 'orange' },
+          { key: 3, text: 'Gamma', color: 'lightgreen' },
+          { key: 4, text: 'Delta', color: 'pink' }
         ],
         [
           { from: 1, to: 2 },
@@ -156,26 +149,25 @@
           { from: 4, to: 1 }
         ]);
 
-      myDiagram = new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
-        {
-          allowHorizontalScroll: false, allowVerticalScroll: false,
-          "panningTool.isEnabled": false,
-          "toolManager.gestureBehavior": go.GestureMode.Cancel,
-          model: myModel,
-          nodeTemplate: myNodeTemplate
-        });
+      myDiagram = new go.Diagram('myDiagramDiv', {
+        allowHorizontalScroll: false, allowVerticalScroll: false,
+        'panningTool.isEnabled': false,
+        'toolManager.gestureBehavior': go.GestureMode.Cancel,
+        model: myModel,
+        nodeTemplate: myNodeTemplate
+      });
 
     }
 
     function changegestureBehavior(id) {
       switch (id) {
-        case "GestureZoom":
+        case 'GestureZoom':
           myDiagram.toolManager.gestureBehavior = go.GestureMode.Zoom;
           break;
-        case "GestureCancel":
+        case 'GestureCancel':
           myDiagram.toolManager.gestureBehavior = go.GestureMode.Cancel;
           break;
-        case "GestureNone":
+        case 'GestureNone':
           myDiagram.toolManager.gestureBehavior = go.GestureMode.None;
           break;
       }

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,54 +124,39 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       padding: 10,
-      layout: $(go.LayeredDigraphLayout, {
+      layout: new go.LayeredDigraphLayout({
         direction: 90,
-        layeringOption: go.LayeredDigraphLayering.LongestPathSource,
+        layeringOption: go.LayeredDigraphLayering.LongestPathSource
       }),
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Vertical,
-      { portId: '', fromLinkable: true, toLinkable: true },
-      new go.Binding('visible'),
-      $(go.Panel,
-        go.Panel.Auto,
-        $(go.Shape,
-          { fill: 'white', minSize: new go.Size(30, 30), strokeWidth: 0 },
-          { cursor: 'pointer' }, // indicate that linking may start here
-          new go.Binding('fill', 'color')
-        ),
-        $(go.TextBlock,
-          { margin: 2 },
-          { fromLinkable: false, toLinkable: false }, // don't start drawing a link from the text
-          new go.Binding('text', 'key')
-        )
-      ),
-      $('Button', // a replacement for "TreeExpanderButton" that works for non-tree-structured graphs
-        // assume initially not visible because there are no links coming out
-        { visible: false },
-        // bind the button visibility to whether it's not a leaf node
-        new go.Binding('visible', 'isTreeLeaf', (leaf) => !leaf).ofObject(),
-        $(go.Shape,
-          {
-            name: 'ButtonIcon',
-            figure: 'MinusLine',
-            desiredSize: new go.Size(6, 6),
-          },
-          new go.Binding(
-            'figure',
-            'isCollapsed', // data.isCollapsed remembers "collapsed" or "expanded"
-            (collapsed) => (collapsed ? 'PlusLine' : 'MinusLine')
-          )
-        ),
-        {
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      portId: '',
+      fromLinkable: true,
+      toLinkable: true
+    })
+      .bind('visible')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({
+              fill: 'white',
+              minSize: new go.Size(30, 30),
+              strokeWidth: 0,
+              cursor: 'pointer' // indicate that linking may start here
+            }).bind('fill', 'color'),
+            new go.TextBlock({
+              margin: 2,
+              fromLinkable: false,
+              toLinkable: false // don't start drawing a link from the text
+            }).bind('text', 'key')
+          ),
+        go.GraphObject.build('Button', {
+          // a replacement for "TreeExpanderButton" that works for non-tree-structured graphs
+          visible: false, // assume initially not visible because there are no links coming out
           click: (e, obj) => {
             e.diagram.startTransaction();
             var node = obj.part;
@@ -182,26 +166,49 @@
               collapseFrom(node, node);
             }
             e.diagram.commitTransaction('toggled visibility of dependencies');
-          },
-        }
-      )
-    );
+          }
+        })
+          // bind the button visibility to whether it's not a leaf node
+          .bindObject('visible', 'isTreeLeaf', (leaf) => !leaf)
+          .add(
+            new go.Shape({
+              name: 'ButtonIcon',
+              figure: 'MinusLine',
+              desiredSize: new go.Size(6, 6)
+            })
+              .bind(
+                'figure',
+                'isCollapsed', // data.isCollapsed remembers "collapsed" or "expanded"
+                (collapsed) => (collapsed ? 'PlusLine' : 'MinusLine')
+              )
+          )
+      );
 
     function collapseFrom(node, start) {
       if (node.data.isCollapsed) return;
       node.diagram.model.setDataProperty(node.data, 'isCollapsed', true);
-      if (node !== start) node.diagram.model.setDataProperty(node.data, 'visible', false);
+      if (node !== start)
+        node.diagram.model.setDataProperty(node.data, 'visible', false);
       node.findNodesOutOf().each(collapseFrom);
     }
 
     function expandFrom(node, start) {
       if (!node.data.isCollapsed) return;
       node.diagram.model.setDataProperty(node.data, 'isCollapsed', false);
-      if (node !== start) node.diagram.model.setDataProperty(node.data, 'visible', true);
+      if (node !== start)
+        node.diagram.model.setDataProperty(node.data, 'visible', true);
       node.findNodesOutOf().each(expandFrom);
     }
 
-    myDiagram.linkTemplate = $(go.Link, { relinkableFrom: true, relinkableTo: true, corner: 10 }, $(go.Shape), $(go.Shape, { toArrow: 'Standard' }));
+    myDiagram.linkTemplate = new go.Link({
+      relinkableFrom: true,
+      relinkableTo: true,
+      corner: 10
+    })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'Standard' })
+      );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -216,7 +223,7 @@
         { key: 'Z1', color: 'lightgreen' },
         { key: 'Z2', color: 'yellow' },
         { key: 'Z3', color: 'orange' },
-        { key: 'Z4', color: 'pink' },
+        { key: 'Z4', color: 'pink' }
       ],
       [
         { from: 'A', to: 'B1' },
@@ -231,7 +238,7 @@
         { from: 'Z1', to: 'Z2' },
         { from: 'Z2', to: 'Z3' },
         { from: 'Z3', to: 'Z4' },
-        { from: 'Z4', to: 'Z1' },
+        { from: 'Z4', to: 'Z1' }
       ]
     );
   }
@@ -239,15 +246,22 @@
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 600px; height: 700px"></div>
+  <div
+    id="myDiagramDiv"
+    style="border: solid 1px black; width: 600px; height: 700px"></div>
   <p>
-    The "TreeExpanderButton", which changes the <a>Node.isTreeExpanded</a> property, really only works with tree structures. When you want to hide/show the
-    "downstream" nodes from a given node, using the "TreeExpanderButton" might not do what you like, especially when there are cycles in the graph structure.
+    The "TreeExpanderButton", which changes the
+    <a>Node.isTreeExpanded</a> property, really only works with tree structures.
+    When you want to hide/show the "downstream" nodes from a given node, using
+    the "TreeExpanderButton" might not do what you like, especially when there
+    are cycles in the graph structure.
   </p>
   <p>
-    Instead, this sample implements a "Button" with custom behavior to modify the visibility of each Node. If this behavior is still not quite right for your
-    app, you can adapt the behavior implemented in the
-    <code>collapseFrom</code> and <code>expandFrom</code> functions to use different criteria for when to stop recursion.
+    Instead, this sample implements a "Button" with custom behavior to modify
+    the visibility of each Node. If this behavior is still not quite right for
+    your app, you can adapt the behavior implemented in the
+    <code>collapseFrom</code> and <code>expandFrom</code> functions to use
+    different criteria for when to stop recursion.
   </p>
 </div>
 

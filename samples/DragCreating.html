@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,29 +126,36 @@
 
 <script id="code">
   function init() {
-    var $ = go.GraphObject.make; // for conciseness in defining templates
-
     myDiagram = new go.Diagram('myDiagramDiv', {
       // Define the template for Nodes, just some text inside a colored rectangle
-      nodeTemplate: $(go.Node,
-        'Auto',
-        { minSize: new go.Size(60, 20), resizable: true },
-        new go.Binding('desiredSize', 'size', go.Size.parse).makeTwoWay(go.Size.stringify),
-        new go.Binding('position', 'pos', go.Point.parse).makeTwoWay(go.Point.stringify),
+      nodeTemplate: new go.Node('Auto', {
+        minSize: new go.Size(60, 20),
+        resizable: true
+      })
+        .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
         // temporarily put selected nodes in Foreground layer
-        new go.Binding('layerName', 'isSelected', (s) => (s ? 'Foreground' : '')).ofObject(),
-        $(go.Shape, 'Rectangle', new go.Binding('fill', 'color')),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'color'))
-      ),
-      'undoManager.isEnabled': true,
-    });
+        .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
+        .add(
+          new go.Shape('Rectangle')
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 2 })
+            .bind('text', 'color')
+        ),
+        'undoManager.isEnabled': true
+      });
 
     myDiagram.add(
-      $(go.Part,
-        { layerName: 'Grid', location: new go.Point(0, 0) },
-        $(go.TextBlock, 'Mouse-down and then drag in the background\nto add a Node there with the drawn size.', { stroke: 'brown' })
-      )
-    );
+      new go.Part({
+        layerName: 'Grid',
+        location: new go.Point(0, 0)
+      })
+        .add(
+          new go.TextBlock('Mouse-down and then drag in the background\nto add a Node there with the drawn size.', {
+            stroke: 'brown'
+          })
+        )
+      );
 
     // Add an instance of the custom tool defined in DragCreatingTool.js.
     // This needs to be inserted before the standard DragSelectingTool,
@@ -157,12 +163,19 @@
     // Note that if you do not set the DragCreatingTool.delay, the default value will
     // require a wait after the mouse down event.  Not waiting will allow the DragSelectingTool
     // and the PanningTool to be able to run instead of the DragCreatingTool, depending on the delay.
-    myDiagram.toolManager.mouseMoveTools.insertAt(
-      2,
-      $(DragCreatingTool, {
+    myDiagram.toolManager.mouseMoveTools.insertAt(2,
+      new DragCreatingTool({
         isEnabled: true, // disabled by the checkbox
         delay: 0, // always canStart(), so PanningTool never gets the chance to run
-        box: $(go.Part, { layerName: 'Tool' }, $(go.Shape, { name: 'SHAPE', fill: null, stroke: 'cyan', strokeWidth: 2 })),
+        box: new go.Part({ layerName: 'Tool' })
+          .add(
+            new go.Shape({
+              name: 'SHAPE',
+              fill: null,
+              stroke: 'cyan',
+              strokeWidth: 2
+            })
+          ),
         archetypeNodeData: { color: 'white' }, // initial properties shared by all nodes
         insertPart: function (bounds) {
           // method override of DragCreatingTool.insertPart
@@ -170,7 +183,7 @@
           this.archetypeNodeData.color = go.Brush.randomColor();
           // call the base method to do normal behavior and return its result
           return DragCreatingTool.prototype.insertPart.call(this, bounds);
-        },
+        }
       })
     );
   }
@@ -193,6 +206,10 @@
     Press in the background and then drag to show the area to be occupied by the new node. The mouse-up event will add a copy of the
     DragCreatingTool.archetypeNodeData object, causing a new node to be created. The tool will assign its <a>GraphObject.position</a> and
     <a>GraphObject.desiredSize</a>.
+  </p>
+  <p>
+    See also <a href="../samples/basic.html">Basic</a> which uses the click 
+    creating tool.
   </p>
 </div>
 

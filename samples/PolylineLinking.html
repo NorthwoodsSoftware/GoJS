@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -127,8 +126,6 @@
 
 <script id="code">
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-    var $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
@@ -137,12 +134,10 @@
     //tool.temporaryLink.routing = go.Routing.Orthogonal;  // optional, but need to keep link template in sync, below
     myDiagram.toolManager.linkingTool = tool;
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Shape,
-        {
+    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape({
           width: 100,
           height: 100,
           fill: 'lightgray',
@@ -153,22 +148,23 @@
           fromLinkableDuplicates: true, // optional
           toLinkable: true,
           toLinkableSelfNode: true,
-          toLinkableDuplicates: true, // optional
-        },
-        new go.Binding('fill')
-      ),
-      $(go.Shape, { width: 70, height: 70, fill: 'transparent', stroke: null }),
-      $(go.TextBlock, new go.Binding('text'))
-    );
+          toLinkableDuplicates: true // optional
+        })
+          .bind('fill'),
+        new go.Shape({ width: 70, height: 70, fill: 'transparent', stroke: null }),
+        new go.TextBlock().bind('text')
+      );
 
-    myDiagram.linkTemplate = $(go.Link,
-      { reshapable: true, resegmentable: true },
-      //{ routing: go.Routing.Orthogonal },  // optional, but need to keep LinkingTool.temporaryLink in sync, above
-      { adjusting: go.LinkAdjusting.Stretch }, // optional
-      new go.Binding('points', 'points').makeTwoWay(),
-      $(go.Shape, { strokeWidth: 1.5 }),
-      $(go.Shape, { toArrow: 'OpenTriangle' })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      reshapable: true, resegmentable: true,
+      // routing: go.Routing.Orthogonal,  // optional, but need to keep LinkingTool.temporaryLink in sync, above
+      adjusting: go.LinkAdjusting.Stretch // optional
+    })
+      .bindTwoWay('points', 'points')
+      .add(
+        new go.Shape({ strokeWidth: 1.5 }),
+        new go.Shape({ toArrow: 'OpenTriangle' })
+      );
 
     load(); // load a simple diagram from the textarea
   }

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -128,59 +127,64 @@
     const colors = {
       gold: '#f3e601',
       white: '#FFFFFF',
-      black: '#101920',
+      black: '#101920'
     };
-    const $ = go.GraphObject.make;
-    var myDiagram = new go.Diagram(
-      'myDiagramDiv', // create a Diagram for the DIV HTML element
-      {
-        hoverDelay: 50,
-        isReadOnly: true, // don't allow move or delete
-        layout: new go.CircularLayout({
-          radius: 100, // minimum radius
-          spacing: 14, // circular nodes will touch each other
-          nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular, // assume nodes are circular
-          startAngle: 270, // first node will be at top
-        }),
-        // define a DiagramEvent listener
-        LayoutCompleted: (e) => {
-          // now that the CircularLayout has finished, we know where its center is
-          var cntr = myDiagram.findNodeForKey('Center');
-          cntr.location = myDiagram.layout.actualCenter;
-        },
+    var myDiagram = new go.Diagram('myDiagramDiv', {
+      hoverDelay: 50,
+      isReadOnly: true, // don't allow move or delete
+      layout: new go.CircularLayout({
+        radius: 100, // minimum radius
+        spacing: 14, // circular nodes will touch each other
+        nodeDiameterFormula: go.CircularNodeDiameterFormula.Circular, // assume nodes are circular
+        startAngle: 270 // first node will be at top
+      }),
+      // define a DiagramEvent listener
+      LayoutCompleted: (e) => {
+        // now that the CircularLayout has finished, we know where its center is
+        var cntr = myDiagram.findNodeForKey('Center');
+        cntr.location = myDiagram.layout.actualCenter;
       }
-    );
+    });
 
     // these are the nodes that are in a circle
     myDiagram.nodeTemplate = new go.Node({
       locationSpot: go.Spot.Center,
       click: showArrowInfo, // defined below
       // define a tooltip for each link that displays its information
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)),
-    }).add(
-      new go.Shape('Circle', {
-        desiredSize: new go.Size(25, 25),
-        fill: 'transparent',
-        strokeWidth: 1.5,
-        stroke: colors.gold,
-      })
-    );
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)
+        )
+    })
+      .add(
+        new go.Shape('Circle', {
+          desiredSize: new go.Size(25, 25),
+          fill: 'transparent',
+          strokeWidth: 1.5,
+          stroke: colors.gold
+        })
+      );
 
     // use a special template for the center node
     myDiagram.nodeTemplateMap.add(
       'Center',
-      $(go.Node, 'Spot', {
+      new go.Node('Spot', {
         selectable: false,
         isLayoutPositioned: false, // the Diagram.layout will not position this node
-        locationSpot: go.Spot.Center,
+        locationSpot: go.Spot.Center
       })
-        .add(new go.Shape('Circle', { fill: 'transparent', strokeWidth: 1.5, stroke: colors.gold, desiredSize: new go.Size(250, 250) }))
         .add(
+          new go.Shape('Circle', {
+            fill: 'transparent',
+            strokeWidth: 1.5,
+            stroke: colors.gold,
+            desiredSize: new go.Size(250, 250)
+          }),
           new go.TextBlock('Select or hover over\na Node or Link\nto see arrowhead names', {
             margin: 1,
             textAlign: 'center',
             stroke: colors.white,
-            font: '16px Segoe UI, Roboto, Helvetica Neue, Noto Sans, sans-serif',
+            font: '16px Segoe UI, Roboto, Helvetica Neue, Noto Sans, sans-serif'
           })
         )
     );
@@ -192,15 +196,19 @@
       routing: go.Routing.Normal,
       click: showArrowInfo,
       // define a tooltip for each link that displays its information
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)),
+      toolTip: go.GraphObject.build('ToolTip').add(
+        new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)
+      )
     })
-      // the link shape
-      // the first element in a Link is assumed to be main element
-      .add(new go.Shape({ stroke: colors.white, strokeWidth: 1.5, strokeDashArray: [2, 5] }))
-      // the "from" arrowhead
-      .add(new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('fromArrow'))
-      // the "to" arrowhead
-      .add(new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('toArrow'));
+      .add(
+        // the link shape
+        // the first element in a Link is assumed to be main element
+        new go.Shape({ stroke: colors.white, strokeWidth: 1.5, strokeDashArray: [2, 5] }),
+        // the "from" arrowhead
+        new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('fromArrow'),
+        // the "to" arrowhead
+        new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('toArrow')
+      );
 
     // collect all of the predefined arrowhead names
     var arrowheads = go.Shape.getArrowheadGeometries().toKeySet().toArray();
@@ -210,7 +218,12 @@
     var linkdata = [];
     var i = 0;
     for (var j = 0; j < arrowheads.length; j = j + 2) {
-      linkdata.push({ from: 'Center', to: i++, toArrow: arrowheads[j], fromArrow: arrowheads[j + 1] });
+      linkdata.push({
+        from: 'Center',
+        to: i++,
+        toArrow: arrowheads[j],
+        fromArrow: arrowheads[j + 1]
+      });
     }
 
     myDiagram.model = new go.GraphLinksModel({
@@ -220,7 +233,7 @@
       // the node array starts with just the special Center node
       nodeDataArray: [{ category: 'Center', key: 'Center' }],
       // the link array was created above
-      linkDataArray: linkdata,
+      linkDataArray: linkdata
     });
   }
 
@@ -254,14 +267,24 @@
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; background-color: #101920; width: 600px; height: 600px"></div>
+  <div
+    id="myDiagramDiv"
+    style="border: solid 1px black; background-color: #101920; width: 600px; height: 600px"></div>
   <div id="myArrowheadInfo" style="color: red"></div>
-  <p>This sample displays all predefined GoJS arrowheads. Select or hover over a Node or its Link to see the names of the arrowheads on the Link.</p>
   <p>
-    Each Link shows two arrowheads. The Link template has a Shape whose <a>Shape.toArrow</a> property is bound to an arrowhead name. A different Shape in the
-    template has its <a>Shape.fromArrow</a> property bound to a different arrowhead name. Each arrowhead has been scaled up to make it more easily visible.
+    This sample displays all predefined GoJS arrowheads. Select or hover over a Node or its Link to
+    see the names of the arrowheads on the Link.
   </p>
-  <p>See the definitions of all these arrowheads in the file: <a href="../extensions/Arrowheads.js" target="_blank">Arrowheads.js</a>.</p>
+  <p>
+    Each Link shows two arrowheads. The Link template has a Shape whose
+    <a>Shape.toArrow</a> property is bound to an arrowhead name. A different Shape in the template
+    has its <a>Shape.fromArrow</a> property bound to a different arrowhead name. Each arrowhead has
+    been scaled up to make it more easily visible.
+  </p>
+  <p>
+    See the definitions of all these arrowheads in the file:
+    <a href="../extensions/Arrowheads.js" target="_blank">Arrowheads.js</a>.
+  </p>
   <p>For predefined shape geometries, see the <a href="shapes.html">Shapes</a> sample.</p>
 </div>
 

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -125,28 +127,21 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must name or refer to the DIV HTML element
-      {
-        // have mouse wheel events zoom in and out instead of scroll up and down
-        'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
-        // support double-click in background creating a new node
-        'clickCreatingTool.archetypeNodeData': { text: 'new node' },
-        InitialLayoutCompleted: (e) => showIncremental('InitialLayout'),
-        ModelChanged: (e) => {
-          if (e.isTransactionFinished) {
-            // this records each Transaction as a JSON-format string
-            showIncremental(myDiagram.model.toIncrementalJson(e));
-          }
-        },
-        // enable undo & redo
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      // have mouse wheel events zoom in and out instead of scroll up and down
+      'toolManager.mouseWheelBehavior': go.WheelMode.Zoom,
+      // support double-click in background creating a new node
+      'clickCreatingTool.archetypeNodeData': { text: 'new node' },
+      InitialLayoutCompleted: (e) => showIncremental('InitialLayout'),
+      ModelChanged: (e) => {
+        if (e.isTransactionFinished) {
+          // this records each Transaction as a JSON-format string
+          showIncremental(myDiagram.model.toIncrementalJson(e));
+        }
+      },
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
@@ -161,49 +156,45 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      // define the node's outer shape, which will surround the TextBlock
-      $(go.Shape, 'RoundedRectangle', {
-        parameter1: 20, // the corner has a large radius
-        fill: $(go.Brush, 'Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
-        stroke: 'black',
-        portId: '',
-        fromLinkable: true,
-        fromLinkableSelfNode: true,
-        fromLinkableDuplicates: true,
-        toLinkable: true,
-        toLinkableSelfNode: true,
-        toLinkableDuplicates: true,
-        cursor: 'pointer',
-      }),
-      $(go.TextBlock,
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        // define the node's outer shape, which will surround the TextBlock
+        new go.Shape('RoundedRectangle', {
+          parameter1: 20, // the corner has a large radius
+          fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
+          stroke: 'black',
+          portId: '',
+          fromLinkable: true,
+          fromLinkableSelfNode: true,
+          fromLinkableDuplicates: true,
+          toLinkable: true,
+          toLinkableSelfNode: true,
+          toLinkableDuplicates: true,
+          cursor: 'pointer'
+        }),
+        new go.TextBlock({
           font: 'bold 11pt helvetica, bold arial, sans-serif',
-          editable: true, // editing the text automatically updates the model data
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      )
-    );
+          editable: true // editing the text automatically updates the model data
+        })
+          .bindTwoWay('text', 'text')
+      );
 
     // unlike the normal selection Adornment, this one includes a Button
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = $(go.Adornment,
-      'Spot',
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, { fill: null, stroke: 'blue', strokeWidth: 2 }),
-        $(go.Placeholder) // this represents the selected Node
-      ),
-      // the button to create a "next" node, at the top-right corner
-      $('Button',
-        {
+    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
+      .add(
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ fill: null, stroke: 'blue', strokeWidth: 2 }),
+            new go.Placeholder() // this represents the selected Node
+          ),
+        // the button to create a "next" node, at the top-right corner
+        go.GraphObject.build('Button', {
           alignment: go.Spot.TopRight,
-          click: addNodeAndLink, // this function is defined below
-        },
-        $(go.Shape, 'PlusLine', { desiredSize: new go.Size(6, 6) })
-      ) // end button
-    ); // end Adornment
+          click: addNodeAndLink // this function is defined below
+        }) // end button
+          .add(new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) }))
+      ); // end Adornment
 
     // clicking the button inserts a new node to the right of the selected node,
     // and adds a link to that new node
@@ -229,7 +220,7 @@
       var linkdata = {
         from: model.getKeyForNodeData(fromData), // or just: fromData.id
         to: model.getKeyForNodeData(toData),
-        text: 'transition',
+        text: 'transition'
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
@@ -245,43 +236,34 @@
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = $(go.Link, // the whole link panel
-      {
-        curve: go.Curve.Bezier,
-        adjusting: go.LinkAdjusting.Stretch,
-        reshapable: true,
-        relinkableFrom: true,
-        relinkableTo: true,
-      },
-      new go.Binding('points').makeTwoWay(),
-      new go.Binding('curviness', 'curviness'),
-      $(go.Shape, // the link shape
-        { strokeWidth: 1.5 }
-      ),
-      $(go.Shape, // the arrowhead
-        { toArrow: 'standard', stroke: null }
-      ),
-      $(go.Panel,
-        'Auto',
-        $(go.Shape, // the label background, which becomes transparent around the edges
-          {
-            fill: $(go.Brush, 'Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-            stroke: null,
-          }
-        ),
-        $(go.TextBlock,
-          'transition', // the label text
-          {
-            textAlign: 'center',
-            font: '10pt helvetica, arial, sans-serif',
-            stroke: 'black',
-            margin: 4,
-            editable: true, // editing the text automatically updates the model data
-          },
-          new go.Binding('text', 'text').makeTwoWay()
-        )
-      )
-    );
+    myDiagram.linkTemplate = new go.Link({ // the whole link panel
+      curve: go.Curve.Bezier,
+      adjusting: go.LinkAdjusting.Stretch,
+      reshapable: true,
+      relinkableFrom: true,
+      relinkableTo: true
+    })
+      .bindTwoWay('points')
+      .bind('curviness', 'curviness')
+      .add(
+        new go.Shape({ strokeWidth: 1.5 }), // the link shape
+        new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+        new go.Panel('Auto')
+          .add(
+            new go.Shape({ // the label background, which becomes transparent around the edges
+              fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+              stroke: null
+            }),
+            new go.TextBlock('transition', { // the label text
+              textAlign: 'center',
+              font: '10pt helvetica, arial, sans-serif',
+              stroke: 'black',
+              margin: 4,
+              editable: true // editing the text automatically updates the model data
+            })
+              .bindTwoWay('text', 'text')
+          )
+      );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -319,7 +301,8 @@
     var element = document.getElementById('myTransaction');
     // don't show anything upon the initial layout
     if (element.value === 'InitialLayout') str = '';
-    element.value = str;
+    element.innerHTML = str;
+    if (window.Prism) window.Prism.highlightAll();
   }
   window.addEventListener('DOMContentLoaded', init);
 </script>
@@ -333,7 +316,7 @@
     link data. Unlike most models, this example uses "id" as the name of the <a>Model.nodeKeyProperty</a> rather than "key".
   </p>
   Last <a>Transaction</a> saved in incremental JSON format:
-  <textarea id="myTransaction" style="width: 100%; height: 200px"></textarea>
+  <pre class="lang-js"><code id="myTransaction"></code></pre>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:

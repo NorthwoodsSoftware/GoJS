@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,19 +124,17 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowCopy: false,
-      layout: $(go.LayeredDigraphLayout, {
+      layout: new go.LayeredDigraphLayout({
         setsPortSpots: false, // Links already know their fromSpot and toSpot
         columnSpacing: 5,
         isInitial: false,
-        isOngoing: false,
+        isOngoing: false
       }),
       validCycle: go.CycleMode.NotDirected,
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -152,156 +149,183 @@
       }
     });
 
-    const graygrad = $(go.Brush, 'Linear', { 0: 'white', 0.1: 'whitesmoke', 0.9: 'whitesmoke', 1: 'lightgray' });
+    const graygrad = new go.Brush('Linear', {
+        0: 'white',
+        0.1: 'whitesmoke',
+        0.9: 'whitesmoke',
+        1: 'lightgray'
+      });
 
-    myDiagram.nodeTemplate = // the default node template
-      $(go.Node,
-        'Spot',
-        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        // the main body consists of a Rectangle surrounding the text
-        $(go.Panel,
-          'Auto',
-          { name: 'BODY' },
-          $(go.Shape,
-            'Rectangle',
-            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
-            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
-          ),
-          $(go.TextBlock,
-            {
+    myDiagram.nodeTemplate = new go.Node('Spot', { // the default node template
+      selectionAdorned: false,
+      textEditable: true,
+      locationObjectName: 'BODY'
+    })
+      .bind('location', 'loc', go.Point.parse, go.Point.stringify)
+      // the main body consists of a Rectangle surrounding the text
+      .add(
+        new go.Panel('Auto', { name: 'BODY' })
+          .add(
+            new go.Shape('Rectangle', {
+              fill: graygrad,
+              stroke: 'gray',
+              minSize: new go.Size(120, 21)
+            })
+              .bindObject('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)),
+            new go.TextBlock({
               stroke: 'black',
               font: '12px sans-serif',
               editable: true,
               margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
-              alignment: go.Spot.Left,
-            },
-            new go.Binding('text').makeTwoWay()
-          )
-        ),
+              alignment: go.Spot.Left
+            })
+              .bindTwoWay('text')
+          ),
         // output port
-        $(go.Panel,
-          'Auto',
-          { alignment: go.Spot.Right, portId: 'from', fromLinkable: true, cursor: 'pointer', click: addNodeAndLink },
-          $(go.Shape, 'Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
-          $(go.Shape, 'PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
-        ),
+        new go.Panel('Auto', {
+          alignment: go.Spot.Right,
+          portId: 'from',
+          fromLinkable: true,
+          cursor: 'pointer',
+          click: addNodeAndLink
+        })
+          .add(
+            new go.Shape('Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
+            new go.Shape('PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
+          ),
         // input port
-        $(go.Panel,
-          'Auto',
-          { alignment: go.Spot.Left, portId: 'to', toLinkable: true },
-          $(go.Shape, 'Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
-          $(go.Shape, 'Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
-        )
+        new go.Panel('Auto', {
+          alignment: go.Spot.Left,
+          portId: 'to',
+          toLinkable: true
+        })
+          .add(
+            new go.Shape('Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
+            new go.Shape('Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
+          )
       );
 
-    myDiagram.nodeTemplate.contextMenu = $('ContextMenu',
-      $('ContextMenuButton',
-        $(go.TextBlock, 'Rename'),
-        { click: (e, obj) => e.diagram.commandHandler.editTextBlock() },
-        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canEditTextBlock()).ofObject()
-      ),
-      // add one for Editing...
-      $('ContextMenuButton',
-        $(go.TextBlock, 'Delete'),
-        { click: (e, obj) => e.diagram.commandHandler.deleteSelection() },
-        new go.Binding('visible', '', (o) => o.diagram && o.diagram.commandHandler.canDeleteSelection()).ofObject()
-      )
+    myDiagram.nodeTemplate.contextMenu = go.GraphObject.build('ContextMenu')
+      .add(
+        go.GraphObject.build('ContextMenuButton', {
+          click: (e, obj) => e.diagram.commandHandler.editTextBlock()
+        })
+          .bindObject('visible', '', (o) => o.diagram && o.diagram.commandHandler.canEditTextBlock())
+          .add(
+            new go.TextBlock('Rename')
+          ),
+        // add one for Editing...
+        go.GraphObject.build('ContextMenuButton', {
+          click: (e, obj) => e.diagram.commandHandler.deleteSelection()
+        })
+          .bindObject('visible', '', (o) => o.diagram && o.diagram.commandHandler.canDeleteSelection())
+          .add(
+            new go.TextBlock('Delete')
+          )
+      );
+
+    myDiagram.nodeTemplateMap.add('Loading',
+      new go.Node('Spot', {
+        selectionAdorned: false,
+        textEditable: true,
+        locationObjectName: 'BODY'
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // the main body consists of a Rectangle surrounding the text
+          new go.Panel('Auto', { name: 'BODY' })
+            .add(
+              new go.Shape('Rectangle', {
+                fill: graygrad,
+                stroke: 'gray',
+                minSize: new go.Size(120, 21)
+              })
+                .bindObject('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)),
+              new go.TextBlock({
+                stroke: 'black',
+                font: '12px sans-serif',
+                editable: true,
+                margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
+                alignment: go.Spot.Left
+              })
+                .bind('text')
+            ),
+          // output port
+          new go.Panel('Auto', {
+            alignment: go.Spot.Right,
+            portId: 'from',
+            fromLinkable: true,
+            click: addNodeAndLink
+          })
+            .add(
+              new go.Shape('Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
+              new go.Shape('PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
+            )
+        )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Loading',
-      $(go.Node,
-        'Spot',
-        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        // the main body consists of a Rectangle surrounding the text
-        $(go.Panel,
-          'Auto',
-          { name: 'BODY' },
-          $(go.Shape,
-            'Rectangle',
-            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
-            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
-          ),
-          $(go.TextBlock,
-            {
-              stroke: 'black',
-              font: '12px sans-serif',
-              editable: true,
-              margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
-              alignment: go.Spot.Left,
-            },
-            new go.Binding('text', 'text')
-          )
-        ),
-        // output port
-        $(go.Panel,
-          'Auto',
-          { alignment: go.Spot.Right, portId: 'from', fromLinkable: true, click: addNodeAndLink },
-          $(go.Shape, 'Circle', { width: 22, height: 22, fill: 'white', stroke: 'dodgerblue', strokeWidth: 3 }),
-          $(go.Shape, 'PlusLine', { width: 11, height: 11, fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
+    myDiagram.nodeTemplateMap.add('End',
+      new go.Node('Spot', {
+        selectionAdorned: false,
+        textEditable: true,
+        locationObjectName: 'BODY'
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // the main body consists of a Rectangle surrounding the text
+          new go.Panel('Auto', { name: 'BODY' })
+            .add(
+              new go.Shape('Rectangle', {
+                fill: graygrad,
+                stroke: 'gray',
+                minSize: new go.Size(120, 21)
+              })
+                .bindObject('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)),
+              new go.TextBlock({
+                stroke: 'black',
+                font: '12px sans-serif',
+                editable: true,
+                margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
+                alignment: go.Spot.Left
+              })
+                .bind('text')
+            ),
+          // input port
+          new go.Panel('Auto', {
+            alignment: go.Spot.Left,
+            portId: 'to',
+            toLinkable: true
+          })
+            .add(
+              new go.Shape('Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
+              new go.Shape('Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
+            )
         )
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'End',
-      $(go.Node,
-        'Spot',
-        { selectionAdorned: false, textEditable: true, locationObjectName: 'BODY' },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        // the main body consists of a Rectangle surrounding the text
-        $(go.Panel,
-          'Auto',
-          { name: 'BODY' },
-          $(go.Shape,
-            'Rectangle',
-            { fill: graygrad, stroke: 'gray', minSize: new go.Size(120, 21) },
-            new go.Binding('fill', 'isSelected', (s) => (s ? 'dodgerblue' : graygrad)).ofObject()
-          ),
-          $(go.TextBlock,
-            {
-              stroke: 'black',
-              font: '12px sans-serif',
-              editable: true,
-              margin: new go.Margin(3, 3 + 11, 3, 3 + 4),
-              alignment: go.Spot.Left,
-            },
-            new go.Binding('text', 'text')
-          )
-        ),
-        // input port
-        $(go.Panel,
-          'Auto',
-          { alignment: go.Spot.Left, portId: 'to', toLinkable: true },
-          $(go.Shape, 'Circle', { width: 8, height: 8, fill: 'white', stroke: 'gray' }),
-          $(go.Shape, 'Circle', { width: 4, height: 4, fill: 'dodgerblue', stroke: null })
-        )
-      )
     );
 
     // dropping a node on this special node will cause the selection to be deleted;
     // linking or relinking to this special node will cause the link to be deleted
-    myDiagram.nodeTemplateMap.add(
-      'Recycle',
-      $(go.Node,
-        'Auto',
-        {
-          portId: 'to',
-          toLinkable: true,
-          deletable: false,
-          layerName: 'Background',
-          locationSpot: go.Spot.Center,
-        },
-        new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-        {
-          dragComputation: (node, pt, gridpt) => pt,
-          mouseDrop: (e, obj) => e.diagram.commandHandler.deleteSelection(),
-        },
-        $(go.Shape, { fill: 'lightgray', stroke: 'gray' }),
-        $(go.TextBlock, 'Drop Here\nTo Delete', { margin: 5, textAlign: 'center' })
-      )
+    myDiagram.nodeTemplateMap.add('Recycle',
+      new go.Node('Auto', {
+        portId: 'to',
+        toLinkable: true,
+        deletable: false,
+        layerName: 'Background',
+        locationSpot: go.Spot.Center,
+        dragComputation: (node, pt, gridpt) => pt,
+        mouseDrop: (e, obj) => e.diagram.commandHandler.deleteSelection()
+      })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({
+            fill: 'lightgray',
+            stroke: 'gray'
+          }),
+          new go.TextBlock('Drop Here\nTo Delete', {
+            margin: 5,
+            textAlign: 'center'
+          })
+        )
     );
 
     // this is a click event handler that adds a node and a link to the diagram,
@@ -317,7 +341,7 @@
       p.x += diagram.toolManager.draggingTool.gridSnapCellSize.width;
       const toData = {
         text: 'new',
-        loc: go.Point.stringify(p),
+        loc: go.Point.stringify(p)
       };
       // add the new node data to the model
       const model = diagram.model;
@@ -325,7 +349,7 @@
       // create a link data from the old node data to the new node data
       const linkdata = {
         from: model.getKeyForNodeData(fromData),
-        to: model.getKeyForNodeData(toData),
+        to: model.getKeyForNodeData(toData)
       };
       // and add the link data to the model
       model.addLinkData(linkdata);
@@ -368,11 +392,16 @@
       lowlight();
     });
 
-    myDiagram.linkTemplate = $(go.Link,
-      { selectionAdorned: false, fromPortId: 'from', toPortId: 'to', relinkableTo: true },
-      $(go.Shape,
-        { stroke: 'gray', strokeWidth: 2 },
-        {
+    myDiagram.linkTemplate = new go.Link({
+      selectionAdorned: false,
+      fromPortId: 'from',
+      toPortId: 'to',
+      relinkableTo: true
+    })
+      .add(
+        new go.Shape({
+          stroke: 'gray',
+          strokeWidth: 2,
           mouseEnter: (e, obj) => {
             obj.strokeWidth = 5;
             obj.stroke = 'dodgerblue';
@@ -380,14 +409,19 @@
           mouseLeave: (e, obj) => {
             obj.strokeWidth = 2;
             obj.stroke = 'gray';
-          },
-        }
-      )
-    );
+          }
+        })
+      );
 
     function commonLinkingToolInit(tool) {
       // the temporary link drawn during a link drawing operation (LinkingTool) is thick and blue
-      tool.temporaryLink = $(go.Link, { layerName: 'Tool' }, $(go.Shape, { stroke: 'dodgerblue', strokeWidth: 5 }));
+      tool.temporaryLink = new go.Link({ layerName: 'Tool' })
+        .add(
+          new go.Shape({
+            stroke: 'dodgerblue',
+            strokeWidth: 5
+          })
+        );
 
       // change the standard proposed ports feedback from blue rectangles to transparent circles
       tool.temporaryFromPort.figure = 'Circle';
@@ -416,7 +450,12 @@
     const rtool = myDiagram.toolManager.relinkingTool;
     commonLinkingToolInit(rtool);
     // change the standard relink handle to be a shape that takes the shape of the link
-    rtool.toHandleArchetype = $(go.Shape, { isPanelMain: true, fill: null, stroke: 'dodgerblue', strokeWidth: 5 });
+    rtool.toHandleArchetype = new go.Shape({
+      isPanelMain: true,
+      fill: null,
+      stroke: 'dodgerblue',
+      strokeWidth: 5
+    });
 
     // use a special DraggingTool to cause the dragging of a Link to start relinking it
     myDiagram.toolManager.draggingTool = new DragLinkingTool();
@@ -511,9 +550,29 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 500px"></div>
+  <button onclick="layout()">Diagram Layout</button>
+  <p>
+    This sample let's users construct a flowing diagrmam with a few quality of 
+    life features. <a>Node</a>s can be deleted by dragging them over the 
+    "Drop Here To Delete" box.
+  </p>
+  <p>
+    This sample implements a custom DragLinkingTool that allows <a>Link</a>s to 
+    be re-linked by dragging them to different <a>Node</a>s.
+  </p>
+  <p>
+    To create a new <a>Node</a>, click the "+". This will create and link a new 
+    <a>Node</a>.
+  </p>
+  <p>
+    When <a>Nodes</a> are dragged to new locations they will be snapped to the 
+    nearest lane.
+  </p>
+  <p>
+    All <a>Node</a>s <a>TextBlock</a>s are editable.
+  </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
-  <button onclick="layout()">Do Layout</button>
   <br />
   <textarea id="mySavedModel" style="width: 100%; height: 300px">
 { "class": "go.GraphLinksModel",
@@ -534,8 +593,7 @@
     { "from":4, "to":6 }
   ]
 }
-   </textarea
-  >
+  </textarea>
 </div>
 
           

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,9 +124,6 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
     myDiagram = new go.Diagram('myDiagramDiv');
 
@@ -194,48 +190,50 @@
       return 'green';
     }
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      { locationObjectName: 'ICON', locationSpot: go.Spot.Center },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Panel,
-        'Spot',
-        $(go.Panel,
-          'Auto',
-          { name: 'ICON' },
-          $(go.Shape,
-            { fill: null, stroke: null, background: 'rgba(0,0,0,0)' },
-            new go.Binding('background', 'problem', nodeProblemConverter),
-            new go.AnimationTrigger('background')
-          ),
-          $(go.Picture, { margin: 5 }, new go.Binding('source', 'type', nodeTypeImage), new go.Binding('desiredSize', 'type', nodeTypeSize))
-        ), // end Auto Panel
-        $(go.Shape,
-          'Circle',
-          {
-            alignment: go.Spot.TopLeft,
-            alignmentFocus: go.Spot.TopLeft,
-            width: 12,
-            height: 12,
-            fill: 'orange',
-          },
-          new go.Binding('figure', 'operation', nodeOperationConverter)
-        ),
-        $(go.Shape,
-          'Triangle',
-          {
-            alignment: go.Spot.TopRight,
-            alignmentFocus: go.Spot.TopRight,
-            width: 12,
-            height: 12,
-            fill: 'blue',
-          },
-          new go.Binding('fill', 'status', nodeStatusConverter),
-          new go.AnimationTrigger('fill')
-        )
-      ), // end Spot Panel
-      $(go.TextBlock, new go.Binding('text'))
-    ); // end Node
+    myDiagram.nodeTemplate = new go.Node('Vertical', {
+      locationObjectName: 'ICON',
+      locationSpot: go.Spot.Center
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Panel('Spot')
+          .add(
+            new go.Panel('Auto', { name: 'ICON' })
+              .add(
+                new go.Shape({
+                  fill: null,
+                  stroke: null,
+                  background: 'rgba(0,0,0,0)'
+                })
+                  .bind('background', 'problem', nodeProblemConverter)
+                  //you really should just be able to do .trigger('background') here--if you're reading this that has
+                  //probably been fixed by now
+                  .trigger(new go.AnimationTrigger('background')),
+                new go.Picture({ margin: 5 })
+                  .bind('source', 'type', nodeTypeImage)
+                  .bind('desiredSize', 'type', nodeTypeSize)
+              ), // end Auto Panel
+            new go.Shape('Circle', {
+              alignment: go.Spot.TopLeft,
+              alignmentFocus: go.Spot.TopLeft,
+              width: 12,
+              height: 12,
+              fill: 'orange'
+            })
+              .bind('figure', 'operation', nodeOperationConverter),
+            new go.Shape('Triangle', {
+              alignment: go.Spot.TopRight,
+              alignmentFocus: go.Spot.TopRight,
+              width: 12,
+              height: 12,
+              fill: 'blue'
+            })
+              .bind('fill', 'status', nodeStatusConverter)
+              .trigger(new go.AnimationTrigger('fill'))
+          ), // end Spot Panel
+        new go.TextBlock()
+          .bind('text')
+      ); // end Node
 
     // conversion function for Bindings in the Link template:
 
@@ -244,10 +242,18 @@
       return 'gray';
     }
 
-    myDiagram.linkTemplate = $(go.Link,
-      { routing: go.Routing.AvoidsNodes, corner: 3 },
-      $(go.Shape, { strokeWidth: 2, stroke: 'gray' }, new go.Binding('stroke', 'problem', linkProblemConverter), new go.AnimationTrigger('stroke'))
-    );
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.AvoidsNodes,
+      corner: 3
+    })
+      .add(
+        new go.Shape({
+          strokeWidth: 2,
+          stroke: 'gray'
+        })
+          .bind('stroke', 'problem', linkProblemConverter)
+          .trigger(new go.AnimationTrigger('stroke'))
+      );
 
     load();
 

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -124,26 +123,18 @@
             
 
 <script src="../extensions/Figures.js"></script>
-<link rel="stylesheet" href="../extensions/DataInspector.css" />
 <script src="../extensions/DataInspector.js"></script>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     // initialize main Diagram
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('location', 'location', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Shape,
-        'Circle',
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape('Circle', {
           fill: 'white',
           stroke: 'gray',
           strokeWidth: 2,
@@ -153,36 +144,32 @@
           fromLinkableDuplicates: true,
           toLinkableDuplicates: true,
           fromLinkableSelfNode: true,
-          toLinkableSelfNode: true,
-        },
-        new go.Binding('stroke', 'color'),
-        new go.Binding('figure')
-      ),
-      $(go.TextBlock,
-        {
+          toLinkableSelfNode: true
+        })
+          .bind('stroke', 'color')
+          .bind('figure'),
+        new go.TextBlock({
           margin: new go.Margin(5, 5, 3, 5),
           font: '10pt sans-serif',
           minSize: new go.Size(16, 16),
           maxSize: new go.Size(120, NaN),
           textAlign: 'center',
-          editable: true,
-        },
-        new go.Binding('text').makeTwoWay()
-      )
-    );
+          editable: true
+        }).bindTwoWay('text')
+      );
 
     // initialize Palette
     myPalette = new go.Palette('myPaletteDiv', {
       nodeTemplate: myDiagram.nodeTemplate,
       contentAlignment: go.Spot.Center,
-      layout: $(go.GridLayout, { wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
+      layout: new go.GridLayout({ wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
       ModelChanged: (e) => {
         // just for demonstration purposes,
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
           document.getElementById('mySavedPaletteModel').textContent = e.model.toJson();
         }
-      },
+      }
     });
 
     // now add the initial contents of the Palette
@@ -192,13 +179,13 @@
       { text: 'Ellipse', color: 'orange', figure: 'Ellipse' },
       { text: 'Rectangle', color: 'red', figure: 'Rectangle' },
       { text: 'Rounded\nRectangle', color: 'green', figure: 'RoundedRectangle' },
-      { text: 'Triangle', color: 'purple', figure: 'Triangle' },
+      { text: 'Triangle', color: 'purple', figure: 'Triangle' }
     ];
 
     // initialize Overview
     myOverview = new go.Overview('myOverviewDiv', {
       observed: myDiagram,
-      contentAlignment: go.Spot.Center,
+      contentAlignment: go.Spot.Center
     });
 
     var inspector = new Inspector('myInspectorDiv', myDiagram, {
@@ -210,8 +197,8 @@
         key: { readOnly: true, show: Inspector.showIfPresent },
         // color would be automatically added for nodes, but we want to declare it a color also:
         color: { type: 'color' },
-        figure: {},
-      },
+        figure: {}
+      }
     });
 
     load();
@@ -247,7 +234,9 @@
 <div id="sample">
   <div style="width: 100%; white-space: nowrap">
     <span style="display: inline-block; vertical-align: top; padding: 2px; width: 140px">
-      <div id="myPaletteDiv" style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
+      <div
+        id="myPaletteDiv"
+        style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
       <div id="myOverviewDiv" style="border: solid 1px black; height: 100px"></div>
     </span>
     <span style="display: inline-block; vertical-align: top; padding: 2px; width: 500px">
@@ -258,13 +247,15 @@
     </span>
   </div>
   <p>
-    This sample supports the normal kind of drag-and-drop from a <a>Palette</a> to a <a>Diagram</a>. The Data <a>Inspector</a> allows you to edit the properties
-    of a selected node in the diagram.
+    This sample supports the normal kind of drag-and-drop from a <a>Palette</a> to a <a>Diagram</a>.
+    The Data <a>Inspector</a> allows you to edit the properties of a selected node in the diagram.
   </p>
   <p>
-    This sample also supports dynamically adding a copy of a selected node in the diagram to the palette by the "Add To Palette" button. See the current state
-    of the palette's model in the top textarea. The palette is <a>Diagram.isReadOnly</a>, so the user cannot delete selected nodes from the palette. But the
-    "Delete From Palette" button removes any selected nodes from the palette.
+    This sample also supports dynamically adding a copy of a selected node in the diagram to the
+    palette by the "Add To Palette" button. See the current state of the palette's model in the top
+    textarea. The palette is <a>Diagram.isReadOnly</a>, so the user cannot delete selected nodes
+    from the palette. But the "Delete From Palette" button removes any selected nodes from the
+    palette.
   </p>
   <div>
     <button onclick="addToPalette()">Add To Palette</button>

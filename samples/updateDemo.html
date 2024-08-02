@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -125,83 +127,70 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
     blueDiagram = new go.Diagram('blueDiagram', {
       // double-click in background creates a new node there
-      'clickCreatingTool.archetypeNodeData': { text: 'node' },
+      'clickCreatingTool.archetypeNodeData': { text: 'node' }
     });
 
-    blueDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      new go.Binding('location', 'loc').makeTwoWay(),
-      $(go.Shape, 'RoundedRectangle', {
-        fill: $(go.Brush, 'Linear', { 0: '#00ACED', 0.5: '#00ACED', 1: '#0079A6' }),
-        stroke: '#0079A6',
-        portId: '',
-        cursor: 'pointer', // the node's only port is the Shape
-        fromLinkable: true,
-        fromLinkableDuplicates: true,
-        fromLinkableSelfNode: true,
-        toLinkable: true,
-        toLinkableDuplicates: true,
-        toLinkableSelfNode: true,
-      }),
-      $(go.TextBlock, { margin: 3, font: 'bold 10pt Arial, sans-serif', stroke: 'whitesmoke', editable: true }, new go.Binding('text').makeTwoWay())
-    );
+    blueDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', {
+          fill: new go.Brush('Linear', { 0: '#00ACED', 0.5: '#00ACED', 1: '#0079A6' }),
+          stroke: '#0079A6',
+          portId: '',
+          cursor: 'pointer', // the node's only port is the Shape
+          fromLinkable: true,
+          fromLinkableDuplicates: true,
+          fromLinkableSelfNode: true,
+          toLinkable: true,
+          toLinkableDuplicates: true,
+          toLinkableSelfNode: true
+        }),
+      new go.TextBlock({ margin: 3, font: 'bold 10pt Arial, sans-serif', stroke: 'whitesmoke', editable: true }).bindTwoWay('text')
+    ).bindTwoWay('location', 'loc');
 
-    blueDiagram.linkTemplate = $(go.Link,
-      {
-        curve: go.Curve.Bezier,
-        adjusting: go.LinkAdjusting.Stretch,
-        relinkableFrom: true,
-        relinkableTo: true,
-        reshapable: true,
-      },
-      $(go.Shape, // the link shape
-        { strokeWidth: 2, stroke: 'blue' }
-      ),
-      $(go.Shape, // the arrowhead
-        {
+    blueDiagram.linkTemplate = new go.Link({
+      curve: go.Curve.Bezier,
+      adjusting: go.LinkAdjusting.Stretch,
+      relinkableFrom: true,
+      relinkableTo: true,
+      reshapable: true
+    })
+      .add(
+        new go.Shape({ strokeWidth: 2, stroke: 'blue' }), // the link shape
+        new go.Shape({ // the arrowhead
           toArrow: 'standard',
           fill: 'blue',
-          stroke: null,
-        }
-      )
-    );
+          stroke: null
+        })
+      );
 
     greenDiagram = new go.Diagram('greenDiagram', {
       // double-click in background creates a new node there
-      'clickCreatingTool.archetypeNodeData': { key: 'node' },
+      'clickCreatingTool.archetypeNodeData': { key: 'node' }
     });
 
-    greenDiagram.nodeTemplate = $(go.Node,
-      'Vertical',
-      new go.Binding('location', 'loc').makeTwoWay(),
-      $(go.Shape, 'Ellipse', { fill: 'lightgreen', width: 20, height: 20, portId: '' }),
-      $(go.TextBlock, { margin: 3, font: 'bold 12px Georgia, sans-serif' }, new go.Binding('text'))
-    );
+    greenDiagram.nodeTemplate = new go.Node('Vertical')
+      .add(
+        new go.Shape('Ellipse', { fill: 'lightgreen', width: 20, height: 20, portId: '' }),
+        new go.TextBlock({ margin: 3, font: 'bold 12px Georgia, sans-serif' }).bind('text')
+      ).bindTwoWay('location', 'loc');
 
-    greenDiagram.linkTemplate = $(go.Link,
-      $(go.Shape, // the link shape
-        { strokeWidth: 2, stroke: '#76C176' }
-      ),
-      $(go.Shape, // the arrowhead
-        {
+    greenDiagram.linkTemplate = new go.Link()
+      .add(
+        new go.Shape({ strokeWidth: 2, stroke: '#76C176' }), // the link shape
+        new go.Shape({ // the arrowhead
           toArrow: 'standard',
           fill: '#76C176',
-          stroke: null,
-        }
-      )
-    );
+          stroke: null
+        })
+      );
 
     // create the model data that will be represented in both diagrams simultaneously
     var model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', loc: new go.Point(20, 20) },
-        { key: 2, text: 'Beta', loc: new go.Point(160, 120) },
+        { key: 2, text: 'Beta', loc: new go.Point(160, 120) }
       ],
       [{ from: 1, to: 2 }]
     );
@@ -223,7 +212,7 @@
       allowMove: false,
       maxSelectionCount: 1,
       initialContentAlignment: go.Spot.TopLeft,
-      layout: $(go.TreeLayout, {
+      layout: new go.TreeLayout({
         alignment: go.TreeAlignment.Start,
         angle: 0,
         compaction: go.TreeCompaction.None,
@@ -233,22 +222,22 @@
         nodeSpacing: 0,
         setsPortSpot: false,
         setsChildPortSpot: false,
-        arrangementSpacing: new go.Size(2, 2),
+        arrangementSpacing: new go.Size(2, 2)
       }),
-      'animationManager.isEnabled': false,
+      'animationManager.isEnabled': false
     });
 
-    undoDisplay.nodeTemplate = $(go.Node,
-      $('TreeExpanderButton', { width: 14, 'ButtonBorder.fill': 'whitesmoke' }),
-      $(go.Panel,
-        'Horizontal',
-        { position: new go.Point(16, 0) },
-        new go.Binding('background', 'color'),
-        $(go.TextBlock, { margin: 2 }, new go.Binding('text', 'text'))
-      )
-    );
+    undoDisplay.nodeTemplate = new go.Node()
+      .add(
+        go.GraphObject.build("TreeExpanderButton", { width: 14, 'ButtonBorder.fill': 'whitesmoke' }),
+        new go.Panel('Horizontal', { position: new go.Point(16, 0) })
+          .bind('background', 'color')
+          .add(
+            new go.TextBlock({ margin: 2 }).bind('text')
+          )
+      );
 
-    undoDisplay.linkTemplate = $(go.Link); // not really used
+    undoDisplay.linkTemplate = new go.Link(); // not really used
 
     var undoModel = new go.TreeModel({ isReadOnly: true }); // initially empty
     undoDisplay.model = undoModel;
@@ -302,7 +291,7 @@
               var childData = {
                 color: odd ? 'white' : '#E0FFED',
                 text: change.toString(),
-                parent: parentKey,
+                parent: parentKey
               };
               undoModel.addNodeData(childData);
               odd = !odd;
@@ -387,7 +376,7 @@
     of each transaction, when <a>ChangedEvent.isTransactionFinished</a>. The <a>ChangedEvent.object</a> may be a <a>Transaction</a> or null if there were no
     recorded changes. Look through the <a>Transaction.changes</a> list for the model changes that you want to save. This code demonstrates the basic idea:
   </p>
-  <pre>
+  <pre class="lang-js"><code>
   model.addChangedListener(e => {
     if (e.isTransactionFinished) {
       const tx = e.object;
@@ -400,7 +389,7 @@
       }
     }
   });
-  </pre>
+  </code></pre>
 </div>
 
           

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,48 +125,46 @@
 <script src="../extensions/DimensioningLink.js"></script>
 <script id="code">
   function init() {
-    var $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': true
     });
 
     // A simple resizable node
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      { resizable: true },
-      $(go.Shape, { strokeWidth: 0, fill: 'lightgray' }, new go.Binding('fill', 'color')),
-      $(go.TextBlock, { margin: 10 }, new go.Binding('text', 'key'))
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto', {
+      locationSpot: go.Spot.Center,
+      resizable: true
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Shape({ strokeWidth: 0, fill: 'lightgray' }).bind('fill', 'color'),
+        new go.TextBlock({ margin: 10 }).bind('text', 'key')
+      );
 
     // A generalized example template using a DimensioningLink.
     // Most usage might not have so many Bindings.
     myDiagram.linkTemplateMap.add(
       'Dimensioning',
-      $(DimensioningLink,
-        new go.Binding('fromSpot', 'fromSpot', go.Spot.parse),
-        new go.Binding('toSpot', 'toSpot', go.Spot.parse),
-        new go.Binding('direction'),
-        new go.Binding('extension'),
-        new go.Binding('inset'),
-        $(go.Shape, { stroke: 'gray' }, new go.Binding('stroke', 'color')),
-        $(go.Shape, { fromArrow: 'BackwardOpenTriangle', segmentIndex: 2, stroke: 'gray' }, new go.Binding('stroke', 'color')),
-        $(go.Shape, { toArrow: 'OpenTriangle', segmentIndex: -3, stroke: 'gray' }, new go.Binding('stroke', 'color')),
-        $(go.TextBlock,
-          {
+      new DimensioningLink()
+        .bind('fromSpot', 'fromSpot', go.Spot.parse)
+        .bind('toSpot', 'toSpot', go.Spot.parse)
+        .bind('direction')
+        .bind('extension')
+        .bind('inset')
+        .add(
+          new go.Shape({ stroke: 'gray' }).bind('stroke', 'color'),
+          new go.Shape({ fromArrow: 'BackwardOpenTriangle', segmentIndex: 2, stroke: 'gray' }).bind('stroke', 'color'),
+          new go.Shape({ toArrow: 'OpenTriangle', segmentIndex: -3, stroke: 'gray' }).bind('stroke', 'color'),
+          new go.TextBlock({
             segmentIndex: 2,
             segmentFraction: 0.5,
             segmentOrientation: go.Orientation.Upright,
             alignmentFocus: go.Spot.Bottom,
             stroke: 'gray',
-            font: '8pt sans-serif',
-          },
-          new go.Binding('text', '', showDistance).ofObject(),
-          new go.Binding('stroke', 'color')
+            font: '8pt sans-serif'
+          })
+            .bindObject('text', '', showDistance)
+            .bind('stroke', 'color')
         )
-      )
     );
 
     // Return a string representing the distance between the two points.
@@ -181,14 +178,18 @@
       var ang = link.direction;
       if (isNaN(ang)) return Math.floor(Math.sqrt(p0.distanceSquaredPoint(pn))) + '';
       var rad = (ang * Math.PI) / 180;
-      return Math.floor(Math.abs(Math.cos(rad) * (p0.x - pn.x)) + Math.abs(Math.sin(rad) * (p0.y - pn.y))) + '';
+      return (
+        Math.floor(
+          Math.abs(Math.cos(rad) * (p0.x - pn.x)) + Math.abs(Math.sin(rad) * (p0.y - pn.y))
+        ) + ''
+      );
     }
 
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 'Alpha', loc: '0 50' },
         { key: 'Beta', loc: '150 0' },
-        { key: 'Gamma', loc: '100 150' },
+        { key: 'Gamma', loc: '100 150' }
       ],
       [
         {
@@ -196,7 +197,7 @@
           to: 'Beta',
           category: 'Dimensioning',
           fromSpot: 'TopRight',
-          toSpot: 'TopLeft',
+          toSpot: 'TopLeft'
         },
         {
           from: 'Alpha',
@@ -205,7 +206,7 @@
           fromSpot: 'TopLeft',
           toSpot: 'TopRight',
           extension: 50,
-          color: 'blue',
+          color: 'blue'
         },
         {
           from: 'Alpha',
@@ -214,7 +215,7 @@
           fromSpot: 'TopLeft',
           toSpot: 'TopLeft',
           direction: 270,
-          color: 'green',
+          color: 'green'
         },
         {
           from: 'Alpha',
@@ -223,7 +224,7 @@
           fromSpot: 'BottomRight',
           toSpot: 'BottomRight',
           direction: 90,
-          color: 'purple',
+          color: 'purple'
         },
         {
           from: 'Alpha',
@@ -233,7 +234,7 @@
           toSpot: 'Center',
           extension: 50,
           direction: NaN,
-          color: 'red',
+          color: 'red'
         },
 
         {
@@ -242,7 +243,7 @@
           category: 'Dimensioning',
           fromSpot: 'TopLeft',
           toSpot: 'TopRight',
-          direction: 0,
+          direction: 0
         },
         {
           from: 'Gamma',
@@ -250,7 +251,7 @@
           category: 'Dimensioning',
           fromSpot: 'TopRight',
           toSpot: 'BottomRight',
-          direction: 90,
+          direction: 90
         },
         {
           from: 'Gamma',
@@ -258,7 +259,7 @@
           category: 'Dimensioning',
           fromSpot: 'BottomRight',
           toSpot: 'BottomLeft',
-          direction: 180,
+          direction: 180
         },
         {
           from: 'Gamma',
@@ -266,8 +267,8 @@
           category: 'Dimensioning',
           fromSpot: 'BottomLeft',
           toSpot: 'TopLeft',
-          direction: 270,
-        },
+          direction: 270
+        }
       ]
     );
   }
@@ -276,8 +277,8 @@
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 400px"></div>
   <p>
-    This sample makes use of the DimensioningLink class, which inherits from the <a>Link</a> class. That class is defined at
-    <a href="../extensions/DimensioningLink.js">DimensioningLink.js</a>.
+    This sample makes use of the DimensioningLink extension, which inherits from the <a>Link</a> class.
+    The extension definition can be found at <a href="../extensions/DimensioningLink.js">DimensioningLink.js</a>.
   </p>
 </div>
 

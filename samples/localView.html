@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,23 +124,16 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myFullDiagram = new go.Diagram(
-      'fullDiagram', // each diagram refers to its DIV HTML element by id
-      {
-        initialAutoScale: go.AutoScale.Uniform, // automatically scale down to show whole tree
-        contentAlignment: go.Spot.Center, // center the tree in the viewport if it fits
-        isReadOnly: true, // don't allow user to change the diagram
-        'animationManager.isEnabled': false,
-        layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeSorting.Ascending }),
-        maxSelectionCount: 1, // only one node may be selected at a time in each diagram
-        // when the selection changes, update the myLocalDiagram view
-        ChangedSelection: showLocalOnFullClick,
-      }
-    );
+    myFullDiagram = new go.Diagram('fullDiagram', {
+      initialAutoScale: go.AutoScale.Uniform, // automatically scale down to show whole tree
+      contentAlignment: go.Spot.Center, // center the tree in the viewport if it fits
+      isReadOnly: true, // don't allow user to change the diagram
+      'animationManager.isEnabled': false,
+      layout: new go.TreeLayout({ angle: 90, sorting: go.TreeSorting.Ascending }),
+      maxSelectionCount: 1, // only one node may be selected at a time in each diagram
+      // when the selection changes, update the myLocalDiagram view
+      ChangedSelection: showLocalOnFullClick
+    });
 
     myLocalDiagram = // this is very similar to the full Diagram
       new go.Diagram('localDiagram', {
@@ -149,29 +141,28 @@
         contentAlignment: go.Spot.Center,
         isReadOnly: true,
         'animationManager.isInitial': false,
-        layout: $(go.TreeLayout, { angle: 90, sorting: go.TreeSorting.Ascending }),
+        layout: new go.TreeLayout({ angle: 90, sorting: go.TreeSorting.Ascending }),
         LayoutCompleted: (e) => {
           var sel = e.diagram.selection.first();
           if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
         },
         maxSelectionCount: 1,
         // when the selection changes, update the contents of the myLocalDiagram
-        ChangedSelection: showLocalOnLocalClick,
+        ChangedSelection: showLocalOnLocalClick
       });
 
     // Define a node template that is shared by both diagrams
-    var myNodeTemplate = $(go.Node,
-      'Auto',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('text', 'key', go.Binding.toString), // for sorting
-      $(go.Shape, 'Rectangle', new go.Binding('fill', 'color'), { stroke: null }),
-      $(go.TextBlock, { margin: 5 }, new go.Binding('text', 'key', (k) => 'node' + k))
-    );
+    var myNodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .bind('text', 'key', go.Binding.toString) // for sorting
+      .add(
+        new go.Shape('Rectangle', { stroke: null }).bind('fill', 'color'),
+        new go.TextBlock({ margin: 5 }).bind('text', 'key', (k) => 'node' + k)
+      );
     myFullDiagram.nodeTemplate = myNodeTemplate;
     myLocalDiagram.nodeTemplate = myNodeTemplate;
 
     // Define a basic link template, not selectable, shared by both diagrams
-    var myLinkTemplate = $(go.Link, { routing: go.Routing.Normal, selectable: false }, $(go.Shape, { strokeWidth: 1 }));
+    var myLinkTemplate = new go.Link({ routing: go.Routing.Normal, selectable: false }).add(new go.Shape({ strokeWidth: 1 }));
     myFullDiagram.linkTemplate = myLinkTemplate;
     myLocalDiagram.linkTemplate = myLinkTemplate;
 
@@ -179,15 +170,14 @@
     setupDiagram();
 
     // Create a part in the background of the full diagram to highlight the selected node
-    highlighter = $(go.Part,
-      'Auto',
-      { layerName: 'Grid', locationSpot: go.Spot.Center },
-      $(go.Shape, 'Ellipse', {
-        fill: $(go.Brush, 'Radial', { 0.0: 'gold', 0.5: 'gold', 1.0: 'white' }),
-        stroke: null,
-        desiredSize: new go.Size(300, 300),
-      })
-    );
+    highlighter = new go.Part('Auto', { layerName: 'Grid', locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape('Ellipse', {
+          fill: new go.Brush('Radial', { 0.0: 'gold', 0.5: 'gold', 1.0: 'white' }),
+          stroke: null,
+          desiredSize: new go.Size(300, 300)
+        })
+      );
     myFullDiagram.add(highlighter);
 
     // Start by focusing the diagrams on the node at the top of the tree.
@@ -247,7 +237,7 @@
     for (var i = 0; i < total; i++) {
       nodeDataArray.push({
         key: nodeDataArray.length,
-        color: go.Brush.randomColor(),
+        color: go.Brush.randomColor()
       });
     }
     var j = 0;

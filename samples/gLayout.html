@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,39 +124,29 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        layout: $(go.GridLayout, { comparer: go.GridLayout.smartComparer }),
+    myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
+        layout: new go.GridLayout({ comparer: go.GridLayout.smartComparer })
         // other properties are set by the layout function, defined below
       }
     );
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
+    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
       // make sure the Node.location is different from the Node.position
-      { locationSpot: go.Spot.Center },
-      new go.Binding('text', 'text'), // for sorting
-      $(go.Shape,
-        'Ellipse',
-        {
+      .bind('text') // for sorting
+      .add(
+        new go.Shape('Ellipse', {
           fill: 'lightgray',
           stroke: null,
-          desiredSize: new go.Size(30, 30),
-        },
-        new go.Binding('fill', 'fill'),
-        new go.Binding('desiredSize', 'size')
-      ),
-      $(go.TextBlock,
-        // the default alignment is go.Spot.Center
-        new go.Binding('text', 'text')
-      )
-    );
+          desiredSize: new go.Size(30, 30)
+        })
+          .bind('fill')
+          .bind('desiredSize', 'size'),
+        new go.TextBlock()
+          // the default alignment is go.Spot.Center
+          .bind('text')
+      );
 
     // create an array of data describing randomly colored and sized nodes
     var nodeDataArray = [];
@@ -166,7 +155,7 @@
         key: i,
         text: i.toString(),
         fill: go.Brush.randomColor(),
-        size: new go.Size(30 + Math.floor(Math.random() * 50), 30 + Math.floor(Math.random() * 50)),
+        size: new go.Size(30 + Math.floor(Math.random() * 50), 30 + Math.floor(Math.random() * 50))
       });
     }
 
@@ -284,7 +273,14 @@
     </span>
   </div>
   <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
-  <p>For information on <b>GridLayout</b> and its properties, see the <a>GridLayout</a> documentation page.</p>
+  <p>
+    The <a>Diagram.layout</a> of the <a>Diagram</a> above is set to a <a>GridLayout</a>.
+    This layout attempts to place all the <a>Nodes</a> into a grid-like arrangement 
+    with some kind of spacing. The way <a>Nodes</a> are layed out can be customized 
+    using several properties. This sample lets you interactively change these 
+    properties and see how they work.
+  </p>
+  <p>For mpore information on <b>GridLayout</b> and its properties, see the <a>GridLayout</a> documentation page.</p>
 </div>
 
           

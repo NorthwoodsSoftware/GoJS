@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,27 +125,19 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // the ID of the DIV HTML element
-      {
-        layout: $(go.ForceDirectedLayout),
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: new go.ForceDirectedLayout(),
+      'undoManager.isEnabled': true
+    });
 
     // This controls whether links overlap each other at each side of the node,
     // or if the links are spread out on each side of the node.
     const SPREADLINKS = true; // must be set before defining templates!
 
-    myDiagram.nodeTemplate = $(go.Node,
-      go.Panel.Auto,
-      { locationSpot: go.Spot.Center },
-      $(go.Shape,
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape({
           figure: 'RoundedRectangle',
           parameter1: 10,
           fill: 'orange', // default fill color
@@ -155,24 +146,31 @@
           fromSpot: SPREADLINKS ? go.Spot.AllSides : go.Spot.None,
           toLinkable: true,
           toSpot: SPREADLINKS ? go.Spot.AllSides : go.Spot.None,
-          cursor: 'pointer',
-        },
-        new go.Binding('fill', 'color')
-      ),
-      $(go.TextBlock, { margin: 10, font: 'bold 12pt sans-serif' }, new go.Binding('text'))
-    );
+          cursor: 'pointer'
+        })
+          .bind('fill', 'color'),
+        new go.TextBlock({
+          margin: 10,
+          font: 'bold 12pt sans-serif'
+        })
+          .bind('text')
+      );
 
-    myDiagram.linkTemplate = $(TaperedLink, // subclass of Link, defined below
-      {
-        curve: go.Curve.Bezier,
-        routing: SPREADLINKS ? go.Routing.Normal : go.Routing.Orthogonal,
-        fromEndSegmentLength: SPREADLINKS ? 50 : 1,
-        toEndSegmentLength: SPREADLINKS ? 50 : 1,
-        relinkableFrom: true,
-        relinkableTo: true,
-      },
-      $(go.Shape, { stroke: null, strokeWidth: 0 }, new go.Binding('fill', 'color'))
-    );
+    myDiagram.linkTemplate = new TaperedLink({ // subclass of Link, defined below
+      curve: go.Curve.Bezier,
+      routing: SPREADLINKS ? go.Routing.Normal : go.Routing.Orthogonal,
+      fromEndSegmentLength: SPREADLINKS ? 50 : 1,
+      toEndSegmentLength: SPREADLINKS ? 50 : 1,
+      relinkableFrom: true,
+      relinkableTo: true
+    })
+      .add(
+        new go.Shape({
+          stroke: null,
+          strokeWidth: 0
+        })
+          .bind('fill', 'color')
+      );
 
     // create a few nodes and links
     myDiagram.model = new go.GraphLinksModel(
@@ -183,7 +181,7 @@
         { key: 4, text: 'four', color: 'slateblue' },
         { key: 5, text: 'five', color: 'aquamarine' },
         { key: 6, text: 'six', color: 'lightgreen' },
-        { key: 7, text: 'seven' },
+        { key: 7, text: 'seven' }
       ],
       [
         { from: 5, to: 6, color: 'orange' },
@@ -193,7 +191,7 @@
         { from: 2, to: 5, color: 'fuchsia' },
         { from: 3, to: 5, color: 'green' },
         { from: 4, to: 5, color: 'black' },
-        { from: 6, to: 7 },
+        { from: 6, to: 7 }
       ]
     );
   }

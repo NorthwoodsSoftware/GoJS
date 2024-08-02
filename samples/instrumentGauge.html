@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,54 +124,79 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
     myDiagram = new go.Diagram('myDiagramDiv');
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, 'Circle', { stroke: 'orange', strokeWidth: 5, spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight }, new go.Binding('stroke', 'color')),
-      $(go.Panel,
-        'Spot',
-        $(go.Panel,
-          'Graduated',
-          {
-            name: 'SCALE',
-            margin: 14,
-            graduatedTickUnit: 2.5, // tick marks at each multiple of 2.5
-            graduatedMax: 100, // this is actually the default value
-            stretch: go.Stretch.None, // needed to avoid unnecessary re-measuring!!!
-          },
-          new go.Binding('graduatedMax', 'max'), // controls the range of the gauge
-          // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
-          $(go.Shape, { name: 'SHAPE', geometryString: 'M-70.7107 70.7107 B135 270 0 0 100 100 M0 100', stroke: 'white', strokeWidth: 4 }),
-          // three differently sized tick marks
-          $(go.Shape, { geometryString: 'M0 0 V10', stroke: 'white', strokeWidth: 1.5 }),
-          $(go.Shape, { geometryString: 'M0 0 V12', stroke: 'white', strokeWidth: 2.5, interval: 2 }),
-          $(go.Shape, { geometryString: 'M0 0 V15', stroke: 'white', strokeWidth: 3.5, interval: 4 }),
-          $(go.TextBlock, {
-            // each tick label
-            interval: 4,
-            alignmentFocus: go.Spot.Center,
-            font: 'bold italic 14pt sans-serif',
-            stroke: 'white',
-            segmentOffset: new go.Point(0, 30),
-          })
-        ),
-        $(go.TextBlock,
-          { alignment: new go.Spot(0.5, 0.9), stroke: 'orange', font: 'bold italic 14pt sans-serif' },
-          new go.Binding('text'),
-          new go.Binding('stroke', 'color')
-        ),
-        $(go.Shape,
-          { fill: 'red', strokeWidth: 0, geometryString: 'F1 M-6 0 L0 -6 100 0 0 6z x M-100 0' },
-          new go.Binding('angle', 'value', convertValueToAngle)
-        ),
-        $(go.Shape, 'Circle', { width: 2, height: 2, fill: '#444' })
-      )
-    );
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape('Circle', {
+          stroke: 'orange',
+          strokeWidth: 5,
+          spot1: go.Spot.TopLeft,
+          spot2: go.Spot.BottomRight
+        })
+          .bind('stroke', 'color'),
+        new go.Panel('Spot')
+          .add(
+            new go.Panel('Graduated', {
+              name: 'SCALE',
+              margin: 14,
+              graduatedTickUnit: 2.5, // tick marks at each multiple of 2.5
+              graduatedMax: 100, // this is actually the default value
+              stretch: go.Stretch.None // needed to avoid unnecessary re-measuring!!!
+            })
+              .bind('graduatedMax', 'max') // controls the range of the gauge
+              .add(
+                // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
+                new go.Shape({
+                  name: 'SHAPE',
+                  geometryString: 'M-70.7107 70.7107 B135 270 0 0 100 100 M0 100',
+                  stroke: 'white',
+                  strokeWidth: 4
+                }),
+                // three differently sized tick marks
+                new go.Shape({
+                  geometryString: 'M0 0 V10',
+                  stroke: 'white',
+                  strokeWidth: 1.5
+                }),
+                new go.Shape({
+                  geometryString: 'M0 0 V12',
+                  stroke: 'white',
+                  strokeWidth: 2.5,
+                  interval: 2
+                }),
+                new go.Shape({
+                  geometryString: 'M0 0 V15',
+                  stroke: 'white',
+                  strokeWidth: 3.5,
+                  interval: 4
+                }),
+                new go.TextBlock({
+                  // each tick label
+                  interval: 4,
+                  alignmentFocus: go.Spot.Center,
+                  font: 'bold italic 14pt sans-serif',
+                  stroke: 'white',
+                  segmentOffset: new go.Point(0, 30)
+                })
+              ),
+            new go.TextBlock({
+              alignment: new go.Spot(0.5, 0.9),
+              stroke: 'orange',
+              font: 'bold italic 14pt sans-serif'
+            })
+              .bind('text')
+              .bind('stroke', 'color'),
+            new go.Shape({
+              fill: 'red',
+              strokeWidth: 0,
+              geometryString: 'F1 M-6 0 L0 -6 100 0 0 6z x M-100 0'
+            })
+              .bind('angle', 'value', convertValueToAngle),
+            new go.Shape('Circle', { width: 2, height: 2, fill: '#444' })
+          )
+      );
 
     // this determines the angle of the needle, based on the data.value argument
     function convertValueToAngle(v, shape) {
@@ -186,7 +210,7 @@
     myDiagram.model = new go.GraphLinksModel(
       [
         { key: 1, text: 'Alpha', value: 35 },
-        { key: 2, text: 'Beta', color: 'green', max: 140, value: 70 },
+        { key: 2, text: 'Beta', color: 'green', max: 140, value: 70 }
       ],
       [{ from: 1, to: 2 }]
     );

@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -124,65 +123,70 @@
             
 
 <script id="code">
+  function tableRowItemTemplate() {
+    return (
+      new go.Panel({
+        // each of which as "attr" and "text" properties
+        stretch: go.Stretch.Fill,
+        alignment: go.Spot.TopLeft
+      })
+        .bind('column', 'attr', (a, elt) => {
+          // ELT is this bound item/cell Panel
+          // elt.data will be the cell object
+          // elt.panel.data will be the person/row data object
+          // elt.part.data will be the node data object
+          // "columnDefinitions" is on the node data object, so:
+          var cd = findColumnDefinitionForName(elt.part.data, a);
+          if (cd !== null) return cd.column;
+          throw new Error('unknown column name: ' + a);
+        })
+        // you could also have other Bindings here for this cell
+        .add(
+          new go.TextBlock({
+            editable: true,
+            margin: new go.Margin(2, 2, 0, 2),
+            wrap: go.Wrap.None
+          }).bindTwoWay('text')
+        )
+    );
+  }
+
+
   function init() {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
-    myDiagram.nodeTemplate = $(go.Node,
-      'Auto',
-      $(go.Shape, { fill: 'white' }),
-      $(go.Panel,
-        'Table',
-        new go.Binding('itemArray', 'people'),
-        { margin: 0.5 },
-        $(go.RowColumnDefinition, { row: 0, background: 'lightgray' }),
-        $(go.RowColumnDefinition, { row: 1, separatorStroke: 'black' }),
-        // the table headers -- remains even if itemArray is empty
-        $(go.Panel, 'TableRow', { isPanelMain: true }, new go.Binding('itemArray', 'columnDefinitions'), {
-          // bound to a column definition object
-          itemTemplate: $(go.Panel,
-            new go.Binding('column'),
-            $(go.TextBlock, { margin: new go.Margin(2, 2, 0, 2), font: 'bold 10pt sans-serif' }, new go.Binding('text'))
-          ),
-        }),
-        {
+    myDiagram.nodeTemplate = new go.Node('Auto')
+      .add(
+        new go.Shape({ fill: 'white' }),
+        new go.Panel('Table', {
+          margin: 0.5,
           // the rows for the people
           name: 'TABLE',
           defaultAlignment: go.Spot.Left,
           defaultColumnSeparatorStroke: 'black',
           // bound to a person/row data object
-          itemTemplate: $(go.Panel,
-            'TableRow',
-            // which in turn consists of a collection of cell objects,
-            // held by the "columns" property in an Array
-            new go.Binding('itemArray', 'columns'),
-            // you could also have other Bindings here for the whole row
-            {
-              // bound to a cell object
-              itemTemplate: $(go.Panel, // each of which as "attr" and "text" properties
-                { stretch: go.Stretch.Fill, alignment: go.Spot.TopLeft },
-                new go.Binding('column', 'attr', (a, elt) => {
-                  // ELT is this bound item/cell Panel
-                  // elt.data will be the cell object
-                  // elt.panel.data will be the person/row data object
-                  // elt.part.data will be the node data object
-                  // "columnDefinitions" is on the node data object, so:
-                  var cd = findColumnDefinitionForName(elt.part.data, a);
-                  if (cd !== null) return cd.column;
-                  throw new Error('unknown column name: ' + a);
-                }),
-                // you could also have other Bindings here for this cell
-                $(go.TextBlock, { editable: true }, { margin: new go.Margin(2, 2, 0, 2), wrap: go.Wrap.None }, new go.Binding('text').makeTwoWay())
-              ),
-            }
-          ),
-        }
-      )
+          itemTemplate: new go.Panel('TableRow', { itemTemplate: tableRowItemTemplate() }).bind(
+            'itemArray',
+            'columns'
+          )
+        })
+          .bind('itemArray', 'people')
+          .addRowDefinition(0, { background: 'lightgray' })
+          .addRowDefinition(1, { separatorStroke: 'black' })
+          // the table headers -- remains even if itemArray is empty
+          .add(
+            new go.Panel('TableRow', {
+              isPanelMain: true,
+              // bound to a column definition object
+              itemTemplate: new go.Panel().bind('column')
+                .add(
+                  new go.TextBlock({
+                    margin: new go.Margin(2, 2, 0, 2),
+                    font: 'bold 10pt sans-serif'
+                  }).bind('text')
+                )
+            }).bind('itemArray', 'columnDefinitions')
+          )
     );
 
     myDiagram.model = new go.GraphLinksModel({
@@ -196,7 +200,7 @@
             // each column definition needs to specify the column used
             { attr: 'name', text: 'Name', column: 0 },
             { attr: 'phone', text: 'Phone #', column: 1 },
-            { attr: 'office', text: 'Office', column: 2 },
+            { attr: 'office', text: 'Office', column: 2 }
           ],
           people: [
             // the table of people
@@ -205,31 +209,31 @@
               columns: [
                 { attr: 'name', text: 'Alice' },
                 { attr: 'phone', text: '2345' },
-                { attr: 'office', text: 'C4-E18' },
-              ],
+                { attr: 'office', text: 'C4-E18' }
+              ]
             },
             {
               columns: [
                 { attr: 'name', text: 'Bob' },
                 { attr: 'phone', text: '9876' },
-                { attr: 'office', text: 'E1-B34' },
-              ],
+                { attr: 'office', text: 'E1-B34' }
+              ]
             },
             {
               columns: [
                 { attr: 'name', text: 'Carol' },
                 { attr: 'phone', text: '1111' },
-                { attr: 'office', text: 'C4-E23' },
-              ],
+                { attr: 'office', text: 'C4-E23' }
+              ]
             },
             {
               columns: [
                 { attr: 'name', text: 'Ted' },
                 { attr: 'phone', text: '2222' },
-                { attr: 'office', text: 'C4-E197' },
-              ],
-            },
-          ],
+                { attr: 'office', text: 'C4-E197' }
+              ]
+            }
+          ]
         },
         {
           // second node
@@ -237,27 +241,27 @@
           columnDefinitions: [
             { attr: 'name', text: 'Name', column: 0 },
             { attr: 'phone', text: 'Phone #', column: 2 }, // note the different order of columns
-            { attr: 'office', text: 'Office', column: 1 },
+            { attr: 'office', text: 'Office', column: 1 }
           ],
           people: [
             {
               columns: [
                 { attr: 'name', text: 'Robert' },
                 { attr: 'phone', text: '5656' },
-                { attr: 'office', text: 'B1-A27' },
-              ],
+                { attr: 'office', text: 'B1-A27' }
+              ]
             },
             {
               columns: [
                 { attr: 'name', text: 'Natalie' },
                 { attr: 'phone', text: '5698' },
-                { attr: 'office', text: 'B1-B6' },
-              ],
-            },
-          ],
-        },
+                { attr: 'office', text: 'B1-B6' }
+              ]
+            }
+          ]
+        }
       ],
-      linkDataArray: [{ from: 1, to: 2 }],
+      linkDataArray: [{ from: 1, to: 2 }]
     });
   }
 
@@ -274,8 +278,8 @@
       columns: [
         { attr: 'name', text: 'Elena' },
         { attr: 'phone', text: '456' },
-        { attr: 'office', text: 'LA' },
-      ],
+        { attr: 'office', text: 'LA' }
+      ]
     });
     myDiagram.commitTransaction('insertIntoTable');
   }
@@ -286,7 +290,7 @@
     var d = n.data;
     myDiagram.startTransaction('removeFromTable');
     // remove second item of list, at index #1
-    myDiagram.model.removeArrayItem(d.people, 1);
+    if (d.people.length > 1) myDiagram.model.removeArrayItem(d.people, 1);
     myDiagram.commitTransaction('removeFromTable');
   }
 
@@ -331,7 +335,7 @@
     model.addArrayItem(d.columnDefinitions, {
       attr: attrname,
       text: attrname,
-      column: col,
+      column: col
     });
     // add cell to each person in the node's table of people
     var people = d.people;
@@ -339,7 +343,7 @@
       var person = people[j];
       model.addArrayItem(person.columns, {
         attr: attrname,
-        text: Math.floor(Math.random() * 1000).toString(),
+        text: Math.floor(Math.random() * 1000).toString()
       });
     }
     myDiagram.commitTransaction('addColumn');
@@ -404,7 +408,12 @@
   <button onclick="removeColumn()">Remove Column</button>
   <p>Swap the "phone" and "office" columns for each selected node:</p>
   <button onclick="swapTwoColumns()">Swap Two Columns</button>
-  <p>See also the <a href="../samples/ColumnResizing.html">Column and Row Resizing Tools</a></p>
+  <br><br>
+  <p>
+    This sample shows how table panel row and columns can be manipulated using
+    HTML interactions. See also the
+    <a href="../samples/ColumnResizing.html">Column and Row Resizing Tools</a>.
+  </p>
 </div>
 
           
@@ -441,6 +450,21 @@ More information can be found in the <a href="../intro/itemArrays.html">GoJS Int
 </p>
             <p>
               <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
             </p>
             <hr>
           

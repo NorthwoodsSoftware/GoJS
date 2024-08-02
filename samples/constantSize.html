@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -125,55 +124,55 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+    const TIME_STEP = 2000;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       initialContentAlignment: go.Spot.TopLeft,
       isReadOnly: true, // allow selection but not moving or copying or deleting
       'toolManager.hoverDelay': 100, // how quickly tooltips are shown
-      'toolManager.mouseWheelBehavior': go.WheelMode.Zoom, // mouse wheel zooms instead of scrolls
+      'toolManager.mouseWheelBehavior': go.WheelMode.Zoom // mouse wheel zooms instead of scrolls
     });
 
     // the background image, a floor plan
     myDiagram.add(
-      $(go.Part, // this Part is not bound to any model data
-        {
-          width: 840,
-          height: 570,
-          layerName: 'Background',
-          position: new go.Point(0, 0),
-          selectable: false,
-          pickable: false,
-        },
-        $(go.Picture, 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
-      )
+      new go.Part({ // this Part is not bound to any model data
+        width: 840,
+        height: 570,
+        layerName: 'Background',
+        position: new go.Point(0, 0),
+        selectable: false,
+        pickable: false
+      })
+        .add(
+          new go.Picture('https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
+        )
     );
 
     // the template for each kitten, for now just a colored circle
-    myDiagram.nodeTemplate = $(go.Node,
-      new go.Binding('location', 'loc'), // specified by data
-      { locationSpot: go.Spot.Center }, // at center of node
-      $(go.Shape, 'Circle', { width: 12, height: 12, stroke: null }, new go.Binding('fill', 'color')), // also specified by data
-      {
-        // this tooltip shows the name and picture of the kitten
-        toolTip: $('ToolTip',
-          $(go.Panel,
-            'Vertical',
-            $(go.Picture, new go.Binding('source', 'src', (s) => 'images/' + s + '.png')),
-            $(go.TextBlock, { margin: 3 }, new go.Binding('text', 'key'))
+    myDiagram.nodeTemplate = new go.Node({
+      locationSpot: go.Spot.Center,
+
+      // this tooltip shows the name and picture of the kitten
+      toolTip: go.GraphObject.build('ToolTip')
+        .add(
+          new go.Panel('Vertical').add(
+            new go.Picture().bind('source', 'src', (s) => 'images/' + s + '.png'),
+            new go.TextBlock({ margin: 3 }).bind('text', 'key')
           )
-        ), // end Adornment
-      }
-    );
+        ) // end Adornment
+    }) // at center of node
+      .bind('location', 'loc') // specified by data
+      .trigger('location', { duration: TIME_STEP, easing: go.Animation.EaseLinear })
+      .add(
+        new go.Shape('Circle', { width: 12, height: 12, stroke: null }).bind('fill', 'color') // also specified by data
+      );
 
     // pretend there are four kittens
     myDiagram.model.nodeDataArray = [
       { key: 'Alonzo', src: '50x40', loc: new go.Point(220, 130), color: 'blue' },
       { key: 'Coricopat', src: '55x55', loc: new go.Point(420, 250), color: 'green' },
       { key: 'Garfield', src: '60x90', loc: new go.Point(640, 450), color: 'red' },
-      { key: 'Demeter', src: '80x50', loc: new go.Point(140, 350), color: 'purple' },
+      { key: 'Demeter', src: '80x50', loc: new go.Point(140, 350), color: 'purple' }
     ];
 
     // This code keeps all nodes at a constant size in the viewport,
@@ -218,7 +217,7 @@
       setTimeout(() => {
         randomMovement();
         loop();
-      }, 2000);
+      }, TIME_STEP);
     }
     loop(); // start the simulation
   }
@@ -227,8 +226,20 @@
 
 <div id="sample">
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
-  <p>The tooltip for each kitten shows its name and photo.</p>
-  <p>When you zoom in or out the effective size of each Node is kept constant by changing its <a>GraphObject.scale</a>.</p>
+  <p>
+    This diagram displays a monitored floor plan with several nodes 
+    (representing kittens) to view in real-time. Every two seconds the <a>Part.location</a>
+    of the kittens is updated. The location has a linear <a>AnimationTrigger</a> 
+    so that the motion appears smooth.
+  </p>
+  <p>The <a href="../intro/toolTips.html">Tooltip</a> for each kitten shows its name and photo.</p>
+  <p>
+    When you zoom in or out the effective size of each Node is kept constant by changing its
+    <a>GraphObject.scale</a>.
+  </p>
+  <p>
+    See <a href="./#monitoring">monitoring samples</a> for more samples like this.
+  </p>
 </div>
 
           
@@ -259,6 +270,8 @@ More information can be found in the <a href="../intro/toolTips.html">GoJS Intro
               <a href="../samples/index.html#tooltips">Related samples</a>
             </p>
             <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
           
         </div>
     </div>

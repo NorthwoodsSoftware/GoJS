@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -126,25 +125,18 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" type="text/css" />
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to an HTML DIV
-      {
-        allowCopy: false,
-        linkingTool: $(MessagingTool), // defined below
-        'resizingTool.isGridSnapEnabled': true,
-        draggingTool: $(MessageDraggingTool), // defined below
-        'draggingTool.gridSnapCellSize': new go.Size(1, MessageSpacing / 4),
-        'draggingTool.isGridSnapEnabled': true,
-        // automatically extend Lifelines as Activities are moved or resized
-        SelectionMoved: ensureLifelineHeights,
-        PartResized: ensureLifelineHeights,
-        'undoManager.isEnabled': true,
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      linkingTool: new MessagingTool(), // defined below
+      'resizingTool.isGridSnapEnabled': true,
+      draggingTool: new MessageDraggingTool(), // defined below
+      'draggingTool.gridSnapCellSize': new go.Size(1, MessageSpacing / 4),
+      'draggingTool.isGridSnapEnabled': true,
+      // automatically extend Lifelines as Activities are moved or resized
+      SelectionMoved: ensureLifelineHeights,
+      PartResized: ensureLifelineHeights,
+      'undoManager.isEnabled': true
+    });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
@@ -159,33 +151,31 @@
     });
 
     // define the Lifeline Node template.
-    myDiagram.groupTemplate = $(go.Group,
-      'Vertical',
-      {
-        locationSpot: go.Spot.Bottom,
-        locationObjectName: 'HEADER',
-        minLocation: new go.Point(0, 0),
-        maxLocation: new go.Point(9999, 0),
-        selectionObjectName: 'HEADER',
-      },
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-      $(go.Panel,
-        'Auto',
-        { name: 'HEADER' },
-        $(go.Shape, 'Rectangle', {
-          fill: $(go.Brush, 'Linear', { 0: '#bbdefb', 1: go.Brush.darkenBy('#bbdefb', 0.1) }),
-          stroke: null,
-        }),
-        $(go.TextBlock,
-          {
-            margin: 5,
-            font: '400 10pt Source Sans Pro, sans-serif',
-          },
-          new go.Binding('text', 'text')
-        )
-      ),
-      $(go.Shape,
-        {
+    myDiagram.groupTemplate = new go.Group('Vertical', {
+      locationSpot: go.Spot.Bottom,
+      locationObjectName: 'HEADER',
+      minLocation: new go.Point(0, 0),
+      maxLocation: new go.Point(9999, 0),
+      selectionObjectName: 'HEADER'
+    })
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Panel('Auto', { name: 'HEADER' })
+          .add(
+            new go.Shape('Rectangle', {
+              fill: new go.Brush('Linear', {
+                0: '#bbdefb',
+                1: go.Brush.darkenBy('#bbdefb', 0.1)
+              }),
+              stroke: null
+            }),
+            new go.TextBlock({
+              margin: 5,
+              font: '400 10pt Source Sans Pro, sans-serif'
+            })
+              .bind('text')
+          ),
+        new go.Shape({
           figure: 'LineV',
           fill: null,
           stroke: 'gray',
@@ -197,66 +187,61 @@
           fromLinkableDuplicates: true,
           toLinkable: true,
           toLinkableDuplicates: true,
-          cursor: 'pointer',
-        },
-        new go.Binding('height', 'duration', computeLifelineHeight)
-      )
-    );
+          cursor: 'pointer'
+        })
+          .bind('height', 'duration', computeLifelineHeight)
+      );
 
     // define the Activity Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      {
-        locationSpot: go.Spot.Top,
-        locationObjectName: 'SHAPE',
-        minLocation: new go.Point(NaN, LinePrefix - ActivityStart),
-        maxLocation: new go.Point(NaN, 19999),
-        selectionObjectName: 'SHAPE',
-        resizable: true,
-        resizeObjectName: 'SHAPE',
-        resizeAdornmentTemplate: $(go.Adornment,
-          'Spot',
-          $(go.Placeholder),
-          $(go.Shape, // only a bottom resize handle
-            {
-              alignment: go.Spot.Bottom,
-              cursor: 'col-resize',
-              desiredSize: new go.Size(6, 6),
-              fill: 'yellow',
-            }
-          )
-        ),
-      },
-      new go.Binding('location', '', computeActivityLocation).makeTwoWay(backComputeActivityLocation),
-      $(go.Shape,
-        'Rectangle',
-        {
+    myDiagram.nodeTemplate = new go.Node({
+      locationSpot: go.Spot.Top,
+      locationObjectName: 'SHAPE',
+      minLocation: new go.Point(NaN, LinePrefix - ActivityStart),
+      maxLocation: new go.Point(NaN, 19999),
+      selectionObjectName: 'SHAPE',
+      resizable: true,
+      resizeObjectName: 'SHAPE',
+      resizeAdornmentTemplate: new go.Adornment('Spot')
+        .add(
+          new go.Placeholder(),
+          new go.Shape({ // only a bottom resize handle
+            alignment: go.Spot.Bottom,
+            cursor: 'col-resize',
+            desiredSize: new go.Size(6, 6),
+            fill: 'yellow'
+          })
+        )
+    })
+      .bindTwoWay('location', '', computeActivityLocation, backComputeActivityLocation)
+      .add(
+        new go.Shape('Rectangle', {
           name: 'SHAPE',
           fill: 'white',
           stroke: 'black',
           width: ActivityWidth,
           // allow Activities to be resized down to 1/4 of a time unit
-          minSize: new go.Size(ActivityWidth, computeActivityHeight(0.25)),
-        },
-        new go.Binding('height', 'duration', computeActivityHeight).makeTwoWay(backComputeActivityHeight)
-      )
-    );
+          minSize: new go.Size(ActivityWidth, computeActivityHeight(0.25))
+        })
+          .bindTwoWay('height', 'duration', computeActivityHeight, backComputeActivityHeight)
+      );
 
     // define the Message Link template.
-    myDiagram.linkTemplate = $(MessageLink, // defined below
-      { selectionAdorned: true, curviness: 0 },
-      $(go.Shape, 'Rectangle', { stroke: 'black' }),
-      $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'black' }),
-      $(go.TextBlock,
-        {
+    myDiagram.linkTemplate = new MessageLink({ // defined below
+      selectionAdorned: true,
+      curviness: 0
+    })
+      .add(
+        new go.Shape('Rectangle', { stroke: 'black' }),
+        new go.Shape({ toArrow: 'OpenTriangle', stroke: 'black' }),
+        new go.TextBlock({
           font: '400 9pt Source Sans Pro, sans-serif',
           segmentIndex: 0,
           segmentOffset: new go.Point(NaN, NaN),
           isMultiline: false,
-          editable: true,
-        },
-        new go.Binding('text', 'text').makeTwoWay()
-      )
-    );
+          editable: true
+        })
+          .bindTwoWay('text')
+      );
 
     // create the graph by reading the JSON data saved in "mySavedModel" textarea element
     load();
@@ -325,8 +310,8 @@
 
   // a custom routed Link
   class MessageLink extends go.Link {
-    constructor() {
-      super();
+    constructor(...args) {
+      super(...args);
       this.time = 0; // use this "time" value when this is the temporaryLink
     }
 
@@ -395,14 +380,11 @@
   class MessagingTool extends go.LinkingTool {
     constructor() {
       super();
-
-      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-      // For details, see https://gojs.net/latest/intro/buildingObjects.html
-      const $ = go.GraphObject.make;
-      this.temporaryLink = $(MessageLink,
-        $(go.Shape, 'Rectangle', { stroke: 'magenta', strokeWidth: 2 }),
-        $(go.Shape, { toArrow: 'OpenTriangle', stroke: 'magenta' })
-      );
+      this.temporaryLink = new MessageLink()
+        .add(
+          new go.Shape('Rectangle', { stroke: 'magenta', strokeWidth: 2 }),
+          new go.Shape({ toArrow: 'OpenTriangle', stroke: 'magenta' })
+        );
     }
 
     doActivate() {
@@ -424,7 +406,7 @@
         const newact = {
           group: newlink.data.to,
           start: start,
-          duration: duration,
+          duration: duration
         };
         model.addNodeData(newact);
         // now make sure all Lifelines are long enough
