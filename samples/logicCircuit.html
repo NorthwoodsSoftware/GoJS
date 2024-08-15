@@ -126,26 +126,30 @@
 <script src="../extensions/AvoidsLinksRouter.js"></script>
 
 <script id="code">
-  var red = 'orangered'; // 0 or false
-  var green = 'forestgreen'; // 1 or true
-  var gray = 'lightgray';
-  var darkGray = 'darkslategray';
+  const red = '#b91c1c';
+  const red2 = '#fca5a5';
+  const green = '#15803d';
+  const green2 = '#86efac';
+
+  const gray = '#cbd5e1';
+  const darkGray = '#334155';
 
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       'draggingTool.isGridSnapEnabled': true, // dragged nodes will snap to a grid of 10x10 cells
-      'undoManager.isEnabled': true
+      'undoManager.isEnabled': true,
+      'grid.visible': true
     });
 
     const avoidLinksRouter = new AvoidsLinksRouter();
-    avoidLinksRouter.epsilonDistance = 2; // increase
+    avoidLinksRouter.epsilonDistance = 4; // increase distance between links
     myDiagram.routers.push(avoidLinksRouter);
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('saveModel');
+      const button = document.getElementById('saveModel');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -153,7 +157,7 @@
       }
     });
 
-    var palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
+    const palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
 
     // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
     myDiagram.linkTemplate = new go.Link({
@@ -172,7 +176,7 @@
       .add(new go.Shape({ name: 'SHAPE', strokeWidth: 4, stroke: red }));
 
     // node template helpers
-    var sharedToolTip = go.GraphObject.build('ToolTip', {
+    const sharedToolTip = go.GraphObject.build('ToolTip', {
       'Border.figure': 'RoundedRectangle'
     }).add(new go.TextBlock({ margin: 2 }).bind('text', '', (d) => d.category));
 
@@ -208,7 +212,6 @@
         figure: 'Circle',
 
         desiredSize: new go.Size(8, 8),
-        // fill: 'black',
         fill: gray,
         stroke: darkGray,
         strokeWidth: 2,
@@ -223,144 +226,140 @@
 
     // define templates for each type of node
 
-    var inputTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const inputTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+      .set({
+        cursor: 'pointer',
+        margin: new go.Margin(-15, 0, 0, 0),
+        click: (e, obj) => {
+          if (e.diagram instanceof go.Palette) return;
+          e.diagram.startTransaction('Toggle Input');
+
+          const isOn = !obj.data.isOn;
+          myDiagram.model.setDataProperty(obj.data, 'isOn', isOn);
+
+          updateStates();
+          e.diagram.commitTransaction('Toggle Input');
+        }
+      })
       .add(
         new go.Shape(shapeStyle())
           .set({
-            fill: green,
+            fill: go.Brush.lighten(green),
             margin: 3,
             strokeWidth: 1.5,
             desiredSize: new go.Size(NaN, NaN),
             scale: 1.75,
-            // stroke: '#F5F5F5',
             geometry: go.Geometry.parse('F M19.5 3 L19.875 3 C20.4963 3 21 3.5037000000000003 21 4.125 L21 6.375 C21 6.9963 20.4963 7.5 19.875 7.5 L19.5 7.5 M2.25 10.5 L17.25 10.5 C18.4926 10.5 19.5 9.4926 19.5 8.25 L19.5 2.25 C19.5 1.0073600000000003 18.4926 0 17.25 0 L2.25 0 C1.0073599999999998 0 0 1.0073600000000003 0 2.25 L0 8.25 C0 9.4926 1.0073599999999998 10.5 2.25 10.5z', true)
           })
-            .bind('fill', 'isOn', isOn => isOn ? green : red),
-        // new go.Shape('Circle', shapeStyle()).bindTwoWay('fill', 'on').set({ fill: green }), // override the default fill (from shapeStyle()) to be red
+            .bind('fill', 'isOn', isOn => go.Brush.lighten(isOn ? green : red)),
+        new go.Shape('BpmnEventError', {
+          alignment: new go.Spot(0.5, 0.5, -1, 0),
+          width: 18,
+          height: 10,
+          fill: green2,
+          strokeWidth: 0
+        })
+          .bind('fill', 'isOn', isOn => isOn ? green2 : red2),
         new go.Shape('Rectangle', portStyle(false)) // the only port
           .set({
-            desiredSize: new go.Size(1, 4),
+            opacity: 0,
             portId: '',
-            alignment: new go.Spot(1, 0.5, -1, 0)
+            alignment: new go.Spot(1, 0.5, -2, 0)
           })
-      )
-      .set({
-        // if double-clicked, an input node will change its value, represented by the color.
-        click: (e, obj) => {
-          if (e.diagram instanceof go.Palette) return;
-          e.diagram.startTransaction('Toggle Input');
-          // var shp = obj.findObject('NODESHAPE');
-          // shp.fill = shp.fill === green ? red : green;
-          myDiagram.model.setDataProperty(obj.data, 'isOn', !obj.data.isOn);
-          updateStates();
-          e.diagram.commitTransaction('Toggle Input');
-        }
-      });
+      );
 
-    var switchTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const switchTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .set({
         shadowOffset: new go.Point(0, 0),
         shadowBlur: 5,
-        cursor: 'pointer',
-        background: 'transparent', // allow double clicking in dead space
-        margin: new go.Margin(0, 0, 0, 0)
+        margin: new go.Margin(-35, 0, 0, 0)
       })
       .add(
         new go.Panel('Horizontal', {
-          minSize: new go.Size(42, 60),
-          // background: 'purple'
+          // this prevents the ports from moving when the shape rotates
+          minSize: new go.Size(42, 60)
         })
           .add(
             new go.Panel('Spot', {
-              // background: 'green',
-              isClipping: true,
-              // height: 90,
-              // width: 45
-              // width: 80
+              isClipping: true
             })
               .add(
                 new go.Shape({fill: 'blue', strokeWidth: 0}),
                 new go.Panel({
-                  // background: 'red',
                   alignment: go.Spot.Left,
                   alignmentFocus: go.Spot.Center,
-                  angle: 359.99,
-                  // margin: new go.Margin(-40,0),
-                  // minSize: new go.Size(45, 50) // don't resize this when the shape rotates
-                  minSize: new go.Size(80, 0), // don't resize this when the shape rotates
+                  angle: 359.99 // rotate counter clock wise
                 })
                   .add(
                     new go.Shape({width: 1, height: 1}),
                     new go.Shape(shapeStyle())
                       .set({
-                        // desiredSize: new go.Size(40, 10),
-                        // desiredSize: new go.Size(40, 10),
                         strokeWidth: 0,
                         fill: green,
                         width: 40,
                         height: 4,
                         position: new go.Point(40,0),
-                        shadowVisible: false,
+                        shadowVisible: false
                       })
                   )
-                  // .bind('angle', 'isOn', isOn => isOn ? 0 : 359.99)
                   .bind('angle', 'isOn', isOn => isOn ? 359.99 : 359.99 - 30)
                   .trigger('angle', {
-                    // duration: 215,
                     duration: 250,
-                    // duration: 300,
-                    // duration: 3000,
                     easing: go.Animation.EaseOutQuad,
-                    // easing: go.Animation.EaseLinear,
                     finished: updateStates
                   })
-              ),
+              )
           ),
-        // new go.Shape('Circle', shapeStyle()).bindTwoWay('fill', 'on').set({ fill: green }), // override the default fill (from shapeStyle()) to be red
+        // this rectangle is the clickable area
+        new go.Shape('Rectangle', {
+          fill: 'transparent',
+          // fill: 'skyblue',
+          // opacity: 0.6,
+          strokeWidth: 0,
+          width: 40,
+          height: 30,
+          alignment: go.Spot.Center,
+          alignmentFocus: new go.Spot(0.5, 1, 0, -8),
+          cursor: 'pointer',
+          click: (e, obj) => {
+            if (e.diagram instanceof go.Palette) return;
+            e.diagram.startTransaction('Toggle Switch');
+
+            while (obj.part && obj.part !== obj) obj = obj.part; // find node
+            const shp = obj.findObject('NODESHAPE');
+            const isOn = !obj.data.isOn;
+            myDiagram.model.setDataProperty(obj.data, 'isOn', isOn);
+
+            e.diagram.commitTransaction('Toggle Switch');
+            if (!obj.data.isOn)
+              updateStates();
+          }
+        }),
+        // ports
         new go.Shape('Rectangle', portStyle(false)) // the only port
           .set({
-            // desiredSize: new go.Size(1, 4),
             portId: 'out',
-            alignment: new go.Spot(1, 0.5),
+            alignment: new go.Spot(1, 0.5)
           }),
         new go.Shape('Rectangle', portStyle(true)) // the only port
           .set({
-            // desiredSize: new go.Size(1, 4),
             portId: 'in',
             alignment: new go.Spot(0, 0.5)
           })
-      )
-      .set({
-        // if double-clicked, an input node will change its value, represented by the color.
-        click: (e, obj) => {
-          if (e.diagram instanceof go.Palette) return;
-          e.diagram.startTransaction('Toggle Switch');
-          var shp = obj.findObject('NODESHAPE');
-          // shp.fill = shp.fill === green ? red : green;
-          myDiagram.model.setDataProperty(obj.data, 'isOn', !obj.data.isOn);
+      );
 
-          // shp.angle = obj.data.isOn ? -20 : 0;
-          // shp.rotate(5);
-
-          e.diagram.commitTransaction('Toggle Switch');
-          if (!obj.data.isOn)
-            updateStates();
-        }
-      });
-
+    // brush for the "light" in the LED
     const outBrush = new go.Brush('Radial', {
       0.0: 'rgba(255, 255, 255, 0.2)',
       0.5: 'rgba(0,255,0,0.8)',
       0.75: 'rgba(0,255,0,0.3)',
-      // 0.95: 'rgba(0,255,0,0.1)',
       0.85: 'rgba(0,255,0,0.1)',
       0.95: 'rgba(0,255,0,0.05)',
       1: 'rgba(0,255,0,0)',
-      start: new go.Spot(0.5, 0.8),
-      // end: go.Spot.BottomRight,
+      start: new go.Spot(0.5, 0.8)
     })
 
-    var outputTemplate = new go.Node('Spot', nodeStyle())
+    const outputTemplate = new go.Node('Spot', nodeStyle())
       .set({
         isShadowed: true
       })
@@ -371,13 +370,11 @@
             new go.Shape('RoundedRectangle', {
               fill: 'transparent',
               parameter1: Infinity,
-              parameter2: 1 | 2,
+              parameter2: 0b0011, // top rounded
               width: 25,
               height: 22,
               strokeWidth: 2,
-              // shadowColor: 'rgb(0,255,0)',
-              shadowVisible: false,
-              // opacity: 0.66
+              shadowVisible: false
             }),
             new go.Shape('Rectangle', {
               alignment: go.Spot.Bottom,
@@ -385,19 +382,17 @@
               strokeWidth: 0,
               fill: null,
               width: 40,
-              height: 40,
+              height: 43
             })
               .bind('fill', 'isOn', isOn => isOn ? outBrush : 'transparent'),
-              // .bind('shadowVisible', 'isOn'),
             new go.Shape('Rectangle', shapeStyle())
               .set({
-                // shadowVisible: true,
                 width: 32,
                 height: 15,
                 alignment: go.Spot.Bottom,
                 alignmentFocus: new go.Spot(0.5, 0, 0, 2)
               })
-                .bindObject('shadowVisible', 'isSelected'),
+                .bindObject('shadowVisible', 'isSelected')
           ),
         new go.Shape('Rectangle', portStyle(true, new go.Spot(0.5, 1, 0, -3))).set({
           // the only port
@@ -406,7 +401,7 @@
         })
       );
 
-    var andTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const andTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('AndGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -423,7 +418,7 @@
         })
       );
 
-    var orTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const orTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('OrGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -440,7 +435,7 @@
         })
       );
 
-    var xorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const xorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('XorGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -457,7 +452,7 @@
         })
       );
 
-    var norTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const norTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('NorGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -470,11 +465,11 @@
         }),
         new go.Shape('Rectangle', portStyle(false)).set({
           portId: 'out',
-          alignment: new go.Spot(1, 0.5)
+          alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
 
-    var xnorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const xnorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('XnorGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -487,11 +482,11 @@
         }),
         new go.Shape('Rectangle', portStyle(false)).set({
           portId: 'out',
-          alignment: new go.Spot(1, 0.5)
+          alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
 
-    var nandTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const nandTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('NandGate', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -504,11 +499,11 @@
         }),
         new go.Shape('Rectangle', portStyle(false)).set({
           portId: 'out',
-          alignment: new go.Spot(1, 0.5)
+          alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
 
-    var notTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const notTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('Inverter', shapeStyle()),
         new go.Shape('Rectangle', portStyle(true)).set({
@@ -539,8 +534,8 @@
     palette.nodeTemplateMap = myDiagram.nodeTemplateMap;
 
     palette.model.nodeDataArray = [
-      { category: 'input' },
-      { category: 'switch' },
+      { category: 'input', isOn: true },
+      { category: 'switch', isOn: true },
       { category: 'output' },
       { category: 'and' },
       { category: 'or' },
@@ -568,7 +563,7 @@
 
   // update the value and appearance of each node according to its type and input values
   function updateStates() {
-    var oldskip = myDiagram.skipsUndoManager;
+    const oldskip = myDiagram.skipsUndoManager;
     myDiagram.skipsUndoManager = true;
     // do all "input" nodes first
     myDiagram.nodes.each((node) => {
@@ -632,7 +627,8 @@
   }
 
   function doSwitch(node) {
-    var color = node.findLinksInto().all(linkIsTrue) ? green : red;
+    const linksInto = node.findLinksInto();
+    const color = linksInto.count > 0 && linksInto.all(linkIsTrue) ? green : red;
     node.findObject('NODESHAPE').fill = color;
     let ang = node.findObject('NODESHAPE').panel.angle;
     let isGoodAngle = ang >= 357 || ang <= 3;
@@ -640,50 +636,49 @@
   }
 
   function doAnd(node) {
-    var color = node.findLinksInto().all(linkIsTrue) ? green : red;
+    const linksInto = node.findLinksInto();
+    const color = linksInto.count > 0 && linksInto.all(linkIsTrue) && linksInto.count % 2 == 0 ? green : red;
     setOutputLinks(node, color);
   }
   function doNand(node) {
-    var color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+    const color = !node.findLinksInto().all(linkIsTrue) ? green : red;
     setOutputLinks(node, color);
   }
   function doNot(node) {
-    var color = !node.findLinksInto().all(linkIsTrue) ? green : red;
+    const color = !node.findLinksInto().all(linkIsTrue) ? green : red;
     setOutputLinks(node, color);
   }
 
   function doOr(node) {
-    var color = node.findLinksInto().any(linkIsTrue) ? green : red;
+    const color = node.findLinksInto().any(linkIsTrue) ? green : red;
     setOutputLinks(node, color);
   }
   function doNor(node) {
-    var color = !node.findLinksInto().any(linkIsTrue) ? green : red;
+    const color = !node.findLinksInto().any(linkIsTrue) ? green : red;
     setOutputLinks(node, color);
   }
 
   function doXor(node) {
-    var truecount = 0;
+    let truecount = 0;
     node.findLinksInto().each((link) => {
       if (linkIsTrue(link)) truecount++;
     });
-    var color = truecount % 2 !== 0 ? green : red;
+    const color = truecount % 2 !== 0 ? green : red;
     setOutputLinks(node, color);
   }
   function doXnor(node) {
-    var truecount = 0;
+    let truecount = 0;
     node.findLinksInto().each((link) => {
       if (linkIsTrue(link)) truecount++;
     });
-    var color = truecount % 2 === 0 ? green : red;
+    const color = truecount % 2 === 0 ? green : red;
     setOutputLinks(node, color);
   }
 
   function doOutput(node) {
     // assume there is just one input link
-    // we just need to update the node's Shape.fill
-    // console.log('1');
+    // we just need to update the node's data.isOn
     node.linksConnected.each((link) => {
-      // node.findObject('NODESHAPE').fill = link.findObject('SHAPE').stroke;
       myDiagram.model.setDataProperty(node.data, 'isOn', link.findObject('SHAPE').stroke == green);
     });
   }
@@ -707,10 +702,10 @@
         width: 100px;
         height: 500px;
         margin-right: 2px;
-        background-color: whitesmoke;
+        background-color: #f3f4f6;
         border: solid 1px black;
       "></div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 500px; border: solid 1px black"></div>
+    <div id="myDiagramDiv" style="background-color: #f3f4f6; flex-grow: 1; height: 500px; border: solid 1px black"></div>
   </div>
   <p>
     Try clicking on the switch or the battery to toggle them.
@@ -738,28 +733,93 @@
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 200px">
-{ "class": "GraphLinksModel",
-  "linkFromPortIdProperty": "fromPort",
-  "linkToPortIdProperty": "toPort",
-  "nodeDataArray": [
-{"category":"input","key":"input1","loc":"-230 10","isOn":true},
-{"category":"or","key":"or1","loc":"-70 0"},
-{"category":"not","key":"not1","loc":"10 0"},
-{"category":"xor","key":"xor1","loc":"100 0"},
-{"category":"or","key":"or2","loc":"190 0"},
-{"category":"output","key":"output1","loc":"170 -100"},
-{"category":"switch","key":-7,"loc":"-150 -30","isOn":false}
-],
-  "linkDataArray": [
-{"from":"input1","fromPort":"out","to":-7,"toPort":"in"},
-{"from":"or1","fromPort":"out","to":"not1","toPort":"in"},
-{"from":"not1","fromPort":"out","to":"or1","toPort":"in2"},
-{"from":"not1","fromPort":"out","to":"xor1","toPort":"in1"},
-{"from":"xor1","fromPort":"out","to":"or2","toPort":"in1"},
-{"from":"or2","fromPort":"out","to":"xor1","toPort":"in2"},
-{"from":"xor1","fromPort":"out","to":"output1","toPort":""},
-{"from":-7,"to":"or1","fromPort":"out","toPort":"in1"}
-]}
+      { "class": "GraphLinksModel",
+      "linkFromPortIdProperty": "fromPort",
+      "linkToPortIdProperty": "toPort",
+      "nodeDataArray": [
+    {"category":"xor","key":-1,"loc":"-230 -860"},
+    {"category":"xor","key":-2,"loc":"-150 -880"},
+    {"category":"and","key":-3,"loc":"-150 -810"},
+    {"category":"and","key":-4,"loc":"-150 -740"},
+    {"category":"switch","isOn":true,"key":-5,"loc":"-310 -880"},
+    {"category":"switch","isOn":true,"key":-6,"loc":"-310 -860"},
+    {"category":"or","key":-7,"loc":"-80 -780"},
+    {"category":"or","key":-8,"loc":"60 -550"},
+    {"category":"switch","isOn":true,"key":-9,"loc":"-170 -630"},
+    {"category":"switch","isOn":true,"key":-10,"loc":"-170 -650"},
+    {"category":"and","key":-11,"loc":"-10 -510"},
+    {"category":"and","key":-12,"loc":"-10 -580"},
+    {"category":"xor","key":-13,"loc":"-10 -650"},
+    {"category":"xor","key":-14,"loc":"-90 -630"},
+    {"category":"or","key":-15,"loc":"200 -330"},
+    {"category":"switch","isOn":true,"key":-16,"loc":"-20 -410"},
+    {"category":"switch","isOn":true,"key":-17,"loc":"-20 -430"},
+    {"category":"and","key":-18,"loc":"140 -290"},
+    {"category":"and","key":-19,"loc":"140 -360"},
+    {"category":"xor","key":-20,"loc":"140 -430"},
+    {"category":"xor","key":-21,"loc":"60 -410"},
+    {"category":"output","key":-22,"loc":"40 -950","isOn":true},
+    {"category":"output","key":-23,"loc":"90 -950","isOn":true},
+    {"category":"output","key":-24,"loc":"140 -950","isOn":false},
+    {"category":"output","key":-25,"loc":"-10 -950","isOn":true},
+    {"category":"switch","isOn":true,"key":-26,"loc":"-420 -690"},
+    {"category":"switch","isOn":true,"key":-27,"loc":"-420 -660"},
+    {"category":"switch","isOn":true,"key":-28,"loc":"-420 -630"},
+    {"category":"switch","isOn":true,"key":-29,"loc":"-420 -510"},
+    {"category":"switch","isOn":true,"key":-30,"loc":"-420 -480"},
+    {"category":"switch","isOn":true,"key":-31,"loc":"-420 -450"},
+    {"category":"input","isOn":true,"key":-32,"loc":"-490 -640"},
+    {"category":"input","isOn":true,"key":-33,"loc":"-490 -460"},
+    {"category":"input","isOn":false,"key":-34,"loc":"-220 -790"}
+    ],
+      "linkDataArray": [
+    {"from":-5,"to":-1,"fromPort":"out","toPort":"in1"},
+    {"from":-6,"to":-1,"fromPort":"out","toPort":"in2"},
+    {"from":-1,"to":-2,"fromPort":"out","toPort":"in1"},
+    {"from":-1,"to":-3,"fromPort":"out","toPort":"in1"},
+    {"from":-6,"to":-4,"fromPort":"out","toPort":"in2"},
+    {"from":-3,"to":-7,"fromPort":"out","toPort":"in1"},
+    {"from":-4,"to":-7,"fromPort":"out","toPort":"in2"},
+    {"from":-9,"to":-11,"fromPort":"out","toPort":"in2"},
+    {"from":-11,"to":-8,"fromPort":"out","toPort":"in2"},
+    {"from":-12,"to":-8,"fromPort":"out","toPort":"in1"},
+    {"from":-10,"to":-14,"fromPort":"out","toPort":"in1"},
+    {"from":-9,"to":-14,"fromPort":"out","toPort":"in2"},
+    {"from":-14,"to":-13,"fromPort":"out","toPort":"in1"},
+    {"from":-14,"to":-12,"fromPort":"out","toPort":"in1"},
+    {"from":-7,"to":-13,"fromPort":"out","toPort":"in2"},
+    {"from":-7,"to":-12,"fromPort":"out","toPort":"in2"},
+    {"from":-16,"to":-18,"fromPort":"out","toPort":"in2"},
+    {"from":-18,"to":-15,"fromPort":"out","toPort":"in2"},
+    {"from":-19,"to":-15,"fromPort":"out","toPort":"in1"},
+    {"from":-17,"to":-21,"fromPort":"out","toPort":"in1"},
+    {"from":-16,"to":-21,"fromPort":"out","toPort":"in2"},
+    {"from":-21,"to":-20,"fromPort":"out","toPort":"in1"},
+    {"from":-21,"to":-19,"fromPort":"out","toPort":"in1"},
+    {"from":-8,"to":-20,"fromPort":"out","toPort":"in2"},
+    {"from":-8,"to":-19,"fromPort":"out","toPort":"in2"},
+    {"from":-2,"to":-24,"fromPort":"out","toPort":""},
+    {"from":-13,"to":-23,"fromPort":"out","toPort":""},
+    {"from":-20,"to":-22,"fromPort":"out","toPort":""},
+    {"from":-15,"to":-25,"fromPort":"out","toPort":""},
+    {"from":-32,"to":-26,"fromPort":"","toPort":"in"},
+    {"from":-32,"to":-27,"fromPort":"","toPort":"in"},
+    {"from":-32,"to":-28,"fromPort":"","toPort":"in"},
+    {"from":-33,"to":-29,"fromPort":"","toPort":"in"},
+    {"from":-33,"to":-30,"fromPort":"","toPort":"in"},
+    {"from":-33,"to":-31,"fromPort":"","toPort":"in"},
+    {"from":-26,"to":-5,"fromPort":"out","toPort":"in"},
+    {"from":-29,"to":-6,"fromPort":"out","toPort":"in"},
+    {"from":-34,"to":-2,"fromPort":"","toPort":"in2"},
+    {"from":-34,"to":-3,"fromPort":"","toPort":"in2"},
+    {"from":-27,"to":-10,"fromPort":"out","toPort":"in"},
+    {"from":-30,"to":-9,"fromPort":"out","toPort":"in"},
+    {"from":-28,"to":-17,"fromPort":"out","toPort":"in"},
+    {"from":-31,"to":-16,"fromPort":"out","toPort":"in"},
+    {"from":-10,"to":-11,"fromPort":"out","toPort":"in1"},
+    {"from":-17,"to":-18,"fromPort":"out","toPort":"in1"},
+    {"from":-5,"to":-4,"fromPort":"out","toPort":"in1"}
+    ]}
     </textarea>
   </div>
 </div>

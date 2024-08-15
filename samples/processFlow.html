@@ -162,27 +162,77 @@
       }
     });
 
+    function makeDistillationColumnPlatePanel(alignment, side) {
+      return new go.Panel('Graduated', {
+        alignment: new go.Spot(alignment, 0),
+        alignmentFocus: new go.Spot(alignment, 0),
+      })
+        .bind('height', 'height', (value) => (value * 0.85))
+        .add(
+          new go.Shape({ geometryString: "M0 0 V400", strokeWidth: 0 })
+            .bind('geometryString', 'height', (value) => (`M0 0 V${value}`)),
+            new go.Shape({
+              interval: 1,
+              geometryString: "M0 0 V40",
+              graduatedSkip: (n) => (Boolean(n % 20) ^ side),
+              stroke: 'black',
+              strokeDashArray: [10, 1]
+            }) 
+            .bind('geometryString', 'width', (value) => (`M0 0 V${value * 0.8}`)),
+        );
+    }
+
+    function makeMetalBrush() {
+      let color = '#fff';
+      return new go.Brush('Linear', {
+        0: go.Brush.darken(color),
+        0.2: color,
+        0.33: go.Brush.lighten(color),
+        0.5: color,
+        1: go.Brush.darken(color),
+        start: go.Spot.Left,
+        end: go.Spot.Right
+      });
+    }
+
+
     var WAVE_WIDTH = 50;
 		var WAVE_HEIGHT = 10;
 		var ORIGINAL_WIDTH = 100 * WAVE_WIDTH;
+
     myDiagram.nodeTemplateMap.add(
-      'Tank',
+      'DistillationColumn',
       new go.Node('Spot', {
         resizable: true,
         resizeObjectName: 'WAVE_PANEL',
-        locationSpot: go.Spot.Center,
+        locationSpot: go.Spot.Center
       })
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
-          new go.Shape('Capsule', {fill: 'white', stroke: 'black', strokeWidth: 2})
-            .bindTwoWay('height', 'height', (value) => (value + 2))
-            .bindTwoWay('width', 'width', (value) => (value + 2)),
+          new go.Shape('Capsule', {
+            fill: makeMetalBrush(),
+            stroke: 'black',
+            strokeWidth: 1,
+          })
+            .bindTwoWay('height', 'height', (value) => (value + 1))
+            .bindTwoWay('width', 'width', (value) => (value + 1)),
           new go.Panel('Spot', {isClipping: true})
             .add(
-              new go.Shape('Capsule')
+              new go.Shape('Capsule', {
+                  strokeWidth: 0,
+                  portId: 'TopRight',
+                })
                 .bindTwoWay('height')
-                .bindTwoWay('width'),
-              new go.Panel('Spot', {name: 'WAVE_PANEL'})
+                .bindTwoWay('width')
+                //not sure if this is the best way to do it but it does work
+                .bind('toSpot', '', (data) => {
+                  let radius = (data.width > data.height ? data.height : data.width) / 2;
+                  let dx = Math.cos(Math.PI / 4) * radius;
+                  return new go.Spot(1, 0, -(radius - dx), radius - dx);
+                }),
+              new go.Panel('Spot', {
+                name: 'WAVE_PANEL',
+              })
                 .bindTwoWay('height')
                 .bindTwoWay('width')
                 .add(
@@ -216,14 +266,14 @@
                             parameter1: 0,
                             name: 'WAVE1',
                             fill: new go.Brush('Linear', {
-                              0: '#a3b7ca',
-                              1: '#d1dbe4',
+                              0: 'rgba(163, 183, 202, 0.5)',
+                              1: 'rgba(209, 219, 228, 0.5)',
                               start: go.Spot.Top,
                               end: go.Spot.Bottom
                             }),
                             strokeWidth: 0,
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
-                            graduatedSkip: (n) => (n % 2),
+                            graduatedSkip: (n) => (n % 2)
                           }),
                           new go.Shape('Wave', {
                             interval: 1,
@@ -232,22 +282,22 @@
                             graduatedSkip: (n) => (!(n % 2)),
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
                             fill: new go.Brush('Linear', {
-                              0: '#a3b7ca',
-                              1: '#d1dbe4',
+                              0: 'rgba(163, 183, 202, 0.5)',
+                              1: 'rgba(209, 219, 228, 0.5)',
                               start: go.Spot.Top,
                               end: go.Spot.Bottom
                             }),
                             strokeWidth: 0
-                          }),
+                          })
                         ),
                       new go.Shape({
                         fill: new go.Brush('Linear', {
-                          0: '#a3b7ca',
-                          0.25: '#7593af',
-                          0.5: '#476f95',
-                          0.75: '#194a7a',
+                          0: 'rgba(163, 183, 202, 0.5)',
+                          0.25: 'rgba(117, 147, 175, 0.5)',
+                          0.5: 'rgba(71, 111, 149, 0.5)',
+                          0.75: 'rgba(25, 74, 122, 0.5)',
                           start: go.Spot.Top,
-                          end: go.Spot.Bottom,
+                          end: go.Spot.Bottom
                         }),
                         margin: new go.Margin(-1, 0, 0, 0),
                         strokeWidth: 0,
@@ -258,12 +308,126 @@
                           return fill_height - (WAVE_HEIGHT / 2);
                         })
                     )
-                )
+                ),
+                makeDistillationColumnPlatePanel(0, true),
+                makeDistillationColumnPlatePanel(1, false),
             ),
             new go.Panel('Auto')
               .add(
-                new go.Shape({fill: 'white', stroke: 'black'}),
-                new go.TextBlock('test', {stroke: 'black', margin: 3})
+                new go.Shape({fill: 'rgba(255, 255, 255, 0.8)', stroke: 'black'}),
+                new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
+                  .bind('text')
+              )
+        )
+    );
+
+    myDiagram.nodeTemplateMap.add(
+      'Tank',
+      new go.Node('Spot', {
+        resizable: true,
+        resizeObjectName: 'WAVE_PANEL',
+        locationSpot: go.Spot.Center
+      })
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Capsule', {
+            fill: makeMetalBrush(),
+            stroke: 'black',
+            strokeWidth: 1,
+          })
+            .bindTwoWay('height', 'height', (value) => (value + 1))
+            .bindTwoWay('width', 'width', (value) => (value + 1)),
+          new go.Panel('Spot', {isClipping: true})
+            .add(
+              new go.Shape('Capsule', {
+                  strokeWidth: 0,
+                })
+                .bindTwoWay('height')
+                .bindTwoWay('width'),
+              new go.Panel('Spot', {
+                name: 'WAVE_PANEL',
+              })
+                .bindTwoWay('height')
+                .bindTwoWay('width')
+                .add(
+                  new go.Shape({fill: 'white', strokeWidth: 0}),
+                  new go.Panel('Vertical', {
+                    alignmentFocus: go.Spot.BottomCenter,
+                    alignment: go.Spot.BottomCenter,
+                    stretch: go.Stretch.Horizontal
+                  })
+                    .add(
+                      new go.Panel('Graduated', {
+                        background: 'transparent',
+                        graduatedMin: 0,
+                        graduatedMax: 100,
+                        graduatedTickBase: 0,
+                        graduatedTickUnit: 1,
+                        width: ORIGINAL_WIDTH,
+                        margin: 0,
+                        stretch: go.Stretch.Horizontal,
+                        name: 'WAVE_GRADUATED_PANEL'
+                      })
+                        .add(
+                          new go.Shape({
+                            name: 'line',
+                            geometryString: 'M0 0 H-' + ORIGINAL_WIDTH,
+                            stroke: 'gray',
+                            strokeWidth: 0
+                          }),
+                          new go.Shape('Wave', {
+                            interval: 1,
+                            parameter1: 0,
+                            name: 'WAVE1',
+                            fill: new go.Brush('Linear', {
+                              0: 'rgba(163, 183, 202, 0.5)',
+                              1: 'rgba(209, 219, 228, 0.5)',
+                              start: go.Spot.Top,
+                              end: go.Spot.Bottom
+                            }),
+                            strokeWidth: 0,
+                            desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
+                            graduatedSkip: (n) => (n % 2)
+                          }),
+                          new go.Shape('Wave', {
+                            interval: 1,
+                            parameter1: 1,
+                            name: 'WAVE2',
+                            graduatedSkip: (n) => (!(n % 2)),
+                            desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
+                            fill: new go.Brush('Linear', {
+                              0: 'rgba(163, 183, 202, 0.5)',
+                              1: 'rgba(209, 219, 228, 0.5)',
+                              start: go.Spot.Top,
+                              end: go.Spot.Bottom
+                            }),
+                            strokeWidth: 0
+                          })
+                        ),
+                      new go.Shape({
+                        fill: new go.Brush('Linear', {
+                          0: 'rgba(163, 183, 202, 0.5)',
+                          0.25: 'rgba(117, 147, 175, 0.5)',
+                          0.5: 'rgba(71, 111, 149, 0.5)',
+                          0.75: 'rgba(25, 74, 122, 0.5)',
+                          start: go.Spot.Top,
+                          end: go.Spot.Bottom
+                        }),
+                        margin: new go.Margin(-1, 0, 0, 0),
+                        strokeWidth: 0,
+                        stretch: go.Stretch.Horizontal
+                      })
+                        .bind('height', '', (data) => {
+                          let fill_height = data.fillLevel * data.height;
+                          return fill_height - (WAVE_HEIGHT / 2);
+                        })
+                    )
+                ),
+            ),
+            new go.Panel('Auto')
+              .add(
+                new go.Shape({fill: 'rgba(255, 255, 255, 0.6)', stroke: 'black'}),
+                new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
                   .bind('text')
               )
         )
@@ -278,26 +442,30 @@
             .add(
               new go.Shape('Circle', {
                 desiredSize: new go.Size(25, 25),
-                fill: 'transparent',
-                strokeWidth: 2,
+                fill: makeMetalBrush(),
+                strokeWidth: 1,
                 margin: new go.Margin(0, 0, -2, 0)
               }),
               new go.Shape({
                 desiredSize: new go.Size(30, 8),
-                fill: 'transparent',
-                strokeWidth: 2
+                fill: makeMetalBrush(),
+                strokeWidth: 1
               })
             ),
           new go.TextBlock({
             alignment: go.Spot.Center,
             textAlign: 'center',
             margin: 5,
-            editable: true
+            editable: true,
+            font: '10pt serif'
           })
-          .bindTwoWay('text')
+          .bindTwoWay('text'),
+          go.GraphObject.build('Button')
+            .add(
+              new go.TextBlock('what')
+            )
         )
     );
-
 
     myDiagram.nodeTemplateMap.add(
       'Condenser',
@@ -308,8 +476,8 @@
             .add(
               new go.Shape('Circle', {
                 desiredSize: new go.Size(32, 32),
-                fill: 'transparent',
-                strokeWidth: 2,
+                fill: makeMetalBrush(),
+                strokeWidth: 1,
                 portId: '',
                 fromSpot: go.Spot.Right,
                 toSpot: go.Spot.Left
@@ -317,15 +485,16 @@
               new go.Shape({
                 geometryString: 'F M0 36 L0 40 4 40 0 40 20 16 20 24 40 0',
                 desiredSize: new go.Size(35, 35),
-                strokeWidth: 2,
-                fill: 'transparent'
+                strokeWidth: 1,
+                fill: makeMetalBrush()
               })
             ),
           new go.TextBlock({
             alignment: go.Spot.Center,
             textAlign: 'center',
             margin: 5,
-            editable: true
+            editable: true,
+            font: '10pt serif'
           })
           .bindTwoWay('text')
         )
@@ -346,7 +515,8 @@
             alignment: go.Spot.Center,
             textAlign: 'center',
             margin: 5,
-            editable: true
+            editable: true,
+            font: '10pt serif'
           })
             .bindTwoWay('text')
             // keep the text upright, even when the whole node has been rotated upside down
@@ -354,8 +524,8 @@
           new go.Shape({
             name: 'SHAPE',
             geometryString: 'F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30',
-            strokeWidth: 2,
-            fill: 'white',
+            strokeWidth: 1,
+            fill: makeMetalBrush(),
             portId: '',
             fromSpot: new go.Spot(1, 0.35),
             toSpot: new go.Spot(0, 0.35)
@@ -373,22 +543,23 @@
               new go.Shape('Circle', {
                 desiredSize: new go.Size(32, 32),
                 portId: '',
-                fill: 'transparent',
-                strokeWidth: 2
+                fill: makeMetalBrush(),
+                strokeWidth: 1
               }),
               new go.Shape("Circle", {
                 desiredSize: new go.Size(16, 16),
-                strokeWidth: 2,
+                strokeWidth: 1,
                 alignment: go.Spot.BottomCenter,
                 alignmentFocus: go.Spot.BottomCenter,
-                fill: 'transparent'
+                fill: makeMetalBrush()
               })
             ),
           new go.TextBlock({
             alignment: go.Spot.Center,
             textAlign: 'center',
             margin: 5,
-            editable: true
+            editable: true,
+            font: '10pt serif'
           })
           .bindTwoWay('text')
         )
@@ -400,7 +571,7 @@
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({fill: 'white', stroke: 'black'}),
-          new go.TextBlock('test', {stroke: 'black', margin: 3})
+          new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
             .bind('text')
         )
     );
@@ -415,8 +586,8 @@
       .bindTwoWay('points')
       .add(
         // mark each Shape to get the link geometry with isPanelMain: true
-        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 7 }),
-        new go.Shape({ isPanelMain: true, stroke: '#aaa', strokeWidth: 5 })
+        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 5 }),
+        new go.Shape({ isPanelMain: true, stroke: '#aaa', strokeWidth: 3 })
           .bind('stroke'),
         new go.Shape({
           isPanelMain: true,
@@ -425,14 +596,22 @@
           name: 'PIPE',
           strokeDashArray: [10, 10]
         }),
-        new go.Shape({ toArrow: 'Triangle', scale: 1.3, fill: 'white', stroke: 'black' })
+        new go.Shape({ toArrow: 'Triangle', fill: 'white', stroke: 'black' }),
+        new go.Panel('Auto', {visible: false})
+          .bind('visible', 'text', (value) => (value && value != ''))
+          .add(
+            new go.Shape({fill: 'rgba(255, 255, 255, 0.8)', stroke: 'black', strokeDashArray: [5, 5]}),
+            new go.TextBlock({stroke: 'black', margin: 3, font: '10pt serif'})
+              .bind('text')
+          )
       );
 
     load();
   }
 
   var myAnimation = null;
-  var myWaterAnimation = null;
+  var myWavesAnimation = null;
+  var myWavesOffsetAnimation = null;
 
   //parameter1 isn't something you can animate by default :(
 
@@ -458,22 +637,32 @@
     // Run indefinitely
     myAnimation.runCount = Infinity;
     myAnimation.start();
-    //for the water movement
-    if (myWaterAnimation) myWaterAnimation.stop();
-    myWaterAnimation = new go.Animation();
-    myWaterAnimation.easing = go.Animation.EaseInOutQuad;
-    myWaterAnimation.reversible = true;
-    myWaterAnimation.duration = 2000;
+    //for the waves movement
+    if (myWavesAnimation) myWavesAnimation.stop();
+    myWavesAnimation = new go.Animation();
+    myWavesAnimation.easing = go.Animation.EaseInOutQuad;
+    myWavesAnimation.reversible = true;
+    myWavesAnimation.duration = 2000;
     myDiagram.nodes.each((node) => {
       let wave1 = node.findObject('WAVE1');
       let wave2 = node.findObject('WAVE2');
-      let waveGraduatedPanel = node.findObject('WAVE_GRADUATED_PANEL');
-      if (wave1) myWaterAnimation.add(wave1, 'waves', 0, 1);
-      if (wave2) myWaterAnimation.add(wave2, 'waves', 1, 0);
-      if (waveGraduatedPanel) myWaterAnimation.add(waveGraduatedPanel, 'offset', -30, 0);
+      if (wave1) myWavesAnimation.add(wave1, 'waves', 0, 1);
+      if (wave2) myWavesAnimation.add(wave2, 'waves', 1, 0);
     });
-    myWaterAnimation.runCount = Infinity;
-    myWaterAnimation.start();
+    myWavesAnimation.runCount = Infinity;
+    myWavesAnimation.start();
+    //waves offset movement
+    if (myWavesOffsetAnimation) myWavesOffsetAnimation.stop();
+    myWavesOffsetAnimation = new go.Animation();
+    myWavesOffsetAnimation.easing = go.Animation.EaseInOutQuad;
+    myWavesOffsetAnimation.reversible = true;
+    myWavesOffsetAnimation.duration = 5000;
+    myDiagram.nodes.each((node) => {
+      let waveGraduatedPanel = node.findObject('WAVE_GRADUATED_PANEL');
+      if (waveGraduatedPanel) myWavesOffsetAnimation.add(waveGraduatedPanel, 'offset', -30, 0);
+    });
+    myWavesOffsetAnimation.runCount = Infinity;
+    myWavesOffsetAnimation.start();
   }
 
   function save() {
@@ -503,7 +692,8 @@
     <a href="../intro/graduatedPanels.html">Graduated Panels</a> for the water effect inside the tanks.
   </p>
   <p>
-    There is also a custom animation that modifies the <a>Shape.strokeDashOffset</a> for each link.
+    There are two custom animations in this diagram: one that modifies the <a>Shape.strokeDashOffset</a> for each link 
+    and one that uses <a>AnimationManager.defineAnimationEffect</a> to animate the waves in the tanks.
   </p>
   <div>
     <div>
@@ -513,31 +703,32 @@
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 300px">
       {"class": "go.GraphLinksModel",
+        "linkFromPortIdProperty":"fromPort",
+        "linkToPortIdProperty":"toPort",
         "nodeDataArray": [
-          {"key":"Tank1", "category":"Tank", "pos":"0 200", "text":"Feed Tank", "height": 100, "width": 200, "fillLevel": "0.8"},
-          {"key":"Valve1", "category":"Valve", "pos":"170 200", "text":"Valve", "angle":0},
-          {"key":"Tank2", "category":"Tank", "pos":"300 200", "text":"Distillation Column", "height": 275, "width": 75, "fillLevel": "0.3"},
-          {"key":"Condenser1", "category": "Condenser", "pos":"400 0", "text": "Condenser"},
-          {"key":"Tank3", "category":"Tank", "pos":"600 20", "text":"Reflux Drum", "height":75, "width":150, "fillLevel": "0.5"},
-          {"key":"Pump1", "category":"Pump", "pos":"550 100", "text":"Pump"},
-          {"key":"Boiler1", "category":"Boiler", "pos":"400 405", "text":"Reboiler"},
-          {"key":"Valve2", "category":"Valve", "pos":"550 350", "text":"Valve", "angle":270},
-          {"key":"Label1", "category":"Label", "pos":"700 100", "text":"Overhead product"},
-          {"key":"Label2", "category":"Label", "pos":"0 420", "text":"Bottom product"}
-
+          {"key":"Tank1", "category":"Tank", "pos":"0 200", "text":"Feed Tank", "height":100, "width":200, "fillLevel":"0.8"},
+          {"key":"Valve1", "category":"Valve", "pos":"170 200", "text":"Valve", "angle":0, "isOn":true},
+          {"key":"Tank2", "category":"DistillationColumn", "pos":"300 200", "text":"Distillation Column", "height":275, "width":75, "fillLevel":"0.15"},
+          {"key":"Condenser1", "category": "Condenser", "pos":"400 0", "text":"Condenser", "isOn":true},
+          {"key":"Tank3", "category":"Tank", "pos":"600 20", "text":"Reflux Drum", "height":75, "width":150, "fillLevel":"0.1"},
+          {"key":"Pump1", "category":"Pump", "pos":"550 100", "text":"Pump", "isOn":true},
+          {"key":"Boiler1", "category":"Boiler", "pos":"430 370", "text":"Reboiler", "isOn":true},
+          {"key":"Valve2", "category":"Valve", "pos":"550 310", "text":"Valve", "angle":270, "isOn":true},
+          {"key":"Tank4", "category":"Tank", "pos":"700 205", "text":"Holding Tank", "height":50, "width":100, "fillLevel":"0.8"},
+          {"key":"Tank5", "category":"Tank", "pos":"100 420", "text":"Holding Tank", "height":50, "width":100, "fillLevel":"0.8"}
         ],
         "linkDataArray": [
-          {"from":"Tank1", "to":"Valve1", "stroke":"#7593af"},
-          {"from":"Valve1", "to":"Tank2", "stroke":"#7593af"},
+          {"from":"Tank1", "to":"Valve1", "stroke":"rgba(117, 147, 175, 0.5)"},
+          {"from":"Valve1", "to":"Tank2", "stroke":"rgba(117, 147, 175, 0.5)"},
           {"from":"Tank2", "to":"Condenser1"},
-          {"from":"Condenser1", "to":"Tank3", "stroke":"#7593af"},
-          {"from":"Tank3", "to":"Pump1", "stroke":"#7593af"},
-          {"from":"Pump1", "to":"Tank2", "stroke":"#7593af"},
-          {"from":"Pump1", "to":"Label1", "stroke":"#7593af"},
-          {"from":"Tank2", "to":"Boiler1", "stroke":"#7593af"},
+          {"from":"Condenser1", "to":"Tank3", "stroke":"rgba(117, 147, 175, 0.5)"},
+          {"from":"Tank3", "to":"Pump1", "stroke":"rgba(117, 147, 175, 0.5)"},
+          {"from":"Pump1", "to":"Tank2", "stroke":"rgba(117, 147, 175, 0.5)", "toPort":"TopRight"},
+          {"from":"Pump1", "to":"Tank4", "stroke":"rgba(117, 147, 175, 0.5)", "text":"Overhead product"},
+          {"from":"Tank2", "to":"Boiler1", "stroke":"rgba(117, 147, 175, 0.5)"},
           {"from":"Boiler1", "to":"Valve2"},
           {"from":"Valve2", "to":"Tank2"},
-          {"from":"Boiler1", "to":"Label2", "stroke":"#7593af"}
+          {"from":"Boiler1", "to":"Tank5", "stroke":"rgba(117, 147, 175, 0.5)", "text":"Bottom product\n(condensate from reboiler)"}
         ]
       }
     </textarea>

@@ -181,22 +181,22 @@
 
     // replace the default Node template in the nodeTemplateMap
     myDiagram.nodeTemplate = new go.Node('Vertical', { // the whole node panel
-      // when the DIRECTION is vertical, use the whole Node as the port
-      fromSpot: go.Spot.TopBottomSides,
-      toSpot: go.Spot.TopBottomSides
-    })
+        // when the DIRECTION is vertical, use the whole Node as the port
+        fromSpot: go.Spot.TopBottomSides,
+        toSpot: go.Spot.TopBottomSides
+      })
       .add(
         new go.TextBlock() // the text label
           .bind('text', 'key'),
         new go.Picture({ // the icon showing the logo
-          // You should set the desiredSize (or width and height)
-          // whenever you know what size the Picture should be.
-          desiredSize: new go.Size(50, 50),
-          // when the DIRECTION is horizontal, use this icon as the port
-          portId: DIRECTION === 0 || DIRECTION === 180 ? '' : null,
-          fromSpot: go.Spot.LeftRightSides,
-          toSpot: go.Spot.LeftRightSides
-        })
+            // You should set the desiredSize (or width and height)
+            // whenever you know what size the Picture should be.
+            desiredSize: new go.Size(50, 50),
+            // when the DIRECTION is horizontal, use this icon as the port
+            portId: DIRECTION === 0 || DIRECTION === 180 ? '' : null,
+            fromSpot: go.Spot.LeftRightSides,
+            toSpot: go.Spot.LeftRightSides
+          })
           .bind('source', 'key', convertKeyImage)
       );
 
@@ -207,28 +207,26 @@
 
     // replace the default Link template in the linkTemplateMap
     myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 10
-    })
+        curve: go.Curve.Bezier, fromEndSegmentLength: 50, toEndSegmentLength: 50,
+      })
       .add(
         new go.Shape({ strokeWidth: 1.5 }), // the link shape
-        new go.Shape({ toArrow: 'Standard', stroke: null }) // the arrowhead
       );
 
     myDiagram.groupTemplate = // assumes SwimLaneLayout.direction === 0
       new go.Group(DIRECTION === 0 || DIRECTION === 180 ? 'Horizontal' : 'Vertical', {
-        layerName: 'Background', // always behind all regular nodes and links
-        movable: false, // user cannot move or copy any lanes
-        copyable: false,
-        locationObjectName: 'PLACEHOLDER', // this object will be sized and located by SwimLaneLayout
-        layout: null, // no lane lays out its member nodes
-        avoidable: false // don't affect any AvoidsNodes link routes
-      })
+          layerName: 'Background', // always behind all regular nodes and links
+          movable: false, // user cannot move or copy any lanes
+          copyable: false,
+          locationObjectName: 'PLACEHOLDER', // this object will be sized and located by SwimLaneLayout
+          layout: null, // no lane lays out its member nodes
+          avoidable: false // don't affect any AvoidsNodes link routes
+        })
         .add(
           new go.TextBlock({
-            font: 'bold 12pt sans-serif',
-            angle: DIRECTION === 0 || DIRECTION === 180 ? 270 : 0
-          })
+              font: 'bold 12pt sans-serif',
+              angle: DIRECTION === 0 || DIRECTION === 180 ? 270 : 0
+            })
             .bind('text', 'key'),
           new go.Panel('Auto')
             .add(
@@ -244,9 +242,9 @@
               })
             ),
           new go.TextBlock({
-            font: 'bold 12pt sans-serif',
-            angle: DIRECTION === 0 || DIRECTION === 180 ? 90 : 0
-          })
+              font: 'bold 12pt sans-serif',
+              angle: DIRECTION === 0 || DIRECTION === 180 ? 90 : 0
+            })
             .bind('text', 'key')
         );
 

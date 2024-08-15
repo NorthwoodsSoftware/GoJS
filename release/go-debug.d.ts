@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.9
+ * Type definitions for GoJS v3.0.10
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5902,7 +5902,7 @@ export class DraggingTool extends Tool {
      * is determined by the value of {@link isGridSnapRealtime}.
      *
      * This property does not affect dragging disconnected links,
-     * but those links to respect the {@link Part.dragComputation}, which can be used to snap them.
+     * but those links do respect the {@link Part.dragComputation}, which can be used to snap them.
      *
      * By default this property is false.
      * Setting this property does not raise any events.
@@ -26505,10 +26505,10 @@ export class Model {
      * you may need to search for it by iterating through that Array,
      * or by finding the desired {@link Node} or simple {@link Part} in a {@link Diagram} and getting that node's {@link Panel.data},
      * or most likely by calling {@link findNodeDataForKey}.
-     * @param nodedata - a JavaScript object represented by a node, group, or non-link.
+     * @param nodedata - a JavaScript object represented by a node, group, or non-link; if null, this predicate will return false
      * @returns true if it is a node data object in this model; false otherwise.
      */
-    containsNodeData(nodedata: ObjectData): boolean;
+    containsNodeData(nodedata: ObjectData | null): boolean;
     /**
      * Given a number or string, find the node data object in this model
      * that uses the given value as its unique key.
@@ -27362,11 +27362,11 @@ export class GraphLinksModel extends Model {
      * they cannot be found using an index that this model would maintain.
      * However you may choose to provide such a property on the link data objects
      * and maintain your own index.
-     * @param linkdata - a JavaScript object represented by a link.
+     * @param linkdata - a JavaScript object represented by a link; if null, this predicate will return false
      * @see {@link addLinkData}
      * @see {@link removeLinkData}
      */
-    containsLinkData(linkdata: ObjectData): boolean;
+    containsLinkData(linkdata: ObjectData | null): boolean;
     /**
      * When you want to add a link to the diagram, call this method with a new data object.
      * This will add that data to the {@link linkDataArray} and
@@ -31480,10 +31480,12 @@ export abstract class Router {
      * Adding a Router to the Diagram will cause the Diagram to call `canRoute` for every group recursively,
      * and finally for the Diagram itself.
      *
-     * By default this just returns the value of {@link isEnabled}.
+     * By default this returns `false` if {@link isRealtime} is `false` and a realtime operation (such as dragging or resizing) is ongoing,
+     * or else `false` if a default animation is running, or else the value of {@link isEnabled}.
+     *
      * If `true`, {@link routeLinks} will be called on each collection.
      *
-     * An override of this method should return false if {@link isEnabled} is false.
+     * An override of this method should return `false` if {@link isEnabled} is false, or return `false` is if a call to the base method is `false`.
      *
      * This method is only called by the {@link Diagram}. If using a Router without adding it to a Diagram, this method will never be called.
      * @virtual

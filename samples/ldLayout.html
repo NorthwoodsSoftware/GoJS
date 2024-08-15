@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -125,39 +127,35 @@
 
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
+    myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
         initialAutoScale: go.AutoScale.UniformToFill,
-        layout: $(go.LayeredDigraphLayout),
+        layout: new go.LayeredDigraphLayout()
         // other Layout properties are set by the layout function, defined below
       }
     );
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      { locationSpot: go.Spot.Center },
-      $(go.Shape,
-        'Rectangle',
-        {
+    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
+      .add(
+        new go.Shape('Rectangle', {
           fill: 'lightgray', // the initial value, but data binding may provide different value
           stroke: null,
-          desiredSize: new go.Size(30, 30),
-        },
-        new go.Binding('fill', 'fill')
-      ),
-      $(go.TextBlock, new go.Binding('text', 'text'))
-    );
+          desiredSize: new go.Size(30, 30)
+        })
+          .bind('fill'),
+        new go.TextBlock()
+          .bind('text')
+      );
 
     // define the Link template to be minimal
-    myDiagram.linkTemplate = $(go.Link, { selectable: false }, $(go.Shape, { strokeWidth: 3, stroke: '#333' }));
+    myDiagram.linkTemplate = new go.Link({ selectable: false })
+      .add(
+        new go.Shape({ strokeWidth: 3, stroke: '#333' })
+      );
 
     // generate a tree with the default values
+    buildSettingsMenu();
     rebuildGraph();
   }
 
@@ -180,6 +178,7 @@
     // force a diagram layout
     layout();
     myDiagram.commitTransaction('generateDigraph');
+    myDiagram.zoomToFit();
   }
 
   // Creates a random number of randomly colored nodes.
@@ -196,7 +195,7 @@
       nodeArray.push({
         key: i,
         text: i.toString(),
-        fill: go.Brush.randomColor(),
+        fill: go.Brush.randomColor()
       });
     }
 
@@ -235,118 +234,452 @@
   function layout() {
     myDiagram.startTransaction('change Layout');
     var lay = myDiagram.layout;
+    var d = document;
+    var code = 'new go.LayeredDigraphLayout({';
 
-    var direction = getRadioValue('direction');
-    direction = parseFloat(direction, 10);
-    lay.direction = direction;
+    var direction = d.getElementById('direction').value;
+    if (direction === 'Right') lay.direction = 0;
+    else if (direction === 'Down') lay.direction = 90;
+    else if (direction === 'Left') lay.direction = 180;
+    else if (direction === 'Up') lay.direction = 270;
+    if(direction != d.getElementById('direction').name) code += `\n  direction: ${lay.direction},`
 
-    var layerSpacing = document.getElementById('layerSpacing').value;
+    var layerSpacing = d.getElementById('layerSpacing').value;
     layerSpacing = parseFloat(layerSpacing, 10);
     lay.layerSpacing = layerSpacing;
+    if (layerSpacing != d.getElementById('layerSpacing').name) code += `\n  layerSpacing: ${lay.layerSpacing},`
 
-    var columnSpacing = document.getElementById('columnSpacing').value;
+    var columnSpacing = d.getElementById('columnSpacing').value;
     columnSpacing = parseFloat(columnSpacing, 10);
     lay.columnSpacing = columnSpacing;
+    if (columnSpacing != d.getElementById('columnSpacing').name) code += `\n  columnSpacing: ${lay.columnSpacing},`
 
-    var cycleRemove = getRadioValue('cycleRemove');
-    if (cycleRemove === 'CycleDepthFirst') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.DepthFirst;
-    else if (cycleRemove === 'CycleGreedy') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.Greedy;
+    var cycleRemove = d.getElementById('cycleRemoveOption').value.split(/\s+/).join('');
+    if (cycleRemove === 'DepthFirst') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.DepthFirst;
+    else if (cycleRemove === 'Greedy') lay.cycleRemoveOption = go.LayeredDigraphCycleRemove.Greedy;
+    if (cycleRemove != d.getElementById('cycleRemoveOption').name.split(/\s+/).join('')) code += `\n  cycleRemoveOption: go.LayeredDigraphCycleRemove.${cycleRemove},`
 
-    var layering = getRadioValue('layering');
-    if (layering === 'LayerOptimalLinkLength') lay.layeringOption = go.LayeredDigraphLayering.OptimalLinkLength;
-    else if (layering === 'LayerLongestPathSource') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSource;
-    else if (layering === 'LayerLongestPathSink') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSink;
+    var layering = d.getElementById('layeringOption').value.split(/\s+/).join('');
+    if (layering === 'OptimalLinkLength') lay.layeringOption = go.LayeredDigraphLayering.OptimalLinkLength;
+    else if (layering === 'LongestPathSource') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSource;
+    else if (layering === 'LongestPathSink') lay.layeringOption = go.LayeredDigraphLayering.LongestPathSink;
+    if (layering != d.getElementById('layeringOption').name.split(/\s+/).join('')) code += `\n  layeringOption: go.LayeredDigraphLayering.${layering},`
 
-    var initialize = getRadioValue('initialize');
-    if (initialize === 'InitDepthFirstOut') lay.initializeOption = go.LayeredDigraphInit.DepthFirstOut;
-    else if (initialize === 'InitDepthFirstIn') lay.initializeOption = go.LayeredDigraphInit.DepthFirstIn;
-    else if (initialize === 'InitNaive') lay.initializeOption = go.LayeredDigraphInit.Naive;
+    var initialize = d.getElementById('initializeOption').value.split(/\s+/).join('');
+    if (initialize === 'DepthFirstOut') lay.initializeOption = go.LayeredDigraphInit.DepthFirstOut;
+    else if (initialize === 'DepthFirstIn') lay.initializeOption = go.LayeredDigraphInit.DepthFirstIn;
+    else if (initialize === 'Naive') lay.initializeOption = go.LayeredDigraphInit.Naive;
+    if (initialize != d.getElementById('initializeOption').name.split(/\s+/).join('')) code += `\n  initializeOption: go.LayeredDigraphInit.${initialize},`
 
-    var aggressive = getRadioValue('aggressive');
-    if (aggressive === 'AggressiveLess') lay.aggressiveOption = go.LayeredDigraphAggressive.Less;
-    else if (aggressive === 'AggressiveNone') lay.aggressiveOption = go.LayeredDigraphAggressive.None;
-    else if (aggressive === 'AggressiveMore') lay.aggressiveOption = go.LayeredDigraphAggressive.More;
+    var aggressive = d.getElementById('aggressiveOption').value.split(/\s+/).join('');
+    if (aggressive === 'Less') lay.aggressiveOption = go.LayeredDigraphAggressive.Less;
+    else if (aggressive === 'None') lay.aggressiveOption = go.LayeredDigraphAggressive.None;
+    else if (aggressive === 'More') lay.aggressiveOption = go.LayeredDigraphAggressive.More;
+    if (aggressive != d.getElementById('aggressiveOption').name.split(/\s+/).join('')) code += `\n  aggressiveOption: go.LayeredDigraphAggressive.${aggressive},`
 
-    //TODO implement pack option
-    var i;
-    var pack = document.getElementsByName('pack');
-    var packing = 0;
-    for (i = 0; i < pack.length; i++) {
-      if (pack[i].checked) packing = packing | parseInt(pack[i].value, 10);
-    }
-    lay.packOption = packing;
+    var setsPortSpots = d.getElementById('setsPortSpots').checked;
+    lay.setsPortSpots = setsPortSpots;
+    if (!setsPortSpots) code += `\n  setsPortSpots: false,`
 
-    var setsPortSpots = document.getElementById('setsPortSpots');
-    lay.setsPortSpots = setsPortSpots.checked;
-
-    var align = document.getElementsByName('align');
     var alignOption = 0;
-    for (i = 0; i < align.length; i++) {
-      if (align[i].checked) alignOption = alignOption | parseInt(align[i].value, 10);
-    }
-    for (i = 0; i < pack.length; i++) {
-      var cb = pack[i];
-      cb.disabled = alignOption !== 0;
-    }
+    if (d.getElementById('upperLeftAlign').checked) alignOption |= 1;
+    if (d.getElementById('upperRightAlign').checked) alignOption |= 2;
+    if (d.getElementById('lowerLeftAlign').checked) alignOption |= 4;
+    if (d.getElementById('lowerRightAlign').checked) alignOption |= 8;
     lay.alignOption = alignOption;
+    if (alignOption == 0) code += `\n  alignOption: go.LayeredDigraphAlign.None,`
+    else if (alignOption == 15 ) code += ''
+    else code += `\n  alignOption: ${alignOption},`
+    
+    disable('medianPack', !(alignOption == 0));
+    disable('straightenPack', !(alignOption == 0));
+    disable('expandPack', !(alignOption == 0));
+    
+    if (alignOption == 0){
+      var medianPack = d.getElementById('medianPack').checked;
+      var straightenPack = d.getElementById('straightenPack').checked;
+      var expandPack = d.getElementById('expandPack').checked;
+      packOption = 0;
+      if (d.getElementById('medianPack').checked) packOption |= 4;
+      if (d.getElementById('straightenPack').checked) packOption = 2;
+      if (d.getElementById('expandPack').checked) packOption |= 1;
+      lay.packOption = packOption;
+      if (packOption == 0) code += `\n  packOption: go.LayeredDigraphPack.None,`
+      else if (packOption == 7) code += ''
+      else code += `\n  packOption: ${packOption},`
+    }
+    if(code === 'new go.LayeredDigraphLayout({') code = 'new go.LayeredDigraphLayout()'; // If no changes made to layout
+    else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
+    d.getElementById('layoutBuilder').textContent = code;
 
     myDiagram.commitTransaction('change Layout');
+    myDiagram.zoomToFit();
+    if (window.Prism) window.Prism.highlightAll();
   }
 
-  function getRadioValue(name) {
-    var radio = document.getElementsByName(name);
-    for (var i = 0; i < radio.length; i++) if (radio[i].checked) return radio[i].value;
+  function disable(element, bool){
+    document.getElementById(element + 'Row').style.opacity = (bool)? 0.5 : 1;
+    document.getElementById(element + 'Row').style.pointerEvents = (bool)? 'none' : 'auto';
   }
+
+  function buildSettingsMenu(){
+    // Calls to build each setting to the respective builder - Default Properties
+    buildButtonRow('layerSpacing', 5, 25, 'Layer Spacing', 'table1', 0);
+    buildButtonRow('columnSpacing', 5, 25, 'Height Spacing', 'table1', 0);
+    buildSwitch('setsPortSpots', 'Sets Port Spot', 'table1', 'checked');
+    buildDropdown('cycleRemoveOption', 'Cycle Remove', 'table1', ['Depth First', 'Greedy']);
+    
+    buildDropdown('direction', 'Direction', 'table2', ['Right', 'Down', 'Left', 'Up']);
+    buildDropdown('layeringOption', 'Layering', 'table2', ['Optimal Link Length', 'Longest Path Source', 'Longest Path Sink']);
+    buildDropdown('initializeOption', 'Initialize', 'table2', ['Depth First Out', 'Depth First In', 'Native']);
+    buildDropdown('aggressiveOption', 'Crossings', 'table2', ['Less', 'More', 'None']);
+
+    buildSwitch('upperLeftAlign', 'Upper Left', 'table3', 'checked');
+    buildSwitch('upperRightAlign', 'Upper Right', 'table3', 'checked');
+    buildSwitch('lowerLeftAlign', 'Lower Left', 'table3', 'checked');
+    buildSwitch('lowerRightAlign', 'Lower Right', 'table3', 'checked');
+
+    buildSwitch('medianPack', 'Median', 'table4', 'checked');
+    buildSwitch('straightenPack', 'Straighten', 'table4', 'checked');
+    buildSwitch('expandPack', 'Expand', 'table4', 'checked');
+    
+    document.querySelectorAll('.info').forEach(function(element){ 
+      element.addEventListener('mouseover', function(){iframe(element)})
+      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    })
+  }
+  
+  function changeNodes(max, value){ // Allows for Node property to be changed and to make sure max and min never cross each other
+    e = document;
+    if (max){
+      e.getElementById('maxNodes').value = Math.max(e.getElementById('maxNodes').value - -value, 0);
+    } 
+    else{
+      e.getElementById('minNodes').value = Math.max(e.getElementById('minNodes').value - -value, 0);
+    }
+    if (parseInt(e.getElementById('minNodes').value) > parseInt(e.getElementById('maxNodes').value)) {
+      (max)? e.getElementById('minNodes').value = e.getElementById('maxNodes').value : e.getElementById('maxNodes').value = e.getElementById('minNodes').value;
+    }
+  }
+
+  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+    element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function resetButton(element){ // Sets property back to original and changes related divs accordingly
+    e = element.parentNode.querySelector('.input');
+    e.value = e.name;
+    element.style = "background-color: lightgray;";
+    layout();
+  }
+
+  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+    e = element.parentNode.querySelector('.inputBox');
+    change? number = element.name: number = 0;
+    const max = element.parentNode.querySelector('.maximum').name;
+    const min = element.parentNode.querySelector('.minimum').name;
+    const decimal = element.parentNode.querySelector('.decimal').name;
+    var value = (e.value - -number) // Changes by recorded interval
+    if(max !== null) value = Math.min(value, max) // Checks for max and min values
+    if(min !== null) value = Math.max(value, min)
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function buildButtonRow(id, change, start, title, table, min = null, max = null,  decimal = 0) {
+    var template = document.getElementById('buttonRow');
+    var clone = template.content.cloneNode(true);
+    clone.querySelector('.button3').name = change;
+    clone.querySelector('.button2').name = -change;
+    clone.querySelector('.inputBox').name = start;
+    clone.querySelector('.inputBox').id = id;
+    clone.querySelector('.inputBox').value = start;
+    clone.querySelector('.maximum').name = max;
+    clone.querySelector('.minimum').name = min;
+    clone.querySelector('.decimal').name = decimal;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function buildDropdown(id, title, table, options) {
+    var template = document.getElementById('dropdown');
+    var clone = template.content.cloneNode(true);
+    dropdown = clone.querySelector('.input')
+    dropdown.name = options[0];
+    dropdown.id = id;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+    options.forEach(element => {
+      let option = document.createElement('option');
+      option.value = element; // Set the value to be the index + 1
+      option.text = element; // Set the text to be the element from the array
+      dropdown.add(option);
+    });
+    dropdown.options[0].selected = true;
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function buildSwitch(id, title, table, checked) {
+    var template = document.getElementById('switch');
+    var clone = template.content.cloneNode(true);
+    checkSwitch = clone.querySelector('.input')
+    checkSwitch.id = id;
+    checkSwitch.checked = checked;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+    
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function copyCode(){
+    navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
+    document.getElementById('default').style.display = 'none'
+    document.getElementById('clicked').style.display = 'inline-flex'
+    document.getElementById('copyButton').style.pointerEvents = 'none'
+    setTimeout(() => {
+      document.getElementById('default').style.display = 'inline-flex'
+      document.getElementById('clicked').style.display = 'none'
+      document.getElementById('copyButton').style.pointerEvents = 'auto'
+    }, 1500);
+  }
+
+  function iframe(element){
+    var iframe = document.getElementById('apiFrame');
+    var frame = document.getElementById('frame');
+    frame.style.display = 'block';
+    var id = element.parentElement.querySelector('.input').id;
+    if (id.includes('Align')) id = 'alignOption';
+    if (id.includes('Pack')) id = 'packOption';
+    document.getElementById('description').innerHTML = (iframe.contentWindow.document.getElementById(id).parentElement.children[2].firstChild.firstChild.innerHTML);
+    document.getElementById('name').textContent = id;
+    frame.style.left = (element.getBoundingClientRect().left) + 'px';
+    frame.style.top = (element.getBoundingClientRect().top - 10 + window.pageYOffset) + 'px';
+  }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
-<div id="sample">
-  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>New Graph</b><br />
-      MinNodes: <input type="text" size="3" id="minNodes" value="20" /><br />
-      MaxNodes: <input type="text" size="3" id="maxNodes" value="100" /><br />
-      <button type="button" onclick="rebuildGraph()">Generate Digraph</button>
-    </span>
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>LayeredDigraphLayout Properties</b><br />
-      Direction:
-      <input type="radio" name="direction" onclick="layout()" value="0" checked="checked" />Right (0)
-      <input type="radio" name="direction" onclick="layout()" value="90" />Down (90) <input type="radio" name="direction" onclick="layout()" value="180" />Left
-      (180) <input type="radio" name="direction" onclick="layout()" value="270" />Up (270)<br />
-      LayerSpacing:
-      <input type="text" size="3" id="layerSpacing" value="25" onchange="layout()" style="clear: left" /><br />
-      ColumnSpacing:
-      <input type="text" size="3" id="columnSpacing" value="25" onchange="layout()" /><br />
-      CycleRemove:
-      <input type="radio" name="cycleRemove" onclick="layout()" value="CycleDepthFirst" checked="checked" /> CycleDepthFirst
-      <input type="radio" name="cycleRemove" onclick="layout()" value="CycleGreedy" /> CycleGreedy<br />
-      Layering:
-      <input type="radio" name="layering" onclick="layout()" value="LayerOptimalLinkLength" checked="checked" /> LayerOptimalLinkLength
-      <input type="radio" name="layering" onclick="layout()" value="LayerLongestPathSource" /> LayerLongestPathSource
-      <input type="radio" name="layering" onclick="layout()" value="LayerLongestPathSink" /> LayerLongestPathSink<br />
-      Initialize:
-      <input type="radio" name="initialize" onclick="layout()" value="InitDepthFirstOut" checked="checked" /> InitDepthFirstOut
-      <input type="radio" name="initialize" onclick="layout()" value="InitDepthFirstIn" /> InitDepthFirstIn
-      <input type="radio" name="initialize" onclick="layout()" value="InitNaive" /> InitNaive<br />
-      Aggressive:
-      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveNone" /> AggressiveNone
-      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveLess" checked="checked" /> AggressiveLess
-      <input type="radio" name="aggressive" onclick="layout()" value="AggressiveMore" /> AggressiveMore<br />
-      Pack:
-      <input type="checkbox" name="pack" onclick="layout()" value="4" checked="checked" /> PackMedian
-      <input type="checkbox" name="pack" onclick="layout()" value="2" checked="checked" /> PackStraighten
-      <input type="checkbox" name="pack" onclick="layout()" value="1" checked="checked" /> PackExpand<br />
-      Align:
-      <input type="checkbox" name="align" onclick="layout()" value="1" checked="checked" /> AlignUpperLeft
-      <input type="checkbox" name="align" onclick="layout()" value="2" checked="checked" /> AlignUpperRight
-      <input type="checkbox" name="align" onclick="layout()" value="4" checked="checked" /> AlignLowerLeft
-      <input type="checkbox" name="align" onclick="layout()" value="8" checked="checked" /> AlignLowerRight<br />
-      SetsPortSpots: <input type="checkbox" id="setsPortSpots" onclick="layout()" checked="checked" />
-    </span>
+<style>
+  .table {
+    display: table;
+    width: 100%;
+  }
+  .row {
+    display: table-row;
+  }
+  .cell {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .celldif {
+    display: table-cell;
+  }
+  .sampleWrapper {
+    display: flex;
+    flex-direction: column;
+    @media (min-width: 800px) {
+      flex-direction: row;
+    }
+  
+    & > div:first-child {
+      margin-bottom: 0.5rem;
+      @media (min-width: 800px) {
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .info {
+    display: inline-block;
+    cursor: pointer;
+  }
+  .copyButton:hover {
+    background-color: #e9e9e9 !important;
+    color: #000000 !important;
+  }
+</style>
+
+<template id="buttonRow">
+  <div class="row" >
+    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
+    <div class="cell">            
+      <div class="relative flex items-center">
+        <div class="maximum" ></div>
+        <div class="minimum" ></div>
+        <div class="decimal" ></div>
+        <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-7 m-0 pr-[2px] pl-[2px]" style="background-color: lightgray;">
+          <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+            <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+          </svg>
+        </button>
+        <button type="button" onclick="changeInput(this)" class="button2 bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-none h-7  m-0 pr-[11px] pl-[6px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+          </svg>
+        </button>
+        <input type="text" onchange="changeInput(this, false)" class="input inputBox bg-gray-50 border-x-1 border-gray-300 h-7 text-center outline-none text-gray-900 text-sm w-10 m-[-4.5px] z-10" required />
+        <button type="button" onclick="changeInput(this)" class="button3 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 m-0 pr-[7px] pl-[12px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
-  <div id="myDiagramDiv" style="border: solid 1px black; background: white; width: 100%; height: 500px"></div>
-  <p>For information on <b>LayeredDigraphLayout</b> and its properties, see the <a>LayeredDigraphLayout</a> documentation page.</p>
+</template>
+
+<template id="dropdown">
+  <div class="row">
+    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
+    <div class="cell pt-4">
+      <div class="relative flex">
+          <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-8.1 m-0 pr-[2px] pl-[2px] align-middle" style="background-color: lightgray;">
+            <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+              <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+            </svg>
+          </button>
+          <select onchange="changeDropdown(this)" style="width: 100%;" class="input outline-none bg-gray-50 border rounded-s-none rounded-e-lg border-gray-300 text-gray-900 text-sm block p-1.5"></select>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="switch">
+  <label class="row">
+    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap select-none pt-2"></div>
+    <div class="cell inline-flex items-center cursor-pointer ml-[3px]">
+      <input type="checkbox" onclick="layout()" class="input sr-only peer">
+      <div height=5 class="relative w-9 h-5 mt-[7px] bg-gray-200 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+    </div>
+  </label>
+</template>
+
+<div id="sample">
+  <iframe id="apiFrame" src="https://gojs.net/latest/api/symbols/LayeredDigraphLayout.html" style="display: none;"></iframe>
+  <div id="frame" style="z-index: 100; pointer-events: none; position: absolute; display: none; ">
+      <div id="container" style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; max-width: 600px;margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff;">
+        <div id="name" class="name" style="font-weight: bold; font-size: 16px;  display: flex; align-items: center;"></div>
+        <div id="description" style=" margin-top: 10px; font-size: 14px; color: #000;"></div>
+      </div>
+  </div>
+
+  <div class="sampleWrapper">
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black; margin-right: 10px;"></div>
+
+    <div style="flex: 1;">
+      <section class="grid grid-cols-1 gap-y-3 divide-y">
+        <details open class="group py-1 text-lg select-none" id="treeSettings">
+          <summary class="flex cursor-pointer flex-row items-center whitespace-nowrap justify-between py-1 font-semibold marker:[font-size:0px]">Node Settings
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </summary>
+          <span class="sampleWrapper">
+          
+          <div class="table " style="padding-right: 15px;">
+            <div class="row" > <!--Min Nodes-->
+              <div class="cell whitespace-nowrap p-1 select-none" style="font-size: large; padding-right: 15px;">Minimum Nodes
+              </div>
+              <div class="cell max-w-xs"> <!--Min Nodes-->
+                <label for="numNodes" class="items-center cursor-pointer">                    
+                  <div class="relative flex items-center max-w-[6.5rem] ">
+                    <button type="button" id="decrement-button" onclick="changeNodes(false,-5)" class="bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="minNodes" onclick="changeNodes(false, 0)" onchange="changeNodes(false, 0)" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-1 border-gray-300 h-7 text-center outline-none text-gray-900 text-sm w-11 m-[-4.5px] z-10" value="20" required />
+                    <button type="button" id="increment-button" onclick="changeNodes(false, 5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="row"> <!--Max Nodes-->
+              <div id= "nodeWidthText" class="cell whitespace-nowrap p-1 select-none" style="font-size: large">Maximum Nodes</div>
+              <div class="cell max-w-xs" id="nodeWidthForm"> <!--Max Nodes-->
+                <label for="minLinks" class="items-center cursor-pointer">                      
+                  <div class="relative flex items-center max-w-[6.5rem]">
+                    <button type="button" id="decrement-button" onclick="changeNodes(true, -5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="maxNodes" onclick="changeNodes(true, 0)" onchange="changeNodes(true, 0)" aria-describedby="helper-text-explanation" onchange="" class="bg-gray-50 border-x-1 border-gray-300 h-7 text-center text-gray-900 text-sm outline-none w-11 m-[-4.5px] z-10" value="100" required />
+                    <button type="button" id="increment-button" onclick="changeNodes(true, 5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none  m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>  
+          <span style="display: inline-block; vertical-align: top; padding: 5px">
+            <button type="button" class="mt-2 ml-[60px] whitespace-nowrap" onclick="rebuildGraph()">Generate Digraph</button>     
+          </span>
+        </span>
+        </details>
+    
+        <details open class="group py-1 text-lg select-none" id="defaultProperties">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]">Default Properties
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+          <span class="sampleWrapper">
+            <div class="table" id="table1"></div>
+            <div class="table ml-[15px]" id="table2"></div> 
+          </span>
+        </details>
+
+        <details open class="group py-1 text-lg select-none" id="defaultProperties">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]">Pack and Align
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+          <span class="sampleWrapper">
+            <div class="table" id="table3"></div>
+            <div class="table ml-[15px]" id="table4"></div> 
+          </span>
+        </details>
+
+        <details open class="group py-1 text-lg" id="treeLayoutBuilder">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]  select-none">Layered Digraph Builder
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </summary>
+          <div class="p-1" style="position: relative;"><!--Layout Output-->
+            <pre style="overflow: auto;"> 
+              <code id="layoutBuilder" class="lang-js" style="font-size: large;"></code>
+            </pre>
+            <button onclick="copyCode()" style="position: absolute; top: 14px; right: 8px; width: 35px; height: 35px;" id="copyButton" class="copyButton text-gray-900 m-1 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border">
+                  <svg id="default" class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                      <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                  </svg>
+                  <svg id="clicked" class="w-4 h-4" style="display: none;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                  </svg>
+            </button>
+          </div>
+        </details>
+      </section>
+    </div>
+  </div>
 </div>
 
           

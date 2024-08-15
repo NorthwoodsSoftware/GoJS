@@ -116,6 +116,9 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
@@ -171,6 +174,7 @@
     myDiagram.model = new go.Model(nodeDataArray);
 
     // layout using the latest parameters
+    buildSettingsMenu();
     layout();
   }
 
@@ -178,101 +182,302 @@
   function layout() {
     myDiagram.startTransaction('change Layout');
     var lay = myDiagram.layout;
+    var d = document;
+    var code = 'new go.GridLayout({ ';
 
-    var wrappingColumn = document.getElementById('wrappingColumn').value;
+    var wrappingColumn = d.getElementById('wrappingColumn').value;
     lay.wrappingColumn = parseFloat(wrappingColumn, 10);
+    if (wrappingColumn != d.getElementById('wrappingColumn').name) code += `\n  wrappingColumn: ${wrappingColumn},`;
 
-    var wrappingWidth = document.getElementById('wrappingWidth').value;
+    var wrappingWidth = d.getElementById('wrappingWidth').value;
     lay.wrappingWidth = parseFloat(wrappingWidth, 10);
+    if(wrappingWidth != d.getElementById('wrappingWidth').name) code += `\n  wrappingWidth: ${wrappingWidth},`;
 
-    var cellSize = document.getElementById('cellSize').value;
-    lay.cellSize = go.Size.parse(cellSize);
+    var cellWidth = d.getElementById('cellWidth').value;
+    var cellHeight = d.getElementById('cellHeight').value;
+    lay.cellSize = new go.Size(parseFloat(cellWidth, 10), parseFloat(cellHeight, 10));
+    if (cellWidth != d.getElementById('cellWidth').name || cellHeight != d.getElementById('cellHeight').name) code += `\n  cellSize: new go.Size(${cellWidth}, ${cellHeight}),`;
 
-    var spacing = document.getElementById('spacing').value;
-    lay.spacing = go.Size.parse(spacing);
+    var spacingWidth = d.getElementById('spacingWidth').value;
+    var spacingHeight = d.getElementById('spacingHeight').value;
+    lay.spacing = new go.Size(parseFloat(spacingWidth, 10), parseFloat(spacingHeight, 10));
+    if (spacingWidth != d.getElementById('spacingWidth').name || spacingHeight != d.getElementById('spacingHeight').name) code += `\n  spacing: new go.Size(${spacingWidth}, ${spacingHeight}),`;
 
-    var alignment = getRadioValue('alignment');
-    if (alignment === 'Position') {
-      lay.alignment = go.GridAlignment.Position;
+    var alignment = d.getElementById('alignment').value;
+    if(alignment === 'Location') {
+      lay.alignment = go.GridLayout.Location;
     } else {
-      lay.alignment = go.GridAlignment.Location;
+      lay.alignment = go.GridLayout.Position;
     }
+    if (alignment != d.getElementById('alignment').name) code += `\n  alignment: go.GridLayout.${alignment},`;
 
-    var arrangement = getRadioValue('arrangement');
+    var arrangement = d.getElementById('arrangement').value.split(/\s+/).join('');
     if (arrangement === 'LeftToRight') {
       lay.arrangement = go.GridArrangement.LeftToRight;
     } else {
       lay.arrangement = go.GridArrangement.RightToLeft;
     }
+    if (arrangement != d.getElementById('arrangement').name.split(/\s+/).join('')) code += `\n  arrangement: go.GridArrangement.${arrangement},`;
 
-    var sorting = document.getElementById('sorting').value;
-    switch (sorting) {
-      default:
-      case 'Forwards':
-        lay.sorting = go.GridSorting.Forwards;
-        break;
-      case 'Reverse':
-        lay.sorting = go.GridSorting.Reverse;
-        break;
-      case 'Ascending':
-        lay.sorting = go.GridSorting.Ascending;
-        break;
-      case 'Descending':
-        lay.sorting = go.GridSorting.Descending;
-        break;
+    var sorting = d.getElementById('sorting').value;
+    if(sorting === 'Forwards') {
+      lay.sorting = go.GridLayout.Forwards;
+    } else if(sorting === 'Reverse') {
+      lay.sorting = go.GridLayout.Reverse;
+    } else if(sorting === 'Ascending') {
+      lay.sorting = go.GridLayout.Ascending;
+    } else {
+      lay.sorting = go.GridLayout.Descending;
     }
+    if (sorting != d.getElementById('sorting').name) code += `\n  sorting: go.GridLayout.${sorting},`;
 
+    if(code === 'new go.GridLayout({ ') code = 'new go.GridLayout()'; // If no changes made to layout
+    else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
+    d.getElementById('layoutBuilder').textContent = code;
+    if (window.Prism) window.Prism.highlightAll();
     myDiagram.commitTransaction('change Layout');
   }
 
-  function getRadioValue(name) {
-    var radio = document.getElementsByName(name);
-    for (var i = 0; i < radio.length; i++) {
-      if (radio[i].checked) return radio[i].value;
-    }
+  function buildButtonRow(id, change, start, title, table, min = null) {
+    var template = document.getElementById('buttonRow');
+    var clone = template.content.cloneNode(true);
+    clone.querySelector('.button3').name = change;
+    clone.querySelector('.button2').name = -change;
+    clone.querySelector('.inputBox').name = start;
+    clone.querySelector('.inputBox').id = id;
+    clone.querySelector('.inputBox').value = start;
+    clone.querySelector('.minimum').name = min;
+    clone.querySelector('.title').textContent = title;
+
+    document.getElementById(table).appendChild(clone);
   }
+
+  function buildDropdown(id, title, table, options) {
+    var template = document.getElementById('dropdown');
+    var clone = template.content.cloneNode(true);
+    dropdown = clone.querySelector('.input')
+    dropdown.name = options[0];
+    dropdown.id = id;
+    clone.querySelector('.title').textContent = title;
+    options.forEach(element => {
+      let option = document.createElement('option');
+      option.value = element; // Set the value to be the index + 1
+      option.text = element; // Set the text to be the element from the array
+      dropdown.add(option);
+    });
+    dropdown.options[0].selected = true;
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function buildSettingsMenu(){
+    // Builds the setting menu through calls to respective builder
+    buildButtonRow('wrappingColumn', 1, NaN, 'Columns','table1', 0);
+    buildButtonRow('wrappingWidth', 10, NaN, 'Width','table1', 0);
+    buildButtonRow('cellWidth', 10, NaN, 'Cell Width','table1', 0);
+    buildButtonRow('cellHeight', 10, NaN, 'Cell Height','table1', 0);
+    buildButtonRow('spacingWidth', 5, 10, 'Horizontal Spacing','table1', 0);
+    buildButtonRow('spacingHeight', 5, 10, 'Vertical Spacing','table1', 0);
+
+    buildDropdown('alignment', 'Alignment','table2', ['Location', 'Position']);
+    buildDropdown('arrangement', 'Arrangement','table2', ['Left To Right', 'Right To Left']);
+    buildDropdown('sorting', 'Sorting', 'table2', ['Forwards', 'Reverse', 'Ascending', 'Descending']);
+
+    document.querySelectorAll('.info').forEach(function(element){ 
+      element.addEventListener('mouseover', function(){iframe(element)})
+      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    })
+  }
+
+  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+    element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function resetButton(element){ // Resets the value of the input box and updates respective divs
+    e = element.parentNode.querySelector('.input');
+    e.value = e.name;
+    element.style = "background-color: lightgray;";
+    layout();
+  }
+
+  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+    e = element.parentNode.querySelector('.inputBox');
+    change? number = element.name: number = 0;
+    const min = element.parentNode.querySelector('.minimum').name;
+    const decimal = element.parentNode.querySelector('.decimal').name;
+    value = e.value;
+    (isNaN(value))? value = 0 : value = parseFloat(e.value, 10);
+    value += parseFloat(number, 10);
+    if(min !== null) value = Math.max(value, min) // Checks for max and min values]
+    console.log(value)
+    e.value = (value === 0 && !(e.id.includes('spacing')))? NaN : value;
+    element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function copyCode(){
+    navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
+    document.getElementById('default').style.display = 'none'
+    document.getElementById('clicked').style.display = 'inline-flex'
+    document.getElementById('copyButton').style.pointerEvents = 'none'
+    setTimeout(() => {
+      document.getElementById('default').style.display = 'inline-flex'
+      document.getElementById('clicked').style.display = 'none'
+      document.getElementById('copyButton').style.pointerEvents = 'auto'
+    }, 1500);
+  }
+
+  function iframe(element){
+    var iframe = document.getElementById('apiFrame');
+    var frame = document.getElementById('frame');
+    frame.style.display = 'block';
+    var id = element.parentElement.querySelector('.input').id;
+    if (id === 'cellWidth' || id === 'cellHeight') id = 'cellSize';
+    if (id === 'spacingWidth' || id === 'spacingHeight') id = 'spacing';
+    document.getElementById('description').innerHTML = (iframe.contentWindow.document.getElementById(id).parentElement.children[2].firstChild.firstChild.innerHTML);
+    document.getElementById('name').textContent = id;
+    frame.style.left = (element.getBoundingClientRect().left) + 'px';
+    frame.style.top = (element.getBoundingClientRect().top - 10 + window.pageYOffset) + 'px';
+  }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
-<div id="sample">
-  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>GridLayout Properties</b>
-      <br />
-      Wrapping Column:
-      <input type="text" size="3" id="wrappingColumn" value="NaN" onchange="layout()" />
-      (NaN means there's no limit)
-      <br />
-      Wrapping Width:
-      <input type="text" size="3" id="wrappingWidth" value="NaN" onchange="layout()" />
-      (NaN means use the diagram's viewport width)
-      <br />
-      Cell Size:
-      <input type="text" size="8" id="cellSize" value="NaN NaN" onchange="layout()" />
-      (NaN x NaN means use a cell size big enough to hold any node)
-      <br />
-      Spacing:
-      <input type="text" size="8" id="spacing" value="10 10" onchange="layout()" />
-      (the minimum space between the nodes)
-      <br />
-      Alignment:
-      <input type="radio" name="alignment" onclick="layout()" value="Position" /> Position
-      <input type="radio" name="alignment" onclick="layout()" value="Location" checked="checked" /> Location
-      <br />
-      Arrangement:
-      <input type="radio" name="arrangement" onclick="layout()" value="LeftToRight" checked="checked" /> LeftToRight
-      <input type="radio" name="arrangement" onclick="layout()" value="RightToLeft" /> RightToLeft
-      <br />
-      Sorting:
-      <select name="sorting" id="sorting" onchange="layout()">
-        <option value="Forwards" selected="selected">Forwards</option>
-        <option value="Reverse">Reverse</option>
-        <option value="Ascending">Ascending</option>
-        <option value="Descending">Descending</option>
-      </select>
-    </span>
+<style>
+  .table {
+    display: table;
+    width: 100%;
+  }
+  .row {
+    display: table-row;
+  }
+  .cell {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .celldif {
+    display: table-cell;
+  }
+  .sampleWrapper {
+    display: flex;
+    flex-direction: column;
+    @media (min-width: 800px) {
+      flex-direction: row;
+    }
+  
+    & > div:first-child {
+      margin-bottom: 0.5rem;
+      @media (min-width: 800px) {
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .info {
+    display: inline-block;
+    cursor: pointer;
+  }
+  .copyButton:hover {
+    background-color: #e9e9e9 !important;
+    color: #000000 !important;
+  }
+</style>
+
+<template id="buttonRow">
+  <div class="row tooltip" >
+    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
+    <div class="cell">            
+      <div class="relative flex items-center">
+        <div class="maximum" ></div>
+        <div class="minimum" ></div>
+        <div class="decimal" ></div>
+        <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-7 m-0 pr-[2px] pl-[2px]" style="background-color: lightgray;">
+          <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+            <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+          </svg>
+        </button>
+        <button type="button" onclick="changeInput(this)" class="button2  bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-none h-7  m-0 pr-[11px] pl-[6px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+          </svg>
+        </button>
+        <input type="text" onchange="changeInput(this, false)" class="input inputBox bg-gray-50 border-x-1 border-gray-300 h-7 text-center outline-none text-gray-900 text-sm w-10 m-[-4.5px] z-10" required />
+        <button type="button" onclick="changeInput(this)" class="button3 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 m-0 pr-[7px] pl-[12px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
+</template>
+
+<template id="dropdown">
+  <div class="row">
+    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 26px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
+    <div class="cell pt-4">
+      <div class="relative flex">
+          <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-8.1 m-0 pr-[2px] pl-[2px] align-middle" style="background-color: lightgray;">
+            <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+              <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+            </svg>
+          </button>
+          <select onchange="changeDropdown(this)" style="width: 160px;" class="input outline-none bg-gray-50 border rounded-s-none rounded-e-lg border-gray-300 text-gray-900 text-sm block p-1.5"></select>
+      </div>
+    </div>
+  </div>
+</template>
+
+<div id="sample">
+  <iframe id="apiFrame" src="https://gojs.net/latest/api/symbols/GridLayout.html" style="display: none;"></iframe>
+  <div id="frame" style="z-index: 100; pointer-events: none; position: absolute; display: none; ">
+      <div id="container" style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; max-width: 600px;margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff;">
+        <div id="name" class="name" style="font-weight: bold; font-size: 16px;  display: flex; align-items: center;"></div>
+        <div id="description" style=" margin-top: 10px; font-size: 14px; color: #000;"></div>
+      </div>
+  </div>
+  <div class="sampleWrapper">
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 550px; border: solid 1px black; margin-right: 10px;"></div>                
+    
+    <div style="flex: 1;">
+      <section class="grid grid-cols-1 gap-y-3 divide-y">
+        <details open class="group py-1 text-lg">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px] select-none">Layout Properties
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+          <span class="sampleWrapper">
+            <div class="table" id="table1"></div>
+            <div class="table mt-[-15px]" style="vertical-align: top;" id="table2"></div>
+          </span>
+        </details>
+
+        <details open class="group py-1 text-lg" >
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px] select-none">Grid Layout Builder
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+            <div class="p-1" style="position: relative;"><!--Layout Output-->
+              <pre style="overflow: auto;"> 
+                <code id="layoutBuilder" class="lang-js" style="font-size: large;"></code>
+              </pre>
+              <button onclick="copyCode()" style="position: absolute; top: 14px; right: 8px; width: 35px; height: 35px;" id="copyButton" class="copyButton text-gray-900 m-1 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border">
+                    <svg id="default" class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                        <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                    </svg>
+                    <svg id="clicked" class="w-4 h-4" style="display: none;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                    </svg>
+              </button>
+            </div>
+        </details>
+      </section>
+    </div>
+  </div>
   <p>
     The <a>Diagram.layout</a> of the <a>Diagram</a> above is set to a <a>GridLayout</a>.
     This layout attempts to place all the <a>Nodes</a> into a grid-like arrangement 
@@ -282,7 +487,6 @@
   </p>
   <p>For mpore information on <b>GridLayout</b> and its properties, see the <a>GridLayout</a> documentation page.</p>
 </div>
-
           
         </div>
         <!-- * * * * * * * * * * * * * -->

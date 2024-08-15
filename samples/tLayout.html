@@ -13,7 +13,6 @@
 
 
 <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="../assets/css/style.css">
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
@@ -117,60 +116,47 @@
         <script src="../release/go.js"></script>
 
         
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
 
         <div id="allSampleContent" class="p-4 w-full">
           
             
             
 
-<style type="text/css">
-  input[type='number'] {
-    width: 45px;
-  }
-</style>
 <script id="code">
   function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
-
-    myDiagram = new go.Diagram(
-      'myDiagramDiv', // must be the ID or reference to div
-      {
-        initialAutoScale: go.AutoScale.UniformToFill,
-        layout: $(go.TreeLayout, { comparer: go.LayoutVertex.smartComparer }), // have the comparer sort by numbers as well as letters
-        // other properties are set by the layout function, defined below
-      }
-    );
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      initialAutoScale: go.AutoScale.UniformToFill,
+      layout: new go.TreeLayout({ comparer: go.LayoutVertex.smartComparer }) // have the comparer sort by numbers as well as letters
+      // other properties are set by the layout function, defined below
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = $(go.Node,
-      'Spot',
-      { locationSpot: go.Spot.Center },
-      new go.Binding('text', 'text'), // for sorting
-      $(go.Shape,
-        'Ellipse',
-        {
+    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
+      .bind('text', 'text') // for sorting
+      .add(
+        new go.Shape('Ellipse', {
           fill: 'lightgray', // the initial value, but data binding may provide different value
           stroke: null,
-          desiredSize: new go.Size(30, 30),
-        },
-        new go.Binding('desiredSize', 'size'),
-        new go.Binding('fill', 'fill')
-      ),
-      $(go.TextBlock, new go.Binding('text', 'text'))
-    );
+          desiredSize: new go.Size(30, 30)
+        })
+          .bind('desiredSize', 'size')
+          .bind('fill', 'layer', c => randomLayerColors[c % 25]),
+        new go.TextBlock().bind('text')
+      );
 
     // define the Link template
-    myDiagram.linkTemplate = $(go.Link,
-      {
-        routing: go.Routing.Orthogonal,
-        selectable: false,
-      },
-      $(go.Shape, { strokeWidth: 3, stroke: '#333' })
-    );
+    myDiagram.linkTemplate = new go.Link({
+      routing: go.Routing.Orthogonal,
+      selectable: false
+    })
+      .add(
+        new go.Shape({ strokeWidth: 3, stroke: '#333' })
+      );
 
-    // generate a tree with the default values
+    buildSettingsMenu();
     rebuildGraph();
   }
 
@@ -192,11 +178,110 @@
     // create and assign a new model
     var nodeDataArray = generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes);
     myDiagram.model = new go.TreeModel(nodeDataArray);
-
-    // update the diagram layout customized by the various control values
+    shuffleColors(); // Shuffles palette to look like new random colors
+    layerNodes(); // Sets layer value for all the new nodes
     layout();
+    myDiagram.zoomToFit();
   }
 
+  function layerNodes(nodes = myDiagram.findTreeRoots(), layer = 0){
+    if (nodes.count == 0) return;
+    nodes.each(function(node) { //recursively goes through all children of the graph sending a layer down to be set on each
+      myDiagram.model.setDataProperty(node.data, 'layer', layer);
+      layerNodes(node.findTreeChildrenNodes(), layer + 1);
+    });
+  }
+
+  function shuffleColors(){
+    var tempList = [];
+    while(randomLayerColors.length > 0){ // Goes through the color palette randomly pulling out colors to reorder them
+      let item = randomLayerColors.splice(Math.round(Math.random() * randomLayerColors.length - 1), 1);
+      tempList.push(item[0]);
+    }
+    randomLayerColors = [...tempList];
+  }
+
+  var randomLayerColors = [ // Color Palette used to color the layers of the graph
+    "hsl(54, 76%, 84%)",
+    "hsl(208, 55%, 76%)",
+    "hsl(44, 82%, 83%)",
+    "hsl(30, 89%, 83%)",
+    "hsl(26, 90%, 80%)",
+    "hsl(10, 85%, 81%)",
+    "hsl(354, 83%, 84%)",
+    "hsl(340, 80%, 84%)",
+    "hsl(319, 43%, 79%)",
+    "hsl(287, 30%, 75%)",
+    "hsl(255, 32%, 74%)",
+    "hsl(220, 77%, 86%)",
+    "hsl(187, 53%, 75%)",
+    "hsl(175, 38%, 73%)",
+    "hsl(136, 37%, 76%)",
+    "hsl(98, 41%, 79%)",
+    "hsl(72, 51%, 81%)",
+    "hsl(84, 67%, 81%)",
+    "hsl(88, 89%, 90%)",
+    "hsl(44, 95%, 92%)",
+    "hsl(24, 96%, 90%)",
+    "hsl(2, 100%, 88%)",
+    "hsl(351, 94%, 93%)",
+    "hsl(192, 59%, 91%)",
+    "hsl(191, 65%, 88%)"
+  ];
+
+  function buildSettingsMenu(){
+    // Calls to build each setting to the respective builder - Default Properties
+    buildButtonRow('nodeSpacing', 5, 20, 'Node Spacing', 'Negative values overlap nodes', 'table2');
+    buildButtonRow('nodeIndent', 5, 0, 'Node Indent', 'Vertical offset', 'table2', 0);
+    buildButtonRow('nodeIndentPastParent', 0.05, 0, 'Indent Past Parent', 'Fraction of parents breadth added to indent', 'table2', -1, 1, 2);
+    buildButtonRow('layerSpacing', 5, 50, 'Layer Spacing', 'Negative values overlaps layers', 'table2');
+    buildButtonRow('layerSpacingParentOverlap', 0.05, 0, 'Parent Overlap', 'Fraction of the node which overlaps with childs layer', 'table2', 0, 1, 2);
+    buildButtonRow('breadthLimit', 50, 0, 'Breadth Limit', 'Limits the space the tree can use; 0 is unlimited', 'table2', 0);
+    buildButtonRow('rowSpacing', 10, 25, 'Row Spacing', 'Requires a breadth limit', 'table2');
+    buildButtonRow('rowIndent', 10, 10, 'Row Indent', 'Requires a breadth limit and non "center" alignment', 'table2', 0);
+
+    buildSwitch('compaction', 'Compaction', 'How close to pack nodes', 'table3', 'checked')
+    buildSwitch('setsPortSpot', 'Port Spot', 'Whether TreeLayout sets parent node port spots', 'table3', 'checked')
+    buildSwitch('setsChildPortSpot', 'Child Port Spot', 'Whether TreeLayout sets child node port spots', 'table3', 'checked')
+    buildButtonRow('nodeSpacing', 5, 20, 'Node Spacing', 'table2');
+    buildButtonRow('nodeIndent', 5, 0, 'Node Indent', 'table2', 0);
+    buildButtonRow('nodeIndentPastParent', 0.05, 0, 'Indent Past Parent', 'table2', -1, 1, 2);
+    buildButtonRow('layerSpacing', 5, 50, 'Layer Spacing', 'table2');
+    buildButtonRow('layerSpacingParentOverlap', 0.05, 0, 'Parent Overlap', 'table2', 0, 1, 2);
+    buildButtonRow('breadthLimit', 50, 0, 'Breadth Limit', 'table2', 0);
+    buildButtonRow('rowSpacing', 10, 25, 'Row Spacing', 'table2');
+    buildButtonRow('rowIndent', 10, 10, 'Row Indent', 'table2', 0);
+
+    buildSwitch('compaction', 'Compaction', 'table3', 'checked')
+    buildSwitch('setsPortSpot', 'Port Spot', 'table3', 'checked')
+    buildSwitch('setsChildPortSpot', 'Child Port Spot', 'table3', 'checked')
+
+    buildDropdown('angle', 'Angle', 'table4', ['Right', 'Down', 'Left', 'Up'])
+    buildDropdown('alignment', 'Alignment', 'table4', ['Center Children', 'Center Subtrees', 'Start', 'End', 'Bus', 'Bus Branching', 'Top Left Bus', 'Bottom Right Bus'])
+    buildDropdown('sorting', 'Sorting', 'table4', ['Forwards', 'Reverse', 'Ascending', 'Descending'])
+    // Alternate Properties
+    buildButtonRow('alternateNodeSpacing', 5, 20, 'Node Spacing', 'table5');
+    buildButtonRow('alternateNodeIndent', 5, 0, 'Node Indent',  'table5', 0);
+    buildButtonRow('alternateNodeIndentPastParent', 0.05, 0, 'Indent Past Parent', 'table5', -1, 1, 2);
+    buildButtonRow('alternateLayerSpacing', 5, 50, 'Layer Spacing', 'table5');
+    buildButtonRow('alternateLayerSpacingParentOverlap', 0.05, 0, 'Parent Overlap', 'table5', 0, 1, 2);
+    buildButtonRow('alternateBreadthLimit', 50, 0, 'Breadth Limit', 'table5', 0);
+    buildButtonRow('alternateRowSpacing', 10, 25, 'Row Spacing', 'table5');
+    buildButtonRow('alternateRowIndent', 10, 10, 'Row Indent', 'table5', 0);
+
+    buildSwitch('alternateCompaction', 'Compaction', 'table6', 'checked')
+    buildSwitch('alternateSetsPortSpot', 'Port Spot', 'table6', 'checked')
+    buildSwitch('alternateSetsChildPortSpot', 'Child Port Spot', 'table6', 'checked')
+
+    buildDropdown('alternateAngle', 'Angle', 'table7', ['Right', 'Down', 'Left', 'Up'])
+    buildDropdown('alternateAlignment', 'Alignment', 'table7', ['Center Children', 'Center Subtrees', 'Start', 'End', 'Bus', 'Bus Branching', 'Top Left Bus', 'Bottom Right Bus'])
+    buildDropdown('alternateSorting', 'Sorting', 'table7', ['Forwards', 'Reverse', 'Ascending', 'Descending'])
+
+    document.querySelectorAll('.info').forEach(function(element){
+      element.addEventListener('mouseover', function(){iframe(element)})
+      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    })
+  }
   // Creates a random number (between MIN and MAX) of randomly colored nodes.
   function generateNodeData(minNodes, maxNodes, minChil, maxChil, hasRandomSizes) {
     var nodeArray = [];
@@ -210,8 +295,7 @@
         key: i, // the unique identifier
         // "parent" is set by code below that assigns children
         text: i.toString(), // some text to be shown by the node template
-        fill: go.Brush.randomColor(), // a color to be shown by the node template
-        size: hasRandomSizes ? new go.Size(Math.random() * 50 + 20, Math.random() * 50 + 20) : new go.Size(30, 30),
+        size: hasRandomSizes ? new go.Size(Math.random() * 50 + 20, Math.random() * 50 + 20) : new go.Size(30, 30)
       });
     }
 
@@ -251,271 +335,630 @@
     }
     return nodeArray;
   }
-
   // Update the layout from the controls, and then perform the layout again
-  function layout() {
+  function layout(styleChange = false) {
     myDiagram.startTransaction('change Layout');
     var lay = myDiagram.layout;
+    d = document;
+    var code = 'new go.TreeLayout({'
 
-    var style = document.getElementById('style').value;
-    if (style === 'Layered') lay.treeStyle = go.TreeStyle.Layered;
-    else if (style === 'Alternating') lay.treeStyle = go.TreeStyle.Alternating;
-    else if (style === 'LastParents') lay.treeStyle = go.TreeStyle.LastParents;
-    else if (style === 'RootOnly') lay.treeStyle = go.TreeStyle.RootOnly;
+    var treeStyle = d.getElementById('treeStyle').value;
+    if (treeStyle === 'Layered') lay.treeStyle = go.TreeStyle.Layered;
+    else if (treeStyle === 'Alternating') lay.treeStyle = go.TreeStyle.Alternating;
+    else if (treeStyle === 'LastParents') lay.treeStyle = go.TreeStyle.LastParents;
+    else if (treeStyle === 'RootOnly') lay.treeStyle = go.TreeStyle.RootOnly;
+    if(treeStyle != d.getElementById('treeStyle').name) code += `\n  treeStyle: go.TreeStyle.${treeStyle},`;
 
-    var layerStyle = document.getElementById('layerStyle').value;
+    var layerStyle = d.getElementById('layerStyle').value;
     if (layerStyle === 'Individual') lay.layerStyle = go.TreeLayerStyle.Individual;
     else if (layerStyle === 'Siblings') lay.layerStyle = go.TreeLayerStyle.Siblings;
     else if (layerStyle === 'Uniform') lay.layerStyle = go.TreeLayerStyle.Uniform;
+    if(layerStyle != d.getElementById('layerStyle').name) code += `\n  layerStyle: go.TreeLayerStyle.${layerStyle},`;
 
-    var angle = getRadioValue('angle');
-    angle = parseFloat(angle, 10);
-    lay.angle = angle;
+    var angle = d.getElementById('angle').value;
+    if (angle === 'Right') lay.angle = 0;
+    else if (angle === 'Down') lay.angle = 90;
+    else if (angle === 'Left') lay.angle = 180;
+    else if (angle === 'Up') lay.angle = 270;
+    if(angle != d.getElementById('angle').name) code += `\n  angle: ${lay.angle},`;
 
-    var align = document.getElementById('align').value;
-    if (align === 'CenterChildren') lay.alignment = go.TreeAlignment.CenterChildren;
-    else if (align === 'CenterSubtrees') lay.alignment = go.TreeAlignment.CenterSubtrees;
-    else if (align === 'Start') lay.alignment = go.TreeAlignment.Start;
-    else if (align === 'End') lay.alignment = go.TreeAlignment.End;
-    else if (align === 'Bus') lay.alignment = go.TreeAlignment.Bus;
-    else if (align === 'BusBranching') lay.alignment = go.TreeAlignment.BusBranching;
-    else if (align === 'TopLeftBus') lay.alignment = go.TreeAlignment.TopLeftBus;
-    else if (align === 'BottomRightBus') lay.alignment = go.TreeAlignment.BottomRightBus;
+    var alignment = d.getElementById('alignment').value.split(/\s+/).join('');
+    if (alignment === 'CenterChildren') lay.alignment = go.TreeAlignment.CenterChildren;
+    else if (alignment === 'CenterSubtrees') lay.alignment = go.TreeAlignment.CenterSubtrees;
+    else if (alignment === 'Start') lay.alignment = go.TreeAlignment.Start;
+    else if (alignment === 'End') lay.alignment = go.TreeAlignment.End;
+    else if (alignment === 'Bus') lay.alignment = go.TreeAlignment.Bus;
+    else if (alignment === 'BusBranching') lay.alignment = go.TreeAlignment.BusBranching;
+    else if (alignment === 'TopLeftBus') lay.alignment = go.TreeAlignment.TopLeftBus;
+    else if (alignment === 'BottomRightBus') lay.alignment = go.TreeAlignment.BottomRightBus;
+    if(alignment != d.getElementById('alignment').name.split(/\s+/).join('')) code += `\n  alignment: go.TreeAlignment.${alignment},`;
 
-    var nodeSpacing = document.getElementById('nodeSpacing').value;
+    var nodeSpacing = d.getElementById('nodeSpacing').value;
     nodeSpacing = parseFloat(nodeSpacing, 10);
     lay.nodeSpacing = nodeSpacing;
+    if(nodeSpacing != d.getElementById('nodeSpacing').name) code += `\n  nodeSpacing: ${nodeSpacing},`;
 
-    var nodeIndent = document.getElementById('nodeIndent').value;
+    var nodeIndent = d.getElementById('nodeIndent').value;
     nodeIndent = parseFloat(nodeIndent, 10);
     lay.nodeIndent = nodeIndent;
+    if(nodeIndent != d.getElementById('nodeIndent').name) code += `\n  nodeIndent: ${nodeIndent},`;
 
-    var nodeIndentPastParent = document.getElementById('nodeIndentPastParent').value;
+    var nodeIndentPastParent = d.getElementById('nodeIndentPastParent').value;
     nodeIndentPastParent = parseFloat(nodeIndentPastParent, 10);
     lay.nodeIndentPastParent = nodeIndentPastParent;
+    if(nodeIndentPastParent != d.getElementById('nodeIndentPastParent').name) code += `\n  nodeIndentPastParent: ${nodeIndentPastParent},`;
 
-    var layerSpacing = document.getElementById('layerSpacing').value;
+    var layerSpacing = d.getElementById('layerSpacing').value;
     layerSpacing = parseFloat(layerSpacing, 10);
     lay.layerSpacing = layerSpacing;
+    if(layerSpacing != d.getElementById('layerSpacing').name) code += `\n  layerSpacing: ${layerSpacing},`;
 
-    var layerSpacingParentOverlap = document.getElementById('layerSpacingParentOverlap').value;
+    var layerSpacingParentOverlap = d.getElementById('layerSpacingParentOverlap').value;
     layerSpacingParentOverlap = parseFloat(layerSpacingParentOverlap, 10);
     lay.layerSpacingParentOverlap = layerSpacingParentOverlap;
+    if(layerSpacingParentOverlap != d.getElementById('layerSpacingParentOverlap').name) code += `\n  layerSpacingParentOverlap: ${layerSpacingParentOverlap},`;
 
-    var sorting = document.getElementById('sorting').value;
+    var sorting = d.getElementById('sorting').value;
     if (sorting === 'Forwards') lay.sorting = go.TreeSorting.Forwards;
     else if (sorting === 'Reverse') lay.sorting = go.TreeSorting.Reverse;
     else if (sorting === 'Ascending') lay.sorting = go.TreeSorting.Ascending;
     else if (sorting === 'Descending') lay.sorting = go.TreeSorting.Descending;
+    if(sorting != d.getElementById('sorting').name) code += `\n  sorting: go.Tree.${sorting},`;
 
-    var compaction = getRadioValue('compaction');
-    if (compaction === 'Block') lay.compaction = go.TreeCompaction.Block;
-    else if (compaction === 'None') lay.compaction = go.TreeCompaction.None;
+    var compaction = d.getElementById('compaction').checked;
+    lay.compaction = (compaction)? go.TreeCompaction.Block : go.TreeCompaction.None;
+    if(!compaction) code += `\n  compaction: go.TreeCompaction.None,`;
 
-    var breadthLimit = document.getElementById('breadthLimit').value;
+    var breadthLimit = d.getElementById('breadthLimit').value;
     breadthLimit = parseFloat(breadthLimit, 10);
     lay.breadthLimit = breadthLimit;
+    if(breadthLimit != d.getElementById('breadthLimit').name) code += `\n  breadthLimit: ${breadthLimit},`;
 
-    var rowSpacing = document.getElementById('rowSpacing').value;
+    var rowSpacing = d.getElementById('rowSpacing').value;
     rowSpacing = parseFloat(rowSpacing, 10);
     lay.rowSpacing = rowSpacing;
+    if((rowSpacing != d.getElementById('rowSpacing').name) && (breadthLimit != 0)) code += `\n  rowSpacing: ${rowSpacing},`;
+    d.getElementById('rowSpacingRow').style.pointerEvents = (breadthLimit == 0)? "none" : "auto";
+    d.getElementById('rowSpacingRow').style.opacity = (breadthLimit == 0)? 0.5 : 1;
 
-    var rowIndent = document.getElementById('rowIndent').value;
+    var rowIndent = d.getElementById('rowIndent').value;
     rowIndent = parseFloat(rowIndent, 10);
     lay.rowIndent = rowIndent;
+    if((rowIndent != d.getElementById('rowIndent').name) && (breadthLimit != 0) && !(alignment.includes('Center'))) code += `\n  rowIndent: ${rowIndent},`;
+    d.getElementById('rowIndentRow').style.pointerEvents = (breadthLimit == 0 || alignment.includes('Center'))? "none" : "auto";
+    d.getElementById('rowIndentRow').style.opacity = (breadthLimit == 0 || alignment.includes('Center'))? 0.5 : 1;
 
-    var setsPortSpot = document.getElementById('setsPortSpot').checked;
+    var setsPortSpot = d.getElementById('setsPortSpot').checked;
     lay.setsPortSpot = setsPortSpot;
+    if(!setsPortSpot) code += `\n  setsPortSpot: false,`;
 
-    var setsChildPortSpot = document.getElementById('setsChildPortSpot').checked;
+    var setsChildPortSpot = d.getElementById('setsChildPortSpot').checked;
     lay.setsChildPortSpot = setsChildPortSpot;
+    if(!setsChildPortSpot) code += `\n  setsChildPortSpot: false,`;
 
-    if (style !== 'Layered') {
-      var altAngle = getRadioValue('altAngle');
-      altAngle = parseFloat(altAngle, 10);
-      lay.alternateAngle = altAngle;
+    if(treeStyle != 'Layered'){
+      var alternateAngle = d.getElementById('alternateAngle').value;
+      if (alternateAngle === 'Right') lay.alternateAngle = 0;
+      else if (alternateAngle === 'Down') lay.alternateAngle = 90;
+      else if (alternateAngle === 'Left') lay.alternateAngle = 180;
+      else if (alternateAngle === 'Up') lay.alternateAngle = 270;
+      if(alternateAngle != d.getElementById('alternateAngle').name) code += `\n  alternateAngle: ${lay.alternateAngle},`;
 
-      var altAlign = document.getElementById('altAlign').value;
-      if (altAlign === 'CenterChildren') lay.alternateAlignment = go.TreeAlignment.CenterChildren;
-      else if (altAlign === 'CenterSubtrees') lay.alternateAlignment = go.TreeAlignment.CenterSubtrees;
-      else if (altAlign === 'Start') lay.alternateAlignment = go.TreeAlignment.Start;
-      else if (altAlign === 'End') lay.alternateAlignment = go.TreeAlignment.End;
-      else if (altAlign === 'Bus') lay.alternateAlignment = go.TreeAlignment.Bus;
-      else if (altAlign === 'BusBranching') lay.alternateAlignment = go.TreeAlignment.BusBranching;
-      else if (altAlign === 'TopLeftBus') lay.alternateAlignment = go.TreeAlignment.TopLeftBus;
-      else if (altAlign === 'BottomRightBus') lay.alternateAlignment = go.TreeAlignment.BottomRightBus;
+      var alternateAlignment = d.getElementById('alternateAlignment').value.split(/\s+/).join('');
+      if (alternateAlignment === 'CenterChildren') lay.alternateAlignment = go.TreeAlignment.CenterChildren;
+      else if (alternateAlignment === 'CenterSubtrees') lay.alternateAlignment = go.TreeAlignment.CenterSubtrees;
+      else if (alternateAlignment === 'Start') lay.alternateAlignment = go.TreeAlignment.Start;
+      else if (alternateAlignment === 'End') lay.alternateAlignment = go.TreeAlignment.End;
+      else if (alternateAlignment === 'Bus') lay.alternateAlignment = go.TreeAlignment.Bus;
+      else if (alternateAlignment === 'BusBranching') lay.alternateAlignment = go.TreeAlignment.BusBranching;
+      else if (alternateAlignment === 'TopLeftBus') lay.alternateAlignment = go.TreeAlignment.TopLeftBus;
+      else if (alternateAlignment === 'BottomRightBus') lay.alternateAlignment = go.TreeAlignment.BottomRightBus;
+      if(alternateAlignment != d.getElementById('alternateAlignment').name.split(/\s+/).join('')) code += `\n  alternateAlignment: go.TreeAlignment.${alternateAlignment},`;
 
-      var altNodeSpacing = document.getElementById('altNodeSpacing').value;
-      altNodeSpacing = parseFloat(altNodeSpacing, 10);
-      lay.alternateNodeSpacing = altNodeSpacing;
+      var alternateNodeSpacing = d.getElementById('alternateNodeSpacing').value;
+      alternateNodeSpacing = parseFloat(alternateNodeSpacing, 10);
+      lay.alternateNodeSpacing = alternateNodeSpacing;
+      if(alternateNodeSpacing != d.getElementById('alternateNodeSpacing').name) code += `\n  alternateNodeSpacing: ${alternateNodeSpacing},`;
 
-      var altNodeIndent = document.getElementById('altNodeIndent').value;
-      altNodeIndent = parseFloat(altNodeIndent, 10);
-      lay.alternateNodeIndent = altNodeIndent;
+      var alternateNodeIndent = d.getElementById('alternateNodeIndent').value;
+      alternateNodeIndent = parseFloat(alternateNodeIndent, 10);
+      lay.alternateNodeIndent = alternateNodeIndent;
+      if(alternateNodeIndent != d.getElementById('alternateNodeIndent').name) code += `\n  alternateNodeIndent: ${alternateNodeIndent},`;
 
-      var altNodeIndentPastParent = document.getElementById('altNodeIndentPastParent').value;
-      altNodeIndentPastParent = parseFloat(altNodeIndentPastParent, 10);
-      lay.alternateNodeIndentPastParent = altNodeIndentPastParent;
+      var alternateNodeIndentPastParent = d.getElementById('alternateNodeIndentPastParent').value;
+      alternateNodeIndentPastParent = parseFloat(alternateNodeIndentPastParent, 10);
+      lay.alternateNodeIndentPastParent = alternateNodeIndentPastParent;
+      if(alternateNodeIndentPastParent != d.getElementById('alternateNodeIndentPastParent').name) code += `\n  alternateNodeIndentPastParent: ${alternateNodeIndentPastParent},`;
 
-      var altLayerSpacing = document.getElementById('altLayerSpacing').value;
-      altLayerSpacing = parseFloat(altLayerSpacing, 10);
-      lay.alternateLayerSpacing = altLayerSpacing;
+      var alternateLayerSpacing = d.getElementById('alternateLayerSpacing').value;
+      alternateLayerSpacing = parseFloat(alternateLayerSpacing, 10);
+      lay.alternateLayerSpacing = alternateLayerSpacing;
+      if(alternateLayerSpacing != d.getElementById('alternateLayerSpacing').name) code += `\n  alternateLayerSpacing: ${alternateLayerSpacing},`;
 
-      var altLayerSpacingParentOverlap = document.getElementById('altLayerSpacingParentOverlap').value;
-      altLayerSpacingParentOverlap = parseFloat(altLayerSpacingParentOverlap, 10);
-      lay.alternateLayerSpacingParentOverlap = altLayerSpacingParentOverlap;
+      var alternateLayerSpacingParentOverlap = d.getElementById('alternateLayerSpacingParentOverlap').value;
+      alternateLayerSpacingParentOverlap = parseFloat(alternateLayerSpacingParentOverlap, 10);
+      lay.alternateLayerSpacingParentOverlap = alternateLayerSpacingParentOverlap;
+      if(alternateLayerSpacingParentOverlap != d.getElementById('alternateLayerSpacingParentOverlap').name) code += `\n  alternateLayerSpacingParentOverlap: ${alternateLayerSpacingParentOverlap},`;
 
-      var altSorting = document.getElementById('altSorting').value;
-      if (altSorting === 'Forwards') lay.alternateSorting = go.TreeSorting.Forwards;
-      else if (altSorting === 'Reverse') lay.alternateSorting = go.TreeSorting.Reverse;
-      else if (altSorting === 'Ascending') lay.alternateSorting = go.TreeSorting.Ascending;
-      else if (altSorting === 'Descending') lay.alternateSorting = go.TreeSorting.Descending;
+      var alternateSorting = d.getElementById('alternateSorting').value;
+      if (alternateSorting === 'Forwards') lay.alternateSorting = go.TreeSorting.Forwards;
+      else if (alternateSorting === 'Reverse') lay.alternateSorting = go.TreeSorting.Reverse;
+      else if (alternateSorting === 'Ascending') lay.alternateSorting = go.TreeSorting.Ascending;
+      else if (alternateSorting === 'Descending') lay.alternateSorting = go.TreeSorting.Descending;
+      if(alternateSorting != d.getElementById('alternateSorting').name) code += `\n  alternateSorting: go.Tree.${alternateSorting},`;
 
-      var altCompaction = getRadioValue('altCompaction');
-      if (altCompaction === 'Block') lay.alternateCompaction = go.TreeCompaction.Block;
-      else if (altCompaction === 'None') lay.alternateCompaction = go.TreeCompaction.None;
+      var alternateCompaction = d.getElementById('alternateCompaction').checked;
+      lay.alternateCompaction = (alternateCompaction)? go.TreeCompaction.Block : go.TreeCompaction.None;
+      if(!compaction) code += `\n  alternateCompaction: go.TreeCompaction.None,`;
 
-      var altBreadthLimit = document.getElementById('altBreadthLimit').value;
-      altBreadthLimit = parseFloat(altBreadthLimit, 10);
-      lay.alternateBreadthLimit = altBreadthLimit;
+      var alternateBreadthLimit = d.getElementById('alternateBreadthLimit').value;
+      alternateBreadthLimit = parseFloat(alternateBreadthLimit, 10);
+      lay.alternateBreadthLimit = alternateBreadthLimit;
+      if(alternateBreadthLimit != d.getElementById('alternateBreadthLimit').name) code += `\n  alternateBreadthLimit: ${alternateBreadthLimit},`;
 
-      var altRowSpacing = document.getElementById('altRowSpacing').value;
-      altRowSpacing = parseFloat(altRowSpacing, 10);
-      lay.alternateRowSpacing = altRowSpacing;
+      var alternateRowSpacing = d.getElementById('alternateRowSpacing').value;
+      alternateRowSpacing = parseFloat(alternateRowSpacing, 10);
+      lay.alternateRowSpacing = alternateRowSpacing;
+      if((alternateRowSpacing != d.getElementById('alternateRowSpacing').name) && (alternateBreadthLimit != 0)) code += `\n  alternateRowSpacing: ${alternateRowSpacing},`;
+      d.getElementById('alternateRowSpacingRow').style.pointerEvents = (breadthLimit == 0)? "none" : "auto";
+      d.getElementById('alternateRowSpacingRow').style.opacity = (alternateBreadthLimit == 0)? 0.5 : 1;
 
-      var altRowIndent = document.getElementById('altRowIndent').value;
-      altRowIndent = parseFloat(altRowIndent, 10);
-      lay.alternateRowIndent = altRowIndent;
+      var alternateRowIndent = d.getElementById('alternateRowIndent').value;
+      alternateRowIndent = parseFloat(alternateRowIndent, 10);
+      lay.alternateRowIndent = alternateRowIndent;
+      if((alternateRowIndent != d.getElementById('alternateRowIndent').name) && (alternateBreadthLimit != 0) && !(alternateAlignment.includes('Center'))) code += `\n  alternateRowIndent: ${alternateRowIndent},`;
+      d.getElementById('alternateRowIndentRow').style.pointerEvents = (alternateBreadthLimit == 0 || alternateAlignment.includes('Center'))? "none" : "auto";
+      d.getElementById('alternateRowIndentRow').style.opacity = (alternateBreadthLimit == 0 || alternateAlignment.includes('Center'))? 0.5 : 1;
 
-      var altSetsPortSpot = document.getElementById('altSetsPortSpot').checked;
-      lay.alternateSetsPortSpot = altSetsPortSpot;
+      var alternateSetsPortSpot = d.getElementById('alternateSetsPortSpot').checked;
+      lay.alternateSetsPortSpot = alternateSetsPortSpot;
+      if(!alternateSetsPortSpot) code += `\n  alternateSetsPortSpot: false,`;
 
-      var altSetsChildPortSpot = document.getElementById('altSetsChildPortSpot').checked;
-      lay.alternateSetsChildPortSpot = altSetsChildPortSpot;
+      var alternateSetsChildPortSpot = d.getElementById('alternateSetsChildPortSpot').checked;
+      lay.alternateSetsChildPortSpot = alternateSetsChildPortSpot;
+      if(!alternateSetsChildPortSpot) code += `\n  alternateSetsChildPortSpot: false,`;
     }
 
+    if (styleChange) {
+      d.getElementById('alternatePropertiesMenu').open = (treeStyle !== 'Layered');
+      d.getElementById('alternatePropertiesMenu').style.opacity = (treeStyle !== 'Layered')? 1 :0.5;
+      d.getElementById('alternatePropertiesMenu').style.pointerEvents = (treeStyle !== 'Layered')? 'all' : 'none';
+    }
+
+    if(code === 'new go.TreeLayout({') code = 'new go.TreeLayout()'; // If no changes made to layout
+    else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
+    d.getElementById('layoutBuilder').textContent = code;
+
     myDiagram.commitTransaction('change Layout');
+    myDiagram.zoomToFit();
+    if (window.Prism) window.Prism.highlightAll();
   }
 
-  function getRadioValue(name) {
-    var radio = document.getElementsByName(name);
-    for (var i = 0; i < radio.length; i++) if (radio[i].checked) return radio[i].value;
+  function changeNodes(max, value){ // Allows for Node property to be changed and to make sure max and min never cross each other
+    e = document;
+    if (max){
+      e.getElementById('maxNodes').value = Math.max(e.getElementById('maxNodes').value - -value, 0);
+    }
+    else{
+      e.getElementById('minNodes').value = Math.max(e.getElementById('minNodes').value - -value, 0);
+    }
+    if (parseInt(e.getElementById('minNodes').value) > parseInt(e.getElementById('maxNodes').value)) {
+      (max)? e.getElementById('minNodes').value = e.getElementById('maxNodes').value : e.getElementById('maxNodes').value = e.getElementById('minNodes').value;
+    }
   }
+
+  function changeChildren(max, value){ // Makes sure children number properties max and min don't cross
+    e = document;
+    if (max){
+      e.getElementById('maxChil').value = Math.max(e.getElementById('maxChil').value - -value, 0);
+    }
+    else{
+      e.getElementById('minChil').value = Math.max(e.getElementById('minChil').value - -value, 0);
+    }
+    if (parseInt(e.getElementById('minChil').value) > parseInt(e.getElementById('maxChil').value)) {
+      (max)? e.getElementById('minChil').value = e.getElementById('maxChil').value : e.getElementById('maxChil').value = e.getElementById('minChil').value;
+    }
+  }
+
+  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+    element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function resetButton(element){ // Sets property back to original and changes related divs accordingly
+    e = element.parentNode.querySelector('.input');
+    e.value = e.name;
+    element.style = "background-color: lightgray;";
+    layout();
+  }
+
+  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+    e = element.parentNode.querySelector('.inputBox');
+    change? number = element.name: number = 0;
+    const max = element.parentNode.querySelector('.maximum').name;
+    const min = element.parentNode.querySelector('.minimum').name;
+    const decimal = element.parentNode.querySelector('.decimal').name;
+    var value = (e.value - -number) // Changes by recorded interval
+    if(max !== null) value = Math.min(value, max) // Checks for max and min values
+    if(min !== null) value = Math.max(value, min)
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
+    layout();
+  }
+
+  function buildButtonRow(id, change, start, title, table, min = null, max = null,  decimal = 0) {
+    var template = document.getElementById('buttonRow');
+    var clone = template.content.cloneNode(true);
+    clone.querySelector('.button3').name = change;
+    clone.querySelector('.button2').name = -change;
+    clone.querySelector('.inputBox').name = start;
+    clone.querySelector('.inputBox').id = id;
+    clone.querySelector('.inputBox').value = start;
+    clone.querySelector('.maximum').name = max;
+    clone.querySelector('.minimum').name = min;
+    clone.querySelector('.decimal').name = decimal;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function buildDropdown(id, title, table, options) {
+    var template = document.getElementById('dropdown');
+    var clone = template.content.cloneNode(true);
+    dropdown = clone.querySelector('.input')
+    dropdown.name = options[0];
+    dropdown.id = id;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+    options.forEach(element => {
+      let option = document.createElement('option');
+      option.value = element; // Set the value to be the index + 1
+      option.text = element; // Set the text to be the element from the array
+      dropdown.add(option);
+    });
+    dropdown.options[0].selected = true;
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function buildSwitch(id, title, table, checked) {
+    var template = document.getElementById('switch');
+    var clone = template.content.cloneNode(true);
+    checkSwitch = clone.querySelector('.input')
+    checkSwitch.id = id;
+    checkSwitch.checked = checked;
+    clone.querySelector('.title').textContent = title;
+    clone.querySelector('.row').id = (id + 'Row')
+
+    document.getElementById(table).appendChild(clone);
+  }
+
+  function copyCode(){
+    navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
+    document.getElementById('default').style.display = 'none'
+    document.getElementById('clicked').style.display = 'inline-flex'
+    document.getElementById('copyButton').style.pointerEvents = 'none'
+    setTimeout(() => {
+      document.getElementById('default').style.display = 'inline-flex'
+      document.getElementById('clicked').style.display = 'none'
+      document.getElementById('copyButton').style.pointerEvents = 'auto'
+    }, 1500);
+  }
+
+  function iframe(element){
+    var iframe = document.getElementById('apiFrame');
+    var frame = document.getElementById('frame');
+    frame.style.display = 'block';
+    var id = element.parentElement.querySelector('.input').id;
+    document.getElementById('description').innerHTML = (iframe.contentWindow.document.getElementById(id).parentElement.children[2].firstChild.firstChild.innerHTML);
+    document.getElementById('name').textContent = id;
+    frame.style.left = (element.getBoundingClientRect().left) + 'px';
+    frame.style.top = (element.getBoundingClientRect().top - 10 + window.pageYOffset) + 'px';
+  }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
-<div id="sample">
-  <div style="margin-bottom: 5px; padding: 5px; background-color: aliceblue">
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>Tree Style</b><br />
-      <select name="style" id="style" onchange="layout()">
-        <option value="Layered" selected="selected">Layered</option>
-        <option value="Alternating">Alternating</option>
-        <option value="LastParents">LastParents</option>
-        <option value="RootOnly">RootOnly</option>
-      </select>
-      <br />
-      <b>Layer Style</b><br />
-      <select name="layerStyle" id="layerStyle" onchange="layout()">
-        <option value="Individual" selected="selected">Individual</option>
-        <option value="Siblings">Siblings</option>
-        <option value="Uniform">Uniform</option>
-      </select>
-      <br />
-      <br />
-      <b>New Tree</b><br />
-      MinNodes: <input type="number" width="2" id="minNodes" value="20" /><br />
-      MaxNodes: <input type="number" width="2" id="maxNodes" value="100" /><br />
-      MinChildren: <input type="number" width="2" id="minChil" value="1" /><br />
-      MaxChildren: <input type="number" width="2" id="maxChil" value="3" /><br />
-      Random Sizes: <input type="checkbox" id="randomSizes" /><br />
-      <button type="button" onclick="rebuildGraph()">Generate Tree</button>
-    </span>
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>Default Properties</b><br />
-      Angle:
-      <input type="radio" name="angle" onclick="layout()" value="0" checked="checked" />Right
-      <input type="radio" name="angle" onclick="layout()" value="90" />Down <input type="radio" name="angle" onclick="layout()" value="180" />Left
-      <input type="radio" name="angle" onclick="layout()" value="270" />Up<br />
-      Alignment:
-      <select name="align" id="align" onchange="layout()">
-        <option value="CenterChildren" selected="selected">CenterChildren</option>
-        <option value="CenterSubtrees">CenterSubtrees</option>
-        <option value="Start">Start</option>
-        <option value="End">End</option>
-        <option value="Bus">Bus</option>
-        <option value="BusBranching">BusBranching</option>
-        <option value="TopLeftBus">TopLeftBus</option>
-        <option value="BottomRightBus">BottomRightBus</option>
-      </select>
-      <br />
-      NodeSpacing: <input type="number" size="2" id="nodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
-      NodeIndent: <input type="number" size="2" id="nodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
-      NodeIndentPastParent: <input type="number" size="2" id="nodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      LayerSpacing: <input type="number" size="2" id="layerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
-      LayerSpacingParentOverlap: <input type="number" size="2" id="layerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      Sorting:
-      <select name="sorting" id="sorting" onchange="layout()">
-        <option value="Forwards" selected="selected">Forwards</option>
-        <option value="Reverse">Reverse</option>
-        <option value="Ascending">Ascending</option>
-        <option value="Descending">Descending</option>
-      </select>
-      <br />
-      Compaction:
-      <input type="radio" name="compaction" onclick="layout()" value="Block" checked="checked" /> Block
-      <input type="radio" name="compaction" onclick="layout()" value="None" /> None<br />
-      BreadthLimit: <input type="number" size="2" id="breadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
-      RowSpacing: <input type="number" size="2" id="rowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
-      RowIndent: <input type="number" size="2" id="rowIndent" value="10" onchange="layout()" /> (>= 0)<br />
-      SetsPortSpot: <input type="checkbox" id="setsPortSpot" checked="checked" onclick="layout()" /> SetsChildPortSpot:
-      <input type="checkbox" id="setsChildPortSpot" checked="checked" onclick="layout()" /><br />
-    </span>
-    <span style="display: inline-block; vertical-align: top; padding: 5px">
-      <b>Alternates</b>
-      (only when TreeStyle is not Layered)
-      <br />
-      Angle:
-      <input type="radio" name="altAngle" onclick="layout()" value="0" checked="checked" />Right
-      <input type="radio" name="altAngle" onclick="layout()" value="90" />Down <input type="radio" name="altAngle" onclick="layout()" value="180" />Left
-      <input type="radio" name="altAngle" onclick="layout()" value="270" />Up<br />
-      Alignment:
-      <select name="altAlign" id="altAlign" onchange="layout()">
-        <option value="CenterChildren" selected="selected">CenterChildren</option>
-        <option value="CenterSubtrees">CenterSubtrees</option>
-        <option value="Start">Start</option>
-        <option value="End">End</option>
-        <option value="Bus">Bus</option>
-        <option value="BusBranching">BusBranching</option>
-        <option value="TopLeftBus">TopLeftBus</option>
-        <option value="BottomRightBus">BottomRightBus</option>
-      </select>
-      <br />
-      NodeSpacing: <input type="number" size="2" id="altNodeSpacing" value="20" onchange="layout()" /> (negative causes overlaps)<br />
-      NodeIndent: <input type="number" size="2" id="altNodeIndent" value="0" onchange="layout()" /> (when Start or End; >= 0)<br />
-      NodeIndentPastParent: <input type="number" size="2" id="altNodeIndentPastParent" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      LayerSpacing: <input type="number" size="2" id="altLayerSpacing" value="50" onchange="layout()" /> (negative causes overlaps)<br />
-      LayerSpacingParentOverlap: <input type="number" size="2" id="altLayerSpacingParentOverlap" value="0" onchange="layout()" /> (fraction; 0-1)<br />
-      Sorting:
-      <select name="altSorting" id="altSorting" onchange="layout()">
-        <option value="Forwards" selected="selected">Forwards</option>
-        <option value="Reverse">Reverse</option>
-        <option value="Ascending">Ascending</option>
-        <option value="Descending">Descending</option>
-      </select>
-      <br />
-      Compaction:
-      <input type="radio" name="altCompaction" onclick="layout()" value="Block" checked="checked" /> Block
-      <input type="radio" name="altCompaction" onclick="layout()" value="None" /> None<br />
-      BreadthLimit: <input type="number" size="2" id="altBreadthLimit" value="0" onchange="layout()" /> (0 means no limit)<br />
-      RowSpacing: <input type="number" size="2" id="altRowSpacing" value="25" onchange="layout()" /> (negative causes overlaps)<br />
-      RowIndent: <input type="number" size="2" id="altRowIndent" value="10" onchange="layout()" /> (>= 0)<br />
-      SetsPortSpot: <input type="checkbox" id="altSetsPortSpot" checked="checked" onclick="layout()" /> SetsChildPortSpot:
-      <input type="checkbox" id="altSetsChildPortSpot" checked="checked" onclick="layout()" /><br />
-    </span>
+<style>
+  .table {
+    display: table;
+    width: 100%;
+  }
+  .row {
+    display: table-row;
+  }
+  .cell {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .celldif {
+    display: table-cell;
+  }
+  .sampleWrapper {
+    display: flex;
+    flex-direction: column;
+    @media (min-width: 800px) {
+      flex-direction: row;
+    }
+
+    & > div:first-child {
+      margin-bottom: 0.5rem;
+      @media (min-width: 800px) {
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .info {
+    display: inline-block;
+    cursor: pointer;
+  }
+  .copyButton:hover {
+    background-color: #e9e9e9 !important;
+    color: #000000 !important;
+  }
+</style>
+
+<template id="buttonRow">
+  <div class="row" >
+    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
+    <div class="cell">
+      <div class="relative flex items-center">
+        <div class="maximum" ></div>
+        <div class="minimum" ></div>
+        <div class="decimal" ></div>
+        <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-7 m-0 pr-[2px] pl-[2px]" style="background-color: lightgray;">
+          <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+            <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+          </svg>
+        </button>
+        <button type="button" onclick="changeInput(this)" class="button2 bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-none h-7  m-0 pr-[11px] pl-[6px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+          </svg>
+        </button>
+        <input type="text" onchange="changeInput(this, false)" class="input inputBox bg-gray-50 border-x-1 border-gray-300 h-7 text-center outline-none text-gray-900 text-sm w-10 m-[-4.5px] z-10" required />
+        <button type="button" onclick="changeInput(this)" class="button3 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 m-0 pr-[7px] pl-[12px]">
+          <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
-  <div id="myDiagramDiv" style="background-color: white; border: solid 1px black; width: 100%; height: 500px"></div>
-  <p>For information on <b>TreeLayout</b> and its properties, see the <a>TreeLayout</a> documentation page.</p>
+</template>
+
+<template id="dropdown">
+  <div class="row">
+    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
+    <div class="cell pt-4">
+      <div class="relative flex">
+          <button type="button" onclick="resetButton(this)" class="button1 rounded-s-lg rounded-e-none h-8.1 m-0 pr-[2px] pl-[2px] align-middle" style="background-color: lightgray;">
+            <svg fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12px" height="12px" viewBox="0 0 528.919 528.919" xml:space="preserve">
+              <path id="reset" stroke-width="2" d= "M70.846,324.059c3.21,3.926,8.409,3.926,11.619,0l69.162-84.621c3.21-3.926,1.698-7.108-3.372-7.108h-36.723 c-5.07,0-8.516-4.061-7.427-9.012c18.883-85.995,95.625-150.564,187.207-150.564c105.708,0,191.706,85.999,191.706,191.706 c0,105.709-85.998,191.707-191.706,191.707c-12.674,0-22.95,10.275-22.95,22.949s10.276,22.949,22.95,22.949 c131.018,0,237.606-106.588,237.606-237.605c0-131.017-106.589-237.605-237.606-237.605 c-116.961,0-214.395,84.967-233.961,196.409c-0.878,4.994-5.52,9.067-10.59,9.067H5.057c-5.071,0-6.579,3.182-3.373,7.108 L70.846,324.059z"/>
+            </svg>
+          </button>
+          <select onchange="changeDropdown(this)" style="width: 160px;" class="input outline-none bg-gray-50 border rounded-s-none rounded-e-lg border-gray-300 text-gray-900 text-sm block p-1.5"></select>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="switch">
+  <label class="row">
+    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <div class="title cell whitespace-nowrap select-none pt-2"></div>
+    <div class="cell inline-flex items-center cursor-pointer">
+      <input type="checkbox" onclick="layout()" class="input sr-only peer">
+      <div height=5 class="relative w-9 h-5  bg-gray-200 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+    </div>
+  </label>
+</template>
+
+<div id="sample">
+  <iframe id="apiFrame" src="https://gojs.net/latest/api/symbols/TreeLayout.html" style="display: none;"></iframe>
+  <div id="frame" style="z-index: 100; pointer-events: none; position: absolute; display: none; ">
+      <div id="container" style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; max-width: 600px;margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff;">
+        <div id="name" class="name" style="font-weight: bold; font-size: 16px;  display: flex; align-items: center;"></div>
+        <div id="description" style=" margin-top: 10px; font-size: 14px; color: #000;"></div>
+      </div>
+  </div>
+
+  <div class="sampleWrapper">
+    <div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black; margin-right: 10px;"></div>
+
+    <div style="flex: 1;">
+      <section class="grid grid-cols-1 gap-y-3 divide-y">
+        <details open class="group py-1 text-lg select-none" id="treeSettings">
+          <summary class="flex cursor-pointer flex-row items-center whitespace-nowrap justify-between py-1 font-semibold marker:[font-size:0px]">Tree Settings
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </summary>
+          <span class="sampleWrapper">
+
+          <div class="table " style="padding-right: 15px;">
+            <div class="row" > <!--Min Nodes-->
+              <div class="cell whitespace-nowrap p-1 select-none" style="font-size: large; padding-right: 15px;">Minimum Nodes
+              </div>
+              <div class="cell max-w-xs"> <!--Min Nodes-->
+                <label for="numNodes" class="items-center cursor-pointer">
+                  <div class="relative flex items-center max-w-[6.5rem] ">
+                    <button type="button" id="decrement-button" onclick="changeNodes(false,-5)" class="bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="minNodes" onclick="changeNodes(false, 0)" onchange="changeNodes(false, 0)" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-1 border-gray-300 h-7 text-center outline-none text-gray-900 text-sm w-11 m-[-4.5px] z-10" value="20" required />
+                    <button type="button" id="increment-button" onclick="changeNodes(false, 5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="row"> <!--Max Nodes-->
+              <div id= "nodeWidthText" class="cell whitespace-nowrap p-1 select-none" style="font-size: large">Maximum Nodes</div>
+              <div class="cell max-w-xs" id="nodeWidthForm"> <!--Max Nodes-->
+                <label for="minLinks" class="items-center cursor-pointer">
+                  <div class="relative flex items-center max-w-[6.5rem]">
+                    <button type="button" id="decrement-button" onclick="changeNodes(true, -5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="maxNodes" onclick="changeNodes(true, 0)" onchange="changeNodes(true, 0)" aria-describedby="helper-text-explanation" onchange="" class="bg-gray-50 border-x-1 border-gray-300 h-7 text-center text-gray-900 text-sm outline-none w-11 m-[-4.5px] z-10" value="50" required />
+                    <button type="button" id="increment-button" onclick="changeNodes(true, 5)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none  m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="row"> <!--min children-->
+              <div id= "nodeHeightText" class="cell whitespace-nowrap p-1 select-none" style="font-size: large">Minumum Children</div>
+              <div class="cell max-w-xs" id="nodeHeightForm"> <!--min children-->
+                <label for="minLinks" class="items-center cursor-pointer">
+                  <div class="relative flex items-center max-w-[6.5rem]">
+                    <button type="button" id="decrement-button" onclick="changeChildren(false, -1)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="minChil" onclick="changeChildren(false, 0)" onchange="changeChildren(false, 0)" aria-describedby="helper-text-explanation" onchange="" class="bg-gray-50 border-x-1 outline-none border-gray-300 h-7 text-center text-gray-900 text-sm block  w-11 m-[-4.5px] z-10" value="1" required />
+                    <button type="button" id="increment-button" onclick="changeChildren(false, 1)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100 focus:ring-2 focus:outline-none  m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="row"> <!--max children-->
+              <div id="minLinkText" class="cell whitespace-nowrap p-1 select-none" style="font-size: large; ">Maximum Children</div>
+              <div class="cell max-w-xs" id="minLinksForm"> <!--max children-->
+                <label for="minLinks" class="items-center cursor-pointer">
+                  <div class="relative flex items-center max-w-[6.5rem]">
+                    <button type="button" id="decrement-button" onclick="changeChildren(true, -1)" class="bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-s-lg h-7 focus:ring-gray-100  focus:ring-2 focus:outline-none m-0 pr-[12px] pl-[7px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                      </svg>
+                    </button>
+                    <input type="text" id="maxChil" aria-describedby="helper-text-explanation" onchange="changeChildren(true, 0)" onclick="changeChildren(true, 0)" class="bg-gray-50 border-x-1 outline-none border-gray-300 h-7 text-center text-gray-900 text-sm block  w-11 m-[-4.5px] z-10" value="3" required />
+                    <button type="button" id="increment-button" onclick="changeChildren(true, 1)" class="bg-gray-100  hover:bg-gray-200 border border-gray-300 rounded-e-lg h-7 focus:ring-gray-100  focus:ring-2 focus:outline-none m-0 pr-[7px] pl-[12px]">
+                      <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="row"> <!--Random Sizes-->
+              <div class="cell whitespace-nowrap select-none p-1">Random Sizes</div>
+              <div class="cell inline-flex items-center cursor-pointer"> <!--Random Sizes-->
+                <input type="checkbox" value="" class="sr-only peer" id="randomSizes" >
+                <div height=5 class="relative w-9 h-5  bg-gray-200 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              </div>
+            </label>
+            <div class="table">
+              <div class="row">
+                  <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                  </svg>
+                  <div class="cell whitespace-nowrap tooltip-trigger align-middle select-none p-1" style= "padding-right: 10px;">Tree Style</div>
+                  <div class="celldif">
+                    <select id="treeStyle" name="Layered" onchange="layout(true)" class="input align-middle bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[120px] p-1.5">
+                      <option value="Layered" selected="selected">Layered</option>
+                      <option value="Alternating">Alternating</option>
+                      <option value="LastParents">Last Parents</option>
+                      <option value="RootOnly">Root Only</option>
+                    </select>
+                  </div>
+              </div>
+              <div class="row">
+                  <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                  </svg>
+                  <div class="cell whitespace-nowrap tooltip-trigger align-middle select-none p-1" style= "padding-right: 10px;">Layer Style</div>
+                  <div class="celldif">
+                    <select id="layerStyle" name="Individual" onchange="layout()" class="input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[120px] p-1.5">
+                      <option value="Individual" selected="selected">Individual</option>
+                      <option value="Siblings">Siblings</option>
+                      <option value="Uniform">Uniform</option>
+                    </select>
+                  </div>
+              </div>
+            </div>
+            <button type="button" class="mt-2 ml-[60px]" onclick="rebuildGraph()">Generate Tree</button>
+          </div>
+        </span>
+        </details>
+
+        <details open class="group py-1 text-lg select-none" id="defaultProperties">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]">Default Properties
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+          <span class="sampleWrapper">
+            <div class="table" id="table2"></div>
+            <div>
+              <div class="table ml-[15px]" id="table3"></div>
+              <div class="table ml-[15px]" id="table4"></div>
+            </div>
+          </span>
+        </details>
+
+        <details class="group py-1 text-lg select-none" id="alternatePropertiesMenu" style="opacity: .5; pointer-events: none;">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]">Alternate Properties
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+          </summary>
+          <span class="sampleWrapper" >
+            <div class="table" id="table5"></div>
+            <div>
+              <div class="table ml-[15px]" id="table6"></div>
+              <div class="table ml-[15px]" id="table7"></div>
+            </div>
+          </span>
+        </details>
+
+        <details open class="group py-1 text-lg" id="treeLayoutBuilder">
+          <summary class="flex cursor-pointer flex-row items-center justify-between py-1 font-semibold marker:[font-size:0px]  select-none">Tree Layout Builder
+            <svg class="h-6 w-6 rotate-0 transform text-gray-400 group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </summary>
+          <div class="p-1" style="position: relative;"><!--Layout Output-->
+            <pre style="overflow: auto;">
+              <code id="layoutBuilder" class="lang-js" style="font-size: large;"></code>
+            </pre>
+            <button onclick="copyCode()" style="position: absolute; top: 14px; right: 8px; width: 35px; height: 35px;" id="copyButton" class="copyButton text-gray-900 m-1 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border">
+                  <svg id="default" class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                      <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                  </svg>
+                  <svg id="clicked" class="w-4 h-4" style="display: none;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                  </svg>
+            </button>
+          </div>
+        </details>
+      </section>
+    </div>
+  </div>
+  <p style="flex-grow: 1;">For information on <b>TreeLayout</b> and its properties, see the <a>TreeLayout</a> documentation page.</p>
 </div>
 
           

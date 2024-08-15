@@ -60,7 +60,7 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
       this._imagePart = new go.Part(
         { layerName: 'Tool', opacity: 0.5, locationSpot: new go.Spot(0, 0, offset.x, offset.y) })
         .add(
-          new go.Picture({ element: this.diagram.makeImage({ parts: map.toKeySet() }) })
+          new go.Picture({ source: this.diagram.makeImageData({ parts: map.toKeySet() }) as string })
         );
     }
     return map;

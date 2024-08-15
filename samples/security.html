@@ -265,7 +265,7 @@
         currentScale = origscale / newscale;
         // currentScale = 1 + (origscale / newscale - 1)*0.8;
       myDiagram.parts.each(p => {
-        if (p.layerName != 'Foreground') return; // dont scale background image
+        if (p.layerName != 'Foreground') return; // don't scale background image
         p.scale = currentScale;
       });
       myDiagram.commitTransaction('scale Nodes');
@@ -275,7 +275,7 @@
     // Create the Diagram's Model
     loadModel();
     // Toggle random events on
-    randomEventOpen(document.getElementById('eventToggle'));
+    toggleEvents(document.getElementById('eventToggle'));
 
     // the doors match the size of the doorways, this makes them a bit larger
     myDiagram.nodes.each(n => {
@@ -438,7 +438,7 @@
 
     const feedDiv = document.getElementById('cameraFeeds');
     const GAP = 0;
-    const STRK = 4;
+    const STROKE = 4;
 
     const div = document.createElement('div');
     feedDiv.appendChild(div);
@@ -446,7 +446,7 @@
 
     div.style.float = 'left';
     div.style.margin = GAP + 'px';
-    div.style.border = STRK + 'px solid';
+    div.style.border = STROKE + 'px solid';
     div.style.borderColor = 'rgba(0,0,0,0)';
     div.style.aspectRatio = 16 / 9;
 
@@ -548,9 +548,7 @@
 
   // open the specified door
   openDoor = function (node) {
-    node = node || myDiagram.selection.first() || this._prevDoor || myDiagram.nodes.first(); // TODO remove later
     if (node.data.category != 'door') return;
-    this._prevDoor = node;
 
     const data = node.data;
     const door = node.findObject('DOOR');
@@ -606,12 +604,10 @@
 
     anim.start();
     animColor.start();
-  }.bind({_prevDoor: null, n_trig_map: {}}) // reduce global variables
+  }.bind({n_trig_map: {}}) // reduce global variables
 
   // open the specified camera
   triggerCamera = function (node) {
-    node = node || myDiagram.selection.first() || this.prev; // TODO remove later
-    this.prev = node;
     if (node?.data?.category != 'camera') return;
     if (node.data.status != 'Live') return; // don't animate "broken" cameras
 
@@ -627,12 +623,10 @@
     animColor.add(light, 'fill', light.fill, 'rgb(255,255,0)');
 
     animColor.finished = () => {
-      setTimeout(() => {
-        this.n_trig_map[node]--;
-        // only run the last triggered close animation, this way the door can stay
-        // open when multiple people use it in a row
-        if (this.n_trig_map[node]) return;
+      this.n_trig_map[node]--;
+      if (this.n_trig_map[node]) return;
 
+      setTimeout(() => {
         const animColor2 = new go.Animation();
 
         // reset color
@@ -653,12 +647,11 @@
   }.bind({n_trig_map: {}, prev: null}) // reduce global variables
 
   // toggle random events
-  randomEventOpen = function (elem) {
+  toggleEvents = function (elem) {
     if (!this._timeout) { // start
       elem.style.filter = 'brightness(180%)';
       const doEvent = () => {
         // pick a random door/camera
-        // let pickRand = () => (arr=[... myDiagram.nodes.filter(n => n.data.category == 'door')])[parseInt(Math.random() * arr.length)];
         let pickRand = () => (arr=[... myDiagram.nodes])[parseInt(Math.random() * arr.length)];
         let node = pickRand();
         // reduce chance of picking the same node twice in a row
@@ -672,9 +665,7 @@
         // call this function again after a random amount of time
         this._timeout = setTimeout(() => {
           doEvent();
-        // }, 75 + Math.random()*900);
         }, 200 + Math.random()*1150);
-        // }, 10 + Math.random()*200);
       }
       doEvent();
     }
@@ -694,9 +685,7 @@
     </div>
     <div id="myDiagramDiv" style="height: 500px; flex-grow: 1;"></div>
   </div>
-  <button id="eventToggle" onclick="randomEventOpen(this)">Toggle Random Events</button>
-  <button onclick="triggerCamera()">Toggle Cam</button>
-  <button onclick="openDoor()">Toggle Door</button>
+  <button id="eventToggle" onclick="toggleEvents(this)">Toggle Random Events</button>
 
   <div class="w-full flex flex-wrap">
     <div class="flex-1 min-w-[500px] mb-4 mr-2">
