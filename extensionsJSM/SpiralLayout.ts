@@ -43,8 +43,8 @@ export class SpiralLayout extends go.Layout {
     return this._radius;
   }
   set radius(val: number) {
-    if (typeof val !== 'number') throw new Error('new value ofr SpiralLayout.radius must be a number, not ' + val);
     if (this._radius !== val) {
+      if (typeof val !== 'number') throw new Error('new value ofr SpiralLayout.radius must be a number, not ' + val);
       this._radius = val;
       this.invalidateLayout();
     }
@@ -59,8 +59,8 @@ export class SpiralLayout extends go.Layout {
     return this._spacing;
   }
   set spacing(val: number) {
-    if (typeof val !== 'number') throw new Error('new value for SpiralLayout.spacing must be a number, not: ' + val);
     if (this._spacing !== val) {
+      if (typeof val !== 'number') throw new Error('new value for SpiralLayout.spacing must be a number, not: ' + val);
       this._spacing = val;
       this.invalidateLayout();
     }
@@ -75,8 +75,8 @@ export class SpiralLayout extends go.Layout {
     return this._clockwise;
   }
   set clockwise(val: boolean) {
-    if (typeof val !== 'boolean') throw new Error('new value for SpiralLayout.clockwise must be a boolean, not: ' + val);
     if (this._clockwise !== val) {
+      if (typeof val !== 'boolean') throw new Error('new value for SpiralLayout.clockwise must be a boolean, not: ' + val);
       this._clockwise = val;
       this.invalidateLayout();
     }

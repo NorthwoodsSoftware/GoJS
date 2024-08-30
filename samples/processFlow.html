@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Process Flow" />
-<meta property="og:title" content="Process Flow" />
-<meta name="twitter:title" content="Process Flow" />
+<meta itemprop="name" content="Process Flow SCADA Diagram" />
+<meta property="og:title" content="Process Flow SCADA Diagram" />
+<meta name="twitter:title" content="Process Flow SCADA Diagram" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/processFlow.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Process Flow | GoJS
+      Process Flow SCADA Diagram | GoJS Diagramming Library
     </title>
   </head>
 
@@ -125,18 +125,20 @@
 <script src="../extensions/Figures.js"></script>
 <script id="code">
   function init() {
+    const FONT = 'bold 13px InterVariable, sans-serif';
 		go.Shape.defineFigureGenerator('Wave', (shape, w, h) => {
 			const geo = new go.Geometry();
 			const fig = new go.PathFigure(0, 0, true);
       const param1 = shape?.parameter1 ?? 0;
 			geo.add(fig);
+      // w -= 1; // remove slight overlap
 			fig.add(new go.PathSegment(go.SegmentType.Line, w, 0));
 			fig.add(new go.PathSegment(go.SegmentType.Line, w, h*3/4));
 			fig.add(new go.PathSegment(go.SegmentType.QuadraticBezier, 0, h*3/4, w/2, h/4 + h*param1));
 			fig.add(new go.PathSegment(go.SegmentType.Line, 0, 0));
 			return geo;
 		});
-		
+
     myDiagram = new go.Diagram('myDiagramDiv', {
       'grid.visible': true,
       'grid.gridCellSize': new go.Size(30, 20),
@@ -177,7 +179,7 @@
               graduatedSkip: (n) => (Boolean(n % 20) ^ side),
               stroke: 'black',
               strokeDashArray: [10, 1]
-            }) 
+            })
             .bind('geometryString', 'width', (value) => (`M0 0 V${value * 0.8}`)),
         );
     }
@@ -192,6 +194,16 @@
         1: go.Brush.darken(color),
         start: go.Spot.Left,
         end: go.Spot.Right
+      });
+    }
+
+    function makeWaveBrush() {
+      return new go.Brush('Linear', {
+        0: 'rgba(163, 183, 202, 1)',
+        0.9: 'rgba(209, 219, 228, 1)',
+        1: 'rgba(209, 219, 228, 1)',
+        start: go.Spot.Top,
+        end: go.Spot.Bottom
       });
     }
 
@@ -265,12 +277,7 @@
                             interval: 1,
                             parameter1: 0,
                             name: 'WAVE1',
-                            fill: new go.Brush('Linear', {
-                              0: 'rgba(163, 183, 202, 0.5)',
-                              1: 'rgba(209, 219, 228, 0.5)',
-                              start: go.Spot.Top,
-                              end: go.Spot.Bottom
-                            }),
+                            fill: makeWaveBrush(),
                             strokeWidth: 0,
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
                             graduatedSkip: (n) => (n % 2)
@@ -281,21 +288,16 @@
                             name: 'WAVE2',
                             graduatedSkip: (n) => (!(n % 2)),
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
-                            fill: new go.Brush('Linear', {
-                              0: 'rgba(163, 183, 202, 0.5)',
-                              1: 'rgba(209, 219, 228, 0.5)',
-                              start: go.Spot.Top,
-                              end: go.Spot.Bottom
-                            }),
+                            fill: makeWaveBrush(),
                             strokeWidth: 0
                           })
                         ),
                       new go.Shape({
                         fill: new go.Brush('Linear', {
-                          0: 'rgba(163, 183, 202, 0.5)',
-                          0.25: 'rgba(117, 147, 175, 0.5)',
-                          0.5: 'rgba(71, 111, 149, 0.5)',
-                          0.75: 'rgba(25, 74, 122, 0.5)',
+                          0: 'rgba(163, 183, 202, 1)',
+                          0.25: 'rgba(117, 147, 175, 1)',
+                          0.5: 'rgba(71, 111, 149, 1)',
+                          0.75: 'rgba(25, 74, 122, 1)',
                           start: go.Spot.Top,
                           end: go.Spot.Bottom
                         }),
@@ -314,8 +316,8 @@
             ),
             new go.Panel('Auto')
               .add(
-                new go.Shape({fill: 'rgba(255, 255, 255, 0.8)', stroke: 'black'}),
-                new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
+                new go.Shape({fill: 'rgba(255, 255, 255, 0.9)', stroke: 'black'}),
+                new go.TextBlock('test', {stroke: 'black', margin: 3, font: FONT})
                   .bind('text')
               )
         )
@@ -379,12 +381,7 @@
                             interval: 1,
                             parameter1: 0,
                             name: 'WAVE1',
-                            fill: new go.Brush('Linear', {
-                              0: 'rgba(163, 183, 202, 0.5)',
-                              1: 'rgba(209, 219, 228, 0.5)',
-                              start: go.Spot.Top,
-                              end: go.Spot.Bottom
-                            }),
+                            fill: makeWaveBrush(),
                             strokeWidth: 0,
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
                             graduatedSkip: (n) => (n % 2)
@@ -395,21 +392,16 @@
                             name: 'WAVE2',
                             graduatedSkip: (n) => (!(n % 2)),
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
-                            fill: new go.Brush('Linear', {
-                              0: 'rgba(163, 183, 202, 0.5)',
-                              1: 'rgba(209, 219, 228, 0.5)',
-                              start: go.Spot.Top,
-                              end: go.Spot.Bottom
-                            }),
+                            fill: makeWaveBrush(),
                             strokeWidth: 0
                           })
                         ),
                       new go.Shape({
                         fill: new go.Brush('Linear', {
-                          0: 'rgba(163, 183, 202, 0.5)',
-                          0.25: 'rgba(117, 147, 175, 0.5)',
-                          0.5: 'rgba(71, 111, 149, 0.5)',
-                          0.75: 'rgba(25, 74, 122, 0.5)',
+                          0: 'rgba(163, 183, 202, 1)',
+                          0.25: 'rgba(117, 147, 175, 1)',
+                          0.5: 'rgba(71, 111, 149, 1)',
+                          0.75: 'rgba(25, 74, 122, 1)',
                           start: go.Spot.Top,
                           end: go.Spot.Bottom
                         }),
@@ -426,8 +418,8 @@
             ),
             new go.Panel('Auto')
               .add(
-                new go.Shape({fill: 'rgba(255, 255, 255, 0.6)', stroke: 'black'}),
-                new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
+                new go.Shape({fill: 'rgba(255, 255, 255, 0.9)', stroke: 'black'}),
+                new go.TextBlock('test', {stroke: 'black', margin: 3, font: FONT})
                   .bind('text')
               )
         )
@@ -457,13 +449,9 @@
             textAlign: 'center',
             margin: 5,
             editable: true,
-            font: '10pt serif'
+            font: FONT
           })
           .bindTwoWay('text'),
-          go.GraphObject.build('Button')
-            .add(
-              new go.TextBlock('what')
-            )
         )
     );
 
@@ -494,7 +482,7 @@
             textAlign: 'center',
             margin: 5,
             editable: true,
-            font: '10pt serif'
+            font: FONT
           })
           .bindTwoWay('text')
         )
@@ -516,7 +504,7 @@
             textAlign: 'center',
             margin: 5,
             editable: true,
-            font: '10pt serif'
+            font: FONT
           })
             .bindTwoWay('text')
             // keep the text upright, even when the whole node has been rotated upside down
@@ -559,7 +547,7 @@
             textAlign: 'center',
             margin: 5,
             editable: true,
-            font: '10pt serif'
+            font: FONT
           })
           .bindTwoWay('text')
         )
@@ -571,7 +559,7 @@
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({fill: 'white', stroke: 'black'}),
-          new go.TextBlock('test', {stroke: 'black', margin: 3, font: '10pt serif'})
+          new go.TextBlock('test', {stroke: 'black', margin: 3, font: FONT})
             .bind('text')
         )
     );
@@ -600,8 +588,8 @@
         new go.Panel('Auto', {visible: false})
           .bind('visible', 'text', (value) => (value && value != ''))
           .add(
-            new go.Shape({fill: 'rgba(255, 255, 255, 0.8)', stroke: 'black', strokeDashArray: [5, 5]}),
-            new go.TextBlock({stroke: 'black', margin: 3, font: '10pt serif'})
+            new go.Shape({fill: 'rgba(255, 255, 255, 0.9)', stroke: 'black', strokeDashArray: [5, 5]}),
+            new go.TextBlock({stroke: 'black', margin: 3, font: FONT})
               .bind('text')
           )
       );
@@ -614,7 +602,8 @@
   var myWavesOffsetAnimation = null;
 
   //parameter1 isn't something you can animate by default :(
-
+  //see documentation for more details: https://gojs.net/latest/api/symbols/AnimationManager.html#defineAnimationEffect
+  //also see the intro page on animations: https://gojs.net/latest/intro/animation.html
   go.AnimationManager.defineAnimationEffect('waves', (obj, startValue, endValue, easing, currentTime, duration, animation) => {
     let value = easing(currentTime, startValue, endValue - startValue, duration);
     obj.parameter1 = value;
@@ -681,7 +670,7 @@
   <p>
     A <em>process flow diagram</em> is commonly used in chemical and process engineering to indicate
     the general flow of plant processes and equipment. A simple SCADA diagram, with animation of the
-    flow along the pipes, is implemented here. It shows a basic distillation process--more information available on
+    flow along the pipes, is implemented here. It shows a basic distillation process — more information available on
     <a href='https://en.wikipedia.org/wiki/Reflux'>Wikipedia</a>.
   </p>
   <p>
@@ -692,7 +681,7 @@
     <a href="../intro/graduatedPanels.html">Graduated Panels</a> for the water effect inside the tanks.
   </p>
   <p>
-    There are two custom animations in this diagram: one that modifies the <a>Shape.strokeDashOffset</a> for each link 
+    There are two custom animations in this diagram: one that modifies the <a>Shape.strokeDashOffset</a> for each link
     and one that uses <a>AnimationManager.defineAnimationEffect</a> to animate the waves in the tanks.
   </p>
   <div>
@@ -702,35 +691,34 @@
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 300px">
-      {"class": "go.GraphLinksModel",
-        "linkFromPortIdProperty":"fromPort",
-        "linkToPortIdProperty":"toPort",
-        "nodeDataArray": [
-          {"key":"Tank1", "category":"Tank", "pos":"0 200", "text":"Feed Tank", "height":100, "width":200, "fillLevel":"0.8"},
-          {"key":"Valve1", "category":"Valve", "pos":"170 200", "text":"Valve", "angle":0, "isOn":true},
-          {"key":"Tank2", "category":"DistillationColumn", "pos":"300 200", "text":"Distillation Column", "height":275, "width":75, "fillLevel":"0.15"},
-          {"key":"Condenser1", "category": "Condenser", "pos":"400 0", "text":"Condenser", "isOn":true},
-          {"key":"Tank3", "category":"Tank", "pos":"600 20", "text":"Reflux Drum", "height":75, "width":150, "fillLevel":"0.1"},
-          {"key":"Pump1", "category":"Pump", "pos":"550 100", "text":"Pump", "isOn":true},
-          {"key":"Boiler1", "category":"Boiler", "pos":"430 370", "text":"Reboiler", "isOn":true},
-          {"key":"Valve2", "category":"Valve", "pos":"550 310", "text":"Valve", "angle":270, "isOn":true},
-          {"key":"Tank4", "category":"Tank", "pos":"700 205", "text":"Holding Tank", "height":50, "width":100, "fillLevel":"0.8"},
-          {"key":"Tank5", "category":"Tank", "pos":"100 420", "text":"Holding Tank", "height":50, "width":100, "fillLevel":"0.8"}
-        ],
-        "linkDataArray": [
-          {"from":"Tank1", "to":"Valve1", "stroke":"rgba(117, 147, 175, 0.5)"},
-          {"from":"Valve1", "to":"Tank2", "stroke":"rgba(117, 147, 175, 0.5)"},
-          {"from":"Tank2", "to":"Condenser1"},
-          {"from":"Condenser1", "to":"Tank3", "stroke":"rgba(117, 147, 175, 0.5)"},
-          {"from":"Tank3", "to":"Pump1", "stroke":"rgba(117, 147, 175, 0.5)"},
-          {"from":"Pump1", "to":"Tank2", "stroke":"rgba(117, 147, 175, 0.5)", "toPort":"TopRight"},
-          {"from":"Pump1", "to":"Tank4", "stroke":"rgba(117, 147, 175, 0.5)", "text":"Overhead product"},
-          {"from":"Tank2", "to":"Boiler1", "stroke":"rgba(117, 147, 175, 0.5)"},
-          {"from":"Boiler1", "to":"Valve2"},
-          {"from":"Valve2", "to":"Tank2"},
-          {"from":"Boiler1", "to":"Tank5", "stroke":"rgba(117, 147, 175, 0.5)", "text":"Bottom product\n(condensate from reboiler)"}
-        ]
-      }
+      { "class": "GraphLinksModel",
+      "linkFromPortIdProperty": "fromPort",
+      "linkToPortIdProperty": "toPort",
+      "nodeDataArray": [
+    {"key":"Tank1","category":"Tank","pos":"0 200","text":"Feed Tank","height":100,"width":200,"fillLevel":"0.8"},
+    {"key":"Valve1","category":"Valve","pos":"180 220","text":"Valve","angle":0,"isOn":true},
+    {"key":"Tank2","category":"DistillationColumn","pos":"300 200","text":"Distillation Column","height":275,"width":75,"fillLevel":"0.15"},
+    {"key":"Condenser1","category":"Condenser","pos":"390 0","text":"Condenser","isOn":true},
+    {"key":"Tank3","category":"Tank","pos":"600 20","text":"Reflux Drum","height":75,"width":150,"fillLevel":"0.1"},
+    {"key":"Pump1","category":"Pump","pos":"550 100","text":"Pump","isOn":true},
+    {"key":"Boiler1","category":"Boiler","pos":"390 360","text":"Reboiler","isOn":true},
+    {"key":"Valve2","category":"Valve","pos":"510 260","text":"Valve","angle":270,"isOn":true},
+    {"key":"Tank4","category":"Tank","pos":"760 187.5","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"},
+    {"key":"Tank5","category":"Tank","pos":"750 380","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"}
+    ],
+      "linkDataArray": [
+    {"from":"Tank1","to":"Valve1","stroke":"rgba(117, 147, 175, 0.5)","points":[101.00000000000006,200,111.00000000000006,200,130.25000000000003,200,130.25000000000003,220.85,149.5,220.85,159.5,220.85]},
+    {"from":"Valve1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)","points":[200.5,220.85,210.5,220.85,218.5850830078125,220.85,218.5850830078125,200,226.670166015625,200,236.670166015625,200]},
+    {"from":"Tank2","to":"Condenser1","points":[300,61.5,300,51.5,300,52,300,52,300,18,403.516845703125,18,413.516845703125,18]},
+    {"from":"Condenser1","to":"Tank3","stroke":"rgba(117, 147, 175, 0.5)","points":[446.516845703125,18,456.516845703125,18,458,18,458,18,514,18,524,20]},
+    {"from":"Tank3","to":"Pump1","stroke":"rgba(117, 147, 175, 0.5)","points":[600,58.500000000000014,600,68.50000000000001,600,79.25,570.5559921264648,79.25,570.5559921264648,90,570.5559921264648,100]},
+    {"from":"Pump1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)","toPort":"TopRight","points":[558.036008100916,116.5,548.036008100916,116.5,548,116.5,548,66.41242789363899,333.587572106361,66.41242789363899,326.5165042944955,73.48349570550447]},
+    {"from":"Pump1","to":"Tank4","stroke":"rgba(117, 147, 175, 0.5)","text":"Overhead product","points":[583.0759761520137,116.5,593.0759761520137,116.5,596,116.5,596,187.5,689,187.5,699,187.5]},
+    {"from":"Tank2","to":"Boiler1","stroke":"rgba(117, 147, 175, 0.5)","points":[300,338.49999999999983,300,348.49999999999983,300,349.2499999999999,417.94995880126953,349.2499999999999,417.94995880126953,350,417.94995880126953,360]},
+    {"from":"Boiler1","to":"Valve2","points":[417.94995880126953,360,417.94995880126953,350,417.94995880126953,320.25,510.85,320.25,510.85,290.5,510.85,280.5]},
+    {"from":"Valve2","to":"Tank2","points":[510.85,239.5,510.85,229.5,510.85,200,438.7438400268555,200,366.63768005371094,200,356.63768005371094,200]},
+    {"from":"Boiler1","to":"Tank5","stroke":"rgba(117, 147, 175, 0.5)","text":"Bottom product\n(condensate from reboiler)","points":[434.44995880126953,376.5,444.44995880126953,376.5,447,376.5,447,376.5,679,376.5,689,380]}
+    ]}
     </textarea>
   </div>
 </div>
@@ -804,6 +792,17 @@ More information can be found in the <a href="../intro/grids.html">GoJS Intro</a
 </p>
             <p>
               <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>SCADA Diagrams</h4>
+<p>
+  SCADA (supervisory control and data acquisition) diagrams are used to display, control, and supervise machines and processes. GoJS is used worldwide to build human-machine interface diagrams in monitoring and control software. GoJS SCADA applications include power plant and refinery monitoring, heavy industry management, building security monitoring, and more.
+</p>
+            <p>
+              <a href="../samples/index.html#scada">Related samples</a>
             </p>
             <hr>
           

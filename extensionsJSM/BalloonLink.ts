@@ -56,7 +56,11 @@ export class BalloonLink extends go.Link {
     return this._base;
   }
   set base(value: number) {
-    this._base = value;
+    const old = this._base;
+    if (old !== value) {
+      this._base = value;
+      this.raiseChangedEvent(go.ChangeType.Property, 'base', this, old, value);
+    }
   }
 
   /**

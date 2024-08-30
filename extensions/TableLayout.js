@@ -53,7 +53,12 @@ class TableLayout extends go.Layout {
         return this._defaultAlignment;
     }
     set defaultAlignment(val) {
-        this._defaultAlignment = val;
+        if (!this._defaultAlignment.equals(val)) {
+            if (!(val instanceof go.Spot))
+                throw new Error("new defaultAlignment value is not a Spot");
+            this._defaultAlignment = val;
+            this.invalidateLayout();
+        }
     }
     /**
      * Gets or sets whether Parts should be stretched in rows (vertically) and in columns (horizontally).
@@ -65,7 +70,10 @@ class TableLayout extends go.Layout {
         return this._defaultStretch;
     }
     set defaultStretch(val) {
-        this._defaultStretch = val;
+        if (this._defaultStretch !== val) {
+            this._defaultStretch = val;
+            this.invalidateLayout();
+        }
     }
     /**
      * This read-only property returns the number of rows in this TableLayout.

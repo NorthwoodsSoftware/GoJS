@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.10
+ * Type definitions for GoJS v3.0.11
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -14944,6 +14944,19 @@ export abstract class GraphObject {
      * @deprecated See {@link Flip.Both}.
      */
     static readonly FlipBoth = Flip.Both;
+    /**
+     * Call this method to notify that some state has changed.
+     *
+     * @param change - specifies the general nature of the change;
+     * permissible values include {@link ChangeType} values.
+     * @param propertyname - names the property that was modified.
+     * @param obj - the object that was modified.
+     * @param oldval - the previous or older value.
+     * @param newval - the next or newer value.
+     * @param oldparam - an optional value that helps describe the older value.
+     * @param newparam - an optional value that helps describe the newer value.
+     */
+    raiseChangedEvent(change: ChangeType, propertyname: string, obj: ObjectData, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
     /**
      * Returns the Point in document coordinates for a given Spot in this object's bounds
      * or for a Point in local coordinates.

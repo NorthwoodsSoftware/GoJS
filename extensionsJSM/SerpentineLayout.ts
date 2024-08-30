@@ -57,8 +57,8 @@ export class SerpentineLayout extends go.Layout {
     return this._spacing;
   }
   set spacing(val: go.Size) {
-    if (!(val instanceof go.Size)) throw new Error('new value for SerpentineLayout.spacing must be a Size, not: ' + val);
     if (!this._spacing.equals(val)) {
+      if (!(val instanceof go.Size)) throw new Error('new value for SerpentineLayout.spacing must be a Size, not: ' + val);
       this._spacing = val;
       this.invalidateLayout();
     }
@@ -104,7 +104,8 @@ export class SerpentineLayout extends go.Layout {
     return this._leftSpot;
   }
   set leftSpot(val) {
-    if (this._leftSpot !== val) {
+    if (!this._leftSpot.equals(val)) {
+      if (!(val instanceof go.Spot)) throw new Error("new leftSpot value is not a Spot" + val);
       this._leftSpot = val;
       this.invalidateLayout();
     }
@@ -119,7 +120,8 @@ export class SerpentineLayout extends go.Layout {
     return this._rightSpot;
   }
   set rightSpot(val) {
-    if (this._rightSpot !== val) {
+    if (!this._rightSpot.equals(val)) {
+      if (!(val instanceof go.Spot)) throw new Error("new rightSpot value is not a Spot" + val);
       this._rightSpot = val;
       this.invalidateLayout();
     }

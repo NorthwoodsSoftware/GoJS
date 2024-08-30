@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Flow PanelLayout | GoJS
+      Flow PanelLayout | GoJS Diagramming Library
     </title>
   </head>
 
@@ -258,7 +258,7 @@
       return new go.Shape(fig, {
         width: 20,
         height: 20,
-        fill: 'transparent',
+        fill: 'white',
         margin: 5,
         background: 'transparent', // to catch a click anywhere in bounds
         strokeWidth: 2,
@@ -269,7 +269,15 @@
             diag.model.set(ad.data, 'figure', fig);
             ad.adornedPart.invalidateConnectedLinks();
           }, 'modified figure');
+        },
+        mouseEnter: (e, obj) => {
+          obj.fill = 'gray';
+        },
+        mouseLeave: (e, obj) => {
+          obj.fill = 'white';
         }
+      }).trigger('fill', {
+        duration: 125
       });
     }
 

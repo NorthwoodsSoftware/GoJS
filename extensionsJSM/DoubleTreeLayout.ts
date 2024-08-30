@@ -53,8 +53,8 @@ export class DoubleTreeLayout extends go.Layout {
     return this._vertical;
   }
   set vertical(value: boolean) {
-    if (typeof value !== 'boolean') throw new Error('new value for DoubleTreeLayout.vertical must be a boolean value.');
     if (this._vertical !== value) {
+      if (typeof value !== 'boolean') throw new Error('new value for DoubleTreeLayout.vertical must be a boolean value.');
       this._vertical = value;
       this.invalidateLayout();
     }
@@ -71,10 +71,10 @@ export class DoubleTreeLayout extends go.Layout {
     return this._directionFunction;
   }
   set directionFunction(value: (node: go.Node) => boolean) {
-    if (typeof value !== 'function') {
-      throw new Error('new value for DoubleTreeLayout.directionFunction must be a function taking a node data object and returning a boolean.');
-    }
     if (this._directionFunction !== value) {
+      if (typeof value !== 'function') {
+        throw new Error('new value for DoubleTreeLayout.directionFunction must be a function taking a node data object and returning a boolean.');
+      }
       this._directionFunction = value;
       this.invalidateLayout();
     }

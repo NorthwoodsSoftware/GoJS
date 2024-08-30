@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Industrial Monitor" />
-<meta property="og:title" content="Industrial Monitor" />
-<meta name="twitter:title" content="Industrial Monitor" />
+<meta itemprop="name" content="Industrial Monitor SCADA diagram" />
+<meta property="og:title" content="Industrial Monitor SCADA diagram" />
+<meta name="twitter:title" content="Industrial Monitor SCADA diagram" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/industrialMonitor.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Industrial Monitor | GoJS
+      Industrial Monitor SCADA diagram | GoJS Diagramming Library
     </title>
   </head>
 
@@ -160,7 +160,7 @@
     const colors = {
       black: '#151c26',
       white: '#ffffff',
-      gray: '#151c26',
+      gray: '#2c323b',
       green: '#7ba961',
       blue: '#00a9b0',
       pink: '#e483a2',
@@ -179,7 +179,7 @@
       .bind('portId', 'p')
       .bind('fromSpot', 'fs')
       .bind('toSpot', 'ts')
-      .add(new go.Shape("Diamond", { width: 10, height: 10, fill: colors.green }));
+      .add(new go.Shape("Diamond", { width: 10, height: 10, fill: colors.white }));
 
     // Base template is a shape with a label
     myDiagram.nodeTemplateMap.add('',
@@ -198,26 +198,23 @@
                 strokeWidth: 1,
                 stroke: 'gray',
                 width: 75, height: 140,
-                fill: new go.Brush("Linear", {
-                  0.3: colors.gray,
-                  0.5: go.Brush.lightenBy(colors.gray, 0.5),
-                  1.0: colors.gray,
-                  start: go.Spot.Left, end: go.Spot.Right
+                fill: new go.Brush('Linear', {
+                  0: go.Brush.darken(colors.white),
+                  0.2: colors.white,
+                  0.33: go.Brush.lighten(colors.white),
+                  0.5: colors.white,
+                  1: go.Brush.darken(colors.white),
+                  start: go.Spot.Left,
+                  end: go.Spot.Right
                 })
               })
                 .bind('width').bind('height')
-                .bind('geometryString', 'tankType')
-                // .bind('stroke', 'color')
-                .bind('fill', 'color', (c) => new go.Brush("Linear", {
-                  0.0: c,
-                  0.5: go.Brush.lightenBy(c, 0.8),
-                  1.0: c,
-                  start: go.Spot.Left, end: go.Spot.Right
-                })),
-              new go.TextBlock({ font: 'bold 13px InterVariable, sans-serif', stroke: colors.black }).bind(
-                'text',
-                'key'
-              )
+                .bind('geometryString', 'tankType'),
+              // tank label
+              new go.TextBlock({
+                font: 'bold 13px InterVariable, sans-serif',
+                stroke: colors.black
+              }).bind('text', 'key')
             )
         )
     );
@@ -231,7 +228,7 @@
             geometryString: labelRight,
             strokeWidth: 4,
             // width: 100, height: 40,
-            fill: colors.gray
+            fill: colors.black
           })
             .bind('width')
             .bind('height')
@@ -258,7 +255,7 @@
         .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.TextBlock({
-            background: colors.gray,
+            background: colors.black,
             alignment: go.Spot.Center,
             textAlign: "center",
             margin: 2,
@@ -286,7 +283,7 @@
         .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.TextBlock({
-            background: colors.gray,
+            background: colors.black,
             alignment: go.Spot.Center,
             textAlign: "center",
             margin: 2,
@@ -312,7 +309,7 @@
         new go.TextBlock("").set(textDefaults).bind('text', 'label'),
         new go.Panel("Spot", { column: 1 })
           .add(
-            new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
+            new go.Shape({ stroke: colors.orange, fill: colors.black, margin: 2, width: 40, height: 15 }),
             new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
           ),
         new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit')
@@ -337,7 +334,7 @@
       new go.Node("Auto")
         .bind("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
-          new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2 }),
+          new go.Shape({ fill: colors.black, stroke: colors.white, strokeWidth: 2 }),
           new go.Panel("Vertical", { margin: 4 })
             .add(
               // Title
@@ -357,14 +354,14 @@
         .add(
           new go.Panel("Horizontal", { margin: 4 })
             .add(
-              new go.Shape({ fill: colors.gray, stroke: colors.white, strokeWidth: 2, geometryString: sensor, portId: '', fromSpot: new go.Spot(0, 0.4, 0, 0) }),
+              new go.Shape({ fill: colors.black, stroke: colors.white, strokeWidth: 2, geometryString: sensor, portId: '', fromSpot: new go.Spot(0, 0.4, 0, 0) }),
               new go.TextBlock({ margin: 2 }).set(textDefaults).bind('text', 'key')
             ),
           new go.Panel("Horizontal")
             .add(
               new go.Panel("Spot", { column: 1 })
                 .add(
-                  new go.Shape({ stroke: colors.orange, fill: colors.gray, margin: 2, width: 40, height: 15 }),
+                  new go.Shape({ stroke: colors.orange, fill: colors.black, margin: 2, width: 40, height: 15 }),
                   new go.TextBlock("", {}).set(textDefaults).bind('text', 'value')
                 ),
               new go.TextBlock("", { column: 2, alignment: go.Spot.Left }).set(textDefaults).bind('text', 'unit')
@@ -381,11 +378,17 @@
         .bind('fromEndSegmentLength', 'fromEndSeg')
         .bind('toEndSegmentLength', 'toEndSeg')
         .add(
-          new go.Shape({ strokeWidth: 7, stroke: colors.gray, isPanelMain: true }),
-          new go.Shape({ strokeWidth: 3, stroke: colors.green, isPanelMain: true })
+          new go.Shape({ strokeWidth: 8, stroke: colors.black, isPanelMain: true }),
+          new go.Shape({ strokeWidth: 3.5, stroke: colors.green, isPanelMain: true })
             .bind('stroke', 'color'),
           new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' }).bind('stroke', 'color').bind('fill', 'color'),
-          new go.TextBlock({ segmentOffset: new go.Point(0, -10), background: colors.gray }).set(textDefaults).bind('text')
+          // Link label, invisible unless text is specified
+          new go.Panel('Auto', { visible: false })
+            .bind('visible', 'text', (t) => true)
+            .add(
+              new go.Shape('RoundedRectangle', { strokeWidth: 1, fill: colors.gray }),
+              new go.TextBlock({ margin: new go.Margin(3,1,1,1) }).set(textDefaults).bind('text')
+          )
         )
     )
 
@@ -429,7 +432,7 @@
           { key: '8', category: 'label', text: 'To MPHE-02', color: colors.yellow, direction: 'left', pos: "0 615" },
           // TANKS
           {
-            key: 'MHWT', tankType: tank3, color: colors.gray, pos: "287 19", ports: [
+            key: 'MHWT', tankType: tank3, color: colors.black, pos: "287 19", ports: [
               { p: 'BL1', a: new go.Spot(0, 1, 0, -50) },
               { p: 'BL2', a: new go.Spot(0, 1, 0, -30) },
               { p: 'BL3', a: new go.Spot(0, 1, 0, -10) },
@@ -438,14 +441,14 @@
             ]
           },
           {
-            key: 'MSF', color: colors.gray, pos: "244 418", ports: [
+            key: 'MSF', color: colors.black, pos: "244 418", ports: [
               { p: 'TL', a: new go.Spot(0, 0, 0, 30) },
               { p: 'BR', a: new go.Spot(1, 1, 0, -50), fs: go.Spot.Right },
               { p: 'B', a: new go.Spot(0.5, 1, 0, 0) }
             ]
           },
           {
-            key: 'ME-01', color: colors.gray, tankType: tank2, pos: "297 261", width: 70, height: 120, ports: [
+            key: 'ME-01', color: colors.black, tankType: tank2, pos: "297 261", width: 70, height: 120, ports: [
               { p: 'TL', a: new go.Spot(0, 0, 0, 30) },
               { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
               { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30) },
@@ -453,7 +456,7 @@
             ]
           },
           {
-            key: 'MRM', color: colors.gray, pos: "529 370", width: 60, height: 80, ports: [
+            key: 'MRM', color: colors.black, pos: "529 370", width: 60, height: 80, ports: [
               { p: 'T1', a: new go.Spot(0, 0, 10, 0), ts: go.Spot.Top },
               { p: 'T2', a: new go.Spot(0, 0, 30, 0), ts: go.Spot.Top },
               { p: 'T3', a: new go.Spot(0, 0, 50, 0), ts: go.Spot.Top },
@@ -461,18 +464,18 @@
             ]
           },
           {
-            key: 'MZM', color: colors.gray, pos: "680 440", width: 50, height: 80, ports: [
+            key: 'MZM', color: colors.black, pos: "680 440", width: 50, height: 80, ports: [
               { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
               { p: 'B', a: new go.Spot(0.5, 1, 0, 0), ts: go.Spot.Bottom }
             ]
           },
           {
-            key: 'MPAT', color: colors.gray, pos: "865 30", ports: [
+            key: 'MPAT', color: colors.black, pos: "865 30", ports: [
               { p: 'L', a: new go.Spot(0, 0.5, 0, 0), fs: go.Spot.Left }
             ]
           },
           {
-            key: 'MPHE-01', color: colors.gray, tankType: tank2, pos: "860 282", width: 70, height: 120, ports: [
+            key: 'MPHE-01', color: colors.black, tankType: tank2, pos: "860 282", width: 70, height: 120, ports: [
               { p: 'TL', a: new go.Spot(0, 0, 0, 30), fs: go.Spot.LeftSide },
               { p: 'BL', a: new go.Spot(0, 1, 0, -30) },
               { p: 'TR', fs: go.Spot.RightSide, a: new go.Spot(1, 0, 0, 30), ts: go.Spot.RightSide },
@@ -480,7 +483,7 @@
             ]
           },
           {
-            key: 'MHT', color: colors.gray, pos: "769 440", ports: [
+            key: 'MHT', color: colors.black, pos: "769 440", ports: [
               { p: 'T', a: new go.Spot(0.5, 0, 0, 0), fs: go.Spot.Top },
               { p: 'B', a: new go.Spot(0.5, 1, 0, 0), fs: go.Spot.Bottom },
               { p: 'SensorB', a: new go.Spot(1, 0.7, 0, 0), type: 'sensor', ts: go.Spot.RightSide }
@@ -705,6 +708,17 @@ More information can be found in the <a href="../intro/itemArrays.html">GoJS Int
 </p>
             <p>
               <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>SCADA Diagrams</h4>
+<p>
+  SCADA (supervisory control and data acquisition) diagrams are used to display, control, and supervise machines and processes. GoJS is used worldwide to build human-machine interface diagrams in monitoring and control software. GoJS SCADA applications include power plant and refinery monitoring, heavy industry management, building security monitoring, and more.
+</p>
+            <p>
+              <a href="../samples/index.html#scada">Related samples</a>
             </p>
             <hr>
           

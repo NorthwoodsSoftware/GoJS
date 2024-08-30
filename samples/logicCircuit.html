@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Logic Circuit" />
-<meta property="og:title" content="Logic Circuit" />
-<meta name="twitter:title" content="Logic Circuit" />
+<meta itemprop="name" content="Logic Circuit Diagram" />
+<meta property="og:title" content="Logic Circuit Diagram" />
+<meta name="twitter:title" content="Logic Circuit Diagram" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/logicCircuit.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Logic Circuit | GoJS
+      Logic Circuit Diagram | GoJS Diagramming Library
     </title>
   </head>
 
@@ -142,7 +142,7 @@
     });
 
     const avoidLinksRouter = new AvoidsLinksRouter();
-    avoidLinksRouter.epsilonDistance = 4; // increase distance between links
+    avoidLinksRouter.epsilonDistance = 6; // increase distance between links
     myDiagram.routers.push(avoidLinksRouter);
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
@@ -173,7 +173,7 @@
       layerName: 'Background'
     })
       .bindObject('isShadowed', 'isSelected')
-      .add(new go.Shape({ name: 'SHAPE', strokeWidth: 4, stroke: red }));
+      .add(new go.Shape({ name: 'SHAPE', strokeWidth: 3, stroke: red }));
 
     // node template helpers
     const sharedToolTip = go.GraphObject.build('ToolTip', {
@@ -209,12 +209,11 @@
 
     function portStyle(input, spot) {
       return {
-        figure: 'Circle',
-
-        desiredSize: new go.Size(8, 8),
-        fill: gray,
-        stroke: darkGray,
-        strokeWidth: 2,
+        figure: 'Rectangle',
+        desiredSize: new go.Size(4, 4),
+        fill: darkGray,
+        stroke: 'transparent',
+        strokeWidth: 6,
         fromLinkable: !input,
         fromSpot: spot ?? new go.Spot(1, 0.5, -3, 0),
         toSpot: spot ?? new go.Spot(0, 0.5, 3, 0),
@@ -260,7 +259,7 @@
           strokeWidth: 0
         })
           .bind('fill', 'isOn', isOn => isOn ? green2 : red2),
-        new go.Shape('Rectangle', portStyle(false)) // the only port
+        new go.Shape(portStyle(false)) // the only port
           .set({
             opacity: 0,
             portId: '',
@@ -336,14 +335,16 @@
           }
         }),
         // ports
-        new go.Shape('Rectangle', portStyle(false)) // the only port
+        new go.Shape(portStyle(false)) // the only port
           .set({
             portId: 'out',
+            desiredSize: new go.Size(5, 5),
             alignment: new go.Spot(1, 0.5)
           }),
-        new go.Shape('Rectangle', portStyle(true)) // the only port
+        new go.Shape(portStyle(true)) // the only port
           .set({
             portId: 'in',
+            desiredSize: new go.Size(5, 5),
             alignment: new go.Spot(0, 0.5)
           })
       );
@@ -394,7 +395,7 @@
               })
                 .bindObject('shadowVisible', 'isSelected')
           ),
-        new go.Shape('Rectangle', portStyle(true, new go.Spot(0.5, 1, 0, -3))).set({
+        new go.Shape(portStyle(true, new go.Spot(0.5, 1, 0, -3))).set({
           // the only port
           portId: '',
           alignment: new go.Spot(0.5, 1)
@@ -404,15 +405,15 @@
     const andTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('AndGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
           alignment: new go.Spot(1, 0.5)
         })
@@ -421,15 +422,15 @@
     const orTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('OrGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0.16, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0.16, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
           alignment: new go.Spot(1, 0.5)
         })
@@ -438,15 +439,15 @@
     const xorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('XorGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0.26, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0.26, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
           alignment: new go.Spot(1, 0.5)
         })
@@ -455,16 +456,17 @@
     const norTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('NorGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0.16, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0.16, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
+          opacity: 0,
           alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
@@ -472,16 +474,17 @@
     const xnorTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('XnorGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0.26, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0.26, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
+          opacity: 0,
           alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
@@ -489,16 +492,17 @@
     const nandTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('NandGate', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in1',
           alignment: new go.Spot(0, 0.3)
         }),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in2',
           alignment: new go.Spot(0, 0.7)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
+          opacity: 0,
           alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
@@ -506,14 +510,13 @@
     const notTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('Inverter', shapeStyle()),
-        new go.Shape('Rectangle', portStyle(true)).set({
+        new go.Shape(portStyle(true)).set({
           portId: 'in',
           alignment: new go.Spot(0, 0.5)
         }),
-        new go.Shape('Rectangle', portStyle(false)).set({
+        new go.Shape(portStyle(false)).set({
           portId: 'out',
-          // opacity: 0,
-          // desiredSize: new go.Size(0,0),
+          opacity: 0,
           alignment: new go.Spot(1, 0.5, -5, 0)
         })
       );
@@ -700,7 +703,7 @@
       id="palette"
       style="
         width: 100px;
-        height: 500px;
+        height: 600px;
         margin-right: 2px;
         background-color: #f3f4f6;
         border: solid 1px black;
@@ -711,13 +714,21 @@
     Try clicking on the switch or the battery to toggle them.
   </p>
   <p>
-    The Logic Circuit sample allows the user to make circuits using gates and wires, which are
+    This logic circuit implements a three-bit adder (see
+    <a href="https://en.wikipedia.org/wiki/Adder_(electronics)">Wikipedia</a> for more information).
+    The switches connected to the batteries on the left side of the diagram are the inputs, and the
+    lamps at the top are the outputs. By opening or closing the switches, different numbers can be
+    added (up to 7+7=14!), with the lamps reflecting the sum of those numbers in real time.
+  </p>
+  <p>
+    This sample allows the user to make circuits using gates and wires, which are
     updated whenever a Link is modified and at intervals by a looped setTimeout function.
   </p>
   <p>
     The <b>updateStates</b> function calls a function to update each node according to type, which
     uses the color of the links into the node to determine the color of those exiting it. Red means
-    zero or false; green means one or true. Double-clicking an input node will toggle true/false.
+    zero or false; green means one or true. Clicking an input node (battery or switch) will toggle
+    true/false.
   </p>
   <p>
     Mouse over a node to see its category, displayed using a shared <a>Adornment</a> set as the
@@ -738,44 +749,44 @@
       "linkToPortIdProperty": "toPort",
       "nodeDataArray": [
     {"category":"xor","key":-1,"loc":"-230 -860"},
-    {"category":"xor","key":-2,"loc":"-150 -880"},
+    {"category":"xor","key":-2,"loc":"-120 -880"},
     {"category":"and","key":-3,"loc":"-150 -810"},
     {"category":"and","key":-4,"loc":"-150 -740"},
-    {"category":"switch","isOn":true,"key":-5,"loc":"-310 -880"},
-    {"category":"switch","isOn":true,"key":-6,"loc":"-310 -860"},
+    {"category":"switch","isOn":true,"key":-5,"loc":"-340 -890"},
+    {"category":"switch","isOn":true,"key":-6,"loc":"-320 -710"},
     {"category":"or","key":-7,"loc":"-80 -780"},
-    {"category":"or","key":-8,"loc":"60 -550"},
-    {"category":"switch","isOn":true,"key":-9,"loc":"-170 -630"},
-    {"category":"switch","isOn":true,"key":-10,"loc":"-170 -650"},
+    {"category":"or","key":-8,"loc":"80 -550"},
+    {"category":"switch","isOn":true,"key":-9,"loc":"-210 -620"},
+    {"category":"switch","isOn":true,"key":-10,"loc":"-190 -680"},
     {"category":"and","key":-11,"loc":"-10 -510"},
     {"category":"and","key":-12,"loc":"-10 -580"},
     {"category":"xor","key":-13,"loc":"-10 -650"},
     {"category":"xor","key":-14,"loc":"-90 -630"},
-    {"category":"or","key":-15,"loc":"200 -330"},
-    {"category":"switch","isOn":true,"key":-16,"loc":"-20 -410"},
-    {"category":"switch","isOn":true,"key":-17,"loc":"-20 -430"},
-    {"category":"and","key":-18,"loc":"140 -290"},
-    {"category":"and","key":-19,"loc":"140 -360"},
-    {"category":"xor","key":-20,"loc":"140 -430"},
-    {"category":"xor","key":-21,"loc":"60 -410"},
+    {"category":"or","key":-15,"loc":"220 -370"},
+    {"category":"switch","isOn":true,"key":-16,"loc":"-130 -390"},
+    {"category":"switch","isOn":true,"key":-17,"loc":"-100 -440"},
+    {"category":"and","key":-18,"loc":"30 -370"},
+    {"category":"and","key":-19,"loc":"150 -420"},
+    {"category":"xor","key":-20,"loc":"150 -500"},
+    {"category":"xor","key":-21,"loc":"50 -450"},
     {"category":"output","key":-22,"loc":"40 -950","isOn":true},
     {"category":"output","key":-23,"loc":"90 -950","isOn":true},
     {"category":"output","key":-24,"loc":"140 -950","isOn":false},
     {"category":"output","key":-25,"loc":"-10 -950","isOn":true},
-    {"category":"switch","isOn":true,"key":-26,"loc":"-420 -690"},
-    {"category":"switch","isOn":true,"key":-27,"loc":"-420 -660"},
-    {"category":"switch","isOn":true,"key":-28,"loc":"-420 -630"},
-    {"category":"switch","isOn":true,"key":-29,"loc":"-420 -510"},
-    {"category":"switch","isOn":true,"key":-30,"loc":"-420 -480"},
-    {"category":"switch","isOn":true,"key":-31,"loc":"-420 -450"},
-    {"category":"input","isOn":true,"key":-32,"loc":"-490 -640"},
-    {"category":"input","isOn":true,"key":-33,"loc":"-490 -460"},
-    {"category":"input","isOn":false,"key":-34,"loc":"-220 -790"}
+    {"category":"switch","isOn":true,"key":-26,"loc":"-430 -690"},
+    {"category":"switch","isOn":true,"key":-27,"loc":"-430 -660"},
+    {"category":"switch","isOn":true,"key":-28,"loc":"-430 -630"},
+    {"category":"switch","isOn":true,"key":-29,"loc":"-430 -510"},
+    {"category":"switch","isOn":true,"key":-30,"loc":"-430 -480"},
+    {"category":"switch","isOn":true,"key":-31,"loc":"-430 -450"},
+    {"category":"input","isOn":true,"key":-32,"loc":"-520 -640"},
+    {"category":"input","isOn":true,"key":-33,"loc":"-520 -460"},
+    {"category":"input","isOn":false,"key":-34,"loc":"-480 -910"}
     ],
       "linkDataArray": [
     {"from":-5,"to":-1,"fromPort":"out","toPort":"in1"},
     {"from":-6,"to":-1,"fromPort":"out","toPort":"in2"},
-    {"from":-1,"to":-2,"fromPort":"out","toPort":"in1"},
+    {"from":-1,"to":-2,"fromPort":"out","toPort":"in2"},
     {"from":-1,"to":-3,"fromPort":"out","toPort":"in1"},
     {"from":-6,"to":-4,"fromPort":"out","toPort":"in2"},
     {"from":-3,"to":-7,"fromPort":"out","toPort":"in1"},
@@ -810,7 +821,6 @@
     {"from":-33,"to":-31,"fromPort":"","toPort":"in"},
     {"from":-26,"to":-5,"fromPort":"out","toPort":"in"},
     {"from":-29,"to":-6,"fromPort":"out","toPort":"in"},
-    {"from":-34,"to":-2,"fromPort":"","toPort":"in2"},
     {"from":-34,"to":-3,"fromPort":"","toPort":"in2"},
     {"from":-27,"to":-10,"fromPort":"out","toPort":"in"},
     {"from":-30,"to":-9,"fromPort":"out","toPort":"in"},
@@ -818,12 +828,12 @@
     {"from":-31,"to":-16,"fromPort":"out","toPort":"in"},
     {"from":-10,"to":-11,"fromPort":"out","toPort":"in1"},
     {"from":-17,"to":-18,"fromPort":"out","toPort":"in1"},
-    {"from":-5,"to":-4,"fromPort":"out","toPort":"in1"}
+    {"from":-5,"to":-4,"fromPort":"out","toPort":"in1"},
+    {"from":-34,"to":-2,"fromPort":"","toPort":"in1"}
     ]}
     </textarea>
   </div>
 </div>
-
           
         </div>
         <!-- * * * * * * * * * * * * * -->

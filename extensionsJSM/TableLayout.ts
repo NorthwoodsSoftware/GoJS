@@ -61,7 +61,11 @@ export class TableLayout extends go.Layout {
     return this._defaultAlignment;
   }
   set defaultAlignment(val: go.Spot) {
-    this._defaultAlignment = val;
+    if (!this._defaultAlignment.equals(val)) {
+      if (!(val instanceof go.Spot)) throw new Error("new defaultAlignment value is not a Spot");
+      this._defaultAlignment = val;
+      this.invalidateLayout();
+    }
   }
 
   /**
@@ -74,7 +78,10 @@ export class TableLayout extends go.Layout {
     return this._defaultStretch;
   }
   set defaultStretch(val: go.Stretch) {
-    this._defaultStretch = val;
+    if (this._defaultStretch !== val) {
+      this._defaultStretch = val;
+      this.invalidateLayout();
+    }
   }
 
   /**

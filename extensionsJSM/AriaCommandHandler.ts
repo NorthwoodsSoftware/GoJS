@@ -336,7 +336,8 @@ export class AriaCommandHandler extends go.CommandHandler {
    * If there is no node is checked direction does an aria call letting the user know
    */
   private _arrowKeySelectTree() {
-    var _a, _b, _c, _d;
+    let _a: go.Node | null = null;
+    let _c: Array<go.Node> | null = null;
     let node = this.diagram.selection.first();
     const e = this.diagram.lastInput;
     if (node === null) {
@@ -353,13 +354,13 @@ export class AriaCommandHandler extends go.CommandHandler {
     if (!(node instanceof go.Node)) return;
     let nextPart = null;
     if (e.code === 'ArrowUp'){
-      nextPart = (_a = node.findTreeParentNode()) !== null && _a !== void 0 ? _a : 'No parent node';
+      nextPart = (_a = node.findTreeParentNode()) ? _a : 'No parent node';
     } else if (e.code === 'ArrowDown') {
-      nextPart = (_b = node.findTreeChildrenNodes().first()) !== null && _b !== void 0 ? _b : 'No child node';
+      nextPart = (_a = node.findTreeChildrenNodes().first()) ? _a : 'No child node';
     } else if (e.code === 'ArrowLeft') {
-      nextPart = (_c = this._getPreviousSiblingNodes(node)) !== null && _c !== void 0 ? _c[0] : 'No previous sibling node';
+      nextPart = (_c = this._getPreviousSiblingNodes(node)) ? _c[0] : 'No previous sibling node';
     } else if (e.code === 'ArrowRight') {
-      nextPart = (_d = this._getNextSiblingNodes(node)) !== null && _d !== void 0 ? _d[0] : 'No next sibling node';
+      nextPart = (_c = this._getNextSiblingNodes(node)) ? _c[0] : 'No next sibling node';
     }
     if (nextPart === null) return;
     if (typeof nextPart === 'string') this.callAria(nextPart);

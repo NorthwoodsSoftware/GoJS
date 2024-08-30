@@ -50,7 +50,11 @@ export class BalloonLink extends go.Link {
         return this._base;
     }
     set base(value) {
-        this._base = value;
+        const old = this._base;
+        if (old !== value) {
+            this._base = value;
+            this.raiseChangedEvent(go.ChangeType.Property, 'base', this, old, value);
+        }
     }
     /**
      * Produce a Geometry from the Link's route that draws a "balloon" shape around the {@link go.Link.fromNode}

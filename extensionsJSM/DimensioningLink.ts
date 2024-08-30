@@ -74,8 +74,11 @@ export class DimensioningLink extends go.Link {
     return this._direction;
   }
   set direction(val: number) {
+    const old = this._direction;
     if (isNaN(val) || val === 0 || val === 90 || val === 180 || val === 270) {
       this._direction = val;
+      this.raiseChangedEvent(go.ChangeType.Property, 'direction', this, old, val);
+      this.invalidateRoute();
     } else {
       throw new Error('DimensioningLink: invalid new direction: ' + val);
     }
@@ -92,7 +95,12 @@ export class DimensioningLink extends go.Link {
     return this._extension;
   }
   set extension(val: number) {
-    this._extension = val;
+    const old = this._extension;
+    if (old !== val) {
+      this._extension = val;
+      this.raiseChangedEvent(go.ChangeType.Property, 'extension', this, old, val);
+      this.invalidateRoute();
+    }
   }
 
   /**
@@ -105,8 +113,11 @@ export class DimensioningLink extends go.Link {
     return this._inset;
   }
   set inset(val: number) {
-    if (val >= 0) {
+    const old = this._inset;
+    if (old !== val && val >= 0) {
       this._inset = val;
+      this.raiseChangedEvent(go.ChangeType.Property, 'inset', this, old, val);
+      this.invalidateRoute();
     } else {
       throw new Error('DimensionLink: invalid new inset: ' + val);
     }
@@ -121,8 +132,11 @@ export class DimensioningLink extends go.Link {
     return this._gap;
   }
   set gap(val: number) {
-    if (val >= 0) {
+    const old = this._gap;
+    if (old !== val && val >= 0) {
       this._gap = val;
+      this.raiseChangedEvent(go.ChangeType.Property, 'gap', this, old, val);
+      this.invalidateRoute();
     } else {
       throw new Error('DimensionLink: invalid new gap: ' + val);
     }

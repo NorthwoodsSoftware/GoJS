@@ -305,7 +305,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._packMode;
     }
     set packMode(value) {
-        if (value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit) {
+        if (this._packMode !== value && value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit) {
             this._packMode = value;
             this.invalidateLayout();
         }
@@ -320,7 +320,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._sortMode;
     }
     set sortMode(value) {
-        if (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area) {
+        if (this._sortMode !== value && value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area) {
             this._sortMode = value;
             this.invalidateLayout();
         }
@@ -335,7 +335,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._sortOrder;
     }
     set sortOrder(value) {
-        if (value === SortOrder.Descending || value === SortOrder.Ascending) {
+        if (this._sortOrder !== value && value === SortOrder.Descending || value === SortOrder.Ascending) {
             this._sortOrder = value;
             this.invalidateLayout();
         }
@@ -365,8 +365,9 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._comparer;
     }
     set comparer(value) {
-        if (typeof value === 'function') {
+        if (this._comparer !== value && typeof value === 'function') {
             this._comparer = value;
+            this.invalidateLayout();
         }
     }
     /**
@@ -383,7 +384,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._aspectRatio;
     }
     set aspectRatio(value) {
-        if (this.isNumeric(value) && isFinite(value) && value > 0) {
+        if (this._aspectRatio !== value && this.isNumeric(value) && isFinite(value) && value > 0) {
             this._aspectRatio = value;
             this.invalidateLayout();
         }
@@ -438,7 +439,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._spacing;
     }
     set spacing(value) {
-        if (this.isNumeric(value) && isFinite(value)) {
+        if (this._spacing !== value && this.isNumeric(value) && isFinite(value)) {
             this._spacing = value;
             this.invalidateLayout();
         }
@@ -458,7 +459,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._hasCircularNodes;
     }
     set hasCircularNodes(value) {
-        if (typeof value === typeof true && value !== this._hasCircularNodes) {
+        if (this._hasCircularNodes !== value && typeof value === typeof true && value !== this._hasCircularNodes) {
             this._hasCircularNodes = value;
             this.invalidateLayout();
         }
@@ -536,7 +537,7 @@ export class VirtualizedPackedLayout extends go.Layout {
         return this._arrangesToOrigin;
     }
     set arrangesToOrigin(value) {
-        if (typeof value === typeof true && value !== this._arrangesToOrigin) {
+        if (this._arrangesToOrigin !== value && typeof value === typeof true && value !== this._arrangesToOrigin) {
             this._arrangesToOrigin = value;
             this.invalidateLayout();
         }

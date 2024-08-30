@@ -249,7 +249,7 @@ export class ArrangingLayout extends go.Layout {
    * This method is called just before the primaryLayout is performed so that
    * there can be adjustments made to the primaryLayout, if desired.
    * By default this method makes no adjustments to the primaryLayout.
-   * @param primaryLayout - the sideLayout that may be modified for the results of the primaryLayout
+   * @param primaryLayout - the primaryLayout that may be modified for the achieving different results from that layout
    * @param mainColl - the Nodes and Links to be laid out by primaryLayout after being separated into subnetworks
    */
   preparePrimaryLayout(primaryLayout: go.Layout, mainColl: go.Set<go.Part>) {
@@ -341,8 +341,8 @@ export class ArrangingLayout extends go.Layout {
     return this._filter;
   }
   set filter(val: ((part: go.Part) => boolean) | null) {
-    if (val && typeof val !== 'function') throw new Error('new value for ArrangingLayout.filter must be a function, not: ' + val);
     if (this._filter !== val) {
+      if (val && typeof val !== 'function') throw new Error('new value for ArrangingLayout.filter must be a function, not: ' + val);
       this._filter = val;
       this.invalidateLayout();
     }
@@ -362,21 +362,20 @@ export class ArrangingLayout extends go.Layout {
     return this._side;
   }
   set side(val: go.Spot) {
-    if (
-      !(val instanceof go.Spot) ||
-      !(
-        val.isSide() ||
-        val.equals(go.Spot.Top) ||
-        val.equals(go.Spot.Right) ||
-        val.equals(go.Spot.Bottom) ||
-        val.equals(go.Spot.Left)
-      )
-    ) {
-      throw new Error(
-        'new value for ArrangingLayout.side must be a side or middle-side Spot, not: ' + val
-      );
-    }
     if (!this._side.equals(val)) {
+      if (!(val instanceof go.Spot) ||
+          !(
+            val.isSide() ||
+            val.equals(go.Spot.Top) ||
+            val.equals(go.Spot.Right) ||
+            val.equals(go.Spot.Bottom) ||
+            val.equals(go.Spot.Left)
+          )
+        ) {
+        throw new Error(
+          'new value for ArrangingLayout.side must be a side or middle-side Spot, not: ' + val
+        );
+      }
       this._side = val.copy();
       this.invalidateLayout();
     }
@@ -390,8 +389,8 @@ export class ArrangingLayout extends go.Layout {
     return this._spacing;
   }
   set spacing(val: go.Size) {
-    if (!(val instanceof go.Size)) throw new Error('new value for ArrangingLayout.spacing must be a Size, not: ' + val);
     if (!this._spacing.equals(val)) {
+      if (!(val instanceof go.Size)) throw new Error('new value for ArrangingLayout.spacing must be a Size, not: ' + val);
       this._spacing = val.copy();
       this.invalidateLayout();
     }
@@ -406,9 +405,11 @@ export class ArrangingLayout extends go.Layout {
     return this._primaryLayout;
   }
   set primaryLayout(val: go.Layout) {
-    if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
-    this._primaryLayout = val;
-    this.invalidateLayout();
+    if (this._primaryLayout !== val) {
+      if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      this._primaryLayout = val;
+      this.invalidateLayout();
+    }
   }
 
   /**
@@ -421,9 +422,11 @@ export class ArrangingLayout extends go.Layout {
     return this._arrangingLayout;
   }
   set arrangingLayout(val: go.Layout | null) {
-    if (val && !(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
-    this._arrangingLayout = val;
-    this.invalidateLayout();
+    if (this._arrangingLayout !== val) {
+      if (val && !(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      this._arrangingLayout = val;
+      this.invalidateLayout();
+    }
   }
 
   /**
@@ -435,8 +438,10 @@ export class ArrangingLayout extends go.Layout {
     return this._sideLayout;
   }
   set sideLayout(val: go.Layout) {
-    if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
-    this._sideLayout = val;
-    this.invalidateLayout();
+    if (this._sideLayout !== val) {
+      if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      this._sideLayout = val;
+      this.invalidateLayout();
+    }
   }
 }
