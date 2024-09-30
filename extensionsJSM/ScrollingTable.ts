@@ -34,6 +34,7 @@ import * as go from 'gojs';
 go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
   const repeat = go.GraphObject.takeBuilderArgument(args, 50, (x) => typeof x === 'number');
   const delay = go.GraphObject.takeBuilderArgument(args, 500, (x) => typeof x === 'number');
+
   // some internal helper functions for auto-repeating
   function delayClicking(e: go.InputEvent, obj: any) {
     endClicking(e, obj);
@@ -61,23 +62,9 @@ go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
   }
 
   const button = go.GraphObject.build('Button');
-  // override the normal button actions
-  const btndown = button.actionDown;
-  const btnup = button.actionUp;
-  const btncancel = button.actionCancel;
-  button.actionDown = (e, btn) => {
-    delayClicking(e, btn);
-    if (btndown) btndown(e, btn);
-  };
-  button.actionUp = (e, btn) => {
-    endClicking(e, btn);
-    if (btnup) btnup(e, btn);
-  };
-  button.actionCancel = (e, btn) => {
-    endClicking(e, btn);
-    if (btncancel) btncancel(e, btn);
-  };
-  (go.GraphObject.build("Button") as go.Panel).add(new go.Panel());
+  button.actionDown = (e, btn) => delayClicking(e, btn);
+  button.actionUp = (e, btn) => endClicking(e, btn);
+  button.actionCancel = (e, btn) => endClicking(e, btn);
   return button;
 });
 
@@ -278,7 +265,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         .addRowDefinition(2, { sizing: go.Sizing.None })
         .add(
           // the scroll up button
-          (go.GraphObject.build('AutoRepeatButton', {
+          go.GraphObject.build<go.Panel>('AutoRepeatButton', {
               name: 'UP',
               row: 0,
               opacity: 0.0,
@@ -294,7 +281,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
                 e.handled = true;
                 incrTableIndex(obj, -1);
               }
-            }) as go.Panel)
+            })
             .add(
               new go.Shape('TriangleUp', {
                   strokeWidth: 0,
@@ -325,7 +312,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
                 }
               }),
             // the scroll down button
-            (go.GraphObject.build('AutoRepeatButton', {
+            go.GraphObject.build<go.Panel>('AutoRepeatButton', {
                 name: 'DOWN',
                 row: 2,
                 opacity: 0.0,
@@ -341,7 +328,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
                   e.handled = true;
                   incrTableIndex(obj, +1);
                 }
-              }) as go.Panel)
+              })
               .add(
                 new go.Shape('TriangleDown', {
                     strokeWidth: 0,

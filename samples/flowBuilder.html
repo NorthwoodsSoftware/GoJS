@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Flow Builder" />
-<meta property="og:title" content="Flow Builder" />
-<meta name="twitter:title" content="Flow Builder" />
+<meta itemprop="name" content="Flow Builder for Building Acyclic Graphs" />
+<meta property="og:title" content="Flow Builder for Building Acyclic Graphs" />
+<meta name="twitter:title" content="Flow Builder for Building Acyclic Graphs" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/flowBuilder.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Flow Builder | GoJS Diagramming Library
+      Flow Builder for Building Acyclic Graphs | GoJS Diagramming Library
     </title>
   </head>
 
@@ -149,19 +149,14 @@
       }
     });
 
-    const graygrad = new go.Brush('Linear', {
-        0: 'white',
-        0.1: 'whitesmoke',
-        0.9: 'whitesmoke',
-        1: 'lightgray'
-      });
+    const graygrad = new go.Brush('Linear', { 0: 'white', 0.1: 'whitesmoke', 0.9: 'whitesmoke', 1: 'lightgray' });
 
     myDiagram.nodeTemplate = new go.Node('Spot', { // the default node template
       selectionAdorned: false,
       textEditable: true,
       locationObjectName: 'BODY'
     })
-      .bind('location', 'loc', go.Point.parse, go.Point.stringify)
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       // the main body consists of a Rectangle surrounding the text
       .add(
         new go.Panel('Auto', { name: 'BODY' })
@@ -514,12 +509,13 @@
   // Define a custom tool that changes a drag operation on a Link to a relinking operation,
   // but that operates like a normal DraggingTool otherwise.
   class DragLinkingTool extends go.DraggingTool {
-    constructor() {
+    constructor(init) {
       super();
       this.isGridSnapEnabled = true;
       this.isGridSnapRealtime = false;
       this.gridSnapCellSize = new go.Size(182, 1);
       this.gridSnapOrigin = new go.Point(5.5, 0);
+      if (init) Object.assign(this, init);
     }
 
     // Handle dragging a link specially -- by starting the RelinkingTool on that Link

@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Interactive Flowchart Diagram" />
-<meta property="og:title" content="Interactive Flowchart Diagram" />
-<meta name="twitter:title" content="Interactive Flowchart Diagram" />
+<meta itemprop="name" content="Interactive Diagram for Building Flowcharts" />
+<meta property="og:title" content="Interactive Diagram for Building Flowcharts" />
+<meta name="twitter:title" content="Interactive Diagram for Building Flowcharts" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/flowchart.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Interactive Flowchart Diagram | GoJS Diagramming Library
+      Interactive Diagram for Building Flowcharts | GoJS Diagramming Library
     </title>
   </head>
 
@@ -312,28 +312,24 @@
           name: 'HIGHLIGHT'
         }),
         // the link path shape
-        new go.Shape({ isPanelMain: true, strokeWidth: 2 }).theme('stroke', 'link'),
+        new go.Shape({ isPanelMain: true, strokeWidth: 2 })
+          .theme('stroke', 'link'),
         // the arrowhead
-        new go.Shape({ toArrow: 'standard', strokeWidth: 0, scale: 1.5 }).theme('fill', 'link'),
+        new go.Shape({ toArrow: 'standard', strokeWidth: 0, scale: 1.5 })
+          .theme('fill', 'link'),
         // the link label
         new go.Panel('Auto', { visible: false })
           .bind('visible', 'text', (t) => typeof t === 'string' && t.length > 0) // only shown if there is text
           .add(
             // a gradient that fades into the background
-            new go.Shape('Ellipse', { strokeWidth: 0 }).theme('fill', 'div', null, null, (c) => {
-              return new go.Brush(go.BrushType.Radial, {
-                colorStops: new go.Map([
-                  { key: 0, value: c },
-                  { key: 0.5, value: `${c}00` }
-                ])
-              });
-            }),
+            new go.Shape('Ellipse', { strokeWidth: 0 })
+              .theme('fill', 'div', null, null, c => new go.Brush("Radial", { 0: c, 0.5: `${c}00` })),
             new go.TextBlock({
-              name: 'LABEL',
-              font: '9pt Figtree, sans-serif',
-              margin: 3,
-              editable: true
-            })
+                name: 'LABEL',
+                font: '9pt Figtree, sans-serif',
+                margin: 3,
+                editable: true
+              })
               .theme('stroke', 'bgText')
               .bindTwoWay('text')
           )
@@ -479,6 +475,7 @@
       Diagram Model saved in JSON format:
       <textarea id="mySavedModel" style="width: 100%; height: 375px">
 { "class": "GraphLinksModel",
+  "pointsDigits": 0,
   "nodeDataArray": [
     {"key":-1,"category":"Start","loc":"-237 41","text":"Start"},
     {"key":-2,"category":"End","loc":"277 696","text":"End"},

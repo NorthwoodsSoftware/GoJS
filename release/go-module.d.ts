@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.11
+ * Type definitions for GoJS v3.0.12
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -279,7 +279,7 @@ export interface IContext {
     strokeStyle: string | CanvasGradient | CanvasPattern | SGradient;
     textAlign: string;
     imageSmoothingEnabled: boolean;
-    clipInsteadOfFill: boolean;
+    /** Only true if a Spot panel has isClipping element  */ clipInsteadOfFill: boolean;
     filter: string;
     commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
@@ -321,6 +321,7 @@ export interface IContext {
     disableDash(): void;
     clearContextCache(clearFont: boolean): void;
     removePartFromView(p: GraphObject): void;
+    createOrUpdateClipGroup(panel: GraphObject, rect: Rect): void;
 }
 
 /**
@@ -17086,7 +17087,7 @@ export abstract class GraphObject {
      * <p class="boxread">
      * See <a href="../../intro/buildingObjects.html">the Introduction page on building objects</a>
      * for usage information and examples of GraphObject.make.
-     * @param type - a class function or the name of a class in the `go` namespace,
+     * @param cls - a class function or the name of a class in the `go` namespace,
      * or one of several predefined kinds of {@link Panel}s: `"Button"`, `"TreeExpanderButton"`,
      * `"SubGraphExpanderButton"`, or `"ContextMenuButton"`.
      * @param initializers - zero or more values that initialize the new object,
@@ -17239,7 +17240,7 @@ export class Brush {
      * In addition to Brush properties, this object can also contain color stops in the format:
      * `{ 0: "#FEC901", 0.2: "#FFFFAA", 1: "#FEA200" }`
      */
-    constructor(type?: BrushType | string, init?: Partial<Partial<Brush> & Record<(number | string), string>>);
+    constructor(type?: BrushType | string, init?: Partial<Brush> & Record<number, string>);
     /**
      * Create a copy of this Brush with the same values.
      */
@@ -18466,8 +18467,9 @@ export class Panel extends GraphObject {
     set itemCategoryProperty(value: string | ((a: any) => string));
     /**
      * For {@link Spot} Panels: Gets or sets whether this Panel's main element clips instead of fills.
-     * The main element will not paint its stroke, if it has any.
      * This assumes that the main element is a Shape.
+     * The main Shape element will not paint its stroke, if it has any,
+     * and should have its <a>Shape.strokeWidth</a> set to `0`.
      *
      * Since 2.2: For {@link Group}s: Gets or sets whether this Group's Placeholder clips its member nodes.
      * For compatibility, if the Group is a {@link Spot} Panel, it will not clip its members.
@@ -31501,9 +31503,10 @@ export abstract class Router {
      * An override of this method should return `false` if {@link isEnabled} is false, or return `false` is if a call to the base method is `false`.
      *
      * This method is only called by the {@link Diagram}. If using a Router without adding it to a Diagram, this method will never be called.
+     * @param container A Diagram or Group on which the Router will operate.
      * @virtual
      */
-    canRoute(coll: Diagram | Group): boolean;
+    canRoute(container: Diagram | Group): boolean;
     /**
      * Route the links for a given collection (Group or Diagram). By default this is called
      * in a depth-first manner on every Group in the Diagram, and then the Diagram itself.
@@ -31519,24 +31522,24 @@ export abstract class Router {
      * and then the Diagram, you should check the {@link Part.containingGroup} on each Link to ensure it matches:
      *
      * ```ts
-     *  public routeLinks(links: Set<Link>, coll?: Diagram | Group): void {
-     *    const container = coll instanceof Diagram ? null : coll;
+     *  public routeLinks(links: Set<Link>, container?: Diagram | Group): void {
+     *    const container = container instanceof Diagram ? null : container;
      *    const it = links.iterator;
      *    while (it.next()) {
      *      const link = it.value;
      *      // Only operate on links that are in the corresponding collection, if one is given
-     *      if (coll && link.containingGroup !== container) continue;
+     *      if (container && link.containingGroup !== container) continue;
      *      . . .
      * ```
      *
      * This method should not check the {@link canRoute} predicate.
      *
      * @param links The set of links that were recently recomputed, which may need routing.
-     * @param coll A Diagram or Group on which the Router will operate.
+     * @param container A Diagram or Group on which the Router will operate.
      * When calling a router manually, this does not need to be specified.
      * @virtual
      */
-    routeLinks(links: Set<Link>, coll?: Diagram | Group): void;
+    routeLinks(links: Set<Link>, container?: Diagram | Group): void;
 }
 /**
  * The AvoidsNodesRouter is a Router that will modify any Orthogonal {@link Link}s
@@ -31562,16 +31565,16 @@ export class AvoidsNodesRouter extends Router {
      * Determine whether the AvoidsNodesRouter should operate on a given collection.
      * If no avoiding links are present in the collection, the router will not run.
      */
-    canRoute(coll: Diagram | Group): boolean;
+    canRoute(container: Diagram | Group): boolean;
     /**
      * Route the links.
      * By default this is called in a depth-first manner on every Group in the Diagram, and then the Diagram itself.
      * If a layout is warranted for any Group or Diagram, this is called immediately afterwards.
      *
      * @param links The set of links that were recently recomputed, which may need routing.
-     * @param coll A Diagram or Group on which the Router will operate.
+     * @param container A Diagram or Group on which the Router will operate.
      */
-    routeLinks(links: Set<Link>, coll?: Diagram | Group): void;
+    routeLinks(links: Set<Link>, container?: Diagram | Group): void;
 }
 
 

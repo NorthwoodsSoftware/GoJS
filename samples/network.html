@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Network" />
-<meta property="og:title" content="Network" />
-<meta name="twitter:title" content="Network" />
+<meta itemprop="name" content="Network Configuration Diagram Editor With Bars" />
+<meta property="og:title" content="Network Configuration Diagram Editor With Bars" />
+<meta name="twitter:title" content="Network Configuration Diagram Editor With Bars" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/network.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Network | GoJS Diagramming Library
+      Network Configuration Diagram Editor With Bars | GoJS Diagramming Library
     </title>
   </head>
 
@@ -253,7 +253,7 @@
             portId: '',
             toLinkable: true
           })
-            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
             .bind('fill'),
           new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
         )
@@ -309,6 +309,11 @@
   // If the regular node is too far to the left or right of the "HBar" node, the link connects
   // with the closest end of the "HBar" node.
   class BarLink extends go.Link {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     computeSpot(from, port) {
       if (from && this.toNode && this.toNode.category === 'HBar') return go.Spot.TopBottomSides;
       if (!from && this.fromNode && this.fromNode.category === 'HBar') return go.Spot.TopBottomSides;

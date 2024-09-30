@@ -1493,8 +1493,15 @@ new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
   let a = params.get('a');
   if (a) localStorage.setItem('a', a);
   a = localStorage.getItem('a');
-  document.getElementById('tc').href += `?a=${a}`;
-  document.getElementById('tb').href += `?a=${a}`;
+  if (a) {
+    const links = [...document.body.getElementsByTagName("a")].filter((l) => l.href.includes('nwoods.com'));
+    for (const l of links) {
+      const url = new URL(l.href);
+      url.searchParams.set('a', a);
+      l.href = url;
+    }
+  }
+
 </script>
   <script src="../assets/js/prism.js"></script>
   <script src="../release/go.js"></script>

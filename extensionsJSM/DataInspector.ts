@@ -310,9 +310,9 @@ export class Inspector {
    * @param part - the Part being inspected
    * @param propname - the property to check presence of
    */
-  static showIfPresent(data: go.Part | null, propname: string): boolean {
-    if (data instanceof go.Part) data = data.data;
-    return typeof data === 'object' && (data as any)[propname] !== undefined;
+  static showIfPresent(part: go.Part | null, propname: string): boolean {
+    if (part instanceof go.Part) part = part.data;
+    return typeof part === 'object' && (part as any)[propname] !== undefined;
   }
 
   /**

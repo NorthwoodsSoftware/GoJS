@@ -102,28 +102,28 @@ export class LinkLabelRouter extends go.Router {
    * Determine if the LinkLabelRouter should run on a given collection.
    * By default only run once on the whole Diagram, never on Groups
    *
-   * @param { go.Diagram | go.Group } coll
+   * @param { go.Diagram | go.Group } container
    * @returns
    */
-  override canRoute(coll: go.Diagram | go.Group): boolean {
-    if (coll instanceof go.Group) return false;
-    return super.canRoute(coll);
+  override canRoute(container: go.Diagram | go.Group): boolean {
+    if (container instanceof go.Group) return false;
+    return super.canRoute(container);
   }
 
   /**
    * Attempt to move link label objects to avoid overlaps, if necessary.
    *
-   * @param {*} coll A Diagram or a Group
-   * @param {*} diagram
+   * @param {go.Set<go.Link>} links
+   * @param {*} container A Diagram or a Group
    * @returns
    */
-  override routeLinks(links: go.Set<go.Link>, coll: go.Diagram | go.Group) {
+  override routeLinks(links: go.Set<go.Link>, container: go.Diagram | go.Group) {
     if (this.layout === null) return;
-    if (coll instanceof go.Group) return;
+    if (container instanceof go.Group) return;
 
     this.layout.activeSet = links;
-    if (coll instanceof go.Diagram) this.layout.diagram = coll;
-    this.layout.doLayout(coll.links);
+    if (container instanceof go.Diagram) this.layout.diagram = container;
+    this.layout.doLayout(container.links);
     if (this.layout.network === null) return;
 
     for(const vertex of this.layout.network.vertexes) {
@@ -143,6 +143,9 @@ export class LinkLabelRouter extends go.Router {
 
 /** @hidden @internal */
 class LabelVertex extends go.ForceDirectedVertex {
+  constructor(network: go.ForceDirectedNetwork) {
+    super(network);
+  }
   object: go.GraphObject | null = null;
   objectBounds: go.Rect | null = null;
   currentBounds: go.Rect | null = null;
@@ -151,6 +154,11 @@ class LabelVertex extends go.ForceDirectedVertex {
 
 /** @hidden @internal */
 class LabelLayout extends go.ForceDirectedLayout {
+  constructor(init?: Partial<go.ForceDirectedLayout>) {
+    super();
+    if (init) Object.assign(this, init);
+  }
+
   /** @hidden */ router: LinkLabelRouter | null = null;
   /** @hidden */ activeSet: go.Set<go.Link> | null = null;
 

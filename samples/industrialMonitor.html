@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Industrial Monitor SCADA diagram" />
-<meta property="og:title" content="Industrial Monitor SCADA diagram" />
-<meta name="twitter:title" content="Industrial Monitor SCADA diagram" />
+<meta itemprop="name" content="Industrial Monitor SCADA Diagram" />
+<meta property="og:title" content="Industrial Monitor SCADA Diagram" />
+<meta name="twitter:title" content="Industrial Monitor SCADA Diagram" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/industrialMonitor.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Industrial Monitor SCADA diagram | GoJS Diagramming Library
+      Industrial Monitor SCADA Diagram | GoJS Diagramming Library
     </title>
   </head>
 
@@ -187,7 +187,7 @@
       new go.Node('Spot', {
         itemTemplate: tankPort
       })
-        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .bind('itemArray', 'ports')
         .add(
           // Inner spot panel holding Shape and Text label
@@ -208,7 +208,8 @@
                   end: go.Spot.Right
                 })
               })
-                .bind('width').bind('height')
+                .bind('width')
+                .bind('height')
                 .bind('geometryString', 'tankType'),
               // tank label
               new go.TextBlock({
@@ -220,7 +221,8 @@
     );
 
     myDiagram.nodeTemplateMap.add('label',
-      new go.Node('Auto').bind("location", "pos", go.Point.parse, go.Point.stringify)
+      new go.Node('Auto')
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({
             portId: '',
@@ -252,7 +254,7 @@
         selectionObjectName: "SHAPE", rotatable: true
       })
         .bindTwoWay("angle")
-        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.TextBlock({
             background: colors.black,
@@ -270,7 +272,9 @@
             geometryString: valve,
             strokeWidth: 2,
             portId: "", fromSpot: new go.Spot(1, 0.35), toSpot: new go.Spot(0, 0.35)
-          }).bind('fill', 'color').bind('stroke', 'color', (c) => go.Brush.darkenBy(c, 0.3))
+          })
+          .bind('fill', 'color')
+          .bind('stroke', 'color', (c) => go.Brush.darkenBy(c, 0.3))
         )
     );
 
@@ -280,7 +284,7 @@
         selectionObjectName: "SHAPE", rotatable: true
       })
         .bindTwoWay("angle")
-        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.TextBlock({
             background: colors.black,
@@ -299,7 +303,9 @@
             width: 45, height: 40,
             strokeWidth: 2,
             portId: "", fromSpot: new go.Spot(1, 0.25), toSpot: new go.Spot(0, 0.5)
-          }).bind('fill', 'color').bind('stroke', 'color', (c) => Brush.darkenBy(c, 0.3))
+          })
+          .bind('fill', 'color')
+          .bind('stroke', 'color', (c) => Brush.darkenBy(c, 0.3))
         )
     );
 
@@ -332,7 +338,7 @@
     // Monitor node for monitoring values, linked to a pump or valve
     myDiagram.nodeTemplateMap.add("monitor",
       new go.Node("Auto")
-        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({ fill: colors.black, stroke: colors.white, strokeWidth: 2 }),
           new go.Panel("Vertical", { margin: 4 })
@@ -350,7 +356,7 @@
     // Sensor node, linked to a tank
     myDiagram.nodeTemplateMap.add("sensor",
       new go.Node("Vertical")
-        .bind("location", "pos", go.Point.parse, go.Point.stringify)
+        .bindTwoWay("location", "pos", go.Point.parse, go.Point.stringify)
         .add(
           new go.Panel("Horizontal", { margin: 4 })
             .add(
@@ -381,7 +387,9 @@
           new go.Shape({ strokeWidth: 8, stroke: colors.black, isPanelMain: true }),
           new go.Shape({ strokeWidth: 3.5, stroke: colors.green, isPanelMain: true })
             .bind('stroke', 'color'),
-          new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' }).bind('stroke', 'color').bind('fill', 'color'),
+          new go.Shape({ stroke: colors.green, fill: colors.green, toArrow: 'Triangle' })
+            .bind('stroke', 'color')
+            .bind('fill', 'color'),
           // Link label, invisible unless text is specified
           new go.Panel('Auto', { visible: false })
             .bind('visible', 'text', (t) => true)

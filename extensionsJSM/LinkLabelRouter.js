@@ -97,30 +97,30 @@ export class LinkLabelRouter extends go.Router {
      * Determine if the LinkLabelRouter should run on a given collection.
      * By default only run once on the whole Diagram, never on Groups
      *
-     * @param { go.Diagram | go.Group } coll
+     * @param { go.Diagram | go.Group } container
      * @returns
      */
-    canRoute(coll) {
-        if (coll instanceof go.Group)
+    canRoute(container) {
+        if (container instanceof go.Group)
             return false;
-        return super.canRoute(coll);
+        return super.canRoute(container);
     }
     /**
      * Attempt to move link label objects to avoid overlaps, if necessary.
      *
-     * @param {*} coll A Diagram or a Group
-     * @param {*} diagram
+     * @param {go.Set<go.Link>} links
+     * @param {*} container A Diagram or a Group
      * @returns
      */
-    routeLinks(links, coll) {
+    routeLinks(links, container) {
         if (this.layout === null)
             return;
-        if (coll instanceof go.Group)
+        if (container instanceof go.Group)
             return;
         this.layout.activeSet = links;
-        if (coll instanceof go.Diagram)
-            this.layout.diagram = coll;
-        this.layout.doLayout(coll.links);
+        if (container instanceof go.Diagram)
+            this.layout.diagram = container;
+        this.layout.doLayout(container.links);
         if (this.layout.network === null)
             return;
         for (const vertex of this.layout.network.vertexes) {
@@ -142,8 +142,8 @@ export class LinkLabelRouter extends go.Router {
 }
 /** @hidden @internal */
 class LabelVertex extends go.ForceDirectedVertex {
-    constructor() {
-        super(...arguments);
+    constructor(network) {
+        super(network);
         this.object = null;
         this.objectBounds = null;
         this.currentBounds = null;
@@ -152,10 +152,12 @@ class LabelVertex extends go.ForceDirectedVertex {
 }
 /** @hidden @internal */
 class LabelLayout extends go.ForceDirectedLayout {
-    constructor() {
-        super(...arguments);
+    constructor(init) {
+        super();
         /** @hidden */ this.router = null;
         /** @hidden */ this.activeSet = null;
+        if (init)
+            Object.assign(this, init);
     }
     /**
      * we should not ever do a prelayout on this virtual, "fake" force-directed network

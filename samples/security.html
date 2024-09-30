@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Security Monitor Diagram" />
-<meta property="og:title" content="Security Monitor Diagram" />
-<meta name="twitter:title" content="Security Monitor Diagram" />
+<meta itemprop="name" content="Security Monitor Dashboard" />
+<meta property="og:title" content="Security Monitor Dashboard" />
+<meta name="twitter:title" content="Security Monitor Dashboard" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/security.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Security Monitor Diagram | GoJS Diagramming Library
+      Security Monitor Dashboard | GoJS Diagramming Library
     </title>
   </head>
 
@@ -165,8 +165,8 @@
     // door
     myDiagram.nodeTemplateMap.add(
       'door',
-      new go.Node('Auto', {
-        resizeObjectName: 'PANEL',
+      new go.Node({
+        resizeObjectName: 'DOOR',
         resizable: true,
         rotatable: true,
         locationSpot: go.Spot.Center,
@@ -175,24 +175,18 @@
       })
       .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       .bindTwoWay('angle', 'ang')
-        .add(
-          new go.Panel({
-            name: 'PANEL',
-            height: 10,
-            width: 50
-          })
-            .bindTwoWay('width')
-            .bindTwoWay('height')
-            .add(
-              new go.Shape({
-                name: 'DOOR',
-                strokeWidth: 1,
-                fill: 'rgb(0,255,0)'
-              })
-                .bind('height', 'height', (h, s) => h - s.strokeWidth)
-                .bind('width', 'width', (w, s) => w - s.strokeWidth)
-            )
-        )
+      .add(
+        new go.Shape({
+          name: 'DOOR',
+          stretch: go.Stretch.Fill,
+          strokeWidth: 1,
+          fill: 'rgb(0,255,0)',
+          height: 9,
+          width: 50
+        })
+        .bindTwoWay('width')
+        .bindTwoWay('height')
+      )
     );
 
     // camera

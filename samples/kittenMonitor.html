@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Kitten Monitor" />
-<meta property="og:title" content="Kitten Monitor" />
-<meta name="twitter:title" content="Kitten Monitor" />
+<meta itemprop="name" content="Kitten Monitor Using Background Image" />
+<meta property="og:title" content="Kitten Monitor Using Background Image" />
+<meta name="twitter:title" content="Kitten Monitor Using Background Image" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/kittenMonitor.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Kitten Monitor | GoJS Diagramming Library
+      Kitten Monitor Using Background Image | GoJS Diagramming Library
     </title>
   </head>
 
@@ -123,140 +123,139 @@
             
 
 <script id="code">
-  function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make; // for conciseness in defining templates
+function init() {
+  const INTERVAL = 2000; // this constant parameter cannot be set later
 
-    var INTERVAL = 2000; // this constant parameter cannot be set later
+  myDiagram = new go.Diagram('myDiagramDiv', {
+    initialContentAlignment: go.Spot.TopLeft,
+    isReadOnly: true, // allow selection but not moving or copying or deleting
+    scaleComputation: (d, newsc) => {
+      // only allow scales that are a multiple of 0.1
+      var oldsc = Math.round(d.scale * 10);
+      var sc = oldsc + (newsc * 10 > oldsc ? 1 : -1);
+      if (sc < 1) sc = 1; // but disallow zero or negative!
+      return sc / 10;
+    },
+    'toolManager.hoverDelay': 100 // how quickly tooltips are shown
+  });
 
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      initialContentAlignment: go.Spot.TopLeft,
-      isReadOnly: true, // allow selection but not moving or copying or deleting
-      scaleComputation: (d, newsc) => {
-        // only allow scales that are a multiple of 0.1
-        var oldsc = Math.round(d.scale * 10);
-        var sc = oldsc + (newsc * 10 > oldsc ? 1 : -1);
-        if (sc < 1) sc = 1; // but disallow zero or negative!
-        return sc / 10;
-      },
-      'toolManager.hoverDelay': 100 // how quickly tooltips are shown
-    });
-
-    // the background image, a floor plan
-    myDiagram.add(
-      $(go.Part, // this Part is not bound to any model data
-        {
-          width: 840,
-          height: 570,
-          layerName: 'Background',
-          position: new go.Point(0, 0),
-          selectable: false,
-          pickable: false
-        },
-        $(go.Picture, 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
+  // the background image, a floor plan
+  myDiagram.add(
+    new go.Part({ // this Part is not bound to any model data
+        width: 840,
+        height: 570,
+        layerName: 'Background',
+        position: new go.Point(0, 0),
+        selectable: false,
+        pickable: false
+      })
+      .add(
+        new go.Picture('https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
       )
     );
 
-    // the template for each kitten, for now just a colored circle
-    myDiagram.nodeTemplate = $(go.Node,
-      new go.Binding('location', 'loc'), // specified by data
-      INTERVAL > 20 // don't animate if INTERVAL is <= 20 milliseconds
-        ? new go.AnimationTrigger('position', { duration: INTERVAL, easing: go.Animation.EaseLinear })
-        : {},
-      { locationSpot: go.Spot.Center }, // at center of node
-      $(go.Shape,
-        'Circle',
-        { width: 15, height: 15, strokeWidth: 3 },
-        new go.Binding('fill', 'color', makeFill),
-        new go.Binding('stroke', 'color', makeStroke)
-      ), // also specified by data
-      {
-        // this tooltip shows the name and picture of the kitten
-        toolTip: $('ToolTip',
-          $(go.Panel,
-            'Vertical',
-            $(go.Picture, { margin: 3 }, new go.Binding('source', 'src', (s) => 'images/' + s + '.png')),
-            $(go.TextBlock, { margin: 3 }, new go.Binding('text', 'key'))
-          )
-        ) // end Adornment
-      }
-    );
+  // the template for each kitten, for now just a colored circle
+  myDiagram.nodeTemplate =
+    new go.Node({ locationSpot: go.Spot.Center })
+      .bind('location', 'loc') // specified by data
+      .add(
+        new go.Shape('Circle', {
+            width: 15, height: 15,
+            strokeWidth: 3,
+            // this tooltip shows the name and picture of the kitten
+            toolTip: go.GraphObject.build('ToolTip')
+              .add(
+                new go.Panel('Vertical')
+                  .add(
+                    new go.Picture({ margin: 3 })
+                      .bind('source', 'src', (s) => 'images/' + s + '.png'),
+                    new go.TextBlock({ margin: 3 })
+                      .bind('text', 'key')
+                  )
+              )
+          })
+          .bind('fill', 'color', makeFill)
+          .bind('stroke', 'color', makeStroke)
+      );
+  if (INTERVAL > 20) {  // don't animate if INTERVAL is <= 20 milliseconds
+    myDiagram.nodeTemplate.trigger('position', { duration: INTERVAL, easing: go.Animation.EaseLinear })
+  };
 
-    // pretend there are four kittens
-    myDiagram.model.nodeDataArray = [
-      { key: 'Alonzo', src: '50x40', loc: new go.Point(220, 130), color: 2 },
-      { key: 'Coricopat', src: '55x55', loc: new go.Point(420, 250), color: 4 },
-      { key: 'Garfield', src: '60x90', loc: new go.Point(640, 450), color: 6 },
-      { key: 'Demeter', src: '80x50', loc: new go.Point(140, 350), color: 8 }
-    ];
 
-    // simulate some real-time position monitoring, once every INTERVAL milliseconds
-    function randomMovement() {
-      var model = myDiagram.model;
-      model.startTransaction('update locations');
-      var arr = model.nodeDataArray;
-      var picture = myDiagram.parts.first();
-      for (var i = 0; i < arr.length; i++) {
-        var data = arr[i];
-        // determine the new random location
-        var pt = data.loc;
-        var x = pt.x + 25 * (Math.random() - 0.5);
-        var y = pt.y + 25 * (Math.random() - 0.5);
-        // make sure the kittens stay inside the house
-        var b = picture.actualBounds;
-        if (x < b.x + 40 || x > b.right - 80) x = pt.x;
-        if (y < b.y + 40 || y > b.bottom - 40) y = pt.y;
-        model.set(data, 'loc', new go.Point(x, y));
-      }
-      model.commitTransaction('update locations');
-    }
-    function loop() {
-      setTimeout(() => {
-        randomMovement();
-        loop();
-      }, INTERVAL);
-    }
-    loop(); // start the simulation
+  // pretend there are four kittens
+  myDiagram.model.nodeDataArray = [
+    { key: 'Alonzo', src: '50x40', loc: new go.Point(220, 130), color: 2 },
+    { key: 'Coricopat', src: '55x55', loc: new go.Point(420, 250), color: 4 },
+    { key: 'Garfield', src: '60x90', loc: new go.Point(640, 450), color: 6 },
+    { key: 'Demeter', src: '80x50', loc: new go.Point(140, 350), color: 8 }
+  ];
 
-    // generate some colors based on hue value
-    function makeFill(number) {
-      return HSVtoRGB(0.1 * number, 0.5, 0.7);
+  // simulate some real-time position monitoring, once every INTERVAL milliseconds
+  function randomMovement() {
+    var model = myDiagram.model;
+    model.startTransaction('update locations');
+    var arr = model.nodeDataArray;
+    var picture = myDiagram.parts.first();
+    for (var i = 0; i < arr.length; i++) {
+      var data = arr[i];
+      // determine the new random location
+      var pt = data.loc;
+      var x = pt.x + 25 * (Math.random() - 0.5);
+      var y = pt.y + 25 * (Math.random() - 0.5);
+      // make sure the kittens stay inside the house
+      var b = picture.actualBounds;
+      if (x < b.x + 40 || x > b.right - 80) x = pt.x;
+      if (y < b.y + 40 || y > b.bottom - 40) y = pt.y;
+      model.set(data, 'loc', new go.Point(x, y));
     }
-    function makeStroke(number) {
-      return HSVtoRGB(0.1 * number, 0.5, 0.5); // same color but darker (less V in HSV)
-    }
-    function HSVtoRGB(h, s, v) {
-      var r, g, b, i, f, p, q, t;
-      i = Math.floor(h * 6);
-      f = h * 6 - i;
-      p = v * (1 - s);
-      q = v * (1 - f * s);
-      t = v * (1 - (1 - f) * s);
-      switch (i % 6) {
-        case 0:
-          (r = v), (g = t), (b = p);
-          break;
-        case 1:
-          (r = q), (g = v), (b = p);
-          break;
-        case 2:
-          (r = p), (g = v), (b = t);
-          break;
-        case 3:
-          (r = p), (g = q), (b = v);
-          break;
-        case 4:
-          (r = t), (g = p), (b = v);
-          break;
-        case 5:
-          (r = v), (g = p), (b = q);
-          break;
-      }
-      return 'rgb(' + Math.floor(r * 255) + ',' + Math.floor(g * 255) + ',' + Math.floor(b * 255) + ')';
-    }
+    model.commitTransaction('update locations');
   }
-  window.addEventListener('DOMContentLoaded', init);
+  function loop() {
+    setTimeout(() => {
+      randomMovement();
+      loop();
+    }, INTERVAL);
+  }
+  loop(); // start the simulation
+
+  // generate some colors based on hue value
+  function makeFill(number) {
+    return HSVtoRGB(0.1 * number, 0.5, 0.7);
+  }
+  function makeStroke(number) {
+    return HSVtoRGB(0.1 * number, 0.5, 0.5); // same color but darker (less V in HSV)
+  }
+  function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+      case 0:
+        (r = v), (g = t), (b = p);
+        break;
+      case 1:
+        (r = q), (g = v), (b = p);
+        break;
+      case 2:
+        (r = p), (g = v), (b = t);
+        break;
+      case 3:
+        (r = p), (g = q), (b = v);
+        break;
+      case 4:
+        (r = t), (g = p), (b = v);
+        break;
+      case 5:
+        (r = v), (g = p), (b = q);
+        break;
+    }
+    return 'rgb(' + Math.floor(r * 255) + ',' + Math.floor(g * 255) + ',' + Math.floor(b * 255) + ')';
+  }
+}
+window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">

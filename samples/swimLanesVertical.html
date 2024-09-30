@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Swim Lanes Vertical" />
-<meta property="og:title" content="Swim Lanes Vertical" />
-<meta name="twitter:title" content="Swim Lanes Vertical" />
+<meta itemprop="name" content="Vertical, Collapsible, Resizable, Re-orderable Swim Lanes for Flow Diagram" />
+<meta property="og:title" content="Vertical, Collapsible, Resizable, Re-orderable Swim Lanes for Flow Diagram" />
+<meta name="twitter:title" content="Vertical, Collapsible, Resizable, Re-orderable Swim Lanes for Flow Diagram" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/swimLanesVertical.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Swim Lanes Vertical | GoJS Diagramming Library
+      Vertical, Collapsible, Resizable, Re-orderable Swim Lanes for Flow Diagram | GoJS Diagramming Library
     </title>
   </head>
 
@@ -188,6 +188,11 @@
 
   // define a custom ResizingTool to limit how far one can shrink a lane Group
   class LaneResizingTool extends go.ResizingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     isLengthening() {
       return this.handle.alignment === go.Spot.Bottom;
     }
@@ -233,7 +238,7 @@
   // define a custom grid layout that makes sure the length of each lane is the same
   // and that each lane is broad enough to hold its subgraph
   class PoolLayout extends go.GridLayout {
-    constructor() {
+    constructor(init) {
       super();
       this.cellSize = new go.Size(1, 1);
       this.wrappingColumn = Infinity;
@@ -255,6 +260,7 @@
         rect.inflate(-1, -1); // negative strokeWidth of the border Shape
         return rect;
       };
+      if (init) Object.assign(this, init);
     }
 
     doLayout(coll) {

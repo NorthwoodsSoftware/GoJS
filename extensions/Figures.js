@@ -1,9 +1,9 @@
 /*
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
-// This file holds definitions of all standard shape figures -- string values for Shape.figure.
-// You do not need to load this file in order to use named Shape figure.
-// The following figures are built-in to the go.js library and thus do not need to be redefined:
+// This file holds definitions of all legacy shape figures -- string values for Shape.figure.
+// They were built into the library in version 1, but most were removed for v2.0.
+// The following figures are still built-in to the go.js library and thus do not need explicit definitions:
 //   Rectangle, Square, RoundedRectangle, Border, Ellipse, Circle,
 //   TriangleRight, TriangleDown, TriangleLeft, TriangleUp, Triangle,
 //   LineH, LineV, None, BarH, BarV, MinusLine, PlusLine, XLine, Capsule
@@ -315,6 +315,40 @@ go.Shape.defineFigureGenerator('ChamferedRectangle', (shape, w, h) => {
     geo.spot2 = spot2;
     return geo;
 });
+// narrow ends of rectangular area come to a point
+go.Shape.defineFigureGenerator('HexagonalCapsule', (shape, w, h) => {
+    let param1 = shape ? shape.parameter1 : NaN;
+    if (isNaN(param1))
+        param1 = 10;
+    const geo = new go.Geometry();
+    if (w < h) {
+        const inset = Math.min(param1, w / 2);
+        const fig = new go.PathFigure(w / 2, 0, true);
+        geo.add(fig);
+        // Outline
+        fig.add(new go.PathSegment(go.SegmentType.Line, w, inset));
+        fig.add(new go.PathSegment(go.SegmentType.Line, w, h - inset));
+        fig.add(new go.PathSegment(go.SegmentType.Line, w / 2, h));
+        fig.add(new go.PathSegment(go.SegmentType.Line, 0, h - inset));
+        fig.add(new go.PathSegment(go.SegmentType.Line, 0, inset).close());
+        geo.spot1 = new go.Spot(0, 0, inset / 2, inset);
+        geo.spot2 = new go.Spot(1, 1, -inset / 2, -inset);
+    }
+    else {
+        const inset = Math.min(param1, h / 2);
+        const fig = new go.PathFigure(inset, 0, true);
+        geo.add(fig);
+        // Outline
+        fig.add(new go.PathSegment(go.SegmentType.Line, w - inset, 0));
+        fig.add(new go.PathSegment(go.SegmentType.Line, w, h / 2));
+        fig.add(new go.PathSegment(go.SegmentType.Line, w - inset, h));
+        fig.add(new go.PathSegment(go.SegmentType.Line, inset, h));
+        fig.add(new go.PathSegment(go.SegmentType.Line, 0, h / 2).close());
+        geo.spot1 = new go.Spot(0, 0, inset, inset / 2);
+        geo.spot2 = new go.Spot(1, 1, -inset, -inset / 2);
+    }
+    return geo;
+});
 go.Shape.defineFigureGenerator('AsteriskLine', (shape, w, h) => {
     const offset = 0.2 / Math.SQRT2;
     return new go.Geometry().add(new go.PathFigure(offset * w, (1 - offset) * h, false)
@@ -598,7 +632,7 @@ function freeArray(a) {
  */
 function createPolygon(sides) {
     // Point[] points = new Point[sides + 1];
-    const points = tempArray();
+    const points = [];
     const radius = 0.5;
     const center = 0.5;
     const offsetAngle = Math.PI * 1.5;
@@ -4907,49 +4941,6 @@ go.Shape.defineFigureGenerator('4Arrows', (shape, w, h) => {
     fig.add(new go.PathSegment(go.SegmentType.Line, w * 0.35, h * 0.25).close());
     return geo;
 });
-// // narrow ends of rectangular area are completely rounded
-// go.Shape.defineFigureGenerator('Capsule', (shape, w, h) => {
-//   const param1 = shape ? shape.parameter1 : NaN;
-//   const param2 = shape ? shape.parameter2 : NaN;
-//
-//   const geo = new go.Geometry();
-//   if (w < h) {
-//     const fig = new go.PathFigure(0, w / 2, true);
-//     geo.add(fig);
-//     // Outline
-//     const px = isFinite(param1) ? param1 : w * 0.156;
-//     const py = isFinite(param2) ? param2 : w * 0.156;
-//     fig.add(new go.PathSegment(go.SegmentType.Arc, 180, 180, w / 2, w / 2, w / 2, w / 2));
-//     fig.add(new go.PathSegment(go.SegmentType.Line, w, h - w / 2));
-//     fig.add(new go.PathSegment(go.SegmentType.Arc, 0, 180, w / 2, h - w / 2, w / 2, w / 2));
-//     fig.add(new go.PathSegment(go.SegmentType.Line, 0, w / 2));
-//     geo.spot1 = new go.Spot(0, 0, px, py);
-//     geo.spot2 = new go.Spot(1, 1, -px, -py);
-//     return geo;
-//   } else if (w > h) {
-//     const fig = new go.PathFigure(h / 2, 0, true);
-//     geo.add(fig);
-//     // Outline
-//     const px = isFinite(param1) ? param1 : h * 0.156;
-//     const py = isFinite(param2) ? param2 : h * 0.156;
-//     fig.add(new go.PathSegment(go.SegmentType.Line, w - h / 2, 0));
-//     fig.add(new go.PathSegment(go.SegmentType.Arc, 270, 180, w - h / 2, h / 2, h / 2, h / 2));
-//     fig.add(new go.PathSegment(go.SegmentType.Line, w - h / 2, h));
-//     fig.add(new go.PathSegment(go.SegmentType.Arc, 90, 180, h / 2, h / 2, h / 2, h / 2));
-//     geo.spot1 = new go.Spot(0, 0, px, py);
-//     geo.spot2 = new go.Spot(1, 1, -px, -py);
-//     return geo;
-//   } else {  // w === h
-//     geo.type = go.GeometryType.Ellipse;
-//     geo.endX = w;
-//     geo.endY = h;
-//     const px = isFinite(param1) ? param1 : w * 0.156;
-//     const py = isFinite(param2) ? param2 : w * 0.156;
-//     geo.spot1 = new go.Spot(0, 0, px, py);
-//     geo.spot2 = new go.Spot(1, 1, -px, -py);
-//     return geo;
-//   }
-// });
 go.Shape.defineFigureGenerator('Connector', 'Ellipse');
 go.Shape.defineFigureGenerator('Alternative', 'TriangleUp');
 go.Shape.defineFigureGenerator('Merge', 'TriangleUp');

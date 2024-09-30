@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Sequence Diagram" />
-<meta property="og:title" content="Sequence Diagram" />
-<meta name="twitter:title" content="Sequence Diagram" />
+<meta itemprop="name" content="Sequence Diagram with Actors, Lifelines, Activities, and Interactions" />
+<meta property="og:title" content="Sequence Diagram with Actors, Lifelines, Activities, and Interactions" />
+<meta name="twitter:title" content="Sequence Diagram with Actors, Lifelines, Activities, and Interactions" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/sequenceDiagram.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Sequence Diagram | GoJS Diagramming Library
+      Sequence Diagram with Actors, Lifelines, Activities, and Interactions | GoJS Diagramming Library
     </title>
   </head>
 
@@ -310,9 +310,10 @@
 
   // a custom routed Link
   class MessageLink extends go.Link {
-    constructor(...args) {
-      super(...args);
+    constructor(init) {
+      super();
       this.time = 0; // use this "time" value when this is the temporaryLink
+      if (init) Object.assign(this, init);
     }
 
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
@@ -378,13 +379,14 @@
   // A custom LinkingTool that fixes the "time" (i.e. the Y coordinate)
   // for both the temporaryLink and the actual newly created Link
   class MessagingTool extends go.LinkingTool {
-    constructor() {
+    constructor(init) {
       super();
       this.temporaryLink = new MessageLink()
         .add(
           new go.Shape('Rectangle', { stroke: 'magenta', strokeWidth: 2 }),
           new go.Shape({ toArrow: 'OpenTriangle', stroke: 'magenta' })
         );
+      if (init) Object.assign(this, init);
     }
 
     doActivate() {
@@ -420,6 +422,11 @@
   // A custom DraggingTool that supports dragging any number of MessageLinks up and down --
   // changing their data.time value.
   class MessageDraggingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     // override the standard behavior to include all selected Links,
     // even if not connected with any selected Nodes
     computeEffectiveCollection(parts, options) {

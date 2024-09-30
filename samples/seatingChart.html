@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Seating Chart Diagram" />
-<meta property="og:title" content="Seating Chart Diagram" />
-<meta name="twitter:title" content="Seating Chart Diagram" />
+<meta itemprop="name" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
+<meta property="og:title" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
+<meta name="twitter:title" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/seatingChart.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Seating Chart Diagram | GoJS Diagramming Library
+      Seating Chart Diagram Editor Dropping People into Seats at Tables | GoJS Diagramming Library
     </title>
   </head>
 
@@ -271,7 +271,8 @@
     }
 
     function applyTableNodeBindings(node) {
-      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify).bindTwoWay('angle');
+      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+          .bindTwoWay('angle');
       return node;
     }
 
@@ -670,6 +671,11 @@
 
   // Automatically drag people Nodes along with the table Node at which they are seated.
   class SpecialDraggingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     computeEffectiveCollection(parts) {
       const map = super.computeEffectiveCollection(parts);
       // for each Node representing a table, also drag all of the people seated at that table
@@ -692,6 +698,11 @@
   // Note that because people are separate Nodes, rotating a table Node means the people Nodes
   // are not rotated, so their names (TextBlocks) remain horizontal.
   class HorizontalTextRotatingTool extends go.RotatingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     rotate(newangle) {
       super.rotate(newangle);
       const node = this.adornedObject.part;

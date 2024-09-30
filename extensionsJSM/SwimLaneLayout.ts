@@ -35,6 +35,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   // settable properties
   private _laneProperty: string | ((d: any) => string); // how to get lane identifier string from node data
   private _laneNames: Array<string>; // lane names, may be sorted using this.laneComparer
+  private _laneIndexes: go.Map<string, number>;
 
   private _laneComparer: ((a: string, b: string) => number) | null;
   private _laneSpacing: number; // in columns
@@ -47,13 +48,14 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
   private readonly _laneBreadths: go.Map<string, number>; // lane names --> needed width in columns
 
   // internal state
-  private _layers: Array<Array<go.LayeredDigraphVertex>> = [[]];
-  private _neededSpaces: Array<number> = [];
+  private _layers: Array<Array<go.LayeredDigraphVertex>>;
+  private _neededSpaces: Array<number>;
 
   constructor(init?: Partial<SwimLaneLayout>) {
     super();
     this._laneProperty = 'lane'; // how to get lane identifier string from node data
     this._laneNames = []; // lane names, may be sorted using this.laneComparer
+    this._laneIndexes = new go.Map<string, number>();
     this._laneComparer = null;
     this._laneSpacing = 0; // in columns
     this._router = { linkSpacing: 4 };
@@ -337,18 +339,17 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     // set up some data structures
     const layout = this;
     const laneNameSet = new go.Set().addAll(this.laneNames);
-    const laneIndexes = new go.Map(); // lane names --> index when sorted
+    const laneIndexes = new go.Map<string, number>(); // lane name --> index when sorted
 
     const vit = (this.network as go.LayeredDigraphNetwork).vertexes.iterator;
     while (vit.next()) {
       const v = vit.value as go.LayeredDigraphVertex;
-
+      // discover any more lane names
       const lane = this.getLane(v); // cannot call findLane yet
       if (lane !== null && !laneNameSet.has(lane)) {
         laneNameSet.add(lane);
         this.laneNames.push(lane);
       }
-
       const layer = v.layer;
       if (layer >= 0) {
         const arr = this._layers[layer];
@@ -360,11 +361,12 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
       }
     }
 
-    // sort laneNames and initialize laneIndexes
+    // sort laneNames and initialize laneIndexes with sorted indexes
     if (typeof this.laneComparer === 'function') this.laneNames.sort(this.laneComparer);
     for (let i = 0; i < this.laneNames.length; i++) {
       laneIndexes.set(this.laneNames[i], i);
     }
+    this._laneIndexes = laneIndexes;
     // now OK to call findLane
 
     // sort vertexes so that vertexes are grouped by lane
@@ -384,12 +386,13 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     const layers = this._layers;
     const red = this.reducer;
     if (red) {
-      for (let i = 0; i < layers.length - 1; i++) {
-        red.reduceCrossings(layers[i], layers[i + 1]);
+      red.laneIndexes = this._laneIndexes;
+      for (let i = 1; i < layers.length; i++) {
+        red.reduceCrossings(layers[i], layers[i - 1]);
         layers[i].forEach((v, j) => (v.index = j));
       }
-      for (let i = layers.length - 1; i > 0; i--) {
-        red.reduceCrossings(layers[i], layers[i - 1]);
+      for (let i = layers.length - 2; i >= 0; i--) {
+        red.reduceCrossings(layers[i], layers[i + 1]);
         layers[i].forEach((v, j) => (v.index = j));
       }
     }
@@ -565,11 +568,13 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     if (laneV === null) laneV = '';
     let laneW = this.findLane(w);
     if (laneW === null) laneW = '';
-    if (laneV < laneW) return -1;
-    if (laneV > laneW) return 1;
+    const idxV = this._laneIndexes.get(laneV) || 0;
+    const idxW = this._laneIndexes.get(laneW) || 0;
+    if (idxV < idxW) return -1;
+    if (idxV > idxW) return 1;
     // OPTIONAL: sort dummy vertexes before vertexes representing real nodes
-    //if (v.node === null && w.node !== null) return -1;
-    //if (v.node !== null && w.node === null) return 1;
+    if (v.node === null && w.node !== null) return -1;
+    if (v.node !== null && w.node === null) return 1;
     if (v.column < w.column) return -1;
     if (v.column > w.column) return 1;
     return 0;

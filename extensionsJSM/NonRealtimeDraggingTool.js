@@ -41,8 +41,8 @@ export class NonRealtimeDraggingTool extends go.DraggingTool {
      * show it using a Picture, and hold the Picture in a temporary Part, as _imagePart.
      * @param parts - A {@link go.Set} or {@link go.List} of {@link go.Part}s.
      */
-    computeEffectiveCollection(coll) {
-        const map = super.computeEffectiveCollection(coll, this.dragOptions);
+    computeEffectiveCollection(parts) {
+        const map = super.computeEffectiveCollection(parts, this.dragOptions);
         if (this.isActive && this._imagePart === null) {
             const bounds = this.diagram.computePartsBounds(map.toKeySet());
             const offset = this.diagram.lastInput.documentPoint.copy().subtract(bounds.position);

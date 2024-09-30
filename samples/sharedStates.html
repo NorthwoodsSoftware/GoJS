@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Shared States" />
-<meta property="og:title" content="Shared States" />
-<meta name="twitter:title" content="Shared States" />
+<meta itemprop="name" content="Shared States not using Groups" />
+<meta property="og:title" content="Shared States not using Groups" />
+<meta name="twitter:title" content="Shared States not using Groups" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/sharedStates.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Shared States | GoJS Diagramming Library
+      Shared States not using Groups | GoJS Diagramming Library
     </title>
   </head>
 
@@ -193,6 +193,11 @@
 
   // A custom layout that sizes each "Super" node to be big enough to cover all of it member nodes
   class CustomLayout extends go.Layout {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     doLayout(coll) {
       coll = this.collectParts(coll);
 
@@ -249,6 +254,11 @@
 
   // Define a custom DraggingTool
   class CustomDraggingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     moveParts(parts, offset, check) {
       super.moveParts(parts, offset, check);
       this.diagram.layoutDiagram(true);

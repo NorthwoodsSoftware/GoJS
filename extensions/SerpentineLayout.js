@@ -131,7 +131,7 @@ class SerpentineLayout extends go.Layout {
      * This method actually positions all of the Nodes, assuming that the ordering of the nodes
      * is given by a single link from one node to the next.
      * This respects the {@link spacing} and {@link wrap} properties to affect the layout.
-     * @param coll - A collection of {@link go.Part}s.
+     * @param collection - A collection of {@link go.Part}s.
      */
     doLayout(collection) {
         const diagram = this.diagram;

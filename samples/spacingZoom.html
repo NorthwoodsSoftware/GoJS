@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Spacing Zoom" />
-<meta property="og:title" content="Spacing Zoom" />
-<meta name="twitter:title" content="Spacing Zoom" />
+<meta itemprop="name" content="Zooming Changes Spaces Between Nodes without Changing Scale" />
+<meta property="og:title" content="Zooming Changes Spaces Between Nodes without Changing Scale" />
+<meta name="twitter:title" content="Zooming Changes Spaces Between Nodes without Changing Scale" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/minimal.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Spacing Zoom | GoJS Diagramming Library
+      Zooming Changes Spaces Between Nodes without Changing Scale | GoJS Diagramming Library
     </title>
   </head>
 
@@ -204,12 +204,13 @@
 
   // The custom CommandHandler that avoids changing the Diagram.scale
   class SpacingCommandHandler extends go.CommandHandler {
-    constructor() {
+    constructor(init) {
       super();
       this._space = 1.0; // replaces Diagram.scale; also copied to/from Model.modelData.space
       this._spaceCenter = new go.Point(0, 0); // not currently used -- should this be saved on modelData too?
       this._isYSpaced = true; // scale Y along with X?  This option is just for demonstration purposes.
       this._isUpdating = false;
+      if (init) Object.assign(this, init);
     }
 
     // Overrides of commands that scale the diagram -- change the space instead

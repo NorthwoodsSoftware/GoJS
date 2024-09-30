@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2024 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Grafcet Diagrams" />
-<meta property="og:title" content="Grafcet Diagrams" />
-<meta name="twitter:title" content="Grafcet Diagrams" />
+<meta itemprop="name" content="Grafcet Diagram Editor, Type of Sequential Function Chart for Automation Design" />
+<meta property="og:title" content="Grafcet Diagram Editor, Type of Sequential Function Chart for Automation Design" />
+<meta name="twitter:title" content="Grafcet Diagram Editor, Type of Sequential Function Chart for Automation Design" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/grafcet.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Grafcet Diagrams | GoJS Diagramming Library
+      Grafcet Diagram Editor, Type of Sequential Function Chart for Automation Design | GoJS Diagramming Library
     </title>
   </head>
 
@@ -476,7 +476,7 @@
               stroke: 'red',
               width: 200
             })
-            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         )
       )
     );
@@ -500,7 +500,7 @@
               stroke: 'red',
               width: 200
             })
-            .bind('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         )
       )
     );
@@ -592,6 +592,11 @@
   // This custom LinkingTool just turns on Diagram.allowLink when it starts,
   // and turns it off again when it stops so that users cannot draw new links modelessly.
   class CustomLinkingTool extends go.LinkingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     // user-drawn linking is normally disabled,
     // but needs to be turned on when using this tool
     doStart() {
@@ -609,6 +614,11 @@
   // This custom Link class is smart about computing the link point and direction
   // at "Parallel" and "Exclusive" nodes.
   class BarLink extends go.Link {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
       const r = port.getDocumentBounds();
       const op = otherport.getDocumentBounds();

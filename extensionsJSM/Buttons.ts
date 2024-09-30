@@ -122,7 +122,7 @@ go.GraphObject.defineBuilder('Button', (args: any): go.Panel => {
 //    go.GraphObject.build('TreeExpanderButton')
 
 go.GraphObject.defineBuilder('TreeExpanderButton', (args: any): go.Panel => {
-  const button = go.GraphObject.build('Button') as go.Panel;
+  const button = go.GraphObject.build<go.Panel>('Button');
   button.attach({
       // set these values for the isTreeExpanded binding conversion
       '_treeExpandedFigure': 'MinusLine',
@@ -178,7 +178,7 @@ go.GraphObject.defineBuilder('TreeExpanderButton', (args: any): go.Panel => {
 //    go.GraphObject.build('SubGraphExpanderButton')
 
 go.GraphObject.defineBuilder('SubGraphExpanderButton', (args: any): go.Panel => {
-  const button = go.GraphObject.build('Button') as go.Panel;
+  const button = go.GraphObject.build<go.Panel>('Button');
   button.attach({
       // set these values for the isSubGraphExpanded binding conversion
       '_subGraphExpandedFigure': 'MinusLine',
@@ -304,7 +304,7 @@ go.GraphObject.defineBuilder('ContextMenu', (args: any): go.Adornment =>
 // )
 
 go.GraphObject.defineBuilder('ContextMenuButton', (args: any): go.Panel => {
-  const button = go.GraphObject.build('Button') as go.Panel;
+  const button = go.GraphObject.build<go.Panel>('Button');
   button.stretch = go.Stretch.Horizontal;
   const border = button.findObject('ButtonBorder');
   if (border instanceof go.Shape) {
@@ -349,7 +349,7 @@ go.GraphObject.defineBuilder('ContextMenuButton', (args: any): go.Panel => {
 go.GraphObject.defineBuilder('PanelExpanderButton', (args: any): go.Panel => {
   const eltname = go.GraphObject.takeBuilderArgument(args, 'COLLAPSIBLE') as string;
 
-  const button = go.GraphObject.build('Button') as go.Panel;
+  const button = go.GraphObject.build<go.Panel>('Button');
   button.attach({
       // set these values for the button's look
       '_buttonExpandedFigure': 'M0 0 M0 6 L4 2 8 6 M8 8',
@@ -407,8 +407,8 @@ go.GraphObject.defineBuilder('CheckBoxButton', (args: any): go.Panel => {
   // process the one required string argument for this kind of button
   const propname = go.GraphObject.takeBuilderArgument(args) as string;
 
-  const button = go.GraphObject.build('Button',
-      { desiredSize: new go.Size(14, 14) }) as go.Panel;
+  const button = go.GraphObject.build<go.Panel>('Button',
+      { desiredSize: new go.Size(14, 14) });
   button.add(
     new go.Shape({
         name: 'ButtonIcon',
@@ -454,14 +454,14 @@ go.GraphObject.defineBuilder('CheckBox', (args: any): go.Panel => {
   // process the one required string argument for this kind of button
   const propname = go.GraphObject.takeBuilderArgument(args) as string;
 
-  const button = go.GraphObject.build('CheckBoxButton',
+  const button = go.GraphObject.build<go.Panel>('CheckBoxButton',
     {
       name: 'Button',
       isActionable: false, // actionable is set on the whole horizontal panel
       margin: new go.Margin(0, 1, 0, 0)
     },
     propname // bound to this data property
-  ) as go.Panel;
+  );
 
   const box = new go.Panel('Horizontal', {
       isActionable: true,

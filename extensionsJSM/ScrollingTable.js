@@ -55,26 +55,9 @@ go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
         }
     }
     const button = go.GraphObject.build('Button');
-    // override the normal button actions
-    const btndown = button.actionDown;
-    const btnup = button.actionUp;
-    const btncancel = button.actionCancel;
-    button.actionDown = (e, btn) => {
-        delayClicking(e, btn);
-        if (btndown)
-            btndown(e, btn);
-    };
-    button.actionUp = (e, btn) => {
-        endClicking(e, btn);
-        if (btnup)
-            btnup(e, btn);
-    };
-    button.actionCancel = (e, btn) => {
-        endClicking(e, btn);
-        if (btncancel)
-            btncancel(e, btn);
-    };
-    go.GraphObject.build("Button").add(new go.Panel());
+    button.actionDown = (e, btn) => delayClicking(e, btn);
+    button.actionUp = (e, btn) => endClicking(e, btn);
+    button.actionCancel = (e, btn) => endClicking(e, btn);
     return button;
 });
 // Create a "Table" Panel that supports scrolling.

@@ -124,29 +124,29 @@ class AvoidsLinksRouter extends go.Router {
     /**
      * Determine whether the AvoidsLinksRouter should operate on a given collection.
      * See {@link ignoreContainingGroups} for the default behavior.
-     * @param {go.Group | go.Diagram} coll
+     * @param {go.Group | go.Diagram} container
      * @returns
      */
-    canRoute(coll) {
-        if (this._ignoreContainingGroups && coll instanceof go.Group)
+    canRoute(container) {
+        if (this._ignoreContainingGroups && container instanceof go.Group)
             return false;
-        return super.canRoute(coll);
+        return super.canRoute(container);
     }
     /**
      * Adjust segments of all links in the Diagram to prevent overlap.
      *
-     * @param {*} coll A Diagram or a Group
-     * @param {*} diagram
+     * @param {go.Set<go.Link>} links
+     * @param {*} container A Diagram or a Group
      * @returns
      */
-    routeLinks(links, coll) {
+    routeLinks(links, container) {
         const diagram = this.diagram;
         if (diagram === null)
             return;
         for (let i = 0; i < this.iterations; i++) {
             this._allsegs = new go.List();
             this._gridlines = new go.List();
-            this.collectSegments(links, coll);
+            this.collectSegments(links, container);
             let positions = null;
             if (this._avoidsNodes) {
                 positions = diagram.getPositions(true, null, null);

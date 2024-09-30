@@ -30,11 +30,9 @@ import * as go from 'gojs';
 export class SwimLaneLayout extends go.LayeredDigraphLayout {
     constructor(init) {
         super();
-        // internal state
-        this._layers = [[]];
-        this._neededSpaces = [];
         this._laneProperty = 'lane'; // how to get lane identifier string from node data
         this._laneNames = []; // lane names, may be sorted using this.laneComparer
+        this._laneIndexes = new go.Map();
         this._laneComparer = null;
         this._laneSpacing = 0; // in columns
         this._router = { linkSpacing: 4 };
@@ -327,10 +325,11 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         // set up some data structures
         const layout = this;
         const laneNameSet = new go.Set().addAll(this.laneNames);
-        const laneIndexes = new go.Map(); // lane names --> index when sorted
+        const laneIndexes = new go.Map(); // lane name --> index when sorted
         const vit = this.network.vertexes.iterator;
         while (vit.next()) {
             const v = vit.value;
+            // discover any more lane names
             const lane = this.getLane(v); // cannot call findLane yet
             if (lane !== null && !laneNameSet.has(lane)) {
                 laneNameSet.add(lane);
@@ -347,12 +346,13 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                 }
             }
         }
-        // sort laneNames and initialize laneIndexes
+        // sort laneNames and initialize laneIndexes with sorted indexes
         if (typeof this.laneComparer === 'function')
             this.laneNames.sort(this.laneComparer);
         for (let i = 0; i < this.laneNames.length; i++) {
             laneIndexes.set(this.laneNames[i], i);
         }
+        this._laneIndexes = laneIndexes;
         // now OK to call findLane
         // sort vertexes so that vertexes are grouped by lane
         for (let i = 0; i <= this.maxLayer; i++) {
@@ -369,12 +369,13 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         const layers = this._layers;
         const red = this.reducer;
         if (red) {
-            for (let i = 0; i < layers.length - 1; i++) {
-                red.reduceCrossings(layers[i], layers[i + 1]);
+            red.laneIndexes = this._laneIndexes;
+            for (let i = 1; i < layers.length; i++) {
+                red.reduceCrossings(layers[i], layers[i - 1]);
                 layers[i].forEach((v, j) => (v.index = j));
             }
-            for (let i = layers.length - 1; i > 0; i--) {
-                red.reduceCrossings(layers[i], layers[i - 1]);
+            for (let i = layers.length - 2; i >= 0; i--) {
+                red.reduceCrossings(layers[i], layers[i + 1]);
                 layers[i].forEach((v, j) => (v.index = j));
             }
         }
@@ -551,13 +552,17 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         let laneW = this.findLane(w);
         if (laneW === null)
             laneW = '';
-        if (laneV < laneW)
+        const idxV = this._laneIndexes.get(laneV) || 0;
+        const idxW = this._laneIndexes.get(laneW) || 0;
+        if (idxV < idxW)
             return -1;
-        if (laneV > laneW)
+        if (idxV > idxW)
             return 1;
         // OPTIONAL: sort dummy vertexes before vertexes representing real nodes
-        //if (v.node === null && w.node !== null) return -1;
-        //if (v.node !== null && w.node === null) return 1;
+        if (v.node === null && w.node !== null)
+            return -1;
+        if (v.node !== null && w.node === null)
+            return 1;
         if (v.column < w.column)
             return -1;
         if (v.column > w.column)

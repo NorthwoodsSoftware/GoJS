@@ -131,6 +131,11 @@
 
   // See "BarLink" in the Network Configuration sample for a similar class for connecting to horizontal Nodes.
   class TowerLink extends go.Link {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
     getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
       if (!from && node.category === 'Tower' && spot !== Spot.Bottom && spot !== Spot.Top) {
         var op = super.getLinkPoint(othernode, otherport, this.computeSpot(!from), !from, ortho, node, port);

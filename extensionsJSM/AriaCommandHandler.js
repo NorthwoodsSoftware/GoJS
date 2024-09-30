@@ -319,7 +319,7 @@ export class AriaCommandHandler extends go.CommandHandler {
      * For tree layouts.
      * Checks for and returns the previous sibling nodes of the currently selected node.
      * All nodes previous of the currently selected node will be in the array and first element is the previous node.
-     * @param {go.Node}
+     * @param {go.Node} node
      * @return {null || Array<go.Part>} returns null if there is no previous sibling node
      */
     _getPreviousSiblingNodes(node) {
