@@ -62,7 +62,7 @@ Graphs are constructed by creating one or more templates, with desired propertie
 ```html
 <div id="myDiagramDiv" style="width:400px; height:150px;"></div>
 
-<script src="https://unpkg.com/gojs"></script>
+<script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
 
 <script>
   const myDiagram = new go.Diagram(

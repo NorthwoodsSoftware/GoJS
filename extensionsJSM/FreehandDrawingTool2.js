@@ -3,13 +3,12 @@
  */
 /*
  * This is an extension and not part of the main GoJS library.
- * The source code for this is at extensionsJSM/FreehandDrawingTool.ts.
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
  * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
  */
-
+import * as go from 'gojs';
 /**
  * The FreehandDrawingTool allows the user to draw a shape using the mouse.
  * It collects all of the points from a mouse-down, all mouse-moves, until a mouse-up,
@@ -27,14 +26,19 @@
  * If you want to experiment with this extension, try the <a href="../../samples/FreehandDrawing.html">Freehand Drawing</a> sample.
  * @category Tool Extension
  */
-class FreehandDrawingTool extends go.Tool {
+export class FreehandDrawingTool extends go.Tool {
     constructor(init) {
         super();
         this.name = 'FreehandDrawing';
         this._archetypePartData = {};
         this._isBackgroundOnly = true;
         // this is the Shape that is shown during a drawing operation
-        this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+        this._temporaryShape = new go.Shape({
+            name: 'SHAPE',
+            fill: null,
+            strokeWidth: 1.5,
+            stroke: 'white',
+        });
         // the Shape has to be inside a temporary Part that is used during the drawing operation
         new go.Part({ layerName: 'Tool' }).add(this._temporaryShape);
         if (init)
@@ -210,16 +214,18 @@ class FreehandDrawingTool extends go.Tool {
                 // create the node data for the model
                 const d = diagram.model.copyNodeData(this.archetypePartData);
                 if (d !== null) {
+                    d.width = geo.bounds.width;
+                    d.height = geo.bounds.height;
                     // adding data to model creates the actual Part
                     diagram.model.addNodeData(d);
                     const part = diagram.findPartForData(d);
                     if (part !== null) {
                         // assign the location
-                        part.location = new go.Point(pos.x + geo.bounds.width / 2, pos.y + geo.bounds.height / 2);
+                        part.location = new go.Point(pos.x, pos.y);
                         // assign the Shape.geometry
                         const shape = part.findObject('SHAPE');
-                        if (shape !== null)
-                            shape.geometry = geo;
+                        if (shape !== null) {
+                        }
                     }
                 }
             }

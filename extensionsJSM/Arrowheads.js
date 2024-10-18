@@ -1,8 +1,18 @@
 /*
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
+/*
+ * This is an extension and not part of the main GoJS library.
+ * The source code for this is at extensionsJSM/Arrowheads.ts.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+import * as go from 'gojs';
 // These are the definitions for all of the predefined arrowheads.
 // You do not need to load this file in order to use arrowheads.
+// The source code for this is at extensionsJSM/Arrowheads.ts.
 // Typical custom definition:
 //   go.Shape.defineArrowheadGeometry("Zigzag", "M0,4 L1,8 3,0 5,8 7,0 8,4");
 // Typical usage in a link template:
@@ -11,7 +21,6 @@
 //       new go.Shape(),
 //       new go.Shape({ toArrow: "Zigzag" })
 //     );
-import * as go from 'gojs';
 go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
 go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');
 go.Shape.defineArrowheadGeometry('Triangle', 'F1 m 0,0 l 8,4.62 -8,4.62 z');

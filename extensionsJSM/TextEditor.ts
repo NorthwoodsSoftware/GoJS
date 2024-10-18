@@ -2,11 +2,21 @@
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
 
-// This is the definitions of the predefined text editor used by TextEditingTool
-// when you set or bind TextBlock.editable to true.
-// You do not need to load this file in order to use in-place text editing.
+/*
+ * This is an extension and not part of the main GoJS library.
+ * The source code for this is at extensionsJSM/TextEditor.ts.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
 
 import * as go from 'gojs';
+
+// This is the definitions of the predefined text editor used by TextEditingTool
+// when you set or bind TextBlock.editable to true.
+// The source code for this is at extensionsJSM/TextEditor.ts.
+// You do not need to load this file in order to use in-place text editing.
 
 // HTML + JavaScript text editor menu, made with HTMLInfo
 // This is a re-implementation of the default text editor
@@ -35,87 +45,60 @@ import * as go from 'gojs';
 ((window: any) => {
   const TextEditor: go.HTMLInfo = new go.HTMLInfo();
   const textarea = document.createElement('textarea');
-  textarea.id = 'myTextArea';
 
-  textarea.addEventListener(
-    'input',
-    (e) => {
+  textarea.addEventListener('input', e => {
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
       const tempText = tool.measureTemporaryTextBlock(textarea.value);
       const scale = (textarea as any).textScale;
-      textarea.style.width =
-        20 +
-        Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale +
-        'px';
+      textarea.style.width = 20 + Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale + 'px';
       textarea.rows = Math.max(tool.textBlock.lineCount, tempText.lineCount);
-    },
-    false
-  );
+    }, false);
 
-  textarea.addEventListener(
-    'keydown',
-    (e) => {
+  textarea.addEventListener('keydown', e => {
       if (e.isComposing) return;
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
-      const code = e.code;
-      if (code === 'Enter') {
-        // Enter
+      const key = e.key;
+      if (key === 'Enter') { // Enter
         if (tool.textBlock.isMultiline === false) e.preventDefault();
         tool.acceptText(go.TextEditingAccept.Enter);
-      } else if (code === 'Tab') {
-        // Tab
+        return;
+      } else if (key === 'Tab') { // Tab
         tool.acceptText(go.TextEditingAccept.Tab);
         e.preventDefault();
-      } else if (code === 'Escape') {
-        // Esc
+        return;
+      } else if (key === 'Escape') { // Esc
         tool.doCancel();
         if (tool.diagram !== null) tool.diagram.doFocus();
       }
-    },
-    false
-  );
+    }, false);
 
   // handle focus:
-  textarea.addEventListener(
-    'focus',
-    (e) => {
+  textarea.addEventListener('focus', e => {
       const tool = (TextEditor as any).tool;
-      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None)
-        return;
-
+      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None) return;
       if (tool.state === go.TextEditingState.Active) {
         tool.state = go.TextEditingState.Editing;
       }
-
-      if (tool.selectsTextOnActivate) {
+      if (typeof textarea.select === 'function' && tool.selectsTextOnActivate) {
         textarea.select();
         textarea.setSelectionRange(0, 9999);
       }
-    },
-    false
-  );
+    }, false);
 
   // Disallow blur.
   // If the textEditingTool blurs and the text is not valid,
   // we do not want focus taken off the element just because a user clicked elsewhere.
-  textarea.addEventListener(
-    'blur',
-    (e) => {
+  textarea.addEventListener('blur', e => {
       const tool = (TextEditor as any).tool;
-      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None)
-        return;
-
-      textarea.focus();
-
-      if (tool.selectsTextOnActivate) {
+      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None) return;
+      if (typeof textarea.focus === 'function') textarea.focus();
+      if (typeof textarea.select === 'function' && tool.selectsTextOnActivate) {
         textarea.select();
         textarea.setSelectionRange(0, 9999);
       }
-    },
-    false
-  );
+    }, false);
 
   TextEditor.valueFunction = () => textarea.value;
 
@@ -125,14 +108,15 @@ import * as go from 'gojs';
 
   // used to be in doActivate
   TextEditor.show = (textBlock: go.GraphObject, diagram: go.Diagram, tool: go.Tool) => {
-    if (!diagram || !diagram.div) return;
     if (!(textBlock instanceof go.TextBlock)) return;
+    if (!diagram || !diagram.div) return;
+    if (!(tool instanceof go.TextEditingTool)) return;
     if ((TextEditor as any).tool !== null) return; // Only one at a time.
 
     (TextEditor as any).tool = tool; // remember the TextEditingTool for use by listeners
 
     // This is called during validation, if validation failed:
-    if ((tool as any).state === go.TextEditingState.Invalid) {
+    if (tool.state === go.TextEditingState.Invalid) {
       textarea.style.border = '3px solid red';
       textarea.focus();
       return;
@@ -144,7 +128,7 @@ import * as go from 'gojs';
     const pos = diagram.position;
     const sc = diagram.scale;
     let textscale = textBlock.getDocumentScale() * sc;
-    if (textscale < (tool as any).minimumEditorScale) textscale = (tool as any).minimumEditorScale;
+    if (textscale < tool.minimumEditorScale) textscale = tool.minimumEditorScale;
     // Add slightly more width/height to stop scrollbars and line wrapping on some browsers
     // +6 is firefox minimum, otherwise lines will be wrapped improperly
     const textwidth = textBlock.naturalBounds.width * textscale + 6;
@@ -154,14 +138,9 @@ import * as go from 'gojs';
     const valign = textBlock.verticalAlignment;
     const oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
     const allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
-    const center = 0.5 * textheight - 0.5 * allLinesHeight;
+    const center = (0.5 * textheight) - (0.5 * allLinesHeight);
     // add offset to yCenter to get the appropriate position:
-    const yOffset =
-      valign.y * textheight -
-      valign.y * allLinesHeight +
-      valign.offsetY -
-      center -
-      allLinesHeight / 2;
+    const yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
 
     textarea.value = textBlock.text;
     // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides
@@ -172,11 +151,11 @@ import * as go from 'gojs';
     textarea.style['position'] = 'absolute';
     textarea.style['zIndex'] = '100';
     textarea.style['font'] = 'inherit';
-    textarea.style['fontSize'] = textscale * 100 + '%';
+    textarea.style['fontSize'] = (textscale * 100) + '%';
     textarea.style['lineHeight'] = 'normal';
     textarea.style['width'] = textwidth + 'px';
-    textarea.style['left'] = ((left - textwidth / 2) | 0) - paddingsize + 'px';
-    textarea.style['top'] = ((yCenter + yOffset) | 0) - paddingsize + 'px';
+    textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
+    textarea.style['top'] = (((yCenter + yOffset) | 0) - paddingsize) + 'px';
     textarea.style['textAlign'] = textBlock.textAlign;
     textarea.style['margin'] = '0';
     textarea.style['padding'] = paddingsize + 'px';
@@ -193,7 +172,7 @@ import * as go from 'gojs';
 
     // After adding, focus:
     textarea.focus();
-    if ((tool as any).selectsTextOnActivate) {
+    if (tool.selectsTextOnActivate) {
       textarea.select();
       textarea.setSelectionRange(0, 9999);
     }

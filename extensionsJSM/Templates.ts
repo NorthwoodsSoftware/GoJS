@@ -2,15 +2,25 @@
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
 
+/*
+ * This is an extension and not part of the main GoJS library.
+ * The source code for this is at extensionsJSM/Templates.ts.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+
+import * as go from 'gojs';
+
 // These are the definitions for all of the predefined templates and tool archetypes.
+// The source code for this is at extensionsJSM/Templates.ts.
 // You do not need to load this file in order to use the default templates and archetypes.
 
 // Although we have tried to provide definitions here that are faithful to how they
 // are actually implemented, there may be some differences from what is in the library.
 
 // Caution: these may change in a future version.
-
-import * as go from 'gojs';
 
 // Set up the default templates that each Diagram starts off with.
 export function setupDiagramTemplates(diagram: go.Diagram) {

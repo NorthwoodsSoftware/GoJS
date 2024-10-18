@@ -2,7 +2,19 @@
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
 
+/*
+ * This is an extension and not part of the main GoJS library.
+ * The source code for this is at extensionsJSM/Figures.ts.
+ * Note that the API for this class may change with any version, even point releases.
+ * If you intend to use an extension in production, you should copy the code to your own source directory.
+ * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
+ * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ */
+
+import * as go from 'gojs';
+
 // This file holds definitions of all legacy shape figures -- string values for Shape.figure.
+// The source code for this is at extensionsJSM/Figures.ts.
 // They were built into the library in version 1, but most were removed for v2.0.
 // The following figures are still built-in to the go.js library and thus do not need explicit definitions:
 //   Rectangle, Square, RoundedRectangle, Border, Ellipse, Circle,
@@ -11,8 +23,6 @@
 // If you need any of the other figures that are defined in this file, we suggest that you copy
 // just those definitions into your own code.  Do not load this file unless you really want to
 // define a lot of code that your app does not use and will not get garbage-collected.
-
-import * as go from 'gojs';
 
 // The following functions and variables are used throughout this file:
 

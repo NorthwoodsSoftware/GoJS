@@ -162,16 +162,21 @@ async function goDownload(dontDownload) {
   b1.remove();
   b2.remove();
   const hasPrism = typeof window.Prism !== 'undefined';
+  const includeNonModule = `<script src="https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go.js"><\/script>`;
+  const includeModule =`<script type="importmap">
+    { "imports": { "gojs": "https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go-module.js" } }
+  </script>`
+  const scriptInclude = sampleHTML.includes("import * as go from 'gojs'") ? includeModule : includeNonModule;
 
-  const prismImport = 
+  const prismImport =
 `<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>`;
 
-  var text = 
+  var text =
 `<!DOCTYPE html>
 <html lang="en">
 <body>
-<script src="https://unpkg.com/gojs@${go.version}/release/go.js"><\/script>${hasPrism ? `\n${prismImport}` : ''}
+${scriptInclude}${hasPrism ? `\n${prismImport}` : ''}
 <p>
   This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
   <a href="https://gojs.net/latest/${samplePath}">${title}<\/a>. It was automatically generated from a button on the sample page,
@@ -183,15 +188,15 @@ async function goDownload(dontDownload) {
 ${sampleHTML}
 </body>
 </html>`;
-  // replace all uses of '../extensions' with unpkg equivalent
+  // replace all uses of '../extensions' with CDN equivalent
   text = text.replace(
     /\.\.\/extensions/g,
-    `https://unpkg.com/create-gojs-kit@${go.version}/dist/extensions`
+    `https://cdn.jsdelivr.net/npm/create-gojs-kit@${go.version}/dist/extensions`
   );
-  // any src that does not begin with 'http' should get `https://unpkg.com/gojs@${go.version}/CURRENTFOLDER/`
+  // any src that does not begin with 'http' should get `https://cdn.jsdelivr.net/npm/gojs@${go.version}/CURRENTFOLDER/`
   text = text.replace(
     /<script src="(?:(?!http))+/g,
-    `https://unpkg.com/gojs@${go.version}/${dirName}`
+    `https://cdn.jsdelivr.net/npm/gojs@${go.version}/${dirName}`
   );
 
   if (dontDownload === true) {

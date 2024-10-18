@@ -2,17 +2,18 @@
  *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
  */
 
-import * as go from 'gojs';
-
-// A custom Tool to change the scale of an object in a Part.
-
 /*
  * This is an extension and not part of the main GoJS library.
+ * The source code for this is at extensionsJSM/RescalingTool.ts.
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
  * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
  */
+
+import * as go from 'gojs';
+
+// A custom Tool to change the scale of an object in a Part.
 
 /**
  * A custom tool for rescaling an object.
