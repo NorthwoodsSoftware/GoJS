@@ -201,8 +201,7 @@
                 })
               ),
             go.GraphObject.build('Button', {
-              click: changeColor,
-              _buttonFillOver: 'transparent'
+              click: changeColor
             }) // defined below, to support changing the color of the node
               .bind('ButtonBorder.fill', 'color', nextColor)
               .add(new go.Shape({ fill: null, stroke: null, desiredSize: new go.Size(14, 14) })),
@@ -245,8 +244,7 @@
       var shape = node.findObject('SHAPE');
       if (shape === null) return;
       node.diagram.startTransaction('Change color');
-      shape.fill = nextColor(shape.fill);
-      button['_buttonFillNormal'] = nextColor(shape.fill); // update the button too
+      button['_buttonFillOver'] = button['_buttonFillNormal'] = shape.fill = nextColor(shape.fill); // update the button too
       node.diagram.commitTransaction('Change color');
     }
 

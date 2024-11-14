@@ -45,12 +45,21 @@ go.GraphObject.defineBuilder('Button', (args) => {
             if (btn instanceof go.Panel) {
                 const shape = btn.findObject('ButtonBorder');
                 if (shape !== null) {
+                    if (btn['_buttonFillNormal'] === undefined)
+                        btn['_buttonFillNormal'] = shape.fill;
                     if (enabled) {
-                        btn['_buttonFillDisabled'] = shape.fill;
-                        shape.fill = btn['_buttonFillNormal'];
+                        let fnd = null;
+                        if (btn.layer !== null && btn.diagram !== null && btn.isVisibleObject()) {
+                            fnd = btn.layer.findObjectAt(btn.diagram.lastInput.documentPoint);
+                        }
+                        if (fnd === btn || (fnd !== null && fnd.isContainedBy(btn))) {
+                            shape.fill = btn['_buttonFillOver'];
+                        }
+                        else {
+                            shape.fill = btn['_buttonFillNormal'];
+                        }
                     }
                     else {
-                        btn['_buttonFillNormal'] = shape.fill;
                         shape.fill = btn['_buttonFillDisabled'];
                     }
                 }
@@ -60,8 +69,8 @@ go.GraphObject.defineBuilder('Button', (args) => {
     })
         .attach({
         // save these values for the mouseEnter and mouseLeave event handlers
-        '_buttonFillNormal': buttonFillNormal,
-        '_buttonStrokeNormal': buttonStrokeNormal,
+        '_buttonFillNormal': undefined,
+        '_buttonStrokeNormal': undefined,
         '_buttonFillOver': buttonFillOver,
         '_buttonStrokeOver': buttonStrokeOver,
         '_buttonFillDisabled': buttonFillDisabled
@@ -85,9 +94,11 @@ go.GraphObject.defineBuilder('Button', (args) => {
             return;
         const shape = btn.findObject('ButtonBorder'); // the border Shape
         if (shape instanceof go.Shape) {
-            btn['_buttonFillNormal'] = shape.fill;
+            if (btn['_buttonFillNormal'] === undefined)
+                btn['_buttonFillNormal'] = shape.fill;
             shape.fill = btn['_buttonFillOver'];
-            btn['_buttonStrokeNormal'] = shape.stroke;
+            if (btn['_buttonStrokeNormal'] === undefined)
+                btn['_buttonStrokeNormal'] = shape.stroke;
             shape.stroke = btn['_buttonStrokeOver'];
         }
     };
@@ -98,8 +109,10 @@ go.GraphObject.defineBuilder('Button', (args) => {
             return;
         const shape = btn.findObject('ButtonBorder'); // the border Shape
         if (shape instanceof go.Shape) {
-            shape.fill = btn['_buttonFillNormal'];
-            shape.stroke = btn['_buttonStrokeNormal'];
+            if (btn['_buttonFillNormal'] !== undefined)
+                shape.fill = btn['_buttonFillNormal'];
+            if (btn['_buttonStrokeNormal'] !== undefined)
+                shape.stroke = btn['_buttonStrokeNormal'];
         }
     };
     return button;
@@ -326,7 +339,9 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args) => {
         // set these values for the button's look
         '_buttonExpandedFigure': 'M0 0 M0 6 L4 2 8 6 M8 8',
         '_buttonCollapsedFigure': 'M0 0 M0 2 L4 6 8 2 M8 8',
+        'ButtonBorder.fill': 'rgba(0, 0, 0, 0)',
         '_buttonFillNormal': 'rgba(0, 0, 0, 0)',
+        'ButtonBorder.stroke': null,
         '_buttonStrokeNormal': null,
         '_buttonFillOver': 'rgba(0, 0, 0, .2)',
         '_buttonStrokeOver': null

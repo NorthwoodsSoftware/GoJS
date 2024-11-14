@@ -262,11 +262,10 @@
 <pre class="lang-js"><code>
   class MyRouter extends go.Router {
     // links is a Set of Links that may need to be re-routed to avoid other Links
-    // coll is either a Group or a Diagram or undefined
-    routeLinks(links, coll) {
-      // if coll is a Group, operate on those links that are also members of that Group
-      // if coll is a Diagram, operate on those links that are also top-level (i.e. not in a Group)
-      // if coll is undefined, operate on all of the given links
+    // container is either a Group or a Diagram
+    routeLinks(links, container) {
+      // if container is a Group, operate on those links that are members of that Group
+      // if container is a Diagram, operate on those links that are top-level (i.e. not in a Group)
     }
   }
 </code></pre>
@@ -293,15 +292,15 @@ distance from the next node in the tree. This custom router is designed to only 
       this.name = "CustomTree";
     }
 
-    canRoute(coll) {
-      if (!super.canRoute(coll)) return false;
-      if (coll instanceof go.Diagram) return true;
+    canRoute(container) {
+      if (!super.canRoute(container)) return false;
+      if (container instanceof go.Diagram) return true;
       return false; // only perform routing on the whole Diagram, never on Groups
     }
 
-    // We do not use the second `coll` argument in this router, because we implemented
+    // We do not use the second `container` argument in this router, because we implemented
     // canRoute to ignore groups
-    routeLinks(links, coll) {
+    routeLinks(links, container) {
       links.each(link => {
         if (!link.isOrthogonal) return; // only applies to orthogonal links
 

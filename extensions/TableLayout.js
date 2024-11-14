@@ -56,7 +56,7 @@ class TableLayout extends go.Layout {
     set defaultAlignment(val) {
         if (!this._defaultAlignment.equals(val)) {
             if (!(val instanceof go.Spot))
-                throw new Error("new defaultAlignment value is not a Spot");
+                throw new Error('new defaultAlignment value is not a Spot');
             this._defaultAlignment = val;
             this.invalidateLayout();
         }

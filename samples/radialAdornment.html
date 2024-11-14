@@ -165,20 +165,22 @@
     });
 
     var button = new go.Panel('Spot', {
-      isActionable: true, // needed so that the ActionTool intercepts mouse events
-      enabledChanged: (button, enabled) => {
-        const shape = button.findObject('ButtonBorder');
-        if (shape !== null) {
-          shape.fill = enabled ? button['_buttonFillNormal'] : button['_buttonFillDisabled'];
+        isActionable: true, // needed so that the ActionTool intercepts mouse events
+        enabledChanged: (button, enabled) => {
+          const shape = button.findObject('ButtonBorder');
+          if (shape !== null) {
+            shape.fill = enabled ? button['_buttonFillNormal'] : button['_buttonFillDisabled'];
+          }
         }
-      },
-      // save these values for the mouseEnter and mouseLeave event handlers
-      _buttonFillNormal: buttonFillNormal,
-      _buttonStrokeNormal: buttonStrokeNormal,
-      _buttonFillOver: buttonFillOver,
-      _buttonStrokeOver: buttonStrokeOver,
-      _buttonFillDisabled: buttonFillDisabled
-    })
+      })
+      .attach({
+        // save these values for the mouseEnter and mouseLeave event handlers
+        _buttonFillNormal: buttonFillNormal,
+        _buttonStrokeNormal: buttonStrokeNormal,
+        _buttonFillOver: buttonFillOver,
+        _buttonStrokeOver: buttonStrokeOver,
+        _buttonFillDisabled: buttonFillDisabled
+      })
       .add(
         new go.Shape({ // the border
           name: 'ButtonBorder',
@@ -195,12 +197,8 @@
     button.mouseEnter = (e, button, prev) => {
       var shape = button.findObject('ButtonBorder'); // the border Shape
       if (shape instanceof go.Shape) {
-        var brush = button['_buttonFillOver'];
-        button['_buttonFillNormal'] = shape.fill;
-        shape.fill = brush;
-        brush = button['_buttonStrokeOver'];
-        button['_buttonStrokeNormal'] = shape.stroke;
-        shape.stroke = brush;
+        shape.fill = button['_buttonFillOver'];
+        shape.stroke = button['_buttonStrokeOver'];
       }
     };
 

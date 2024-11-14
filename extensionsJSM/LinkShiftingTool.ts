@@ -27,6 +27,8 @@ export class LinkShiftingTool extends go.Tool {
   // these are archetypes for the two shift handles, one at each end of the Link:
   private _fromHandleArchetype: go.GraphObject | null;
   private _toHandleArchetype: go.GraphObject | null;
+  private _fromAdornmentTemplate: go.Adornment | null;
+  private _toAdornmentTemplate: go.Adornment | null;
 
   // transient state
   private _handle: go.GraphObject | null;
@@ -38,26 +40,36 @@ export class LinkShiftingTool extends go.Tool {
   constructor(init?: Partial<LinkShiftingTool>) {
     super();
     this.name = 'LinkShifting';
-    const h: go.Shape = new go.Shape();
-    h.geometryString = 'F1 M0 0 L8 0 M8 4 L0 4';
-    h.fill = null;
-    h.stroke = 'dodgerblue';
-    h.background = 'lightblue';
-    h.cursor = 'pointer';
-    h.segmentIndex = 0;
-    h.segmentFraction = 1;
-    h.segmentOrientation = go.Orientation.Along;
-    const g: go.Shape = new go.Shape();
-    g.geometryString = 'F1 M0 0 L8 0 M8 4 L0 4';
-    g.fill = null;
-    g.stroke = 'dodgerblue';
-    g.background = 'lightblue';
-    g.cursor = 'pointer';
-    g.segmentIndex = -1;
-    g.segmentFraction = 1;
-    g.segmentOrientation = go.Orientation.Along;
-    this._fromHandleArchetype = h;
-    this._toHandleArchetype = g;
+    this._fromHandleArchetype =
+      new go.Shape({
+        geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
+        fill: null,
+        stroke: 'dodgerblue',
+        background: 'lightblue',
+        cursor: 'pointer',
+        segmentIndex: 0,
+        segmentFraction: 1,
+        segmentOrientation: go.Orientation.Along
+      });
+    this._fromAdornmentTemplate =
+      new go.Adornment(go.Panel.Link)
+        .add(this._fromHandleArchetype)
+        .freezeBindings();
+    this._toHandleArchetype =
+      new go.Shape({
+        geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
+        fill: null,
+        stroke: 'dodgerblue',
+        background: 'lightblue',
+        cursor: 'pointer',
+        segmentIndex: -1,
+        segmentFraction: 1,
+        segmentOrientation: go.Orientation.Along
+      });
+    this._toAdornmentTemplate =
+      new go.Adornment(go.Panel.Link)
+        .add(this._toHandleArchetype)
+        .freezeBindings();
     this._originalPoints = null;
     this._handle = null;
     this._originalPoints = null;
@@ -72,6 +84,8 @@ export class LinkShiftingTool extends go.Tool {
   }
   set fromHandleArchetype(value: go.GraphObject | null) {
     this._fromHandleArchetype = value;
+    if (value !== null) this._fromAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();
+    else this._fromAdornmentTemplate = null;
   }
 
   /**
@@ -82,6 +96,8 @@ export class LinkShiftingTool extends go.Tool {
   }
   set toHandleArchetype(value: go.GraphObject | null) {
     this._toHandleArchetype = value;
+    if (value !== null) this._toAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();
+    else this._toAdornmentTemplate = null;
   }
 
   /**
@@ -107,8 +123,10 @@ export class LinkShiftingTool extends go.Tool {
           adornment = link.findAdornment(category);
           if (adornment === null) {
             adornment = this.makeAdornment(selelt, false);
-            adornment.category = category;
-            link.addAdornment(category, adornment);
+            if (adornment) {
+              adornment.category = category;
+              link.addAdornment(category, adornment);
+            }
           } else {
             // This is just to invalidate the measure, so it recomputes itself based on the adorned link
             adornment.segmentFraction = Math.random();
@@ -134,8 +152,10 @@ export class LinkShiftingTool extends go.Tool {
           adornment = link.findAdornment(category);
           if (adornment === null) {
             adornment = this.makeAdornment(selelt, true);
-            adornment.category = category;
-            link.addAdornment(category, adornment);
+            if (adornment) {
+              adornment.category = category;
+              link.addAdornment(category, adornment);
+            }
           } else {
             // This is just to invalidate the measure, so it recomputes itself based on the adorned link
             adornment.segmentFraction = Math.random();
@@ -151,16 +171,13 @@ export class LinkShiftingTool extends go.Tool {
    * @param selelt - the {@link go.GraphObject} of the {@link go.Link} being shifted.
    * @param toend
    */
-  makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment {
-    const adornment = new go.Adornment();
-    adornment.type = go.Panel.Link;
-    const h = toend ? this.toHandleArchetype : this.fromHandleArchetype;
-    if (h !== null) {
-      // add a single handle for shifting at one end
-      adornment.add(h.copy());
+  makeAdornment(selelt: go.GraphObject, toend: boolean): go.Adornment | null {
+    let ad = toend ? this._toAdornmentTemplate : this._fromAdornmentTemplate;
+    if (ad) {
+      ad = ad.copy();
+      ad.adornedObject = selelt;
     }
-    adornment.adornedObject = selelt;
-    return adornment;
+    return ad;
   }
 
   /**

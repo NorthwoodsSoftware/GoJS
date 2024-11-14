@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.13
+ * Type definitions for GoJS v3.0.14
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -6110,6 +6110,13 @@ export class DraggingTool extends Tool {
      * the Part(s) to be selected and dragged have already been determined by the caller.
      */
     doActivate(): void;
+    /**
+     * @param link
+     * (undocumented)
+     * This predicate is passed the single Link that is starting to be dragged when {@link dragsLink} is true.
+     * By default this function ignores the link and only checks whether {@link Diagram.allowRelink} is true.
+     */
+    mayDragLink(link: Link): boolean;
     /**
      * This just calls {@link CommandHandler.computeEffectiveCollection} and remains for compatibility.
      *
@@ -12338,6 +12345,7 @@ export class Diagram {
      * which if non-null will take precedence over this Diagram property.
      *
      * This Adornment must not be in the visual tree of any Diagram.
+     * The value must not be null.
      */
     get nodeSelectionAdornmentTemplate(): Adornment;
     set nodeSelectionAdornmentTemplate(value: Adornment);
@@ -12347,6 +12355,7 @@ export class Diagram {
      * Each {@link Group} can have its own {@link Part.selectionAdornmentTemplate}, which if non-null will take precedence over this Diagram property.
      *
      * This Adornment must not be in the visual tree of any Diagram.
+     * The value must not be null.
      */
     get groupSelectionAdornmentTemplate(): Adornment;
     set groupSelectionAdornmentTemplate(value: Adornment);
@@ -12356,6 +12365,7 @@ export class Diagram {
      * Each {@link Link} can have its own {@link Part.selectionAdornmentTemplate}, which if non-null will take precedence over this Diagram property.
      *
      * This Adornment must not be in the visual tree of any Diagram.
+     * The value must not be null.
      */
     get linkSelectionAdornmentTemplate(): Adornment;
     set linkSelectionAdornmentTemplate(value: Adornment);
@@ -13682,28 +13692,28 @@ export class Overview extends Diagram {
  * <h3>Keyboard Shortcuts</h3>
  *
  * The CommandHandler implements the following command bindings for keyboard input in {@link doKeyDown}:
- *   - `Ctrl-X` & `Shift-Del` invoke {@link cutSelection}
- *   - `Ctrl-C` & `Ctrl-Insert` invoke {@link copySelection}
- *   - `Ctrl-V` & `Shift-Insert` invoke {@link pasteSelection}
- *   - `Del` & `Backspace` invoke {@link deleteSelection}
+ *   - `Del` or `Backspace` invokes {@link deleteSelection}
+ *   - `Ctrl-X` or `Shift-Del` invokes {@link cutSelection}
+ *   - `Ctrl-C` or `Ctrl-Insert` invokes {@link copySelection}
+ *   - `Ctrl-V` or `Shift-Insert` invokes {@link pasteSelection}
  *   - `Ctrl-A` invokes {@link selectAll}
- *   - `Ctrl-Z` & `Alt-Backspace` invoke {@link undo}
- *   - `Ctrl-Y` & `Alt-Shift-Backspace` invoke {@link redo}
- *   - `Up` & `Down` & `Left` & `Right` (arrow keys) call {@link Diagram.scroll}
- *   - `PageUp` & `PageDown` call {@link Diagram.scroll}
- *   - `Home` & `End` call {@link Diagram.scroll}
+ *   - `Ctrl-Z` or `Alt-Backspace` invokes {@link undo}
+ *   - `Ctrl-Y` or `Ctrl-Shift-Z` or `Alt-Shift-Backspace` invokes {@link redo}
+ *   - `Up` or `Down` or `Left` or `Right` (arrow key) calls {@link Diagram.scroll}
+ *   - `PageUp` or `PageDown` calls {@link Diagram.scroll}
+ *   - `Home` or `End` calls {@link Diagram.scroll}
  *   - `Space` invokes {@link scrollToPart}
- *   - `Ctrl-- & Keypad--` (minus) invoke {@link decreaseZoom}
- *   - `Ctrl-+ & Keypad-+` (plus) invoke {@link increaseZoom}
+ *   - `Ctrl-- (minus) or Keypad--` invokes {@link decreaseZoom}
+ *   - `Ctrl-+ (plus) or Keypad-+` invokes {@link increaseZoom}
  *   - `Ctrl-0` invokes {@link resetZoom}
  *   - `Shift-Z` invokes {@link zoomToFit}; repeat to return to the original scale and position
  *   - `Ctrl-G` invokes {@link groupSelection}
  *   - `Ctrl-Shift-G` invokes {@link ungroupSelection}
  *   - `F2` invokes {@link editTextBlock}
- *   - `Menu Key` invokes {@link showContextMenu}
+ *   - `Menu Key` or Shift-F10 or Ctrl-Shift-\ invokes {@link showContextMenu}
  *   - `Esc` invokes {@link stopCommand}
  *
- * On a Macintosh the Command key is used as the modifier instead of the Control key.
+ * On a Mac the Command key is used as the modifier instead of the Control key.
  *
  * On touch devices there is a default context menu that shows many commonly-used commands
  * when you hold a finger down on the diagram.
@@ -18330,6 +18340,13 @@ export class Panel extends GraphObject {
      */
     get itemIndex(): number;
     set itemIndex(value: number);
+    /**
+     * (undocumented)
+     * Collect all of the Bindings in the visual tree, freeze them,
+     * and make sure there is a name association to the target object,
+     * so that they can be found in each copy of the visual tree.
+     */
+    freezeBindings(): this;
     /**
      * Make a deep copy of this Panel and allow it to be used as a template.
      * This makes copies of Bindings, unlike the regular `copy()` method.
@@ -31522,15 +31539,19 @@ export abstract class Router {
      * and then the Diagram, you should check the {@link Part.containingGroup} on each Link to ensure it matches:
      *
      * ```ts
-     *  public routeLinks(links: Set<Link>, container?: Diagram | Group): void {
-     *    const container = container instanceof Diagram ? null : container;
+     *  public routeLinks(links: Set<Link>, container: Diagram | Group): void {
+     *    const grp = container instanceof Diagram ? null : container;
      *    const it = links.iterator;
      *    while (it.next()) {
      *      const link = it.value;
      *      // Only operate on links that are in the corresponding collection, if one is given
-     *      if (container && link.containingGroup !== container) continue;
+     *      if (link.containingGroup !== grp) continue;
      *      . . .
      * ```
+     *
+     * However you may wish to design your router so that {@link canRoute} is false for Groups,
+     * in which case you will want to operate on each of the Links in the first argument,
+     * regardless of whether or not it is a top-level Link.
      *
      * This method should not check the {@link canRoute} predicate.
      *
@@ -31539,7 +31560,7 @@ export abstract class Router {
      * When calling a router manually, this does not need to be specified.
      * @virtual
      */
-    routeLinks(links: Set<Link>, container?: Diagram | Group): void;
+    routeLinks(links: Set<Link>, container: Diagram | Group): void;
 }
 /**
  * The AvoidsNodesRouter is a Router that will modify any Orthogonal {@link Link}s
@@ -31574,7 +31595,7 @@ export class AvoidsNodesRouter extends Router {
      * @param links The set of links that were recently recomputed, which may need routing.
      * @param container A Diagram or Group on which the Router will operate.
      */
-    routeLinks(links: Set<Link>, container?: Diagram | Group): void;
+    routeLinks(links: Set<Link>, container: Diagram | Group): void;
 }
 
 

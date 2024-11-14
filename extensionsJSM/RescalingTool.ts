@@ -34,6 +34,7 @@ import * as go from 'gojs';
 export class RescalingTool extends go.Tool {
   private _rescaleObjectName: string;
   private _handleArchetype: go.GraphObject;
+  private _adornmentTemplate: go.Adornment;
   // internal state
   private _adornedObject: go.GraphObject | null;
   private _handle: go.GraphObject | null;
@@ -45,19 +46,23 @@ export class RescalingTool extends go.Tool {
     super();
     this.name = 'Rescaling';
     this._rescaleObjectName = '';
+    this._handleArchetype =
+      new go.Shape({
+        alignment: go.Spot.BottomRight,
+        width: 8, height: 8,
+        fill: 'lightblue', stroke: 'dodgerblue',
+        cursor: 'nwse-resize'
+      });
+    this._adornmentTemplate =
+      new go.Adornment(go.Panel.Spot)
+        .add(new go.Placeholder(), this._handleArchetype)
+        .freezeBindings();
     // internal state
     this._adornedObject = null;
     this._handle = null;
     this.originalPoint = new go.Point();
     this.originalTopLeft = new go.Point();
     this.originalScale = 1.0;
-    const h = new go.Shape();
-    h.desiredSize = new go.Size(8, 8);
-    h.fill = 'lightblue';
-    h.stroke = 'dodgerblue';
-    h.strokeWidth = 1;
-    h.cursor = 'nwse-resize';
-    this._handleArchetype = h;
     if (init) Object.assign(this, init);
   }
 
@@ -87,11 +92,14 @@ export class RescalingTool extends go.Tool {
    *       { width: 8, height: 8, stroke: "green", fill: "transparent" })
    * ```
    */
-  get handleArchetype(): go.GraphObject {
-    return this._handleArchetype;
-  }
+  get handleArchetype(): go.GraphObject { return this._handleArchetype; }
   set handleArchetype(val: go.GraphObject) {
+    if (!(val instanceof go.GraphObject)) return;
     this._handleArchetype = val;
+    this._adornmentTemplate =
+      new go.Adornment(go.Panel.Spot)
+        .add(new go.Placeholder(), val)
+        .freezeBindings();
   }
 
   /**
@@ -154,10 +162,7 @@ export class RescalingTool extends go.Tool {
    * @param rescaleObj
    */
   makeAdornment(rescaleObj: go.GraphObject | null): go.Adornment {
-    const adornment = new go.Adornment();
-    adornment.type = go.Panel.Position;
-    adornment.locationSpot = go.Spot.Center;
-    adornment.add(this._handleArchetype.copy());
+    const adornment = this._adornmentTemplate.copy();
     adornment.adornedObject = rescaleObj;
     return adornment;
   }

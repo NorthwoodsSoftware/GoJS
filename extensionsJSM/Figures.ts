@@ -367,29 +367,29 @@ go.Shape.defineFigureGenerator('HexagonalCapsule', (shape, w, h) => {
   if (isNaN(param1)) param1 = 10;
   const geo = new go.Geometry();
   if (w < h) {
-    const inset = Math.min(param1, w/2);
-    const fig = new go.PathFigure(w/2, 0, true);
+    const inset = Math.min(param1, w / 2);
+    const fig = new go.PathFigure(w / 2, 0, true);
     geo.add(fig);
     // Outline
     fig.add(new go.PathSegment(go.SegmentType.Line, w, inset));
     fig.add(new go.PathSegment(go.SegmentType.Line, w, h - inset));
-    fig.add(new go.PathSegment(go.SegmentType.Line, w/2, h));
+    fig.add(new go.PathSegment(go.SegmentType.Line, w / 2, h));
     fig.add(new go.PathSegment(go.SegmentType.Line, 0, h - inset));
     fig.add(new go.PathSegment(go.SegmentType.Line, 0, inset).close());
-    geo.spot1 = new go.Spot(0, 0, inset/2, inset);
-    geo.spot2 = new go.Spot(1, 1, -inset/2, -inset);
+    geo.spot1 = new go.Spot(0, 0, inset / 2, inset);
+    geo.spot2 = new go.Spot(1, 1, -inset / 2, -inset);
   } else {
-    const inset = Math.min(param1, h/2);
+    const inset = Math.min(param1, h / 2);
     const fig = new go.PathFigure(inset, 0, true);
     geo.add(fig);
     // Outline
     fig.add(new go.PathSegment(go.SegmentType.Line, w - inset, 0));
-    fig.add(new go.PathSegment(go.SegmentType.Line, w, h/2));
+    fig.add(new go.PathSegment(go.SegmentType.Line, w, h / 2));
     fig.add(new go.PathSegment(go.SegmentType.Line, w - inset, h));
     fig.add(new go.PathSegment(go.SegmentType.Line, inset, h));
-    fig.add(new go.PathSegment(go.SegmentType.Line, 0, h/2).close());
-    geo.spot1 = new go.Spot(0, 0, inset, inset/2);
-    geo.spot2 = new go.Spot(1, 1, -inset, -inset/2);
+    fig.add(new go.PathSegment(go.SegmentType.Line, 0, h / 2).close());
+    geo.spot1 = new go.Spot(0, 0, inset, inset / 2);
+    geo.spot2 = new go.Spot(1, 1, -inset, -inset / 2);
   }
   return geo;
 });

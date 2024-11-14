@@ -39,9 +39,9 @@ export class AriaCommandHandler extends go.CommandHandler {
   /**
    * Creates and sets the Aria live region.
    * Defines variables for node selection history and runs setup method.
-   * 
+   *
    * @param {string} mode the mode of the diagram, 'default', 'tree', or 'links'
-   * 
+   *
    * Default mode: Arrow keys change selection to a new node, if possible, based on direction.
    * Tree mode: Arrow keys change selection to a new node, if possible, based on tree relationships.
    * Links mode: Arrow keys change selection to a new node, if possible, based on linked nodes.
@@ -54,14 +54,6 @@ export class AriaCommandHandler extends go.CommandHandler {
     this.index = 0;
     this.mode = mode; //'default' 'tree' or 'links'
     if (init) Object.assign(this, init);
-  }
-
-  /**
-   * Allows for changing of the mode after initialization.
-   * @param {string} mode the mode of the diagram, 'default', 'tree', or 'links'
-   */
-  setMode(mode: string) {
-    this.mode = mode;
   }
 
   /**
@@ -126,6 +118,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * @param {number} a angle
    * @param {number} dir direction to compare the angle to
    * @return {number} returns the difference between the two angles
@@ -136,6 +129,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * Looks for the closest node to the selection in the given direction and returns it.
    * Returns null if there are no nodes found in the direction.
    * @param {number} dir direction angle to look for the closest node
@@ -174,10 +168,11 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
-     * For default layouts.
-     * Returns an array of all nodes and parts in the given diagram, but not any links.
-     * @return {object[]}
-     */
+   * @hidden @internal
+   * For default layouts.
+   * Returns an array of all nodes and parts in the given diagram, but not any links.
+   * @return {object[]}
+   */
   private _getAllParts(): Array<go.Part> {
     const diagram = this.diagram;
     if (!diagram) return [];
@@ -193,11 +188,12 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
-     * For default layouts.
-     * Checks for closest node in the direction of the hit arrow key and selects the node
-     * Adds the node to the node movement history
-     * If there is no node is checked direction completes an aria call letting the user know
-     */
+   * @hidden @internal
+   * For default layouts.
+   * Checks for closest node in the direction of the hit arrow key and selects the node
+   * Adds the node to the node movement history
+   * If there is no node is checked direction completes an aria call letting the user know
+   */
   private _arrowKeySelect(ekey: string) {
     let node = this.diagram.selection.first();
     //if no node is currently selected it selects one and clears node history
@@ -234,6 +230,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * Checks if the currently selected node is the furthest part of the history
    * Selects the previous node in the history array
    */
@@ -244,6 +241,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * Checks if the currently selected node is the closest part of the history
    * Selects the next node in the history array
    */
@@ -268,11 +266,11 @@ export class AriaCommandHandler extends go.CommandHandler {
     const parent = node.findTreeParentNode();
     const children = node.findTreeChildrenNodes();
     const nextSiblings = this._getNextSiblingNodes(node);
-    const previousSiblings = this._getPreviousSiblingNodes(node); 
-    message += (parent != null ? this.getPartText(parent) + ' is the parent. ': 'No parent node.');
-    children.each((child) => {message += this.getPartText(child) + ' is a child. '});
-    if (nextSiblings !== null) nextSiblings.forEach((sibling) => {message += this.getPartText(sibling) + ' is a next sibling. '});
-    if (previousSiblings !== null) previousSiblings.forEach((sibling) => {message += this.getPartText(sibling) + ' is a previous sibling. '});
+    const previousSiblings = this._getPreviousSiblingNodes(node);
+    message += (parent != null ? this.getPartText(parent) + ' is the parent. ' : 'No parent node.');
+    children.each(child => message += this.getPartText(child) + ' is a child. ');
+    if (nextSiblings !== null) nextSiblings.forEach(sibling => message += this.getPartText(sibling) + ' is a next sibling. ');
+    if (previousSiblings !== null) previousSiblings.forEach(sibling => message += this.getPartText(sibling) + ' is a previous sibling. ');
     this.callAria(message);
   }
 
@@ -294,6 +292,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * For tree layouts.
    * Checks for and returns the next sibling nodes of the currently selected node.
    * All nodes next from the currently selected node will be in the array and first element is the next node.
@@ -301,35 +300,33 @@ export class AriaCommandHandler extends go.CommandHandler {
    * @return {null || Array<go.Part>} returns null if there is no next sibling node
    */
   private _getNextSiblingNodes(node: go.Node){
-    if (!(node instanceof go.Node))
-        return null;
-    if (node.findTreeParentNode() === null)
-        return null;
-    let nodes: Array<go.Node> = []
-    node.findTreeParentNode()!.findTreeChildrenNodes().each((n) => {nodes.push(n)});
+    if (!(node instanceof go.Node)) return null;
+    if (node.findTreeParentNode() === null) return null;
+    let nodes: Array<go.Node> = [];
+    node.findTreeParentNode()!.findTreeChildrenNodes().each(n => nodes.push(n));
     nodes = nodes.slice(nodes.indexOf(node) + 1);
     return (nodes.length > 0) ? nodes : null;
   }
 
   /**
+   * @hidden @internal
    * For tree layouts.
    * Checks for and returns the previous sibling nodes of the currently selected node.
    * All nodes previous of the currently selected node will be in the array and first element is the previous node.
    * @param {go.Node} node
    * @return {null || Array<go.Part>} returns null if there is no previous sibling node
    */
-  _getPreviousSiblingNodes(node: go.Node){
-    if (!(node instanceof go.Node))
-        return null;
-    if (node.findTreeParentNode() === null)
-        return null;
-    let nodes: Array<go.Node> = []
-    node.findTreeParentNode()!.findTreeChildrenNodes().each((n) => {nodes.push(n)});
+  private _getPreviousSiblingNodes(node: go.Node) {
+    if (!(node instanceof go.Node)) return null;
+    if (node.findTreeParentNode() === null) return null;
+    let nodes: Array<go.Node> = [];
+    node.findTreeParentNode()!.findTreeChildrenNodes().each(n => nodes.push(n));
     nodes = nodes.slice(0, nodes.indexOf(node)).reverse();
     return (nodes.length > 0) ? nodes : null;
   }
 
   /**
+   * @hidden @internal
    * For tree layouts.
    * Checks for closest node in the direction of the hit arrow key and selects the node
    * Adds the node to the node movement history
@@ -373,6 +370,7 @@ export class AriaCommandHandler extends go.CommandHandler {
   }
 
   /**
+   * @hidden @internal
    * For links layouts.
    * Checks if selected node is recorded node and if so selects the first linked node
    * If already selecting a linked node, gets array of linked nodes and selects the next one
@@ -386,21 +384,21 @@ export class AriaCommandHandler extends go.CommandHandler {
     node.findNodesConnected().each(x => linkedNodes.push(x));
     if (linkedNodes.length === 0) return null;
     if (node === selectedNode) {
-        return linkedNodes[0]
-    }
-    else {
-        let index = linkedNodes.indexOf(selectedNode);
-        if (index === linkedNodes.length - 1) return linkedNodes[0];
-        else return linkedNodes[index + 1];
+      return linkedNodes[0];
+    } else {
+      const index = linkedNodes.indexOf(selectedNode);
+      if (index === linkedNodes.length - 1) return linkedNodes[0];
+      else return linkedNodes[index + 1];
     }
   }
 
   /**
-     * For links layouts.
-     * Checks if selected node is recorded node and if so selects the first linked node
-     * If already selecting a linked node, gets array of linked nodes and selects the previous one
-     * If there is no previous linked node does an aria call letting the user know
-     */
+   * @hidden @internal
+   * For links layouts.
+   * Checks if selected node is recorded node and if so selects the first linked node
+   * If already selecting a linked node, gets array of linked nodes and selects the previous one
+   * If there is no previous linked node does an aria call letting the user know
+   */
   private _linkSelectionBack() {
     const linkedNodes: Array<go.Node> = [];
     const node = this.history[this.index];
@@ -412,7 +410,7 @@ export class AriaCommandHandler extends go.CommandHandler {
         return linkedNodes[0];
     }
     else {
-        let index = linkedNodes.indexOf(selectedNode);
+        const index = linkedNodes.indexOf(selectedNode);
         if (index === 0) return linkedNodes[linkedNodes.length - 1];
         else return linkedNodes[index - 1];
     }
@@ -436,18 +434,19 @@ export class AriaCommandHandler extends go.CommandHandler {
         return;
     }
     message += 'Linked to node ' + this.getPartText(node) + ' are: ';
-    node.findNodesConnected().each((n) => {message += this.getPartText(n) + ', '});
+    node.findNodesConnected().each(n => message += this.getPartText(n) + ', ');
     this.callAria(message);
   }
 
   /**
+   * @hidden @internal
    * For links layouts.
    * Checks for closest node in the direction of the hit arrow key and selects the node
    * Adds the node to the node movement history
    * If there is no node is checked direction does an aria call letting the user know
    */
-  _arrowKeySelectLinks() {
-    let node = this.diagram.selection.first();
+  private _arrowKeySelectLinks() {
+    const node = this.diagram.selection.first();
     const e = this.diagram.lastInput;
     if (!(node instanceof go.Node) || this.history.length === 0) {
         const first = this.diagram.nodes.first();
@@ -473,7 +472,7 @@ export class AriaCommandHandler extends go.CommandHandler {
     if (typeof nextPart === 'string') this.callAria(nextPart);
     if (!(nextPart instanceof go.Node)) return;
     else {
-        if (!(this.mode === 'links')){   
+        if (!(this.mode === 'links')){
             this.history = this.history.slice(0, this.index + 1);
             this.index = this.history.push(nextPart) - 1;
         }

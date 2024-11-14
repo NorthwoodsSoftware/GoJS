@@ -214,7 +214,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             table.part.ensureBounds();
         const tabh = table.actualBounds.height;
         const pad = table.defaultSeparatorPadding;
-        const rowh = table.elements.count == 0 || table.elements.count < table.topIndex ? 0 : table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
+        const rowh = table.elements.count === 0 || table.elements.count < table.topIndex ? 0 : table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
         if (rowh === 0)
             return table.rowCount;
         return Math.min(table.rowCount, Math.floor(tabh / rowh));
@@ -268,9 +268,9 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         opacity: 0.0,
         'ButtonBorder.figure': 'Rectangle',
         'ButtonBorder.fill': 'transparent',
-        "ButtonBorder.strokeWidth": 0,
-        "ButtonBorder.spot1": go.Spot.TopLeft,
-        "ButtonBorder.spot2": go.Spot.BottomRight,
+        'ButtonBorder.strokeWidth': 0,
+        'ButtonBorder.spot1': go.Spot.TopLeft,
+        'ButtonBorder.spot2': go.Spot.BottomRight,
         _buttonFillOver: 'rgba(0, 0, 0, .25)',
         _buttonStrokeOver: null,
         isActionable: true,
@@ -311,9 +311,9 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         opacity: 0.0,
         'ButtonBorder.figure': 'Rectangle',
         'ButtonBorder.fill': 'transparent',
-        "ButtonBorder.strokeWidth": 0,
-        "ButtonBorder.spot1": go.Spot.TopLeft,
-        "ButtonBorder.spot2": go.Spot.BottomRight,
+        'ButtonBorder.strokeWidth': 0,
+        'ButtonBorder.spot1': go.Spot.TopLeft,
+        'ButtonBorder.spot2': go.Spot.BottomRight,
         _buttonFillOver: 'rgba(0, 0, 0, .25)',
         _buttonStrokeOver: null,
         isActionable: true,

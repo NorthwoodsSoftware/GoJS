@@ -106,7 +106,7 @@ export class SerpentineLayout extends go.Layout {
   }
   set leftSpot(val) {
     if (!this._leftSpot.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error("new leftSpot value is not a Spot" + val);
+      if (!(val instanceof go.Spot)) throw new Error('new leftSpot value is not a Spot' + val);
       this._leftSpot = val;
       this.invalidateLayout();
     }
@@ -122,7 +122,7 @@ export class SerpentineLayout extends go.Layout {
   }
   set rightSpot(val) {
     if (!this._rightSpot.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error("new rightSpot value is not a Spot" + val);
+      if (!(val instanceof go.Spot)) throw new Error('new rightSpot value is not a Spot' + val);
       this._rightSpot = val;
       this.invalidateLayout();
     }

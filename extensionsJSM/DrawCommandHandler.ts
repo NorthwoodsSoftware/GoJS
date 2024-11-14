@@ -79,8 +79,7 @@ export class DrawCommandHandler extends go.CommandHandler {
     return this._pasteOffset;
   }
   set pasteOffset(val: go.Point) {
-    if (!(val instanceof go.Point))
-      throw new Error('DrawCommandHandler.pasteOffset must be a Point, not: ' + val);
+    if (!(val instanceof go.Point)) throw new Error('DrawCommandHandler.pasteOffset must be a Point, not: ' + val);
     this._pasteOffset.set(val);
   }
 

@@ -155,10 +155,7 @@
         pickable: false
       })
         .add(
-          new go.Picture("images/officeFloorPlan.png", {
-            name: 'IMAGE',
-            scale: 0.4
-          })
+          new go.Picture("images/officeFloorPlan.png", { scale: 0.4 })
         )
       );
 
@@ -178,7 +175,6 @@
       .add(
         new go.Shape({
           name: 'DOOR',
-          stretch: go.Stretch.Fill,
           strokeWidth: 1,
           fill: 'rgb(0,255,0)',
           height: 9,
@@ -315,9 +311,7 @@
       });
     });
 
-    /** link each camera to a "live" video feed **/
-
-    // link new cameras
+    // link each camera to a "live" video feed
     myDiagram.addDiagramListener("InitialLayoutCompleted", e => {
         myDiagram.nodes.each(linkCam);
     });
@@ -328,9 +322,9 @@
       // reverse to put back in the same order for load
       [... e.subject].reverse().forEach(part => {
         if (part.category !== 'camera') return;
-        if (part.data?._ele?.firstChild?.src)
-          camIMGs.unshift(part.data._ele.firstChild.src);
-        part.data._ele.remove();
+        if (part.data?._cameraDiv?.firstChild?.src)
+          camIMGs.unshift(part.data._cameraDiv.firstChild.src);
+        part.data._cameraDiv.remove();
       });
     });
 
@@ -341,9 +335,9 @@
         prevSelection.each(part => { // undo old highlights
           if (!part) return;
           if (part.category !== 'camera') return;
-          if (!part.data._ele) return;
+          if (!part.data._cameraDiv) return;
 
-          part.data._ele.style.borderColor = 'rgba(0,0,0,0)';
+          part.data._cameraDiv.style.borderColor = 'rgba(0,0,0,0)';
         });
 
       prevSelection = e.subject.copy();
@@ -351,9 +345,9 @@
       e.subject.each(part => { // highlight currently selected
         if (!part) return;
         if (part.category !== 'camera') return;
-        if (!part.data._ele) linkCam(part);
+        if (!part.data._cameraDiv) linkCam(part);
 
-        part.data._ele.style.borderColor = 'white';
+        part.data._cameraDiv.style.borderColor = 'white';
       });
     });
 
@@ -393,14 +387,10 @@
             .add(
               new go.PathSegment(
                 go.SegmentType.Arc,
-                angle,
-                sweep, // angles
-                radius,
-                radius, // center
-                radius,
-                radius
+                angle, sweep, // angles
+                radius, radius, radius, radius
               )
-            ) // radius
+            )
             .add(new go.PathSegment(go.SegmentType.Line, radius, radius).close())
         )
         .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
@@ -430,20 +420,12 @@
   function linkCam(node) {
     if (!node) return;
     if (node.category !== 'camera') return;
-
     const feedDiv = document.getElementById('cameraFeeds');
-    const GAP = 0;
-    const STROKE = 4;
 
     const div = document.createElement('div');
+    div.className = 'cameraDiv';
     feedDiv.appendChild(div);
-    node.data._ele = div; // starts with "_" to prevent the property from being saved in JSON
-
-    div.style.float = 'left';
-    div.style.margin = GAP + 'px';
-    div.style.border = STROKE + 'px solid';
-    div.style.borderColor = 'rgba(0,0,0,0)';
-    div.style.aspectRatio = 16 / 9;
+    node.data._cameraDiv = div; // starts with "_" to prevent the property from being saved in JSON
 
     if (node.data.status.toLowerCase() == 'live' && camIMGs[0]) {
       const img = document.createElement('img');
@@ -459,22 +441,12 @@
       }
 
       const div2 = document.createElement('div');
+      div2.className = 'innerCamera';
       div.appendChild(div2);
-      div2.style.display = 'flex';
-      div2.style.justifyContent = 'center';
-      div2.style.alignItems = 'center';
-      div2.style.width = '100%';
-      div2.style.height = '100%';
-      div2.style.background = 'rgb(64,64,64)'
-
       const text = document.createElement('p');
+      text.className = 'cameraLabel';
+      text.innerHTML = 'NO SIGNAL';
       div2.appendChild(text);
-      text.style.fontSize = div2.offsetWidth * 0.1 + 'px';
-      text.style.userSelect = 'none';
-      text.style.margin = '0';
-      text.style.color = 'white';
-      text.style.bold = 'white';
-      text.innerHTML = '<b>NO SIGNAL</b>';
 
       // keep scale of text proportional to div
       const resizeObserver = new ResizeObserver(entries => {
@@ -547,7 +519,6 @@
 
     const data = node.data;
     const door = node.findObject('DOOR');
-    const panel = node.findObject('PANEL');
 
     // random user ID
     const USR = 1000 + parseInt(Math.random() * 2500);
@@ -566,7 +537,8 @@
 
     // animate door opening
     const anim = new go.Animation();
-    anim.add(door, 'width', door.width || panel.width, panel.width * 0.2 - door.strokeWidth);
+    const originalWidth =  door.width;
+    anim.add(door, 'width', door.width, Math.max(0, door.width * 0.2 - door.strokeWidth));
     anim.easing = go.Animation.EaseOutExpo;
     anim.duration = 1000;
     anim.finished = () => {
@@ -575,16 +547,15 @@
       // open when multiple people use it in a row
       if (this.n_trig_map[node]) return;
 
-      const animColor2 = new go.Animation();
-      const anim2 = new go.Animation();
-
       // reset color
+      const animColor2 = new go.Animation();
       animColor2.easing = go.Animation.EaseOutExpo;
       animColor2.duration = 1350;
       animColor2.add(door, 'fill', 'rgb(255,0,0)', 'rgb(0,255,0)');
 
       // close door
-      anim2.add(door, 'width', door.width || panel.width * 0.2, panel.width - door.strokeWidth);
+      const anim2 = new go.Animation();
+      anim2.add(door, 'width', door.width, originalWidth);
       anim2.easing = go.Animation.EaseOutExpo;
       anim2.duration = 500;
 
@@ -636,7 +607,7 @@
     else this.n_trig_map[node]++;
 
     // diagram text popup and event log
-    createEvent(node, `Motion detected`, `MOTION on cam ${[... document.getElementById('cameraFeeds').children].indexOf(node.data._ele) + 1}`);
+    createEvent(node, `Motion detected`, `MOTION on cam ${[... document.getElementById('cameraFeeds').children].indexOf(node.data._cameraDiv) + 1}`);
 
     animColor.start();
   }.bind({n_trig_map: {}, prev: null}) // reduce global variables
@@ -750,6 +721,32 @@
   </textarea>
 </div>
 
+
+<style>
+  .cameraDiv {
+    float: left;
+    border: 4px solid;
+    border-color: rgba(0,0,0,0);
+    aspect-ratio: 16 / 9;
+    max-width: 200px;
+    max-height: 200px;
+  }
+
+  .innerCamera {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgb(64,64,64);
+  }
+
+  .cameraLabel {
+    user-select: none;
+    margin: 0;
+    color: white;
+  }
+</style>
           
         </div>
         <!-- * * * * * * * * * * * * * -->

@@ -49,13 +49,6 @@ class AriaCommandHandler extends go.CommandHandler {
             Object.assign(this, init);
     }
     /**
-     * Allows for changing of the mode after initialization.
-     * @param {string} mode the mode of the diagram, 'default', 'tree', or 'links'
-     */
-    setMode(mode) {
-        this.mode = mode;
-    }
-    /**
      * Given a Part, return the text that the aria label should read
      * By default this uses `Part.text`, unless it is empty, then it uses `Part.key`
      * This can be overridden to return arbitrary text based on Part data, etc.
@@ -124,6 +117,7 @@ class AriaCommandHandler extends go.CommandHandler {
         this.liveRegion.textContent = message;
     }
     /**
+     * @hidden @internal
      * @param {number} a angle
      * @param {number} dir direction to compare the angle to
      * @return {number} returns the difference between the two angles
@@ -133,6 +127,7 @@ class AriaCommandHandler extends go.CommandHandler {
         return Math.min(Math.abs(dir - a), Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a)));
     }
     /**
+     * @hidden @internal
      * Looks for the closest node to the selection in the given direction and returns it.
      * Returns null if there are no nodes found in the direction.
      * @param {number} dir direction angle to look for the closest node
@@ -172,10 +167,11 @@ class AriaCommandHandler extends go.CommandHandler {
         return closest;
     }
     /**
-       * For default layouts.
-       * Returns an array of all nodes and parts in the given diagram, but not any links.
-       * @return {object[]}
-       */
+     * @hidden @internal
+     * For default layouts.
+     * Returns an array of all nodes and parts in the given diagram, but not any links.
+     * @return {object[]}
+     */
     _getAllParts() {
         const diagram = this.diagram;
         if (!diagram)
@@ -193,11 +189,12 @@ class AriaCommandHandler extends go.CommandHandler {
         return allParts;
     }
     /**
-       * For default layouts.
-       * Checks for closest node in the direction of the hit arrow key and selects the node
-       * Adds the node to the node movement history
-       * If there is no node is checked direction completes an aria call letting the user know
-       */
+     * @hidden @internal
+     * For default layouts.
+     * Checks for closest node in the direction of the hit arrow key and selects the node
+     * Adds the node to the node movement history
+     * If there is no node is checked direction completes an aria call letting the user know
+     */
     _arrowKeySelect(ekey) {
         let node = this.diagram.selection.first();
         //if no node is currently selected it selects one and clears node history
@@ -239,6 +236,7 @@ class AriaCommandHandler extends go.CommandHandler {
         }
     }
     /**
+     * @hidden @internal
      * Checks if the currently selected node is the furthest part of the history
      * Selects the previous node in the history array
      */
@@ -249,6 +247,7 @@ class AriaCommandHandler extends go.CommandHandler {
         this.index--;
     }
     /**
+     * @hidden @internal
      * Checks if the currently selected node is the closest part of the history
      * Selects the next node in the history array
      */
@@ -275,11 +274,11 @@ class AriaCommandHandler extends go.CommandHandler {
         const nextSiblings = this._getNextSiblingNodes(node);
         const previousSiblings = this._getPreviousSiblingNodes(node);
         message += (parent != null ? this.getPartText(parent) + ' is the parent. ' : 'No parent node.');
-        children.each((child) => { message += this.getPartText(child) + ' is a child. '; });
+        children.each(child => message += this.getPartText(child) + ' is a child. ');
         if (nextSiblings !== null)
-            nextSiblings.forEach((sibling) => { message += this.getPartText(sibling) + ' is a next sibling. '; });
+            nextSiblings.forEach(sibling => message += this.getPartText(sibling) + ' is a next sibling. ');
         if (previousSiblings !== null)
-            previousSiblings.forEach((sibling) => { message += this.getPartText(sibling) + ' is a previous sibling. '; });
+            previousSiblings.forEach(sibling => message += this.getPartText(sibling) + ' is a previous sibling. ');
         this.callAria(message);
     }
     /**
@@ -299,6 +298,7 @@ class AriaCommandHandler extends go.CommandHandler {
         this.callAria(message);
     }
     /**
+     * @hidden @internal
      * For tree layouts.
      * Checks for and returns the next sibling nodes of the currently selected node.
      * All nodes next from the currently selected node will be in the array and first element is the next node.
@@ -311,11 +311,12 @@ class AriaCommandHandler extends go.CommandHandler {
         if (node.findTreeParentNode() === null)
             return null;
         let nodes = [];
-        node.findTreeParentNode().findTreeChildrenNodes().each((n) => { nodes.push(n); });
+        node.findTreeParentNode().findTreeChildrenNodes().each(n => nodes.push(n));
         nodes = nodes.slice(nodes.indexOf(node) + 1);
         return (nodes.length > 0) ? nodes : null;
     }
     /**
+     * @hidden @internal
      * For tree layouts.
      * Checks for and returns the previous sibling nodes of the currently selected node.
      * All nodes previous of the currently selected node will be in the array and first element is the previous node.
@@ -328,11 +329,12 @@ class AriaCommandHandler extends go.CommandHandler {
         if (node.findTreeParentNode() === null)
             return null;
         let nodes = [];
-        node.findTreeParentNode().findTreeChildrenNodes().each((n) => { nodes.push(n); });
+        node.findTreeParentNode().findTreeChildrenNodes().each(n => nodes.push(n));
         nodes = nodes.slice(0, nodes.indexOf(node)).reverse();
         return (nodes.length > 0) ? nodes : null;
     }
     /**
+     * @hidden @internal
      * For tree layouts.
      * Checks for closest node in the direction of the hit arrow key and selects the node
      * Adds the node to the node movement history
@@ -383,6 +385,7 @@ class AriaCommandHandler extends go.CommandHandler {
         }
     }
     /**
+     * @hidden @internal
      * For links layouts.
      * Checks if selected node is recorded node and if so selects the first linked node
      * If already selecting a linked node, gets array of linked nodes and selects the next one
@@ -401,7 +404,7 @@ class AriaCommandHandler extends go.CommandHandler {
             return linkedNodes[0];
         }
         else {
-            let index = linkedNodes.indexOf(selectedNode);
+            const index = linkedNodes.indexOf(selectedNode);
             if (index === linkedNodes.length - 1)
                 return linkedNodes[0];
             else
@@ -409,11 +412,12 @@ class AriaCommandHandler extends go.CommandHandler {
         }
     }
     /**
-       * For links layouts.
-       * Checks if selected node is recorded node and if so selects the first linked node
-       * If already selecting a linked node, gets array of linked nodes and selects the previous one
-       * If there is no previous linked node does an aria call letting the user know
-       */
+     * @hidden @internal
+     * For links layouts.
+     * Checks if selected node is recorded node and if so selects the first linked node
+     * If already selecting a linked node, gets array of linked nodes and selects the previous one
+     * If there is no previous linked node does an aria call letting the user know
+     */
     _linkSelectionBack() {
         const linkedNodes = [];
         const node = this.history[this.index];
@@ -427,7 +431,7 @@ class AriaCommandHandler extends go.CommandHandler {
             return linkedNodes[0];
         }
         else {
-            let index = linkedNodes.indexOf(selectedNode);
+            const index = linkedNodes.indexOf(selectedNode);
             if (index === 0)
                 return linkedNodes[linkedNodes.length - 1];
             else
@@ -452,17 +456,18 @@ class AriaCommandHandler extends go.CommandHandler {
             return;
         }
         message += 'Linked to node ' + this.getPartText(node) + ' are: ';
-        node.findNodesConnected().each((n) => { message += this.getPartText(n) + ', '; });
+        node.findNodesConnected().each(n => message += this.getPartText(n) + ', ');
         this.callAria(message);
     }
     /**
+     * @hidden @internal
      * For links layouts.
      * Checks for closest node in the direction of the hit arrow key and selects the node
      * Adds the node to the node movement history
      * If there is no node is checked direction does an aria call letting the user know
      */
     _arrowKeySelectLinks() {
-        let node = this.diagram.selection.first();
+        const node = this.diagram.selection.first();
         const e = this.diagram.lastInput;
         if (!(node instanceof go.Node) || this.history.length === 0) {
             const first = this.diagram.nodes.first();
