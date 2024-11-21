@@ -128,23 +128,21 @@
   let currentScale = 1;
 
   function init() {
+    // clear the output log, some browsers will save text in textareas
+    document.getElementById('outputLog').innerText = '';
+
     myDiagram = new go.Diagram('myDiagramDiv', {
-      initialScale: 0.75,
-      initialPosition: new go.Point(350, 580),
+      initialAutoScale: go.AutoScale.Uniform,
       allowClipboard: false,
       allowCopy: false,
       'grid.gridCellSize': new go.Size(1, 1),
       'draggingTool.isGridSnapEnabled': true,
-      'toolManager.hoverDelay': 350 // changes delay for tooltips
+      'toolManager.hoverDelay': 350, // changes delay for tooltips
+      'animationManager.isInitial': false
     });
 
     // install the SectorReshapingTool as a mouse-down tool
     myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool());
-
-    // clear the output log, some browsers will save text in textareas
-    document.getElementById('outputLog').innerText = '';
-    document.getElementById('outputLog').innerHTML = '';
-    document.getElementById('outputLog').value = '';
 
     // the background image, a floor plan
     myDiagram.add(
@@ -155,13 +153,12 @@
         pickable: false
       })
         .add(
-          new go.Picture("images/officeFloorPlan.png", { scale: 0.4 })
+          new go.Picture("images/officeFloorPlan.png", { width: 2833, height: 1333 })
         )
       );
 
-    // door
-    myDiagram.nodeTemplateMap.add(
-      'door',
+    // Doors represent an access-controlled door (eg, by keycard). They open and close automatically when simulated persons use them.
+    myDiagram.nodeTemplateMap.add('door',
       new go.Node({
         resizeObjectName: 'DOOR',
         resizable: true,
@@ -185,9 +182,8 @@
       )
     );
 
-    // camera
-    myDiagram.nodeTemplateMap.add(
-      'camera',
+    // Cameras represent a security camera's visible area
+    myDiagram.nodeTemplateMap.add('camera',
       new go.Node('Spot', {
         isInDocumentBounds: false,
         isShadowed: true,
@@ -218,15 +214,15 @@
                 shadowVisible: false
               })
                 .bindObject('stroke', 'isSelected', s => s ? 'blue' : null)
-                .bind('fill', 'status', s => s!='Live'?'red':'skyblue')
+                .bind('fill', 'status', s => s !== 'Live' ? 'red' : 'skyblue')
                 .bind('geometry', '', makeSector),
               new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 }),
               new go.TextBlock('!', {
-                alignmentFocus: go.Spot.Bottom,
+                alignmentFocus: new go.Spot(1, 0, -30, -30),
                 font: '64pt Arial',
                 stroke: 'red',
                 shadowVisible: true
-              }).bind('visible', 'status', s => s!='Live')
+              }).bind('visible', 'status', s => s!== 'Live')
             ),
           new go.TextBlock({
             alignment: new go.Spot(0.5, 0.5, 0, 3),
@@ -256,7 +252,7 @@
         currentScale = origscale / newscale;
         // currentScale = 1 + (origscale / newscale - 1)*0.8;
       myDiagram.parts.each(p => {
-        if (p.layerName != 'Foreground') return; // don't scale background image
+        if (p.layerName !== 'Foreground') return; // don't scale background image
         p.scale = currentScale;
       });
       myDiagram.commitTransaction('scale Nodes');
@@ -266,7 +262,7 @@
     // Create the Diagram's Model
     loadModel();
     // Toggle random events on
-    toggleEvents(document.getElementById('eventToggle'));
+    toggleEvents();
 
     // the doors match the size of the doorways, this makes them a bit larger
     myDiagram.nodes.each(n => {
@@ -311,7 +307,7 @@
       });
     });
 
-    // link each camera to a "live" video feed
+    // link each camera to a "Live" video feed
     myDiagram.addDiagramListener("InitialLayoutCompleted", e => {
         myDiagram.nodes.each(linkCam);
     });
@@ -362,10 +358,10 @@
     // alternate opacity of all "malfunctioning" cameras
     let cur_op = 0.4;
     setInterval(() => {
-      cur_op = cur_op != 0.4 ? 0.4 : 0.63;
+      cur_op = cur_op !== 0.4 ? 0.4 : 0.63;
       myDiagram.nodes.each(n => {
-        if (n.data.category != 'camera') return;
-        if (n.data.status == 'Live') return;
+        if (n.data.category !== 'camera') return;
+        if (n.data.status === 'Live') return;
         const arc = n.findObject('ARC');
         myDiagram.model.setDataProperty(arc, 'opacity', cur_op);
       });
@@ -427,7 +423,7 @@
     feedDiv.appendChild(div);
     node.data._cameraDiv = div; // starts with "_" to prevent the property from being saved in JSON
 
-    if (node.data.status.toLowerCase() == 'live' && camIMGs[0]) {
+    if (node.data.status === 'Live' && camIMGs[0]) {
       const img = document.createElement('img');
       div.appendChild(img)
       img.src = camIMGs[0];
@@ -436,7 +432,7 @@
       img.style = 'width: 100%; height: 100%; object-fit: cover;';
       img.style.userSelect = 'none';
     } else {
-      if (node.data.status.toLowerCase() == 'live') { // no more feeds
+      if (node.data.status === 'Live') { // no more feeds
         myDiagram.model.setDataProperty(node.data, 'status', 'No video feed');
       }
 
@@ -447,12 +443,6 @@
       text.className = 'cameraLabel';
       text.innerHTML = 'NO SIGNAL';
       div2.appendChild(text);
-
-      // keep scale of text proportional to div
-      const resizeObserver = new ResizeObserver(entries => {
-        text.style.fontSize = entries[0].contentRect.width * 0.1 + 'px';
-      });
-      resizeObserver.observe(div2);
     }
 
     div.onclick = () => {
@@ -494,7 +484,7 @@
     myDiagram.add(p);
 
     // position for doors, location for cameras
-    const isDoor = node.data.category == 'door';
+    const isDoor = node.data.category === 'door';
     const pos2 = (isDoor ? node.position.copy() : node.location.copy());
     if (isDoor)
       pos2.x += node.getDocumentBounds().width;
@@ -514,8 +504,9 @@
   }
 
   // open the specified door
+  const doorTriggers = {}; // map of door nodes to animation count
   openDoor = function (node) {
-    if (node.data.category != 'door') return;
+    if (node.data.category !== 'door') return;
 
     const data = node.data;
     const door = node.findObject('DOOR');
@@ -525,9 +516,9 @@
 
     // animations
 
-    // it is important to understand that multiple nodes can be modified by a
-    // single animation, however since each one here has a different duration
-    // they need separate Animation objects
+    // multiple nodes can be modified by a single animation,
+    // however since each one here has a different duration
+    // they use separate Animations
 
     // animate door color
     const animColor = new go.Animation();
@@ -542,10 +533,10 @@
     anim.easing = go.Animation.EaseOutExpo;
     anim.duration = 1000;
     anim.finished = () => {
-      this.n_trig_map[node]--;
+      doorTriggers[node]--;
       // only run the last triggered close animation, this way the door can stay
       // open when multiple people use it in a row
-      if (this.n_trig_map[node]) return;
+      if (doorTriggers[node]) return;
 
       // reset color
       const animColor2 = new go.Animation();
@@ -562,20 +553,21 @@
       anim2.start();
       animColor2.start();
     };
-    if (isNaN(this.n_trig_map[node])) this.n_trig_map[node] = 1;
-    else this.n_trig_map[node]++;
+    if (isNaN(doorTriggers[node])) doorTriggers[node] = 1;
+    else doorTriggers[node]++;
 
     // diagram text popup and event log
     createEvent(node, `Opened by USER ${USR}`, `USER ${USR} opened ${data.key}`);
 
     anim.start();
     animColor.start();
-  }.bind({n_trig_map: {}}) // reduce global variables
+  }
 
   // open the specified camera
+  const cameraTriggers = {} // map of camera nodes to how many times they have been triggered
   triggerCamera = function (node) {
-    if (node?.data?.category != 'camera') return;
-    if (node.data.status != 'Live') return; // don't animate "broken" cameras
+    if (node?.data?.category !== 'camera') return;
+    if (node.data.status !== 'Live') return; // don't animate "broken" cameras
 
     const data = node.data;
     const light = node.findObject('ARC');
@@ -589,47 +581,48 @@
     animColor.add(light, 'fill', light.fill, 'rgb(255,255,0)');
 
     animColor.finished = () => {
-      this.n_trig_map[node]--;
-      if (this.n_trig_map[node]) return;
+      cameraTriggers[node]--;
+      if (cameraTriggers[node]) return;
 
       setTimeout(() => {
         const animColor2 = new go.Animation();
-
         // reset color
         animColor2.easing = go.Animation.EaseOutExpo;
         animColor2.duration = animColor.duration * 1.2;
         animColor2.add(light, 'fill', light.fill, myDiagram.nodeTemplateMap.get('camera').findObject('ARC').fill);
-
         animColor2.start();
       }, 250); // let the camera stay yellow before changing back
     };
-    if (isNaN(this.n_trig_map[node])) this.n_trig_map[node] = 1;
-    else this.n_trig_map[node]++;
+    if (isNaN(cameraTriggers[node])) cameraTriggers[node] = 1;
+    else cameraTriggers[node]++;
 
     // diagram text popup and event log
     createEvent(node, `Motion detected`, `MOTION on cam ${[... document.getElementById('cameraFeeds').children].indexOf(node.data._cameraDiv) + 1}`);
 
     animColor.start();
-  }.bind({n_trig_map: {}, prev: null}) // reduce global variables
+  }
 
   // toggle random events
-  toggleEvents = function (elem) {
-    if (!this._timeout) { // start
+  let _timeout = null;
+  let _prevNode = null;
+  function toggleEvents() {
+    const elem = document.getElementById('eventToggle'); // button
+    if (!_timeout) { // start
       elem.style.filter = 'brightness(180%)';
       const doEvent = () => {
         // pick a random door/camera
         let pickRand = () => (arr=[... myDiagram.nodes])[parseInt(Math.random() * arr.length)];
         let node = pickRand();
         // reduce chance of picking the same node twice in a row
-        if (node == this._prevNode) node = pickRand();
-        this._prevNode = node;
+        if (node === _prevNode) node = pickRand();
+        _prevNode = node;
 
-        if (node.category == 'door')
+        if (node.category === 'door')
           openDoor(node);
         else
           triggerCamera(node);
         // call this function again after a random amount of time
-        this._timeout = setTimeout(() => {
+        _timeout = setTimeout(() => {
           doEvent();
         }, 200 + Math.random()*1150);
       }
@@ -637,10 +630,10 @@
     }
     else { // stop
       elem.style.filter = '';
-      clearInterval(this._timeout);
-      this._timeout = null;
+      clearInterval(_timeout);
+      _timeout = null;
     }
-  }.bind({_timeout: null, _prevNode: null})
+  }
 </script>
 
 <div id="sample">
@@ -651,7 +644,7 @@
     </div>
     <div id="myDiagramDiv" style="height: 500px; flex-grow: 1;"></div>
   </div>
-  <button id="eventToggle" onclick="toggleEvents(this)">Toggle Random Events</button>
+  <button id="eventToggle" onclick="toggleEvents()">Toggle Random Events</button>
 
   <div class="w-full flex flex-wrap">
     <div class="flex-1 min-w-[500px] mb-4 mr-2">
@@ -703,7 +696,7 @@
 {"loc":"2310 599","category":"door","key":"office 4","width":55,"height":10,"ang":90},
 {"loc":"2310 483","category":"door","key":"storage 2","ang":90,"width":58,"height":10},
 {"loc":"2310 341","category":"door","key":"meeting 3","ang":270,"width":55,"height":10},
-{"status":"live","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
+{"status":"","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
 {"status":"Live","loc":"704 1194","category":"camera","sweep":90,"radius":280,"key":2,"angle":180},
 {"status":"Live","loc":"1937 683","category":"camera","sweep":92,"radius":111,"key":3,"angle":179},
 {"status":"Live","loc":"2460 663","category":"camera","sweep":90,"radius":128,"key":4,"angle":90},
@@ -728,8 +721,8 @@
     border: 4px solid;
     border-color: rgba(0,0,0,0);
     aspect-ratio: 16 / 9;
-    max-width: 200px;
-    max-height: 200px;
+    width: 200px;
+    height: 100px;
   }
 
   .innerCamera {

@@ -717,14 +717,17 @@
 <script>
   goCode('spacing3', 600, 150);
 </script>
-<p>TableRow panels are particularly useful when used as an <a>Panel.itemTemplate</a>.</p>
-<p>The same kind of organization is also possible with columns by using <a>Panel.TableColumn</a> Panels.</p>
+<p>
+  TableRow panels are particularly useful when used as an <a>Panel.itemTemplate</a>.
+  Read more about Table Panels and item Arrays at <a href="itemArrays.html#DifferentPanelTypes">Item Arrays and Panels</a>.
+</p>
+<p>
+  The same kind of organization is also possible with columns by using <a>Panel.TableColumn</a> Panels.
+</p>
 
 <h2 id="Examples">Examples</h2>
-<p>In this example the first column spans two rows, because <a>GraphObject.rowSpan</a> is 2 on the <a>Picture</a>.</p>
 <p>
-  The second column (column #1) has a <a>RowColumnDefinition.minimum</a> width of 100, so that column is at least that wide even if the elements in that
-  column's cells are narrower.
+  In this example the Picture spans two rows, because <a>GraphObject.rowSpan</a> is 2 on the <a>Picture</a>.
 </p>
 <p>
   The first column only takes as much width as it naturally needs and any excess width is given to the second column. This occurs because the
@@ -738,25 +741,26 @@
 </p>
 <pre class="lang-js" id="example1"><code>
   diagram.nodeTemplate =
-    new go.Node("Auto", { resizable: true, minSize: new go.Size(162, 62) })
+    new go.Node("Auto", { resizable: true, width: 150 })
+      .bindTwoWay("desiredSize", "size", go.Size.parse, go.Size.stringify)
       .add(
         new go.Shape({ fill: "white" }),
-        new go.Panel("Table", { stretch: go.Stretch.Fill, margin: 0.5 })
+        new go.Panel("Table", { stretch: go.Stretch.Fill })
           .addColumnDefinition(0, { sizing: go.Sizing.None, background: "white", coversSeparators: true })
-          .addColumnDefinition(1, { minimum: 100, background: "white", separatorStroke: "black" })
+          .addColumnDefinition(1, { separatorStroke: "black", background: "white" })
           .addRowDefinition(0, { sizing: go.Sizing.None })
           .addRowDefinition(1, { separatorStroke: "black" })
-          .add(
+          .add(  // these three elements are the content of the Table Panel
             new go.Picture({ row: 0, column: 0,
                 rowSpan: 2, width: 48, height: 48, margin: 6 })
               .bind("source", "pic"),
             new go.TextBlock({ row: 0, column: 1,
-                stretch: go.Stretch.Horizontal, margin: 2, textAlign: "center" })
+                stretch: go.Stretch.Horizontal, margin: 2, textAlign: "center", overflow: go.TextOverflow.Ellipsis })
               .bind("text", "text1"),
             new go.TextBlock({ row: 1, column: 1,
-                stretch: go.Stretch.Fill, margin: 2, textAlign: "center" })
+                stretch: go.Stretch.Fill, margin: 2, textAlign: "center", overflow: go.TextOverflow.Ellipsis })
               .bind("text", "text2")
-          )
+          ),
       );
 
   diagram.model.nodeDataArray = [
@@ -766,6 +770,7 @@
       text2: "bottom gets extra space"
     },
     {
+      size: "160 100",
       pic: "../samples/images/hs2.jpg",
       text1: "top has more description that wraps",
       text2: "node is taller due to more text"
@@ -775,6 +780,13 @@
 <script>
   goCode('example1', 600, 200);
 </script>
+<p>
+  Try resizing a node.
+</p>
+<p>
+  Because the Table Panel and its TextBlocks are stretched, when they do not have enough room to render all of the text,
+  the <a>TextBlock.overflow</a> value of <a>TextOverflow.Ellipsis</a> causes "..." to be shown.
+</p>
 
       </div>
     </div>
