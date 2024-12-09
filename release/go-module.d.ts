@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.15
+ * Type definitions for GoJS v3.0.16
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -16960,25 +16960,6 @@ export abstract class GraphObject {
      */
     setProperties(props: ObjectData): this;
     /**
-     * This static function creates an instance that was defined with {@link GraphObject.defineBuilder}.
-     * Once this is called one can use the name as the first argument for {@link GraphObject.make}.
-     * Names are case sensitive.
-     *
-     * The second is an optional settings configuration object, equivalent to calling {@link GraphObject.set}
-     * on the new object.
-     *
-     * Predefined builder names include: `"Button"`, `"TreeExpanderButton"`, `"SubGraphExpanderButton"`,
-     * `"PanelExpanderButton"`, and `"ContextMenuButton"`.
-     * The implementation of these builders is provided by <a href="../../extensions/Buttons.js">Buttons.js</a>
-     * in the Extensions directory.
-     *
-     * @param name - a capitalized name; must not be `""` or `"None"`
-     * @param config - a plain JavaScript object with various property values to be set on this GraphObject.
-     * @param args - If defined in the builder, the additional arguments that would be passed to {@link GraphObject.takeBuilderArgument}
-     * @since 2.2
-     */
-    static build<T extends GraphObject>(name: string, config?: Partial<T> & ObjectData, ...args: Array<any>): T;
-    /**
      * This static function builds an object given its class and additional arguments
      * providing initial properties or {@link GraphObject}s that become {@link Panel} elements.
      *
@@ -17139,6 +17120,25 @@ export abstract class GraphObject {
         ModelChanged?: ChangedEventHandler;
     } : unknown)) | MakeAllow<CT, GraphObject, Binding> | MakeAllow<CT, GraphObject, AnimationTrigger> | MakeAllow<CT, Panel, GraphObject> | MakeAllow<CT, Panel, RowColumnDefinition> | MakeAllow<CT, Panel, PanelLayout> | MakeAllow<CT, RowColumnDefinition, Binding> | MakeAllow<CT, Geometry, PathFigure> | MakeAllow<CT, PathFigure, PathSegment> | number>>): InstanceType<CT>;
     /**
+     * This static function creates an instance that was defined with {@link GraphObject.defineBuilder}.
+     * Once this is called one can use the name as the first argument for {@link GraphObject.make}.
+     * Names are case sensitive.
+     *
+     * The second is an optional settings configuration object, equivalent to calling {@link GraphObject.set}
+     * on the new object.
+     *
+     * Predefined builder names include: `"Button"`, `"TreeExpanderButton"`, `"SubGraphExpanderButton"`,
+     * `"PanelExpanderButton"`, and `"ContextMenuButton"`.
+     * The implementation of these builders is provided by <a href="../../extensions/Buttons.js">Buttons.js</a>
+     * in the Extensions directory.
+     *
+     * @param name - a capitalized name; must not be `""` or `"None"`
+     * @param config - a plain JavaScript object with various property values to be set on this GraphObject.
+     * @param args - If defined in the builder, the additional arguments that would be passed to {@link GraphObject.takeBuilderArgument}
+     * @since 2.2
+     */
+    static build<T extends GraphObject>(name: string, config?: Partial<T> & ObjectData, ...args: Array<any>): T;
+    /**
      * This static function defines a named function that {@link GraphObject.make} or {@link GraphObject.build} can use to build objects.
      * Once this is called one can use the name as the first argument for {@link GraphObject.make} or {@link GraphObject.build}.
      * Names are case sensitive.
@@ -17156,6 +17156,11 @@ export abstract class GraphObject {
      * @param func - that takes an Array of `GraphObject.make` arguments and returns a new object
      */
     static defineBuilder(name: string, func: ((a: Array<any>) => ObjectData)): void;
+    /**
+     * This static predicate is true if and only if {@link GraphObject.defineBuilder} has been called on the given name.
+     * @param name
+     */
+    static isBuilderDefined(name: string): boolean;
     /**
      * This static function returns the first argument from the arguments array passed
      * to a {@link GraphObject.defineBuilder} function by {@link GraphObject.make}.
@@ -18408,7 +18413,7 @@ export class Panel extends GraphObject {
      * Return the {@link Panel} that was made for a particular data object in this panel's {@link itemArray}.
      * If this returns a Panel, its {@link data} property will be the argument data object,
      * and its containing {@link GraphObject.panel} will be this panel.
-     * @param data - must be an Object, not a string or a number or a boolean or a function
+     * @param data - must be a non-null Object, not a string or a number or a boolean or a function
      * @returns or null if not found
      */
     findItemPanelForData(data: ObjectData): Panel | null;
@@ -18538,6 +18543,11 @@ export class Panel extends GraphObject {
      * @since 2.0
      */
     static definePanelLayout(layoutName: string, layout: PanelLayout): void;
+    /**
+     * This static predicate is true if and only if {@link Panel.definePanelLayout} has been called on the given name.
+     * @param name
+     */
+    static isBuilderDefined(name: string): boolean;
     /**
      * Returns a 'Position' PanelLayout, a possible value for {@link Panel.type}.
      */
@@ -19546,6 +19556,11 @@ export class Shape extends GraphObject {
      */
     static defineFigureGenerator(name: string, func: string | ((shape: Shape, width: number, height: number) => Geometry)): void;
     /**
+     * This static predicate is true if and only if {@link Shape.defineFigureGenerator} has been called on the given name.
+     * @param name
+     */
+    static isFigureDefined(name: string): boolean;
+    /**
      * This static function returns a read-only Map of named arrowhead geometries.
      * The keys are arrowhead names.
      * The values are {@link Geometry} objects.
@@ -19566,6 +19581,11 @@ export class Shape extends GraphObject {
      * @param pathstr - a {@link Geometry} or a Geometry path string, e.g. "m 0,0 l 8,4 -8,4"
      */
     static defineArrowheadGeometry(name: string, pathstr: Geometry | string): void;
+    /**
+     * This static predicate is true if and only if {@link Shape.defineArrowheadGeometry} has been called on the given name.
+     * @param name
+     */
+    static isArrowheadDefined(name: string): boolean;
 }
 /**
  * This enumeration specifies possible values for {@link TextBlock.wrap}.
@@ -26303,6 +26323,11 @@ export class Model {
      *   - the property value is not undefined and is not a function
      *   - the model knows how to convert the property value to JSON format
      *   - property values that are Objects or Arrays form a tree structure -- no shared or cyclical references
+     *
+     * The new value must not be null.
+     *
+     * This data object must not be used in the {@link nodeDataArray} or {@link GraphLinksModel.linkDataArray}
+     * or in any {@link Panel.itemArray}.
      *
      * Most object classes cannot be serialized into JSON without special knowledge and processing at both ends.
      * The {@link toJson} and {@link Model.fromJson} methods automatically do such processing for numbers that are NaN

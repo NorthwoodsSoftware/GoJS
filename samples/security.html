@@ -125,13 +125,14 @@
 <script src="../extensions/SectorReshapingTool.js"></script>
 
 <script id="code">
-  let currentScale = 1;
+  let currentScale = 2.5;
 
   function init() {
     // clear the output log, some browsers will save text in textareas
     document.getElementById('outputLog').innerText = '';
 
     myDiagram = new go.Diagram('myDiagramDiv', {
+      contentAlignment: go.Spot.Center,
       initialAutoScale: go.AutoScale.Uniform,
       allowClipboard: false,
       allowCopy: false,
@@ -161,9 +162,7 @@
     myDiagram.nodeTemplateMap.add('door',
       new go.Node({
         resizeObjectName: 'DOOR',
-        resizable: true,
-        rotatable: true,
-        locationSpot: go.Spot.Center,
+        locationSpot: go.Spot.Left,
         pickable: false,
         selectable: false
       })
@@ -177,8 +176,8 @@
           height: 9,
           width: 50
         })
-        .bindTwoWay('width')
-        .bindTwoWay('height')
+        .bind('width')
+        .bind('height')
       )
     );
 
@@ -505,16 +504,13 @@
 
   // open the specified door
   const doorTriggers = {}; // map of door nodes to animation count
-  openDoor = function (node) {
+  function openDoor(node) {
     if (node.data.category !== 'door') return;
+    if (doorTriggers[node.key]) return;
 
     const data = node.data;
     const door = node.findObject('DOOR');
-
-    // random user ID
-    const USR = 1000 + parseInt(Math.random() * 2500);
-
-    // animations
+    const randomUserId = 1000 + parseInt(Math.random() * 2500);
 
     // multiple nodes can be modified by a single animation,
     // however since each one here has a different duration
@@ -533,11 +529,6 @@
     anim.easing = go.Animation.EaseOutExpo;
     anim.duration = 1000;
     anim.finished = () => {
-      doorTriggers[node]--;
-      // only run the last triggered close animation, this way the door can stay
-      // open when multiple people use it in a row
-      if (doorTriggers[node]) return;
-
       // reset color
       const animColor2 = new go.Animation();
       animColor2.easing = go.Animation.EaseOutExpo;
@@ -549,15 +540,15 @@
       anim2.add(door, 'width', door.width, originalWidth);
       anim2.easing = go.Animation.EaseOutExpo;
       anim2.duration = 500;
+      anim2.finished = () => { doorTriggers[node.key] = false; }
 
       anim2.start();
       animColor2.start();
     };
-    if (isNaN(doorTriggers[node])) doorTriggers[node] = 1;
-    else doorTriggers[node]++;
+    doorTriggers[node.key] = true;
 
     // diagram text popup and event log
-    createEvent(node, `Opened by USER ${USR}`, `USER ${USR} opened ${data.key}`);
+    createEvent(node, `Opened by USER ${randomUserId}`, `USER ${randomUserId} opened ${data.key}`);
 
     anim.start();
     animColor.start();
@@ -602,16 +593,14 @@
     animColor.start();
   }
 
-  // toggle random events
+  // emit random events
   let _timeout = null;
   let _prevNode = null;
   function toggleEvents() {
-    const elem = document.getElementById('eventToggle'); // button
     if (!_timeout) { // start
-      elem.style.filter = 'brightness(180%)';
       const doEvent = () => {
         // pick a random door/camera
-        let pickRand = () => (arr=[... myDiagram.nodes])[parseInt(Math.random() * arr.length)];
+        let pickRand = () => [... myDiagram.nodes][parseInt(Math.random() * myDiagram.nodes.count)];
         let node = pickRand();
         // reduce chance of picking the same node twice in a row
         if (node === _prevNode) node = pickRand();
@@ -624,12 +613,10 @@
         // call this function again after a random amount of time
         _timeout = setTimeout(() => {
           doEvent();
-        }, 200 + Math.random()*1150);
+        }, 600 + Math.random()*1150);
       }
       doEvent();
-    }
-    else { // stop
-      elem.style.filter = '';
+    } else { // stop
       clearInterval(_timeout);
       _timeout = null;
     }
@@ -640,15 +627,30 @@
   <div style="width: 100%; display: flex;border: solid 1px black;">
     <div
       id="myPaletteDiv"
-      style="width: 100px; height: 500px; background: whitesmoke; border-right: solid 1px black;">
+      style="width: 100px; height: 600px; background: whitesmoke; border-right: solid 1px black;">
     </div>
-    <div id="myDiagramDiv" style="height: 500px; flex-grow: 1;"></div>
+    <div id="myDiagramDiv" style="height: 600px; flex-grow: 1;"></div>
   </div>
-  <button id="eventToggle" onclick="toggleEvents()">Toggle Random Events</button>
+
+  <p>
+    This sample demonstrates a security dashboard built with GoJS. <a>Node</a>s are used to represent the doors and
+    cameras. When hovering over the camera a <a>Tooltip</a> will show its status. You can make new cameras
+    by dragging one into the <a>Diagram</a> from the <a>Palette</a>. Then it can be rotated, resized, and have the field
+    of view changed using the <a href="../samples/SectorReshaping.html">Sector Reshaping Tool</a>.
+  </p>
+  <p>
+    This sample simulates doors opening and cameras detecting motion. This information is conveyed via <a>Animation</a>s in the
+    Diagram and an "Event Log" in the HTML below.
+  </p>
+
+  <p>
+    Because of this sample's complexity, it is meant for a demonstration of several GoJS features, rather than a starting point for your own project.
+    We are happy to help you begin a proof-of-concept for your own project if you have similar needs.
+  </p>
 
   <div class="w-full flex flex-wrap">
     <div class="flex-1 min-w-[500px] mb-4 mr-2">
-      Live Camera Feeds
+      Clicking a (simulated) video feed below will highlight the corresponding camera in the Diagram. A single camera is offline to demonstrate a signal connection error.
       <div id="cameraFeeds" class="border border-black w-full min-h-[100px] bg-[#1f4963] grid grid-cols-4"></div>
     </div>
     <div class="flex-none w-[500px] min-h-[200px] flex flex-col mb-4">
@@ -657,16 +659,7 @@
     </div>
   </div>
 
-  <p>
-    This sample shows what a security dashboard might look like with GoJS. <a>Node</a>s are used to represent the doors and
-    cameras. When hovering over the camera a <a>Tooltip</a> will show its status (Live/Offline). You can make new cameras
-    by dragging one into the <a>Diagram</a> from the <a>Palette</a>. Then it can be rotated, resized, and have the field
-    of view changed using the <a href="../samples/SectorReshaping.html">Sector Reshaping Tool</a>.
-  </p>
-  <p>
-    When a door is opened or camera detects motion <a>Animation</a>s start to show the door opening along with a popup
-    showing which user opened the door. This information is also logged below the <a>Diagram</a> in the "Event Log".
-  </p>
+
 
   <br>
   <button onclick="saveModel()">Save</button>
@@ -675,29 +668,29 @@
   <textarea id="mySavedModel" style="width: 90%;height: 400px">
 { "class": "GraphLinksModel",
   "nodeDataArray": [
-{"category":"door","loc":"535 610.5","ang":270,"width":57,"height":10,"key":"sub office 1"},
-{"category":"door","loc":"616.5 665","width":51,"height":10,"key":"office 1"},
-{"category":"door","loc":"746 738","key":"bath 1","width":44,"height":10},
-{"category":"door","loc":"971 664","key":"office 2","width":52,"height":10},
-{"category":"door","loc":"451.5 942","key":"main entrance","width":91,"height":10},
-{"loc":"715 1094","category":"door","key":"lounge 1","ang":270,"width":57,"height":10},
-{"loc":"752 1007","category":"door","key":"storage 1","width":56,"height":10},
-{"loc":"1149.5 738","category":"door","key":"meeting 1","width":55,"height":10},
-{"loc":"1638 407","category":"door","key":"meeting 2","width":56,"height":10},
-{"loc":"2133 702","category":"door","key":"office 3","ang":90,"width":56,"height":10},
-{"loc":"2310 701","category":"door","key":"second entrance","ang":90,"width":57,"height":10},
-{"loc":"2026.5 407","category":"door","key":"lounge 2","width":55,"height":10},
-{"loc":"1833.5 561","category":"door","key":"bath 2","width":45,"height":10},
-{"loc":"1924 561","category":"door","key":"bath 3","width":46,"height":10},
-{"loc":"2310 978.5","category":"door","key":"sub office 4","ang":90,"width":57,"height":10},
-{"loc":"2133 904","category":"door","key":"sub office 2","ang":270,"width":57,"height":10},
-{"loc":"2133 980","category":"door","key":"sub office 3","ang":90,"width":56,"height":10},
-{"loc":"2255 1018","category":"door","key":"sub office 5","width":56,"height":10,"ang":180},
-{"loc":"2310 599","category":"door","key":"office 4","width":55,"height":10,"ang":90},
-{"loc":"2310 483","category":"door","key":"storage 2","ang":90,"width":58,"height":10},
-{"loc":"2310 341","category":"door","key":"meeting 3","ang":270,"width":55,"height":10},
-{"status":"","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
+{"category":"door","loc":"400 942","key":"main entrance","width":91,"height":10},
+{"category":"door","loc":"535 635","ang":270,"width":57,"height":10,"key":"sub office 1"},
+{"category":"door","loc":"580 665","width":51,"height":10,"key":"office 1"},
+{"category":"door","loc":"720 738","key":"bath 1","width":44,"height":10},
+{"category":"door","loc":"948 664","key":"office 2","width":52,"height":10},
+{"category":"door","loc":"715 1130", "key":"lounge 1","ang":270,"width":57,"height":10},
+{"category":"door","loc":"712 1007", "key":"storage 1","width":56,"height":10},
+{"category":"door","loc":"1112 738", "key":"meeting 1","width":55,"height":10},
+{"category":"door","loc":"1608 407", "key":"meeting 2","width":56,"height":10},
+{"category":"door","loc":"2133 675", "key":"office 3","ang":90,"width":56,"height":10},
+{"category":"door","loc":"2002 407", "key":"lounge 2","width":55,"height":10},
+{"category":"door","loc":"1811 561", "key":"bath 2","width":45,"height":10},
+{"category":"door","loc":"1902 561", "key":"bath 3","width":46,"height":10},
+{"category":"door","loc":"2310 950", "key":"sub office 4","ang":90,"width":57,"height":10},
+{"category":"door","loc":"2133 924", "key":"sub office 2","ang":270,"width":57,"height":10},
+{"category":"door","loc":"2133 952", "key":"sub office 3","ang":90,"width":56,"height":10},
+{"category":"door","loc":"2280 1018", "key":"sub office 5","width":56,"height":10,"ang":180},
+{"category":"door","loc":"2310 575", "key":"office 4","width":55,"height":10,"ang":90},
+{"category":"door","loc":"2310 675", "key":"second entrance","ang":90,"width":57,"height":10},
+{"category":"door","loc":"2310 458", "key":"storage 2","ang":90,"width":58,"height":10},
+{"category":"door","loc":"2310 363", "key":"meeting 3","ang":270,"width":55,"height":10},
 {"status":"Live","loc":"704 1194","category":"camera","sweep":90,"radius":280,"key":2,"angle":180},
+{"status":"","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
 {"status":"Live","loc":"1937 683","category":"camera","sweep":92,"radius":111,"key":3,"angle":179},
 {"status":"Live","loc":"2460 663","category":"camera","sweep":90,"radius":128,"key":4,"angle":90},
 {"status":"Live","loc":"524 674","category":"camera","sweep":90,"radius":162,"key":5,"angle":90},
@@ -721,8 +714,6 @@
     border: 4px solid;
     border-color: rgba(0,0,0,0);
     aspect-ratio: 16 / 9;
-    width: 200px;
-    height: 100px;
   }
 
   .innerCamera {
