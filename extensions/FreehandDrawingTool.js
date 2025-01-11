@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -49,7 +49,9 @@ class FreehandDrawingTool extends go.Tool {
         return this._temporaryShape;
     }
     set temporaryShape(val) {
-        if (this._temporaryShape !== val && val !== null) {
+        if (this._temporaryShape !== val) {
+            if (!(val instanceof go.Shape))
+                throw new Error('FreehandDrawingTool.temporaryShape must be a Shape');
             val.name = 'SHAPE';
             const panel = this._temporaryShape.panel;
             if (panel !== null) {
@@ -79,7 +81,7 @@ class FreehandDrawingTool extends go.Tool {
         return this._isBackgroundOnly;
     }
     set isBackgroundOnly(val) {
-        this._isBackgroundOnly = val;
+        this._isBackgroundOnly = !!val;
     }
     /**
      * Only start if the diagram is modifiable and allows insertions.

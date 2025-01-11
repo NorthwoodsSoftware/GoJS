@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -57,6 +57,7 @@ export class RowResizingTool extends go.Tool {
     return this._handleArchetype;
   }
   set handleArchetype(val: go.GraphObject) {
+    if (!(val instanceof go.Shape)) throw new Error('ColumnResizingTool.handleArchetype must be a Shape');
     this._handleArchetype = val;
   }
 
@@ -69,6 +70,7 @@ export class RowResizingTool extends go.Tool {
     return this._tableName;
   }
   set tableName(val: string) {
+    if (typeof val !== 'string') throw new Error('RowResizingTool.tableName must be a string');
     this._tableName = val;
   }
 

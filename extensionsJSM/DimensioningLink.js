@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -89,6 +89,8 @@ export class DimensioningLink extends go.Link {
     set extension(val) {
         const old = this._extension;
         if (old !== val) {
+            if (typeof val !== 'number')
+                throw new Error('DimensioningLink.extension must be a number');
             this._extension = val;
             this.raiseChangedEvent(go.ChangeType.Property, 'extension', this, old, val);
             this.invalidateRoute();
@@ -105,13 +107,12 @@ export class DimensioningLink extends go.Link {
     }
     set inset(val) {
         const old = this._inset;
-        if (old !== val && val >= 0) {
+        if (old !== val) {
+            if (typeof val !== 'number' || val < 0)
+                throw new Error('DimensioningLink.inset must be a non-negative number');
             this._inset = val;
             this.raiseChangedEvent(go.ChangeType.Property, 'inset', this, old, val);
             this.invalidateRoute();
-        }
-        else {
-            throw new Error('DimensionLink: invalid new inset: ' + val);
         }
     }
     /**
@@ -124,13 +125,12 @@ export class DimensioningLink extends go.Link {
     }
     set gap(val) {
         const old = this._gap;
-        if (old !== val && val >= 0) {
+        if (old !== val) {
+            if (typeof val !== 'number' || val < 0)
+                throw new Error('DimensioningLink.gap must be a non-negative number');
             this._gap = val;
             this.raiseChangedEvent(go.ChangeType.Property, 'gap', this, old, val);
             this.invalidateRoute();
-        }
-        else {
-            throw new Error('DimensionLink: invalid new gap: ' + val);
         }
     }
     /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -86,6 +86,7 @@ export class DragCreatingTool extends go.Tool {
     return this._box;
   }
   set box(val: go.Part) {
+    if (!(val instanceof go.Part)) throw new Error('DragCreatingTool.box must be a Part');
     this._box = val;
   }
 
@@ -101,6 +102,7 @@ export class DragCreatingTool extends go.Tool {
     return this._delay;
   }
   set delay(val: number) {
+    if (typeof val !== 'number') throw new Error('DragCreatingTool.delay must be a number');
     this._delay = val;
   }
 

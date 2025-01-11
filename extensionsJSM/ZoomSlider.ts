@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -127,6 +127,7 @@ export class ZoomSlider {
   set size(val: number) {
     const old = this._size;
     if (old !== val) {
+      if (typeof val !== 'number') throw new Error('new value for ZoomSlider.size must be a number, not: ' + val);
       this._size = val;
       this.resize();
     }
@@ -142,6 +143,7 @@ export class ZoomSlider {
   set buttonSize(val: number) {
     const old = this._buttonSize;
     if (old !== val) {
+      if (typeof val !== 'number') throw new Error('new value for ZoomSlider.buttonSize must be a number, not: ' + val);
       this._buttonSize = val;
       this.resize();
     }
@@ -156,8 +158,8 @@ export class ZoomSlider {
   }
   set alignment(val: go.Spot) {
     const old = this._alignment;
-    if (old !== val) {
-      this._alignment = val;
+    if (!old.equals(val)) {
+      if (!(val instanceof go.Spot)) throw new Error('new value for ZoomSlider.alignment must be a Spot, not: ' + val);      this._alignment = val;
       this.realign();
     }
   }
@@ -171,7 +173,8 @@ export class ZoomSlider {
   }
   set alignmentFocus(val: go.Spot) {
     const old = this._alignmentFocus;
-    if (old !== val) {
+    if (!old.equals(val)) {
+      if (!(val instanceof go.Spot)) throw new Error('new value for ZoomSlider.alignmentFocus must be a Spot, not: ' + val);      this._alignment = val;
       this._alignmentFocus = val;
       this.realign();
     }
@@ -206,6 +209,7 @@ export class ZoomSlider {
   set opacity(val: number) {
     const old = this._opacity;
     if (old !== val) {
+      if (typeof val !== 'number' || val < 0 || val > 1) throw new Error('new value for ZoomSlider.opacity must be a number between 0 and 1 inclusive, not: ' + val);
       this._opacity = val;
       if (this._sliderDiv !== null) {
         this._sliderDiv.style.opacity = val.toString();

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -81,6 +81,8 @@ class DragZoomingTool extends go.Tool {
         return this._box;
     }
     set box(val) {
+        if (!(val instanceof go.Part))
+            throw new Error('DragZoomingTool.box must be a Part');
         this._box = val;
     }
     /**
@@ -94,6 +96,8 @@ class DragZoomingTool extends go.Tool {
         return this._delay;
     }
     set delay(val) {
+        if (typeof val !== 'number')
+            throw new Error('DragZoomingTool.delay must be a number');
         this._delay = val;
     }
     /**

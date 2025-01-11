@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -268,8 +268,8 @@ class PackedLayout extends go.Layout {
         return this._packShape;
     }
     set packShape(value) {
-        if ((value === PackShape.Elliptical || value === PackShape.Rectangular || value === PackShape.Spiral)
-            && this.packShape !== value) {
+        if (this.packShape !== value &&
+            (value === PackShape.Elliptical || value === PackShape.Rectangular || value === PackShape.Spiral)) {
             this._packShape = value;
             this.invalidateLayout();
         }
@@ -285,8 +285,8 @@ class PackedLayout extends go.Layout {
         return this._packMode;
     }
     set packMode(value) {
-        if ((value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit)
-            && this.packMode !== value) {
+        if (this.packMode !== value &&
+            (value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit)) {
             this._packMode = value;
             this.invalidateLayout();
         }
@@ -301,8 +301,8 @@ class PackedLayout extends go.Layout {
         return this._sortMode;
     }
     set sortMode(value) {
-        if ((value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area)
-            && this.sortMode !== value) {
+        if (this.sortMode !== value &&
+            (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area)) {
             this._sortMode = value;
             this.invalidateLayout();
         }
@@ -317,8 +317,8 @@ class PackedLayout extends go.Layout {
         return this._sortOrder;
     }
     set sortOrder(value) {
-        if ((value === SortOrder.Descending || value === SortOrder.Ascending)
-            && this.sortOrder !== value) {
+        if (this.sortOrder !== value &&
+            (value === SortOrder.Descending || value === SortOrder.Ascending)) {
             this._sortOrder = value;
             this.invalidateLayout();
         }
@@ -348,7 +348,7 @@ class PackedLayout extends go.Layout {
         return this._comparer;
     }
     set comparer(value) {
-        if (typeof value === 'function' && this.comparer !== value) {
+        if (this.comparer !== value && typeof value === 'function') {
             this._comparer = value;
         }
     }
@@ -366,7 +366,7 @@ class PackedLayout extends go.Layout {
         return this._aspectRatio;
     }
     set aspectRatio(value) {
-        if (this.isNumeric(value) && isFinite(value) && value > 0 && this.aspectRatio !== value) {
+        if (this.aspectRatio !== value && this.isNumeric(value) && value > 0) {
             this._aspectRatio = value;
             this.invalidateLayout();
         }
@@ -395,12 +395,8 @@ class PackedLayout extends go.Layout {
             this._fillViewport = true;
             this.invalidateLayout();
         }
-        else if (this.isNumeric(value.width) &&
-            isFinite(value.width) &&
-            value.width >= 0 &&
-            this.isNumeric(value.height) &&
-            isFinite(value.height) &&
-            value.height >= 0) {
+        else if (this.isNumeric(value.width) && value.width >= 0 &&
+            this.isNumeric(value.height) && value.height >= 0) {
             this._size = value;
             this.invalidateLayout();
         }
@@ -421,7 +417,7 @@ class PackedLayout extends go.Layout {
         return this._spacing;
     }
     set spacing(value) {
-        if (this.isNumeric(value) && isFinite(value) && this.spacing !== value) {
+        if (this.spacing !== value && this.isNumeric(value)) {
             this._spacing = value;
             this.invalidateLayout();
         }
@@ -441,7 +437,8 @@ class PackedLayout extends go.Layout {
         return this._hasCircularNodes;
     }
     set hasCircularNodes(value) {
-        if (typeof value === typeof true && this.hasCircularNodes !== value) {
+        value = !!value;
+        if (this.hasCircularNodes !== value) {
             this._hasCircularNodes = value;
             this.invalidateLayout();
         }
@@ -519,7 +516,8 @@ class PackedLayout extends go.Layout {
         return this._arrangesToOrigin;
     }
     set arrangesToOrigin(value) {
-        if (typeof value === typeof true && this.arrangesToOrigin !== value) {
+        value = !!value;
+        if (this.arrangesToOrigin !== value) {
             this._arrangesToOrigin = value;
             this.invalidateLayout();
         }
@@ -1642,7 +1640,7 @@ class PackedLayout extends go.Layout {
      * @param value - the value to check
      */
     isNumeric(value) {
-        return !isNaN(Number(value.toString()));
+        return typeof value === 'number' && !isNaN(value) && isFinite(value);
     }
     /**
      * @hidden @internal

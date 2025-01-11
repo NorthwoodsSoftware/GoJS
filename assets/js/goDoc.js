@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved. */
+/* Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved. */
 
 // Used on live samples on pages, like Intro
 function goCodeExecute(pre, w, h, parentId, animation) {

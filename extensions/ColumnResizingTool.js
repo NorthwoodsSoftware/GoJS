@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -47,6 +47,8 @@ class ColumnResizingTool extends go.Tool {
         return this._handleArchetype;
     }
     set handleArchetype(val) {
+        if (!(val instanceof go.GraphObject))
+            throw new Error('ColumnResizingTool.handleArchetype must be a GraphObject');
         this._handleArchetype = val;
     }
     /**
@@ -58,6 +60,8 @@ class ColumnResizingTool extends go.Tool {
         return this._tableName;
     }
     set tableName(val) {
+        if (typeof val !== 'string')
+            throw new Error('ColumnResizingTool.tableName must be a string');
         this._tableName = val;
     }
     /**

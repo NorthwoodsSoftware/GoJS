@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -69,9 +69,7 @@ class SnapLinkReshapingTool extends go.LinkReshapingTool {
         return this._isGridSnapEnabled;
     }
     set isGridSnapEnabled(val) {
-        if (typeof val !== 'boolean')
-            throw new Error('new value for SnapLinkReshapingTool.isGridSnapEnabled must be a boolean, not: ' + val);
-        this._isGridSnapEnabled = val;
+        this._isGridSnapEnabled = !!val;
     }
     /**
      * Gets or sets whether a reshape handle's position should only be dragged where the
@@ -84,9 +82,7 @@ class SnapLinkReshapingTool extends go.LinkReshapingTool {
         return this._avoidsNodes;
     }
     set avoidsNodes(val) {
-        if (typeof val !== 'boolean')
-            throw new Error('new value for SnapLinkReshapingTool.avoidsNodes must be a boolean, not: ' + val);
-        this._avoidsNodes = val;
+        this._avoidsNodes = !!val;
     }
     /**
      * This override records information about the original point of the handle being dragged,

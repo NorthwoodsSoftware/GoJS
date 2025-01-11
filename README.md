@@ -128,4 +128,4 @@ The GoJS <a href="https://gojs.net/latest/license.html">software license</a>.
 
 The GoJS <a href="https://gojs.net/latest/evaluationLicense.html">evaluation license</a>.
 
-Copyright (c) Northwoods Software Corporation
+Copyright Northwoods Software Corporation

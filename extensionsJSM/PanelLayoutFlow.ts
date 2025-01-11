@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -99,6 +99,7 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return this._spacing;
   }
   set spacing(s: go.Size) {
+    if (!(s instanceof go.Size)) throw new Error('PanelLayoutFlow.spacing must be a Size');
     this._spacing = s;
   }
 

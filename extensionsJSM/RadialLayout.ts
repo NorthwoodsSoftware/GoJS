@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -40,6 +40,7 @@ export class RadialLayout extends go.Layout {
     return this._root;
   }
   set root(value: go.Node | null) {
+    if (value !== null && !(value instanceof go.Node)) throw new Error('RadiallLayout.root must be a go.Node');
     if (this._root !== value) {
       this._root = value;
       this.invalidateLayout();
@@ -56,6 +57,7 @@ export class RadialLayout extends go.Layout {
   }
   set layerThickness(value: number) {
     if (this._layerThickness !== value) {
+      if (typeof value !== 'number' || isNaN(value)) throw new Error('new value for RadialLayout.layerThickness must be a real number');
       this._layerThickness = value;
       this.invalidateLayout();
     }
@@ -71,6 +73,7 @@ export class RadialLayout extends go.Layout {
   }
   set maxLayers(value: number) {
     if (this._maxLayers !== value) {
+      if (typeof value !== 'number' || isNaN(value) || value < 0) throw new Error('new value for RadialLayout.maxLayers must be a non-negative number');
       this._maxLayers = value;
       this.invalidateLayout();
     }

@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
   byId('sample').parentElement.appendChild(b1);
   byId('sample').parentElement.appendChild(b2);
 
-  var copyright = 'Copyright 1998-2024 by Northwoods Software.';
+  var copyr = 'Copyright &copy; 1998-2025 by Northwoods Software Corporation.';
   var p2 = document.createElement('p');
   p2.classList = 'text-xs';
   p2.innerHTML = window.go
-    ? 'GoJS version ' + go.version + '. ' + copyright
-    : copyright;
+    ? 'GoJS version ' + go.version + '. ' + copyr
+    : copyr;
   byId('sample').appendChild(p2);
 
   var url = window.location.href;

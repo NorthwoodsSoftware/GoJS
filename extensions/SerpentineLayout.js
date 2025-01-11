@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -67,6 +67,8 @@ class SerpentineLayout extends go.Layout {
     }
     set wrap(val) {
         if (this._wrap !== val) {
+            if (typeof val !== 'number')
+                throw new Error('SerpentineLayout.wrap must be a number');
             this._wrap = val;
             this.invalidateLayout();
         }
@@ -81,6 +83,8 @@ class SerpentineLayout extends go.Layout {
     }
     set root(val) {
         if (this._root !== val) {
+            if (val !== null && !(val instanceof go.Node))
+                throw new Error('SerpentinelLayout.root must be a go.Node');
             this._root = val;
             this.invalidateLayout();
         }
@@ -96,7 +100,7 @@ class SerpentineLayout extends go.Layout {
     set leftSpot(val) {
         if (!this._leftSpot.equals(val)) {
             if (!(val instanceof go.Spot))
-                throw new Error('new leftSpot value is not a Spot' + val);
+                throw new Error('SerpentinelLayout.leftSpot must be a Spot');
             this._leftSpot = val;
             this.invalidateLayout();
         }
@@ -112,7 +116,7 @@ class SerpentineLayout extends go.Layout {
     set rightSpot(val) {
         if (!this._rightSpot.equals(val)) {
             if (!(val instanceof go.Spot))
-                throw new Error('new rightSpot value is not a Spot' + val);
+                throw new Error('SerpentinelLayout.rightSpot must be a Spot');
             this._rightSpot = val;
             this.invalidateLayout();
         }

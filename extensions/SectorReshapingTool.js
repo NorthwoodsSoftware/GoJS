@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -46,6 +46,8 @@ class SectorReshapingTool extends go.Tool {
         return this._radiusProperty;
     }
     set radiusProperty(val) {
+        if (typeof val !== 'string')
+            throw new Error('SectorReshapingTool.radiusProperty must be the string name of a data property.');
         this._radiusProperty = val;
     }
     /**
@@ -57,6 +59,8 @@ class SectorReshapingTool extends go.Tool {
         return this._angleProperty;
     }
     set angleProperty(val) {
+        if (typeof val !== 'string')
+            throw new Error('SectorReshapingTool.angleProperty must be the string name of a data property.');
         this._angleProperty = val;
     }
     /**
@@ -68,6 +72,8 @@ class SectorReshapingTool extends go.Tool {
         return this._sweepProperty;
     }
     set sweepProperty(val) {
+        if (typeof val !== 'string')
+            throw new Error('SectorReshapingTool.sweepProperty must be the string name of a data property.');
         this._sweepProperty = val;
     }
     /**

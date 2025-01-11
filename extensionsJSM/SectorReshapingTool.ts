@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -59,6 +59,7 @@ export class SectorReshapingTool extends go.Tool {
     return this._radiusProperty;
   }
   set radiusProperty(val: string) {
+    if (typeof val !== 'string') throw new Error('SectorReshapingTool.radiusProperty must be the string name of a data property.')
     this._radiusProperty = val;
   }
 
@@ -71,6 +72,7 @@ export class SectorReshapingTool extends go.Tool {
     return this._angleProperty;
   }
   set angleProperty(val: string) {
+    if (typeof val !== 'string') throw new Error('SectorReshapingTool.angleProperty must be the string name of a data property.')
     this._angleProperty = val;
   }
 
@@ -83,6 +85,7 @@ export class SectorReshapingTool extends go.Tool {
     return this._sweepProperty;
   }
   set sweepProperty(val: string) {
+    if (typeof val !== 'string') throw new Error('SectorReshapingTool.sweepProperty must be the string name of a data property.')
     this._sweepProperty = val;
   }
 

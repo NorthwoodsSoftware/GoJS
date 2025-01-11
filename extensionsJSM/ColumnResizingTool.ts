@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -20,7 +20,7 @@ import * as go from 'gojs';
  * @category Tool Extension
  */
 export class ColumnResizingTool extends go.Tool {
-  private _handleArchetype: go.Shape;
+  private _handleArchetype: go.GraphObject;
   private _tableName: string;
 
   // internal state
@@ -53,10 +53,11 @@ export class ColumnResizingTool extends go.Tool {
    *
    * The default value is a {@link go.Shape} that is a narrow rectangle.
    */
-  get handleArchetype(): go.Shape {
+  get handleArchetype(): go.GraphObject {
     return this._handleArchetype;
   }
-  set handleArchetype(val: go.Shape) {
+  set handleArchetype(val: go.GraphObject) {
+    if (!(val instanceof go.GraphObject)) throw new Error('ColumnResizingTool.handleArchetype must be a GraphObject');
     this._handleArchetype = val;
   }
 
@@ -69,6 +70,7 @@ export class ColumnResizingTool extends go.Tool {
     return this._tableName;
   }
   set tableName(val: string) {
+    if (typeof val !== 'string') throw new Error('ColumnResizingTool.tableName must be a string');
     this._tableName = val;
   }
 

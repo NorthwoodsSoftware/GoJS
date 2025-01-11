@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -30,6 +30,7 @@ export class TreeMapLayout extends go.Layout {
         return this._isTopLevelHorizontal;
     }
     set isTopLevelHorizontal(val) {
+        val = !!val;
         if (this._isTopLevelHorizontal !== val) {
             this._isTopLevelHorizontal = val;
             this.invalidateLayout();

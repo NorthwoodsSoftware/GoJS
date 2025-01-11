@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v3.0.16
+ * Type definitions for GoJS v3.0.17
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright (C) 1998-2024 by Northwoods Software Corporation.
+ * Copyright 1998-2025 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 
@@ -69,7 +69,7 @@ export interface Iterable<T> {
  *  }
  * ```
  *
- * Many iterators will signal an error if {@link next} is called
+ * It is an error if {@link next} is called
  * after the underlying collection has been modified.
  *
  * To avoid confusion when dealing with {@link Iterable}s,
@@ -3596,7 +3596,7 @@ export class InputEvent {
      * or else the code string, relevant for built-in Commands.
      * This is intended to normalize values across keyboard layouts in different languages.
      *
-     * This will return one of the lowercase letters used by the {@link CommandHandler}: `'x', 'v', 'y', 'z', 'a', 'g'`,
+     * This will return one of the lowercase letters used by the {@link CommandHandler}: `'c', 'x', 'v', 'y', 'z', 'a', 'g'`,
      * or else a `KeyboardEvent.code` string for a key such as `'Delete', 'Insert', 'Backspace', 'ArrowDown'`, etc.
      * @since 3.0
      */
@@ -13570,7 +13570,7 @@ export class Palette extends Diagram {
      * }
      * ```
      */
-    constructor(div?: Element | string, init?: Partial<Palette>);
+    constructor(div?: Element | string, init?: Partial<Palette & DiagramInitOptions>);
     /**
      * @param init - A JavaScript object specifying optional initialization properties object.
      * Can specify Palette properties, and Palette sub-properties, just as when initializing a Diagram.
@@ -13582,7 +13582,7 @@ export class Palette extends Diagram {
      * }
      * ```
      */
-    constructor(init?: Partial<Palette>);
+    constructor(init?: Partial<Palette & DiagramInitOptions>);
 }
 /**
  * An Overview is a {@link Diagram} that displays all of a different diagram,
@@ -13617,11 +13617,11 @@ export class Overview extends Diagram {
     * can then be set later on.
     * @param init - Optional initialization properties.
     */
-    constructor(div?: Element | string, init?: Partial<Overview>);
+    constructor(div?: Element | string, init?: Partial<Overview & DiagramInitOptions>);
     /**
     * @param init - Optional initialization properties.
     */
-    constructor(init?: Partial<Overview>);
+    constructor(init?: Partial<Overview & DiagramInitOptions>);
     /**
      * Gets or sets the {@link Diagram} for which this Overview is
      * displaying a model and showing its viewport into that model.
@@ -17137,6 +17137,8 @@ export abstract class GraphObject {
      * @param args - If defined in the builder, the additional arguments that would be passed to {@link GraphObject.takeBuilderArgument}
      * @since 2.2
      */
+    static build<T extends Adornment>(name: ('ToolTip' | 'ContextMenu'), config?: Partial<T> & ObjectData, ...args: Array<any>): T;
+    static build<T extends Panel>(name: ('Button' | 'TreeExpanderButton' | 'SubGraphExpanderButton' | 'ContextMenuButton' | 'PanelExpanderButton' | 'CheckBoxButton' | 'CheckBox'), config?: Partial<T> & ObjectData, ...args: Array<any>): T;
     static build<T extends GraphObject>(name: string, config?: Partial<T> & ObjectData, ...args: Array<any>): T;
     /**
      * This static function defines a named function that {@link GraphObject.make} or {@link GraphObject.build} can use to build objects.
@@ -19549,7 +19551,8 @@ export class Shape extends GraphObject {
      * For some figures you may also want to set {@link Geometry.defaultStretch} to {@link GeometryStretch.Uniform}
      * in order to maintain the geometry's aspect ratio within the Shape.
      *
-     * Generated figures must create a Geometry that is not larger than the supplied with and height. Doing so will signal an error.
+     * Generated figures must create a Geometry that is not larger than the supplied width and height.
+     * Doing so is an error that may result in unexpected appearances or behaviors.
      * @param name - a capitalized figure name ("RoundedRectangle"); must not be "" or "None"
      * @param func - A function that takes (Shape,width,height) and returns a Geometry,
      *    or an existing figure generator name for which the new name will be a synonym.

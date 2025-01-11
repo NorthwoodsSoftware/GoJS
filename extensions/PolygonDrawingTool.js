@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -52,7 +52,7 @@ class PolygonDrawingTool extends go.Tool {
         return this._isPolygon;
     }
     set isPolygon(val) {
-        this._isPolygon = val;
+        this._isPolygon = !!val;
     }
     /**
      * Gets or sets whether this tool draws shapes with quadratic bezier curves for each segment, or just straight lines.
@@ -63,7 +63,7 @@ class PolygonDrawingTool extends go.Tool {
         return this._hasArcs;
     }
     set hasArcs(val) {
-        this._hasArcs = val;
+        this._hasArcs = !!val;
     }
     /**
      * Gets or sets whether this tool draws shapes with only orthogonal segments, or segments in any direction.
@@ -73,7 +73,7 @@ class PolygonDrawingTool extends go.Tool {
         return this._isOrthoOnly;
     }
     set isOrthoOnly(val) {
-        this._isOrthoOnly = val;
+        this._isOrthoOnly = !!val;
     }
     /**
      * Gets or sets whether this tool only places the shape's corners on the Diagram's visible grid.
@@ -83,7 +83,7 @@ class PolygonDrawingTool extends go.Tool {
         return this._isGridSnapEnabled;
     }
     set isGridSnapEnabled(val) {
-        this._isGridSnapEnabled = val;
+        this._isGridSnapEnabled = !!val;
     }
     /**
      * Gets or sets the node data object that is copied and added to the model
@@ -104,7 +104,7 @@ class PolygonDrawingTool extends go.Tool {
         return this._temporaryShape;
     }
     set temporaryShape(val) {
-        if (this._temporaryShape !== val && val !== null) {
+        if (this._temporaryShape !== val && val instanceof go.Shape) {
             val.name = 'SHAPE';
             const panel = this._temporaryShape.panel;
             if (panel !== null) {

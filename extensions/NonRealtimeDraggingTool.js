@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -35,6 +35,8 @@ class NonRealtimeDraggingTool extends go.DraggingTool {
         return this._duration;
     }
     set duration(val) {
+        if (typeof val !== 'number' || isNaN(val) || val < 0)
+            throw new Error('New value for NonRealtimeDraggingTool.duration must be a non-negative number.');
         this._duration = val;
     }
     /**

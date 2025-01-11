@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -68,6 +68,7 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set linkSpacing(value: number) {
     if (value !== this._linkSpacing) {
+      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.linkSpacing must be a number');
       this._linkSpacing = value;
       this.invalidateRouter();
     }
@@ -84,6 +85,7 @@ export class AvoidsLinksRouter extends go.Router {
     return this._avoidsNodes;
   }
   set avoidsNodes(value: boolean) {
+    value = !!value;
     if (value !== this._avoidsNodes) {
       this._avoidsNodes = value;
       this.invalidateRouter();
@@ -103,6 +105,7 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set epsilonDistance(value: number) {
     if (value !== this._epsilonDistance) {
+      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.epsilonDistance must be a number');
       this._epsilonDistance = value;
       this.invalidateRouter();
     }
@@ -120,6 +123,7 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set iterations(value: number) {
     if (value !== this._iterations) {
+      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.iterations must be a number');
       this._iterations = value;
       this.invalidateRouter();
     }
@@ -139,6 +143,7 @@ export class AvoidsLinksRouter extends go.Router {
     return this._ignoreContainingGroups;
   }
   set ignoreContainingGroups(value: boolean) {
+    value = !!value;
     if (value !== this._ignoreContainingGroups) {
       this._ignoreContainingGroups = value;
       this.invalidateRouter();

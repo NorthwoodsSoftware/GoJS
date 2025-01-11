@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -66,7 +66,7 @@ export class Inspector {
     /**
      * Constructs an Inspector and sets up properties based on the options provided.
      * Also sets up change listeners on the Diagram so the Inspector stays up-to-date.
-     * @param divid - a string referencing the HTML ID of the to-be Inspector's div
+     * @param divid - a string referencing the HTML ID of the to-be Inspector's div, or a reference to an HTMLDivElement
      * @param diagram - a reference to a GoJS Diagram
      * @param options - an optional JS Object describing options for the inspector
      */
@@ -83,7 +83,11 @@ export class Inspector {
         // Private variables used to keep track of internal state
         this.inspectedProperties = {};
         this.multipleProperties = {};
-        const mainDiv = document.getElementById(divid);
+        if (!(diagram instanceof go.Diagram))
+            throw new Error('Inspector constructor diagram must be a Diagram');
+        const mainDiv = divid instanceof HTMLDivElement ? divid : document.getElementById(divid);
+        if (!(mainDiv instanceof HTMLDivElement))
+            throw new Error('Inspector constructor not given an HTMLDivElement or its identifier');
         mainDiv.className = 'inspector';
         mainDiv.innerHTML = '';
         this._div = mainDiv;
@@ -134,6 +138,8 @@ export class Inspector {
     }
     set diagram(val) {
         if (val !== this._diagram) {
+            if (!(val instanceof go.Diagram))
+                throw new Error('New Inspector.diagram must be a Diagram');
             // First, unassociate change listeners with current inspected diagram
             this._diagram.removeModelChangedListener(this.inspectOnModelChanged);
             this._diagram.removeDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
@@ -167,6 +173,7 @@ export class Inspector {
         return this._inspectSelection;
     }
     set inspectSelection(val) {
+        val = !!val; // handle any non-boolean values
         if (val !== this._inspectSelection) {
             this._inspectSelection = val;
             if (this._inspectSelection) {
@@ -188,6 +195,7 @@ export class Inspector {
         return this._includesOwnProperties;
     }
     set includesOwnProperties(val) {
+        val = !!val; // handle any non-boolean values
         if (val !== this._includesOwnProperties) {
             this._includesOwnProperties = val;
             this.inspectObject();
@@ -198,13 +206,13 @@ export class Inspector {
      * The object should contain string: Object pairs represnting propertyName: propertyOptions.
      * Can be used to include or exclude additional properties.
      *
-     * The default value is an empty object.
+     * The default value is an empty Object.
      */
     get properties() {
         return this._properties;
     }
     set properties(val) {
-        if (val !== this._properties) {
+        if (val !== null && val !== this._properties) {
             this._properties = val;
             this.inspectObject();
         }
@@ -220,6 +228,8 @@ export class Inspector {
     }
     set propertyModified(val) {
         if (val !== this._propertyModified) {
+            if (val !== null && typeof val !== 'function')
+                throw new Error('Inspector.propertyModified must be a function or null');
             this._propertyModified = val;
         }
     }
@@ -232,6 +242,7 @@ export class Inspector {
         return this._multipleSelection;
     }
     set multipleSelection(val) {
+        val = !!val; // handle any non-boolean values
         if (val !== this._multipleSelection) {
             this._multipleSelection = val;
             this.inspectObject();
@@ -246,6 +257,7 @@ export class Inspector {
         return this._showUnionProperties;
     }
     set showUnionProperties(val) {
+        val = !!val; // handle any non-boolean values
         if (val !== this._showUnionProperties) {
             this._showUnionProperties = val;
             this.inspectObject();
@@ -261,6 +273,8 @@ export class Inspector {
     }
     set showLimit(val) {
         if (val !== this._showLimit) {
+            if (typeof val !== 'number')
+                throw new Error('Inspector.showLimit must be a number');
             this._showLimit = val;
             this.inspectObject();
         }
@@ -631,9 +645,10 @@ export class Inspector {
         }
         else {
             const inputi = (input = document.createElement('input'));
-            if (inputi && inputi.setPointerCapture) {
-                inputi.addEventListener('pointerdown', (e) => inputi.setPointerCapture(e.pointerId));
-            }
+            //?? Capturing pointer here breaks Date picker in Chromium, so this is commented out.
+            // if (inputi && inputi.setPointerCapture) {
+            //   inputi.addEventListener('pointerdown', (e) => inputi.setPointerCapture(e.pointerId));
+            // }
             inputi.value = this.convertToString(propertyValue);
             if (decProp) {
                 const t = decProp.type;

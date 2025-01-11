@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -93,6 +93,8 @@ class PanelLayoutFlow extends go.PanelLayout {
         return this._spacing;
     }
     set spacing(s) {
+        if (!(s instanceof go.Size))
+            throw new Error('PanelLayoutFlow.spacing must be a Size');
         this._spacing = s;
     }
     measure(panel, width, height, elements, union, minw, minh) {

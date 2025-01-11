@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -76,6 +76,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._handleArchetype;
   }
   set handleArchetype(value: go.GraphObject) {
+    if (!(value instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.handleArchetype must be a GraphObject');
     this._handleArchetype = value;
   }
 
@@ -87,6 +88,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._midHandleArchetype;
   }
   set midHandleArchetype(value: go.GraphObject) {
+    if (!(value instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.midHandleArchetype must be a GraphObject');
     this._midHandleArchetype = value;
   }
 
@@ -100,7 +102,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._isResegmenting;
   }
   set isResegmenting(val: boolean) {
-    this._isResegmenting = val;
+    this._isResegmenting = !!val;
   }
 
   /**
@@ -112,6 +114,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._resegmentingDistance;
   }
   set resegmentingDistance(val: number) {
+    if (typeof val !== 'number') throw new Error('GeometryReshapingTool.resegmentingDistance must be a number');
     this._resegmentingDistance = val;
   }
 
@@ -123,6 +126,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._reshapeObjectName;
   }
   set reshapeObjectName(value: string) {
+    if (typeof value !== 'string') throw new Error('GeometryReshapingTool.reshapeObjectName must be a string');
     this._reshapeObjectName = value;
   }
 
@@ -135,6 +139,7 @@ export class GeometryReshapingTool extends go.Tool {
     return this._handle;
   }
   set handle(val: go.GraphObject | null) {
+    if (val !== null && !(val instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.handle must be a GraphObject');
     this._handle = val;
   }
 

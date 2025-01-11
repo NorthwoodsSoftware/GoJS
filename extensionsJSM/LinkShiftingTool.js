@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -70,6 +70,8 @@ export class LinkShiftingTool extends go.Tool {
         return this._fromHandleArchetype;
     }
     set fromHandleArchetype(value) {
+        if (value !== null && !(value instanceof go.GraphObject))
+            throw new Error('LinkShiftingTool.fromHandleArchetype must be a GraphObject');
         this._fromHandleArchetype = value;
         if (value !== null)
             this._fromAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();
@@ -83,6 +85,8 @@ export class LinkShiftingTool extends go.Tool {
         return this._toHandleArchetype;
     }
     set toHandleArchetype(value) {
+        if (value !== null && !(value instanceof go.GraphObject))
+            throw new Error('LinkShiftingTool.toHandleArchetype must be a GraphObject');
         this._toHandleArchetype = value;
         if (value !== null)
             this._toAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();

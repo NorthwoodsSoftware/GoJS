@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -50,6 +50,8 @@ export class ParallelLayout extends go.TreeLayout {
         return this._splitNode;
     }
     set splitNode(val) {
+        if (val !== null && !(val instanceof go.Node))
+            throw new Error('ParallelLayout.splitNode must be a go.Node');
         this._splitNode = val;
     }
     /**
@@ -59,6 +61,8 @@ export class ParallelLayout extends go.TreeLayout {
         return this._mergeNode;
     }
     set mergeNode(val) {
+        if (val !== null && !(val instanceof go.Node))
+            throw new Error('ParallelLayout.mergeNode must be a go.Node');
         this._mergeNode = val;
     }
     /**

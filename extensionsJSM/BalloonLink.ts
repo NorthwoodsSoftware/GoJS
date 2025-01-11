@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -59,6 +59,7 @@ export class BalloonLink extends go.Link {
   set base(value: number) {
     const old = this._base;
     if (old !== value) {
+      if (typeof value !== 'number') throw new Error('BalloonLink.base must be a number');
       this._base = value;
       this.raiseChangedEvent(go.ChangeType.Property, 'base', this, old, value);
     }

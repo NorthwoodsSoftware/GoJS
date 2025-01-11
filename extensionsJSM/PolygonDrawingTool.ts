@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -64,7 +64,7 @@ export class PolygonDrawingTool extends go.Tool {
     return this._isPolygon;
   }
   set isPolygon(val: boolean) {
-    this._isPolygon = val;
+    this._isPolygon = !!val;
   }
 
   /**
@@ -76,7 +76,7 @@ export class PolygonDrawingTool extends go.Tool {
     return this._hasArcs;
   }
   set hasArcs(val: boolean) {
-    this._hasArcs = val;
+    this._hasArcs = !!val;
   }
 
   /**
@@ -87,7 +87,7 @@ export class PolygonDrawingTool extends go.Tool {
     return this._isOrthoOnly;
   }
   set isOrthoOnly(val: boolean) {
-    this._isOrthoOnly = val;
+    this._isOrthoOnly = !!val;
   }
 
   /**
@@ -98,7 +98,7 @@ export class PolygonDrawingTool extends go.Tool {
     return this._isGridSnapEnabled;
   }
   set isGridSnapEnabled(val: boolean) {
-    this._isGridSnapEnabled = val;
+    this._isGridSnapEnabled = !!val;
   }
 
   /**
@@ -121,7 +121,7 @@ export class PolygonDrawingTool extends go.Tool {
     return this._temporaryShape;
   }
   set temporaryShape(val: go.Shape) {
-    if (this._temporaryShape !== val && val !== null) {
+    if (this._temporaryShape !== val && val instanceof go.Shape) {
       val.name = 'SHAPE';
       const panel = this._temporaryShape.panel;
       if (panel !== null) {

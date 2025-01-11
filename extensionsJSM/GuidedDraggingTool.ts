@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -104,8 +104,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
     return this._isGuidelineEnabled;
   }
   set isGuidelineEnabled(val: boolean) {
-    if (typeof val !== 'boolean') throw new Error('new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.');
-    this._isGuidelineEnabled = val;
+    this._isGuidelineEnabled = !!val;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 /*
  * This is an extension and not part of the main GoJS library.
@@ -68,9 +68,7 @@ export class GuidedDraggingTool extends go.DraggingTool {
         return this._isGuidelineEnabled;
     }
     set isGuidelineEnabled(val) {
-        if (typeof val !== 'boolean')
-            throw new Error('new value for GuidedDraggingTool.isGuidelineEnabled must be a boolean value.');
-        this._isGuidelineEnabled = val;
+        this._isGuidelineEnabled = !!val;
     }
     /**
      * Gets or sets the color of horizontal guidelines.

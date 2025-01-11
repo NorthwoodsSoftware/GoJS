@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998-2024 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 /*
@@ -76,8 +76,8 @@ export class SpiralLayout extends go.Layout {
     return this._clockwise;
   }
   set clockwise(val: boolean) {
+    val = !!val;
     if (this._clockwise !== val) {
-      if (typeof val !== 'boolean') throw new Error('new value for SpiralLayout.clockwise must be a boolean, not: ' + val);
       this._clockwise = val;
       this.invalidateLayout();
     }
