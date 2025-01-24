@@ -12,13 +12,15 @@
     Window: ['notes'],
     Door: ['length', 'swing', 'notes'],
     Room: ['name', 'area'],
-    Wall: ['notes', 'thickness']
+    Wall: ['notes', 'thickness'],
+    DimensionLink: ['key']
   };
 
   let objDataSubset = $derived.by(() => {
     if (!selection) return [];
     const category = selection.data.category || '';
-    const categories = inspectableDataForCategories[category];
+    let categories = inspectableDataForCategories[category];
+    if (!categories) categories = ['key'];
     const newMap = new Map();
     for (const key of categories) {
       if (selection.data[key] !== undefined) {

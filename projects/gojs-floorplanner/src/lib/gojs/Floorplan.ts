@@ -2975,24 +2975,26 @@ export class Floorplan extends go.Diagram {
 
 // Default Group
 function makeDefaultGroup() {
-  return new go.Group('Vertical', {
-    contextMenu: makeContextMenu(),
-    toolTip: makeGroupToolTip()
-  })
-    .bind('location', 'loc')
-    .add(
-      new go.Panel('Auto').add(
-        new go.Shape('RoundedRectangle', {
-          fill: 'rgba(128,128,128,0.15)',
-          stroke: 'rgba(128, 128, 128, .05)',
-          name: 'SHAPE',
-          strokeCap: 'square'
-        }).bindObject('fill', 'isSelected', function (s, obj) {
-          return s ? 'rgba(128, 128, 128, .15)' : 'rgba(128, 128, 128, 0.10)';
-        })
-      ),
-      new go.Placeholder({ padding: 5 })
-    );
+  return (
+    new go.Group('Vertical', {
+      contextMenu: makeContextMenu(),
+      toolTip: makeGroupToolTip()
+    })
+      // .bind('location', 'loc')
+      .add(
+        new go.Panel('Auto').add(
+          new go.Shape('RoundedRectangle', {
+            fill: 'rgba(128,128,128,0.15)',
+            stroke: 'rgba(128, 128, 128, .05)',
+            name: 'SHAPE',
+            strokeCap: 'square'
+          }).bindObject('fill', 'isSelected', function (s, obj) {
+            return s ? 'rgba(128, 128, 128, .15)' : 'rgba(128, 128, 128, 0.10)';
+          }),
+          new go.Placeholder({ padding: 5 })
+        )
+      )
+  );
 }
 
 /*
@@ -3156,11 +3158,10 @@ function makeDimensionLink(opacity?: number, stroke?: string, strokeWidth?: numb
             if (distance > 40) {
               return '13px sans-serif';
             }
-            if (distance <= 40 && distance >= 20) {
+            if (distance >= 20) {
               return '11px sans-serif';
-            } else {
-              return '9px sans-serif';
             }
+            return '9px sans-serif';
           })
       )
   );
