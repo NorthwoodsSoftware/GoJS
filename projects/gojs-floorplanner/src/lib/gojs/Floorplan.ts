@@ -261,17 +261,17 @@ export class Floorplan extends go.Diagram {
           let stationaryPt = new go.Point();
           let movingPt = new go.Point();
           let resizeAdornment: go.Adornment | null = null;
-          const oitr = obj.adornments.iterator;
-          while (oitr.next()) {
-            const adorn: go.Adornment = oitr.value;
+          const oItr = obj.adornments.iterator;
+          while (oItr.next()) {
+            const adorn: go.Adornment = oItr.value;
             if (adorn.name === 'WallPartResizeAdornment') {
               resizeAdornment = adorn;
             }
           }
           if (resizeAdornment !== null) {
-            const ritr = resizeAdornment.elements.iterator;
-            while (ritr.next()) {
-              const el: go.GraphObject = ritr.value;
+            const rItr = resizeAdornment.elements.iterator;
+            while (rItr.next()) {
+              const el: go.GraphObject = rItr.value;
               const handle: go.GraphObject | null = this.handle;
               if (handle !== null) {
                 if (el instanceof go.Shape && el.alignment === handle.alignment) {
@@ -1495,6 +1495,8 @@ export class Floorplan extends go.Diagram {
       roomBoundaryWalls,
       this
     );
+    /* eslint-disable */
+    const fp = this;
     walls.iterator.each((w: go.Group) => {
       const s: go.Point = w.data.startpoint;
       const e: go.Point = w.data.endpoint;
@@ -1697,12 +1699,12 @@ export class Floorplan extends go.Diagram {
           oiw = fp.sortWallsClockwiseWithSetStartWall(oiw, lw);
         }
         // the "parent wall" (the one that led to all walls in oiw) is the next, non "lw" wall in the clockwise-sorted oiw
-        const parentw: go.Group = oiw.toArray()[1];
+        const parentW: go.Group = oiw.toArray()[1];
 
         // add the mitering side of parent wall to the path that's not already in the path
         if (op !== null) {
-          const side1: number = fp.getCounterClockwiseWallSide(parentw, op);
-          const entry = [parentw.data.key, side1];
+          const side1: number = fp.getCounterClockwiseWallSide(parentW, op);
+          const entry = [parentW.data.key, side1];
 
           // if this entry already exists, we've come full circle and are done
           let entryExists: boolean = false;
@@ -1719,10 +1721,10 @@ export class Floorplan extends go.Diagram {
 
           if (entry !== null && !entryExists) {
             path.push(entry);
-            seenWalls.add(parentw);
+            seenWalls.add(parentW);
 
             // now recurse
-            recursivelyFindHolePath(parentw, seenIp, path, op, origWall);
+            recursivelyFindHolePath(parentW, seenIp, path, op, origWall);
           } else if (entryExists) {
             return path;
           }
@@ -1747,7 +1749,7 @@ export class Floorplan extends go.Diagram {
         const mPt: go.Point = new go.Point((sPt.x + ePt.x) / 2, (sPt.y + ePt.y) / 2);
         const wallsDistArr: Array<any> = []; // array of wall/dist pairs [[wallA, 15], [wallB, 30]] -- this makes sorting easier than if we were using a Map
         offendingWalls.iterator.each((w) => {
-          const ip: go.Point | null = fp.getSegmentsIntersection(
+          const ip: go.Point | null = this.getSegmentsIntersection(
             pt,
             mPt,
             w.data.startpoint,
@@ -2777,9 +2779,9 @@ export class Floorplan extends go.Diagram {
 
                 // check if this angleNode already exists -- if it does, adjust data (instead of deleting/redrawing)
                 let angleNode: go.Node | null = null;
-                const aitr = this.angleNodes.iterator;
-                while (aitr.next()) {
-                  const aNode: go.Node = aitr.value;
+                const aItr = this.angleNodes.iterator;
+                while (aItr.next()) {
+                  const aNode: go.Node = aItr.value;
                   if (aNode.data.key === key) {
                     angleNode = aNode;
                   }
@@ -3065,8 +3067,8 @@ function makeAngleNode() {
         .bind('alignment', 'sweep', function (sweep, panel) {
           const rad = Math.min(30, panel.part.data.maxRadius);
           const angle = panel.part.data.angle;
-          const cntr = new go.Point(rad, 0).rotate(angle + sweep / 2);
-          return new go.Spot(0.5, 0.5, cntr.x, cntr.y);
+          const center = new go.Point(rad, 0).rotate(angle + sweep / 2);
+          return new go.Spot(0.5, 0.5, center.x, center.y);
         })
         .add(
           // rectangle containing angle text

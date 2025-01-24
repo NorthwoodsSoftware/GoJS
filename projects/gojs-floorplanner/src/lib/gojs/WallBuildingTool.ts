@@ -191,6 +191,6 @@ export class WallBuildingTool extends go.Tool {
 
     this.stopTransaction();
 
-    this.isActive = false; // Default functionality
+    this.isActive = false;
   }
 }
