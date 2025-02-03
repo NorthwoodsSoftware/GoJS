@@ -215,8 +215,9 @@
     myDiagram.nodeTemplateMap.add(
       'DistillationColumn',
       new go.Node('Spot', {
+        selectionObjectName: 'CAPSULE',
         resizable: true,
-        resizeObjectName: 'WAVE_PANEL',
+        resizeObjectName: 'CAPSULE',
         locationSpot: go.Spot.Center
       })
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
@@ -226,27 +227,19 @@
             stroke: 'black',
             strokeWidth: 1,
           })
-            .bindTwoWay('height', 'height', (value) => (value + 1))
-            .bindTwoWay('width', 'width', (value) => (value + 1)),
+            .bind('height', 'height', (value) => (value + 1))
+            .bind('width', 'width', (value) => (value + 1)),
           new go.Panel('Spot', {isClipping: true})
             .add(
               new go.Shape('Capsule', {
+                  name: "CAPSULE",
                   strokeWidth: 0,
-                  portId: 'TopRight',
                 })
                 .bindTwoWay('height')
-                .bindTwoWay('width')
-                //not sure if this is the best way to do it but it does work
-                .bind('toSpot', '', (data) => {
-                  let radius = (data.width > data.height ? data.height : data.width) / 2;
-                  let dx = Math.cos(Math.PI / 4) * radius;
-                  return new go.Spot(1, 0, -(radius - dx), radius - dx);
-                }),
-              new go.Panel('Spot', {
-                name: 'WAVE_PANEL',
-              })
-                .bindTwoWay('height')
-                .bindTwoWay('width')
+                .bindTwoWay('width'),
+              new go.Panel('Spot')
+                .bind('height')
+                .bind('width')
                 .add(
                   new go.Shape({fill: 'white', strokeWidth: 0}),
                   new go.Panel('Vertical', {
@@ -326,8 +319,9 @@
     myDiagram.nodeTemplateMap.add(
       'Tank',
       new go.Node('Spot', {
+        selectionObjectName: 'CAPSULE',
         resizable: true,
-        resizeObjectName: 'WAVE_PANEL',
+        resizeObjectName: 'CAPSULE',
         locationSpot: go.Spot.Center
       })
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
@@ -337,20 +331,19 @@
             stroke: 'black',
             strokeWidth: 1,
           })
-            .bindTwoWay('height', 'height', (value) => (value + 1))
-            .bindTwoWay('width', 'width', (value) => (value + 1)),
+            .bind('height', 'height', (value) => (value + 1))
+            .bind('width', 'width', (value) => (value + 1)),
           new go.Panel('Spot', {isClipping: true})
             .add(
               new go.Shape('Capsule', {
+                  name: "CAPSULE",
                   strokeWidth: 0,
                 })
                 .bindTwoWay('height')
                 .bindTwoWay('width'),
-              new go.Panel('Spot', {
-                name: 'WAVE_PANEL',
-              })
-                .bindTwoWay('height')
-                .bindTwoWay('width')
+              new go.Panel('Spot')
+                .bind('height')
+                .bind('width')
                 .add(
                   new go.Shape({fill: 'white', strokeWidth: 0}),
                   new go.Panel('Vertical', {
@@ -491,7 +484,7 @@
     myDiagram.nodeTemplateMap.add(
       'Valve',
       new go.Node('Vertical', {
-        locationSpot: new go.Spot(0.5, 1, 0, -21),
+        locationSpot: new go.Spot(0.5, 0.3333),
         locationObjectName: 'SHAPE',
         selectionObjectName: 'SHAPE',
         rotatable: true
@@ -515,8 +508,8 @@
             strokeWidth: 1,
             fill: makeMetalBrush(),
             portId: '',
-            fromSpot: new go.Spot(1, 0.35),
-            toSpot: new go.Spot(0, 0.35)
+            fromSpot: new go.Spot(1, 0.3333),
+            toSpot: new go.Spot(0, 0.3333)
           })
         )
     );
@@ -691,35 +684,35 @@
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 300px">
-    { "class": "GraphLinksModel",
-      "linkFromPortIdProperty": "fromPort",
-      "linkToPortIdProperty": "toPort",
-      "pointsDigits": 1,
-      "nodeDataArray": [
-    {"key":"Tank1","category":"Tank","pos":"0 200","text":"Feed Tank","height":100,"width":200,"fillLevel":"0.8"},
-    {"key":"Valve1","category":"Valve","pos":"180 220","text":"Valve","angle":0,"isOn":true},
-    {"key":"Tank2","category":"DistillationColumn","pos":"300 200","text":"Distillation Column","height":275,"width":75,"fillLevel":"0.15"},
-    {"key":"Condenser1","category":"Condenser","pos":"390 0","text":"Condenser","isOn":true},
-    {"key":"Tank3","category":"Tank","pos":"600 20","text":"Reflux Drum","height":75,"width":150,"fillLevel":"0.1"},
-    {"key":"Pump1","category":"Pump","pos":"550 100","text":"Pump","isOn":true},
-    {"key":"Boiler1","category":"Boiler","pos":"390 360","text":"Reboiler","isOn":true},
-    {"key":"Valve2","category":"Valve","pos":"510 260","text":"Valve","angle":270,"isOn":true},
-    {"key":"Tank4","category":"Tank","pos":"760 187.5","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"},
-    {"key":"Tank5","category":"Tank","pos":"750 380","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"}
-    ],
-      "linkDataArray": [
-    {"from":"Tank1","to":"Valve1","stroke":"rgba(117, 147, 175, 0.5)","points":[101.00000000000006,200,111.00000000000006,200,130.25000000000003,200,130.25000000000003,220.85,149.5,220.85,159.5,220.85]},
-    {"from":"Valve1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)","points":[200.5,220.85,210.5,220.85,218.5850830078125,220.85,218.5850830078125,200,226.670166015625,200,236.670166015625,200]},
-    {"from":"Tank2","to":"Condenser1","points":[300,61.5,300,51.5,300,52,300,52,300,18,403.516845703125,18,413.516845703125,18]},
-    {"from":"Condenser1","to":"Tank3","stroke":"rgba(117, 147, 175, 0.5)","points":[446.516845703125,18,456.516845703125,18,458,18,458,18,514,18,524,20]},
-    {"from":"Tank3","to":"Pump1","stroke":"rgba(117, 147, 175, 0.5)","points":[600,58.500000000000014,600,68.50000000000001,600,79.25,570.5559921264648,79.25,570.5559921264648,90,570.5559921264648,100]},
-    {"from":"Pump1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)","toPort":"TopRight","points":[558.036008100916,116.5,548.036008100916,116.5,548,116.5,548,66.41242789363899,333.587572106361,66.41242789363899,326.5165042944955,73.48349570550447]},
-    {"from":"Pump1","to":"Tank4","stroke":"rgba(117, 147, 175, 0.5)","text":"Overhead product","points":[583.0759761520137,116.5,593.0759761520137,116.5,596,116.5,596,187.5,689,187.5,699,187.5]},
-    {"from":"Tank2","to":"Boiler1","stroke":"rgba(117, 147, 175, 0.5)","points":[300,338.49999999999983,300,348.49999999999983,300,349.2499999999999,417.94995880126953,349.2499999999999,417.94995880126953,350,417.94995880126953,360]},
-    {"from":"Boiler1","to":"Valve2","points":[417.94995880126953,360,417.94995880126953,350,417.94995880126953,320.25,510.85,320.25,510.85,290.5,510.85,280.5]},
-    {"from":"Valve2","to":"Tank2","points":[510.85,239.5,510.85,229.5,510.85,200,438.7438400268555,200,366.63768005371094,200,356.63768005371094,200]},
-    {"from":"Boiler1","to":"Tank5","stroke":"rgba(117, 147, 175, 0.5)","text":"Bottom product\n(condensate from reboiler)","points":[434.44995880126953,376.5,444.44995880126953,376.5,447,376.5,447,376.5,679,376.5,689,380]}
-    ]}
+{ "class": "GraphLinksModel",
+  "pointsDigits": 1,
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"key":"Tank1","category":"Tank","pos":"-30 200","text":"Feed Tank","height":100,"width":200,"fillLevel":"0.8"},
+{"key":"Valve1","category":"Valve","pos":"150 200","text":"Valve","angle":0,"isOn":true},
+{"key":"Tank2","category":"DistillationColumn","pos":"300 200","text":"Distillation Column","height":275,"width":75,"fillLevel":"0.15"},
+{"key":"Condenser1","category":"Condenser","pos":"390 0","text":"Condenser","isOn":true},
+{"key":"Tank3","category":"Tank","pos":"600 20","text":"Reflux Drum","height":75,"width":150,"fillLevel":"0.1"},
+{"key":"Pump1","category":"Pump","pos":"550 100","text":"Pump","isOn":true},
+{"key":"Boiler1","category":"Boiler","pos":"390 360","text":"Reboiler","isOn":true},
+{"key":"Valve2","category":"Valve","pos":"480 260","text":"Valve","angle":270,"isOn":true},
+{"key":"Tank4","category":"Tank","pos":"750 180","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"},
+{"key":"Tank5","category":"Tank","pos":"750 380","text":"Holding Tank","height":75,"width":120,"fillLevel":"0.8"}
+],
+  "linkDataArray": [
+{"from":"Tank1","to":"Valve1","stroke":"rgba(117, 147, 175, 0.5)","points":[71.0,200.0,81.0,200.0,100.3,200.0,100.3,200.0,119.5,200.0,129.5,200.0]},
+{"from":"Valve1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)","points":[170.5,200.0,180.5,200.0,203.5,200.0,203.5,200.0,226.5,200.0,236.5,200.0]},
+{"from":"Tank2","to":"Condenser1","points":[300.0,61.5,300.0,51.5,300.0,52.0,300.0,52.0,300.0,18.0,402.5,18.0,412.5,18.0]},
+{"from":"Condenser1","to":"Tank3","stroke":"rgba(117, 147, 175, 0.5)","points":[446.5,18.0,456.5,18.0,458.0,18.0,458.0,18.0,514.0,18.0,524.0,20.0]},
+{"from":"Tank3","to":"Pump1","stroke":"rgba(117, 147, 175, 0.5)","points":[600.0,58.5,600.0,68.5,600.0,79.3,570.6,79.3,570.6,90.0,570.6,100.0]},
+{"from":"Pump1","to":"Tank2","stroke":"rgba(117, 147, 175, 0.5)", "points":[561.0,116.5,551.0,116.5,548.0,116.5,548.0,66.4,333.6,66.4,326.5,73.5]},
+{"from":"Pump1","to":"Tank4","stroke":"rgba(117, 147, 175, 0.5)","text":"Overhead product","points":[586.0,116.5,596.0,116.5,596.0,116.5,596.0,180.0,679.0,180.0,689.0,180.0]},
+{"from":"Tank2","to":"Boiler1","stroke":"rgba(117, 147, 175, 0.5)", "points":[300.0,338.5,300.0,348.5,300.0,349.2,422.0,349.2,422.0,350.0,422.0,360.0]},
+{"from":"Boiler1","to":"Valve2","points":[422.0,360.0,422.0,350.0,422.0,320.3,480.0,320.3,480.0,290.5,480.0,280.5]},
+{"from":"Valve2","to":"Tank2","points":[480.0,239.5,480.0,229.5,480.0,200.0,426.8,200.0,373.5,200.0,363.5,200.0]},
+{"from":"Boiler1","to":"Tank5","stroke":"rgba(117, 147, 175, 0.5)","text":"Bottom product\n(condensate from reboiler)","points":[438.5,376.5,448.5,376.5,455.0,376.5,455.0,376.5,679.0,376.5,689.0,380.0]}
+]}
     </textarea>
   </div>
 </div>

@@ -43,7 +43,7 @@ export class BalloonLink extends go.Link {
   /**
    * Copies properties to a cloned BalloonLink.
    */
-  protected override cloneProtected(copy: this): void {
+  override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._base = this._base;
   }

@@ -117,7 +117,7 @@ export class DoubleTreeLayout extends go.Layout {
    * @hidden @internal
    * Copies properties to a cloned Layout.
    */
-  protected override cloneProtected(copy: this): void {
+  override cloneProtected(copy: this): void {
     super.cloneProtected(copy);
     copy._vertical = this._vertical;
     copy._directionFunction = this._directionFunction;

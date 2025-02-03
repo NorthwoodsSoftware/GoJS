@@ -207,7 +207,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @param v
    * @param topleft
    */
-  protected override nodeMinLayerSpace(v: go.LayeredDigraphVertex, topleft: boolean): number {
+  override nodeMinLayerSpace(v: go.LayeredDigraphVertex, topleft: boolean): number {
     if (!this._neededSpaces) this._neededSpaces = this.computeNeededLayerSpaces(this.network as go.LayeredDigraphNetwork);
     if (v.node === null) return 0;
     let lay = v.layer;
@@ -380,7 +380,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @hidden
    * Replace the standard reduceCrossings behavior so that it respects lanes.
    */
-  protected override reduceCrossings(): void {
+  override reduceCrossings(): void {
     this.setupLanes();
 
     // this just cares about the .index and ignores .column
@@ -496,7 +496,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
    * @hidden
    * Disable normal straightenAndPack behavior, which would mess up the columns.
    */
-  protected override straightenAndPack(): void {}
+  override straightenAndPack(): void {}
 
   /**
    * Given a vertex, get the lane (name) that its node belongs in.

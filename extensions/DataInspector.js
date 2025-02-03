@@ -94,7 +94,7 @@ class Inspector {
         this._diagram = diagram;
         this.tabIndex = 0;
         // Set properties based on options
-        if (options !== undefined) {
+        if (options) {
             if (options.inspectSelection !== undefined)
                 this._inspectSelection = options.inspectSelection;
             if (options.includesOwnProperties !== undefined)

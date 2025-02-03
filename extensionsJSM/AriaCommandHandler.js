@@ -437,7 +437,6 @@ export class AriaCommandHandler extends go.CommandHandler {
             else
                 return linkedNodes[index - 1];
         }
-        return null;
     }
     /**
      * For links layouts.

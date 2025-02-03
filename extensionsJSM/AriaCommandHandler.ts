@@ -408,13 +408,11 @@ export class AriaCommandHandler extends go.CommandHandler {
     if (linkedNodes.length === 0) return null;
     if (node === selectedNode) {
         return linkedNodes[0];
-    }
-    else {
+    } else {
         const index = linkedNodes.indexOf(selectedNode);
         if (index === 0) return linkedNodes[linkedNodes.length - 1];
         else return linkedNodes[index - 1];
     }
-    return null;
   }
 
   /**

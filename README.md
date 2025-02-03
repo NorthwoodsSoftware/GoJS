@@ -29,7 +29,7 @@ There are samples for
 [sankey](https://gojs.net/latest/samples/sankey.html),
 [family trees](https://gojs.net/latest/samples/familyTree.html) and [genogram charts](https://gojs.net/latest/samples/genogram.html),
 [fishbone diagrams](https://gojs.net/latest/samples/Fishbone.html),
-[floor plans](https://gojs.net/latest/samples/floorplannerTS/index.html),
+[floor plans](https://gojs.net/latest/projects/gojs-floorplanner/index.html),
 [UML](https://gojs.net/latest/samples/umlClass.html),
 [decision trees](https://gojs.net/latest/samples/decisionTree.html),
 [PERT charts](https://gojs.net/latest/samples/PERT.html),

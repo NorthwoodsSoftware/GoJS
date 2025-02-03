@@ -92,7 +92,7 @@ export class ZoomSlider {
     this._zoomSliderRangeCtn = null;
 
     // Set properties based on options
-    if (options !== undefined) {
+    if (options) {
       if (options.size !== undefined) this._size = options.size;
       if (options.buttonSize !== undefined) this._buttonSize = options.buttonSize;
       if (options.alignment !== undefined) this._alignment = options.alignment;

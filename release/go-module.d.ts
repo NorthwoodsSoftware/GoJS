@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.18
+ * Type definitions for GoJS v3.0.19
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -397,7 +397,7 @@ export class List<T> implements Iterable<T> {
      * @param val
      * @returns This modified List.
      */
-    add(val: T): List<T>;
+    add(val: T): this;
     /**
      * Adds a given value to the end of the List.
      *
@@ -412,7 +412,7 @@ export class List<T> implements Iterable<T> {
      * @param coll - the collection of items to add.
      * @returns This modified List.
      */
-    addAll(coll: Iterable<T> | Array<T>): List<T>;
+    addAll(coll: Iterable<T> | Array<T>): this;
     /**
      * Clears the List.
      * This sets the {@link count} to zero.
@@ -509,7 +509,7 @@ export class List<T> implements Iterable<T> {
      * @param func - This function must not modify the collection.
      * @returns This List itself
      */
-    each(func: ((a: T) => void)): List<T>;
+    each(func: ((a: T) => void)): this;
     /**
      * Call the given function on each item in the collection and collect the results in a new List.
      *
@@ -574,7 +574,7 @@ export class List<T> implements Iterable<T> {
      * @param to - int The ending index of the range to remove, inclusive; values greater than the length of the list are treated as referring to the last element
      * @returns This modified List
      */
-    removeRange(from: number, to: number): List<T>;
+    removeRange(from: number, to: number): this;
     /**
      * Makes a shallow copy of this List.
      * The values are not copied,
@@ -604,7 +604,7 @@ export class List<T> implements Iterable<T> {
      * or greater than zero if the first value should come after the second value.
      * @returns This modified List.
      */
-    sort(sortfunc: ((a: T, b: T) => number)): List<T>;
+    sort(sortfunc: ((a: T, b: T) => number)): this;
     /**
      * (undocumented)
      * Sorts a range of consecutive elements in this List based on the given comparison function.
@@ -618,12 +618,12 @@ export class List<T> implements Iterable<T> {
      * defaults to the end of the list.
      * @returns This modified List.
      */
-    sortRange(sortfunc: ((a: T, b: T) => number), from?: number, to?: number): List<T>;
+    sortRange(sortfunc: ((a: T, b: T) => number), from?: number, to?: number): this;
     /**
      * Reverse the order of items in this List.
      * @returns This modified List.
      */
-    reverse(): List<T>;
+    reverse(): this;
     /**
      * This read-only property is the length of the List.
      */
@@ -749,7 +749,7 @@ export class Set<T> implements Iterable<T> {
      * @param val - The value to add to the Set; must not be null.
      * @returns This modified Set.
      */
-    add(val: T): Set<T>;
+    add(val: T): this;
     /**
      * Adds all of the values of a collection to this Set.
      *
@@ -757,7 +757,7 @@ export class Set<T> implements Iterable<T> {
      * @param coll - the collection of items to add.
      * @returns This modified Set.
      */
-    addAll(coll: Iterable<T> | Array<T>): Set<T>;
+    addAll(coll: Iterable<T> | Array<T>): this;
     /**
      * Returns whether the given value is in this Set.
      * @param val - The value to check.
@@ -815,7 +815,7 @@ export class Set<T> implements Iterable<T> {
      * @param func - This function must not modify the collection.
      * @returns This Set itself.
      */
-    each(func: ((a: T) => void)): Set<T>;
+    each(func: ((a: T) => void)): this;
     /**
      * Call the given function on each item in the collection and collect the results in a new Set.
      *
@@ -855,7 +855,7 @@ export class Set<T> implements Iterable<T> {
      * @param coll - the collection of items to remove.
      * @returns This modified Set.
      */
-    removeAll(coll: Iterable<T> | Array<T>): Set<T>;
+    removeAll(coll: Iterable<T> | Array<T>): this;
     /**
      * Removes from this Set all items that are not in the given collection.
      *
@@ -863,7 +863,7 @@ export class Set<T> implements Iterable<T> {
      * @param coll - the collection of items that should be kept in this Set.
      * @returns This modified Set.
      */
-    retainAll(coll: Iterable<T>): Set<T>;
+    retainAll(coll: Iterable<T>): this;
     /**
      * Clears the Set.
      * This sets the {@link count} to zero.
@@ -1015,7 +1015,7 @@ export class Map<K, V> {
      * @param val - The value to add to the Map, associated with the key.
      * @returns This modified Map.
      */
-    set(key: K, val: V): Map<K, V>;
+    set(key: K, val: V): this;
     /**
      * Adds a key-value association to the Map, or replaces the value associated with the key
      * if the key was already present in the map.
@@ -1035,12 +1035,12 @@ export class Map<K, V> {
      * @param coll - the collection of {@link IKeyValuePair}s to add, or an Array of {@link IKeyValuePair}s.
      * @returns This modified Map.
      */
-    addAll(coll: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V>): Map<K, V>;
+    addAll(coll: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V>): this;
     /**
      * Returns the first {@link IKeyValuePair} in the collection, or null if there is none.
      * @returns This returns null if there are no items in the collection.
      */
-    first(): IKeyValuePair<K, V>;
+    first(): IKeyValuePair<K, V> | null;
     /**
      * This is true if any invocation of the given predicate on items in the collection is true.
      *
@@ -1074,7 +1074,7 @@ export class Map<K, V> {
      * This function must not modify the collection.
      * @returns This Map itself
      */
-    each(func: ((a: IKeyValuePair<K, V>) => void)): Map<K, V>;
+    each(func: ((a: IKeyValuePair<K, V>) => void)): this;
     /**
      * Call the given function on each key-value pair in the collection and associate the key with the result of the function in a new Map.
      *
@@ -1258,13 +1258,13 @@ export class Point {
      * @param y
      * @returns this.
      */
-    setTo(x: number, y: number): Point;
+    setTo(x: number, y: number): this;
     /**
      * Modify this Point so that its X and Y values are the same as the given Point.
      * @param p - the given Point.
      * @returns this.
      */
-    set(p: Point): Point;
+    set(p: Point): this;
     /**
      * Create a copy of this Point, with the same values.
      * @virtual
@@ -1333,7 +1333,7 @@ export class Point {
      * @see {@link offset}
      * @see {@link subtract}
      */
-    add(p: Point): Point;
+    add(p: Point): this;
     /**
      * Modify this point so that is the difference of this Point and the
      * x and y co-ordinates of the given Point.
@@ -1342,7 +1342,7 @@ export class Point {
      * @see {@link offset}
      * @see {@link add}
      */
-    subtract(p: Point): Point;
+    subtract(p: Point): this;
     /**
      * Modify this point by shifting its values with the given DX and DY offsets.
      * @param dx
@@ -1351,20 +1351,20 @@ export class Point {
      * @see {@link add}
      * @see {@link subtract}
      */
-    offset(dx: number, dy: number): Point;
+    offset(dx: number, dy: number): this;
     /**
      * Modify this Point so that has been rotated about the origin by the given angle.
      * @param angle - an angle in degrees.
      * @returns this.
      */
-    rotate(angle: number): Point;
+    rotate(angle: number): this;
     /**
      * Modify this Point so that its X and Y values have been scaled by given factors along the X and Y axes.
      * @param sx
      * @param sy
      * @returns this.
      */
-    scale(sx: number, sy: number): Point;
+    scale(sx: number, sy: number): this;
     /**
      * Returns the square of the distance from this Point to a given Point.
      * @param p - the other Point to measure to.
@@ -1385,7 +1385,7 @@ export class Point {
      * However, if this Point is the origin (zero, zero), its length remains zero.
      * @returns this.
      */
-    normalize(): Point;
+    normalize(): this;
     /**
      * Compute the angle from this Point to a given Point.
      * However, if the given Point is the same as this Point, the direction is zero.
@@ -1460,14 +1460,14 @@ export class Point {
      * @param qy - the other end of the finite line segment
      * @returns this modified Point
      */
-    projectOntoLineSegment(px: number, py: number, qx: number, qy: number): Point;
+    projectOntoLineSegment(px: number, py: number, qx: number, qy: number): this;
     /**
      * Modify this point to be the closest point to this point that is on a finite line segment.
      * @param p - one end of the finite line segment
      * @param q - the other end of the finite line segment
      * @returns this modified Point
      */
-    projectOntoLineSegmentPoint(p: Point, q: Point): Point;
+    projectOntoLineSegmentPoint(p: Point, q: Point): this;
     /**
      * Modify this point to be at the nearest point on an infinite grid,
      * given the grid's origin and size of each grid cell.
@@ -1477,7 +1477,7 @@ export class Point {
      * @param cellheight - the size of each grid cell -- must be a real number larger than zero
      * @returns this modified Point
      */
-    snapToGrid(originx: number, originy: number, cellwidth: number, cellheight: number): Point;
+    snapToGrid(originx: number, originy: number, cellwidth: number, cellheight: number): this;
     /**
      * Modify this point to be at the nearest point on an infinite grid,
      * given the grid's origin and size of each grid cell.
@@ -1485,7 +1485,7 @@ export class Point {
      * @param cellsize - the size of each grid cell
      * @returns this modified Point
      */
-    snapToGridPoint(origin: Point, cellsize: Size): Point;
+    snapToGridPoint(origin: Point, cellsize: Size): this;
     /**
      * Modify this Point so that its X and Y values correspond to a particular {@link Spot}
      * in a given Rect.
@@ -1496,7 +1496,7 @@ export class Point {
      * @returns this.
      * @see {@link setSpot}
      */
-    setRectSpot(r: Rect, spot: Spot): Point;
+    setRectSpot(r: Rect, spot: Spot): this;
     /**
      * Modify this Point so that its X and Y values correspond to a particular {@link Spot}
      * in a given rectangle.
@@ -1510,7 +1510,7 @@ export class Point {
      * @returns this the point of the spot in the rectangle.
      * @see {@link setRectSpot}
      */
-    setSpot(x: number, y: number, w: number, h: number, spot: Spot): Point;
+    setSpot(x: number, y: number, w: number, h: number, spot: Spot): this;
     /**
      * This static function returns the square of the distance from the point P
      * to the finite line segment from point A to point B.
@@ -1592,13 +1592,13 @@ export class Size {
      * @param h - the height.
      * @returns this.
      */
-    setTo(w: number, h: number): Size;
+    setTo(w: number, h: number): this;
     /**
      * Modify this Size so that its Width and Height values are the same as the given Size.
      * @param s - the given Size.
      * @returns this.
      */
-    set(s: Size): Size;
+    set(s: Size): this;
     /**
      * Create a copy of this Size, with the same values.
      * @virtual
@@ -1730,25 +1730,25 @@ export class Rect {
      * @param h - the height.
      * @returns this.
      */
-    setTo(x: number, y: number, w: number, h: number): Rect;
+    setTo(x: number, y: number, w: number, h: number): this;
     /**
      * Modify this Rect so that its X, Y, Width, and Height values are the same as the given Rect.
      * @param r - the given Rect.
      * @returns this.
      */
-    set(r: Rect): Rect;
+    set(r: Rect): this;
     /**
      * Modify this Rect so that its X and Y values are the same as the given Point.
      * @param p - the given Point.
      * @returns this.
      */
-    setPoint(p: Point): Rect;
+    setPoint(p: Point): this;
     /**
      * Modify this Rect so that its Width and Height values are the same as the given Size.
      * @param s - the given Size.
      * @returns this.
      */
-    setSize(s: Size): Rect;
+    setSize(s: Size): this;
     /**
      * Create a copy of this Rect, with the same values.
      * @virtual
@@ -1841,7 +1841,7 @@ export class Rect {
      * @param dy
      * @returns this.
      */
-    offset(dx: number, dy: number): Rect;
+    offset(dx: number, dy: number): this;
     /**
      * Modify this Rect so that its width and height are changed on all four sides,
      * equally on the left and right sides, and equally on the top and bottom sides.
@@ -1962,7 +1962,7 @@ export class Rect {
      * @param spot - a Spot; {@link Spot.isSpot} must be true.
      * @returns this.
      */
-    setSpot(x: number, y: number, spot: Spot): Rect;
+    setSpot(x: number, y: number, spot: Spot): this;
     /**
      * This static function indicates whether a Rect contains the given Point/Rect.
      * @param rx - The X coordinate of a Rect.
@@ -2142,14 +2142,14 @@ export class Margin {
      * @param l - left.
      * @returns this.
      */
-    setTo(t: number, r: number, b: number, l: number): Margin;
+    setTo(t: number, r: number, b: number, l: number): this;
     /**
      * Modify this Margin so that its Top, Right, Bottom, and Left values
      * are the same as the given Margin.
      * @param m - the given Margin.
      * @returns this.
      */
-    set(m: Margin): Margin;
+    set(m: Margin): this;
     /**
      * Create a copy of this Margin, with the same values.
      * @virtual
@@ -2278,13 +2278,13 @@ export class Spot {
      * @param offy
      * @returns this.
      */
-    setTo(x: number, y: number, offx: number, offy: number): Spot;
+    setTo(x: number, y: number, offx: number, offy: number): this;
     /**
      * Modify this Spot so that its X, Y, OffsetX, and OffsetY values are the same as the given Spot.
      * @param s - the given Spot.
      * @returns this.
      */
-    set(s: Spot): Spot;
+    set(s: Spot): this;
     /**
      * Create a copy of this Spot, with the same values.
      * @virtual
@@ -2762,7 +2762,7 @@ export class Geometry {
      * @param y - The y-axis offset factor.
      * @returns this
      */
-    offset(x: number, y: number): Geometry;
+    offset(x: number, y: number): this;
     /**
      * Scales the Geometry in place by a given (x, y) scale factor.
      *
@@ -2772,7 +2772,7 @@ export class Geometry {
      * @param y - The y-axis scale factor.
      * @returns this
      */
-    scale(x: number, y: number): Geometry;
+    scale(x: number, y: number): this;
     /**
      * Rotates the Geometry in place by a given angle, with optional x and y values to rotate the geometry about.
      * If no x and y value are given, (0, 0) is used as the rotation point.
@@ -2781,7 +2781,7 @@ export class Geometry {
      * @param y - The optional Y point to rotate the geometry about. If no point is given, this value is 0.
      * @returns this
      */
-    rotate(angle: number, x?: number, y?: number): Geometry;
+    rotate(angle: number, x?: number, y?: number): this;
     /**
      * Returns true if the Geometry contains the point.
      * @param p - in local geometry coordinates
@@ -2876,7 +2876,7 @@ export class Geometry {
      * @param figure - a newly allocated unshared PathFigure that will become owned by this Geometry
      * @returns this
      */
-    add(figure: PathFigure): Geometry;
+    add(figure: PathFigure): this;
     /**
      * (undocumented)
      * Set {@link spot1} and {@link spot2} without allocating new {@link Spot}s.
@@ -2890,7 +2890,7 @@ export class Geometry {
      * @param o2y - offset2.y, default is zero
      * @returns this
      */
-    setSpots(f1x: number, f1y: number, f2x: number, f2y: number, o1x?: number, o1y?: number, o2x?: number, o2y?: number): Geometry;
+    setSpots(f1x: number, f1y: number, f2x: number, f2y: number, o1x?: number, o1y?: number, o2x?: number, o2y?: number): this;
     /**
      * Gets or sets the spot an "Auto" {@link Panel} will use for the top-left corner of any panel content
      * when the {@link Shape.spot1} value is {@link Spot.Default}.
@@ -3001,7 +3001,7 @@ export class PathFigure {
      * Add a {@link PathSegment} to the {@link segments} list.
      * @param segment - a newly allocated unshared PathSegment that will become owned by this PathFigure
      */
-    add(segment: PathSegment): PathFigure;
+    add(segment: PathSegment): this;
 }
 /**
  * This enumeration specifies possible values for {@link PathSegment.type}.
@@ -3152,7 +3152,7 @@ export class PathSegment {
      * Closes the path after this PathSegment
      * @returns returns this PathSegment.
      */
-    close(): PathSegment;
+    close(): this;
     /**
      * Gets or sets whether the path is closed after this PathSegment.
      * Default value is false.
@@ -5027,13 +5027,15 @@ export abstract class Tool {
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
-     * @param navig - An optional custom navigation
-     * function to find target objects.
-     * @param pred - An optional custom predicate
-     * function to find target objects. No value means that only objects in layers holding permanent objects.
+     * @param navig - An optional custom navigation function to find target objects.
+     * This argument is passed to {@link Diagram.findObjectAt}.
+     * @param pred - An optional custom predicate function to find target objects.
+     * A null value is effectively the same as a function that always returns true.
+     * This argument is passed to {@link Diagram.findObjectAt}, unless the value is undefined,
+     * which means to use a predicate to consider only objects in layers holding permanent objects.
      * @returns true if {@link InputEvent.handled} had been set to true on the {@link Diagram.lastInput}.
      */
-    standardMouseClick<T extends GraphObject>(navig?: (a: GraphObject) => (T | null), pred?: (a: T) => boolean): boolean;
+    standardMouseClick<T extends GraphObject>(navig?: ((a: GraphObject) => (T | null)) | null, pred?: ((a: T) => boolean) | null): boolean;
     /**
      * Implement the standard behavior for mouse enter, over, and leave events,
      * where the mouse is moving but no button is pressed.
@@ -5459,7 +5461,7 @@ export class ToolManager extends Tool {
      * @param tooltip
      * @param obj - The GraphObject getting the tooltip; this is null if the tooltip is being shown for the diagram background.
      */
-    showToolTip(tooltip: Adornment | HTMLInfo, obj: GraphObject): void;
+    showToolTip(tooltip: Adornment | HTMLInfo, obj: GraphObject | null): void;
     /**
      * This is called by {@link showToolTip} to position the part within the viewport.
      * It normally goes just below the cursor.
@@ -5482,7 +5484,7 @@ export class ToolManager extends Tool {
      * @param obj - The {@link GraphObject} getting the tooltip,
      * or null if the tooltip is for the diagram background.
      */
-    positionToolTip(tooltip: Adornment, obj: GraphObject): void;
+    positionToolTip(tooltip: Adornment, obj: GraphObject | null): void;
     /**
      * Hide any tooltip.
      *
@@ -8531,7 +8533,7 @@ export class ContextMenuTool extends Tool {
      * @returns something with a `contextMenu`,
      * or null if nothing can be found with a context menu at the current mouse point.
      */
-    findObjectWithContextMenu(obj?: GraphObject | Diagram): GraphObject | Diagram | null;
+    findObjectWithContextMenu(obj?: GraphObject | Diagram | null): GraphObject | Diagram | null;
     /**
      * Do nothing, activation is special and relies on doMouseUp
      */
@@ -8558,7 +8560,7 @@ export class ContextMenuTool extends Tool {
      * @virtual
      * @param currobj
      */
-    maybeStopTool(currobj: GraphObject): void;
+    maybeStopTool(currobj: GraphObject | null): void;
     /**
      * Handle mouse-enter, mouse-over, and mouse-leave events, as well as tooltips.
      */
@@ -12308,7 +12310,7 @@ export class Diagram {
      * @see {@link toolManager}
      */
     get currentTool(): Tool;
-    set currentTool(value: Tool);
+    set currentTool(value: Tool | null);
     /**
      * This read-only property returns the read-only collection of selected objects.
      * Most commands and many tools operate on this collection.
@@ -13938,7 +13940,7 @@ export class CommandHandler {
      * @param pos - Point at which to center the newly pasted parts; if not present the parts are not moved.
      * @see {@link canPasteSelection}
      */
-    pasteSelection(pos?: Point): void;
+    pasteSelection(pos?: Point | null): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link pasteSelection} command.
      *
@@ -14124,7 +14126,7 @@ export class CommandHandler {
      * @see {@link canScrollToPart}
      * @see {@link Diagram.scrollToRect}
      */
-    scrollToPart(part?: Part): void;
+    scrollToPart(part?: Part | null): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link scrollToPart} command.
      * This returns false if there is no argument Part and there are no selected Parts.
@@ -14137,7 +14139,7 @@ export class CommandHandler {
      * @returns This returns true if {@link Diagram.allowHorizontalScroll} and {@link Diagram.allowVerticalScroll} are true.
      * @see {@link scrollToPart}
      */
-    canScrollToPart(part?: Part): boolean;
+    canScrollToPart(part?: Part | null): boolean;
     /**
      * This command collapses all expanded selected {@link Node}s.
      * This operation is performed within a "Collapse Tree" transaction.
@@ -14155,7 +14157,7 @@ export class CommandHandler {
      * @param node - if supplied, ignore the selection and collapse this particular Node subtree.
      * @see {@link canCollapseTree}
      */
-    collapseTree(node?: Node): void;
+    collapseTree(node?: Node | null): void;
     /**
      * This predicate controls whether the user can collapse expanded subtrees of {@link Node}s.
      *
@@ -14166,7 +14168,7 @@ export class CommandHandler {
      * @param node - if supplied, ignore the selection and consider collapsing this particular Node.
      * @see {@link collapseTree}
      */
-    canCollapseTree(node?: Node): boolean;
+    canCollapseTree(node?: Node | null): boolean;
     /**
      * This command expands all collapsed selected {@link Node}s.
      * This operation is performed within an "Expand Tree" transaction.
@@ -14184,7 +14186,7 @@ export class CommandHandler {
      * @param node - if supplied, ignore the selection and collapse this particular Node subtree.
      * @see {@link canExpandTree}
      */
-    expandTree(node?: Node): void;
+    expandTree(node?: Node | null): void;
     /**
      * This predicate controls whether the user can expand collapsed subtrees of {@link Node}s.
      *
@@ -14195,7 +14197,7 @@ export class CommandHandler {
      * @param node - if supplied, ignore the selection and consider expanding this particular Node.
      * @see {@link expandTree}
      */
-    canExpandTree(node?: Node): boolean;
+    canExpandTree(node?: Node | null): boolean;
     /**
      * This command adds a copy of {@link archetypeGroupData} to the diagram's model
      * to create a new {@link Group} and then adds the selected {@link Part}s to that new group.
@@ -14252,7 +14254,7 @@ export class CommandHandler {
      * @param part - a Part, usually a Node, possibly another Group, but not a Link or an Adornment.
      * @returns true if OK to add the node to the group.
      */
-    isValidMember(group: Group, part: Part): boolean;
+    isValidMember(group: Group | null, part: Part): boolean;
     /**
      * This command removes selected groups from the diagram without removing their members from the diagram.
      * This is normally invoked by the `Ctrl-Shift-G` keyboard shortcut.
@@ -14273,7 +14275,7 @@ export class CommandHandler {
      * @param group - if supplied, ignore the selection and consider ungrouping this particular Group.
      * @see {@link canUngroupSelection}
      */
-    ungroupSelection(group?: Group): void;
+    ungroupSelection(group?: Group | null): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link ungroupSelection} command.
      *
@@ -14290,7 +14292,7 @@ export class CommandHandler {
      * if there are any selected {@link Group}s that are {@link Group.ungroupable}.
      * @see {@link ungroupSelection}
      */
-    canUngroupSelection(group?: Group): boolean;
+    canUngroupSelection(group?: Group | null): boolean;
     /**
      * Make sure all of the unnested {@link Part}s in the given collection
      * are removed from any containing {@link Group}s.
@@ -14336,7 +14338,7 @@ export class CommandHandler {
      * @param group - if supplied, ignore the selection and collapse this particular Group.
      * @see {@link canCollapseSubGraph}
      */
-    collapseSubGraph(group?: Group): void;
+    collapseSubGraph(group?: Group | null): void;
     /**
      * This predicate controls whether the user can collapse expanded {@link Group}s.
      *
@@ -14347,7 +14349,7 @@ export class CommandHandler {
      * @param group - if supplied, ignore the selection and consider collapsing this particular Group.
      * @see {@link collapseSubGraph}
      */
-    canCollapseSubGraph(group?: Group): boolean;
+    canCollapseSubGraph(group?: Group | null): boolean;
     /**
      * This command expands all collapsed selected {@link Group}s.
      * This operation is performed within an "Expand SubGraph" transaction.
@@ -14365,7 +14367,7 @@ export class CommandHandler {
      * @param group - if supplied, ignore the selection and expand this particular Group.
      * @see {@link canExpandSubGraph}
      */
-    expandSubGraph(group?: Group): void;
+    expandSubGraph(group?: Group | null): void;
     /**
      * This predicate controls whether the user can expand collapsed {@link Group}s.
      *
@@ -14376,7 +14378,7 @@ export class CommandHandler {
      * @param group - if supplied, ignore the selection and consider expanding this particular Group.
      * @see {@link expandSubGraph}
      */
-    canExpandSubGraph(group?: Group): boolean;
+    canExpandSubGraph(group?: Group | null): boolean;
     /**
      * This command starts in-place editing of a {@link TextBlock} in the selected {@link Part}.
      * This is normally invoked by the `F2` keyboard shortcut.
@@ -14390,7 +14392,7 @@ export class CommandHandler {
      * @param textblock - the {@link TextBlock} to start editing.
      * @see {@link canEditTextBlock}
      */
-    editTextBlock(textblock?: TextBlock): void;
+    editTextBlock(textblock?: TextBlock | null): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link editTextBlock} command.
      *
@@ -14406,7 +14408,7 @@ export class CommandHandler {
      * if there is any selected {@link Part} for which {@link Part.canEdit} is true.
      * @see {@link editTextBlock}
      */
-    canEditTextBlock(textblock?: TextBlock): boolean;
+    canEditTextBlock(textblock?: TextBlock | null): boolean;
     /**
      * This command opens the context menu for a selected Part or given GraphObject, or else for the whole Diagram.
      * This is normally invoked by the `Menu` keyboard shortcut.
@@ -14423,7 +14425,7 @@ export class CommandHandler {
      * if a Diagram, at the current mouse position if it is in the viewport.
      * @see {@link canShowContextMenu}
      */
-    showContextMenu(obj?: GraphObject | Diagram): void;
+    showContextMenu(obj?: GraphObject | Diagram | null): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link showContextMenu} command.
      *
@@ -14435,7 +14437,7 @@ export class CommandHandler {
      * If none is given, this method will use the first selected object, or else the Diagram.
      * @see {@link showContextMenu}
      */
-    canShowContextMenu(obj?: GraphObject | Diagram): boolean;
+    canShowContextMenu(obj?: GraphObject | Diagram | null): boolean;
     set copiesClipboardData(value: boolean);
     /**
      * Gets or sets whether {@link copySelection} should also copy Links that connect with selected Nodes.
@@ -14501,8 +14503,8 @@ export class CommandHandler {
      * If you set this to an Object, be sure that {@link GraphLinksModel.isGroupForNodeData} is true for that object.
      * Setting this property does not raise any events.
      */
-    get archetypeGroupData(): ObjectData;
-    set archetypeGroupData(value: ObjectData);
+    get archetypeGroupData(): ObjectData | null;
+    set archetypeGroupData(value: ObjectData | null);
     /**
      * Gets or sets the predicate that determines whether or not a node may become a member of a group.
      * This predicate is called in addition to any existing group's {@link Group.memberValidation} predicate.
@@ -17270,7 +17272,7 @@ export class Brush {
      * @param color - A valid CSS color string.
      * @returns this Brush
      */
-    addColorStop(loc: number, color: string): Brush;
+    addColorStop(loc: number, color: string): this;
     /**
      * Gets or sets the type of brush.
      * The default value is {@link BrushType.Solid}.
@@ -17354,7 +17356,7 @@ export class Brush {
      * @param mode - Color space to use for adjusting. Must be a {@link ColorSpace} value, defaults to {@link ColorSpace.Oklch}.
      * @returns This Brush with modified color values.
      */
-    lightenBy(fraction?: number, mode?: ColorSpace): Brush;
+    lightenBy(fraction?: number, mode?: ColorSpace): this;
     /**
      * This static function takes a color and lightens it.
      * @param color - A valid CSS color string.
@@ -17376,7 +17378,7 @@ export class Brush {
      * @param mode - Color space to use for adjusting. Must be a {@link ColorSpace} value, defaults to {@link ColorSpace.Oklch}.
      * @returns This Brush with modified color values.
      */
-    darkenBy(fraction?: number, mode?: ColorSpace): Brush;
+    darkenBy(fraction?: number, mode?: ColorSpace): this;
     /**
      * This static function takes a color and darkens it.
      * @param color - A valid CSS color string
@@ -18180,7 +18182,7 @@ export class Panel extends GraphObject {
      * @see {@link addColumnDefinition}
      * @see {@link addRowColumnDefinition}
      */
-    addRowDefinition(rowIndex: number, options: Partial<RowColumnDefinition>): Panel;
+    addRowDefinition(rowIndex: number, options: Partial<RowColumnDefinition>): this;
     /**
      * For "Table" Panels: Sets the column {@link RowColumnDefinition} given by the index.
      * If the column definition does not exist on the Panel, this will create it.
@@ -18205,7 +18207,7 @@ export class Panel extends GraphObject {
      * @see {@link addRowDefinition}
      * @see {@link addRowColumnDefinition}
      */
-    addColumnDefinition(colIndex: number, options: Partial<RowColumnDefinition>): Panel;
+    addColumnDefinition(colIndex: number, options: Partial<RowColumnDefinition>): this;
     /**
      * For "Table" Panels: Gets or sets how this Panel's rows deal with extra space.
      * Valid values are {@link Sizing} values.
@@ -18364,7 +18366,7 @@ export class Panel extends GraphObject {
      * @since 2.2
      * @param freeze - whether to freeze the Bindings in the copy; default is false
      */
-    copyTemplate(freeze?: boolean): Panel;
+    copyTemplate(freeze?: boolean): this;
     /**
      * Re-evaluate all data bindings on this panel,
      * in order to assign new property values to the {@link GraphObject}s in this visual tree
@@ -18971,7 +18973,7 @@ export class RowColumnDefinition {
      * @returns this RowColumnDefinition
      * @since 2.2
      */
-    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    bind(targetprop: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
     /**
      * Add a data-binding of a property on this RowColumnDefinition to a property on a data object.
      *
@@ -20748,7 +20750,7 @@ export class Part extends Panel {
      * @param category - a string identifying the kind or role of the given adornment for this Part.
      * @param ad - the new Adornment.
      */
-    addAdornment(category: string, ad: Adornment): void;
+    addAdornment(category: string, ad: Adornment | null): void;
     /**
      * Remove any {@link Adornment} of the given category that may be associated with this Part.
      * @param category - a string identifying the kind or role of the given adornment for this Part.
@@ -21583,7 +21585,7 @@ export class Part extends Panel {
      * If this is a Node and you want to find whether it is in a subtree whose root is a given Node, use {@link Node.isInTreeOf}.
      * @param part
      */
-    isMemberOf(part: Part): boolean;
+    isMemberOf(part: Part | null): boolean;
     /**
      * Find the {@link Group} that perhaps indirectly contains both this part and another one.
      * If this is a Group and it contains the OTHER Part, return this.
@@ -23280,13 +23282,13 @@ export class Link extends Part {
     /**
      * (undocumented)
      */
-    get defaultFromPoint(): Point;
-    set defaultFromPoint(value: Point);
+    get defaultFromPoint(): Point | null;
+    set defaultFromPoint(value: Point | null);
     /**
      * (undocumented)
      */
-    get defaultToPoint(): Point;
-    set defaultToPoint(value: Point);
+    get defaultToPoint(): Point | null;
+    set defaultToPoint(value: Point | null);
     /**
      * This method recomputes the route if the route is invalid,
      * to make sure the {@link points} are up-to-date.
@@ -24714,7 +24716,7 @@ export class LayoutNetwork {
      * @param link
      * @returns an edge in this network, or null if both vertexes don't exist.
      */
-    linkVertexes(fromVertex: LayoutVertex, toVertex: LayoutVertex, link: Link | null): LayoutEdge;
+    linkVertexes(fromVertex: LayoutVertex | null, toVertex: LayoutVertex | null, link: Link | null): LayoutEdge | null;
     /**
      * Reverses the direction of a {@link LayoutEdge} in the network.
      * @param edge
@@ -25743,7 +25745,7 @@ export class Binding {
      * @param backconv
      * @returns this two-way Binding.
      */
-    makeTwoWay(backconv?: BackConversion): Binding;
+    makeTwoWay(backconv?: BackConversion): this;
     /**
      * Modify this Binding to set its {@link sourceName} property so as to identify
      * a {@link GraphObject} in the visual tree of the bound {@link Panel} as the data source,
@@ -25757,7 +25759,7 @@ export class Binding {
      * @see {@link sourceName}
      * @see {@link ofModel}
      */
-    ofObject(srcname?: string): Binding;
+    ofObject(srcname?: string): this;
     /**
      * Modify this Binding so that the source is the {@link Model.modelData} object,
      * not a regular node data object or another {@link GraphObject} in the {@link Part}.
@@ -25765,7 +25767,7 @@ export class Binding {
      * @see {@link isToModel}
      * @see {@link ofObject}
      */
-    ofModel(): Binding;
+    ofModel(): this;
 }
 /**
  * A ThemeBinding describes how to automatically set a property on a {@link GraphObject}
@@ -25882,7 +25884,7 @@ export class ThemeBinding extends Binding {
      * @see {@link ofObject}
      * @see {@link ofModel}
      */
-    ofData(): Binding;
+    ofData(): this;
 }
 /**
  * The Key type is the same as `string | number | undefined`.
