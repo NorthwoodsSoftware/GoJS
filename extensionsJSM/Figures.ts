@@ -757,10 +757,9 @@ function freeArray(a: Array<any>) {
 }
 
 /**
- * This allocates a temporary Array that should be freeArray()'ed by the caller.
  * @param sides
  */
-function createPolygon(sides: number): Array<any> {
+function createPolygon(sides: number): Array<go.Point> {
   // Point[] points = new Point[sides + 1];
   const points = [];
   const radius = 0.5;

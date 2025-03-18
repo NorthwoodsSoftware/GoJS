@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.19
+ * Type definitions for GoJS v3.0.20
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -13541,7 +13541,7 @@ export interface ImageRendererOptions extends DiagramRendererOptions {
      * The optional details to pass to the HTMLCanvasElement's toDataURL function.
      * If the type is `"image/jpeg"` then this can be a number from `0` to `1`, inclusive, describing the desired jpeg quality.
      */
-    details?: ObjectData;
+    details?: number;
 }
 /**
  * Palette extends the Diagram class to allow objects to be dragged and placed onto other Diagrams.
@@ -13730,6 +13730,26 @@ export class CommandHandler {
      * after {@link Diagram.commandHandler} has been set to this object.
      */
     get diagram(): Diagram;
+    /**
+     * This method is called after this instance of CommandHandler has been associated with a Diagram
+     * by being set as its {@link Diagram.commandHandler}.
+     *
+     * By default this method does nothing.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     */
+    doStart(): void;
+    /**
+     * This method is called just before this instance of CommandHandler will be de-associated with a Diagram
+     * by being replaced as its {@link Diagram.commandHandler}.
+     *
+     * By default this method does nothing.
+     *
+     * This method may be overridden.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     */
+    doStop(): void;
     /**
      * This is called by tools to handle keyboard commands.
      * For most commands, this calls the "can..." predicate; if that returns true it calls the command method.
@@ -14516,8 +14536,8 @@ export class CommandHandler {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    get memberValidation(): ((aGroup: Group, somePart: Part) => boolean) | null;
-    set memberValidation(value: ((aGroup: Group, somePart: Part) => boolean) | null);
+    get memberValidation(): ((aGroup: Group | null, somePart: Part) => boolean) | null;
+    set memberValidation(value: ((aGroup: Group | null, somePart: Part) => boolean) | null);
     /**
      * (undocumented)
      * Deprecated in favor of {@link Diagram.defaultScale}.
@@ -22935,8 +22955,8 @@ export class Link extends Part {
      *
      * The default value is null -- no function is called.
      */
-    get toPortChanged(): ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject) => void) | null;
-    set toPortChanged(value: ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject) => void) | null);
+    get toPortChanged(): ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject | null) => void) | null;
+    set toPortChanged(value: ((thisLink: Link, oldPort: GraphObject | null, newPort: GraphObject | null) => void) | null);
     /**
      * Gets or sets where this link should connect at the {@link fromPort}.
      * The default value is {@link Spot.Default}, meaning that the value
@@ -23964,8 +23984,8 @@ export class Group extends Node {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    get memberValidation(): ((thisGroup: Group, part: Part) => boolean) | null;
-    set memberValidation(value: ((thisGroup: Group, part: Part) => boolean) | null);
+    get memberValidation(): ((thisGroup: Group | null, part: Part) => boolean) | null;
+    set memberValidation(value: ((thisGroup: Group | null, part: Part) => boolean) | null);
     /**
      * See if the given collection of {@link Part}s contains non-Links all for which
      * {@link CommandHandler.isValidMember} returns true.

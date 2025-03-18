@@ -636,7 +636,6 @@ function freeArray(a) {
     _CachedArrays.push(a);
 }
 /**
- * This allocates a temporary Array that should be freeArray()'ed by the caller.
  * @param sides
  */
 function createPolygon(sides) {

@@ -144,20 +144,23 @@
 </div>
 
 <script id="code">
-  const myDiagram = new go.Diagram('myDiagramDiv', {
-    'undoManager.isEnabled': true // enable undo & redo
-  });
+  const myDiagram =
+    new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true // enable undo & redo
+    });
 
   // define a simple Node template
 
-  // try getting rid of this part--the default node template will just make the node appear as the text
-  myDiagram.nodeTemplate = new go.Node('Auto')
-    .add(
-      // two elements: the Shape will go around the TextBlock
-      new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-        .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-      new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }).bind('text') // some room around the text, bold font // TextBlock.text is bound to Node.data.text
-    );
+  // if you don't set this template, the default node template will just make the node appear as the text
+  myDiagram.nodeTemplate =
+    new go.Node('Auto')
+      .add(
+        // two elements: the Shape will go around the TextBlock
+        new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' })
+          .bind('text') // some room around the text, bold font // TextBlock.text is bound to Node.data.text
+      );
 
   // but use the default Link template, by not setting Diagram.linkTemplate
 

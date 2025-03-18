@@ -46,8 +46,17 @@ GoJS Diagrams are backed by Models, with saving and loading typically via JSON-f
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
-This repository contains only the library.
-The sources for all samples, extensions, and documentation can be installed by running:
+This repository and the website contain not only the library, but also
+the sources for all samples, extensions, and documentation.
+
+However the npm package contains only the library.
+You can install the GoJS library using npm:
+
+```html
+$ npm install gojs
+```
+
+The samples, extensions, and documentation can be installed by running:
 
 ```html
 $ npm create gojs-kit@latest
@@ -65,22 +74,21 @@ Graphs are constructed by creating one or more templates, with desired propertie
 <script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
 
 <script>
-  const myDiagram = new go.Diagram(
-    'myDiagramDiv', // create a Diagram for the HTML Div element
-    { 'undoManager.isEnabled': true }
-  ); // enable undo & redo
+  const myDiagram =
+    new go.Diagram('myDiagramDiv', { // create a Diagram for the HTML Div element
+      'undoManager.isEnabled': true  // enable undo & redo
+    });
 
   // define a simple Node template
-  myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will automatically surround the TextBlock
-    // add a Shape and a TextBlock to this "Auto" Panel
-    .add(
-      new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-        .bind('fill', 'color')
-    ) // Shape.fill is bound to Node.data.color
-    .add(
-      new go.TextBlock({ margin: 8, stroke: '#333' }) // some room around the text
-        .bind('text', 'key')
-    ); // TextBlock.text is bound to Node.data.key
+  // the Shape will automatically surround the TextBlock
+  myDiagram.nodeTemplate =
+    new go.Node('Auto')
+      .add(  // add a Shape and a TextBlock to this "Auto" Panel
+        new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text
+          .bind('text', 'key') // TextBlock.text is bound to Node.data.key
+      );
 
   // but use the default Link template, by not setting Diagram.linkTemplate
 
