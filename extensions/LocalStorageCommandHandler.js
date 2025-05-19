@@ -67,6 +67,7 @@ class LocalStorageCommandHandler extends go.CommandHandler {
                 window.localStorage.setItem(this.StorageKey, clipdiag.model.toJson());
                 window.localStorage.setItem(this.FormatKey, clipdiag.model.dataFormat);
             }
+            this.diagram.raiseDiagramEvent('ClipboardChanged', coll);
         }
         catch (ex) {
             // fallback implementation

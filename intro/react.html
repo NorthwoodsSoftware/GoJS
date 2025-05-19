@@ -390,8 +390,8 @@
   <ul>
     <li>a set of props coming in from the parent component which holds state and handlers</li>
     <li>a ref to the ReactDiagram component so getDiagram() and clear() can be used</li>
-    <li>componentDidMount and componentWillUnmount methods to add/remove app-specific diagram listeners</li>
-    <li>an initDiagram method to be passed to the ReactDiagram component</li>
+    <li>a useEffect to add/remove app-specific diagram listeners</li>
+    <li>an initDiagram function to be passed to the ReactDiagram component</li>
   </ul>
   Node and link data are <i>merged</i> into the GoJS model, thus properties should not be removed from node or link data,
   but rather set to undefined if they are no longer needed; GoJS avoids destructive merging.
@@ -404,10 +404,10 @@
 <pre class="lang-js"><code>
   import * as go from 'gojs';
   import { ReactDiagram } from 'gojs-react';
-  import * as React from 'react';
+  import { useEffect, useRef } from 'react';
 
   // props passed in from a parent component holding state, some of which will be passed to ReactDiagram
-  interface WrapperProps {
+  interface DiagramProps {
     nodeDataArray: Array&lt;go.ObjectData&gt;;
     linkDataArray: Array&lt;go.ObjectData&gt;;
     modelData: go.ObjectData;
@@ -416,51 +416,33 @@
     onModelChange: (e: go.IncrementalData) => void;
   }
 
-  export class DiagramWrapper extends React.Component&lt;WrapperProps, {}&gt; {
-    /**
-     * Ref to keep a reference to the component, which provides access to the GoJS diagram via getDiagram().
-     */
-    private diagramRef: React.RefObject&lt;ReactDiagram&gt;;
+  export const DiagramWrapper = (props: DiagramProps) => {
+    // Ref to keep a reference to the component, which provides access to the GoJS diagram via getDiagram().
+    const diagramRef = useRef&lt;ReactDiagram&gt;(null);
 
-    constructor(props: WrapperProps) {
-      super(props);
-      this.diagramRef = React.createRef();
-    }
-
-    /**
-     * Get the diagram reference and add any desired diagram listeners.
-     * Typically the same function will be used for each listener,
-     * with the function using a switch statement to handle the events.
-     * This is only necessary when you want to define additional app-specific diagram listeners.
-     */
-    public componentDidMount() {
-      if (!this.diagramRef.current) return;
-      const diagram = this.diagramRef.current.getDiagram();
+    // add/remove listeners
+    // only done on mount, not any time there's a change to props.onDiagramEvent
+    useEffect(() => {
+      if (diagramRef.current === null) return;
+      const diagram = diagramRef.current.getDiagram();
       if (diagram instanceof go.Diagram) {
-        diagram.addDiagramListener('ChangedSelection', this.props.onDiagramEvent);
+        diagram.addDiagramListener('ChangedSelection', props.onDiagramEvent);
       }
-    }
+      return () => {
+        if (diagram instanceof go.Diagram) {
+          diagram.removeDiagramListener('ChangedSelection', props.onDiagramEvent);
+        }
+      };
+    }, []);
 
     /**
-     * Get the diagram reference and remove listeners that were added during mounting.
-     * This is only necessary when you have defined additional app-specific diagram listeners.
-     */
-    public componentWillUnmount() {
-      if (!this.diagramRef.current) return;
-      const diagram = this.diagramRef.current.getDiagram();
-      if (diagram instanceof go.Diagram) {
-        diagram.removeDiagramListener('ChangedSelection', this.props.onDiagramEvent);
-      }
-    }
-
-    /**
-     * Diagram initialization method, which is passed to the ReactDiagram component.
-     * This method is responsible for making the diagram and initializing the model, any templates,
+     * Diagram initialization function, which is passed to the ReactDiagram component.
+     * This is responsible for making the diagram and initializing the model, any templates,
      * and maybe doing other initialization tasks like customizing tools.
      * The model's data should not be set here, as the ReactDiagram component handles that via the other props.
      */
-    private initDiagram(): go.Diagram {
-      // set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
+    const initDiagram = (): go.Diagram => {
+      // set your license key here before creating the diagram: go.Diagram.licenseKey = '...';
       const diagram =
         new go.Diagram(
           {
@@ -516,36 +498,35 @@
           );
 
       return diagram;
-    }
+    };
 
-    public render() {
-      return (
-        &lt;ReactDiagram
-          ref={this.diagramRef}
-          divClassName='diagram-component'
-          initDiagram={this.initDiagram}
-          nodeDataArray={this.props.nodeDataArray}
-          linkDataArray={this.props.linkDataArray}
-          modelData={this.props.modelData}
-          onModelChange={this.props.onModelChange}
-          skipsDiagramUpdate={this.props.skipsDiagramUpdate}
-        /&gt;
-      );
-    }
-  }
+    return (
+      &lt;ReactDiagram
+        ref={diagramRef}
+        divClassName='diagram-component'
+        initDiagram={initDiagram}
+        nodeDataArray={props.nodeDataArray}
+        linkDataArray={props.linkDataArray}
+        modelData={props.modelData}
+        onModelChange={props.onModelChange}
+        skipsDiagramUpdate={props.skipsDiagramUpdate}
+      /&gt;
+    );
+  };
 </code></pre>
 <h4 id="UsingWrapperComponentWithinApp">Using the wrapper component within the app</h4>
 <p>
   The application should set up a few things to be passed to the wrapper described above:
   <ul>
     <li>state containing a nodeDataArray, linkDataArray, modelData object, and skipsDiagramUpdate flag</li>
-    <li>a handleDiagramEvent method for any app-specific DiagramEvents, such as 'ChangedSelection'</li>
-    <li>a handleModelChange method for updating state based on updates from the GoJS model</li>
+    <li>a handleDiagramEvent function for any app-specific DiagramEvents, such as 'ChangedSelection'</li>
+    <li>a handleModelChange function for updating state based on updates from the GoJS model</li>
   </ul>
 </p>
 <pre class="lang-js"><code>
   import * as go from 'gojs';
-  import * as React from 'react';
+  import { useEffect } from 'react';
+  import { useImmer } from 'use-immer';  // we use Immer here for simple immutable updates
 
   import { DiagramWrapper } from './components/Diagram';
 
@@ -558,35 +539,26 @@
     skipsDiagramUpdate: boolean;
   }
 
-  class App extends React.Component&lt;{}, AppState&gt; {
-    constructor(props: object) {
-      super(props);
-      this.state = {
-        // ...
-        nodeDataArray: [
-          { key: 0, text: 'Alpha', color: 'lightblue', loc: '0 0' },
-          { key: 1, text: 'Beta', color: 'orange', loc: '150 0' },
-          { key: 2, text: 'Gamma', color: 'lightgreen', loc: '0 150' },
-          { key: 3, text: 'Delta', color: 'pink', loc: '150 150' }
-        ],
-        linkDataArray: [
-          { key: -1, from: 0, to: 1 },
-          { key: -2, from: 0, to: 2 },
-          { key: -3, from: 1, to: 1 },
-          { key: -4, from: 2, to: 3 },
-          { key: -5, from: 3, to: 0 }
-        ],
-        modelData: {
-          canRelink: true
-        },
-        selectedKey: null,
-        skipsDiagramUpdate: false
-      };
-      // bind handler methods
-      this.handleDiagramEvent = this.handleDiagramEvent.bind(this);
-      this.handleModelChange = this.handleModelChange.bind(this);
-      this.handleRelinkChange = this.handleRelinkChange.bind(this);
-    }
+  export const App = () => {
+    // Diagram state
+    const [diagramData, updateDiagramData] = useImmer&lt;AppState&gt;({
+      nodeDataArray: [
+        { key: 0, text: 'Alpha', color: 'lightblue', loc: '0 0' },
+        { key: 1, text: 'Beta', color: 'orange', loc: '150 0' },
+        { key: 2, text: 'Gamma', color: 'lightgreen', loc: '0 150' },
+        { key: 3, text: 'Delta', color: 'pink', loc: '150 150' }
+      ],
+      linkDataArray: [
+        { key: -1, from: 0, to: 1 },
+        { key: -2, from: 0, to: 2 },
+        { key: -3, from: 1, to: 1 },
+        { key: -4, from: 2, to: 3 },
+        { key: -5, from: 3, to: 0 }
+      ],
+      modelData: { canRelink: true },
+      selectedKey: null,
+      skipsDiagramUpdate: false
+    });
 
     /**
      * Handle any app-specific DiagramEvents, in this case just selection changes.
@@ -595,29 +567,32 @@
      * This is not required, and is only needed when handling DiagramEvents from the GoJS diagram.
      * @param e a GoJS DiagramEvent
      */
-    public handleDiagramEvent(e: go.DiagramEvent) {
+    const handleDiagramEvent = (e: go.DiagramEvent) => {
       const name = e.name;
       switch (name) {
         case 'ChangedSelection': {
           const sel = e.subject.first();
-          if (sel) {
-            this.setState({ selectedKey: sel.key });
-          } else {
-            this.setState({ selectedKey: null });
-          }
+          updateDiagramData((draft) => {
+            if (sel) {
+              draft.selectedKey = sel.key;
+            } else {
+              draft.selectedKey = null;
+            }
+          });
           break;
         }
         default: break;
       }
-    }
+    };
 
     /**
      * Handle GoJS model changes, which output an object of data changes via Model.toIncrementalData.
-     * This method should iterates over those changes and update state to keep in sync with the GoJS model.
-     * This can be done via setState in React or another preferred state management method.
+     * This method should iterate over those changes and update state to keep in sync with the GoJS model.
+     * This can be done via setState in React or another preferred state management method,
+     * such as updateDiagramData in a case like this.
      * @param obj a JSON-formatted string
      */
-    public handleModelChange(obj: go.IncrementalData) {
+    const handleModelChange = (obj: go.IncrementalData) => {
       // const insertedNodeKeys = obj.insertedNodeKeys;
       // const modifiedNodeData = obj.modifiedNodeData;
       // const removedNodeKeys = obj.removedNodeKeys;
@@ -628,52 +603,53 @@
 
       // see gojs-react-basic for an example model change handler
       // when setting state, be sure to set skipsDiagramUpdate: true since GoJS already has this update
-    }
+    };
 
     /**
      * Handle changes to the checkbox on whether to allow relinking.
      * @param e a change event from the checkbox
      */
-    public handleRelinkChange(e: any) {
+    const handleRelinkChange = (e: any) => {
       const target = e.target;
       const value = target.checked;
-      this.setState({ modelData: { canRelink: value }, skipsDiagramUpdate: false });
+      updateDiagramData((draft) => {
+        draft.modelData = { canRelink: value };
+        draft.skipsDiagramUpdate = false;
+      });
+    };
+
+    let selKey;
+    if (diagramData.selectedKey !== null) {
+      selKey = &lt;p&gt;Selected key: {diagramData.selectedKey}&lt;/p&gt;;
     }
 
-    public render() {
-      let selKey;
-      if (this.state.selectedKey !== null) {
-        selKey = &lt;p&gt;Selected key: {this.state.selectedKey}&lt;/p&gt;;
-      }
-
-      return (
-        &lt;div&gt;
-          &lt;DiagramWrapper
-            nodeDataArray={this.state.nodeDataArray}
-            linkDataArray={this.state.linkDataArray}
-            modelData={this.state.modelData}
-            skipsDiagramUpdate={this.state.skipsDiagramUpdate}
-            onDiagramEvent={this.handleDiagramEvent}
-            onModelChange={this.handleModelChange}
-          /&gt;
-          &lt;label&gt;
-            Allow Relinking?
-            &lt;input
-              type='checkbox'
-              id='relink'
-              checked={this.state.modelData.canRelink}
-              onChange={this.handleRelinkChange} /&gt;
-          &lt;/label&gt;
-          {selKey}
-        &lt;/div&gt;
-      );
-    }
+    return (
+      &lt;div&gt;
+        &lt;DiagramWrapper
+          nodeDataArray={diagramData.nodeDataArray}
+          linkDataArray={diagramData.linkDataArray}
+          modelData={diagramData.modelData}
+          skipsDiagramUpdate={diagramData.skipsDiagramUpdate}
+          onDiagramEvent={handleDiagramEvent}
+          onModelChange={handleModelChange}
+        /&gt;
+        &lt;label&gt;
+          Allow Relinking?
+          &lt;input
+            type='checkbox'
+            id='relink'
+            checked={diagramData.modelData.canRelink}
+            onChange={handleRelinkChange} /&gt;
+        &lt;/label&gt;
+        {selKey}
+      &lt;/div&gt;
+    );
   }
 </code></pre>
 <h4>A Note on Diagram Reinitialization</h4>
 <p>
   Occasionally you may want to treat a model update as if you were loading a completely new model.
-  But initialization is done via the initDiagram function, within the componentDidMount lifecycle method, and only once.
+  But initialization is done via the initDiagram function, when the ReactDiagram mounts, and only once.
   A regular model update is not treated as an initialization, so none of the <b>initial...</b> properties
   of your Diagram will apply.
 </p>
@@ -688,23 +664,23 @@
   Here is a small sample of how one might trigger diagram reinitilization using the clear() method.
 </p>
 <pre class="lang-js"><code>
-  public reinitModel() {
-    this.diagramRef.current.clear();
-    this.setState({
-      nodeDataArray: [
+  const reinitModel = () => {
+    diagramRef.current.clear();
+    updateDiagramData((draft) => {
+      draft.nodeDataArray = [
         { key: 0, text: 'Epsilon', color: 'lightblue' },
         { key: 1, text: 'Zeta', color: 'orange' },
         { key: 2, text: 'Eta', color: 'lightgreen' },
         { key: 3, text: 'Theta', color: 'pink' }
-      ],
-      linkDataArray: [
+      ];
+      draft.linkDataArray = [
         { key: -1, from: 0, to: 1 },
         { key: -2, from: 0, to: 2 },
         { key: -3, from: 1, to: 1 },
         { key: -4, from: 2, to: 3 },
         { key: -5, from: 3, to: 0 }
-      ],
-      skipsDiagramUpdate: false
+      ];
+      draft.skipsDiagramUpdate = false;
     });
   }
 </code></pre>
