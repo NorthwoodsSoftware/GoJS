@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.24
+ * Type definitions for GoJS v3.0.25
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -21817,7 +21817,7 @@ export class Adornment extends Part {
      *     background: "red"
      *   })
      *   .add(
-     *     new go.Shape("RoundedRectangle")),
+     *     new go.Shape("RoundedRectangle"),
      *     new go.TextBlock("Some Text")
      *   )
      * ```
