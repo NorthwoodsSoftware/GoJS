@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,34 +131,34 @@
     });
 
     // define the "sample" Node template
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('RoundedRectangle', { // define the node's outer shape
-          fill: 'rgb(150, 60, 60)',
-          stroke: 'rgb(235, 194, 117)',
-          strokeWidth: 2
-        })
-          .bind('fill', 'color')
-          .bind('stroke'),
-        new go.TextBlock({ // define the node's text
-          margin: 7
-        })
-          .bind('text')
-          .bind('stroke')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('RoundedRectangle', { // define the node's outer shape
+              fill: 'rgb(150, 60, 60)',
+              stroke: 'rgb(235, 194, 117)',
+              strokeWidth: 2
+            })
+            .bind('fill', 'color')
+            .bind('stroke'),
+          new go.TextBlock({ margin: 7 }) // define the node's text
+            .bind('text')
+            .bind('stroke')
+        );
 
-    myDiagram.linkTemplate = new go.Link()
-      .add(
-        new go.Shape({
-            stroke: "rgb(150, 60, 60)",
-            strokeWidth: 2
-          }),  // the link shape
-        new go.Shape({   // the arrowhead
-            toArrow: "OpenTriangle",
-            stroke: "rgb(150, 60, 60)",
-            strokeWidth: 2
-          })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ toShortLength: 2 })
+        .add(
+          new go.Shape({
+              stroke: "rgb(150, 60, 60)",
+              strokeWidth: 2
+            }),  // the link shape
+          new go.Shape({   // the arrowhead
+              toArrow: "OpenTriangle",
+              stroke: "rgb(150, 60, 60)",
+              strokeWidth: 2
+            })
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -174,29 +176,30 @@
     });
 
     // use Groups, not regular Nodes or Links, to show relationship of GraphObjects in myDiagram
-    myVisualTree.groupTemplate = new go.Group('Auto', {
-      layout: new go.GridLayout({
-        wrappingColumn: 2,
-        alignment: go.GridAlignment.Position,
-        cellSize: new go.Size(1, 1)
-      })
-    })
-      .add(
-        new go.Shape({ fill: "rgba(243, 153, 73, 0.2)", stroke: "rgb(150, 60, 60)", strokeWidth: 2 }),
-        new go.Panel('Spot')
-          .add(
-            new go.Placeholder({ padding: new go.Margin(15, 5, 5, 5) }),
-            new go.TextBlock({
-              font: 'bold 13px monospace',
-              stroke: 'rgb(150, 60, 60)',
-              margin: 5,
-              alignment: go.Spot.Top,
-              alignmentFocus: go.Spot.Top
-            })
-              // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
-              .bind('text', '', (x) => x.toString())
-          )
-      );
+    myVisualTree.groupTemplate =
+      new go.Group('Auto', {
+          layout: new go.GridLayout({
+            wrappingColumn: 2,
+            alignment: go.GridAlignment.Position,
+            cellSize: new go.Size(1, 1)
+          })
+        })
+        .add(
+          new go.Shape({ fill: "rgba(243, 153, 73, 0.2)", stroke: "rgb(150, 60, 60)", strokeWidth: 2 }),
+          new go.Panel('Spot')
+            .add(
+              new go.Placeholder({ padding: new go.Margin(15, 5, 5, 5) }),
+              new go.TextBlock({
+                  font: 'bold 13px monospace',
+                  stroke: 'rgb(150, 60, 60)',
+                  margin: 5,
+                  alignment: go.Spot.Top,
+                  alignmentFocus: go.Spot.Top
+                })
+                // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+                .bind('text', '', x => x.toString())
+            )
+        );
 
     drawVisualTree();
   }
@@ -229,10 +232,11 @@
       nodeKeyProperty: 'vtkey',
       nodeGroupKeyProperty: 'parentKey',
       // always return true so that all node data is represented by groups
-      nodeIsGroupProperty: (data) => true,
+      nodeIsGroupProperty: data => true,
       nodeDataArray: visualNodeDataArray
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

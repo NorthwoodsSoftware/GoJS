@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,20 +131,22 @@
     });
 
     // define the "sample" Node template
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .bindTwoWay('location')
-      .add(
-        new go.Shape('RoundedRectangle', { fill: 'white', strokeWidth: 0 }) // define the node's outer shape
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // define the node's text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('location')
+        .add(
+          new go.Shape('RoundedRectangle', { fill: 'white', strokeWidth: 0 }) // define the node's outer shape
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // define the node's text
+            .bind('text')
+        );
 
-    myDiagram.linkTemplate = new go.Link({curve: go.Curve.Bezier})
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ curve: go.Curve.Bezier })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -164,29 +168,31 @@
       layout: new go.TreeLayout({ nodeSpacing: 5 }) // automatically laid out as a tree
     });
 
-    myVisualTree.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({ fill: 'white', stroke: null }), // assume a dark background
-        new go.TextBlock({
-          font: 'bold 13px monospace',
-          stroke: 'black',
-          margin: 3
-        })
-          // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
-          .bind('text', '', (x) => {
-            // if the node represents a link, be sure to include the "to/from" data for that link
-            if (x instanceof go.Link) {
-              var s = 'Link#' + x.data.__gohashid;
-              s += '(' + x.data.from + ' to ' + x.data.to + ')';
-              return s;
-            } else return x.toString();
-          })
-      );
+    myVisualTree.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ fill: 'white', stroke: null }), // assume a dark background
+          new go.TextBlock({
+              font: 'bold 13px monospace',
+              stroke: 'black',
+              margin: 3
+            })
+            // bind the text to the Diagram/Layer/Part/GraphObject converted to a string
+            .bind('text', '', x => {
+              // if the node represents a link, be sure to include the "to/from" data for that link
+              if (x instanceof go.Link) {
+                var s = 'Link#' + x.data.__gohashid;
+                s += '(' + x.data.from + ' to ' + x.data.to + ')';
+                return s;
+              } else return x.toString();
+            })
+        );
 
-    myVisualTree.linkTemplate = new go.Link()
-      .add(
-        new go.Shape({ stroke: 'white', strokeWidth: 2 })
-      );
+    myVisualTree.linkTemplate =
+      new go.Link({ corner: 10 })
+        .add(
+          new go.Shape({ stroke: 'white', strokeWidth: 2 })
+        );
 
     drawVisualTree();
   }
@@ -221,6 +227,7 @@
       nodeDataArray: visualNodeDataArray
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -124,7 +126,7 @@
 
 <script id="code">
   function init() {
-    var pieRadius = 100;
+    const pieRadius = 100;
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       'textEditingTool.starting': go.TextEditingStarting.SingleClick,
@@ -150,127 +152,132 @@
       }
     }
 
-    var sliceTemplate = new go.Panel({
-      // Allow the user to "select" slices when clicking them
-      click: (e, slice) => {
-        var sliceShape = slice.findObject('SLICE');
-        var oldskips = slice.diagram.skipsUndoManager;
-        slice.diagram.skipsUndoManager = true;
-        if (sliceShape.stroke === 'transparent') {
-          sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
-          // Move the slice out from the pie when selected
-          var nodedata = findNodeDataForSlice(slice.data);
-          if (nodedata) {
-            var sliceindex = nodedata.slices.indexOf(slice.data);
-            var angles = getAngles(nodedata, sliceindex);
-            if (angles.sweep !== 360) {
-              var angle = angles.start + angles.sweep / 2;
-              var offsetPoint = new go.Point(pieRadius / 10, 0);
-              slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
+    var sliceTemplate =
+      new go.Panel({
+        // Allow the user to "select" slices when clicking them
+        click: (e, slice) => {
+          var sliceShape = slice.findObject('SLICE');
+          var oldskips = slice.diagram.skipsUndoManager;
+          slice.diagram.skipsUndoManager = true;
+          if (sliceShape.stroke === 'transparent') {
+            sliceShape.stroke = go.Brush.darkenBy(slice.data.color, 0.4);
+            // Move the slice out from the pie when selected
+            var nodedata = findNodeDataForSlice(slice.data);
+            if (nodedata) {
+              var sliceindex = nodedata.slices.indexOf(slice.data);
+              var angles = getAngles(nodedata, sliceindex);
+              if (angles.sweep !== 360) {
+                var angle = angles.start + angles.sweep / 2;
+                var offsetPoint = new go.Point(pieRadius / 10, 0);
+                slice.position = offsetPoint.rotate(angle).offset(pieRadius / 10, pieRadius / 10);
+              }
             }
+          } else {
+            sliceShape.stroke = 'transparent';
+            slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
           }
-        } else {
-          sliceShape.stroke = 'transparent';
-          slice.position = new go.Point(pieRadius / 10, pieRadius / 10);
-        }
-        slice.diagram.skipsUndoManager = oldskips;
-      },
-      toolTip: go.GraphObject.build('ToolTip', {
-        'Border.fill': 'lightgray'
-      })
+          slice.diagram.skipsUndoManager = oldskips;
+        },
+        toolTip:
+          go.GraphObject.build('ToolTip', {
+              'Border.fill': 'lightgray'
+            })
+            .add(
+              new go.TextBlock({
+                  font: '10pt Verdana, sans-serif',
+                  margin: 4
+                })
+                .bind('text', '', data => {
+                  // Display text and percentage rounded to 2 decimals
+                  var nodedata = findNodeDataForSlice(data);
+                  if (nodedata) {
+                    var percent = Math.round((data.count / getTotalCount(nodedata)) * 100 * 100) / 100;
+                    return data.text + ': ' + percent + '%';
+                  }
+                  return '';
+                })
+            )
+        })
+        .bind('position', '', positionSlice)
+        .add(
+          new go.Shape({
+              name: 'SLICE',
+              strokeWidth: 2,
+              stroke: 'transparent',
+              isGeometryPositioned: true
+            })
+            .bind('fill', 'color')
+            .bind('geometry', '', makeGeo)
+        );
+
+    var optionTemplate =
+      new go.Panel('TableRow')
         .add(
           new go.TextBlock({
-            font: '10pt Verdana, sans-serif',
-            margin: 4
-          }).bind('text', '', (data) => {
-            // Display text and percentage rounded to 2 decimals
-            var nodedata = findNodeDataForSlice(data);
-            if (nodedata) {
-              var percent = Math.round((data.count / getTotalCount(nodedata)) * 100 * 100) / 100;
-              return data.text + ': ' + percent + '%';
-            }
-            return '';
-          })
-        )
-    })
-      .bind('position', '', positionSlice)
-      .add(
-        new go.Shape({
-          name: 'SLICE',
-          strokeWidth: 2,
-          stroke: 'transparent',
-          isGeometryPositioned: true
-        })
-          .bind('fill', 'color')
-          .bind('geometry', '', makeGeo)
-      );
-
-    var optionTemplate = new go.Panel('TableRow')
-      .add(
-        new go.TextBlock({
-          column: 0,
-          font: '10pt Verdana, sans-serif',
-          alignment: go.Spot.Left,
-          margin: 5
-        }).bind('text'),
-        new go.Panel('Auto', {
-          column: 1
-        })
-          .add(
-            new go.Shape({ fill: '#F2F2F2' }),
-            new go.TextBlock({
+              column: 0,
               font: '10pt Verdana, sans-serif',
-              textAlign: 'right',
-              margin: 2,
-              wrap: go.Wrap.None,
-              width: 40,
-              editable: true,
-              isMultiline: false,
-              textValidation: isValidCount
+              alignment: go.Spot.Left,
+              margin: 5
             })
-              .bindTwoWay('text', 'count', null, (count) => parseInt(count, 10))
-          ),
-        new go.Panel('Horizontal', { column: 2 })
-          .add(
-            go.GraphObject.build('Button', { click: incrementCount })
-              .add(
-                new go.Shape('PlusLine', {
-                  margin: 3,
-                  desiredSize: new go.Size(7, 7)
+            .bind('text'),
+          new go.Panel('Auto', { column: 1 })
+            .add(
+              new go.Shape({ fill: '#F2F2F2' }),
+              new go.TextBlock({
+                  font: '10pt Verdana, sans-serif',
+                  textAlign: 'right',
+                  margin: 2,
+                  wrap: go.Wrap.None,
+                  width: 40,
+                  editable: true,
+                  isMultiline: false,
+                  textValidation: isValidCount
                 })
-              ),
-            go.GraphObject.build('Button', { click: decrementCount })
-              .add(
-                new go.Shape('MinusLine', {
-                  margin: 3,
-                  desiredSize: new go.Size(7, 7)
-                })
-              )
-          )
-      );
+                .bindTwoWay('text', 'count', null, count => parseInt(count, 10))
+            ),
+          new go.Panel('Horizontal', { column: 2 })
+            .add(
+              go.GraphObject.build('Button', { click: incrementCount })
+                .add(
+                  new go.Shape('PlusLine', {
+                    margin: 3,
+                    desiredSize: new go.Size(7, 7)
+                  })
+                ),
+              go.GraphObject.build('Button', { click: decrementCount })
+                .add(
+                  new go.Shape('MinusLine', {
+                    margin: 3,
+                    desiredSize: new go.Size(7, 7)
+                  })
+                )
+            )
+        );
 
-    myDiagram.nodeTemplate = new go.Node('Vertical', { deletable: false })
-      .add(
-        new go.TextBlock({
-          font: '11pt Verdana, sans-serif',
-          margin: 5
-        }).bind('text'),
-        new go.Panel('Horizontal')
-          .add(
-            new go.Panel('Position', {
-              name: 'PIE',
-              // account for slices offsetting when selected so the node won't change size
-              desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
-              itemTemplate: sliceTemplate
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical', { deletable: false })
+        .add(
+          new go.TextBlock({
+              font: '11pt Verdana, sans-serif',
+              margin: 5
             })
-              .bind('itemArray', 'slices'),
-            new go.Panel('Table', {
-              margin: 5,
-              itemTemplate: optionTemplate
-            })
-              .bind('itemArray', 'slices')
-          )
-      );
+            .bind('text'),
+          new go.Panel('Horizontal')
+            .add(
+              new go.Panel('Position', {
+                  name: 'PIE',
+                  // account for slices offsetting when selected so the node won't change size
+                  desiredSize: new go.Size(pieRadius * 2.2 + 5, pieRadius * 2.2 + 5),
+                  itemTemplate: sliceTemplate
+                })
+                .bind('itemArray', 'slices'),
+              new go.Panel('Table', {
+                  margin: 5,
+                  itemTemplate: optionTemplate
+                })
+                .bind('itemArray', 'slices')
+            )
+        );
 
     myDiagram.model = new go.Model({
       copiesArrays: true,
@@ -314,21 +321,22 @@
       var angles = getAngles(nodedata, sliceindex);
 
       // Constructing the Geomtery this way is much more efficient than calling go.GraphObject.ma ke:
-      return new go.Geometry().add(
-        new go.PathFigure(pieRadius, pieRadius) // start point
-          .add(
-            new go.PathSegment(
-              go.SegmentType.Arc,
-              angles.start,
-              angles.sweep, // angles
-              pieRadius,
-              pieRadius, // center
-              pieRadius,
-              pieRadius
-            ) // radius
-              .close()
-          )
-      );
+      return new go.Geometry()
+        .add(
+          new go.PathFigure(pieRadius, pieRadius) // start point
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                angles.start,
+                angles.sweep, // angles
+                pieRadius,
+                pieRadius, // center
+                pieRadius,
+                pieRadius
+              ) // radius
+                .close()
+            )
+        );
     }
 
     // Ensure slices get the proper positioning after we update any counts
@@ -390,7 +398,7 @@
           nodeset.add(nodedata);
         }
         // Force geometries to be redrawn on any node that had slices deleted
-        nodeset.each((data) => {
+        nodeset.each(data => {
           myDiagram.model.updateTargetBindings(data, 'count');
         });
         myDiagram.commitTransaction('delete slices');
@@ -435,6 +443,7 @@
       myDiagram.model.commitTransaction('decrement count');
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -515,7 +524,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -532,7 +541,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -567,6 +576,32 @@ More information can be found in the <a href="../intro/geometry.html">GoJS Intro
             <hr>
           
         <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
+            </p>
+            <hr>
           
         </div>
     </div>

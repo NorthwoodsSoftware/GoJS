@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -122,222 +124,592 @@
             
             
 
-<script id="code">
-  function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      InitialLayoutCompleted: (e) => {
-        updateBelts(); // changes the bounds of the "Belt"s
-        e.diagram.alignDocument(go.Spot.Center, go.Spot.Center);
-      },
-      'animationManager.isInitial': false,
-      'undoManager.isEnabled': true,
-      allowCopy: false,
-      allowDelete: false,
-      'draggingTool.moveParts': function (parts, offset, check) {
-        // method override must be function, not =>
-        go.DraggingTool.prototype.moveParts.call(this, parts, offset, check);
-        updateBelts(); // this is inefficient if there are a lot of belts
-      }
-    });
 
-    function commonStyle() {
-      return {
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'GUIDE',
-        selectionAdorned: false,
-        dragComputation: (node, newloc, snaploc) => {
-          // don't allow rollers or drums to overlap each other
-          var oldloc = node.location;
-          var noderad = node.findObject('GUIDE').actualBounds.width / 2;
-          var ok = true;
-          var it = node.diagram.nodes.iterator;
-          while (it.next()) {
-            var n = it.value;
-            if (n === node || n.category === 'Belt') continue;
-            var dist2 = newloc.distanceSquaredPoint(n.location);
-            var rad = n.findObject('GUIDE').actualBounds.width / 2;
-            if (dist2 < (noderad + rad) * (noderad + rad)) {
-              ok = false;
-              break;
-            }
-          }
-          return ok ? newloc : oldloc;
-        }
-      };
-    }
-
-    function applyCommonStyleBindings(object) {
-      object.bindTwoWay('location', 'xy', go.Point.parse, go.Point.stringify);
-      return object;
-    }
-
-    myDiagram.nodeTemplateMap.add(
-      'Roller',
-      applyCommonStyleBindings(
-        new go.Node('Spot', commonStyle())
-          .add(
-            new go.Shape('Circle', {
-              name: 'GUIDE',
-              fill: 'lightgray',
-              strokeWidth: 0,
-              width: 20,
-              height: 20
-            })
-              .bindTwoWay('width', 'diameter')
-              .bind('height', 'diameter'),
-            new go.TextBlock({ font: '6pt sans-serif', stroke: 'black' }).bind('text', 'key')
-          )
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Drum',
-      applyCommonStyleBindings(
-        new go.Node('Spot', commonStyle())
-          .add(
-            new go.Shape('Circle', {
-              name: 'GUIDE',
-              fill: 'lightgray',
-              stroke: 'gray',
-              width: 80,
-              height: 80
-            }).bind('fill', 'color'),
-            new go.TextBlock({
-              font: '6pt sans-serif',
-              stroke: 'darkblue'
-            }).bind('text', 'key')
-          )
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Belt',
-      new go.Node({
-        selectionAdorned: false,
-        layerName: 'Foreground',
-        copyable: false,
-        movable: false
-      })
-        .add(
-          new go.Shape({
-            name: 'BELT',
-            fill: null,
-            stroke: 'gray',
-            strokeWidth: 2,
-            strokeDashArray: [4, 2]
-          }).bind('stroke', 'color')
-        )
-    );
-
-    load();
-  } // end init
-
-  function updateBelts(coll) {
-    if (!coll) coll = myDiagram.nodes;
-    myDiagram.startTransaction();
-    coll.each(updateBelt);
-    myDiagram.commitTransaction('updated belts');
+<style>
+  #myDiagramDiv {
+    width: 900px;
+    height: 800px;
+    background-color: #262626;
   }
 
-  function updateBelt(node) {
-    if (node.category !== 'Belt') return;
-    var belt = node.findObject('BELT');
-    var diagram = node.diagram;
-    var guideinfos = node.data.guides;
-    if (!Array.isArray(guideinfos))
-      throw new Error('data.guides is not an Array for Belt node: ' + node.data.key);
+  code {
+    font-family: monospace;
+    background-color: #d3d3d3;
+    padding: 0 3px;
+  }
+</style>
 
-    // gather basic information about each guide node
-    var guides = []; // holds Objects with handy information
-    for (var i = 0; i < guideinfos.length; i++) {
-      var info = guideinfos[i];
-      var guidenode = diagram.findNodeForKey(info.k);
-      if (guidenode !== null && guidenode.location.isReal()) {
-        var loc = guidenode.location;
-        var cyl = guidenode.findObject('GUIDE');
-        var radius = cyl !== null ? cyl.measuredBounds.width / 2 : 10;
-        if (guides.length > 0) {
-          var prevguide = guides[guides.length - 1];
-          var prevloc = prevguide.location;
-          var prevradius = prevguide.radius;
-          var dist = Math.sqrt(prevloc.distanceSquaredPoint(loc));
-          if (dist < Math.abs(prevradius - radius)) {
-            // one is completely inside the other
-            if (prevradius > radius) {
-              continue; // skip this smaller guide
-            } else {
-              guides.pop(); // skip the previous guide, which was smaller
-            }
+<script id="code">
+  // =================== GLOBAL VARIABLES ===================
+
+  const ROLLER_DEFAULT_DIAMETER = 30;
+  const BELT_STROKE_WIDTH = 4;
+  const DEFAULT_COLOR = '#d3d3d3'; // default roller & belt color
+  const BACKGROUND_COLOR = '#262626';
+
+  // defined in init()
+  let myDiagram;
+  let rollersLists = {};
+
+  // =================== TEMPLATES ===================
+
+  const rollerTemplate = new go.Node('Auto', {
+    locationSpot: go.Spot.Center,
+    selectionAdorned: false,
+    dragComputation: rollerDragComputation
+  })
+    .add(
+      // roller outline circle
+      new go.Shape('Circle', {
+        name: 'GUIDE',
+        stroke: DEFAULT_COLOR,
+        strokeWidth: 2,
+        fill: 'transparent',
+        width: ROLLER_DEFAULT_DIAMETER,
+        height: ROLLER_DEFAULT_DIAMETER
+      })
+        .bind('stroke', 'color')
+        .bind('width', 'diameter')
+        .bind('height', 'diameter')
+        .bindObject('fill', '', (obj) => {
+          const beltKeys = getNodesBeltKeys(obj.part);
+          if (beltKeys.length > 1) {
+            const color = obj.part.data.color || DEFAULT_COLOR;
+            return go.Brush.mix(color, BACKGROUND_COLOR, 0.5);
+          } else return 'transparent';
+        }),
+      // center dot, visible if roller is attached to a belt
+      new go.Shape('Circle', {
+        width: 5,
+        fill: 'white',
+        stroke: null
+      })
+        .bind('fill', 'color')
+        .bind('width', 'diameter', (d) => {
+          if (d > 15)
+            return 5; // if diameter is less than 15, make the center dot smaller
+          else return d / 4;
+        })
+        .bindObject('visible', '', (obj) => {
+          const beltKeys = getNodesBeltKeys(obj.part);
+          if (beltKeys.length === 0) {
+            return false;
+          } else return true;
+        })
+    )
+    .bindTwoWay('location', 'xy', go.Point.parse, go.Point.stringify);
+
+  const beltTemplate = new go.Node({
+    selectionAdorned: false,
+    layerName: 'Foreground',
+    movable: false
+  }).add(
+    new go.Shape({
+      name: 'BELT',
+      fill: null,
+      stroke: DEFAULT_COLOR,
+      strokeWidth: BELT_STROKE_WIDTH,
+      // to create the dotted lines
+      // 8 px of line, 4 px of space, repeat
+      strokeDashArray: [8, 4]
+    }).bind('stroke', 'color')
+  );
+
+  const modelTemplate = [
+    { key: '11', category: 'Roller', xy: '450 450' },
+    {
+      key: '12',
+      category: 'Roller',
+      xy: '350 600'
+    },
+    { key: '13', category: 'Roller', xy: '300 800', diameter: 40 },
+    { key: '14', category: 'Roller', xy: '150 650' },
+    {
+      key: '15',
+      category: 'Roller',
+      xy: '0 550',
+      color: '#daab2d'
+    },
+    {
+      key: '16',
+      category: 'Roller',
+      xy: '130 500'
+    },
+    { key: '17', category: 'Roller', xy: '300 430', diameter: 100 },
+    { key: '01', category: 'Roller', xy: '300 326', diameter: 100 },
+    {
+      key: 'B1',
+      category: 'Belt',
+      // the guides list defines the rollers that can interact with the belt
+      // the rollers the belt bends around
+      guides: [
+        { k: '11' },
+        { k: '12', outside: true, touchingBelt: true },
+        { k: '13' },
+        { k: '14', outside: true, touchingBelt: true },
+        { k: '15' },
+        { k: '16', outside: true, touchingBelt: true },
+        { k: '17' }
+      ]
+    },
+    {
+      key: '21',
+      category: 'Roller',
+      xy: '-100 700',
+      color: '#daab2d'
+    },
+    {
+      key: '22',
+      category: 'Roller',
+      xy: '100 800',
+      color: '#daab2d'
+    },
+    {
+      key: 'B2',
+      category: 'Belt',
+      color: '#daab2d',
+      guides: [{ k: '21' }, { k: '15' }, { k: '22' }, { k: '12', outside: true }]
+    }
+  ];
+
+  // =================== MATH FUNCTIONS ===================
+
+  // imagine a square with corners at from and to
+  // returns true if pt is inside the square
+  function isBetween(pt, from, to) {
+    const bounds = {
+      x: Math.min(from.x, to.x),
+      y: Math.min(from.y, to.y),
+      width: Math.abs(to.x - from.x),
+      height: Math.abs(to.y - from.y)
+    };
+    if (
+      pt.x >= bounds.x &&
+      pt.x <= bounds.x + bounds.width &&
+      pt.y >= bounds.y &&
+      pt.y <= bounds.y + bounds.height
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // only used for clampDistance()
+  // returns a point that is dist away from pt1 towards pt2
+  // dist is the distance to move towards pt2, not the distance between pt1 and pt2
+  function partwayBetween(pt1, pt2, dist) {
+    return new go.Point(pt1.x - vector.x * dist, pt1.y - vector.y * dist);
+  }
+
+  function circleTouchingLine(pt1, pt2, center, r) {
+    const dist = go.Point.distanceLineSegmentSquared(
+      center.x,
+      center.y,
+      pt1.x,
+      pt1.y,
+      pt2.x,
+      pt2.y
+    );
+    if (dist < r * r) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function segmentFullyCrossesCircle(roller, line) {
+    const dx = line[1].x - line[0].x;
+    const dy = line[1].y - line[0].y;
+    const r = roller.radius; // radius of the roller
+    const A = dx * dx + dy * dy; // A = dx^2 + dy^2
+    const fx = line[0].x - roller.center.x; // fx = x1 - cx
+    const fy = line[0].y - roller.center.y; // fy = y1 - cy
+    const B = 2 * (fx * dx + fy * dy); // B = 2 * (fx * dx + fy * dy)
+    const C = fx * fx + fy * fy - r * r; // C = fx^2 + fy^2 - r^2
+    const discriminant = B * B - 4 * A * C; // discriminant
+    if (discriminant < 0) {
+      // no intersection
+      return false;
+    } else {
+      // there is an intersection
+      const t1 = (-B + Math.sqrt(discriminant)) / (2 * A);
+      const t2 = (-B - Math.sqrt(discriminant)) / (2 * A);
+      // check if intersection points are between the line segment points
+      return t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1 && Math.abs(t1 - t2) > 0.01; // check if the intersection points are different enough
+    }
+  }
+
+  function getFromTo(guideA, guideB) {
+    const locA = guideA.center;
+    const locB = guideB.center;
+    const { x: x1, y: y1 } = locA;
+    const { x: x2, y: y2 } = locB;
+    const r1 = guideA.radius;
+    const r2 = guideB.radius;
+
+    const vector = new go.Point(x2 - x1, y2 - y1);
+    // angle in radians from A to B center
+    let centerAngle = Math.atan2(vector.y, vector.x);
+    // dist between A and B center
+    let hypotenuse = Math.hypot(vector.x, vector.y);
+    const opposite = guideA.outside === guideB.outside ? r2 - r1 : r2 + r1;
+
+    // sine of the angle between the center-to-center line segment and the tangent line
+    // imagine a right triangle with the center-to-center line segment as the hypotenuse
+    let offsetSine = opposite / hypotenuse; // sine = opposite / hypotenuse
+
+    // clamp offsetSine to [-1, 1] to avoid NaN in Math.asin
+    // in case of floating point errors
+    if (offsetSine < -1) offsetSine = -1;
+    else if (offsetSine > 1) offsetSine = 1;
+
+    // angle between the center-to-center line segment and the tangent line
+    // tangent offset
+    let offset = Math.asin(offsetSine);
+
+    let a;
+    if (guideB.outside) {
+      a = guideA.outside
+        ? Math.PI / 2 - offset - centerAngle
+        : Math.PI / 2 - Math.abs(offset) - centerAngle;
+    } else {
+      a = guideA.outside
+        ? Math.abs(offset) - Math.PI / 2 - centerAngle
+        : Math.PI / 2 + offset - centerAngle;
+    }
+    const cosa = Math.cos(a);
+    const sina = Math.sin(a);
+
+    const from =
+      guideB.outside && guideA.outside
+        ? new go.Point(x1 - r1 * cosa, y1 + r1 * sina)
+        : new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
+    const to =
+      !guideB.outside && !guideA.outside
+        ? new go.Point(x2 + r2 * cosa, y2 - r2 * sina)
+        : new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
+
+    return {
+      from: from,
+      to: to
+    };
+  }
+
+  // uses q1 to q2 as anchor line segment
+  // returns true if p1 and p2 are on opposite sides of the line segment q
+  // credit for concept: https://stackoverflow.com/a/3842240
+  function segmentsIntersect(segment1, segment2) {
+    function oppositeSide(p1, p2, anchorLine) {
+      // negative = on right side of the line segment
+      // positive = on left side of the line segment
+      // zero = on the line segment
+      const side1 = p1.compareWithLineSegmentPoint(anchorLine[0], anchorLine[1]);
+      const side2 = p2.compareWithLineSegmentPoint(anchorLine[0], anchorLine[1]);
+      if (side1 > 0 !== side2 > 0) {
+        // if one is on the right side and the other is on the left side
+        return true;
+      } else {
+        // otherwise, they do not intersect or only the endpoints touch
+        return false;
+      }
+    }
+
+    if (
+      oppositeSide(segment1[0], segment1[1], segment2) &&
+      oppositeSide(segment2[0], segment2[1], segment1)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function areRollersOverlapping(node, newloc) {
+    let nodeRadius = node.findObject('GUIDE').actualBounds.width / 2;
+    let overlapping = false;
+    let it = node.diagram.nodes.iterator;
+    myDiagram.nodes.each((n) => {
+      if (n === node || n.category === 'Belt') return;
+      let dist2 = newloc.distanceSquaredPoint(n.location);
+      let radius = n.findObject('GUIDE').actualBounds.width / 2;
+      if (dist2 < (nodeRadius + radius) ** 2) {
+        // they are overlapping - now check if they share a belt
+        const nBeltKeys = getNodesBeltKeys(n);
+        const nodeBeltKeys = getNodesBeltKeys(node);
+        if (nBeltKeys.some((key) => nodeBeltKeys.includes(key))) {
+          overlapping = true;
+        }
+      }
+    });
+    return overlapping;
+  }
+
+  // =================== GET FUNCTIONS ===================
+
+  // only used in getAllRollers()
+  // returns data for a roller by index: center point, radius, and extra flags
+  function getGuideData(guides, i) {
+    // guide has the data about how the roller interacts with the BELT:
+    // if it's outside/inside, if it's touching the belt
+    const guide = guides[i];
+    const guideKey = guide.k;
+    // guideData is the data about the roller ITSELF:
+    // location, diameter
+    const guideData = myDiagram.model.findNodeDataForKey(guideKey);
+    if (guideData && guideData.xy) {
+      const xy = guideData.xy.split(' ').map((str) => parseInt(str));
+      return {
+        center: new go.Point(xy[0], xy[1]),
+        // adding half of beltWidth to the radius is is how the belt isn't directly on top of the rollers but rather looped around them
+        radius:
+          (guideData.diameter || ROLLER_DEFAULT_DIAMETER) / 2 + BELT_STROKE_WIDTH / 2,
+        outside: guide.outside,
+        touchingBelt: guide.touchingBelt,
+        key: guideKey
+      };
+    } else {
+      console.warn(`Roller with key ${guideKey} not found. (or it has no xy)`);
+      return null;
+    }
+  }
+
+  // used only in getOrderedRollers()
+  // get a list of roller data from the beltData (which has the rollers' keys)
+  function getAllRollers(beltData) {
+    const rollers = [];
+    for (let i = 0; i < beltData.guides.length; i++) {
+      rollers.push(getGuideData(beltData.guides, i));
+    }
+    return rollers;
+  }
+
+  // used only for orderRollers()
+  function getOrderedRollers(beltKey) {
+    const beltData = myDiagram.model.findNodeDataForKey(beltKey);
+
+    const rollers = getAllRollers(beltData);
+
+    let ordered = rollers.filter((roller) => !roller.outside || roller.touchingBelt);
+    let unordered = rollers.filter((roller) => roller.outside && !roller.touchingBelt);
+
+    ordered = computeContacts(ordered.slice() /* copy array */);
+    ordered = deleteRollersNotTouching(ordered, beltKey).ordered;
+
+    const obj = considerAddingUnorderedRollersBack(ordered, unordered);
+
+    // all items in rollers that are not in ordered
+    unordered = [];
+    for (const roller of rollers) {
+      if (!ordered.some((r) => r.key === roller.key)) {
+        unordered.push(roller);
+      }
+    }
+    return {
+      ordered: ordered,
+      unordered: unordered
+    };
+  }
+
+  function getAllBeltKeys() {
+    return myDiagram.model.nodeDataArray
+      .filter((n) => n.category === 'Belt')
+      .map((n) => n.key);
+  }
+
+  function getNodesBeltKeys(node) {
+    let beltKeys = [];
+    for (let beltKey in rollersLists) {
+      const hasNode = (key) =>
+        rollersLists[beltKey][key].some((roller) => roller.key === node.key);
+      if (hasNode('ordered') || hasNode('unordered')) {
+        beltKeys.push(beltKey);
+      }
+    }
+    return beltKeys;
+  }
+
+  // =================== HELPFUL FUNCTIONS ===================
+
+  // returns a point that is dist away from pt1 towards pt2
+  // dist is the distance to move towards pt2, not the distance between pt1 and pt2
+  function partwayBetween(pt1, pt2, dist) {
+    const vector = new go.Point(pt1.x - pt2.x, pt1.y - pt2.y);
+    vector.normalize();
+    return new go.Point(pt1.x - vector.x * dist, pt1.y - vector.y * dist);
+  }
+
+  // for preventing rollers from jumping around when dragged
+  function clampDistance(newloc, oldloc) {
+    // so rollers can't jump through each other
+    const dist = ROLLER_DEFAULT_DIAMETER;
+    const tooFarApart = newloc.distanceSquaredPoint(oldloc) > dist * dist;
+    if (tooFarApart) {
+      // make it move less far
+      newloc = partwayBetween(oldloc, newloc, dist);
+    }
+    return newloc;
+  }
+
+  // used to set the initial order of rollers when the belt is created
+  // either when program is just starting or you load new data
+  function orderRollers(beltKeys) {
+    for (const beltKey of beltKeys || getAllBeltKeys()) {
+      rollersLists[beltKey] = getOrderedRollers(beltKey);
+    }
+  }
+
+  function drawAllInitialBelts(beltKeys) {
+    for (const beltKey of beltKeys || getAllBeltKeys()) {
+      const rollers = recalcRollerLists(beltKey).ordered;
+      beltGeom(rollers, beltKey);
+    }
+  }
+
+  function updateRollerLocations(rollers, guides, node, newLoc) {
+    // updates the rollers' locations based on the guides
+    for (let i = 0; i < rollers.length; i++) {
+      if (node && rollers[i].key === node.key) {
+        // if the roller is being dragged, update its location
+        rollers[i].center = newLoc;
+      } else {
+        const centerString = myDiagram.model.findNodeDataForKey(rollers[i].key).xy;
+        rollers[i].center = go.Point.parse(centerString);
+      }
+    }
+    return rollers;
+  }
+
+  // =================== MAIN FUNCTIONS ===================
+
+  // returns a new rollers list that has .to and .from on each roller
+  function computeContacts(rollers) {
+    for (let i = 0; i < rollers.length; i++) {
+      const guideA = rollers[i];
+      // get next guide, wrap around to 0 if needed
+      const nexti = (i + 1) % rollers.length;
+      const guideB = rollers[nexti];
+
+      const { from, to } = getFromTo(guideA, guideB);
+
+      rollers[i].from = from;
+      rollers[nexti].to = to;
+    }
+    return rollers;
+  }
+
+  // prevents belt looping around roller for no reason
+  // cause sometimes the belt can loop around a roller that is very close to the next roller
+  // and in that case the next roller is not actually touching the belt
+  // it will usually have the to and from points very close to each other so we check for that
+  function weirdGlitchWillHappen(roller, rollers) {
+    const isVeryShortSegment = (p1, p2) =>
+      Math.abs(p1.x - p2.x) < 3 && Math.abs(p1.y - p2.y) < 3;
+
+    const isTouchingOtherRoller = (roller1, roller2) => {
+      const dist = roller1.center.distanceSquaredPoint(roller2.center);
+      const hypotheticalDist = (roller1.radius + roller2.radius) ** 2;
+      if (dist < hypotheticalDist + hypotheticalDist * 0.05) {
+        return true;
+      }
+    };
+
+    if (isVeryShortSegment(roller.to, roller.from)) {
+      // have to check that it's close enough to another roller's for that glitch to happen
+      for (const r of rollers) {
+        if (r === roller) {
+          continue;
+        }
+        if (isTouchingOtherRoller(r, roller)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  // skip any guides that should not contact the Belt, because they cannot touch the path
+  function deleteRollersNotTouching(rollers, beltKey) {
+    function deleteRollers(outsideOnly) {
+      let deletedRollers = [];
+      // outside rollers
+      let i = 0;
+      while (rollers.length > 2 && i < rollers.length) {
+        const guide = rollers[i];
+        const next = rollers[(i + 1) % rollers.length];
+        const follow = rollers[(i + 2) % rollers.length];
+
+        if (weirdGlitchWillHappen(next, rollers)) {
+          deletedRollers.push(rollers.splice((i + 1) % rollers.length, 1)[0]);
+          break;
+        }
+
+        if ((next.outside || false) !== outsideOnly) {
+          i++;
+          continue;
+        }
+
+        const { from, to } = getFromTo(guide, follow);
+        let between = isBetween(next.from, from, to);
+        let wrongside = false;
+        if (between) {
+          // check if the next roller is on the wrong side of the line segment
+          wrongside = next.from.compareWithLineSegmentPoint(from, to) < 0;
+          if (next.outside) {
+            wrongside = !wrongside;
           }
         }
-        guides.push({
-          node: guidenode,
-          location: guidenode.location.copy(),
-          radius: radius + belt.strokeWidth / 2,
-          outside: !!info.outside,
-          from: null, // these Points will be computed by computeContacts
-          to: null
-        });
-      }
-    }
-
-    // handle some degenerate cases
-    if (guides.length < 2) {
-      if (guides.length === 1) {
-        node.location = guides[0].location;
-      }
-      if (belt !== null) {
-        belt.geometry = new go.Geometry(go.GeometryType.Ellipse);
-      }
-      return;
-    }
-
-    // compute the contact points
-    // assume guides are listed in clockwise order
-    for (var i = 0; i < guides.length; i++) {
-      var guide = guides[i];
-      var next = guides[(i + 1) % guides.length];
-      computeContacts(guide, next);
-    }
-
-    // skip any guides that should not contact the Belt, because they're cannot touch the path
-    var i = 0;
-    while (guides.length > 2 && i < guides.length) {
-      var guide = guides[i];
-      var next = guides[(i + 1) % guides.length];
-      var follow = guides[(i + 2) % guides.length];
-      // is NEXT on the wrong side of the line from GUIDE to FOLLOW?
-      var wrongside = next.to.compareWithLineSegmentPoint(guide.from, follow.to) < 0;
-      if (next.outside) wrongside = !wrongside;
-      if (wrongside) {
-        computeContacts(guide, follow);
-        // get rid of NEXT
-        if (i + 1 < guides.length) {
-          guides.splice(i + 1, 1);
+        if (wrongside) {
+          // get rid of NEXT
+          deletedRollers.push(rollers.splice((i + 1) % rollers.length, 1)[0]);
+          // now also need to check whether GUIDE has become on the wrong side!
+          if (i > 0) i--;
         } else {
-          guides.splice(0, 1);
+          i++;
         }
-        // now also need to check whether GUIDE has become on the wrong side!
-        if (i > 0) i--;
-      } else {
-        i++;
       }
+      return deletedRollers;
     }
 
+    let deletedRollers = [];
+    deletedRollers.push(...deleteRollers(true)); // outside rollers
+    deletedRollers.push(...deleteRollers(false)); // inside rollers
+
+    for (const roller of deletedRollers) {
+      roller.touchingBelt = false; // also update the roller object
+    }
+    return {
+      ordered: rollers,
+      unordered: deletedRollers
+    };
+  }
+
+  function beltGeom(rollers, beltKey) {
     // construct the Geometry for the belt Shape
-    var geo = new go.Geometry();
-    var fig = null;
-    for (var i = 0; i < guides.length; i++) {
-      var guide = guides[i];
-      var next = guides[(i + 1) % guides.length];
+    const geo = new go.Geometry();
+    let fig = null;
+    for (let i = 0; i < rollers.length; i++) {
+      const guide = rollers[i];
+      // next guide (loops back to zero if current guide is the last one)
+      const nexti = (i + 1) % rollers.length;
+      const next = rollers[nexti];
       if (fig === null) {
-        fig = new go.PathFigure(guide.from.x, guide.from.y, true);
+        // PathFigure is a piece of a Geometry. This one starts from guide.from and this function will add PathSegments to complete it
+        fig = new go.PathFigure(guide.from.x, guide.from.y);
         geo.add(fig);
+
+        const beltNode = myDiagram.findNodeForKey(beltKey);
+        beltNode.location = guide.from;
       }
+      // lines between
       fig.add(new go.PathSegment(go.SegmentType.Line, next.to.x, next.to.y));
-      var startang = next.location.directionPoint(next.to);
-      var endang = next.location.directionPoint(next.from);
-      var sweep = endang > startang ? endang - startang : 360 - startang + endang;
+
+      // lines around the rollers
+      // next.center, next.to, and next.from are Points.
+      // directionPoint is a method of Points that returns the angle, in degrees, of the line from this Point to the given point.
+      let startang = next.center.directionPoint(next.to);
+      let endang = next.center.directionPoint(next.from);
+      let sweep = endang > startang ? endang - startang : 360 - startang + endang;
+
       if (next.outside) {
         // go counter-clockwise
         fig.add(
@@ -345,8 +717,8 @@
             go.SegmentType.Arc,
             startang,
             sweep - 360,
-            next.location.x,
-            next.location.y,
+            next.center.x,
+            next.center.y,
             next.radius,
             next.radius
           )
@@ -358,8 +730,8 @@
             go.SegmentType.Arc,
             startang,
             sweep,
-            next.location.x,
-            next.location.y,
+            next.center.x,
+            next.center.y,
             next.radius,
             next.radius
           )
@@ -367,131 +739,289 @@
       }
     }
 
-    // update the Belt's Shape.geometry
-    if (belt !== null) {
-      var pos = geo.normalize();
-      belt.geometry = geo;
-      // account for the thickness of the belt shape's stroke
-      node.position = new go.Point(-pos.x - belt.strokeWidth / 2, -pos.y - belt.strokeWidth / 2);
-      node.ensureBounds();
-    }
-  } // end updateBelt
+    // add the geometry to the belt Shape
+    const beltNode = myDiagram.findNodeForKey(beltKey);
+    if (beltNode) {
+      const beltShape = beltNode.findObject('BELT');
+      if (beltShape) {
+        let pos = geo.normalize();
+        beltShape.geometry = geo;
 
-  function computeContacts(guideA, guideB) {
-    var locA = guideA.location;
-    var x1 = locA.x;
-    var y1 = locA.y;
-    var r1 = guideA.radius;
-    var locB = guideB.location;
-    var x2 = locB.x;
-    var y2 = locB.y;
-    var r2 = guideB.radius;
-
-    // this assumes that belts only go clockwise
-    var g = Math.atan2(y2 - y1, x2 - x1);
-    var d = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-
-    var bb = (guideA.outside === guideB.outside ? r2 - r1 : r2 + r1) / d;
-    if (bb < -1) bb = -1;
-    else if (bb > 1) bb = 1;
-    var b = Math.asin(bb);
-
-    if (guideB.outside) {
-      if (guideA.outside) {
-        // both outside
-        var a = Math.PI / 2 - b - g;
-        var cosa = Math.cos(a);
-        var sina = Math.sin(a);
-        guideA.from = new go.Point(x1 - r1 * cosa, y1 + r1 * sina);
-        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
-      } else {
-        // inside A, outside B
-        var a = Math.PI / 2 - Math.abs(b) - g;
-        var cosa = Math.cos(a);
-        var sina = Math.sin(a);
-        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
-        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
+        // account for the thickness of the belt shape's stroke
+        beltNode.position = new go.Point(
+          -pos.x - BELT_STROKE_WIDTH / 2,
+          -pos.y - BELT_STROKE_WIDTH / 2
+        );
       }
     } else {
-      if (guideA.outside) {
-        // outside A, inside B
-        var a = Math.abs(b) - Math.PI / 2 - g;
-        var cosa = Math.cos(a);
-        var sina = Math.sin(a);
-        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
-        guideB.to = new go.Point(x2 - r2 * cosa, y2 + r2 * sina);
-      } else {
-        // both inside
-        var a = Math.PI / 2 + b - g;
-        var cosa = Math.cos(a);
-        var sina = Math.sin(a);
-        guideA.from = new go.Point(x1 + r1 * cosa, y1 - r1 * sina);
-        guideB.to = new go.Point(x2 + r2 * cosa, y2 - r2 * sina);
-      }
+      console.warn(`Belt node with key ${beltKey} not found.`);
     }
   }
 
-  // Show the diagram's model in JSON format that the user may edit
-  function save() {
-    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
-    myDiagram.isModified = false;
+  function considerAddingUnorderedRollersBack(ordered, unordered) {
+    const addBackRollers = [];
+
+    // go thru all lines & see if it's touching the line
+    for (let j = 0; j < unordered.length; j++) {
+      const roller = unordered[j];
+      for (let i = 0; i < ordered.length; i++) {
+        const before = ordered[i];
+        const after = ordered[(i + 1) % ordered.length];
+        if (circleTouchingLine(before.from, after.to, roller.center, roller.radius)) {
+          const obj = {
+            roller: roller,
+            i: i + 1,
+            unorderedI: j
+          };
+          if (roller.outside) {
+            obj.roller.touchingBelt = true;
+          }
+          addBackRollers.push(obj);
+        }
+      }
+    }
+
+    for (const info of addBackRollers) {
+      ordered.splice(info.i, 0, info.roller);
+      unordered.splice(info.unorderedI, 1);
+    }
+    return {
+      ordered: ordered,
+      unordered: unordered
+    };
   }
 
-  var beltAnimation = null;
-  function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+  function recalcRollerLists(beltKey, node, newloc) {
+    // same stuff as drawBelt()
+    const beltData = myDiagram.model.findNodeDataForKey(beltKey);
 
+    // get roller order
+    let rollers = rollersLists[beltKey].ordered.slice();
+    let unorderedRollers = rollersLists[beltKey].unordered.slice();
+
+    // have to update all roller locations based on diagram location
+    rollers = updateRollerLocations(rollers, beltData.guides, node, newloc);
+    unorderedRollers = updateRollerLocations(
+      unorderedRollers,
+      beltData.guides,
+      node,
+      newloc
+    );
+
+    rollers = considerAddingUnorderedRollersBack(rollers, unorderedRollers).ordered;
+    rollers = computeContacts(rollers);
+    const obj = deleteRollersNotTouching(rollers, beltKey);
+    rollers = obj.ordered;
+    unorderedRollers = [...unorderedRollers, ...obj.unordered];
+    rollers = computeContacts(rollers);
+    return {
+      ordered: rollers,
+      unordered: unorderedRollers
+    };
+  }
+
+  function areOverlappingLines(rollers) {
+    // make allLines list
+    const allLines = [];
+    for (let i = 0; i < rollers.length; i++) {
+      allLines.push([rollers[i].from, rollers[(i + 1) % rollers.length].to]);
+    }
+
+    const rollersToAdd = [];
+
+    // for EVERY line, check if it crosses another line
+    for (const line of allLines) {
+      for (const line2 of allLines) {
+        // skip if it's the same line
+        if (line === line2) continue;
+
+        if (segmentsIntersect(line, line2)) {
+          return true;
+        }
+      }
+
+      // also check if it crosses a circle
+      for (let i = 0; i < rollers.length; i++) {
+        const roller = rollers[i];
+        if (segmentFullyCrossesCircle(roller, line)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function computeUpdatedRollersLists(node, newloc, beltKeys) {
+    const newRollersLists = {};
+    for (const beltKey of beltKeys) {
+      newRollersLists[beltKey] = recalcRollerLists(beltKey, node, newloc);
+    }
+
+    return newRollersLists;
+  }
+
+
+
+  function moveNode(node, newRollersLists, beltKeys) {
+    for (beltKey of beltKeys) {
+      beltGeom(newRollersLists[beltKey].ordered, beltKey);
+      rollersLists[beltKey] = newRollersLists[beltKey];
+    }
+  }
+
+  function drawBelt(beltKey) {
+    const { ordered, unordered } = recalcRollerLists(beltKey);
+    beltGeom(ordered, beltKey);
+    rollersLists[beltKey].ordered = {
+      ordered: ordered,
+      unordered: unordered
+    };
+  }
+
+  function rollerDragComputation(node, newloc, snaploc) {
+    // don't allow rollers or drums to overlap each other
+    let oldloc = node.location;
+
+    // prevents rollers from jumping around when dragged where they're not supposed to be
+    // this is what makes moving rollers slower though
+    newloc = clampDistance(newloc, oldloc);
+
+    const beltKeys = getNodesBeltKeys(node);
+    const newRollersLists = computeUpdatedRollersLists(node, newloc, beltKeys);
+    if (!isNodeMoveAllowed(node, newloc, beltKeys)) {
+      return oldloc;
+    } else {
+      moveNode(node, newRollersLists, beltKeys);
+    }
+
+    myDiagram.updateAllTargetBindings();
+
+    // rounds so we only have integer locations
+    return new go.Point(Math.round(newloc.x), Math.round(newloc.y));
+  }
+
+  function isNodeMoveAllowed(node, newloc, beltKeys) {
+    if (areRollersOverlapping(node, newloc)) return false;
+    for (const beltKey of beltKeys) {
+      let { ordered, unordered } = recalcRollerLists(beltKey, node, newloc);
+      if (areOverlappingLines(ordered)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  // =================== INIT ===================
+
+  function startAnimation() {
     // Animate the flow in the pipes
-    if (beltAnimation) beltAnimation.stop();
-    var animation = new go.Animation();
+    let animation = new go.Animation();
     animation.easing = go.Animation.EaseLinear;
+    animation.duration = 1000; // 1 second instead of default 600 milliseconds
     myDiagram.nodes.each((node) => {
       if (node.category !== 'Belt') return;
-      animation.add(node.findObject('BELT'), 'strokeDashOffset', 36, 0);
+      const belt = node.findObject('BELT');
+      // animate the strokeDashOffset from 36 to 0 create the illusion of a moving belt
+      animation.add(belt, 'strokeDashOffset', 36, 0);
     });
     // Run indefinitely
     animation.runCount = Infinity;
     animation.start();
-    beltAnimation = animation;
+
+    const beltKeys = getAllBeltKeys();
+    orderRollers(beltKeys);
+    drawAllInitialBelts(beltKeys);
   }
-  window.addEventListener('DOMContentLoaded', init);
+
+  function init() {
+    // initialize the GoJS Diagram
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'undoManager.isEnabled': true
+    });
+
+    myDiagram.nodeTemplateMap.add('Roller', rollerTemplate);
+    myDiagram.nodeTemplateMap.add('Belt', beltTemplate);
+
+    myDiagram.model = new go.GraphLinksModel(modelTemplate);
+
+    startAnimation();
+    save(); // initial model appears in the textarea
+  }
+  document.addEventListener('DOMContentLoaded', init);
+
+  // =================== SAVE AND LOAD ===================
+
+  function save() {
+    myDiagram.startTransaction('save');
+    // save it in the order it currently is in
+    for (let beltKey in rollersLists) {
+      const guides = [];
+      for (let roller of [
+        ...rollersLists[beltKey].ordered,
+        ...rollersLists[beltKey].unordered
+      ]) {
+        const obj = { k: roller.key };
+        if (roller.outside) {
+          obj.outside = true;
+        }
+        if (roller.touchingBelt) {
+          obj.touchingBelt = true;
+        }
+        guides.push(obj);
+      }
+      const beltNode = myDiagram.model.findNodeDataForKey(beltKey);
+      myDiagram.model.setDataProperty(beltNode, 'guides', guides);
+    }
+    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
+    myDiagram.isModified = false;
+    myDiagram.commitTransaction('save');
+  }
+
+  function load() {
+    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
+
+    for (const data of myDiagram.model.nodeDataArray) {
+      if (!data.diameter && data.category === 'Roller') {
+        myDiagram.model.setDataProperty(data, 'diameter', ROLLER_DEFAULT_DIAMETER);
+      }
+    }
+
+    startAnimation();
+  }
 </script>
 
 <div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
+  <div style="display: flex">
+    <div id="myDiagramDiv" style="flex-grow: 1"></div>
+  </div>
   <p>
-    This sample uses <a>Animation</a>s and <a>Node</a>s to give the illusion of
-    a continuous belt. The belt is guided by rollers which it bends around using
-    custom <a>Geometry</a>. It is assumed that the <a>Node</a>s will be arranged in order
-    going clockwise. When the <a>Node</a>s are moved around outside this expected order
-    the belt can behave strangely.
+    This sample uses <a>Animation</a>s and <a>Node</a>s to give the illusion of a
+    continuous conveyor belt. The belt is guided by rollers and bends around them using a
+    custom <a>Geometry</a> built of
+    <code><a href="../api/symbols/PathSegment.html">PathSegments</a></code
+    >. Each <code>PathSegment</code> is either a line segment between two rollers or an
+    arc wrapping around a roller.
+  </p>
+  <p>
+    Rollers can be dragged around, and the belt will update automatically. The program
+    prevents you from moving the rollers in a way that would make:
+  </p>
+  <ul>
+    <li>a belt overlap itself</li>
+    <li>a belt go through its rollers</li>
+    <li>a roller overlap another roller in the same belt</li>
+  </ul>
+  <p>
+    Rollers can be contained to one belt or be part of multiple belts. In the model, the
+    <code>guides</code> list for a belt defines the rollers that can interact with the
+    belt. Some rollers in this sample have a fill color, meaning that they are part of
+    both belts shown. Try it out: you'll see that normal rollers will go right through
+    other belts, but rollers with a fill color will affect both belts.
   </p>
   <button id="SaveButton" onclick="save()">Save</button>
   <button onclick="load()">Load</button>
   Diagram Model saved in JSON format:
-  <textarea id="mySavedModel" style="width: 100%; height: 300px">
-{ "class": "go.GraphLinksModel",
-  "nodeDataArray": [
-{"key":"P111", "category":"Roller", "xy":"450 610"},
-{"key":"P112", "category":"Roller", "xy":"400 660"},
-{"key":"P113", "category":"Roller", "xy":"350 725"},
-{"key":"P114", "category":"Roller", "xy":"305 800"},
-{"key":"P115", "category":"Roller", "xy":"280 705"},
-{"key":"P116", "category":"Roller", "xy":"200 720"},
-{"key":"P117", "category":"Roller", "xy":"200 620"},
-{"key":"D1", "category":"Drum", "xy":"300 540"},
-{"key":"D2", "category":"Drum", "xy":"300 622"},
-{"key":"B1", "category":"Belt", "color":"blue",
- "guides":[ {"k":"D2"},{"k":"P111"},{"k":"P112", "outside":true},{"k":"P113", "outside":true},{"k":"P114"},{"k":"P115", "outside":true},{"k":"P116"},{"k":"P117"} ]},
-{"key":"P211", "category":"Roller", "xy":"100 750"},
-{"key":"P212", "category":"Roller", "xy":"150 800"},
-{"key":"B2", "category":"Belt", "color":"green",
-  "guides":[ {"k":"P211"},{"k":"P116"},{"k":"P212"} ]}
- ],
-  "linkDataArray": []}
-  </textarea>
+  <textarea id="mySavedModel" style="width: 100%; height: 300px"> </textarea>
 </div>
-
           
         </div>
         <!-- * * * * * * * * * * * * * -->

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -121,8 +123,8 @@
           
             
             
-
-    <script id="code">
+  
+  <script id="code">
     function init() {
 
       myDiagram = new go.Diagram('myDiagramDiv', {
@@ -136,9 +138,9 @@
 
       // when the document is modified, add a "*" to the title and enable the "Save" button
       myDiagram.addDiagramListener('Modified', e => {
-        var button = document.getElementById('SaveButton');
+        const button = document.getElementById('SaveButton');
         if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf('*');
+        const idx = document.title.indexOf('*');
         if (myDiagram.isModified) {
           if (idx < 0) document.title += '*';
         } else {
@@ -162,11 +164,11 @@
               alignment: go.Spot.Center
             }),
             new go.TextBlock({
-              font: 'bold 16px sans-serif',
-              alignment: go.Spot.Center,
-              wrap: go.Wrap.Fit,
-              editable: true
-            })
+                font: 'bold 16px sans-serif',
+                alignment: go.Spot.Center,
+                wrap: go.Wrap.Fit,
+                editable: true
+              })
               .bindTwoWay('text')
           )
       );
@@ -174,9 +176,9 @@
       // define the transition Node template.
       myDiagram.nodeTemplateMap.add('transition',
         new go.Node('Horizontal', {
-          locationSpot: go.Spot.Center,
-          locationObjectName: 'BAR'
-        })
+            locationSpot: go.Spot.Center,
+            locationObjectName: 'BAR'
+          })
           .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
           .add(
             new go.Shape('Rectangle', {
@@ -189,9 +191,9 @@
               toSpot: go.Spot.TopSide
             }),
             new go.TextBlock({
-              editable: true,
-              margin: 3
-            })
+                editable: true,
+                margin: 3
+              })
               .bindTwoWay('text')
           )
       );
@@ -215,10 +217,11 @@
       );
 
       // define the Link template
-      myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal })
-        .add(
-          new go.Shape({ stroke: 'black', strokeWidth: 2 })
-        );
+      myDiagram.linkTemplate =
+        new go.Link({ routing: go.Routing.Orthogonal })
+          .add(
+            new go.Shape({ stroke: 'black', strokeWidth: 2 })
+          );
 
       // create the graph by reading the JSON data saved in "mySavedModel" textarea element
       load();

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,13 +131,15 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        // two elements: the Shape will go around the TextBlock
-        new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }).bind('text') // some room around the text, bold font // TextBlock.text is bound to Node.data.text
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          // two elements: the Shape will go around the TextBlock
+          new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+            .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+          new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text, bold font
+            .bind('text') // TextBlock.text is bound to Node.data.text
+        );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -187,6 +191,7 @@
   function makeBlob() {
     var blob = myDiagram.makeImageData({ background: 'white', returnType: 'blob', callback: myCallback });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

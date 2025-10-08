@@ -281,7 +281,7 @@ const GeneratorEllipseSpot2 = new go.Spot(0.844, 0.844);
 
 const KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
 
-// OPTIONAL figures, not predefined in the v3.0 library:
+// OPTIONAL figures, not predefined in the library:
 
 // ChamferedRectangle
 // parameter1 controls the length of the side of the triangle that is cut off from a corner.
@@ -3385,7 +3385,7 @@ go.Shape.defineFigureGenerator('Cylinder1', (shape, w, h) => {
   );
 
   geo.spot1 = new go.Spot(0, 0, 0, 2 * param1);
-  geo.spot2 = new go.Spot(1, 1);
+  geo.spot2 = go.Spot.BottomRight;
   return geo;
 });
 
@@ -3472,7 +3472,7 @@ go.Shape.defineFigureGenerator('Cylinder2', (shape, w, h) => {
     )
   );
 
-  geo.spot1 = new go.Spot(0, 0);
+  geo.spot1 = go.Spot.TopLeft;
   geo.spot2 = new go.Spot(1, 1, 0, -2 * param1);
   return geo;
 });
@@ -3561,7 +3561,7 @@ go.Shape.defineFigureGenerator('Cylinder3', (shape, w, h) => {
   );
 
   geo.spot1 = new go.Spot(0, 0, 2 * param1, 0);
-  geo.spot2 = new go.Spot(1, 1);
+  geo.spot2 = go.Spot.BottomRight;
   return geo;
 });
 
@@ -3648,7 +3648,7 @@ go.Shape.defineFigureGenerator('Cylinder4', (shape, w, h) => {
     )
   );
 
-  geo.spot1 = new go.Spot(0, 0);
+  geo.spot1 = go.Spot.TopLeft;
   geo.spot2 = new go.Spot(1, 1, -2 * param1, 0);
   return geo;
 });
@@ -6960,7 +6960,7 @@ go.Shape.defineFigureGenerator('Package', (shape, w, h) => {
   fig2.add(new go.PathSegment(go.SegmentType.Line, 0.6 * w, 0));
   fig2.add(new go.PathSegment(go.SegmentType.Line, 0.65 * w, 0.15 * h).close());
   geo.spot1 = new go.Spot(0, 0.1);
-  geo.spot2 = new go.Spot(1, 1);
+  geo.spot2 = go.Spot.BottomRight;
   return geo;
 });
 

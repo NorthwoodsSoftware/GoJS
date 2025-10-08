@@ -86,12 +86,13 @@ export function init() {
 
   go.Shape.defineFigureGenerator('Annotation', function (shape, w, h) {
     const len = Math.min(w, 10);
-    return new go.Geometry().add(
-      new go.PathFigure(len, 0)
-        .add(new go.PathSegment(go.SegmentType.Line, 0, 0))
-        .add(new go.PathSegment(go.SegmentType.Line, 0, h))
-        .add(new go.PathSegment(go.SegmentType.Line, len, h))
-    );
+    return new go.Geometry()
+      .add(
+        new go.PathFigure(len, 0)
+          .add(new go.PathSegment(go.SegmentType.Line, 0, 0))
+          .add(new go.PathSegment(go.SegmentType.Line, 0, h))
+          .add(new go.PathSegment(go.SegmentType.Line, len, h))
+      );
   });
 
   const gearStr =
@@ -957,7 +958,7 @@ export function init() {
       },
       selectionChanged: assignGroupLayer,
       computesBoundsAfterDrag: true,
-      memberValidation: function (group: go.Group, part: go.Part) {
+      memberValidation: function (group: go.Group | null, part: go.Part) {
         return (
           (!(part instanceof go.Group) && part.category !== 'Phase') ||
           (part.category !== 'Pool' && part.category !== 'Lane')
@@ -1041,7 +1042,7 @@ export function init() {
 
   // hide links between lanes when either lane is collapsed
   function updateCrossLaneLinks(group: go.Group) {
-    group.findExternalLinksConnected().each((l) => {
+    group.findExternalLinksConnected().each(l => {
       l.visible =
         l.fromNode !== null && l.fromNode.isVisible() && l.toNode !== null && l.toNode.isVisible();
     });
@@ -1108,9 +1109,8 @@ export function init() {
         // don't allow drag-and-dropping a mix of regular Nodes and Groups
         if (
           !e.diagram.selection.any(
-            (n) =>
-              (n instanceof go.Group && n.category !== 'subprocess') ||
-              n.category === 'privateProcess'
+            n => (n instanceof go.Group && n.category !== 'subprocess') ||
+                 n.category === 'privateProcess'
           )
         ) {
           const ok = grp.addMembers(grp.diagram.selection, true);
@@ -2190,7 +2190,7 @@ class LaneResizingTool extends go.ResizingTool {
     if (!(lane instanceof go.Group)) return go.ResizingTool.prototype.resize.call(this, newr);
     if (lane instanceof go.Group && lane.containingGroup !== null && this.isLengthening()) {
       // changing the length of all of the lanes
-      lane.containingGroup.memberParts.each((l) => {
+      lane.containingGroup.memberParts.each(l => {
         if (!(l instanceof go.Group)) return;
         const shape = l.resizeObject;
         if (shape !== null) {

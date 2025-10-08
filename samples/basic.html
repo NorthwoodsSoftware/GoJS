@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -141,75 +143,69 @@
 
     // To simplify this code we define a function for creating a context menu button:
     function makeButton(text, action, visiblePredicate) {
-      let button = go.GraphObject.build('ContextMenuButton')
-        .add(
-          new go.TextBlock(text, { click: action })
-        );
+      const button =
+        go.GraphObject.build('ContextMenuButton')
+          .add(new go.TextBlock(text, { click: action }));
       // don't bother with binding GraphObject.visible if there's no predicate
-      if (visiblePredicate)
-        button.bindObject('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false));
+      if (visiblePredicate) {
+        button.bindObject('visible', '', (o, e) => o.diagram ? visiblePredicate(o, e) : false);
+      }
       return button;
     }
 
     // a context menu is an Adornment with a bunch of buttons in them
-    var partContextMenu = go.GraphObject.build('ContextMenu')
-      .add(
-        makeButton('Properties', (e, obj) => {
-          // OBJ is this Button
-          var contextmenu = obj.part; // the Button is in the context menu Adornment
-          var part = contextmenu.adornedPart; // the adornedPart is the Part that the context menu adorns
-          // now can do something with PART, or with its data, or with the Adornment (the context menu)
-          if (part instanceof go.Link) alert(linkInfo(part.data));
-          else if (part instanceof go.Group) alert(groupInfo(contextmenu));
-          else alert(nodeInfo(part.data));
-        }),
-        makeButton(
-          'Cut',
-          (e, obj) => e.diagram.commandHandler.cutSelection(),
-          (o) => o.diagram.commandHandler.canCutSelection()
-        ),
-        makeButton(
-          'Copy',
-          (e, obj) => e.diagram.commandHandler.copySelection(),
-          (o) => o.diagram.commandHandler.canCopySelection()
-        ),
-        makeButton(
-          'Paste',
-          (e, obj) =>
-            e.diagram.commandHandler.pasteSelection(
-              e.diagram.toolManager.contextMenuTool.mouseDownPoint
-            ),
-          (o) =>
-            o.diagram.commandHandler.canPasteSelection(
-              o.diagram.toolManager.contextMenuTool.mouseDownPoint
-            )
-        ),
-        makeButton(
-          'Delete',
-          (e, obj) => e.diagram.commandHandler.deleteSelection(),
-          (o) => o.diagram.commandHandler.canDeleteSelection()
-        ),
-        makeButton(
-          'Undo',
-          (e, obj) => e.diagram.commandHandler.undo(),
-          (o) => o.diagram.commandHandler.canUndo()
-        ),
-        makeButton(
-          'Redo',
-          (e, obj) => e.diagram.commandHandler.redo(),
-          (o) => o.diagram.commandHandler.canRedo()
-        ),
-        makeButton(
-          'Group',
-          (e, obj) => e.diagram.commandHandler.groupSelection(),
-          (o) => o.diagram.commandHandler.canGroupSelection()
-        ),
-        makeButton(
-          'Ungroup',
-          (e, obj) => e.diagram.commandHandler.ungroupSelection(),
-          (o) => o.diagram.commandHandler.canUngroupSelection()
-        )
-      );
+    var partContextMenu =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          makeButton('Properties',
+            (e, obj) => {
+              // OBJ is this Button
+              var contextmenu = obj.part; // the Button is in the context menu Adornment
+              var part = contextmenu.adornedPart; // the adornedPart is the Part that the context menu adorns
+              // now can do something with PART, or with its data, or with the Adornment (the context menu)
+              if (part instanceof go.Link) alert(linkInfo(part.data));
+              else if (part instanceof go.Group) alert(groupInfo(contextmenu));
+              else alert(nodeInfo(part.data));
+            }),
+          makeButton('Cut',
+            (e, obj) => e.diagram.commandHandler.cutSelection(),
+            o => o.diagram.commandHandler.canCutSelection()
+          ),
+          makeButton('Copy',
+            (e, obj) => e.diagram.commandHandler.copySelection(),
+            o => o.diagram.commandHandler.canCopySelection()
+          ),
+          makeButton('Paste',
+            (e, obj) =>
+              e.diagram.commandHandler.pasteSelection(
+                e.diagram.toolManager.contextMenuTool.mouseDownPoint
+              ),
+            o =>
+              o.diagram.commandHandler.canPasteSelection(
+                o.diagram.toolManager.contextMenuTool.mouseDownPoint
+              )
+          ),
+          makeButton('Delete',
+            (e, obj) => e.diagram.commandHandler.deleteSelection(),
+            o => o.diagram.commandHandler.canDeleteSelection()
+          ),
+          makeButton('Undo',
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()
+          ),
+          makeButton('Redo',
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo()
+          ),
+          makeButton('Group',
+            (e, obj) => e.diagram.commandHandler.groupSelection(),
+            o => o.diagram.commandHandler.canGroupSelection()
+          ),
+          makeButton('Ungroup',
+            (e, obj) => e.diagram.commandHandler.ungroupSelection(),
+            o => o.diagram.commandHandler.canUngroupSelection()
+          )
+        );
 
     function nodeInfo(d) {
       // Tooltip info for a node data object
@@ -223,37 +219,41 @@
     // whose fill color is bound to the node data.
     // The user can drag a node by dragging its TextBlock label.
     // Dragging from the Shape will start drawing a new link.
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      // this tooltip Adornment is shared by all nodes
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(
-          new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling nodeInfo(data)
-            .bind('text', '', nodeInfo)
-        ),
-      // this context menu Adornment is shared by all nodes
-      contextMenu: partContextMenu
-    })
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+        locationSpot: go.Spot.Center,
+        // this tooltip Adornment is shared by all nodes
+        toolTip:
+          go.GraphObject.build('ToolTip')
+            .add(
+              new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling nodeInfo(data)
+                .bind('text', '', nodeInfo)
+            ),
+        // this context menu Adornment is shared by all nodes
+        contextMenu: partContextMenu
+      })
       .add(
         new go.Shape('RoundedRectangle', {
-          fill: 'white', // the default fill, if there is no data bound value
-          portId: '',
-          cursor: 'pointer', // the Shape is the port, not the whole Node
-          // allow all kinds of links from and to this port
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: true,
-          toLinkableDuplicates: true
-        }).bind('fill', 'color'),
+            fill: 'white', // the default fill, if there is no data bound value
+            portId: '',
+            cursor: 'pointer', // the Shape is the port, not the whole Node
+            // allow all kinds of links from and to this port
+            fromLinkable: true,
+            fromLinkableSelfNode: true,
+            fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true,
+            toLinkableDuplicates: true
+          })
+          .bind('fill', 'color'),
         new go.TextBlock({
-          font: 'bold 14px sans-serif',
-          stroke: '#333',
-          margin: 6, // make some extra space for the shape around the text
-          isMultiline: false, // don't allow newlines in text
-          editable: true // allow in-place editing by user
-        }).bindTwoWay('text', 'text')
+            font: 'bold 14px sans-serif',
+            stroke: '#333',
+            margin: 6, // make some extra space for the shape around the text
+            isMultiline: false, // don't allow newlines in text
+            editable: true // allow in-place editing by user
+          })
+          .bindTwoWay('text', 'text')
       );
 
     // Define the appearance and behavior for Links:
@@ -264,23 +264,27 @@
     }
 
     // The link shape and arrowhead have their stroke brush data bound to the "color" property
-    myDiagram.linkTemplate = new go.Link({
-      toShortLength: 3,
-      relinkableFrom: true,
-      relinkableTo: true,
-      // this tooltip Adornment is shared by all links
-      toolTip: go.GraphObject.build('ToolTip')
+    myDiagram.linkTemplate =
+      new go.Link({
+          toShortLength: 3,
+          relinkableFrom: true,
+          relinkableTo: true,
+          // this tooltip Adornment is shared by all links
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling linkInfo(data)
+                  .bind('text', '', linkInfo)
+              ),
+          // the same context menu Adornment is shared by all links
+          contextMenu: partContextMenu
+        }) // allow the user to relink existing links
         .add(
-          new go.TextBlock({ margin: 4 }) // the tooltip shows the result of calling linkInfo(data)
-            .bind('text', '', linkInfo)
-        ),
-      // the same context menu Adornment is shared by all links
-      contextMenu: partContextMenu
-    }) // allow the user to relink existing links
-      .add(
-        new go.Shape({ strokeWidth: 2 }).bind('stroke', 'color'),
-        new go.Shape({ toArrow: 'Standard', stroke: null }).bind('fill', 'color')
-      );
+          new go.Shape({ strokeWidth: 2 })
+            .bind('stroke', 'color'),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+            .bind('fill', 'color')
+        );
 
     // Define the appearance and behavior for Groups:
 
@@ -289,7 +293,7 @@
       var g = adornment.adornedPart; // get the Group that the tooltip adorns
       var mems = g.memberParts.count;
       var links = 0;
-      g.memberParts.each((part) => {
+      g.memberParts.each(part => {
         if (part instanceof go.Link) links++;
       });
       return (
@@ -307,47 +311,50 @@
 
     // Groups consist of a title in the color given by the group node data
     // above a translucent gray rectangle surrounding the member parts
-    myDiagram.groupTemplate = new go.Group('Vertical', {
-      selectionObjectName: 'PANEL', // selection handle goes around shape, not label
-      ungroupable: true, // enable Ctrl-Shift-G to ungroup a selected Group
-      // this tooltip Adornment is shared by all groups
-      toolTip: go.GraphObject.build('ToolTip')
+    myDiagram.groupTemplate =
+      new go.Group('Vertical', {
+          selectionObjectName: 'PANEL', // selection handle goes around shape, not label
+          ungroupable: true, // enable Ctrl-Shift-G to ungroup a selected Group
+          // this tooltip Adornment is shared by all groups
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 })
+                  // bind to tooltip, not to Group.data, to allow access to Group properties
+                  .bindObject('text', '', groupInfo)
+              ),
+          // the same context menu Adornment is shared by all groups
+          contextMenu: partContextMenu
+        })
         .add(
-          new go.TextBlock({ margin: 4 })
-            // bind to tooltip, not to Group.data, to allow access to Group properties
-            .bindObject('text', '', groupInfo)
-        ),
-      // the same context menu Adornment is shared by all groups
-      contextMenu: partContextMenu
-    }).add(
-      new go.TextBlock({
-        //alignment: go.Spot.Right,
-        font: 'bold 19px sans-serif',
-        isMultiline: false, // don't allow newlines in text
-        editable: true // allow in-place editing by user
-      })
-        .bindTwoWay('text', 'text')
-        .bind('stroke', 'color'),
-      new go.Panel('Auto', { name: 'PANEL' })
-        .add(
-          new go.Shape('Rectangle', {
-            // the rectangular shape around the members
-            fill: 'rgba(128,128,128,0.2)',
-            stroke: 'gray',
-            strokeWidth: 3,
-            portId: '',
-            cursor: 'pointer', // the Shape is the port, not the whole Node
-            // allow all kinds of links from and to this port
-            fromLinkable: true,
-            fromLinkableSelfNode: true,
-            fromLinkableDuplicates: true,
-            toLinkable: true,
-            toLinkableSelfNode: true,
-            toLinkableDuplicates: true
-          }),
-          new go.Placeholder({ margin: 10, background: 'transparent' })
-        ) // represents where the members are
-    );
+          new go.TextBlock({
+              //alignment: go.Spot.Right,
+              font: 'bold 19px sans-serif',
+              isMultiline: false, // don't allow newlines in text
+              editable: true // allow in-place editing by user
+            })
+            .bindTwoWay('text', 'text')
+            .bind('stroke', 'color'),
+          new go.Panel('Auto', { name: 'PANEL' })
+            .add(
+              new go.Shape('Rectangle', {
+                // the rectangular shape around the members
+                fill: 'rgba(128,128,128,0.2)',
+                stroke: 'gray',
+                strokeWidth: 3,
+                portId: '',
+                cursor: 'pointer', // the Shape is the port, not the whole Node
+                // allow all kinds of links from and to this port
+                fromLinkable: true,
+                fromLinkableSelfNode: true,
+                fromLinkableDuplicates: true,
+                toLinkable: true,
+                toLinkableSelfNode: true,
+                toLinkableDuplicates: true
+              }),
+              new go.Placeholder({ margin: 10, background: 'transparent' })
+            ) // represents where the members are
+        );
 
     // Define the behavior for the Diagram background:
 
@@ -359,46 +366,46 @@
     }
 
     // provide a tooltip for the background of the Diagram, when not over any Part
-    myDiagram.toolTip = go.GraphObject.build('ToolTip')
-      .add(
-        new go.TextBlock({ margin: 4 }).bind('text', '', diagramInfo)
-      );
+    myDiagram.toolTip =
+      go.GraphObject.build('ToolTip')
+        .add(
+          new go.TextBlock({ margin: 4 })
+            .bind('text', '', diagramInfo)
+        );
 
     // provide a context menu for the background of the Diagram, when not over any Part
-    myDiagram.contextMenu = go.GraphObject.build('ContextMenu')
-      .add(
-        makeButton(
-          'Paste',
-          (e, obj) =>
-            e.diagram.commandHandler.pasteSelection(
-              e.diagram.toolManager.contextMenuTool.mouseDownPoint
-            ),
-          (o) =>
-            o.diagram.commandHandler.canPasteSelection(
-              o.diagram.toolManager.contextMenuTool.mouseDownPoint
-            )
-        ),
-        makeButton(
-          'Undo',
-          (e, obj) => e.diagram.commandHandler.undo(),
-          (o) => o.diagram.commandHandler.canUndo()
-        ),
-        makeButton(
-          'Redo',
-          (e, obj) => e.diagram.commandHandler.redo(),
-          (o) => o.diagram.commandHandler.canRedo()
-        )
-      );
+    myDiagram.contextMenu =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          makeButton('Paste',
+            (e, obj) =>
+              e.diagram.commandHandler.pasteSelection(
+                e.diagram.toolManager.contextMenuTool.mouseDownPoint
+              ),
+            o =>
+              o.diagram.commandHandler.canPasteSelection(
+                o.diagram.toolManager.contextMenuTool.mouseDownPoint
+              )
+          ),
+          makeButton('Undo',
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()
+          ),
+          makeButton('Redo',
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo()
+          )
+        );
 
     // Create the Diagram's Model:
-    var nodeDataArray = [
+    const nodeDataArray = [
       { key: 1, text: 'Alpha', color: 'lightblue' },
       { key: 2, text: 'Beta', color: 'orange' },
       { key: 3, text: 'Gamma', color: 'lightgreen', group: 5 },
       { key: 4, text: 'Delta', color: 'pink', group: 5 },
       { key: 5, text: 'Epsilon', color: 'green', isGroup: true }
     ];
-    var linkDataArray = [
+    const linkDataArray = [
       { from: 1, to: 2, color: 'blue' },
       { from: 2, to: 2 },
       { from: 3, to: 4, color: 'green' },
@@ -406,6 +413,7 @@
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -496,7 +504,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -538,7 +546,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -547,6 +555,32 @@ More information can be found in the <a href="../intro/buttons.html">GoJS Intro<
 </p>
             <p>
               <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

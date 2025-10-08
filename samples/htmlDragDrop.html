@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -199,9 +201,8 @@
     // Instead of finding every drag target,
     // we can add the event to the document and disregard
     // all elements that are not of class "draggable"
-    document.addEventListener(
-      'dragstart',
-      (event) => {
+    document.addEventListener('dragstart',
+      event => {
         if (event.target.className !== 'draggable') return;
         // Some data must be set to allow drag
         event.dataTransfer.setData('text', event.target.textContent);
@@ -217,9 +218,8 @@
     );
 
     // This event resets styles after a drag has completed (successfully or not)
-    document.addEventListener(
-      'dragend',
-      (event) => {
+    document.addEventListener('dragend',
+      event => {
         // reset the border of the dragged element
         dragged.style.border = '';
         onHighlight(null);
@@ -230,9 +230,8 @@
     // Next, events intended for the drop target - the Diagram div
 
     const div = document.getElementById('myDiagramDiv');
-    div.addEventListener(
-      'dragenter',
-      (event) => {
+    div.addEventListener('dragenter',
+      event => {
         // Here you could also set effects on the Diagram,
         // such as changing the background color to indicate an acceptable drop zone
 
@@ -242,9 +241,8 @@
       false
     );
 
-    div.addEventListener(
-      'dragover',
-      (event) => {
+    div.addEventListener('dragover',
+      event => {
         // We call preventDefault to allow a drop
         // But on divs that already contain an element,
         // we want to disallow dropping
@@ -279,9 +277,8 @@
       false
     );
 
-    div.addEventListener(
-      'dragleave',
-      (event) => {
+    div.addEventListener('dragleave',
+      event => {
         // reset background of potential drop target
         if (event.target.className == 'dropzone') {
           event.target.style.background = '';
@@ -291,9 +288,8 @@
       false
     );
 
-    div.addEventListener(
-      'drop',
-      (event) => {
+    div.addEventListener('drop',
+      event => {
         // prevent default action
         // (open as link for some elements in some browsers)
         event.preventDefault();
@@ -339,8 +335,9 @@
           myDiagram.commitTransaction('new node');
 
           // remove dragged element from its old location, if checkbox is checked
-          if (document.getElementById('removeCheckBox').checked)
+          if (document.getElementById('removeCheckBox').checked) {
             dragged.parentNode.removeChild(dragged);
+          }
         }
 
         // If we were using drag data, we could get it here, ie:
@@ -398,58 +395,60 @@
     });
 
     // define a Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      // on mouse-over, highlight the node
-      mouseDragEnter: (e, node) => (node.isHighlighted = true),
-      mouseDragLeave: (e, node) => (node.isHighlighted = false),
-      // on a mouse-drop add a link from the dropped-upon node to the new node
-      mouseDrop: (e, node) => {
-        const newnode = e.diagram.selection.first();
-        if (!mayConnect(node, newnode)) return;
-        const incoming = newnode.findLinksInto().first();
-        if (incoming) e.diagram.remove(incoming);
-        e.diagram.model.addLinkData({ from: node.key, to: newnode.key });
-      }
-    })
-      .bind('location')
-      .add(
-        new go.Shape('Rectangle', { fill: 'white' })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color')
-          // this binding changes the Shape.fill when Node.isHighlighted changes value
-          .bindObject('fill', 'isHighlighted', (h, shape) => {
-            if (h) return 'red';
-            const c = shape.part.data.color;
-            return c ? c : 'white';
-          }),
-        new go.TextBlock({ margin: 3, font: 'bold 16px sans-serif', width: 140, textAlign: 'center' })
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Center,
+          // on mouse-over, highlight the node
+          mouseDragEnter: (e, node) => (node.isHighlighted = true),
+          mouseDragLeave: (e, node) => (node.isHighlighted = false),
+          // on a mouse-drop add a link from the dropped-upon node to the new node
+          mouseDrop: (e, node) => {
+            const newnode = e.diagram.selection.first();
+            if (!mayConnect(node, newnode)) return;
+            const incoming = newnode.findLinksInto().first();
+            if (incoming) e.diagram.remove(incoming);
+            e.diagram.model.addLinkData({ from: node.key, to: newnode.key });
+          }
+        })
+        .bind('location')
+        .add(
+          new go.Shape('Rectangle', { fill: 'white' })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color')
+            // this binding changes the Shape.fill when Node.isHighlighted changes value
+            .bindObject('fill', 'isHighlighted', (h, shape) => {
+              if (h) return 'red';
+              const c = shape.part.data.color;
+              return c ? c : 'white';
+            }),
+          new go.TextBlock({ margin: 3, font: 'bold 16px sans-serif', width: 140, textAlign: 'center' })
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
 
     // define a Link template
-    myDiagram.linkTemplate = new go.Link({
-      // on mouse-over, highlight the link
-      mouseDragEnter: (e, link) => (link.isHighlighted = true),
-      mouseDragLeave: (e, link) => (link.isHighlighted = false),
-      // on a mouse-drop splice the new node in between the dropped-upon link's fromNode and toNode
-      mouseDrop: (e, link) => {
-        const oldto = link.toNode;
-        const newnode = e.diagram.selection.first();
-        if (!mayConnect(newnode, oldto)) return;
-        if (!mayConnect(link.fromNode, newnode)) return;
-        link.toNode = newnode;
-        e.diagram.model.addLinkData({ from: newnode.key, to: oldto.key });
-      }
-    })
-      .add(
-        // two path Shapes: the transparent one becomes visible during mouse-over
-        new go.Shape({ isPanelMain: true, strokeWidth: 6, stroke: 'transparent' })
-          .bindObject('stroke', 'isHighlighted', (h) => (h ? 'red' : 'transparent')),
-        new go.Shape({ isPanelMain: true, strokeWidth: 1 }),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          // on mouse-over, highlight the link
+          mouseDragEnter: (e, link) => (link.isHighlighted = true),
+          mouseDragLeave: (e, link) => (link.isHighlighted = false),
+          // on a mouse-drop splice the new node in between the dropped-upon link's fromNode and toNode
+          mouseDrop: (e, link) => {
+            const oldto = link.toNode;
+            const newnode = e.diagram.selection.first();
+            if (!mayConnect(newnode, oldto)) return;
+            if (!mayConnect(link.fromNode, newnode)) return;
+            link.toNode = newnode;
+            e.diagram.model.addLinkData({ from: newnode.key, to: oldto.key });
+          }
+        })
+        .add(
+          // two path Shapes: the transparent one becomes visible during mouse-over
+          new go.Shape({ isPanelMain: true, strokeWidth: 6, stroke: 'transparent' })
+            .bindObject('stroke', 'isHighlighted', h => h ? 'red' : 'transparent'),
+          new go.Shape({ isPanelMain: true, strokeWidth: 1 }),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     // Decide whether a link from node1 to node2 may be created by a drop operation
     function mayConnect(node1, node2) {
@@ -466,10 +465,8 @@
       const control = e.meta || e.control;
       const shift = e.shift;
       const k = e.commandKey;
-      if (
-        ((control && k === 'v') || (shift && k === 'Insert')) &&
-        (!diagram.commandHandler.canPasteSelection() || diagram.selection.count === 0)
-      ) {
+      if (((control && k === 'v') || (shift && k === 'Insert')) &&
+          (!diagram.commandHandler.canPasteSelection() || diagram.selection.count === 0)) {
         // Instead of the usual behavior:
         // if (this.canPasteSelection()) this.pasteSelection();
         // let the event bubble up the DOM:
@@ -480,7 +477,7 @@
     };
 
     // handle inserting a new node using text that is in the system clipboard
-    document.addEventListener('paste', (e) => {
+    document.addEventListener('paste', e => {
       const paste = e.clipboardData.getData('text');
       // Decide if the clipboard should be pasted, or if we should let GoJS paste
       // This sample pastes from the clipboard if it contains any text at all,
@@ -555,6 +552,32 @@ More information can be found in the <a href="../intro/HTMLinteraction.html">GoJ
 </p>
             <p>
               <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

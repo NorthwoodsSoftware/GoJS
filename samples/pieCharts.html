@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,24 +127,29 @@
 <script id="code">
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
-      nodeTemplate: new go.Node('Vertical')
-        .add(
-          new go.Panel({
-            itemTemplate: new go.Panel({
-              toolTip: go.GraphObject.build('ToolTip')
-                .add(
-                  new go.TextBlock({ margin: 4 }).bind('text', '', (data) => data.color + ': ' + data.start + ' to ' + (data.start + data.sweep))
-                )
-            })
-              .add(
-                new go.Shape({ fill: 'lightgreen', isGeometryPositioned: true })
-                  .bind('fill', 'color')
-                  .bind('geometry', '', makeGeo)
-              )
-          })
-            .bind('itemArray', 'slices'),
-          new go.TextBlock().bind('text')
-        ),
+      nodeTemplate:
+        new go.Node('Vertical')
+          .add(
+            new go.Panel({
+                itemTemplate:
+                  new go.Panel({
+                      toolTip:
+                        go.GraphObject.build('ToolTip')
+                          .add(
+                            new go.TextBlock({ margin: 4 })
+                              .bind('text', '', data => data.color + ': ' + data.start + ' to ' + (data.start + data.sweep))
+                          )
+                    })
+                    .add(
+                      new go.Shape({ fill: 'lightgreen', isGeometryPositioned: true })
+                        .bind('fill', 'color')
+                        .bind('geometry', '', makeGeo)
+                    )
+              })
+              .bind('itemArray', 'slices'),
+            new go.TextBlock()
+              .bind('text')
+          ),
       model: new go.GraphLinksModel({
         copiesArrays: true,
         copiesArrayObjects: true,
@@ -174,23 +181,25 @@
     });
 
     function makeGeo(data) {
-      return new go.Geometry().add(
-        new go.PathFigure(50, 50) // start point
-          .add(
-            new go.PathSegment(
-              go.SegmentType.Arc,
-              data.start,
-              data.sweep, // angles
-              50,
-              50, // center
-              50,
-              50
-            ) // radius
-              .close()
-          )
-      );
+      return new go.Geometry()
+        .add(
+          new go.PathFigure(50, 50) // start point
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                data.start,
+                data.sweep, // angles
+                50,
+                50, // center
+                50,
+                50
+              ) // radius
+                .close()
+            )
+        );
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -241,7 +250,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

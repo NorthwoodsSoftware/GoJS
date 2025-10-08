@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -171,40 +173,41 @@
       return builtIn.indexOf(shapeName) >= 0;
     }
 
-    myDiagram.nodeTemplate = new go.Node('Vertical', {
-      mouseEnter: (e, node) => (node.isHighlighted = true),
-      mouseLeave: (e, node) => (node.isHighlighted = false),
-      locationSpot: go.Spot.Center, // the location is the center of the Shape
-      locationObjectName: 'SHAPE',
-      selectionAdorned: false, // no selection handle when selected
-      resizable: true,
-      resizeObjectName: 'SHAPE', // user can resize the Shape
-      rotatable: true,
-      rotateObjectName: 'SHAPE', // rotate the Shape without rotating the label
-      // don't re-layout when node changes size
-      layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized
-    })
-      .bindObject('layerName', 'isHighlighted', (h) => (h ? 'Foreground' : ''))
-      .add(
-        new go.Shape({
-          name: 'SHAPE', // named so that the above properties can refer to this GraphObject
-          width: 70,
-          height: 70,
-          strokeWidth: 3
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical', {
+          mouseEnter: (e, node) => (node.isHighlighted = true),
+          mouseLeave: (e, node) => (node.isHighlighted = false),
+          locationSpot: go.Spot.Center, // the location is the center of the Shape
+          locationObjectName: 'SHAPE',
+          selectionAdorned: false, // no selection handle when selected
+          resizable: true,
+          resizeObjectName: 'SHAPE', // user can resize the Shape
+          rotatable: true,
+          rotateObjectName: 'SHAPE', // rotate the Shape without rotating the label
+          // don't re-layout when node changes size
+          layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized
         })
-          // Color the built in shapes green, and the figures.js shapes Pink
-          .bind('fill', 'key', (k) => (isBuiltIn(k) ? 'palegreen' : 'lightpink'))
-          .bind('stroke', 'key', (k) => (isBuiltIn(k) ? 'darkgreen' : '#C2185B'))
-          // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
-          .bind('figure', 'key'),
-        new go.TextBlock({ // the label
-          margin: 4,
-          font: 'bold 18px sans-serif',
-          background: 'white'
-        })
-          .bindObject('visible', 'isHighlighted')
-          .bind('text', 'key')
-      );
+        .bindObject('layerName', 'isHighlighted', h => h ? 'Foreground' : '')
+        .add(
+          new go.Shape({
+              name: 'SHAPE', // named so that the above properties can refer to this GraphObject
+              width: 70,
+              height: 70,
+              strokeWidth: 3
+            })
+            // Color the built in shapes green, and the figures.js shapes Pink
+            .bind('fill', 'key', k => isBuiltIn(k) ? 'palegreen' : 'lightpink')
+            .bind('stroke', 'key', k => isBuiltIn(k) ? 'darkgreen' : '#C2185B')
+            // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
+            .bind('figure', 'key'),
+          new go.TextBlock({ // the label
+              margin: 4,
+              font: 'bold 18px sans-serif',
+              background: 'white'
+            })
+            .bindObject('visible', 'isHighlighted')
+            .bind('text', 'key')
+        );
 
     // initialize the model
     myDiagram.model.nodeDataArray = go.Shape.getFigureGenerators().toArray();
@@ -213,26 +216,25 @@
       layout: new go.GridLayout({ sorting: go.GridSorting.Forwards }) // use a GridLayout
     });
 
-    myDiagram2.nodeTemplate = new go.Node('Vertical')
-      .add(
-        new go.Shape('RoundedRectangle', {
-          width: 50,
-          height: 50,
-          strokeWidth: 2,
-          fill: 'palegreen',
-          stroke: 'darkgreen',
-          parameter1: 30
-        })
-          .bind('parameter1')
-          .bind('parameter2')
-      )
-      .add(
-        new go.TextBlock({ margin: 12, font: 'bold 12px monospace' }).bind(
-          'text',
-          'text',
-          (val) => 'parameter2: ' + val
+    myDiagram2.nodeTemplate =
+      new go.Node('Vertical')
+        .add(
+          new go.Shape('RoundedRectangle', {
+              width: 50,
+              height: 50,
+              strokeWidth: 2,
+              fill: 'palegreen',
+              stroke: 'darkgreen',
+              parameter1: 30
+            })
+            .bind('parameter1')
+            .bind('parameter2')
         )
-      );
+        .add(
+          new go.TextBlock({ margin: 12, font: 'bold 12px monospace' })
+            .bind('text', 'text', val => 'parameter2: ' + val)
+        );
+
     myDiagram2.model.nodeDataArray = [
       { parameter2: 1 | 2, text: '1 | 2' },
       { parameter2: 4 | 8, text: '4 | 8' },
@@ -240,6 +242,7 @@
       { parameter2: 1 | 8, text: '1 | 8' }
     ];
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

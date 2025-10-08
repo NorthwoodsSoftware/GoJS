@@ -110,6 +110,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -148,22 +150,22 @@
   var myDiagram;
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
-        'animationManager.isEnabled': true,
-        layout: new PackedLayout(),
-        scale: 0.75,
-        isReadOnly: true
-      }
-    );
+      'animationManager.isEnabled': true,
+      layout: new PackedLayout(),
+      scale: 0.75,
+      isReadOnly: true
+    });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-    .add(
-      new go.Shape({ strokeWidth: 0 })
-        .bind('figure')
-        .bind('width')
-        .bind('height')
-        .bind('fill')
-    )
-    .bind('visible');
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bind('visible')
+        .add(
+          new go.Shape({ strokeWidth: 0 })
+            .bind('figure')
+            .bind('width')
+            .bind('height')
+            .bind('fill')
+        );
 
     myDiagram.model = new go.GraphLinksModel([]);
 
@@ -172,7 +174,7 @@
     layout();
   }
 
-  function layout(change = false){
+  function layout(change = false) { 
     myDiagram.startTransaction('change Layout');
     var lay = myDiagram.layout;
     var d = document;
@@ -209,9 +211,9 @@
     if (sortOrder != d.getElementById('sortOrder').name) code += `\n  sortOrder: go.SortOrder.${sortOrder},`
 
     var sortMode = d.getElementById('sortMode').value.split(/\s+/).join('');
-    if(sortMode === 'None') lay.sortMode = SortMode.None;
-    else if(sortMode === 'MaxSide') lay.sortMode = SortMode.MaxSide;
-    else if(sortMode === 'Area') lay.sortMode = SortMode.Area;
+    if (sortMode === 'None') lay.sortMode = SortMode.None;
+    else if (sortMode === 'MaxSide') lay.sortMode = SortMode.MaxSide;
+    else if (sortMode === 'Area') lay.sortMode = SortMode.Area;
     if (sortMode != d.getElementById('sortMode').name.split(/\s+/).join('')) code += `\n  sortMode: go.SortMode.${sortMode},`
 
     var aspectRatio = d.getElementById('aspectRatio').value;
@@ -231,17 +233,17 @@
     lay.hasCircularNodes = hasCircularNodes;
     if (hasCircularNodes) code += `\n  hasCircularNodes: ${hasCircularNodes},`
 
-    if(code === 'new PackedLayout({') code = 'new PackedLayout()'; // If no changes made to layout
+    if (code === 'new PackedLayout({') code = 'new PackedLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
 
     if (window.Prism) window.Prism.highlightAll();
     myDiagram.commitTransaction('change Layout');
     myDiagram.zoomToFit();
-    if(change) rebuildGraph();
+    if (change) rebuildGraph();
   }
 
-  function disable(element, bool){
+  function disable(element, bool) { 
     document.getElementById(element + 'Row').style.opacity = (bool)? 0.5 : 1;
     document.getElementById(element + 'Row').style.pointerEvents = (bool)? 'none' : 'auto';
   }
@@ -293,7 +295,7 @@
     myDiagram.model.nodeDataArray = nodeArray;
   }
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     buildButtonRow('aspectRatio', 0.05, 1.00, 'Aspect Ratio', 'table1', 0.1, 100, 2);
     buildButtonRow('width', 50, 600, 'Layout Width',  'table1', 0);
     buildButtonRow('height', 50, 600, 'Layout Height', 'table1', 0);
@@ -304,18 +306,17 @@
     buildDropdown('sortOrder', 'Sort Order', 'table2', ['Descending', 'Ascending'])
     buildDropdown('sortMode', 'Sort Mode', 'table2', ['None', 'Max Side Length', 'Area'])
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = ''; })
     })
   }
 
-  function changeNodes(max, value){
+  function changeNodes(max, value) { 
     var e = document;
-    if (max){
+    if (max) { 
       e.getElementById('nodeMaxSide').value = Math.max(e.getElementById('nodeMaxSide').value - -value, 1);
-    }
-    else{
+    } else {
       e.getElementById('nodeMinSide').value = Math.max(e.getElementById('nodeMinSide').value - -value, 1);
     }
     if (parseInt(e.getElementById('nodeMinSide').value) > parseInt(e.getElementById('nodeMaxSide').value)) {
@@ -323,28 +324,28 @@
     }
   }
 
-  function changeDropdown(element){
+  function changeDropdown(element) { 
     element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function resetButton(element){
+  function resetButton(element) { 
     var e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){
+  function changeInput(element, change = true) { 
     var e = element.parentNode.querySelector('.inputBox');
     var number = change? element.name: number = 0;
     const max = element.parentNode.querySelector('.maximum').name;
     const min = element.parentNode.querySelector('.minimum').name;
     const decimal = element.parentNode.querySelector('.decimal').name;
-    var value = (e.value - -number)
-    if(max !== null) value = Math.min(value, max)
-    if(min !== null) value = Math.max(value, min)
-    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal)
+    var value = (e.value - -number);
+    if (max !== null) value = Math.min(value, max);
+    if (min !== null) value = Math.max(value, min);
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal);
     e.parentNode.querySelector('.button1').style = (e.name == e.value)? "background-color: lightgray;" : "background-color: lightcoral;";
     layout();
   }
@@ -385,7 +386,7 @@
     document.getElementById(table).appendChild(clone);
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -397,7 +398,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -420,8 +421,9 @@
 </script>
 
 <script>
-  if (window.location.protocol === 'file:')
+  if (window.location.protocol === 'file:') {
     alert('For security reasons this page must be served from a web server.');
+  }
 </script>
 
 <style>
@@ -466,7 +468,7 @@
 
 <template id="buttonRow">
   <div class="row tooltip" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 0px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 0px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
@@ -498,7 +500,7 @@
 
 <template id="dropdown">
   <div class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 3px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 3px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
@@ -602,7 +604,7 @@
             </div>
             <div>
               <div class="row" id="hasCircularNodesRow"><!--Node Shape-->
-                <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                 </svg>
                 <div class="cell whitespace-nowrap tooltip-trigger align-middle select-none p-1" style= "padding-right: 10px;">Node Shape</div>

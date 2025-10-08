@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,7 +132,7 @@
     myDiagram = new go.Diagram('myDiagramDiv', {
       validCycle: go.CycleMode.NotDirected, // don't allow loops
       // For this sample, automatically show the state of the diagram's model on the page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) showModel();
       },
       'undoManager.isEnabled': true
@@ -164,7 +166,7 @@
       } else {
         if (!isFieldSelected(item)) {
           // deselect all sibling items
-          item.panel.elements.each((it) => {
+          item.panel.elements.each(it => {
             if (it !== item) setFieldSelected(it, false);
           });
           setFieldSelected(item, true);
@@ -176,87 +178,90 @@
 
     // This template is a Panel that is used to represent each item in a Panel.itemArray.
     // The Panel is data bound to the item object.
-    var fieldTemplate = new go.Panel('TableRow', { // this Panel is a row in the containing Table
-      background: UnselectedBrush, // so this port's background can be picked by the mouse
-      fromSpot: go.Spot.LeftRightSides, // links only go from the right side to the left side
-      toSpot: go.Spot.LeftRightSides,
-      // allow drawing links from or to this port:
-      fromLinkable: true,
-      toLinkable: true,
-      // select items -- the background indicates "selected" when not UnselectedBrush
-      click: onFieldClick
-    })
-      .bind('portId', 'name') // this Panel is a "port"
-      .add(
-        new go.Shape({
-          width: 12,
-          height: 12,
-          column: 0,
-          strokeWidth: 2,
-          margin: 4,
-          // but disallow drawing links from or to this shape:
-          fromLinkable: false,
-          toLinkable: false
+    var fieldTemplate =
+      new go.Panel('TableRow', { // this Panel is a row in the containing Table
+          background: UnselectedBrush, // so this port's background can be picked by the mouse
+          fromSpot: go.Spot.LeftRightSides, // links only go from the right side to the left side
+          toSpot: go.Spot.LeftRightSides,
+          // allow drawing links from or to this port:
+          fromLinkable: true,
+          toLinkable: true,
+          // select items -- the background indicates "selected" when not UnselectedBrush
+          click: onFieldClick
         })
-          .bind('figure')
-          .bind('fill', 'color'),
-        new go.TextBlock({
-          margin: new go.Margin(0, 2),
-          column: 1,
-          font: 'bold 13px sans-serif',
-          // and disallow drawing links from or to this text:
-          fromLinkable: false,
-          toLinkable: false
-        })
-          .bind('text', 'name'),
-        new go.TextBlock({ margin: new go.Margin(0, 2), column: 2, font: '13px sans-serif' })
-          .bind('text', 'info')
-      );
+        .bind('portId', 'name') // this Panel is a "port"
+        .add(
+          new go.Shape({
+              width: 12,
+              height: 12,
+              column: 0,
+              strokeWidth: 2,
+              margin: 4,
+              // but disallow drawing links from or to this shape:
+              fromLinkable: false,
+              toLinkable: false
+            })
+            .bind('figure')
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              margin: new go.Margin(0, 2),
+              column: 1,
+              font: 'bold 13px sans-serif',
+              // and disallow drawing links from or to this text:
+              fromLinkable: false,
+              toLinkable: false
+            })
+            .bind('text', 'name'),
+          new go.TextBlock({ margin: new go.Margin(0, 2), column: 2, font: '13px sans-serif' })
+            .bind('text', 'info')
+        );
 
     // This template represents a whole "record".
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // this rectangular shape surrounds the content of the node
-        new go.Shape({ fill: '#EEEEEE' }),
-        // the content consists of a header and a list of items
-        new go.Panel('Vertical')
-          .add(
-            // this is the header for the whole node
-            new go.Panel('Auto', { stretch: go.Stretch.Horizontal }) // as wide as the whole node
-              .add(
-                new go.Shape({ fill: '#1570A6', stroke: null }),
-                new go.TextBlock({
-                  alignment: go.Spot.Center,
-                  margin: 3,
-                  stroke: 'white',
-                  textAlign: 'center',
-                  font: 'bold 12pt sans-serif'
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // this rectangular shape surrounds the content of the node
+          new go.Shape({ fill: '#EEEEEE' }),
+          // the content consists of a header and a list of items
+          new go.Panel('Vertical')
+            .add(
+              // this is the header for the whole node
+              new go.Panel('Auto', { stretch: go.Stretch.Horizontal }) // as wide as the whole node
+                .add(
+                  new go.Shape({ fill: '#1570A6', stroke: null }),
+                  new go.TextBlock({
+                      alignment: go.Spot.Center,
+                      margin: 3,
+                      stroke: 'white',
+                      textAlign: 'center',
+                      font: 'bold 12pt sans-serif'
+                    })
+                    .bind('text', 'key')
+                ),
+              // this Panel holds a Panel for each item object in the itemArray;
+              // each item Panel is defined by the itemTemplate to be a TableRow in this Table
+              new go.Panel('Table', {
+                  name: 'TABLE',
+                  padding: 2,
+                  minSize: new go.Size(100, 10),
+                  defaultStretch: go.Stretch.Horizontal,
+                  itemTemplate: fieldTemplate
                 })
-                  .bind('text', 'key')
-              ),
-            // this Panel holds a Panel for each item object in the itemArray;
-            // each item Panel is defined by the itemTemplate to be a TableRow in this Table
-            new go.Panel('Table', {
-              name: 'TABLE',
-              padding: 2,
-              minSize: new go.Size(100, 10),
-              defaultStretch: go.Stretch.Horizontal,
-              itemTemplate: fieldTemplate
-            })
-              .bind('itemArray', 'fields')
-          ) // end Vertical Panel
-      ); // end Node
+                .bind('itemArray', 'fields')
+            ) // end Vertical Panel
+        ); // end Node
 
-    myDiagram.linkTemplate = new go.Link({
-      relinkableFrom: true,
-      relinkableTo: true,
-      toShortLength: 4
-    }) // let user reconnect links
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }),
-        new go.Shape({ toArrow: 'Standard', stroke: null })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          relinkableFrom: true,
+          relinkableTo: true,
+          toShortLength: 4
+        }) // let user reconnect links
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+        );
 
     myDiagram.model = new go.GraphLinksModel({
       copiesArrays: true,
@@ -344,6 +349,7 @@
       if (window.Prism) window.Prism.highlightAll();
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -395,6 +401,32 @@ More information can be found in the <a href="../intro/itemArrays.html">GoJS Int
 </p>
             <p>
               <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

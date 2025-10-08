@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,7 +127,8 @@
 <script src="../extensions/SectorReshapingTool.js"></script>
 
 <script id="code">
-  let currentScale = 2.5;
+  const scaleMult = 2.5;
+  let currentScale = 1 * scaleMult;
 
   function init() {
     // clear the output log, some browsers will save text in textareas
@@ -148,110 +151,106 @@
     // the background image, a floor plan
     myDiagram.add(
       new go.Part({ // this Part is not bound to any model data
-        layerName: 'Background',
-        position: new go.Point(0, 0),
-        selectable: false,
-        pickable: false
-      })
+          layerName: 'Background',
+          position: new go.Point(0, 0),
+          selectable: false,
+          pickable: false
+        })
         .add(
           new go.Picture("images/officeFloorPlan.png", { width: 2833, height: 1333 })
-        )
-      );
+        ));
 
     // Doors represent an access-controlled door (eg, by keycard). They open and close automatically when simulated persons use them.
     myDiagram.nodeTemplateMap.add('door',
       new go.Node({
-        resizeObjectName: 'DOOR',
-        locationSpot: go.Spot.Left,
-        pickable: false,
-        selectable: false
-      })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .bindTwoWay('angle', 'ang')
-      .add(
-        new go.Shape({
-          name: 'DOOR',
-          strokeWidth: 1,
-          fill: 'rgb(0,255,0)',
-          height: 9,
-          width: 50
+          resizeObjectName: 'DOOR',
+          locationSpot: go.Spot.Left,
+          pickable: false,
+          selectable: false
         })
-        .bind('width')
-        .bind('height')
-      )
-    );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('angle', 'ang')
+        .add(
+          new go.Shape({
+            name: 'DOOR',
+            strokeWidth: 1,
+            fill: 'rgb(0,255,0)',
+            height: 9,
+            width: 50
+          })
+          .bind('width')
+          .bind('height')
+        ));
 
     // Cameras represent a security camera's visible area
     myDiagram.nodeTemplateMap.add('camera',
       new go.Node('Spot', {
-        isInDocumentBounds: false,
-        isShadowed: true,
-        shadowOffset: new go.Point(2,2),
-        shadowColor: 'black',
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'LAMP',
-        selectionObjectName: 'LAMP',
-        selectionAdorned: false,
-        toolTip: new go.Adornment('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', {
-              fill: 'white'
-            }),
-            new go.TextBlock('Live', { margin: 6 })
-              .bind('text', 'status')
-          )
-      })
+          isInDocumentBounds: false,
+          isShadowed: true,
+          shadowOffset: new go.Point(2,2),
+          shadowColor: 'black',
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'LAMP',
+          selectionObjectName: 'LAMP',
+          selectionAdorned: false,
+          toolTip:
+            new go.Adornment('Auto')
+              .add(
+                new go.Shape('RoundedRectangle', {
+                  fill: 'white'
+                }),
+                new go.TextBlock('Live', { margin: 6 })
+                  .bind('text', 'status')
+              )
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
           new go.Panel('Spot', { name: 'LAMP' })
             .add(
               new go.Shape({ // arc
-                name: 'ARC',
-                fill: 'skyblue',
-                strokeWidth: 5,
-                opacity: 0.5,
-                shadowVisible: false
-              })
+                  name: 'ARC',
+                  fill: 'skyblue',
+                  strokeWidth: 5,
+                  opacity: 0.5,
+                  shadowVisible: false
+                })
                 .bindObject('stroke', 'isSelected', s => s ? 'blue' : null)
                 .bind('fill', 'status', s => s !== 'Live' ? 'red' : 'skyblue')
                 .bind('geometry', '', makeSector),
               new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 }),
               new go.TextBlock('!', {
-                alignmentFocus: new go.Spot(1, 0, -30, -30),
-                font: '64pt Arial',
-                stroke: 'red',
-                shadowVisible: true
-              }).bind('visible', 'status', s => s!== 'Live')
+                  alignmentFocus: new go.Spot(1, 0, -30, -30),
+                  font: '64pt Arial',
+                  stroke: 'red',
+                  shadowVisible: true
+                })
+                .bind('visible', 'status', s => s!== 'Live')
             ),
           new go.TextBlock({
-            alignment: new go.Spot(0.5, 0.5, 0, 3),
-            alignmentFocus: go.Spot.Top,
-            stroke: 'blue',
-            background: 'rgba(255,255,255,0.3)'
-          })
+              alignment: new go.Spot(0.5, 0.5, 0, 3),
+              alignmentFocus: go.Spot.Top,
+              stroke: 'blue',
+              background: 'rgba(255,255,255,0.3)'
+            })
             .bindTwoWay('alignment', 'spot', go.Spot.parse, go.Spot.stringify)
             .bind('text', 'name')
-        )
-    );
+        ));
 
     // This code keeps certain parts at a constant size in the viewport, by
     // adjusting for any scaling done by zooming in or out.
     let origscale = NaN;
-    myDiagram.addDiagramListener('InitialLayoutCompleted', (e) => {
+    myDiagram.addDiagramListener('InitialLayoutCompleted', e => {
       origscale = myDiagram.scale;
     });
-    myDiagram.addDiagramListener('ViewportBoundsChanged', (e) => {
+    myDiagram.addDiagramListener('ViewportBoundsChanged', e => {
       if (isNaN(origscale)) return;
       var newscale = myDiagram.scale;
       if (e.subject.scale === newscale) return; // optimization: don't scale Nodes when just scrolling/panning
       myDiagram.skipsUndoManager = true;
       myDiagram.startTransaction('scale Nodes');
-      currentScale = origscale / newscale;
-      if (newscale < origscale) // when zoomed out scale up by 80% to decrease overlaps
-        currentScale = origscale / newscale;
-        // currentScale = 1 + (origscale / newscale - 1)*0.8;
+      currentScale = scaleMult * origscale / newscale;
       myDiagram.parts.each(p => {
-        if (p.layerName !== 'Foreground') return; // don't scale background image
+        if (p.layerName !== 'Adornment') return; // don't scale background image
         p.scale = currentScale;
       });
       myDiagram.commitTransaction('scale Nodes');
@@ -262,13 +261,6 @@
     loadModel();
     // Toggle random events on
     toggleEvents();
-
-    // the doors match the size of the doorways, this makes them a bit larger
-    myDiagram.nodes.each(n => {
-      if (n.category !== 'door') return;
-      myDiagram.model.setDataProperty(n.data, 'height', 15);
-      myDiagram.model.setDataProperty(n.data, 'width', +(n.data.width * 1.1).toFixed(1)); // remove unnecessary precision
-    });
 
     // palette
     myPalette = new go.Palette('myPaletteDiv', {
@@ -317,8 +309,9 @@
       // reverse to put back in the same order for load
       [... e.subject].reverse().forEach(part => {
         if (part.category !== 'camera') return;
-        if (part.data?._cameraDiv?.firstChild?.src)
+        if (part.data?._cameraDiv?.firstChild?.src) {
           camIMGs.unshift(part.data._cameraDiv.firstChild.src);
+        }
         part.data._cameraDiv.remove();
       });
     });
@@ -326,7 +319,7 @@
     // highlight current camera
     let prevSelection = null;
     myDiagram.addDiagramListener('ChangedSelection', e => {
-      if (prevSelection)
+      if (prevSelection) {
         prevSelection.each(part => { // undo old highlights
           if (!part) return;
           if (part.category !== 'camera') return;
@@ -334,7 +327,7 @@
 
           part.data._cameraDiv.style.borderColor = 'rgba(0,0,0,0)';
         });
-
+      }
       prevSelection = e.subject.copy();
 
       e.subject.each(part => { // highlight currently selected
@@ -368,30 +361,31 @@
 
     saveModel(); // update model to match random camera status
   }
+
   window.addEventListener('DOMContentLoaded', init);
 
   function makeSector(data) {
-      // Geometry converter for the node's "LAMP" Shape
-      var radius = SectorReshapingTool.getRadius(data);
-      var angle = SectorReshapingTool.getAngle(data);
-      var sweep = SectorReshapingTool.getSweep(data);
-      var start = new go.Point(radius, 0).rotate(angle);
-      var geo = new go.Geometry()
-        .add(
-          new go.PathFigure(radius + start.x, radius + start.y) // start point
-            .add(
-              new go.PathSegment(
-                go.SegmentType.Arc,
-                angle, sweep, // angles
-                radius, radius, radius, radius
-              )
+    // Geometry converter for the node's "LAMP" Shape
+    var radius = SectorReshapingTool.getRadius(data);
+    var angle = SectorReshapingTool.getAngle(data);
+    var sweep = SectorReshapingTool.getSweep(data);
+    var start = new go.Point(radius, 0).rotate(angle);
+    var geo = new go.Geometry()
+      .add(
+        new go.PathFigure(radius + start.x, radius + start.y) // start point
+          .add(
+            new go.PathSegment(
+              go.SegmentType.Arc,
+              angle, sweep, // angles
+              radius, radius, radius, radius
             )
-            .add(new go.PathSegment(go.SegmentType.Line, radius, radius).close())
-        )
-        .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
-        .add(new go.PathFigure(2 * radius, 2 * radius)); // even if only a small sector is "lit"
-      return geo;
-    }
+          )
+          .add(new go.PathSegment(go.SegmentType.Line, radius, radius).close())
+      )
+      .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
+      .add(new go.PathFigure(2 * radius, 2 * radius)); // even if only a small sector is "lit"
+    return geo;
+  }
 
   const camIMGs = [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/01_01_RIMG0002.jpg/1200px-01_01_RIMG0002.jpg?20201006124235',
@@ -470,25 +464,22 @@
     elem.value = `${new Date().toLocaleString()} ${logTxt}\r\n` + (elem.value || elem.innerText || '');
 
     // add the text animation
-    const p = new go.Part('Auto', { pickable: false, layerName: 'Foreground' })
-      .add(
-        new go.Shape('RoundedRectangle', {
-          fill: 'white'
-        }),
-        new go.TextBlock(diaTxt, {
-          margin: 8
-        })
-      );
-    p.scale = currentScale;
+    const p =
+      new go.Part('Auto', { pickable: false, layerName: 'Adornment', scale: currentScale })
+        .add(
+          new go.Shape('RoundedRectangle', { fill: 'white' }),
+          new go.TextBlock(diaTxt, { margin: 8 })
+        );
     myDiagram.add(p);
 
     // position for doors, location for cameras
     const isDoor = node.data.category === 'door';
     const pos2 = (isDoor ? node.position.copy() : node.location.copy());
-    if (isDoor)
+    if (isDoor) {
       pos2.x += node.getDocumentBounds().width;
-    else
+    } else {
       pos2.y -= 25;
+    }
     pos2.x += 10;
     pos2.y -= 20;
     const pos1 = pos2.copy();
@@ -606,10 +597,11 @@
         if (node === _prevNode) node = pickRand();
         _prevNode = node;
 
-        if (node.category === 'door')
+        if (node.category === 'door') {
           openDoor(node);
-        else
+        } else {
           triggerCamera(node);
+        }
         // call this function again after a random amount of time
         _timeout = setTimeout(() => {
           doEvent();
@@ -655,7 +647,7 @@
     </div>
     <div class="flex-none w-[500px] min-h-[200px] flex flex-col mb-4">
       Event Log
-      <textarea id="outputLog" style="width: 100%; height: 100%;resize: none;"></textarea>
+      <textarea id="outputLog" style="width: 100%; height: 100%;resize: none;" autocomplete="off"></textarea>
     </div>
   </div>
 
@@ -665,32 +657,32 @@
   <button onclick="saveModel()">Save</button>
   <button onclick="loadModel()">Load</button>
   <br>
-  <textarea id="mySavedModel" style="width: 90%;height: 400px">
+  <textarea id="mySavedModel" style="width: 90%;height: 400px" autocomplete="off">
 { "class": "GraphLinksModel",
   "nodeDataArray": [
-{"category":"door","loc":"400 942","key":"main entrance","width":91,"height":10},
-{"category":"door","loc":"535 635","ang":270,"width":57,"height":10,"key":"sub office 1"},
-{"category":"door","loc":"580 665","width":51,"height":10,"key":"office 1"},
-{"category":"door","loc":"720 738","key":"bath 1","width":44,"height":10},
-{"category":"door","loc":"948 664","key":"office 2","width":52,"height":10},
-{"category":"door","loc":"715 1130", "key":"lounge 1","ang":270,"width":57,"height":10},
-{"category":"door","loc":"712 1007", "key":"storage 1","width":56,"height":10},
-{"category":"door","loc":"1112 738", "key":"meeting 1","width":55,"height":10},
-{"category":"door","loc":"1608 407", "key":"meeting 2","width":56,"height":10},
-{"category":"door","loc":"2133 675", "key":"office 3","ang":90,"width":56,"height":10},
-{"category":"door","loc":"2002 407", "key":"lounge 2","width":55,"height":10},
-{"category":"door","loc":"1811 561", "key":"bath 2","width":45,"height":10},
-{"category":"door","loc":"1902 561", "key":"bath 3","width":46,"height":10},
-{"category":"door","loc":"2310 950", "key":"sub office 4","ang":90,"width":57,"height":10},
-{"category":"door","loc":"2133 924", "key":"sub office 2","ang":270,"width":57,"height":10},
-{"category":"door","loc":"2133 952", "key":"sub office 3","ang":90,"width":56,"height":10},
-{"category":"door","loc":"2280 1018", "key":"sub office 5","width":56,"height":10,"ang":180},
-{"category":"door","loc":"2310 575", "key":"office 4","width":55,"height":10,"ang":90},
-{"category":"door","loc":"2310 675", "key":"second entrance","ang":90,"width":57,"height":10},
-{"category":"door","loc":"2310 458", "key":"storage 2","ang":90,"width":58,"height":10},
-{"category":"door","loc":"2310 363", "key":"meeting 3","ang":270,"width":55,"height":10},
+{"category":"door","loc":"535 641.85","ang":270,"width":62.7,"height":15,"key":"sub office 1"},
+{"category":"door","loc":"588.45 665","width":56.1,"height":15,"key":"office 1"},
+{"category":"door","loc":"721.8 738","key":"bath 1","width":48.4,"height":15},
+{"category":"door","loc":"942.4 664","key":"office 2","width":57.2,"height":15},
+{"category":"door","loc":"401.45 942","key":"main entrance","width":100.1,"height":15},
+{"loc":"715 1125.35","category":"door","key":"lounge 1","ang":270,"width":62.7,"height":15},
+{"loc":"721.2 1007","category":"door","key":"storage 1","width":61.6,"height":15},
+{"loc":"1119.25 738","category":"door","key":"meeting 1","width":60.5,"height":15},
+{"loc":"1607.2 407","category":"door","key":"meeting 2","width":61.6,"height":15},
+{"loc":"2133 671.2","category":"door","key":"office 3","ang":90,"width":61.6,"height":15},
+{"loc":"2310 669.65","category":"door","key":"second entrance","ang":90,"width":62.7,"height":15},
+{"loc":"1996.25 407","category":"door","key":"lounge 2","width":60.5,"height":15},
+{"loc":"1808.75 561","category":"door","key":"bath 2","width":49.5,"height":15},
+{"loc":"1898.7 561","category":"door","key":"bath 3","width":50.6,"height":15},
+{"loc":"2310 947.15","category":"door","key":"sub office 4","ang":90,"width":62.7,"height":15},
+{"loc":"2133 935.35","category":"door","key":"sub office 2","ang":270,"width":62.7,"height":15},
+{"loc":"2133 949.2","category":"door","key":"sub office 3","ang":90,"width":61.6,"height":15},
+{"loc":"2285.8 1018","category":"door","key":"sub office 5","width":61.6,"height":15,"ang":180},
+{"loc":"2310 568.75","category":"door","key":"office 4","width":60.5,"height":15,"ang":90},
+{"loc":"2310 451.1","category":"door","key":"storage 2","ang":90,"width":63.8,"height":15},
+{"loc":"2310 371.25","category":"door","key":"meeting 3","ang":270,"width":60.5,"height":15},
+{"status":"Camera offline since 6/30/2025, 11:06:17 AM","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
 {"status":"Live","loc":"704 1194","category":"camera","sweep":90,"radius":280,"key":2,"angle":180},
-{"status":"","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
 {"status":"Live","loc":"1937 683","category":"camera","sweep":92,"radius":111,"key":3,"angle":179},
 {"status":"Live","loc":"2460 663","category":"camera","sweep":90,"radius":128,"key":4,"angle":90},
 {"status":"Live","loc":"524 674","category":"camera","sweep":90,"radius":162,"key":5,"angle":90},
@@ -811,7 +803,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

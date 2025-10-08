@@ -112,7 +112,7 @@ class Quadtree {
     constructor(nodeCapacity, maxLevel, bounds) {
         /** @hidden @internal */ this._nodeCapacity = 1;
         /** @hidden @internal */ this._maxLevels = Infinity;
-        /** @hidden @internal */ this._treeObjectMap = new go.Map();
+        /** @hidden @internal */ this._treeObjectMap = new Map();
         // we can avoid unnecessary work when adding objects if there are no objects with 0 width or height.
         // Note that after being set to true, these flags are not ever set again to false, even if all objects
         // with zero width/height are removed (assumption was made that this should almost never matter)
@@ -848,7 +848,7 @@ class Quadtree {
         if (owner1 !== null && owner2 !== null) {
             const treeObj1 = this._treeObjectMap.get(obj1);
             const treeObj2 = this._treeObjectMap.get(obj2);
-            if (treeObj1 !== null && treeObj2 !== null) {
+            if (treeObj1 !== undefined && treeObj2 !== undefined) {
                 return treeObj1.bounds.center.distanceSquaredPoint(treeObj2.bounds.center);
             }
         }

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,6 +128,7 @@
             
 
 <script id="code">
+
   // Custom DraggingTool for dragging fields instead of whole Parts.
   // FieldDraggingTool.fieldTemplate needs to be set to a template of the field that you want shown while dragging.
   class FieldDraggingTool extends go.DraggingTool {
@@ -142,8 +145,9 @@
       let obj = diagram.findObjectAt(diagram.lastInput.documentPoint);
       while (obj !== null && obj.type !== go.Panel.TableRow) obj = obj.panel;
       if (obj !== null && obj.type === go.Panel.TableRow && this.fieldTemplate !== null && this.temporaryPart === null) {
-        const tempPart = new go.Part('Table', { layerName: 'Tool', locationSpot: go.Spot.Center })
-          .add(this.fieldTemplate.copy()); // copy the template!
+        const tempPart =
+          new go.Part('Table', { layerName: 'Tool', locationSpot: go.Spot.Center })
+            .add(this.fieldTemplate.copy()); // copy the template!
         this.temporaryPart = tempPart;
         // assume OBJ is now a Panel representing a field, bound to field data
         // update the temporary Part via data binding
@@ -219,7 +223,7 @@
       validCycle: go.CycleMode.NotDirected, // don't allow loops
       draggingTool: new FieldDraggingTool(), // use custom DraggingTool
       // automatically update the model that is shown on this page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) showModel();
       },
       'undoManager.isEnabled': true
@@ -228,74 +232,78 @@
     // This template is a Panel that is used to represent each item in a Panel.itemArray.
     // The Panel is data bound to the item object.
     // This template needs to be used by the FieldDraggingTool as well as the Diagram.nodeTemplate.
-    const fieldTemplate = new go.Panel('TableRow', {
-      background: 'transparent', // so this port's background can be picked by the mouse
-      fromSpot: go.Spot.Right, // links only go from the right side to the left side
-      toSpot: go.Spot.Left
-    }) // allow drawing links from or to this port
-      // this Panel is a row in the containing Table
-      .bind('portId', 'name') // this Panel is a "port"
-      .add(
-        new go.Shape({ width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 })
-          .bind('figure')
-          .bind('fill', 'color'),
-        new go.TextBlock({
-          margin: new go.Margin(0, 2),
-          column: 1,
-          font: 'bold 13px sans-serif'
-        })
-          .bind('text', 'name'),
-        new go.TextBlock({
-          margin: new go.Margin(0, 2),
-          column: 2,
-          font: '13px sans-serif'
-        })
-          .bind('text', 'info')
-      );
+    const fieldTemplate =
+      new go.Panel('TableRow', {
+          background: 'transparent', // so this port's background can be picked by the mouse
+          fromSpot: go.Spot.Right, // links only go from the right side to the left side
+          toSpot: go.Spot.Left
+        }) // allow drawing links from or to this port
+        // this Panel is a row in the containing Table
+        .bind('portId', 'name') // this Panel is a "port"
+        .add(
+          new go.Shape({ width: 12, height: 12, column: 0, strokeWidth: 2, margin: 4 })
+            .bind('figure')
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              margin: new go.Margin(0, 2),
+              column: 1,
+              font: 'bold 13px sans-serif'
+            })
+            .bind('text', 'name'),
+          new go.TextBlock({
+              margin: new go.Margin(0, 2),
+              column: 2,
+              font: '13px sans-serif'
+            })
+            .bind('text', 'info')
+        );
 
     // the FieldDraggingTool needs a template for what to show while dragging
     myDiagram.toolManager.draggingTool.fieldTemplate = fieldTemplate;
 
     // This template represents a whole "record".
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      movable: false,
-      copyable: false,
-      deletable: false,
-      locationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // this rectangular shape surrounds the content of the node
-        new go.Shape({ fill: '#EEEEEE' }),
-        // the content consists of a header and a list of items
-        new go.Panel('Vertical')
-          .add(
-            // this is the header for the whole node
-            new go.Panel('Auto', { stretch: go.Stretch.Horizontal }) // as wide as the whole node
-              .add(
-                new go.Shape({
-                  fill: '#1570A6',
-                  stroke: null
-                }),
-                new go.TextBlock({
-                  alignment: go.Spot.Center,
-                  margin: 3,
-                  stroke: 'white',
-                  textAlign: 'center',
-                  font: 'bold 12pt sans-serif'
-                }).bind('text', 'title')
-              ),
-            // this Panel holds a Panel for each item object in the itemArray;
-            // each item Panel is defined by the itemTemplate to be a TableRow in this Table
-            new go.Panel('Table', {
-              name: 'TABLE',
-              padding: 2,
-              minSize: new go.Size(100, 10),
-              defaultStretch: go.Stretch.Horizontal,
-              itemTemplate: fieldTemplate
-            }).bind('itemArray', 'fields')
-          ) // end Table Panel of items
-      ); // end Vertical Panel
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          movable: false,
+          copyable: false,
+          deletable: false,
+          locationSpot: go.Spot.Center
+        })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // this rectangular shape surrounds the content of the node
+          new go.Shape({ fill: '#EEEEEE' }),
+          // the content consists of a header and a list of items
+          new go.Panel('Vertical')
+            .add(
+              // this is the header for the whole node
+              new go.Panel('Auto', { stretch: go.Stretch.Horizontal }) // as wide as the whole node
+                .add(
+                  new go.Shape({
+                    fill: '#1570A6',
+                    stroke: null
+                  }),
+                  new go.TextBlock({
+                      alignment: go.Spot.Center,
+                      margin: 3,
+                      stroke: 'white',
+                      textAlign: 'center',
+                      font: 'bold 12pt sans-serif'
+                    })
+                    .bind('text', 'title')
+                ),
+              // this Panel holds a Panel for each item object in the itemArray;
+              // each item Panel is defined by the itemTemplate to be a TableRow in this Table
+              new go.Panel('Table', {
+                  name: 'TABLE',
+                  padding: 2,
+                  minSize: new go.Size(100, 10),
+                  defaultStretch: go.Stretch.Horizontal,
+                  itemTemplate: fieldTemplate
+                })
+                .bind('itemArray', 'fields')
+            ) // end Table Panel of items
+        ); // end Vertical Panel
 
     myDiagram.model = new go.GraphLinksModel({
       linkFromPortIdProperty: 'fromPort',
@@ -329,6 +337,7 @@
       if (window.Prism) window.Prism.highlightAll();
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

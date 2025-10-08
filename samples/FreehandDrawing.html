@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,28 +133,28 @@
 
     myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
 
-    myDiagram.nodeTemplateMap.add(
-      'FreehandDrawing',
+    myDiagram.nodeTemplateMap.add('FreehandDrawing',
       new go.Part({
-        locationSpot: go.Spot.Center,
-        isLayoutPositioned: false,
-        selectionAdorned: true,
-        selectionObjectName: 'SHAPE',
-        resizable: true,
-        resizeObjectName: 'SHAPE',
-        reshapable: true, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
-        // custom selection adornment: a blue rectangle
-        selectionAdornmentTemplate: new go.Adornment('Auto')
-          .add(
-            new go.Shape({ stroke: 'dodgerblue', fill: null }),
-            new go.Placeholder({ margin: -1 })
-          )
-      })
+          isLayoutPositioned: false,
+          selectionObjectName: 'SHAPE',
+          // custom selection adornment: a blue rectangle
+          selectionAdornmentTemplate:
+            new go.Adornment('Auto')
+              .add(
+                new go.Shape({ stroke: 'dodgerblue', fill: null }),
+                new go.Placeholder({ margin: -1 })
+              ),
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          rotatable: true,
+          rotationSpot: go.Spot.Center,
+          reshapable: true // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('angle')
         .add(
-          new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1.5 })
+          new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1 })
             .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-            .bindTwoWay('angle')
             .bindTwoWay('geometryString', 'geo')
             .bind('fill')
             .bind('stroke')
@@ -161,9 +163,9 @@
     );
 
     // create drawing tool for myDiagram, defined in FreehandDrawingTool.js
-    var tool = new FreehandDrawingTool();
+    const tool = new FreehandDrawingTool();
     // provide the default JavaScript object for a new polygon in the model
-    tool.archetypePartData = { stroke: 'green', strokeWidth: 3, category: 'FreehandDrawing' };
+    tool.archetypePartData = { stroke: 'green', strokeWidth: 1, category: 'FreehandDrawing' };
     // allow the tool to start on top of an existing Part
     tool.isBackgroundOnly = false;
     // install as first mouse-move-tool
@@ -188,7 +190,7 @@
 
   function updateAllAdornments() {
     // called after checkboxes change Diagram.allow...
-    myDiagram.selection.each((p) => p.updateAdornments());
+    myDiagram.selection.each(p => p.updateAdornments());
   }
 
   // save a model to and load a model from Json text, displayed below the Diagram
@@ -207,6 +209,7 @@
       alert(ex);
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

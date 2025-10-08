@@ -90,7 +90,7 @@
       // Load a model for a given NAME; can be used without CALLBACK,
       // which would initialize myDiagram rather than using the hidden diagram/div
       function fetchModel(name, callback) {
-        if (!callback) callback = (m) => (myDiagram.model = m);
+        if (!callback) callback = m => (myDiagram.model = m);
         const m = allModels.get(name) || allModels.get('one');
         callback(m);
       }
@@ -153,8 +153,8 @@
           if (namelist.length > 0) {
             if (namelist.length !== namelistlength) doc.addPage(pageOptions);
             const name = namelist.shift();
-            fetchModel(name, (m) =>
-              useModel(m, (e) => {
+            fetchModel(name, m =>
+              useModel(m, e => {
                 const diagram = e.diagram;
                 const bnds = diagram.documentBounds;
 
@@ -227,7 +227,7 @@
       function downloadPdf() {
         // called by HTML button
         generatePdf(
-          (blob) => {
+          blob => {
             const datauri = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style = 'display: none';

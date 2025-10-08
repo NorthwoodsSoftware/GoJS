@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -140,26 +142,34 @@
         isPartialInclusion: true,
         delay: 50,
           // replace the magenta box with a red one
-        box: new go.Part({ layerName: 'Tool', selectable: false })
-          .add(
-            new go.Shape({
-              name: 'SHAPE',
-              fill: 'rgba(255,0,0,0.1)',
-              stroke: 'red',
-              strokeWidth: 2
-            })
-          )
+        box:
+          new go.Part({ layerName: 'Tool', selectable: false })
+            .add(
+              new go.Shape({
+                name: 'SHAPE',
+                fill: 'rgba(255,0,0,0.1)',
+                stroke: 'red',
+                strokeWidth: 2
+              })
+            )
       }),
 
       // Define the template for Nodes, just some text inside a colored rectangle
-      nodeTemplate: new go.Node('Spot', { width: 70, height: 20 })
-        .add(
-          new go.Shape('Rectangle').bind('fill', 'c'),
-          new go.TextBlock({ margin: 2 }).bind('text', 'c')
-        ),
+      nodeTemplate:
+        new go.Node('Spot', { width: 70, height: 20 })
+          .add(
+            new go.Shape('Rectangle')
+              .bind('fill', 'c'),
+            new go.TextBlock({ margin: 2 })
+              .bind('text', 'c')
+          ),
 
       // Define the template for Links, just a simple line
-      linkTemplate: new go.Link().add(new go.Shape({ stroke: 'black' })),
+      linkTemplate:
+        new go.Link()
+          .add(
+            new go.Shape({ stroke: 'black' })
+          ),
 
       layout: new go.TreeLayout()
     });
@@ -182,6 +192,7 @@
     }
     return new go.TreeModel(treedata);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

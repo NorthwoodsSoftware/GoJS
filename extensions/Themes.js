@@ -12,6 +12,153 @@
 /* eslint comma-dangle: 'off' */
 
 /**
+   * The default light theme used by {@link ThemeManager}.
+   *
+   * Defined as the following:
+   * ```ts
+   * {
+   *   colors: {
+   *     text: '#0a0a0a',  // Neutral 950
+   *     comment: '#ca8a04',  // Yellow 600
+   *     link: '#0a0a0a',  // Neutral 950
+   *     group: '#a3a3a344',  // Neutral 400, partially transparent
+   *     outline: '#a3a3a3',  // Neutral 400
+   *     selection: '#0ea5e9',  // Sky 500
+   *     div: '#fff',
+   *     gridMinor: '#e5e5e5',  // Neutral 200
+   *     gridMajor: '#a3a3a3',  // Neutral 400
+   *     overviewBox: '#c026d3',  // Fuschia 600
+   *     tempLink: '#2563eb',  // Blue 600
+   *     tempPort: '#c026d3',  // Fuschia 600
+   *     adornmentFill: '#0ea5e9',  // Sky 500
+   *     adornmentStroke: '#1e40af',  // Blue 800
+   *     dragSelect: '#c026d3'  // Fuschia 600
+   *   },
+   *   fonts: {
+   *     normal: '10pt sans-serif',
+   *     bold: 'bold 12pt sans-serif'
+   *   },
+   *   numbers: {
+   *     group: 1,  // group strokeWidth
+   *     selection: 3  // selection strokeWidth
+   *   },
+   *   margins: {
+   *     group: new Margin(5)  // group padding
+   *   },
+   *   arrowheads: {
+   *     toArrow: 'Standard'
+   *   }
+   * }
+   * ```
+   */
+const Light = {
+    colors: {
+        text: '#0a0a0a', // Neutral 950
+        comment: '#ca8a04', // Yellow 600
+        link: '#0a0a0a', // Neutral 950
+        group: '#a3a3a344', // Neutral 400, partially transparent
+        outline: '#a3a3a3', // Neutral 400
+        selection: '#0ea5e9', // Sky 500
+        div: '#fff',
+        gridMinor: '#e5e5e5', // Neutral 200
+        gridMajor: '#a3a3a3', // Neutral 400
+        overviewBox: '#c026d3', // Fuschia 600
+        tempLink: '#2563eb', // Blue 600
+        tempPort: '#c026d3', // Fuschia 600
+        adornmentFill: '#0ea5e9', // Sky 500
+        adornmentStroke: '#1e40af', // Blue 800
+        dragSelect: '#c026d3' // Fuschia 600
+    },
+    fonts: {
+        normal: '10pt sans-serif',
+        bold: 'bold 12pt sans-serif'
+    },
+    numbers: {
+        group: 1, // group strokeWidth
+        selection: 3 // selection strokeWidth
+    },
+    margins: {
+        group: new go.Margin(5) // group padding
+    },
+    arrowheads: {
+        toArrow: 'Standard'
+    }
+};
+/**
+ * The default dark theme used by {@link ThemeManager}.
+ *
+ * Defined as the following:
+ * ```ts
+ * {
+ *   colors: {
+ *     text: '#f5f5f5',  // Neutral 100
+ *     comment: '#facc15',  // Yellow 400
+ *     link: '#f5f5f5',  // Neutral 100
+ *     group: '#a3a3a388',  // Neutral 400, partially transparent
+ *     outline: '#a3a3a3',  // Neutral 400
+ *     selection: '#38bdf8',  // Sky 400
+ *     div: '#171717',  // Neutral 900
+ *     gridMinor: '#262626',  // Neutral 800
+ *     gridMajor: '#404040',  // Neutral 700
+ *     overviewBox: '#e879f9',  // Fuschia 400
+ *     tempLink: '#60a5fa',  // Blue 400
+ *     tempPort: '#e879f9',  // Fuschia 400
+ *     adornmentFill: '#38bdf8',  // Sky 400
+ *     adornmentStroke: '#2563eb',  // Blue 600
+ *     dragSelect: '#e879f9'  // Fuschia 400
+ *   },
+ *   fonts: {
+ *     normal: '10pt sans-serif',
+ *     bold: 'bold 12pt sans-serif'
+ *   },
+ *   numbers: {
+ *     group: 1,  // group strokeWidth
+ *     selection: 3  // selection strokeWidth
+ *   },
+ *   margins: {
+ *     group: new Margin(5)  // group padding
+ *   },
+ *   arrowheads: {
+ *     toArrow: 'Standard'
+ *   }
+ * }
+ * ```
+ */
+const Dark = {
+    // some info is duplicated from the Light theme in case that isn't used as a default
+    colors: {
+        text: '#f5f5f5', // Neutral 100
+        comment: '#facc15', // Yellow 400
+        link: '#f5f5f5', // Neutral 100
+        group: '#a3a3a388', // Neutral 400, partially transparent
+        outline: '#a3a3a3', // Neutral 400
+        selection: '#38bdf8', // Sky 400
+        div: '#171717', // Neutral 900
+        gridMinor: '#262626', // Neutral 800
+        gridMajor: '#404040', // Neutral 700
+        overviewBox: '#e879f9', // Fuschia 400
+        tempLink: '#60a5fa', // Blue 400
+        tempPort: '#e879f9', // Fuschia 400
+        adornmentFill: '#38bdf8', // Sky 400
+        adornmentStroke: '#2563eb', // Blue 600
+        dragSelect: '#e879f9' // Fuschia 400
+    },
+    fonts: {
+        normal: '10pt sans-serif',
+        bold: 'bold 12pt sans-serif'
+    },
+    numbers: {
+        group: 1,
+        selection: 3
+    },
+    margins: {
+        group: new go.Margin(5)
+    },
+    arrowheads: {
+        toArrow: 'Standard'
+    }
+};
+/**
  * A light theme using different colors for links and the diagram background.
  *
  * This can serve as a drop-in replacement for the {@link go.Themes.Light} theme.

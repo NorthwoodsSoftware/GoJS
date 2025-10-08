@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,19 +125,73 @@
             
 
 <script id="code">
+
+  // This custom LinkingTool just turns on Diagram.allowLink when it starts,
+  // and turns it off again when it stops so that users cannot draw new links modelessly.
+  class CustomLinkingTool extends go.LinkingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
+    // user-drawn linking is normally disabled,
+    // but needs to be turned on when using this tool
+    doStart() {
+      this.diagram.allowLink = true;
+      super.doStart();
+    }
+
+    doStop() {
+      super.doStop();
+      this.diagram.allowLink = false;
+    }
+  }
+  // end CustomLinkingTool
+
+  // This custom Link class is smart about computing the link point and direction
+  // at "Parallel" and "Exclusive" nodes.
+  class BarLink extends go.Link {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
+    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
+      const r = port.getDocumentBounds();
+      const op = otherport.getDocumentBounds();
+      const below = op.centerY > r.centerY;
+      const y = below ? r.bottom : r.top;
+      if (node.category === 'Parallel' || node.category === 'Exclusive') {
+        if (op.right < r.left) return new go.Point(r.left, y);
+        if (op.left > r.right) return new go.Point(r.right, y);
+        return new go.Point((Math.max(r.left, op.left) + Math.min(r.right, op.right)) / 2, y);
+      } else {
+        return new go.Point(r.centerX, y);
+      }
+    }
+
+    getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
+      const p = port.getDocumentPoint(go.Spot.Center);
+      const op = otherport.getDocumentPoint(go.Spot.Center);
+      const below = op.y > p.y;
+      return below ? 90 : 270;
+    }
+  }
+  // end BarLink class
+
   function init() {
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowLink: false, // linking is only started via buttons, not modelessly;
-      // see the "startLink..." functions and CustomLinkingTool defined below
+      // see the "startLink..." functions and CustomLinkingTool defined above
       // double-click in the background creates a new "Start" node
       'clickCreatingTool.archetypeNodeData': { category: 'Start', step: 1, text: 'Action' },
-      linkingTool: new CustomLinkingTool(), // defined below to automatically turn on allowLink
+      linkingTool: new CustomLinkingTool(), // defined above to automatically turn on allowLink
       'undoManager.isEnabled': true
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('saveModel');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -151,100 +207,102 @@
     // Each button has a click function to execute the command, a tooltip for a textual description,
     // and a Binding of "visible" to hide the button if it cannot be executed for that particular node.
 
-    const commandsAdornment = go.GraphObject.build('ContextMenu')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({
-              fill: null,
-              stroke: 'deepskyblue',
-              strokeWidth: 2,
-              shadowVisible: false
-            }),
-            new go.Placeholder()
-          ),
-        new go.Panel('Horizontal', { defaultStretch: go.Stretch.Vertical })
-          .add(
-            go.GraphObject.build('Button', {
-              click: addExclusive,
-              toolTip: makeTooltip('Add Exclusive')
-            })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 L10 0',
-                  fill: null,
-                  stroke: 'red',
-                  margin: 3
+    const commandsAdornment =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({
+                fill: null,
+                stroke: 'deepskyblue',
+                strokeWidth: 2,
+                shadowVisible: false
+              }),
+              new go.Placeholder()
+            ),
+          new go.Panel('Horizontal', { defaultStretch: go.Stretch.Vertical })
+            .add(
+              go.GraphObject.build('Button', {
+                  click: addExclusive,
+                  toolTip: makeTooltip('Add Exclusive')
                 })
-              )
-              .bindObject('visible', '', canAddSplit),
-            go.GraphObject.build('Button', {
-                click: addParallel,
-                toolTip: makeTooltip('Add Parallel')
-              })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 L10 0 M0 3 10 3',
-                  fill: null,
-                  stroke: 'red',
-                  margin: 3
+                .bindObject('visible', '', canAddSplit)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 L10 0',
+                    fill: null,
+                    stroke: 'red',
+                    margin: 3
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: addParallel,
+                  toolTip: makeTooltip('Add Parallel')
                 })
-              )
-              .bindObject('visible', '', canAddSplit),
-            go.GraphObject.build('Button', {
-              click: addStep,
-              toolTip: makeTooltip('Add Step')
-            })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 L10 0 10 6 0 6z',
-                  fill: 'lightyellow',
-                  margin: 3
+                .bindObject('visible', '', canAddSplit)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 L10 0 M0 3 10 3',
+                    fill: null,
+                    stroke: 'red',
+                    margin: 3
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: addStep,
+                  toolTip: makeTooltip('Add Step')
                 })
-              )
-              .bindObject('visible', '', canAddStep),
-            go.GraphObject.build('Button', {
-              click: startLinkDown,
-              toolTip: makeTooltip('Draw Link Down')
-            })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 M5 0 L5 10 M3 8 5 10 7 8 M10 0',
-                  fill: null,
-                  margin: 3
+                .bindObject('visible', '', canAddStep)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 L10 0 10 6 0 6z',
+                    fill: 'lightyellow',
+                    margin: 3
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: startLinkDown,
+                  toolTip: makeTooltip('Draw Link Down')
                 })
-              )
-              .bindObject('visible', '', canStartLink),
-            go.GraphObject.build('Button', {
-              click: startLinkAround,
-              toolTip: makeTooltip('Draw Link Skip')
-            })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 M3 0 L3 2 7 2 7 6 3 6 3 10 M1 8 3 10 5 8 M10 0',
-                  fill: null,
-                  margin: 3
+                .bindObject('visible', '', canStartLink)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 M5 0 L5 10 M3 8 5 10 7 8 M10 0',
+                    fill: null,
+                    margin: 3
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: startLinkAround,
+                  toolTip: makeTooltip('Draw Link Skip')
                 })
-              )
-              .bindObject('visible', '', canStartLink),
-            go.GraphObject.build('Button', {
-              click: startLinkUp,
-              toolTip: makeTooltip('Draw Link Repeat')
-            })
-              .add(
-                new go.Shape({
-                  geometryString: 'M0 0 M3 2 L3 0 7 0 7 10 3 10 3 8 M5 6 7 4 9 6 M10 0',
-                  fill: null,
-                  margin: 3
+                .bindObject('visible', '', canStartLink)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 M3 0 L3 2 7 2 7 6 3 6 3 10 M1 8 3 10 5 8 M10 0',
+                    fill: null,
+                    margin: 3
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: startLinkUp,
+                  toolTip: makeTooltip('Draw Link Repeat')
                 })
-              )
-              .bindObject('visible', '', canStartLink)
-          )
-      );
+                .bindObject('visible', '', canStartLink)
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 M3 2 L3 0 7 0 7 10 3 10 3 8 M5 6 7 4 9 6 M10 0',
+                    fill: null,
+                    margin: 3
+                  })
+                )
+            )
+        );
 
     function makeTooltip(str) {
       // a helper function for defining tooltips for buttons
-      return go.GraphObject.build('ToolTip').add(new go.TextBlock(str));
+      return go.GraphObject.build('ToolTip')
+        .add(new go.TextBlock(str));
     }
 
     // Commands for adding new Nodes
@@ -338,24 +396,15 @@
 
     // The various kinds of Nodes
 
-    // a helper function that declares common properties for all kinds of nodes
-    function commonNodeStyle() {
-      return {
-        locationSpot: go.Spot.Center,
-        selectionAdornmentTemplate: commandsAdornment // shared selection Adornment
-      };
-    }
-
-    function applyCommonNodeBindings(node) {
+    function nodeStyle(node) {
+      node.locationSpot = go.Spot.Center;
+      node.selectionAdornmentTemplate = commandsAdornment; // shared selection Adornment
       node.bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify);
-      return node;
     }
 
     myDiagram.nodeTemplateMap.add('Start',
-      applyCommonNodeBindings(new go.Node('Horizontal', {
-          ...commonNodeStyle(),
-          ...{ locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' }
-        })
+      new go.Node('Horizontal', { locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' })
+        .apply(nodeStyle)
         .add(
           new go.Panel('Auto', {
               // this is the port element, not the whole Node
@@ -391,15 +440,11 @@
                 })
                 .bindTwoWay('text')
             )
-        )
-      )
-    );
+        ));
 
     myDiagram.nodeTemplateMap.add('',
-      applyCommonNodeBindings(new go.Node('Horizontal', {
-          ...commonNodeStyle(),
-          ...{ locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' }
-        })
+      new go.Node('Horizontal', { locationObjectName: 'STEPPANEL', selectionObjectName: 'STEPPANEL' })
+        .apply(nodeStyle)
         .add(
           new go.Panel('Auto', {
               // this is the port element, not the whole Node
@@ -434,32 +479,30 @@
                 })
                 .bindTwoWay('text')
             )
-        )
-      )
-    );
+        ));
 
-    const resizeAdornment = new go.Adornment("Spot")
-      .add(
-        new go.Placeholder(),
-        new go.Shape({ // left resize handle
-            alignment: go.Spot.Left,
-            cursor: 'col-resize',
-            desiredSize: new go.Size(6, 6),
-            fill: 'lightblue',
-            stroke: 'dodgerblue'
-          }),
-        new go.Shape({ // right resize handle
-            alignment: go.Spot.Right,
-            cursor: 'col-resize',
-            desiredSize: new go.Size(6, 6),
-            fill: 'lightblue',
-            stroke: 'dodgerblue'
-          })
-      );
+    const resizeAdornment =
+      new go.Adornment("Spot")
+        .add(
+          new go.Placeholder(),
+          new go.Shape({ // left resize handle
+              alignment: go.Spot.Left,
+              cursor: 'col-resize',
+              desiredSize: new go.Size(6, 6),
+              fill: 'lightblue',
+              stroke: 'dodgerblue'
+            }),
+          new go.Shape({ // right resize handle
+              alignment: go.Spot.Right,
+              cursor: 'col-resize',
+              desiredSize: new go.Size(6, 6),
+              fill: 'lightblue',
+              stroke: 'dodgerblue'
+            })
+        );
 
     myDiagram.nodeTemplateMap.add('Parallel',
-      applyCommonNodeBindings(new go.Node({
-          ...commonNodeStyle(),
+      new go.Node({
           // special resizing: just at the ends
           resizable: true,
           resizeObjectName: 'SHAPE',
@@ -467,6 +510,7 @@
           fromLinkable: true,
           toLinkable: true
         })
+        .apply(nodeStyle)
         .add(
           new go.Shape({
               // horizontal pair of lines stretched to an initial width of 200
@@ -477,13 +521,10 @@
               width: 200
             })
             .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-        )
-      )
-    );
+        ));
 
     myDiagram.nodeTemplateMap.add('Exclusive',
-      applyCommonNodeBindings(new go.Node({
-          ...commonNodeStyle(),
+      new go.Node({
           // special resizing: just at the ends
           resizable: true,
           resizeObjectName: 'SHAPE',
@@ -491,6 +532,7 @@
           fromLinkable: true,
           toLinkable: true
         })
+        .apply(nodeStyle)
         .add(
           new go.Shape({
               // horizontal line stretched to an initial width of 200
@@ -501,14 +543,12 @@
               width: 200
             })
             .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-        )
-      )
-    );
+        ));
 
     // the various kinds of Links
 
     myDiagram.linkTemplateMap.add('',
-      new BarLink({ routing: go.Routing.Orthogonal }) // subclass defined below
+      new BarLink({ routing: go.Routing.Orthogonal }) // subclass defined above
         .add(
           new go.Shape({ strokeWidth: 1.5 }),
           new go.Shape('LineH', { // only visible when there is text
@@ -516,15 +556,14 @@
               height: 1,
               visible: false
             })
-            .bind('visible', 'text', (t) => t !== ''),
+            .bind('visible', 'text', t => t !== ''),
           new go.TextBlock({  // only visible when there is text
               alignmentFocus: new go.Spot(0, 0.5, -12, 0),
               editable: true
             })
             .bindTwoWay('text')
-            .bind('visible', 'text', (t) => t !== '')
-        )
-    );
+            .bind('visible', 'text', t => t !== '')
+        ));
 
     myDiagram.linkTemplateMap.add('Skip',
       new go.Link({
@@ -541,15 +580,14 @@
               height: 1,
               visible: false
             })
-            .bind('visible', 'text', (t) => t !== ''),
+            .bind('visible', 'text', t => t !== ''),
           new go.TextBlock({ // only visible when there is text
               alignmentFocus: new go.Spot(1, 0.5, 12, 0),
               editable: true
             })
             .bindTwoWay('text')
-            .bind('visible', 'text', (t) => t !== '')
-        )
-    );
+            .bind('visible', 'text', t => t !== '')
+        ));
 
     myDiagram.linkTemplateMap.add('Repeat',
       new go.Link({
@@ -575,72 +613,19 @@
               width: 20,
               height: 1,
               visible: false
-            }).bind('visible', 'text', (t) => t !== ''),
+            })
+            .bind('visible', 'text', t => t !== ''),
           new go.TextBlock({ // only visible when there is text
               alignmentFocus: new go.Spot(1, 0.5, 12, 0),
               editable: true
             })
             .bindTwoWay('text')
-            .bind('visible', 'text', (t) => t !== '')
-        )
-    );
+            .bind('visible', 'text', t => t !== '')
+        ));
 
     // start off with a simple diagram
     load();
   }
-
-  // This custom LinkingTool just turns on Diagram.allowLink when it starts,
-  // and turns it off again when it stops so that users cannot draw new links modelessly.
-  class CustomLinkingTool extends go.LinkingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    // user-drawn linking is normally disabled,
-    // but needs to be turned on when using this tool
-    doStart() {
-      this.diagram.allowLink = true;
-      super.doStart();
-    }
-
-    doStop() {
-      super.doStop();
-      this.diagram.allowLink = false;
-    }
-  }
-  // end CustomLinkingTool
-
-  // This custom Link class is smart about computing the link point and direction
-  // at "Parallel" and "Exclusive" nodes.
-  class BarLink extends go.Link {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    getLinkPoint(node, port, spot, from, ortho, othernode, otherport) {
-      const r = port.getDocumentBounds();
-      const op = otherport.getDocumentBounds();
-      const below = op.centerY > r.centerY;
-      const y = below ? r.bottom : r.top;
-      if (node.category === 'Parallel' || node.category === 'Exclusive') {
-        if (op.right < r.left) return new go.Point(r.left, y);
-        if (op.left > r.right) return new go.Point(r.right, y);
-        return new go.Point((Math.max(r.left, op.left) + Math.min(r.right, op.right)) / 2, y);
-      } else {
-        return new go.Point(r.centerX, y);
-      }
-    }
-
-    getLinkDirection(node, port, linkpoint, spot, from, ortho, othernode, otherport) {
-      const p = port.getDocumentPoint(go.Spot.Center);
-      const op = otherport.getDocumentPoint(go.Spot.Center);
-      const below = op.y > p.y;
-      return below ? 90 : 270;
-    }
-  }
-  // end BarLink class
 
   // save a model to and load a model from JSON text, displayed below the Diagram
   function save() {
@@ -650,6 +635,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -759,7 +745,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -800,7 +786,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

@@ -136,7 +136,7 @@ import * as go from 'gojs';
 
   let firstTime = true;
 
-  function showContextMenu(obj: go.GraphObject, diagram: go.Diagram, tool: go.Tool) {
+  function showContextMenu(obj: go.GraphObject | null, diagram: go.Diagram, tool: go.Tool) {
     if (firstTime) {
       // We don't want the div acting as a context menu to have a (browser) context menu!
       cmLight.addEventListener(

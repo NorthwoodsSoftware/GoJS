@@ -30,11 +30,12 @@ import * as go from 'gojs';
 //    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
 // ```
 // ```js
-//   $(go.Node, . . .,
-//     . . .
-//       $(go.TextBlock, { textEditor: window.TextEditor, . . . })
-//     . . .
-//   )
+//   new go.Node(. . .)
+//     .add(
+//       . . .
+//       new go.TextBlock({ textEditor: window.TextEditor, . . . })
+//       . . .
+//     )
 // ```
 // If you do use this code, copy it into your project and modify it there.
 // See also TextEditor.html

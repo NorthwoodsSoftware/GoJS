@@ -33,14 +33,14 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
         super();
         this._laneProperty = 'lane'; // how to get lane identifier string from node data
         this._laneNames = []; // lane names, may be sorted using this.laneComparer
-        this._laneIndexes = new go.Map();
+        this._laneIndexes = new Map();
         this._laneComparer = null;
         this._laneSpacing = 0; // in columns
         this._router = { linkSpacing: 4 };
         this._reducer = null;
         // computed, read-only state
-        this._lanePositions = new go.Map(); // lane names --> start columns, left to right
-        this._laneBreadths = new go.Map(); // lane names --> needed width in columns
+        this._lanePositions = new Map(); // lane names --> start columns, left to right
+        this._laneBreadths = new Map(); // lane names --> needed width in columns
         // internal state
         this._layers = [[]];
         this._neededSpaces = [];
@@ -147,14 +147,14 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     }
     /**
      * The computed positions of each lane,
-     * in the form of a {@link go.Map} mapping lane names (strings) to numbers.
+     * in the form of a {@link Map} mapping lane names (strings) to numbers.
      */
     get lanePositions() {
         return this._lanePositions;
     }
     /**
      * The computed breadths (widths or heights depending on the direction) of each lane,
-     * in the form of a {@link go.Map} mapping lane names (strings) to numbers.
+     * in the form of a {@link Map} mapping lane names (strings) to numbers.
      */
     get laneBreadths() {
         return this._laneBreadths;
@@ -325,8 +325,8 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
     setupLanes() {
         // set up some data structures
         const layout = this;
-        const laneNameSet = new go.Set().addAll(this.laneNames);
-        const laneIndexes = new go.Map(); // lane name --> index when sorted
+        const laneNameSet = new Set(this.laneNames);
+        const laneIndexes = new Map(); // lane name --> index when sorted
         const vit = this.network.vertexes.iterator;
         while (vit.next()) {
             const v = vit.value;
@@ -388,7 +388,7 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
             const lane = this.laneNames[i];
             this.laneBreadths.set(lane, this.computeMinLaneWidth(lane));
         }
-        const lwidths = new go.Map(); // reused for each layer
+        const lwidths = new Map(); // reused for each layer
         for (let i = 0; i <= this.maxLayer; i++) {
             const arr = this._layers[i];
             if (arr) {
@@ -400,20 +400,20 @@ export class SwimLaneLayout extends go.LayeredDigraphLayout {
                     const w = this.nodeMinColumnSpace(v, true) + 1 + this.nodeMinColumnSpace(v, false);
                     const ln = this.findLane(v) || '';
                     const totw = lwidths.get(ln);
-                    if (totw === null) {
+                    if (totw === undefined) {
                         lwidths.set(ln, w);
                     }
                     else {
                         lwidths.set(ln, totw + w);
                     }
                 }
-                lwidths.each((kvp) => {
-                    const lane = kvp.key;
-                    const colsInLayer = kvp.value;
+                for (const [key, value] of lwidths) {
+                    const lane = key;
+                    const colsInLayer = value;
                     const colsMax = layout.laneBreadths.get(lane) || 0;
                     if (colsInLayer > colsMax)
                         layout.laneBreadths.set(lane, colsInLayer);
-                });
+                }
                 lwidths.clear();
             }
         }

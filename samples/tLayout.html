@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,27 +136,27 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
-      .bind('text', 'text') // for sorting
-      .add(
-        new go.Shape('Ellipse', {
-          fill: 'lightgray', // the initial value, but data binding may provide different value
-          stroke: null,
-          desiredSize: new go.Size(30, 30)
-        })
-          .bind('desiredSize', 'size')
-          .bind('fill', 'layer', c => randomLayerColors[c % 25]),
-        new go.TextBlock().bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', { locationSpot: go.Spot.Center })
+        .bind('text', 'text') // for sorting
+        .add(
+          new go.Shape('Ellipse', {
+              fill: 'lightgray', // the initial value, but data binding may provide different value
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            })
+            .bind('desiredSize', 'size')
+            .bind('fill', 'layer', c => randomLayerColors[c % 25]),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      selectable: false
-    })
-      .add(
-        new go.Shape({ strokeWidth: 3, stroke: '#333' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, selectable: false, corner: 10 })
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: '#333' })
+        );
 
     buildSettingsMenu();
     rebuildGraph();
@@ -184,21 +186,21 @@
     myDiagram.zoomToFit();
   }
 
-  function layerNodes(nodes = myDiagram.findTreeRoots(), layer = 0){
+  function layerNodes(nodes = myDiagram.findTreeRoots(), layer = 0) { 
     if (nodes.count == 0) return;
-    nodes.each(function(node) { //recursively goes through all children of the graph sending a layer down to be set on each
+    nodes.each(node => { //recursively goes through all children of the graph sending a layer down to be set on each
       myDiagram.model.setDataProperty(node.data, 'layer', layer);
       layerNodes(node.findTreeChildrenNodes(), layer + 1);
     });
   }
 
-  function shuffleColors(){
+  function shuffleColors() { 
     var tempList = [];
-    while(randomLayerColors.length > 0){ // Goes through the color palette randomly pulling out colors to reorder them
+    while (randomLayerColors.length > 0) {  // Goes through the color palette randomly pulling out colors to reorder them
       let item = randomLayerColors.splice(Math.round(Math.random() * randomLayerColors.length - 1), 1);
       tempList.push(item[0]);
     }
-    randomLayerColors = [...tempList];
+    randomLayerColors = tempList;
   }
 
   var randomLayerColors = [ // Color Palette used to color the layers of the graph
@@ -229,7 +231,7 @@
     "hsl(191, 65%, 88%)"
   ];
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     // Calls to build each setting to the respective builder - Default Properties
     buildButtonRow('nodeSpacing', 5, 20, 'Node Spacing', 'table2');
     buildButtonRow('nodeIndent', 5, 0, 'Node Indent', 'table2', 0);
@@ -265,9 +267,9 @@
     buildDropdown('alternateAlignment', 'Alignment', 'table7', ['Center Children', 'Center Subtrees', 'Start', 'End', 'Bus', 'Bus Branching', 'Top Left Bus', 'Bottom Right Bus'])
     buildDropdown('alternateSorting', 'Sorting', 'table7', ['Forwards', 'Reverse', 'Ascending', 'Descending'])
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = ''; })
     })
   }
   // Creates a random number (between MIN and MAX) of randomly colored nodes.
@@ -335,20 +337,20 @@
     else if (treeStyle === 'Alternating') lay.treeStyle = go.TreeStyle.Alternating;
     else if (treeStyle === 'LastParents') lay.treeStyle = go.TreeStyle.LastParents;
     else if (treeStyle === 'RootOnly') lay.treeStyle = go.TreeStyle.RootOnly;
-    if(treeStyle != d.getElementById('treeStyle').name) code += `\n  treeStyle: go.TreeStyle.${treeStyle},`;
+    if (treeStyle != d.getElementById('treeStyle').name) code += `\n  treeStyle: go.TreeStyle.${treeStyle},`;
 
     var layerStyle = d.getElementById('layerStyle').value;
     if (layerStyle === 'Individual') lay.layerStyle = go.TreeLayerStyle.Individual;
     else if (layerStyle === 'Siblings') lay.layerStyle = go.TreeLayerStyle.Siblings;
     else if (layerStyle === 'Uniform') lay.layerStyle = go.TreeLayerStyle.Uniform;
-    if(layerStyle != d.getElementById('layerStyle').name) code += `\n  layerStyle: go.TreeLayerStyle.${layerStyle},`;
+    if (layerStyle != d.getElementById('layerStyle').name) code += `\n  layerStyle: go.TreeLayerStyle.${layerStyle},`;
 
     var angle = d.getElementById('angle').value;
     if (angle === 'Right') lay.angle = 0;
     else if (angle === 'Down') lay.angle = 90;
     else if (angle === 'Left') lay.angle = 180;
     else if (angle === 'Up') lay.angle = 270;
-    if(angle != d.getElementById('angle').name) code += `\n  angle: ${lay.angle},`;
+    if (angle != d.getElementById('angle').name) code += `\n  angle: ${lay.angle},`;
 
     var alignment = d.getElementById('alignment').value.split(/\s+/).join('');
     if (alignment === 'CenterChildren') lay.alignment = go.TreeAlignment.CenterChildren;
@@ -359,78 +361,78 @@
     else if (alignment === 'BusBranching') lay.alignment = go.TreeAlignment.BusBranching;
     else if (alignment === 'TopLeftBus') lay.alignment = go.TreeAlignment.TopLeftBus;
     else if (alignment === 'BottomRightBus') lay.alignment = go.TreeAlignment.BottomRightBus;
-    if(alignment != d.getElementById('alignment').name.split(/\s+/).join('')) code += `\n  alignment: go.TreeAlignment.${alignment},`;
+    if (alignment != d.getElementById('alignment').name.split(/\s+/).join('')) code += `\n  alignment: go.TreeAlignment.${alignment},`;
 
     var nodeSpacing = d.getElementById('nodeSpacing').value;
     nodeSpacing = parseFloat(nodeSpacing, 10);
     lay.nodeSpacing = nodeSpacing;
-    if(nodeSpacing != d.getElementById('nodeSpacing').name) code += `\n  nodeSpacing: ${nodeSpacing},`;
+    if (nodeSpacing != d.getElementById('nodeSpacing').name) code += `\n  nodeSpacing: ${nodeSpacing},`;
 
     var nodeIndent = d.getElementById('nodeIndent').value;
     nodeIndent = parseFloat(nodeIndent, 10);
     lay.nodeIndent = nodeIndent;
-    if(nodeIndent != d.getElementById('nodeIndent').name) code += `\n  nodeIndent: ${nodeIndent},`;
+    if (nodeIndent != d.getElementById('nodeIndent').name) code += `\n  nodeIndent: ${nodeIndent},`;
 
     var nodeIndentPastParent = d.getElementById('nodeIndentPastParent').value;
     nodeIndentPastParent = parseFloat(nodeIndentPastParent, 10);
     lay.nodeIndentPastParent = nodeIndentPastParent;
-    if(nodeIndentPastParent != d.getElementById('nodeIndentPastParent').name) code += `\n  nodeIndentPastParent: ${nodeIndentPastParent},`;
+    if (nodeIndentPastParent != d.getElementById('nodeIndentPastParent').name) code += `\n  nodeIndentPastParent: ${nodeIndentPastParent},`;
 
     var layerSpacing = d.getElementById('layerSpacing').value;
     layerSpacing = parseFloat(layerSpacing, 10);
     lay.layerSpacing = layerSpacing;
-    if(layerSpacing != d.getElementById('layerSpacing').name) code += `\n  layerSpacing: ${layerSpacing},`;
+    if (layerSpacing != d.getElementById('layerSpacing').name) code += `\n  layerSpacing: ${layerSpacing},`;
 
     var layerSpacingParentOverlap = d.getElementById('layerSpacingParentOverlap').value;
     layerSpacingParentOverlap = parseFloat(layerSpacingParentOverlap, 10);
     lay.layerSpacingParentOverlap = layerSpacingParentOverlap;
-    if(layerSpacingParentOverlap != d.getElementById('layerSpacingParentOverlap').name) code += `\n  layerSpacingParentOverlap: ${layerSpacingParentOverlap},`;
+    if (layerSpacingParentOverlap != d.getElementById('layerSpacingParentOverlap').name) code += `\n  layerSpacingParentOverlap: ${layerSpacingParentOverlap},`;
 
     var sorting = d.getElementById('sorting').value;
     if (sorting === 'Forwards') lay.sorting = go.TreeSorting.Forwards;
     else if (sorting === 'Reverse') lay.sorting = go.TreeSorting.Reverse;
     else if (sorting === 'Ascending') lay.sorting = go.TreeSorting.Ascending;
     else if (sorting === 'Descending') lay.sorting = go.TreeSorting.Descending;
-    if(sorting != d.getElementById('sorting').name) code += `\n  sorting: go.Tree.${sorting},`;
+    if (sorting != d.getElementById('sorting').name) code += `\n  sorting: go.Tree.${sorting},`;
 
     var compaction = d.getElementById('compaction').checked;
     lay.compaction = (compaction)? go.TreeCompaction.Block : go.TreeCompaction.None;
-    if(!compaction) code += `\n  compaction: go.TreeCompaction.None,`;
+    if (!compaction) code += `\n  compaction: go.TreeCompaction.None,`;
 
     var breadthLimit = d.getElementById('breadthLimit').value;
     breadthLimit = parseFloat(breadthLimit, 10);
     lay.breadthLimit = breadthLimit;
-    if(breadthLimit != d.getElementById('breadthLimit').name) code += `\n  breadthLimit: ${breadthLimit},`;
+    if (breadthLimit != d.getElementById('breadthLimit').name) code += `\n  breadthLimit: ${breadthLimit},`;
 
     var rowSpacing = d.getElementById('rowSpacing').value;
     rowSpacing = parseFloat(rowSpacing, 10);
     lay.rowSpacing = rowSpacing;
-    if((rowSpacing != d.getElementById('rowSpacing').name) && (breadthLimit != 0)) code += `\n  rowSpacing: ${rowSpacing},`;
+    if ((rowSpacing != d.getElementById('rowSpacing').name) && (breadthLimit != 0)) code += `\n  rowSpacing: ${rowSpacing},`;
     d.getElementById('rowSpacingRow').style.pointerEvents = (breadthLimit == 0)? "none" : "auto";
     d.getElementById('rowSpacingRow').style.opacity = (breadthLimit == 0)? 0.5 : 1;
 
     var rowIndent = d.getElementById('rowIndent').value;
     rowIndent = parseFloat(rowIndent, 10);
     lay.rowIndent = rowIndent;
-    if((rowIndent != d.getElementById('rowIndent').name) && (breadthLimit != 0) && !(alignment.includes('Center'))) code += `\n  rowIndent: ${rowIndent},`;
+    if ((rowIndent != d.getElementById('rowIndent').name) && (breadthLimit != 0) && !(alignment.includes('Center'))) code += `\n  rowIndent: ${rowIndent},`;
     d.getElementById('rowIndentRow').style.pointerEvents = (breadthLimit == 0 || alignment.includes('Center'))? "none" : "auto";
     d.getElementById('rowIndentRow').style.opacity = (breadthLimit == 0 || alignment.includes('Center'))? 0.5 : 1;
 
     var setsPortSpot = d.getElementById('setsPortSpot').checked;
     lay.setsPortSpot = setsPortSpot;
-    if(!setsPortSpot) code += `\n  setsPortSpot: false,`;
+    if (!setsPortSpot) code += `\n  setsPortSpot: false,`;
 
     var setsChildPortSpot = d.getElementById('setsChildPortSpot').checked;
     lay.setsChildPortSpot = setsChildPortSpot;
-    if(!setsChildPortSpot) code += `\n  setsChildPortSpot: false,`;
+    if (!setsChildPortSpot) code += `\n  setsChildPortSpot: false,`;
 
-    if(treeStyle != 'Layered'){
+    if (treeStyle != 'Layered') { 
       var alternateAngle = d.getElementById('alternateAngle').value;
       if (alternateAngle === 'Right') lay.alternateAngle = 0;
       else if (alternateAngle === 'Down') lay.alternateAngle = 90;
       else if (alternateAngle === 'Left') lay.alternateAngle = 180;
       else if (alternateAngle === 'Up') lay.alternateAngle = 270;
-      if(alternateAngle != d.getElementById('alternateAngle').name) code += `\n  alternateAngle: ${lay.alternateAngle},`;
+      if (alternateAngle != d.getElementById('alternateAngle').name) code += `\n  alternateAngle: ${lay.alternateAngle},`;
 
       var alternateAlignment = d.getElementById('alternateAlignment').value.split(/\s+/).join('');
       if (alternateAlignment === 'CenterChildren') lay.alternateAlignment = go.TreeAlignment.CenterChildren;
@@ -441,70 +443,70 @@
       else if (alternateAlignment === 'BusBranching') lay.alternateAlignment = go.TreeAlignment.BusBranching;
       else if (alternateAlignment === 'TopLeftBus') lay.alternateAlignment = go.TreeAlignment.TopLeftBus;
       else if (alternateAlignment === 'BottomRightBus') lay.alternateAlignment = go.TreeAlignment.BottomRightBus;
-      if(alternateAlignment != d.getElementById('alternateAlignment').name.split(/\s+/).join('')) code += `\n  alternateAlignment: go.TreeAlignment.${alternateAlignment},`;
+      if (alternateAlignment != d.getElementById('alternateAlignment').name.split(/\s+/).join('')) code += `\n  alternateAlignment: go.TreeAlignment.${alternateAlignment},`;
 
       var alternateNodeSpacing = d.getElementById('alternateNodeSpacing').value;
       alternateNodeSpacing = parseFloat(alternateNodeSpacing, 10);
       lay.alternateNodeSpacing = alternateNodeSpacing;
-      if(alternateNodeSpacing != d.getElementById('alternateNodeSpacing').name) code += `\n  alternateNodeSpacing: ${alternateNodeSpacing},`;
+      if (alternateNodeSpacing != d.getElementById('alternateNodeSpacing').name) code += `\n  alternateNodeSpacing: ${alternateNodeSpacing},`;
 
       var alternateNodeIndent = d.getElementById('alternateNodeIndent').value;
       alternateNodeIndent = parseFloat(alternateNodeIndent, 10);
       lay.alternateNodeIndent = alternateNodeIndent;
-      if(alternateNodeIndent != d.getElementById('alternateNodeIndent').name) code += `\n  alternateNodeIndent: ${alternateNodeIndent},`;
+      if (alternateNodeIndent != d.getElementById('alternateNodeIndent').name) code += `\n  alternateNodeIndent: ${alternateNodeIndent},`;
 
       var alternateNodeIndentPastParent = d.getElementById('alternateNodeIndentPastParent').value;
       alternateNodeIndentPastParent = parseFloat(alternateNodeIndentPastParent, 10);
       lay.alternateNodeIndentPastParent = alternateNodeIndentPastParent;
-      if(alternateNodeIndentPastParent != d.getElementById('alternateNodeIndentPastParent').name) code += `\n  alternateNodeIndentPastParent: ${alternateNodeIndentPastParent},`;
+      if (alternateNodeIndentPastParent != d.getElementById('alternateNodeIndentPastParent').name) code += `\n  alternateNodeIndentPastParent: ${alternateNodeIndentPastParent},`;
 
       var alternateLayerSpacing = d.getElementById('alternateLayerSpacing').value;
       alternateLayerSpacing = parseFloat(alternateLayerSpacing, 10);
       lay.alternateLayerSpacing = alternateLayerSpacing;
-      if(alternateLayerSpacing != d.getElementById('alternateLayerSpacing').name) code += `\n  alternateLayerSpacing: ${alternateLayerSpacing},`;
+      if (alternateLayerSpacing != d.getElementById('alternateLayerSpacing').name) code += `\n  alternateLayerSpacing: ${alternateLayerSpacing},`;
 
       var alternateLayerSpacingParentOverlap = d.getElementById('alternateLayerSpacingParentOverlap').value;
       alternateLayerSpacingParentOverlap = parseFloat(alternateLayerSpacingParentOverlap, 10);
       lay.alternateLayerSpacingParentOverlap = alternateLayerSpacingParentOverlap;
-      if(alternateLayerSpacingParentOverlap != d.getElementById('alternateLayerSpacingParentOverlap').name) code += `\n  alternateLayerSpacingParentOverlap: ${alternateLayerSpacingParentOverlap},`;
+      if (alternateLayerSpacingParentOverlap != d.getElementById('alternateLayerSpacingParentOverlap').name) code += `\n  alternateLayerSpacingParentOverlap: ${alternateLayerSpacingParentOverlap},`;
 
       var alternateSorting = d.getElementById('alternateSorting').value;
       if (alternateSorting === 'Forwards') lay.alternateSorting = go.TreeSorting.Forwards;
       else if (alternateSorting === 'Reverse') lay.alternateSorting = go.TreeSorting.Reverse;
       else if (alternateSorting === 'Ascending') lay.alternateSorting = go.TreeSorting.Ascending;
       else if (alternateSorting === 'Descending') lay.alternateSorting = go.TreeSorting.Descending;
-      if(alternateSorting != d.getElementById('alternateSorting').name) code += `\n  alternateSorting: go.Tree.${alternateSorting},`;
+      if (alternateSorting != d.getElementById('alternateSorting').name) code += `\n  alternateSorting: go.Tree.${alternateSorting},`;
 
       var alternateCompaction = d.getElementById('alternateCompaction').checked;
       lay.alternateCompaction = (alternateCompaction)? go.TreeCompaction.Block : go.TreeCompaction.None;
-      if(!compaction) code += `\n  alternateCompaction: go.TreeCompaction.None,`;
+      if (!compaction) code += `\n  alternateCompaction: go.TreeCompaction.None,`;
 
       var alternateBreadthLimit = d.getElementById('alternateBreadthLimit').value;
       alternateBreadthLimit = parseFloat(alternateBreadthLimit, 10);
       lay.alternateBreadthLimit = alternateBreadthLimit;
-      if(alternateBreadthLimit != d.getElementById('alternateBreadthLimit').name) code += `\n  alternateBreadthLimit: ${alternateBreadthLimit},`;
+      if (alternateBreadthLimit != d.getElementById('alternateBreadthLimit').name) code += `\n  alternateBreadthLimit: ${alternateBreadthLimit},`;
 
       var alternateRowSpacing = d.getElementById('alternateRowSpacing').value;
       alternateRowSpacing = parseFloat(alternateRowSpacing, 10);
       lay.alternateRowSpacing = alternateRowSpacing;
-      if((alternateRowSpacing != d.getElementById('alternateRowSpacing').name) && (alternateBreadthLimit != 0)) code += `\n  alternateRowSpacing: ${alternateRowSpacing},`;
+      if ((alternateRowSpacing != d.getElementById('alternateRowSpacing').name) && (alternateBreadthLimit != 0)) code += `\n  alternateRowSpacing: ${alternateRowSpacing},`;
       d.getElementById('alternateRowSpacingRow').style.pointerEvents = (breadthLimit == 0)? "none" : "auto";
       d.getElementById('alternateRowSpacingRow').style.opacity = (alternateBreadthLimit == 0)? 0.5 : 1;
 
       var alternateRowIndent = d.getElementById('alternateRowIndent').value;
       alternateRowIndent = parseFloat(alternateRowIndent, 10);
       lay.alternateRowIndent = alternateRowIndent;
-      if((alternateRowIndent != d.getElementById('alternateRowIndent').name) && (alternateBreadthLimit != 0) && !(alternateAlignment.includes('Center'))) code += `\n  alternateRowIndent: ${alternateRowIndent},`;
+      if ((alternateRowIndent != d.getElementById('alternateRowIndent').name) && (alternateBreadthLimit != 0) && !(alternateAlignment.includes('Center'))) code += `\n  alternateRowIndent: ${alternateRowIndent},`;
       d.getElementById('alternateRowIndentRow').style.pointerEvents = (alternateBreadthLimit == 0 || alternateAlignment.includes('Center'))? "none" : "auto";
       d.getElementById('alternateRowIndentRow').style.opacity = (alternateBreadthLimit == 0 || alternateAlignment.includes('Center'))? 0.5 : 1;
 
       var alternateSetsPortSpot = d.getElementById('alternateSetsPortSpot').checked;
       lay.alternateSetsPortSpot = alternateSetsPortSpot;
-      if(!alternateSetsPortSpot) code += `\n  alternateSetsPortSpot: false,`;
+      if (!alternateSetsPortSpot) code += `\n  alternateSetsPortSpot: false,`;
 
       var alternateSetsChildPortSpot = d.getElementById('alternateSetsChildPortSpot').checked;
       lay.alternateSetsChildPortSpot = alternateSetsChildPortSpot;
-      if(!alternateSetsChildPortSpot) code += `\n  alternateSetsChildPortSpot: false,`;
+      if (!alternateSetsChildPortSpot) code += `\n  alternateSetsChildPortSpot: false,`;
     }
 
     if (styleChange) {
@@ -513,7 +515,7 @@
       d.getElementById('alternatePropertiesMenu').style.pointerEvents = (treeStyle !== 'Layered')? 'all' : 'none';
     }
 
-    if(code === 'new go.TreeLayout({') code = 'new go.TreeLayout()'; // If no changes made to layout
+    if (code === 'new go.TreeLayout({') code = 'new go.TreeLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
 
@@ -522,12 +524,11 @@
     if (window.Prism) window.Prism.highlightAll();
   }
 
-  function changeNodes(max, value){ // Allows for Node property to be changed and to make sure max and min never cross each other
+  function changeNodes(max, value) {  // Allows for Node property to be changed and to make sure max and min never cross each other
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxNodes').value = Math.max(e.getElementById('maxNodes').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minNodes').value = Math.max(e.getElementById('minNodes').value - -value, 0);
     }
     if (parseInt(e.getElementById('minNodes').value) > parseInt(e.getElementById('maxNodes').value)) {
@@ -535,12 +536,11 @@
     }
   }
 
-  function changeChildren(max, value){ // Makes sure children number properties max and min don't cross
+  function changeChildren(max, value) {  // Makes sure children number properties max and min don't cross
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxChil').value = Math.max(e.getElementById('maxChil').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minChil').value = Math.max(e.getElementById('minChil').value - -value, 0);
     }
     if (parseInt(e.getElementById('minChil').value) > parseInt(e.getElementById('maxChil').value)) {
@@ -548,28 +548,28 @@
     }
   }
 
-  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+  function changeDropdown(element) {  // Changes dropdowns and updates code block and reset button
     element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function resetButton(element){ // Sets property back to original and changes related divs accordingly
+  function resetButton(element) {  // Sets property back to original and changes related divs accordingly
     e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+  function changeInput(element, change = true) {  // Changes value and checks for default equality for the reset button
     e = element.parentNode.querySelector('.inputBox');
     change? number = element.name: number = 0;
     const max = element.parentNode.querySelector('.maximum').name;
     const min = element.parentNode.querySelector('.minimum').name;
     const decimal = element.parentNode.querySelector('.decimal').name;
-    var value = (e.value - -number) // Changes by recorded interval
-    if(max !== null) value = Math.min(value, max) // Checks for max and min values
-    if(min !== null) value = Math.max(value, min)
-    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    var value = (e.value - -number); // Changes by recorded interval
+    if (max !== null) value = Math.min(value, max); // Checks for max and min values
+    if (min !== null) value = Math.max(value, min);
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal); // Rounds to assigned place
     element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
@@ -620,7 +620,7 @@
     document.getElementById(table).appendChild(clone);
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -632,7 +632,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -688,7 +688,7 @@
 
 <template id="buttonRow">
   <div class="row" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
@@ -720,7 +720,7 @@
 
 <template id="dropdown">
   <div class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
@@ -739,7 +739,7 @@
 
 <template id="switch">
   <label class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap select-none pt-2"></div>
@@ -865,7 +865,7 @@
             </label>
             <div class="table">
               <div class="row">
-                  <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                   </svg>
                   <div class="cell whitespace-nowrap tooltip-trigger align-middle select-none p-1" style= "padding-right: 10px;">Tree Style</div>
@@ -879,7 +879,7 @@
                   </div>
               </div>
               <div class="row">
-                  <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                   </svg>
                   <div class="cell whitespace-nowrap tooltip-trigger align-middle select-none p-1" style= "padding-right: 10px;">Layer Style</div>

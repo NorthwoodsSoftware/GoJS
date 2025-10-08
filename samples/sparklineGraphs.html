@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -163,59 +165,61 @@
       return new go.Spot(0, 1, 0, -y);
     }
 
-    var sparkLine = new go.Panel('Horizontal', {
-      alignment: go.Spot.Left,
-      alignmentFocusName: 'spark'
-    })
-      .bind('alignmentFocus', 'values', makeAlignmentFromValues)
-      .add(
-        new go.TextBlock({
-          visible: false,
-          margin: 1,
-          font: '11px sans-serif',
-          background: 'white'
+    var sparkLine =
+      new go.Panel('Horizontal', {
+          alignment: go.Spot.Left,
+          alignmentFocusName: 'spark'
         })
-          .bind('alignment', 'values', (values) => {
-            var min = Infinity;
-            var max = -Infinity;
-            for (var i = 0; i < values.length; i++) {
-              min = Math.min(min, values[i]);
-              max = Math.max(max, values[i]);
-            }
-            if (max - min === 0) return go.Spot.Center;
-            return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
-          })
-          .bind('stroke', 'color')
-          .bind('text', 'label')
-          .bind('visible', 'label', (l) => true),
-        new go.Shape({
-          fill: null,
-          strokeWidth: SPARK_STROKEWIDTH,
-          stroke: 'gray',
-          name: 'spark'
-        })
-          .bind('stroke', 'color')
-          .bind('geometryString', 'values', makeStringFromValues)
-      );
-
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({
-          fill: 'rgba(200,200,255,.3)',
-          strokeWidth: 0
-        }),
-        new go.Panel('Spot', { itemTemplate: sparkLine })
-          .bind('itemArray', 'items')
-          .add(
-            new go.Shape({
-              width: 1,
-              height: 200,
-              fill: 'red',
-              stroke: null,
-              strokeWidth: 0
+        .bind('alignmentFocus', 'values', makeAlignmentFromValues)
+        .add(
+          new go.TextBlock({
+              visible: false,
+              margin: 1,
+              font: '11px sans-serif',
+              background: 'white'
             })
-          )
-      );
+            .bind('alignment', 'values', values => {
+              var min = Infinity;
+              var max = -Infinity;
+              for (var i = 0; i < values.length; i++) {
+                min = Math.min(min, values[i]);
+                max = Math.max(max, values[i]);
+              }
+              if (max - min === 0) return go.Spot.Center;
+              return new go.Spot(0, 1 - Math.abs((values[0] - min) / (max - min)), 0, 0);
+            })
+            .bind('stroke', 'color')
+            .bind('text', 'label')
+            .bind('visible', 'label', l => true),
+          new go.Shape({
+              fill: null,
+              strokeWidth: SPARK_STROKEWIDTH,
+              stroke: 'gray',
+              name: 'spark'
+            })
+            .bind('stroke', 'color')
+            .bind('geometryString', 'values', makeStringFromValues)
+        );
+
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({
+            fill: 'rgba(200,200,255,.3)',
+            strokeWidth: 0
+          }),
+          new go.Panel('Spot', { itemTemplate: sparkLine })
+            .bind('itemArray', 'items')
+            .add(
+              new go.Shape({
+                width: 1,
+                height: 200,
+                fill: 'red',
+                stroke: null,
+                strokeWidth: 0
+              })
+            )
+        );
 
     function rand(min, max) {
       return Math.random() * (max - min) + min;
@@ -272,6 +276,7 @@
       ]
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,67 +132,71 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
-    myDiagram.nodeTemplate = new go.Node('Vertical')
-      .add(
-        new go.TextBlock({ font: 'bold 10pt sans-serif' }).bind('text'),
-        new go.Shape({
-          width: 40,
-          height: 40,
-          fill: 'white',
-          portId: '',
-          fromSpot: go.Spot.LeftRightSides,
-          toSpot: go.Spot.LeftRightSides
-        })
-          .bind('fill', 'color')
-          .bindTwoWay('figure'),
-        new go.Panel('Flow', {
-          maxSize: new go.Size(40, NaN),
-          background: 'transparent',
-          itemTemplate: new go.Panel()
-            .add(
-              new go.TextBlock({
-                font: '9pt sans-serif',
-                margin: new go.Margin(1, 1, 0, 1)
-              })
-                .bind('text', '')
-            )
-        })
-          .bind('itemArray', 'values')
-      );
-
-    myDiagram.nodeTemplate.contextMenu = new go.Adornment('Table', {
-      background: 'transparent',
-      defaultAlignment: go.Spot.Top,
-      padding: 10
-    })
-      .addRowDefinition(1, { height: 0 })
-      .add(
-        new go.Panel('Auto')
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical')
         .add(
-          new go.Shape({fill: 'transparent', stroke: 'black', strokeWidth: 1}),
-          new go.Panel('Horizontal', {
-            row: 0,
-            stretch: go.Stretch.Vertical,
-            defaultStretch: go.Stretch.Horizontal
-          })
-            .add(
-              makeTabLabel('Rectangles', true),
-              makeTabLabel('Triangles'),
-              makeTabLabel('Other')
-            )
-        ),
-        new go.Panel('Auto', {row: 2, stretch: go.GraphObject.fill})
+          new go.TextBlock({ font: 'bold 10pt sans-serif' })
+            .bind('text'),
+          new go.Shape({
+              width: 40,
+              height: 40,
+              fill: 'white',
+              portId: '',
+              fromSpot: go.Spot.LeftRightSides,
+              toSpot: go.Spot.LeftRightSides
+            })
+            .bind('fill', 'color')
+            .bindTwoWay('figure'),
+          new go.Panel('Flow', {
+              maxSize: new go.Size(40, NaN),
+              background: 'transparent',
+              itemTemplate:
+                new go.Panel()
+                  .add(
+                    new go.TextBlock({
+                        font: '9pt sans-serif',
+                        margin: new go.Margin(1, 1, 0, 1)
+                      })
+                      .bind('text', '')
+                  )
+            })
+            .bind('itemArray', 'values')
+        );
+
+    myDiagram.nodeTemplate.contextMenu =
+      new go.Adornment('Table', {
+          background: 'transparent',
+          defaultAlignment: go.Spot.Top,
+          padding: 10
+        })
+        .addRowDefinition(1, { height: 0 })
+        .add(
+          new go.Panel('Auto')
           .add(
-            new go.Shape({fill: 'white', stroke: 'black', strokeWidth: 1}),
-            new go.Panel('Auto')
+            new go.Shape({ fill: 'transparent' }),
+            new go.Panel('Horizontal', {
+                row: 0,
+                stretch: go.Stretch.Vertical,
+                defaultStretch: go.Stretch.Horizontal
+              })
               .add(
-                new go.Shape({fill: '#eee', margin: 4, stroke: 'black', strokeWidth: 1}),
-                makeFlowPanel('Rectangles', ['Square', 'RoundedRectangle', 'Diamond', 'RoundedTopRectangle', 'RoundedBottomRectangle'], true),
-                makeFlowPanel('Triangles', ['TriangleUp', 'TriangleRight', 'TriangleDown', 'TriangleLeft', 'TriangleDownLeft', 'TriangleDownRight', 'TriangleUpLeft', 'TriangleUpRight']),
-                makeFlowPanel('Other', ['LineH', 'LineV', 'Curve1', 'Curve2', 'PlusLine', 'XLine', 'Heart', 'Lightning', 'Trapezoid', 'Octagon'])
+                makeTabLabel('Rectangles', true),
+                makeTabLabel('Triangles'),
+                makeTabLabel('Other')
               )
-          )
-      );
+          ),
+          new go.Panel('Auto', { row: 2, stretch: go.Stretch.Fill })
+            .add(
+              new go.Shape({ fill: 'white' }),
+              new go.Panel('Auto')
+                .add(
+                  new go.Shape({ fill: '#eee', margin: 4 }),
+                  makeFlowPanel('Rectangles', ['Square', 'RoundedRectangle', 'Diamond', 'RoundedTopRectangle', 'RoundedBottomRectangle'], true),
+                  makeFlowPanel('Triangles', ['TriangleUp', 'TriangleRight', 'TriangleDown', 'TriangleLeft', 'TriangleDownLeft', 'TriangleDownRight', 'TriangleUpLeft', 'TriangleUpRight']),
+                  makeFlowPanel('Other', ['LineH', 'LineV', 'Curve1', 'Curve2', 'PlusLine', 'XLine', 'Heart', 'Lightning', 'Trapezoid', 'Octagon'])
+                )
+            )
+        );
 
     //set the last thing for the context menu
     myDiagram.nodeTemplate.contextMenu.lastPanelName = 'Rectangles';
@@ -237,9 +243,9 @@
     }
 
     function makeFlowPanel(name, figures, selected) {
-      return new go.Panel('Auto', {padding: 10})
+      return new go.Panel('Auto', { padding: 10 })
         .add(
-          new go.Shape({fill: 'transparent', strokeWidth: 0}),
+          new go.Shape({ fill: 'transparent', strokeWidth: 0 }),
           new go.Panel(new PanelLayoutFlow({
               spacing: new go.Size(5, 5),
               direction: 0
@@ -256,29 +262,28 @@
 
     function makeShape(fig) {
       return new go.Shape(fig, {
-        width: 20,
-        height: 20,
-        fill: 'white',
-        margin: 5,
-        background: 'transparent', // to catch a click anywhere in bounds
-        strokeWidth: 2,
-        stroke: 'black',
-        click: (e, shape) => {
-          var ad = shape.part;
-          e.diagram.commit((diag) => {
-            diag.model.set(ad.data, 'figure', fig);
-            ad.adornedPart.invalidateConnectedLinks();
-          }, 'modified figure');
-        },
-        mouseEnter: (e, obj) => {
-          obj.fill = 'gray';
-        },
-        mouseLeave: (e, obj) => {
-          obj.fill = 'white';
-        }
-      }).trigger('fill', {
-        duration: 125
-      });
+          width: 20,
+          height: 20,
+          fill: 'white',
+          margin: 5,
+          background: 'transparent', // to catch a click anywhere in bounds
+          strokeWidth: 2,
+          stroke: 'black',
+          click: (e, shape) => {
+            var ad = shape.part;
+            e.diagram.commit(diag => {
+              diag.model.set(ad.data, 'figure', fig);
+              ad.adornedPart.invalidateConnectedLinks();
+            }, 'modified figure');
+          },
+          mouseEnter: (e, obj) => {
+            obj.fill = 'gray';
+          },
+          mouseLeave: (e, obj) => {
+            obj.fill = 'white';
+          }
+        })
+        .trigger('fill', { duration: 125 });
     }
 
     myDiagram.model = new go.GraphLinksModel(
@@ -296,6 +301,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

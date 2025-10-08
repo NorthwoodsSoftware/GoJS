@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,10 +133,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -143,34 +145,35 @@
     });
 
     // the regular node template, which supports user-drawn links from the main Shape
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      layerName: 'Background'
-    }) // always have regular nodes behind Links
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('RoundedRectangle', {
-          fill: 'white',
-          stroke: null,
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer'
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // make some extra space for the shape around the text
-          .bind('text', 'key') // the label shows the node data's key
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Center,
+          layerName: 'Background'
+        }) // always have regular nodes behind Links
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+              fill: 'white',
+              stroke: null,
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // make some extra space for the shape around the text
+            .bind('text', 'key') // the label shows the node data's key
+        );
 
     // This is the template for a label node on a link: just an Ellipse.
     // This node supports user-drawn links to and from the label node.
-    myDiagram.nodeTemplateMap.add(
-      'LinkLabel',
+    myDiagram.nodeTemplateMap.add('LinkLabel',
       new go.Node({
-        selectable: false,
-        avoidable: false,
-        layerName: 'Foreground'
-      }) // always have link label nodes in front of Links
+          selectable: false,
+          movable: false,
+          avoidable: false,
+          layerName: 'Foreground'
+        }) // always have link label nodes in front of Links
         .add(
           new go.Shape('Ellipse', {
             width: 5,
@@ -185,18 +188,21 @@
     );
 
     // the regular link template, a straight blue arrow
-    myDiagram.linkTemplate = new go.Link({ relinkableFrom: true, relinkableTo: true, toShortLength: 2 })
-      .add(
-        new go.Shape({ stroke: '#2E68CC', strokeWidth: 2 }),
-        new go.Shape({ fill: '#2E68CC', stroke: null, toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          relinkableFrom: true, relinkableTo: true, toShortLength: 2
+        })
+        .add(
+          new go.Shape({ stroke: '#2E68CC', strokeWidth: 2 }),
+          new go.Shape({ fill: '#2E68CC', stroke: null, toArrow: 'Standard' })
+        );
 
     // This template shows links connecting with label nodes as green and arrow-less.
-    myDiagram.linkTemplateMap.add(
-      'linkToLink',
+    myDiagram.linkTemplateMap.add('linkToLink',
       new go.Link({ relinkableFrom: true, relinkableTo: true })
-        .add(new go.Shape({ stroke: '#2D9945', strokeWidth: 2 }))
-    );
+        .add(
+          new go.Shape({ stroke: '#2D9945', strokeWidth: 2 })
+        ));
 
     // GraphLinksModel support for link label nodes requires specifying two properties.
     myDiagram.model = new go.GraphLinksModel({ linkLabelKeysProperty: 'labelKeys' });
@@ -223,6 +229,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -137,7 +139,7 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -150,13 +152,13 @@
 
     // To simplify this code we define a function for creating a context menu button:
     function makeButton(text, action, visiblePredicate) {
-      const obj = go.GraphObject.build('ContextMenuButton', {
-        click: action
-      }).add(new go.TextBlock(text));
-
-      if (visiblePredicate)
-        obj.bindObject('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false));
-      return obj;
+      const button =
+        go.GraphObject.build('ContextMenuButton', { click: action})
+          .add(new go.TextBlock(text));
+      if (visiblePredicate) {
+        button.bindObject('visible', '', (o, e) => o.diagram ? visiblePredicate(o, e) : false);
+      }
+      return button;
     }
 
     const nodeMenu = // context menu for each Node
@@ -177,8 +179,7 @@
       go.GraphObject.build('ContextMenu')
         .add(
           makeButton('Swap order', (e, obj) => swapOrder(obj.part.adornedObject)),
-          makeButton(
-            'Remove port',
+          makeButton('Remove port',
             // in the click event handler, the obj.part is the Adornment;
             // its adornedObject is the port
             (e, obj) => removePort(obj.part.adornedObject)
@@ -189,154 +190,167 @@
 
     // the node template
     // includes a panel on each side with an itemArray of panels containing ports
-    myDiagram.nodeTemplate = new go.Node('Table', {
-      locationObjectName: 'BODY',
-      locationSpot: go.Spot.Center,
-      selectionObjectName: 'BODY',
-      contextMenu: nodeMenu
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // the body
-        new go.Panel('Auto', {
-          row: 1,
-          column: 1,
-          name: 'BODY',
-          stretch: go.Stretch.Fill
+    myDiagram.nodeTemplate =
+      new go.Node('Table', {
+          locationObjectName: 'BODY',
+          locationSpot: go.Spot.Center,
+          selectionObjectName: 'BODY',
+          contextMenu: nodeMenu
         })
-          .add(
-            new go.Shape('Rectangle', {
-              fill: 'lightgray',
-              stroke: 'gray',
-              strokeWidth: 0.5,
-              minSize: new go.Size(60, 60)
-            }),
-            new go.TextBlock({
-              margin: 10,
-              textAlign: 'center',
-              font: 'bold 14px Segoe UI,sans-serif',
-              stroke: '#484848',
-              editable: true
-            }).bindTwoWay('text', 'name')
-          ), // end Auto Panel body
-
-        // the Panel holding the left port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.leftArray
-        new go.Panel('Vertical', {
-          row: 1,
-          column: 0,
-          itemTemplate: new go.Panel({
-            _side: 'left', // internal property to make it easier to tell which side it's on
-            fromSpot: go.Spot.Left,
-            toSpot: go.Spot.Left,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer',
-            contextMenu: portMenu
-          })
-            .bind('portId', 'portId')
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // the body
+          new go.Panel('Auto', {
+              row: 1,
+              column: 1,
+              name: 'BODY',
+              stretch: go.Stretch.Fill
+            })
             .add(
               new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(1, 0)
-              }).themeData('fill', 'portColor', 'ports')
-            )
-        }) // end Vertical Panel
-          .bind('itemArray', 'leftArray'),
+                fill: 'lightgray',
+                stroke: 'gray',
+                strokeWidth: 0.5,
+                minSize: new go.Size(60, 60)
+              }),
+              new go.TextBlock({
+                  margin: 10,
+                  textAlign: 'center',
+                  font: 'bold 14px Segoe UI,sans-serif',
+                  stroke: '#484848',
+                  editable: true
+                })
+                .bindTwoWay('text', 'name')
+            ), // end Auto Panel body
 
-        // the Panel holding the top port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.topArray
-        new go.Panel('Horizontal', {
-          row: 0,
-          column: 1,
-          itemTemplate: new go.Panel({
-            _side: 'top',
-            fromSpot: go.Spot.Top,
-            toSpot: go.Spot.Top,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer',
-            contextMenu: portMenu
-          })
-            .bind('portId', 'portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(0, 1)
-              }).themeData('fill', 'portColor', 'ports')
-            )
-        }) // end Horizontal Panel
-          .bind('itemArray', 'topArray'),
+          // the Panel holding the left port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.leftArray
+          new go.Panel('Vertical', {
+              row: 1,
+              column: 0,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Left,
+                    toSpot: go.Spot.Left,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer',
+                    contextMenu: portMenu
+                  })
+                  .attach({ _side: 'left' }) // internal property to make it easier to tell which side it's on
+                  .bind('portId', 'portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(1, 0)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  )
+            }) // end Vertical Panel
+            .bind('itemArray', 'leftArray'),
 
-        // the Panel holding the right port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.rightArray
-        new go.Panel('Vertical', {
-          row: 1,
-          column: 2,
-          itemTemplate: new go.Panel({
-            _side: 'right',
-            fromSpot: go.Spot.Right,
-            toSpot: go.Spot.Right,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer',
-            contextMenu: portMenu
-          })
-            .bind('portId', 'portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(1, 0)
-              }).themeData('fill', 'portColor', 'ports')
-            )
-        }) // end Vertical Panel
-          .bind('itemArray', 'rightArray'),
+          // the Panel holding the top port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.topArray
+          new go.Panel('Horizontal', {
+              row: 0,
+              column: 1,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Top,
+                    toSpot: go.Spot.Top,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer',
+                    contextMenu: portMenu
+                  })
+                  .attach({ _side: 'top' }) // internal property to make it easier to tell which side it's on
+                  .bind('portId', 'portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(0, 1)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  )
+            }) // end Horizontal Panel
+            .bind('itemArray', 'topArray'),
 
-        // the Panel holding the bottom port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.bottomArray
-        new go.Panel('Horizontal', {
-          row: 2,
-          column: 1,
-          itemTemplate: new go.Panel({
-            _side: 'bottom',
-            fromSpot: go.Spot.Bottom,
-            toSpot: go.Spot.Bottom,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer',
-            contextMenu: portMenu
-          })
-            .bind('portId', 'portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(0, 1)
-              }).themeData('fill', 'portColor', 'ports')
-            ) // end itemTemplate
-        }) // end Horizontal Panel
-          .bind('itemArray', 'bottomArray')
-      ); // end Node
+          // the Panel holding the right port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.rightArray
+          new go.Panel('Vertical', {
+              row: 1,
+              column: 2,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Right,
+                    toSpot: go.Spot.Right,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer',
+                    contextMenu: portMenu
+                  })
+                  .attach({ _side: 'right' }) // internal property to make it easier to tell which side it's on
+                  .bind('portId', 'portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(1, 0)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  )
+            }) // end Vertical Panel
+            .bind('itemArray', 'rightArray'),
+
+          // the Panel holding the bottom port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.bottomArray
+          new go.Panel('Horizontal', {
+              row: 2,
+              column: 1,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Bottom,
+                    toSpot: go.Spot.Bottom,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer',
+                    contextMenu: portMenu
+                  })
+                  .attach({ _side: 'bottom' }) // internal property to make it easier to tell which side it's on
+                  .bind('portId', 'portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(0, 1)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  ) // end itemTemplate
+            }) // end Horizontal Panel
+            .bind('itemArray', 'bottomArray')
+        ); // end Node
 
     // an orthogonal link template, reshapable and relinkable
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 4,
-      curve: go.Curve.JumpGap,
-      reshapable: true,
-      resegmentable: true,
-      relinkableFrom: true,
-      relinkableTo: true
-    })
-      .bindTwoWay('points')
-      .add(new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 }));
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          corner: 4,
+          curve: go.Curve.JumpGap,
+          reshapable: true,
+          resegmentable: true,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
+        .bindTwoWay('points')
+        .add(
+          new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 })
+        );
 
     // support double-clicking in the background to add a copy of this data as a node
     myDiagram.toolManager.clickCreatingTool.archetypeNodeData = {
@@ -347,30 +361,26 @@
       bottomArray: []
     };
 
-    myDiagram.contextMenu = go.GraphObject.build('ContextMenu')
-      .add(
-        makeButton(
-          'Paste',
-          (e, obj) =>
-            e.diagram.commandHandler.pasteSelection(
-              e.diagram.toolManager.contextMenuTool.mouseDownPoint
-            ),
-          (o) =>
-            o.diagram.commandHandler.canPasteSelection(
-              o.diagram.toolManager.contextMenuTool.mouseDownPoint
-            )
-        ),
-        makeButton(
-          'Undo',
-          (e, obj) => e.diagram.commandHandler.undo(),
-          (o) => o.diagram.commandHandler.canUndo()
-        ),
-        makeButton(
-          'Redo',
-          (e, obj) => e.diagram.commandHandler.redo(),
-          (o) => o.diagram.commandHandler.canRedo()
-        )
-      );
+    myDiagram.contextMenu =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          makeButton('Paste',
+            (e, obj) => e.diagram.commandHandler.pasteSelection(
+                          e.diagram.toolManager.contextMenuTool.mouseDownPoint
+                        ),
+            o => o.diagram.commandHandler.canPasteSelection(
+                    o.diagram.toolManager.contextMenuTool.mouseDownPoint
+                  )
+          ),
+          makeButton('Undo',
+            (e, obj) => e.diagram.commandHandler.undo(),
+            o => o.diagram.commandHandler.canUndo()
+          ),
+          makeButton('Redo',
+            (e, obj) => e.diagram.commandHandler.redo(),
+            o => o.diagram.commandHandler.canRedo()
+          )
+        );
 
     // load the diagram from JSON data
     load();
@@ -379,7 +389,7 @@
   // Add a port to the specified side of the selected nodes.
   function addPort(side) {
     myDiagram.startTransaction('addPort');
-    myDiagram.selection.each((node) => {
+    myDiagram.selection.each(node => {
       // skip any selected Links
       if (!(node instanceof go.Node)) return;
       // compute the next available index number for the side
@@ -417,8 +427,8 @@
           newarr[i + 1] = arr[i];
           // remember the new Array in the model
           myDiagram.model.setDataProperty(port.part.data, port._side + 'Array', newarr);
-          port.part.findLinksConnected(newarr[i].portId).each((l) => l.invalidateRoute());
-          port.part.findLinksConnected(newarr[i + 1].portId).each((l) => l.invalidateRoute());
+          port.part.findLinksConnected(newarr[i].portId).each(l => l.invalidateRoute());
+          port.part.findLinksConnected(newarr[i + 1].portId).each(l => l.invalidateRoute());
           myDiagram.commitTransaction('swap ports');
           break;
         }
@@ -480,6 +490,7 @@
     // so the GraphLinksModel needs to set these property names:
     // linkFromPortIdProperty and linkToPortIdProperty.
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -653,7 +664,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -679,6 +690,32 @@ More information can be found in the <a href="../intro/buttons.html">GoJS Intro<
 </p>
             <p>
               <a href="../samples/index.html#theme">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

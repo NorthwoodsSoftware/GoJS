@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,31 +131,31 @@
   function init() {
 
     myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
-        layout: new go.GridLayout({ comparer: go.GridLayout.smartComparer })
-        // other properties are set by the layout function, defined below
-      }
-    );
+      layout: new go.GridLayout({ comparer: go.GridLayout.smartComparer })
+      // other properties are set by the layout function, defined below
+    });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
-      // make sure the Node.location is different from the Node.position
-      .bind('text') // for sorting
-      .add(
-        new go.Shape('Ellipse', {
-          fill: 'lightgray',
-          stroke: null,
-          desiredSize: new go.Size(30, 30)
-        })
-          .bind('fill')
-          .bind('desiredSize', 'size'),
-        new go.TextBlock()
-          // the default alignment is go.Spot.Center
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', { locationSpot: go.Spot.Center })
+        // make sure the Node.location is different from the Node.position
+        .bind('text') // for sorting
+        .add(
+          new go.Shape('Ellipse', {
+              fill: 'lightgray',
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            })
+            .bind('fill')
+            .bind('desiredSize', 'size'),
+          new go.TextBlock()
+            // the default alignment is go.Spot.Center
+            .bind('text')
+        );
 
     // create an array of data describing randomly colored and sized nodes
-    var nodeDataArray = [];
-    for (var i = 0; i < 100; i++) {
+    const nodeDataArray = [];
+    for (let i = 0; i < 100; i++) {
       nodeDataArray.push({
         key: i,
         text: i.toString(),
@@ -163,9 +165,9 @@
     }
 
     // randomize the data
-    for (i = 0; i < nodeDataArray.length; i++) {
-      var swap = Math.floor(Math.random() * nodeDataArray.length);
-      var temp = nodeDataArray[swap];
+    for (let i = 0; i < nodeDataArray.length; i++) {
+      const swap = Math.floor(Math.random() * nodeDataArray.length);
+      const temp = nodeDataArray[swap];
       nodeDataArray[swap] = nodeDataArray[i];
       nodeDataArray[i] = temp;
     }
@@ -191,7 +193,7 @@
 
     var wrappingWidth = d.getElementById('wrappingWidth').value;
     lay.wrappingWidth = parseFloat(wrappingWidth, 10);
-    if(wrappingWidth != d.getElementById('wrappingWidth').name) code += `\n  wrappingWidth: ${wrappingWidth},`;
+    if (wrappingWidth != d.getElementById('wrappingWidth').name) code += `\n  wrappingWidth: ${wrappingWidth},`;
 
     var cellWidth = d.getElementById('cellWidth').value;
     var cellHeight = d.getElementById('cellHeight').value;
@@ -204,7 +206,7 @@
     if (spacingWidth != d.getElementById('spacingWidth').name || spacingHeight != d.getElementById('spacingHeight').name) code += `\n  spacing: new go.Size(${spacingWidth}, ${spacingHeight}),`;
 
     var alignment = d.getElementById('alignment').value;
-    if(alignment === 'Location') {
+    if (alignment === 'Location') {
       lay.alignment = go.GridLayout.Location;
     } else {
       lay.alignment = go.GridLayout.Position;
@@ -220,18 +222,18 @@
     if (arrangement != d.getElementById('arrangement').name.split(/\s+/).join('')) code += `\n  arrangement: go.GridArrangement.${arrangement},`;
 
     var sorting = d.getElementById('sorting').value;
-    if(sorting === 'Forwards') {
+    if (sorting === 'Forwards') {
       lay.sorting = go.GridLayout.Forwards;
-    } else if(sorting === 'Reverse') {
+    } else if (sorting === 'Reverse') {
       lay.sorting = go.GridLayout.Reverse;
-    } else if(sorting === 'Ascending') {
+    } else if (sorting === 'Ascending') {
       lay.sorting = go.GridLayout.Ascending;
     } else {
       lay.sorting = go.GridLayout.Descending;
     }
     if (sorting != d.getElementById('sorting').name) code += `\n  sorting: go.GridLayout.${sorting},`;
 
-    if(code === 'new go.GridLayout({ ') code = 'new go.GridLayout()'; // If no changes made to layout
+    if (code === 'new go.GridLayout({ ') code = 'new go.GridLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
     if (window.Prism) window.Prism.highlightAll();
@@ -253,14 +255,14 @@
   }
 
   function buildDropdown(id, title, table, options) {
-    var template = document.getElementById('dropdown');
-    var clone = template.content.cloneNode(true);
+    const template = document.getElementById('dropdown');
+    const clone = template.content.cloneNode(true);
     dropdown = clone.querySelector('.input')
     dropdown.name = options[0];
     dropdown.id = id;
     clone.querySelector('.title').textContent = title;
     options.forEach(element => {
-      let option = document.createElement('option');
+      const option = document.createElement('option');
       option.value = element; // Set the value to be the index + 1
       option.text = element; // Set the text to be the element from the array
       dropdown.add(option);
@@ -269,7 +271,7 @@
     document.getElementById(table).appendChild(clone);
   }
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     // Builds the setting menu through calls to respective builder
     buildButtonRow('wrappingColumn', 1, NaN, 'Columns','table1', 0);
     buildButtonRow('wrappingWidth', 10, NaN, 'Width','table1', 0);
@@ -282,25 +284,25 @@
     buildDropdown('arrangement', 'Arrangement','table2', ['Left To Right', 'Right To Left']);
     buildDropdown('sorting', 'Sorting', 'table2', ['Forwards', 'Reverse', 'Ascending', 'Descending']);
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = ''; })
     })
   }
 
-  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+  function changeDropdown(element) {  // Changes dropdowns and updates code block and reset button
     element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function resetButton(element){ // Resets the value of the input box and updates respective divs
+  function resetButton(element) {  // Resets the value of the input box and updates respective divs
     e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+  function changeInput(element, change = true) {  // Changes value and checks for default equality for the reset button
     e = element.parentNode.querySelector('.inputBox');
     change? number = element.name: number = 0;
     const min = element.parentNode.querySelector('.minimum').name;
@@ -308,13 +310,13 @@
     value = e.value;
     (isNaN(value))? value = 0 : value = parseFloat(e.value, 10);
     value += parseFloat(number, 10);
-    if(min !== null) value = Math.max(value, min) // Checks for max and min values]
+    if (min !== null) value = Math.max(value, min) // Checks for max and min values]
     e.value = (value === 0 && !(e.id.includes('spacing')))? NaN : value;
     element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -326,7 +328,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -384,7 +386,7 @@
 
 <template id="buttonRow">
   <div class="row tooltip" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
@@ -416,7 +418,7 @@
 
 <template id="dropdown">
   <div class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 26px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 26px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>

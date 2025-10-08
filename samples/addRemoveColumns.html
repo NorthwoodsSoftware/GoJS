@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,10 +128,10 @@
   function tableRowItemTemplate() {
     return (
       new go.Panel({
-        // each of which as "attr" and "text" properties
-        stretch: go.Stretch.Fill,
-        alignment: go.Spot.TopLeft
-      })
+          // each of which as "attr" and "text" properties
+          stretch: go.Stretch.Fill,
+          alignment: go.Spot.TopLeft
+        })
         .bind('column', 'attr', (a, elt) => {
           // ELT is this bound item/cell Panel
           // elt.data will be the cell object
@@ -143,51 +145,55 @@
         // you could also have other Bindings here for this cell
         .add(
           new go.TextBlock({
-            editable: true,
-            margin: new go.Margin(2, 2, 0, 2),
-            wrap: go.Wrap.None
-          }).bindTwoWay('text')
+              editable: true,
+              margin: new go.Margin(2, 2, 0, 2),
+              wrap: go.Wrap.None
+            })
+            .bindTwoWay('text')
         )
     );
   }
 
-
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({ fill: 'white' }),
-        new go.Panel('Table', {
-          margin: 0.5,
-          // the rows for the people
-          name: 'TABLE',
-          defaultAlignment: go.Spot.Left,
-          defaultColumnSeparatorStroke: 'black',
-          // bound to a person/row data object
-          itemTemplate: new go.Panel('TableRow', { itemTemplate: tableRowItemTemplate() }).bind(
-            'itemArray',
-            'columns'
-          )
-        })
-          .bind('itemArray', 'people')
-          .addRowDefinition(0, { background: 'lightgray' })
-          .addRowDefinition(1, { separatorStroke: 'black' })
-          // the table headers -- remains even if itemArray is empty
-          .add(
-            new go.Panel('TableRow', {
-              isPanelMain: true,
-              // bound to a column definition object
-              itemTemplate: new go.Panel().bind('column')
-                .add(
-                  new go.TextBlock({
-                    margin: new go.Margin(2, 2, 0, 2),
-                    font: 'bold 10pt sans-serif'
-                  }).bind('text')
-                )
-            }).bind('itemArray', 'columnDefinitions')
-          )
-    );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ fill: 'white' }),
+          new go.Panel('Table', {
+              margin: 0.5,
+              // the rows for the people
+              name: 'TABLE',
+              defaultAlignment: go.Spot.Left,
+              defaultColumnSeparatorStroke: 'black',
+              // bound to a person/row data object
+              itemTemplate:
+                new go.Panel('TableRow', { itemTemplate: tableRowItemTemplate() })
+                  .bind('itemArray', 'columns')
+            })
+            .bind('itemArray', 'people')
+            .addRowDefinition(0, { background: 'lightgray' })
+            .addRowDefinition(1, { separatorStroke: 'black' })
+            // the table headers -- remains even if itemArray is empty
+            .add(
+              new go.Panel('TableRow', {
+                isPanelMain: true,
+                // bound to a column definition object
+                itemTemplate:
+                  new go.Panel()
+                    .bind('column')
+                    .add(
+                      new go.TextBlock({
+                          margin: new go.Margin(2, 2, 0, 2),
+                          font: 'bold 10pt sans-serif'
+                        })
+                        .bind('text')
+                    )
+              })
+              .bind('itemArray', 'columnDefinitions')
+            )
+        );
 
     myDiagram.model = new go.GraphLinksModel({
       copiesArrays: true,
@@ -380,7 +386,7 @@
   function swapTwoColumns() {
     myDiagram.startTransaction('swapColumns');
     var model = myDiagram.model;
-    myDiagram.selection.each((n) => {
+    myDiagram.selection.each(n => {
       if (!(n instanceof go.Node)) return;
       var d = n.data;
       var phonedef = findColumnDefinitionForName(d, 'phone');
@@ -395,6 +401,7 @@
     });
     myDiagram.commitTransaction('swapColumns');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

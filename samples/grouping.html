@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,48 +135,53 @@
     });
 
     // define the node template for non-groups
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('Rectangle', { stroke: null, strokeWidth: 0 }).bind('fill', 'key'),
-        new go.TextBlock({ margin: 7, font: 'Bold 14px Sans-Serif' })
-          //the text, color, and key are all bound to the same property in the node data
-          .bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('Rectangle', { stroke: null, strokeWidth: 0 })
+            .bind('fill', 'key'),
+          new go.TextBlock({ margin: 7, font: 'Bold 14px Sans-Serif' })
+            //the text, color, and key are all bound to the same property in the node data
+            .bind('text', 'key')
+        );
 
-    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, corner: 10 })
-      .add(
-        new go.Shape({ strokeWidth: 2 }),
-        new go.Shape({ toArrow: 'OpenTriangle' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 10 })
+        .add(
+          new go.Shape({ strokeWidth: 2 }),
+          new go.Shape({ toArrow: 'OpenTriangle' })
+        );
 
     // define the group template
-    myDiagram.groupTemplate = new go.Group('Auto', {
-      // define the group's internal layout
-      layout: new go.TreeLayout({ angle: 90, arrangement: go.TreeArrangement.Horizontal, isRealtime: false }),
-      // the group begins unexpanded;
-      // upon expansion, a Diagram Listener will generate contents for the group
-      isSubGraphExpanded: false,
-      // when a group is expanded, if it contains no parts, generate a subGraph inside of it
-      subGraphExpandedChanged: (group) => {
-        if (group.memberParts.count === 0) {
-          randomGroup(group.data.key);
-        }
-      }
-    })
-      .add(
-        new go.Shape('Rectangle', { fill: null, stroke: 'gray', strokeWidth: 2 }),
-        new go.Panel('Vertical', { defaultAlignment: go.Spot.Left, margin: 4 })
-          .add(
-            new go.Panel('Horizontal', { defaultAlignment: go.Spot.Top })
-              .add(
-                // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
-                go.GraphObject.build('SubGraphExpanderButton'),
-                new go.TextBlock({ font: 'Bold 18px Sans-Serif', margin: 4 }).bind('text', 'key')
-              ),
-            // create a placeholder to represent the area where the contents of the group are
-            new go.Placeholder({ padding: new go.Margin(0, 10) })
-          ) // end Vertical Panel
-      ); // end Group
+    myDiagram.groupTemplate =
+      new go.Group('Auto', {
+          // define the group's internal layout
+          layout: new go.TreeLayout({ angle: 90, arrangement: go.TreeArrangement.Horizontal, isRealtime: false }),
+          // the group begins unexpanded;
+          // upon expansion, a Diagram Listener will generate contents for the group
+          isSubGraphExpanded: false,
+          // when a group is expanded, if it contains no parts, generate a subGraph inside of it
+          subGraphExpandedChanged: group => {
+            if (group.memberParts.count === 0) {
+              randomGroup(group.data.key);
+            }
+          }
+        })
+        .add(
+          new go.Shape('Rectangle', { fill: null, stroke: 'gray', strokeWidth: 2 }),
+          new go.Panel('Vertical', { defaultAlignment: go.Spot.Left, margin: 4 })
+            .add(
+              new go.Panel('Horizontal', { defaultAlignment: go.Spot.Top })
+                .add(
+                  // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
+                  go.GraphObject.build('SubGraphExpanderButton'),
+                  new go.TextBlock({ font: 'Bold 18px Sans-Serif', margin: 4 })
+                    .bind('text', 'key')
+                ),
+              // create a placeholder to represent the area where the contents of the group are
+              new go.Placeholder({ padding: new go.Margin(0, 10) })
+            ) // end Vertical Panel
+        ); // end Group
 
     // generate the initial model
     randomGroup();
@@ -187,7 +194,7 @@
     myDiagram.startTransaction('addGroupContents');
     var addedKeys = []; // this will contain the keys of all nodes created
     var groupCount = 0; // the number of groups in the diagram, to determine the numbers in the keys of new groups
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       if (node instanceof go.Group) groupCount++;
     });
     // create a random number of groups
@@ -222,6 +229,7 @@
     }
     myDiagram.commitTransaction('addGroupContents');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -293,7 +301,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

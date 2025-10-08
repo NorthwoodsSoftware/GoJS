@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,6 +125,7 @@
             
 
 <script id="code">
+
   class WheelLayout extends go.CircularLayout {
     constructor(init) {
       super();
@@ -200,38 +203,39 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Horizontal', {
-      selectionAdorned: false,
-      locationSpot: go.Spot.Center, // Node.location is the center of the Shape
-      locationObjectName: 'SHAPE',
-      mouseEnter: (e, node) => {
-        e.diagram.clearHighlighteds();
-        node.linksConnected.each(l => highlightLink(l, true));
-        node.isHighlighted = true;
-        const tb = node.findObject('TEXTBLOCK');
-        if (tb !== null) tb.stroke = highlightColor;
-      },
-      mouseLeave: (e, node) => {
-        e.diagram.clearHighlighteds();
-        const tb = node.findObject('TEXTBLOCK');
-        if (tb !== null) tb.stroke = 'black';
-      }
-    })
-      .bind('text', 'text') // for sorting the nodes
-      .add(
-        new go.Shape('Circle', {
-          name: 'SHAPE',
-          fill: 'lightgray', // default value, but also data-bound
-          stroke: 'transparent', // modified by highlighting
-          strokeWidth: 2,
-          desiredSize: new go.Size(25, 25),
-          portId: ''
-        }) // so links will go to the shape, not the whole node
-          .bind('fill', 'color')
-          .bindObject('stroke', 'isHighlighted', h => h ? highlightColor : 'transparent'),
-        new go.TextBlock({ name: 'TEXTBLOCK' }) // for search
-          .bind('text', 'text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Horizontal', {
+          selectionAdorned: false,
+          locationSpot: go.Spot.Center, // Node.location is the center of the Shape
+          locationObjectName: 'SHAPE',
+          mouseEnter: (e, node) => {
+            e.diagram.clearHighlighteds();
+            node.linksConnected.each(l => highlightLink(l, true));
+            node.isHighlighted = true;
+            const tb = node.findObject('TEXTBLOCK');
+            if (tb !== null) tb.stroke = highlightColor;
+          },
+          mouseLeave: (e, node) => {
+            e.diagram.clearHighlighteds();
+            const tb = node.findObject('TEXTBLOCK');
+            if (tb !== null) tb.stroke = 'black';
+          }
+        })
+        .bind('text', 'text') // for sorting the nodes
+        .add(
+          new go.Shape('Circle', {
+              name: 'SHAPE',
+              fill: 'lightgray', // default value, but also data-bound
+              stroke: 'transparent', // modified by highlighting
+              strokeWidth: 2,
+              desiredSize: new go.Size(25, 25),
+              portId: ''
+            }) // so links will go to the shape, not the whole node
+            .bind('fill', 'color')
+            .bindObject('stroke', 'isHighlighted', h => h ? highlightColor : 'transparent'),
+          new go.TextBlock({ name: 'TEXTBLOCK' }) // for search
+            .bind('text', 'text')
+        );
 
     function highlightLink(link, show) {
       link.isHighlighted = show;
@@ -240,19 +244,20 @@
     }
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({
-      // routing: go.Routing.Orthogonal,
-      curve: go.Curve.Bezier,
-      selectionAdorned: false,
-      mouseEnter: (e, link) => highlightLink(link, true),
-      mouseLeave: (e, link) => highlightLink(link, false)
-    })
-      .add(
-        new go.Shape()
-          .bindObject('stroke', 'isHighlighted', (h, shape) => (h ? highlightColor : go.Brush.darken(shape.part.data.color)))
-          .bindObject('strokeWidth', 'isHighlighted', h => h ? 3 : 1.5)
-        // no arrowhead -- assume directionality of relationship need not be shown
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          // routing: go.Routing.Orthogonal,
+          curve: go.Curve.Bezier,
+          selectionAdorned: false,
+          mouseEnter: (e, link) => highlightLink(link, true),
+          mouseLeave: (e, link) => highlightLink(link, false)
+        })
+        .add(
+          new go.Shape()
+            .bindObject('stroke', 'isHighlighted', (h, shape) => h ? highlightColor : go.Brush.darken(shape.part.data.color))
+            .bindObject('strokeWidth', 'isHighlighted', h => h ? 3 : 1.5)
+          // no arrowhead -- assume directionality of relationship need not be shown
+        );
 
     generateGraph();
   }
@@ -337,6 +342,7 @@
 
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

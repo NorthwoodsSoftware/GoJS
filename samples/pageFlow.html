@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -153,14 +155,12 @@
     var smallfont = 'bold 11pt Helvetica, Arial, sans-serif';
 
     // Common text styling
-    function textStyle() {
-      return {
-        margin: 10,
-        wrap: go.Wrap.Fit,
-        textAlign: 'center',
-        editable: true,
-        font: bigfont
-      };
+    function textStyle(tb) {
+      tb.margin = 10;
+      tb.wrap = go.Wrap.Fit;
+      tb.textAlign = 'center';
+      tb.editable = true;
+      tb.font = bigfont;
     }
 
     myDiagram = new go.Diagram('myDiagramDiv', {
@@ -177,10 +177,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -188,160 +188,158 @@
       }
     });
 
-    var defaultAdornment = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({
-              fill: null,
-              stroke: selectColor,
-              strokeWidth: 3
-            }),
-            new go.Placeholder()
-          ),
-        // the button to create a "next" node, at the top-right corner
-        go.GraphObject.build('Button', {
-          alignment: new go.Spot(1, 0, -5, 5),
-          click: addNodeAndLink
-        }) // this function is defined below
-          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
-          .add(
-            new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
-          )
-      );
+    var defaultAdornment =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: null, stroke: selectColor, strokeWidth: 3 }),
+              new go.Placeholder()
+            ),
+          // the button to create a "next" node, at the top-right corner
+          go.GraphObject.build('Button', {
+              alignment: new go.Spot(1, 0, -5, 5),
+              click: addNodeAndLink
+            }) // this function is defined below
+            .bindObject('visible', '', a => !a.diagram.isReadOnly)
+            .add(
+              new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
+            )
+        );
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      selectionAdornmentTemplate: defaultAdornment,
-      isShadowed: true,
-      shadowBlur: 2,
-      shadowColor: yellowShadow,
-      shadowOffset: new go.Point(4, 6)
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('Rectangle', {
-          fill: yellow,
-          stroke: 'rgba(0, 0, 0, 0)',
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer',
-          toEndSegmentLength: 50,
-          fromEndSegmentLength: 40
-        }),
-        new go.TextBlock('Page', {
-          margin: 10,
-          font: bigfont,
-          editable: true
-        })
-          .bindTwoWay('text')
-      );
-
-    myDiagram.nodeTemplateMap.add('Source',
+    myDiagram.nodeTemplate =
       new go.Node('Auto', {
-        isShadowed: true,
-        shadowBlur: 2,
-        shadowColor: blueShadow,
-        shadowOffset: new go.Point(4, 6)
-      })
+          selectionAdornmentTemplate: defaultAdornment,
+          isShadowed: true,
+          shadowBlur: 2,
+          shadowColor: yellowShadow,
+          shadowOffset: new go.Point(4, 6)
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
-          new go.Shape('RoundedRectangle', {
-            name: 'SHAPE',
-            fill: blue,
+          new go.Shape('Rectangle', {
+            fill: yellow,
             stroke: 'rgba(0, 0, 0, 0)',
             portId: '',
             fromLinkable: true,
+            toLinkable: true,
             cursor: 'pointer',
+            toEndSegmentLength: 50,
             fromEndSegmentLength: 40
-          })
+          }),
+          new go.TextBlock('Page', {
+              margin: 10,
+              font: bigfont,
+              editable: true
+            })
+            .bindTwoWay('text')
+        );
+
+    myDiagram.nodeTemplateMap.add('Source',
+      new go.Node('Auto', {
+          isShadowed: true,
+          shadowBlur: 2,
+          shadowColor: blueShadow,
+          shadowOffset: new go.Point(4, 6)
+        })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+              name: 'SHAPE',
+              fill: blue,
+              stroke: 'rgba(0, 0, 0, 0)',
+              portId: '',
+              fromLinkable: true,
+              cursor: 'pointer',
+              fromEndSegmentLength: 40
+            })
             .bind('fill', 'color'),
-          new go.TextBlock('Source', textStyle())
+          new go.TextBlock('Source')
+            .apply(textStyle)
             .bindTwoWay('text')
         )
     );
 
     myDiagram.nodeTemplateMap.add('DesiredEvent',
       new go.Node('Auto', {
-        isShadowed: true,
-        shadowBlur: 2,
-        shadowColor: greenShadow,
-        shadowOffset: new go.Point(4, 6)
-      })
+          isShadowed: true,
+          shadowBlur: 2,
+          shadowColor: greenShadow,
+          shadowOffset: new go.Point(4, 6)
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape('RoundedRectangle', {
-            fill: green,
-            stroke: null,
-            portId: '',
-            toLinkable: true,
-            toEndSegmentLength: 50
-          })
+              fill: green,
+              stroke: null,
+              portId: '',
+              toLinkable: true,
+              toEndSegmentLength: 50
+            })
             .bind('fill', 'color'),
-          new go.TextBlock('Success!', textStyle())
+          new go.TextBlock('Success!')
+            .apply(textStyle)
             .bindTwoWay('text')
         )
     );
 
     // Undesired events have special adornments that allows adding and removing additional "reasons"
-    var UndesiredEventAdornmentModify = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({
-              fill: null,
-              stroke: selectColor,
-              strokeWidth: 4
-            }),
-            new go.Placeholder()
-          ),
-        // the button to create a new reason, at the bottom-left corner
-        go.GraphObject.build('Button', {
-          alignment: new go.Spot(1, 1, -5, -5),
-          click: addReason
-        }) // this function is defined below
-          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
-          .add(
-            new go.Shape('TriangleDown', { desiredSize: new go.Size(10, 10) })
-          ),
-        //the button to remove the most recent reason, above the "create" button
-        go.GraphObject.build('Button', {
-          alignment: new go.Spot(1, 1, -5, -22),
-          click: removeReason
-        }) //this function is also defined below
-          .bindObject('visible', '', (a) => !a.diagram.isReadOnly)
-          .add(
-            new go.Shape('TriangleUp', { desiredSize: new go.Size(10, 10) })
-          )
-      );
+    var UndesiredEventAdornmentModify =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: null, stroke: selectColor, strokeWidth: 4 }),
+              new go.Placeholder()
+            ),
+          // the button to create a new reason, at the bottom-left corner
+          go.GraphObject.build('Button', {
+              alignment: new go.Spot(1, 1, -5, -5),
+              click: addReason
+            }) // this function is defined below
+            .bindObject('visible', '', a => !a.diagram.isReadOnly)
+            .add(
+              new go.Shape('TriangleDown', { desiredSize: new go.Size(10, 10) })
+            ),
+          //the button to remove the most recent reason, above the "create" button
+          go.GraphObject.build('Button', {
+              alignment: new go.Spot(1, 1, -5, -22),
+              click: removeReason
+            }) //this function is also defined below
+            .bindObject('visible', '', a => !a.diagram.isReadOnly)
+            .add(
+              new go.Shape('TriangleUp', { desiredSize: new go.Size(10, 10) })
+            )
+        );
 
-    var reasonTemplate = new go.Panel('Horizontal')
-      .add(
-        new go.TextBlock('•', {
-          margin: 4,
-          stroke: undesiredEventTextColor,
-          font: smallfont
-        }),
-        new go.TextBlock('Reason', {
-          margin: 4,
-          maxSize: new go.Size(200, NaN),
-          wrap: go.Wrap.Fit,
-          stroke: undesiredEventTextColor,
-          editable: true,
-          font: smallfont
-        })
-          .bindTwoWay('text')
-      );
+    var reasonTemplate =
+      new go.Panel('Horizontal')
+        .add(
+          new go.TextBlock('•', {
+            margin: 4,
+            stroke: undesiredEventTextColor,
+            font: smallfont
+          }),
+          new go.TextBlock('Reason', {
+              margin: 4,
+              maxSize: new go.Size(200, NaN),
+              wrap: go.Wrap.Fit,
+              stroke: undesiredEventTextColor,
+              editable: true,
+              font: smallfont
+            })
+            .bindTwoWay('text')
+        );
 
     myDiagram.nodeTemplateMap.add('UndesiredEvent',
       new go.Node('Auto', {
-        isShadowed: true,
-        shadowBlur: 2,
-        shadowColor: redShadow,
-        shadowOffset: new go.Point(4, 6),
-        selectionAdornmentTemplate: UndesiredEventAdornmentModify
-      })
+          isShadowed: true,
+          shadowBlur: 2,
+          shadowColor: redShadow,
+          shadowOffset: new go.Point(4, 6),
+          selectionAdornmentTemplate: UndesiredEventAdornmentModify
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape('RoundedRectangle', {
@@ -353,16 +351,17 @@
           }),
           new go.Panel('Vertical', { defaultAlignment: go.Spot.Top })
             .add(
-              new go.TextBlock('Drop', {
-                ...textStyle(),
-                stroke: undesiredEventTextColor,
-                minSize: new go.Size(80, NaN)
-              })
+              new go.TextBlock('Drop')
+                .apply(textStyle)
+                .set({
+                  stroke: undesiredEventTextColor,
+                  minSize: new go.Size(80, NaN)
+                })
                 .bindTwoWay('text'),
               new go.Panel('Vertical', {
-                defaultAlignment: go.Spot.TopLeft,
-                itemTemplate: reasonTemplate
-              })
+                  defaultAlignment: go.Spot.TopLeft,
+                  itemTemplate: reasonTemplate
+                })
                 .bindTwoWay('itemArray', 'reasonsList')
             )
         )
@@ -379,12 +378,12 @@
             fromLinkable: true
           }),
           new go.TextBlock('A comment', {
-            margin: 10,
-            maxSize: new go.Size(200, NaN),
-            wrap: go.Wrap.Fit,
-            editable: true,
-            font: smallfont
-          })
+              margin: 10,
+              maxSize: new go.Size(200, NaN),
+              wrap: go.Wrap.Fit,
+              editable: true,
+              font: smallfont
+            })
             .bindTwoWay('text')
           // no ports, because no links are allowed to connect with a comment
         )
@@ -443,31 +442,32 @@
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link({ // the whole link panel
-        curve: go.Curve.Bezier,
-        toShortLength: 5,
-        fromSpot: go.Spot.Right,
-        toSpot: go.Spot.Left
-      })
-      .add(
-        new go.Shape({ // the link shape
-          stroke: lineColor,
-          strokeWidth: 2.5
-        }),
-        new go.Shape({ // the arrowhead
-          toArrow: 'Kite',
-          fill: lineColor,
-          stroke: lineColor,
-          scale: 1.5
+    myDiagram.linkTemplate =
+      new go.Link({ // the whole link panel
+          curve: go.Curve.Bezier,
+          toShortLength: 5,
+          fromSpot: go.Spot.Right,
+          toSpot: go.Spot.Left
         })
-      );
+        .add(
+          new go.Shape({ // the link shape
+            stroke: lineColor,
+            strokeWidth: 2.5
+          }),
+          new go.Shape({ // the arrowhead
+            toArrow: 'Kite',
+            fill: lineColor,
+            stroke: lineColor,
+            scale: 1.5
+          })
+        );
 
     // comments will have different links
     myDiagram.linkTemplateMap.add('Comment',
       new go.Link({
-        fromSpot: go.Spot.Center,
-        toSpot: go.Spot.Center
-      })
+          fromSpot: go.Spot.Center,
+          toSpot: go.Spot.Center
+        })
         .add(
           new go.Shape({
             strokeWidth: 1.5,
@@ -477,7 +477,7 @@
     );
 
     // when a new link is created, determine what template to use
-    myDiagram.addDiagramListener('LinkDrawn', (e) => {
+    myDiagram.addDiagramListener('LinkDrawn', e => {
       var link = e.subject;
       if (link.fromNode.category === 'Comment') {
         link.category = 'Comment';
@@ -516,6 +516,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -696,7 +697,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

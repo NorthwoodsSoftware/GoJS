@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -163,20 +165,22 @@ function init() {
             width: 15, height: 15,
             strokeWidth: 3,
             // this tooltip shows the name and picture of the kitten
-            toolTip: go.GraphObject.build('ToolTip')
-              .add(
-                new go.Panel('Vertical')
-                  .add(
-                    new go.Picture({ margin: 3 })
-                      .bind('source', 'src', (s) => 'images/' + s + '.png'),
-                    new go.TextBlock({ margin: 3 })
-                      .bind('text', 'key')
-                  )
-              )
+            toolTip:
+              go.GraphObject.build('ToolTip')
+                .add(
+                  new go.Panel('Vertical')
+                    .add(
+                      new go.Picture({ margin: 3 })
+                        .bind('source', 'src', s => 'images/' + s + '.png'),
+                      new go.TextBlock({ margin: 3 })
+                        .bind('text', 'key')
+                    )
+                )
           })
           .bind('fill', 'color', makeFill)
           .bind('stroke', 'color', makeStroke)
       );
+
   if (INTERVAL > 20) {  // don't animate if INTERVAL is <= 20 milliseconds
     myDiagram.nodeTemplate.trigger('position', { duration: INTERVAL, easing: go.Animation.EaseLinear })
   };
@@ -262,7 +266,7 @@ window.addEventListener('DOMContentLoaded', init);
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 600px"></div>
   <p>This diagram displays a monitored floor plan with several nodes (representing kittens) to view in real-time.</p>
   <p>Every two seconds the kitten positions are updated</p>
-  <p>The <a href="../intro/toolTips.html">Tooltip</a> for each kitten shows its name and photo.</p>
+  <p>The <a href="../intro/tooltips.html">Tooltip</a> for each kitten shows its name and photo.</p>
   <p>There is a custom <a>Diagram.scaleComputation</a> that limits the <a>Diagram.scale</a> values to multiples of 0.1.
   </p>
 </div>
@@ -288,7 +292,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

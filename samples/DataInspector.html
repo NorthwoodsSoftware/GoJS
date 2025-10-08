@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -187,7 +189,7 @@
       // enable undo & redo
       'undoManager.isEnabled': true,
       // automatically show the state of the diagram's model on the page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           document.getElementById('savedModel').textContent =
             myDiagram.model.toJson();
@@ -200,75 +202,77 @@
     // whose fill color is bound to the node data.
     // The user can drag a node by dragging its TextBlock label.
     // Dragging from the Shape will start drawing a new link.
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('Rectangle', {
-          stroke: null,
-          strokeWidth: 0,
-          fill: 'white', // the default fill, if there is no data-binding
-          portId: '',
-          cursor: 'pointer', // the Shape is the port, not the whole Node
-          // allow all kinds of links from and to this port
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: true,
-          toLinkableDuplicates: true
-        }).bind('fill', 'color'),
-        new go.TextBlock({
-          font: 'bold 18px sans-serif',
-          stroke: '#111',
-          margin: 8, // make some extra space for the shape around the text
-          isMultiline: false, // don't allow newlines in text
-          editable: true // allow in-place editing by user
-        }).bindTwoWay('text', 'text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Rectangle', {
+              stroke: null,
+              strokeWidth: 0,
+              fill: 'white', // the default fill, if there is no data-binding
+              portId: '',
+              cursor: 'pointer', // the Shape is the port, not the whole Node
+              // allow all kinds of links from and to this port
+              fromLinkable: true,
+              fromLinkableSelfNode: true,
+              fromLinkableDuplicates: true,
+              toLinkable: true,
+              toLinkableSelfNode: true,
+              toLinkableDuplicates: true
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              font: 'bold 18px sans-serif',
+              stroke: '#111',
+              margin: 8, // make some extra space for the shape around the text
+              isMultiline: false, // don't allow newlines in text
+              editable: true // allow in-place editing by user
+            })
+            .bindTwoWay('text', 'text')
+        );
 
     // The link shape and arrowhead have their stroke brush data bound to the "color" property
-    myDiagram.linkTemplate = new go.Link({
-      toShortLength: 3,
-      relinkableFrom: true,
-      relinkableTo: true
-    }) // allow the user to relink existing links
-      .add(
-        new go.Shape({ strokeWidth: 2 }).bind('stroke', 'color'),
-        new go.Shape({ toArrow: 'Standard', stroke: null }).bind(
-          'fill',
-          'color'
-        )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          toShortLength: 3,
+          relinkableFrom: true,
+          relinkableTo: true
+        }) // allow the user to relink existing links
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+            .bind('stroke', 'color'),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+            .bind('fill', 'color')
+        );
 
     // Groups consist of a title in the color given by the group node data
     // above a translucent gray rectangle surrounding the member parts
-    myDiagram.groupTemplate = new go.Group('Vertical', {
-      selectionObjectName: 'PANEL', // selection handle goes around shape, not label
-      ungroupable: true
-    }) // enable Ctrl-Shift-G to ungroup a selected Group
-      .add(
-        new go.TextBlock({
-          font: 'bold 19px sans-serif',
-          isMultiline: false, // don't allow newlines in text
-          editable: true // allow in-place editing by user
-        })
-          .bindTwoWay('text', 'text')
-          .bind('stroke', 'color'),
-        new go.Panel('Auto', { name: 'PANEL' })
-          .add(
-            new go.Shape('Rectangle', { // the rectangular shape around the members
-              fill: 'rgba(128,128,128,0.2)',
-              stroke: 'gray',
-              strokeWidth: 3
-            }),
-            new go.Placeholder({ padding: 10 }) // represents where the members are
-          )
-      );
+    myDiagram.groupTemplate =
+      new go.Group('Vertical', {
+          selectionObjectName: 'PANEL', // selection handle goes around shape, not label
+          ungroupable: true
+        }) // enable Ctrl-Shift-G to ungroup a selected Group
+        .add(
+          new go.TextBlock({
+              font: 'bold 19px sans-serif',
+              isMultiline: false, // don't allow newlines in text
+              editable: true // allow in-place editing by user
+            })
+            .bindTwoWay('text', 'text')
+            .bind('stroke', 'color'),
+          new go.Panel('Auto', { name: 'PANEL' })
+            .add(
+              new go.Shape('Rectangle', { // the rectangular shape around the members
+                fill: 'rgba(128,128,128,0.2)',
+                stroke: 'gray',
+                strokeWidth: 3
+              }),
+              new go.Placeholder({ padding: 10 }) // represents where the members are
+            )
+        );
 
     // Create the Diagram's Model:
-    var nodeDataArray = [
+    const nodeDataArray = [
       { key: 1, text: 'Alpha', color: '#B2DFDB', state: 'one' },
       {
         key: 2,
@@ -296,7 +300,7 @@
       },
       { key: 5, text: 'Epsilon', color: '#00BFA5', isGroup: true }
     ];
-    var linkDataArray = [
+    const linkDataArray = [
       { from: 1, to: 2, color: '#5E35B1' },
       { from: 2, to: 2, color: '#5E35B1' },
       { from: 3, to: 4, color: '#6200EA' },
@@ -314,63 +318,67 @@
     // By default, all properties on the model data objects are shown unless the inspector option "includesOwnProperties" is set to false.
 
     // Show the primary selection's data, or blanks if no Part is selected:
-    var inspector = new Inspector('myInspectorDiv', myDiagram, {
-      // allows for multiple nodes to be inspected at once
-      multipleSelection: true,
-      // max number of node properties will be shown when multiple selection is true
-      showSize: 4,
-      // when multipleSelection is true, when showAllProperties is true it takes the union of properties
-      // otherwise it takes the intersection of properties
-      showAllProperties: true,
-      // uncomment this line to only inspect the named properties below instead of all properties on each object:
-      // includesOwnProperties: false,
-      properties: {
-        text: {},
-        // key would be automatically added for nodes, but we want to declare it read-only also:
-        key: { readOnly: true, show: Inspector.showIfPresent },
-        // color would be automatically added for nodes, but we want to declare it a color also:
-        color: { show: Inspector.showIfPresent, type: 'color' },
-        // Comments and LinkComments are not in any node or link data (yet), so we add them here:
-        Comments: { show: Inspector.showIfNode },
-        LinkComments: { show: Inspector.showIfLink },
-        isGroup: { readOnly: true, show: Inspector.showIfPresent },
-        flag: { show: Inspector.showIfNode, type: 'checkbox' },
-        state: {
-          show: Inspector.showIfNode,
-          type: 'select',
-          choices: (node, propName) => {
-            if (Array.isArray(node.data.choices)) return node.data.choices;
-            return ['one', 'two', 'three', 'four', 'five'];
-          }
-        },
-        choices: { show: false }, // must not be shown at all
-        // an example of specifying the <input> type
-        password: { show: Inspector.showIfPresent, type: 'password' }
-      }
-    });
+    const inspector =
+      new Inspector('myInspectorDiv', myDiagram, {
+        // allows for multiple nodes to be inspected at once
+        multipleSelection: true,
+        // max number of node properties will be shown when multiple selection is true
+        showSize: 4,
+        // when multipleSelection is true, when showUnionProperties is true it takes the union of properties
+        // otherwise it takes the intersection of properties
+        showUnionProperties: true,
+        // uncomment this line to only inspect the named properties below instead of all properties on each object:
+        // includesOwnProperties: false,
+        properties: {
+          text: {},
+          // key would be automatically added for nodes, but we want to declare it read-only also:
+          key: { readOnly: true, show: Inspector.showIfPresent },
+          // color would be automatically added for nodes, but we want to declare it a color also:
+          color: { show: Inspector.showIfPresent, type: 'color' },
+          // Comments and LinkComments are not in any node or link data (yet), so we add them here:
+          Comments: { show: Inspector.showIfNode },
+          LinkComments: { show: Inspector.showIfLink },
+          isGroup: { readOnly: true, show: Inspector.showIfPresent },
+          flag: { show: Inspector.showIfNode, type: 'checkbox' },
+          state: {
+            show: Inspector.showIfNode,
+            type: 'select',
+            choices: (node, propName) => {
+              if (Array.isArray(node.data.choices)) return node.data.choices;
+              return ['one', 'two', 'three', 'four', 'five'];
+            }
+          },
+          choices: { show: false }, // must not be shown at all
+          // an example of specifying the <input> type
+          password: { show: Inspector.showIfPresent, type: 'password' }
+        }
+      });
 
     // Always show the first Node:
-    var inspector2 = new Inspector('myInspectorDiv2', myDiagram, {
-      // By default the inspector works on the Diagram selection.
-      // This property lets us inspect a specific object by calling Inspector.inspectObject.
-      inspectSelection: false,
-      properties: {
-        text: {},
-        // This property we want to declare as a color, to show a color-picker:
-        color: { type: 'color' },
-        // key would be automatically added for node data, but we want to declare it read-only also:
-        key: { readOnly: true, show: Inspector.showIfPresent }
-      }
-    });
+    const inspector2 =
+      new Inspector('myInspectorDiv2', myDiagram, {
+        // By default the inspector works on the Diagram selection.
+        // This property lets us inspect a specific object by calling Inspector.inspectObject.
+        inspectSelection: false,
+        properties: {
+          text: {},
+          // This property we want to declare as a color, to show a color-picker:
+          color: { type: 'color' },
+          // key would be automatically added for node data, but we want to declare it read-only also:
+          key: { readOnly: true, show: Inspector.showIfPresent }
+        }
+      });
     // If not inspecting a selection, you can programatically decide what to inspect (a Part, or a JavaScript object)
     inspector2.inspectObject(myDiagram.nodes.first().data);
 
     // Always show the model.modelData:
-    var inspector3 = new Inspector('myInspectorDiv3', myDiagram, {
-      inspectSelection: false
-    });
+    const inspector3 =
+      new Inspector('myInspectorDiv3', myDiagram, {
+        inspectSelection: false
+      });
     inspector3.inspectObject(myDiagram.model.modelData);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

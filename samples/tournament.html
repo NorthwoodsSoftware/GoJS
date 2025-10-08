@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,76 +141,75 @@
     }
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', { selectable: false })
-      .add(
-        new go.Shape('Rectangle', { fill: '#8C8C8C', stroke: null })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.Panel('Table')
-          .addColumnDefinition(0, { separatorStroke: 'black' })
-          .addColumnDefinition(1, { separatorStroke: 'black', background: '#BABABA' })
-          .addRowDefinition(0, { separatorStroke: 'black' })
-          .addRowDefinition(1, { separatorStroke: 'black' })
-          .add(
-            new go.TextBlock('', {
-              row: 0,
-              wrap: go.Wrap.None,
-              margin: 5,
-              width: 90,
-              isMultiline: false,
-              textAlign: 'left',
-              font: '10pt  Segoe UI,sans-serif',
-              stroke: 'white'
-            })
-              .bindTwoWay('text', 'player1'),
-            new go.TextBlock('', {
-              row: 1,
-              wrap: go.Wrap.None,
-              margin: 5,
-              width: 90,
-              isMultiline: false,
-              textAlign: 'left',
-              font: '10pt  Segoe UI,sans-serif',
-              stroke: 'white'
-            })
-              .bindTwoWay('text', 'player2'),
-            new go.TextBlock('', {
-              column: 1,
-              row: 0,
-              wrap: go.Wrap.None,
-              margin: 2,
-              width: 25,
-              isMultiline: false,
-              editable: true,
-              textAlign: 'center',
-              font: '10pt  Segoe UI,sans-serif',
-              stroke: 'black'
-            })
-              .bindTwoWay('text', 'score1'),
-            new go.TextBlock('', {
-              column: 1,
-              row: 1,
-              wrap: go.Wrap.None,
-              margin: 2,
-              width: 25,
-              isMultiline: false,
-              editable: true,
-              textAlign: 'center',
-              font: '10pt  Segoe UI,sans-serif',
-              stroke: 'black'
-            })
-              .bindTwoWay('text', 'score2')
-          )
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { selectable: false })
+        .add(
+          new go.Shape('Rectangle', { fill: '#8C8C8C', stroke: null })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.Panel('Table')
+            .addColumnDefinition(0, { separatorStroke: 'black' })
+            .addColumnDefinition(1, { separatorStroke: 'black', background: '#BABABA' })
+            .addRowDefinition(0, { separatorStroke: 'black' })
+            .addRowDefinition(1, { separatorStroke: 'black' })
+            .add(
+              new go.TextBlock('', {
+                  row: 0,
+                  wrap: go.Wrap.None,
+                  margin: 5,
+                  width: 90,
+                  isMultiline: false,
+                  textAlign: 'left',
+                  font: '10pt  Segoe UI,sans-serif',
+                  stroke: 'white'
+                })
+                .bindTwoWay('text', 'player1'),
+              new go.TextBlock('', {
+                  row: 1,
+                  wrap: go.Wrap.None,
+                  margin: 5,
+                  width: 90,
+                  isMultiline: false,
+                  textAlign: 'left',
+                  font: '10pt  Segoe UI,sans-serif',
+                  stroke: 'white'
+                })
+                .bindTwoWay('text', 'player2'),
+              new go.TextBlock('', {
+                  column: 1,
+                  row: 0,
+                  wrap: go.Wrap.None,
+                  margin: 2,
+                  width: 25,
+                  isMultiline: false,
+                  editable: true,
+                  textAlign: 'center',
+                  font: '10pt  Segoe UI,sans-serif',
+                  stroke: 'black'
+                })
+                .bindTwoWay('text', 'score1'),
+              new go.TextBlock('', {
+                  column: 1,
+                  row: 1,
+                  wrap: go.Wrap.None,
+                  margin: 2,
+                  width: 25,
+                  isMultiline: false,
+                  editable: true,
+                  textAlign: 'center',
+                  font: '10pt  Segoe UI,sans-serif',
+                  stroke: 'black'
+                })
+                .bindTwoWay('text', 'score2')
+            )
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      selectable: false
-    })
-      .add(
-        new go.Shape({ strokeWidth: 2, stroke: 'white' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, selectable: false })
+        .add(
+          new go.Shape({ strokeWidth: 2, stroke: 'white' })
+        );
 
     // Generates the original graph from an array of player names
     function createPairs(players) {
@@ -281,7 +282,7 @@
     function makeModel(players) {
       var model = new go.TreeModel(createPairs(players));
 
-      model.addChangedListener((e) => {
+      model.addChangedListener(e => {
         if (e.propertyName !== 'score1' && e.propertyName !== 'score2') return;
         updateNode(e.object);
       });

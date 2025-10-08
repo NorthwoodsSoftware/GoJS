@@ -17,9 +17,9 @@
 <!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
 
 
-<meta itemprop="name" content="Guided Dragging Shows Guidelines During Dragging for Aligning Nodes to other Nodes" />
-<meta property="og:title" content="Guided Dragging Shows Guidelines During Dragging for Aligning Nodes to other Nodes" />
-<meta name="twitter:title" content="Guided Dragging Shows Guidelines During Dragging for Aligning Nodes to other Nodes" />
+<meta itemprop="name" content="Guided Dragging Shows Guidelines During Dragging for Equal Spacing between Nodes or for Aligning Nodes to other Nodes" />
+<meta property="og:title" content="Guided Dragging Shows Guidelines During Dragging for Equal Spacing between Nodes or for Aligning Nodes to other Nodes" />
+<meta name="twitter:title" content="Guided Dragging Shows Guidelines During Dragging for Equal Spacing between Nodes or for Aligning Nodes to other Nodes" />
 
 
 <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/guideddragging.png" />
@@ -34,7 +34,7 @@
 <meta property="twitter:domain" content="gojs.net" />
 
     <title>
-      Guided Dragging Shows Guidelines During Dragging for Aligning Nodes to other Nodes | GoJS Diagramming Library
+      Guided Dragging Shows Guidelines During Dragging for Equal Spacing between Nodes or for Aligning Nodes to other Nodes | GoJS Diagramming Library
     </title>
   </head>
 
@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -128,56 +130,47 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       draggingTool: new GuidedDraggingTool(), // defined in GuidedDraggingTool.js
-      'draggingTool.horizontalGuidelineColor': 'blue',
-      'draggingTool.verticalGuidelineColor': 'blue',
-      'draggingTool.centerGuidelineColor': 'green',
-      'draggingTool.guidelineWidth': 1,
       'undoManager.isEnabled': true // enable undo & redo
     });
 
-    // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock from 'Auto'
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        // have various width and height nodes based on existing data properties
+        .bind('width', 'text', t => Math.max(50, t.length*12))
+        .bind('height', 'color', c => Math.max(30, c.length*8))
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            .bind('fill', 'color'),
+          new go.TextBlock()
+            .bind('text')
+        );
 
-    // but use the default Link template, by not setting Diagram.linkTemplate
-
-    // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: 1, text: 'Alpha', color: 'lightblue' },
-        { key: 2, text: 'Beta', color: 'orange' },
-        { key: 3, text: 'Gamma', color: 'lightgreen' },
-        { key: 4, text: 'Delta', color: 'pink' }
-      ],
-      [
-        { from: 1, to: 2 },
-        { from: 1, to: 3 },
-        { from: 2, to: 2 },
-        { from: 3, to: 4 },
-        { from: 4, to: 1 }
+        { text: 'Alpha', color: 'lightblue' },
+        { text: 'Beta', color: 'orange' },
+        { text: 'Gamma', color: 'lightgreen' },
+        { text: 'Delta', color: 'pink' },
+        { text: 'Epsilon', color: 'yellow' },
+        { text: 'Zeta', color: 'coral' },
+        { text: 'Eta', color: 'tomato' },
+        { text: 'Theta', color: 'goldenrod' },
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">
   <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
-  <div id="myDiagramDiv" style="border: solid 1px black; width: 400px; height: 400px"></div>
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 600px; height: 600px"></div>
   <p>
     This custom <a>DraggingTool</a> class makes guidelines visible as a Part is dragged around a Diagram and is nearly aligned with another Part. If a
     locationObjectName is set, then this aligns <a>Part.locationObject</a>s instead. The tool is defined in its own file, as
     <a href="../extensions/GuidedDraggingTool.js">GuidedDraggingTool.js</a>.
   </p>
-  <p>Usage can also be seen in the <a href="FloorPlanEditor.html">Floor Plan Editor</a> sample.</p>
 </div>
 
           

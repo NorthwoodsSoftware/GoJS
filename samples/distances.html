@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,47 +134,53 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Horizontal', {
-        locationSpot: go.Spot.Center, // Node.location is the center of the Shape
-        locationObjectName: 'SHAPE',
-        selectionAdorned: false,
-        selectionChanged: nodeSelectionChanged // defined below
-      }
-    )
-      .add(
-        new go.Panel('Spot')
-          .add(
-            new go.Shape('Circle', {
-              name: 'SHAPE',
-              fill: 'lightgray', // default value, but also data-bound
-              strokeWidth: 0,
-              desiredSize: new go.Size(30, 30),
-              portId: '' // so links will go to the shape, not the whole node
-            }).bindObject('fill', 'isSelected', (s, obj) => (s ? 'red' : obj.part.data.color)),
-            new go.TextBlock().bind('text', 'distance', (d) => (d === Infinity ? 'INF' : d | 0))
-          ),
-        new go.TextBlock().bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Horizontal', {
+          locationSpot: go.Spot.Center, // Node.location is the center of the Shape
+          locationObjectName: 'SHAPE',
+          selectionAdorned: false,
+          selectionChanged: nodeSelectionChanged // defined below
+        })
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Circle', {
+                  name: 'SHAPE',
+                  fill: 'lightgray', // default value, but also data-bound
+                  strokeWidth: 0,
+                  desiredSize: new go.Size(30, 30),
+                  portId: '' // so links will go to the shape, not the whole node
+                })
+                .bindObject('fill', 'isSelected', (s, obj) => s ? 'red' : obj.part.data.color),
+              new go.TextBlock()
+                .bind('text', 'distance', d => d === Infinity ? 'INF' : d | 0)
+            ),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({
-      selectable: false, // links cannot be selected by the user
-      curve: go.Curve.Bezier,
-      layerName: 'Background' // don't cross in front of any nodes
-    })
-      .add(
-        new go.Shape({ // this shape only shows when it isHighlighted
-          isPanelMain: true,
-          stroke: null,
-          strokeWidth: 5
-        }).bindObject('stroke', 'isHighlighted', (h) => (h ? 'red' : null)),
-        new go.Shape({ // mark each Shape to get the link geometry with isPanelMain: true
-          isPanelMain: true,
-          stroke: 'black',
-          strokeWidth: 1
-        }).bind('stroke', 'color'),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          selectable: false, // links cannot be selected by the user
+          curve: go.Curve.Bezier,
+          layerName: 'Background' // don't cross in front of any nodes
+        })
+        .add(
+          new go.Shape({ // this shape only shows when it isHighlighted
+              isPanelMain: true,
+              stroke: null,
+              strokeWidth: 5
+            })
+            .bindObject('stroke', 'isHighlighted', h => h ? 'red' : null),
+          new go.Shape({ // mark each Shape to get the link geometry with isPanelMain: true
+              isPanelMain: true,
+              stroke: 'black',
+              strokeWidth: 1
+            })
+            .bind('stroke', 'color'),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     // Override the clickSelectingTool's standardMouseSelect
     // If less than 2 nodes are selected, always add to the selection
@@ -180,19 +188,19 @@
       // method override must be function, not =>
       const diagram = this.diagram;
       if (diagram === null || !diagram.allowSelect) return;
-      var e = diagram.lastInput;
-      var count = diagram.selection.count;
-      var curobj = diagram.findPartAt(e.documentPoint, false);
+      const e = diagram.lastInput;
+      const count = diagram.selection.count;
+      const curobj = diagram.findPartAt(e.documentPoint, false);
       if (curobj !== null) {
         if (count < 2) {
           // add the part to the selection
           if (!curobj.isSelected) {
-            var part = curobj;
+            const part = curobj;
             if (part !== null) part.isSelected = true;
           }
         } else {
           if (!curobj.isSelected) {
-            var part = curobj;
+            const part = curobj;
             if (part !== null) diagram.select(part);
           }
         }
@@ -209,7 +217,7 @@
 
   // Create an assign a model that has a bunch of nodes with a bunch of random links between them.
   function generateGraph() {
-    var names = [
+    const names = [
       'Joshua',
       'Kathryn',
       'Robert',
@@ -233,16 +241,16 @@
       'Dylan'
     ];
 
-    var nodeDataArray = [];
-    for (var i = 0; i < names.length; i++) {
+    const nodeDataArray = [];
+    for (let i = 0; i < names.length; i++) {
       nodeDataArray.push({ key: i, text: names[i], color: go.Brush.randomColor(128, 240) });
     }
 
-    var linkDataArray = [];
-    var num = nodeDataArray.length;
-    for (var i = 0; i < num * 2; i++) {
-      var a = Math.floor(i / 2);
-      var b = Math.floor((Math.random() * num) / 4) + 1;
+    const linkDataArray = [];
+    const num = nodeDataArray.length;
+    for (let i = 0; i < num * 2; i++) {
+      const a = Math.floor(i / 2);
+      const b = Math.floor((Math.random() * num) / 4) + 1;
       linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
     }
 
@@ -252,15 +260,15 @@
   // Select two nodes at random for which there is a path that connects from the first one to the second one.
   function chooseTwoNodes() {
     myDiagram.clearSelection();
-    var num = myDiagram.model.nodeDataArray.length;
-    var node1 = null;
-    var node2 = null;
-    for (var i = Math.floor(Math.random() * num); i < num * 2; i++) {
+    const num = myDiagram.model.nodeDataArray.length;
+    let node1 = null;
+    let node2 = null;
+    for (let i = Math.floor(Math.random() * num); i < num * 2; i++) {
       node1 = myDiagram.findNodeForKey(i % num);
-      var distances = findDistances(node1);
-      for (var j = Math.floor(Math.random() * num); j < num * 2; j++) {
+      const distances = findDistances(node1);
+      for (let j = Math.floor(Math.random() * num); j < num * 2; j++) {
         node2 = myDiagram.findNodeForKey(j % num);
-        var dist = distances.get(node2);
+        const dist = distances.get(node2);
         if (dist > 1 && dist < Infinity) {
           node1.isSelected = true;
           node2.isSelected = true;
@@ -277,20 +285,20 @@
   // When a second node is selected, highlight the shortest path between two selected nodes.
   // If a node is deselected, clear all highlights.
   function nodeSelectionChanged(node) {
-    var diagram = node.diagram;
+    const diagram = node.diagram;
     if (diagram === null) return;
     diagram.clearHighlighteds();
     if (node.isSelected) {
       // when there is a selection made, always clear out the list of all paths
-      var sel = document.getElementById('myPaths');
+      const sel = document.getElementById('myPaths');
       sel.innerHTML = '';
 
       // show the distance for each node from the selected node
-      var begin = diagram.selection.first();
+      const begin = diagram.selection.first();
       showDistances(begin);
 
       if (diagram.selection.count === 2) {
-        var end = node; // just became selected
+        const end = node; // just became selected
 
         // highlight the shortest path
         highlightShortestPath(begin, end);
@@ -308,10 +316,10 @@
     distances = findDistances(begin);
 
     // show the distance on each node
-    var it = distances.iterator;
+    const it = distances.iterator;
     while (it.next()) {
-      var n = it.key;
-      var dist = it.value;
+      const n = it.key;
+      const dist = it.value;
       myDiagram.model.setDataProperty(n.data, 'distance', dist);
     }
   }
@@ -331,10 +339,10 @@
     paths = collectAllPaths(begin, end);
 
     // update the Selection element with a bunch of Option elements, one per path
-    var sel = document.getElementById('myPaths');
+    const sel = document.getElementById('myPaths');
     sel.innerHTML = ''; // clear out any old Option elements
-    paths.each((p) => {
-      var opt = document.createElement('option');
+    paths.each(p => {
+      const opt = document.createElement('option');
       opt.text = pathToString(p);
       sel.add(opt, null);
     });
@@ -343,8 +351,8 @@
 
   // Return a string representation of a path for humans to read.
   function pathToString(path) {
-    var s = path.length + ': ';
-    for (var i = 0; i < path.length; i++) {
+    let s = path.length + ': ';
+    for (let i = 0; i < path.length; i++) {
       if (i > 0) s += ' -- ';
       s += path.get(i).data.text;
     }
@@ -356,17 +364,17 @@
   // When the selected item changes in the Selection element,
   // highlight the corresponding path of nodes.
   function highlightSelectedPath() {
-    var sel = document.getElementById('myPaths');
+    const sel = document.getElementById('myPaths');
     highlightPath(paths.get(sel.selectedIndex));
   }
 
   // Highlight a particular path, a List of Nodes.
   function highlightPath(path) {
     myDiagram.clearHighlighteds();
-    for (var i = 0; i < path.count - 1; i++) {
-      var f = path.get(i);
-      var t = path.get(i + 1);
-      f.findLinksTo(t).each((l) => (l.isHighlighted = true));
+    for (let i = 0; i < path.count - 1; i++) {
+      const f = path.get(i);
+      const t = path.get(i + 1);
+      f.findLinksTo(t).each(l => l.isHighlighted = true);
     }
   }
 
@@ -382,42 +390,42 @@
   // Returns a Map of Nodes with distance values from the given source Node.
   // Assumes all links are directional.
   function findDistances(source) {
-    var diagram = source.diagram;
+    const diagram = source.diagram;
     // keep track of distances from the source node
-    var distances = new go.Map(/*go.Node, "number"*/);
+    const distances = new go.Map(/*go.Node, "number"*/);
     // all nodes start with distance Infinity
-    var nit = diagram.nodes;
+    const nit = diagram.nodes;
     while (nit.next()) {
-      var n = nit.value;
+      const n = nit.value;
       distances.set(n, Infinity);
     }
     // the source node starts with distance 0
     distances.set(source, 0);
     // keep track of nodes for which we have set a non-Infinity distance,
     // but which we have not yet finished examining
-    var seen = new go.Set(/*go.Node*/);
+    const seen = new go.Set(/*go.Node*/);
     seen.add(source);
 
     // keep track of nodes we have finished examining;
     // this avoids unnecessary traversals and helps keep the SEEN collection small
-    var finished = new go.Set(/*go.Node*/);
+    const finished = new go.Set(/*go.Node*/);
     while (seen.count > 0) {
       // look at the unfinished node with the shortest distance so far
-      var least = leastNode(seen, distances);
-      var leastdist = distances.get(least);
+      const least = leastNode(seen, distances);
+      const leastdist = distances.get(least);
       // by the end of this loop we will have finished examining this LEAST node
       seen.delete(least);
       finished.add(least);
       // look at all Links connected with this node
-      var it = least.findLinksOutOf();
+      const it = least.findLinksOutOf();
       while (it.next()) {
-        var link = it.value;
-        var neighbor = link.getOtherNode(least);
+        const link = it.value;
+        const neighbor = link.getOtherNode(least);
         // skip nodes that we have finished
         if (finished.has(neighbor)) continue;
-        var neighbordist = distances.get(neighbor);
+        const neighbordist = distances.get(neighbor);
         // assume "distance" along a link is unitary, but could be any non-negative number.
-        var dist = leastdist + 1; //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
+        const dist = leastdist + 1; //Math.sqrt(least.location.distanceSquaredPoint(neighbor.location));
         if (dist < neighbordist) {
           // if haven't seen that node before, add it to the SEEN collection
           if (neighbordist === Infinity) {
@@ -434,12 +442,12 @@
 
   // This helper function finds a Node in the given collection that has the smallest distance.
   function leastNode(coll, distances) {
-    var bestdist = Infinity;
-    var bestnode = null;
-    var it = coll.iterator;
+    let bestdist = Infinity;
+    let bestnode = null;
+    const it = coll.iterator;
     while (it.next()) {
-      var n = it.value;
-      var dist = distances.get(n);
+      const n = it.value;
+      const dist = distances.get(n);
       if (dist < bestdist) {
         bestdist = dist;
         bestnode = n;
@@ -455,10 +463,10 @@
     distances = findDistances(begin);
 
     // now find a path from END to BEGIN, always choosing the adjacent Node with the lowest distance
-    var path = new go.List();
+    const path = new go.List();
     path.add(end);
     while (end !== null) {
-      var next = leastNode(end.findNodesInto(), distances);
+      let next = leastNode(end.findNodesInto(), distances);
       if (next !== null) {
         if (distances.get(next) < distances.get(end)) {
           path.add(next); // making progress towards the beginning
@@ -479,15 +487,15 @@
   // Finally return the collection of paths, which may be empty.
   // This assumes all links are directional.
   function collectAllPaths(begin, end) {
-    var stack = new go.List(/*go.Node*/);
-    var coll = new go.List(/*go.List*/);
+    const stack = new go.List(/*go.Node*/);
+    const coll = new go.List(/*go.List*/);
 
     function find(source, end) {
-      source.findNodesOutOf().each((n) => {
+      source.findNodesOutOf().each(n => {
         if (n === source) return; // ignore reflexive links
         if (n === end) {
           // success
-          var path = stack.copy();
+          const path = stack.copy();
           path.add(end); // finish the path at the end node
           coll.add(path); // remember the whole path
         } else if (!stack.has(n)) {
@@ -503,6 +511,7 @@
     find(begin, end);
     return coll;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

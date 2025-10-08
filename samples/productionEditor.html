@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,7 +135,7 @@
 <script id="code">
   function init() {
     // Abstract colors
-    var Colors = {
+    const Colors = {
       red: '#be4b15',
       green: '#52ce60',
       blue: '#6ea5f8',
@@ -145,7 +147,7 @@
       orange: '#f08c00'
     };
 
-    var ColorNames = [];
+    const ColorNames = [];
     for (var n in Colors) ColorNames.push(n);
 
     // a conversion function for translating general color names to specific colors
@@ -156,7 +158,7 @@
     }
 
     // Icons derived from SVG paths designed by freepik: http://www.freepik.com/
-    var Icons = {};
+    const Icons = {};
     Icons.natgas =
       'F M244.414,133.231 L180.857,133.231 178.509,156.191 250.527,192.94z\
         M179.027,276.244 262.328,308.179 253.451,221.477z\
@@ -235,7 +237,7 @@
       'draggingTool.gridSnapCellSize': new go.Size(10, 1),
       'draggingTool.isGridSnapEnabled': true,
       'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         // just for demonstration purposes,
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
@@ -245,62 +247,66 @@
       }
     });
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationObjectName: 'PORT',
-      locationSpot: go.Spot.Top, // location point is the middle top of the PORT
-      linkConnected: updatePortHeight,
-      linkDisconnected: updatePortHeight,
-      toolTip: go.GraphObject.build('ToolTip')
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationObjectName: 'PORT',
+          locationSpot: go.Spot.Top, // location point is the middle top of the PORT
+          linkConnected: updatePortHeight,
+          linkDisconnected: updatePortHeight,
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4, width: 140 })
+                  .bind('text', '', data => data.text + ':\n\n' + data.description)
+              )
+        })
+        .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
-          new go.TextBlock({ margin: 4, width: 140 })
-            .bind('text', '', (data) => data.text + ':\n\n' + data.description)
-        )
-    })
-      .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
-      .add(
-        // The main element of the Spot panel is a vertical panel housing an optional icon,
-        // plus a rectangle that acts as the port
-        new go.Panel('Vertical')
-          .add(
-            new go.Shape({
-              width: 40,
-              height: 0,
-              stroke: null,
-              strokeWidth: 0,
-              fill: 'gray'
-            })
-              .bind('height', 'icon', () => 40)
-              .bind('fill', 'color', colorFunc)
-              .bind('geometry', 'icon', geoFunc),
-            new go.Shape({
-              name: 'PORT',
-              width: 40,
-              height: 24,
-              margin: new go.Margin(-1, 0, 0, 0),
-              stroke: null,
-              strokeWidth: 0,
-              fill: 'gray',
-              portId: '',
-              cursor: 'pointer',
-              fromLinkable: true,
-              toLinkable: true
-            }).bind('fill', 'color', colorFunc),
-            new go.TextBlock({
-              font: 'Bold 14px Lato, sans-serif',
-              textAlign: 'center',
-              margin: 3,
-              maxSize: new go.Size(100, NaN),
-              alignment: go.Spot.Top,
-              alignmentFocus: go.Spot.Bottom,
-              editable: true
-            }).bindTwoWay('text')
-          )
-      );
+          // The main element of the Spot panel is a vertical panel housing an optional icon,
+          // plus a rectangle that acts as the port
+          new go.Panel('Vertical')
+            .add(
+              new go.Shape({
+                  width: 40,
+                  height: 0,
+                  stroke: null,
+                  strokeWidth: 0,
+                  fill: 'gray'
+                })
+                .bind('height', 'icon', () => 40)
+                .bind('fill', 'color', colorFunc)
+                .bind('geometry', 'icon', geoFunc),
+              new go.Shape({
+                  name: 'PORT',
+                  width: 40,
+                  height: 24,
+                  margin: new go.Margin(-1, 0, 0, 0),
+                  stroke: null,
+                  strokeWidth: 0,
+                  fill: 'gray',
+                  portId: '',
+                  cursor: 'pointer',
+                  fromLinkable: true,
+                  toLinkable: true
+                })
+                .bind('fill', 'color', colorFunc),
+              new go.TextBlock({
+                  font: 'Bold 14px Lato, sans-serif',
+                  textAlign: 'center',
+                  margin: 3,
+                  maxSize: new go.Size(100, NaN),
+                  alignment: go.Spot.Top,
+                  alignmentFocus: go.Spot.Bottom,
+                  editable: true
+                })
+                .bindTwoWay('text')
+            )
+        );
 
     function updatePortHeight(node, link, port) {
       var sideinputs = 0;
       var sideoutputs = 0;
-      node.findLinksConnected().each((l) => {
+      node.findLinksConnected().each(l => {
         if (l.toNode === node && l.toSpot === go.Spot.LeftSide) sideinputs++;
         if (l.fromNode === node && l.fromSpot === go.Spot.RightSide) sideoutputs++;
       });
@@ -309,38 +315,38 @@
       port.height = tot * (10 + 2) + 2; // where 10 is the link path's strokeWidth
     }
 
-    myDiagram.linkTemplate = new go.Link({
-      layerName: 'Background',
-      routing: go.Routing.Orthogonal,
-      corner: 15,
-      reshapable: true,
-      resegmentable: true,
-      fromSpot: go.Spot.RightSide,
-      toSpot: go.Spot.LeftSide
-    })
-      // make sure links come in from the proper direction and go out appropriately
-      .bind('fromSpot', 'fromSpot', go.Spot.parse)
-      .bind('toSpot', 'toSpot', go.Spot.parse)
-      .bindTwoWay('points')
-      .add(
-        // mark each Shape to get the link geometry with isPanelMain: true
-        new go.Shape({ isPanelMain: true, stroke: 'gray', strokeWidth: 10 })
-          // get the default stroke color from the fromNode
-          .bindObject('stroke', 'fromNode', (n) =>
-            go.Brush.lighten((n && Colors[n.data.color]) || 'gray')
-          )
-          // but use the link's data.color if it is set
-          .bind('stroke', 'color', colorFunc),
-        new go.Shape({
-          isPanelMain: true,
-          stroke: 'white',
-          strokeWidth: 3,
-          name: 'PIPE',
-          strokeDashArray: [20, 40]
+    myDiagram.linkTemplate =
+      new go.Link({
+          layerName: 'Background',
+          routing: go.Routing.Orthogonal,
+          corner: 15,
+          reshapable: true,
+          resegmentable: true,
+          fromSpot: go.Spot.RightSide,
+          toSpot: go.Spot.LeftSide
         })
-      );
+        // make sure links come in from the proper direction and go out appropriately
+        .bind('fromSpot', 'fromSpot', go.Spot.parse)
+        .bind('toSpot', 'toSpot', go.Spot.parse)
+        .bindTwoWay('points')
+        .add(
+          // mark each Shape to get the link geometry with isPanelMain: true
+          new go.Shape({ isPanelMain: true, stroke: 'gray', strokeWidth: 10 })
+            // get the default stroke color from the fromNode
+            .bindObject('stroke', 'fromNode',
+              n => go.Brush.lighten((n && Colors[n.data.color]) || 'gray'))
+            // but use the link's data.color if it is set
+            .bind('stroke', 'color', colorFunc),
+          new go.Shape({
+            isPanelMain: true,
+            stroke: 'white',
+            strokeWidth: 3,
+            name: 'PIPE',
+            strokeDashArray: [20, 40]
+          })
+        );
 
-    var SpotNames = [
+    const SpotNames = [
       'Top',
       'Left',
       'Right',
@@ -411,6 +417,7 @@
     title.textContent = data.text;
     description.textContent = data.description;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

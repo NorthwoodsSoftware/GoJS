@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,7 +125,7 @@
             
 
 <script id="code">
-  var names = {}; // hash to keep track of what names have been used
+  const names = {}; // hash to keep track of what names have been used
 
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
@@ -137,27 +139,30 @@
     });
 
     // Define a simple node template consisting of text followed by an expand/collapse button
-    myDiagram.nodeTemplate = new go.Node('Horizontal', {
-      selectionChanged: nodeSelectionChanged
-    }) // this event handler is defined below
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ fill: '#1F4963', stroke: null }),
-            new go.TextBlock({
-              font: 'bold 13px Helvetica, bold Arial, sans-serif',
-              stroke: 'white',
-              margin: 3
-            }).bind('text', 'key')
-          ),
-        go.GraphObject.build('TreeExpanderButton')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Horizontal', {
+          selectionChanged: nodeSelectionChanged
+        }) // this event handler is defined below
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: '#1F4963', stroke: null }),
+              new go.TextBlock({
+                  font: 'bold 13px Helvetica, bold Arial, sans-serif',
+                  stroke: 'white',
+                  margin: 3
+                })
+                .bind('text', 'key')
+            ),
+          go.GraphObject.build('TreeExpanderButton')
+        );
 
     // Define a trivial link template with no arrowhead.
-    myDiagram.linkTemplate = new go.Link({ selectable: false })
-      .add(
-        new go.Shape()
-      ); // the link shape
+    myDiagram.linkTemplate =
+      new go.Link({ selectable: false, corner: 10 })
+        .add(
+          new go.Shape()
+        ); // the link shape
 
     // create the model for the DOM tree
     myDiagram.model = new go.TreeModel({
@@ -178,16 +183,16 @@
     // Ignore the navigation menus
     if (node.id === 'navSide' || node.id === 'navTop') return;
     // add this node to the nodeDataArray
-    var name = getName(node);
-    var data = { key: name, name: name };
+    const name = getName(node);
+    const data = { key: name, name: name };
     dataArray.push(data);
     // add a link to its parent
     if (parentName !== null) {
       data.parent = parentName;
     }
     // find all children
-    var l = node.childNodes.length;
-    for (var i = 0; i < l; i++) {
+    const l = node.childNodes.length;
+    for (let i = 0; i < l; i++) {
       traverseDom(node.childNodes[i], name, dataArray);
     }
     return dataArray;
@@ -195,10 +200,10 @@
 
   // Give every node a unique name
   function getName(node) {
-    var n = node.nodeName;
+    let n = node.nodeName;
     if (node.id) n = n + ' (' + node.id + ')';
-    var namenum = n; // make sure the name is unique
-    var i = 1;
+    let namenum = n; // make sure the name is unique
+    let i = 1;
     while (names[namenum] !== undefined) {
       namenum = n + i;
       i++;
@@ -215,6 +220,7 @@
       names[node.data.name].style.backgroundColor = '';
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -222,7 +228,7 @@
   <!-- The DIV needs an explicit size or else we won't see anything. -->
   <div
     id="myDiagramDiv"
-    style="border: 1px solid black; width: 100%; height: 300px"></div>
+    style="border: 1px solid black; width: 100%; height: 500px"></div>
   <p>
     This sample shows the DOM (Document Object Model) of this webpage displayed
     as a tree. Each Node in the Diagram shows information about the
@@ -312,7 +318,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

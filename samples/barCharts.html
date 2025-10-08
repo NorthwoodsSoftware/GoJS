@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,40 +129,45 @@
     myDiagram = new go.Diagram('myDiagramDiv');
 
     // the template for each item in a node's array of item data
-    var itemTempl = new go.Panel('TableColumn')
-      .add(
-        new go.Shape({
-          row: 0,
-          alignment: go.Spot.Bottom,
-          fill: 'slateblue',
-          stroke: null,
-          width: 40,
-          toolTip: go.GraphObject.build('ToolTip')
+    var itemTempl =
+      new go.Panel('TableColumn')
+        .add(
+          new go.Shape({
+              row: 0,
+              alignment: go.Spot.Bottom,
+              fill: 'slateblue',
+              stroke: null,
+              width: 40,
+              toolTip:
+                go.GraphObject.build('ToolTip')
+                  .add(
+                    new go.TextBlock({ margin: 4 })
+                      .bind('text', 'val')
+                  )
+            })
+            .bind('height', 'val')
+            .bind('fill', 'color'),
+          new go.TextBlock({ row: 1 })
+            .bind('text')
+        );
+
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ fill: 'white' }),
+          new go.Panel('Vertical')
             .add(
-              new go.TextBlock({ margin: 4 }).bind('text', 'val')
+              new go.Panel('Table', {
+                  margin: 6,
+                  itemTemplate: itemTempl
+                })
+                .bind('itemArray', 'items'),
+              new go.TextBlock({ font: 'bold 12pt sans-serif' })
+                .bind('text')
             )
-        })
-          .bind('height', 'val')
-          .bind('fill', 'color'),
-        new go.TextBlock({
-          row: 1
-        }).bind('text')
-      );
+        );
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({ fill: 'white' }),
-        new go.Panel('Vertical')
-          .add(
-            new go.Panel('Table', {
-              margin: 6,
-              itemTemplate: itemTempl
-            }).bind('itemArray', 'items'),
-            new go.TextBlock({ font: 'bold 12pt sans-serif' }).bind('text')
-          )
-      );
-
-    var nodeDataArray = [
+    const nodeDataArray = [
       {
         key: 1,
         text: 'Before',
@@ -182,7 +189,7 @@
         ]
       }
     ];
-    var linkDataArray = [{ from: 1, to: 2 }];
+    const linkDataArray = [{ from: 1, to: 2 }];
     myDiagram.model = new go.GraphLinksModel({
       copiesArrays: true,
       copiesArrayObjects: true,
@@ -190,6 +197,7 @@
       linkDataArray: linkDataArray
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -259,7 +267,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

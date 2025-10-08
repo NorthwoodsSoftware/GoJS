@@ -55,6 +55,7 @@ export class FishboneLayout extends go.TreeLayout {
             // ignore leaves of tree
             if (v.destinationEdges.count === 0)
                 return;
+            this.prepareParent(v, net);
             if (v.destinationEdges.count % 2 === 1) {
                 // if there's an odd number of real children, add two dummies
                 const dummy = net.createVertex();
@@ -73,6 +74,8 @@ export class FishboneLayout extends go.TreeLayout {
         });
         return net;
     }
+    /** @hidden */
+    prepareParent(v, net) { }
     /**
      * Add a direction property to each vertex and modify {@link go.TreeVertex.layerSpacing}.
      */
@@ -121,8 +124,21 @@ export class FishboneLayout extends go.TreeLayout {
                 link.toSpot = go.Spot.Right;
             }
         });
-        // move the parent node to the location of the last dummy
-        let vit = this.network.vertexes.iterator;
+        this.moveParentNodesToDummies();
+        this.network.vertexes.each(v => {
+            const w = v;
+            if (w.parent === null) {
+                this.shift(w);
+            }
+        });
+        // now actually change the Node.location of all nodes
+        super.commitNodes();
+    }
+    /**
+     * Move each parent node to the location of the last dummy.
+     */
+    moveParentNodesToDummies() {
+        const vit = this.network.vertexes.iterator;
         while (vit.next()) {
             const v = vit.value;
             const len = v.children.length;
@@ -134,16 +150,6 @@ export class FishboneLayout extends go.TreeLayout {
             v.centerX = dummy2.centerX;
             v.centerY = dummy2.centerY;
         }
-        const layout = this;
-        vit = this.network.vertexes.iterator;
-        while (vit.next()) {
-            const v = vit.value;
-            if (v.parent === null) {
-                layout.shift(v);
-            }
-        }
-        // now actually change the Node.location of all nodes
-        super.commitNodes();
     }
     /**
      * This override stops links from being committed since the work is done by the {@link FishboneLink} class.

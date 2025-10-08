@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -261,12 +264,13 @@ The same sequence happens for key-up events.
 </p>
 <p>
 Please note that the handling of keyboard commands depends on the diagram getting focus and then getting keyboard events.
-Do not apply any styling such as <pre class="lang-css"><code>canvas:focus { display: none; } /* DO NOT DO THIS! */</code></pre>.
+Do not apply any styling such as <pre class="lang-css"><code>canvas:focus { display: none; } /* DO NOT DO THIS! */</code></pre>
 </p>
 
 <h2 id="KeyboardCommandBindings">Keyboard command bindings</h2>
 <p>
-The <a>CommandHandler</a> implements the following command bindings for keyboard input:
+The <a>CommandHandler</a> implements the following commands for keyboard input.
+On a Mac the Command key may be used as the modifier instead of the Control key.
 </p>
 <ul>
   <li>Del or Backspace invokes <a>CommandHandler.deleteSelection</a></li>
@@ -280,22 +284,26 @@ The <a>CommandHandler</a> implements the following command bindings for keyboard
   <li>PageUp or PageDown calls <a>Diagram.scroll</a></li>
   <li>Home or End calls <a>Diagram.scroll</a></li>
   <li>Space invokes <a>CommandHandler.scrollToPart</a></li>
-  <li>Ctrl-- (minus) or Keypad-- invokes <a>CommandHandler.decreaseZoom</a></li>
-  <li>Ctrl-+ (plus) or Keypad-+ invokes <a>CommandHandler.increaseZoom</a></li>
+  <li>Ctrl-- (minus) or Numpad-- invokes <a>CommandHandler.decreaseZoom</a></li>
+  <li>Ctrl-+ (plus) or Numpad-+ invokes <a>CommandHandler.increaseZoom</a></li>
   <li>Ctrl-0 invokes <a>CommandHandler.resetZoom</a></li>
   <li>Shift-Z invokes <a>CommandHandler.zoomToFit</a>; repeat to return to the original scale and position if <a>CommandHandler.isZoomToFitRestoreEnabled</a> is true</li>
   <li>Ctrl-G invokes <a>CommandHandler.groupSelection</a></li>
   <li>Ctrl-Shift-G invokes <a>CommandHandler.ungroupSelection</a></li>
   <li>F2 invokes <a>CommandHandler.editTextBlock</a></li>
   <li>Menu Key or Shift-F10 or Ctrl-Shift-\ invokes <a>CommandHandler.showContextMenu</a></li>
-  <li>Esc invokes <a>CommandHandler.stopCommand</a></li>
+  <li>Escape invokes <a>CommandHandler.stopCommand</a></li>
+  <li>Ctrl-Alt-Enter switches to <a href="./accessibility.html">Keyboard Control Mode</a></li>
 </ul>
 <p>
-On a Mac the Command key is used as the modifier instead of the Control key.
+For the keyboard command bindings when in keyboard control mode, see
+<a href="./accessibility.html#KeyboardCommandTable">Keyboard Control Commands</a>.
 </p>
 <p>
 At the current time there are no keyboard bindings for commands such as <a>CommandHandler.collapseSubGraph</a>,
 <a>CommandHandler.collapseTree</a>, <a>CommandHandler.expandSubGraph</a>, or <a>CommandHandler.expandTree</a>.
+Such Nodes or Groups usually have buttons such as "TreeExpanderButton" or "SubGraphExpanderButton" in them
+or provide expand/collapse ability via other means.
 </p>
 <p>
 If you want to have a different behavior for the arrow keys, consider using the sample class extended from <a>CommandHandler</a>:
@@ -391,16 +399,16 @@ You can use the <a>CommandHandler</a>'s "can..." predicates to enable or disable
   }
   // enable or disable all command buttons
   function enableAll() {
-    const cmdhnd = diagram.commandHandler;
-    enable("SelectAll", cmdhnd.canSelectAll());
-    enable("Cut", cmdhnd.canCutSelection());
-    enable("Copy", cmdhnd.canCopySelection());
-    enable("Paste", cmdhnd.canPasteSelection());
-    enable("Delete", cmdhnd.canDeleteSelection());
-    enable("Group", cmdhnd.canGroupSelection());
-    enable("Ungroup", cmdhnd.canUngroupSelection());
-    enable("Undo", cmdhnd.canUndo());
-    enable("Redo", cmdhnd.canRedo());
+    const cmd = diagram.commandHandler;
+    enable("SelectAll", cmd.canSelectAll());
+    enable("Cut", cmd.canCutSelection());
+    enable("Copy", cmd.canCopySelection());
+    enable("Paste", cmd.canPasteSelection());
+    enable("Delete", cmd.canDeleteSelection());
+    enable("Group", cmd.canGroupSelection());
+    enable("Ungroup", cmd.canUngroupSelection());
+    enable("Undo", cmd.canUndo());
+    enable("Redo", cmd.canRedo());
   }
   // notice whenever the selection may have changed
   diagram.addDiagramListener("ChangedSelection", e => enableAll());
@@ -437,28 +445,31 @@ Each button is implemented in the following fashion:
 </code></pre>
 <p>
 Whenever the selection changes or whenever a transaction or undo or redo occurs,
-the enableAll function is called to update the "disabled" property of each of the buttons.
+the enableAll function is called to update the <code>disabled</code> property of each of the buttons.
 </p>
 
 <h2 id="Accessibility">Accessibility</h2>
 <p>
-Since <b>GoJS</b> is based on the HTML Canvas element,
-making an app that is accessible to screen-readers or other accessibility devices
-is a matter of generating fallback content outside of GoJS,
-just as you would generate fallback content separate from any HTML Canvas application.
-</p>
-<p>
 Although much of the predefined functionality of the <a>CommandHandler</a> is accessible
 with keyboard commands or the default context menu, not all of it is,
 and the functionality of the <a>Tool</a>s mostly depends on mouse or touch events.
-We recommend that you implement alternative mechanisms specific to your application
-for those tools that you want your users to access without a pointing device.
+Your users can use <a href="./accessibility.html">Keyboard Control Mode</a>
+if they cannot use a mouse or finger or if they prefer to use a keyboard.
+</p>
+<p>
+That mode also supports updating through screen readers.
+Since for efficiency and flexibility reasons <b>GoJS</b> is designed not to use regular HTML DOM elements,
+making an app that is accessible to screen readers or other accessibility devices
+is a matter of producing the appropriate application-specific information in an
+HTML element and implementing a <a>CommandHandler.focusChanged</a> event handler that updates that element.
+Read more at <a href="./accessibility.html#CustomizingforScreenReaders">Customizing for Screen Readers</a>.
 </p>
 
 <h2 id="MoreCommandHandlerOverrideExamples">More CommandHandler override examples</h2>
 
 <p>
-Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programmatically:
+Stop CTRL+Z/CTRL+Y from doing an undo/redo,
+but still allow <a>CommandHandler.undo</a> and <a>CommandHandler.redo</a> to be called programmatically:
 </p>
 <pre class="lang-js"><code>
   myDiagram.commandHandler.doKeyDown = function() { // must be a function, not an arrow =>
@@ -522,7 +533,9 @@ Stop CTRL+Z/CTRL+Y from doing an undo/redo, but still allow <a>CommandHandler.un
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

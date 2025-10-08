@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -214,14 +216,16 @@
 
 <script id="code">
   // this is used to generate the example code
-  const TEMPLATE = `myDiagram.nodeTemplate = new go.Node('Auto')
-  .add(
-    new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' })
-      .bind('fill', 'color'),
-    new go.TextBlock({ margin: 8, stroke: '#333', spacingBelow: {SPACING} })
-      .bind('text')
-      .bind('font')
-  );
+  const TEMPLATE = `
+myDiagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' })
+        .bind('fill', 'color'),
+      new go.TextBlock({ margin: 8, stroke: '#333', spacingBelow: {SPACING} })
+        .bind('text')
+        .bind('font')
+    );
 
 function init() {
   // construct the Diagram first; then assign the model:
@@ -234,24 +238,25 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', () => {
   new FontFace("{FONTNAME}", "url({FONTURL})").load().then(
-    (font) => {
+    font => {
       document.fonts.add(font);
       init();
     },
-    (err) => {
+    err => {
       console.error(err);
     }
-  )
+  );
 });
 
 <link rel="stylesheet" href="{ALTLINK}" />
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.fonts.values().forEach(f => f.load());
+  document.fonts.forEach(f => f.load());
   document.fonts.ready.then(() => {
     init();
   });
-});`;
+});
+`;
 
   // list of example fonts
   const Fonts = [
@@ -294,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let f = Fonts[document.getElementById('fontSelector').value];
 
-    myDiagram.model.commit((m) => {
+    myDiagram.model.commit(m => {
       m.set(m.modelData, 'color', f.color);
     });
     myDiagram.setDivBackground(f.color);
@@ -352,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // get data on selected node
     let fontname = data.font.split(' ').slice(1).join(' ');
-    let f = Fonts.filter((f) => f.name == fontname)[0];
+    let f = Fonts.filter(f => f.name == fontname)[0];
     let fonturl = data.fonturl;
     let alturl = f.alturl;
     let color = f.color;
@@ -401,6 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'dragSelectingTool.isEnabled': false,
       'undoManager.isEnabled': false,
       'panningTool.isEnabled': false,
+      'toolManager.mouseWheelBehavior': 'none',
       isReadOnly: true,
       allowZoom: false,
 
@@ -408,40 +414,38 @@ document.addEventListener('DOMContentLoaded', () => {
       layout: new go.GridLayout({ spacing: new go.Size(0, 0) })
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      selectionAdorned: false,
-      mouseEnter: (e, obj) => {
-        // lighten the Node on hover
-        if (obj.part.isSelected) return;
-        let br = new go.Brush(myDiagram.model.modelData.color);
-        br.lightenBy(0.1);
-        obj.part.elt(0).fill = br.color;
-      },
-      mouseLeave: (e, obj) => {
-        if (obj.part.isSelected) return;
-        obj.part.elt(0).fill = myDiagram.model.modelData.color;
-      }
-    })
-      .add(
-        new go.Shape('RoundedRectangle', {
-          strokeWidth: 0,
-          width: 56,
-          height: 56
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          selectionAdorned: false,
+          mouseEnter: (e, obj) => {
+            // lighten the Node on hover
+            if (obj.part.isSelected) return;
+            let br = new go.Brush(myDiagram.model.modelData.color);
+            br.lightenBy(0.1);
+            obj.part.elt(0).fill = br.color;
+          },
+          mouseLeave: (e, obj) => {
+            if (obj.part.isSelected) return;
+            obj.part.elt(0).fill = myDiagram.model.modelData.color;
+          }
         })
-          .trigger(
-            new go.AnimationTrigger(
-              'fill', // animate the color change
-              { duration: 200 }
+        .add(
+          new go.Shape('RoundedRectangle', {
+              strokeWidth: 0,
+              width: 56,
+              height: 56
+            })
+            .trigger(  // animate the color change
+              new go.AnimationTrigger('fill', { duration: 200 })
             )
-          )
-          .bindObject('fill', 'isSelected', (isSelected, obj) => {
-            return !isSelected ? myDiagram.model.modelData.color : 'white';
-          }),
-        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' })
-          .bind('text')
-          .bind('font')
-          .bind('spacingBelow', 'spacing')
-      );
+            .bindObject('fill', 'isSelected', (isSelected, obj) => {
+              return !isSelected ? myDiagram.model.modelData.color : 'white';
+            }),
+          new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' })
+            .bind('text')
+            .bind('font')
+            .bind('spacingBelow', 'spacing')
+        );
 
     // add all font options to drop down
     let fontSelector = document.getElementById('fontSelector');
@@ -460,10 +464,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('DOMContentLoaded', () => {
     let n_loaded = 0;
 
-    Fonts.forEach((f) => {
+    Fonts.forEach(f => {
       // load each fonts
       new FontFace(f.name, `url(${f.url})`).load().then(
-        (font) => {
+        font => {
           document.fonts.add(font);
 
           // call init once all fonts have been loaded
@@ -471,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             init();
           }
         },
-        (err) => {
+        err => {
           console.error(f.name + '\n' + err);
         }
       );

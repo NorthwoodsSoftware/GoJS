@@ -234,7 +234,11 @@ go.GraphObject.defineBuilder('SubGraphExpanderButton', (args) => {
 go.GraphObject.defineBuilder('ToolTip', (args) => new go.Adornment('Auto', {
     isShadowed: true,
     shadowColor: 'rgba(0, 0, 0, .4)',
-    shadowOffset: new go.Point(0, 2)
+    shadowOffset: new go.Point(0, 2),
+    mouseOver: (e, ad) => {
+        const mgr = e.diagram.toolManager;
+        mgr.extendToolTip(mgr.toolTipDuration);
+    }
 })
     .add(new go.Shape('RoundedRectangle', {
     name: 'Border',
@@ -305,14 +309,15 @@ go.GraphObject.defineBuilder('ContextMenuButton', (args) => {
     return button;
 });
 // This button is used to toggle the visibility of a GraphObject named
-// by the second argument to GraphObject.make.  If the second argument is not present
-// or if it is not a string, this assumes that the element name is 'COLLAPSIBLE'.
+// by the third argument to GraphObject.build.
+// If the third argument is not present or if it is not a string,
+// this assumes that the element name is 'COLLAPSIBLE'.
 // You can only control the visibility of one element in a Part at a time,
 // although that element might be an arbitrarily complex Panel.
 // Typical usage:
 //   new go.Panel(. . .).add(
 //     . . .,
-//     go.GraphObject.build('PanelExpanderButton', 'COLLAPSIBLE'),
+//     go.GraphObject.build('PanelExpanderButton', {}, 'COLLAPSIBLE'),
 //     . . .,
 //     new go.Panel({ name: 'COLLAPSIBLE' })
 //       .add(
@@ -381,25 +386,30 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args) => {
 // it raises an error.  If no data binding of the checked state is desired,
 // pass an empty string as the first argument.
 // Examples:
-// $('CheckBoxButton', 'dataPropertyName', ...)
+// go.GraphObject.build('CheckBoxButton', { . . . }, 'dataPropertyName')
 // or:
-// $('CheckBoxButton', '', { '_doClick': (e, obj) => alert('clicked!') })
+// go.GraphObject.build('CheckBoxButton', { '_doClick': (e, obj) => alert('clicked!') }, "")
 go.GraphObject.defineBuilder('CheckBoxButton', (args) => {
     // process the one required string argument for this kind of button
     const propname = go.GraphObject.takeBuilderArgument(args);
     const button = go.GraphObject.build('Button', { desiredSize: new go.Size(14, 14) });
-    button.add(new go.Shape({
+    button.attach({
+        'ButtonBorder.spot1': new go.Spot(0, 0, 1, 1),
+        'ButtonBorder.spot2': new go.Spot(1, 1, -1, -1)
+    });
+    const shp = new go.Shape({
         name: 'ButtonIcon',
         geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
         strokeWidth: 2,
         stretch: go.Stretch.Fill, // this Shape expands to fill the Button
         geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
         visible: false // visible set to false: not checked, unless data.PROPNAME is true
-    }));
+    });
     // create a data Binding only if PROPNAME is supplied and not the empty string
     if (propname !== '') {
-        button.bindTwoWay('visible', propname);
+        shp.bindTwoWay('visible', propname);
     }
+    button.add(shp);
     button.click = (e, btn) => {
         if (!(btn instanceof go.Panel))
             return;
@@ -423,10 +433,13 @@ go.GraphObject.defineBuilder('CheckBoxButton', (args) => {
 // This defines a whole check-box -- including both a 'CheckBoxButton' and whatever you want as the check box label.
 // Note that mouseEnter/mouseLeave/click events apply to everything in the panel, not just in the 'CheckBoxButton'.
 // Examples:
-// $('CheckBox', 'aBooleanDataProperty', $(go.TextBlock, 'the checkbox label'))
+// go.GraphObject.build('CheckBox', {}, 'aBooleanDataProperty')
+//   .add(new go.TextBlock('the checkbox label'))
 // or
-// $('CheckBox', 'someProperty', $(go.TextBlock, 'A choice'),
-//   { '_doClick': (e, obj) => { ... perform extra side-effects ... } })
+// go.GraphObject.build('CheckBox', {
+//     '_doClick': (e, obj) => { ... perform extra side-effects ... }
+//   }, 'someProperty')
+//   .add(new go.TextBlock('A choice'))
 go.GraphObject.defineBuilder('CheckBox', (args) => {
     // process the one required string argument for this kind of button
     const propname = go.GraphObject.takeBuilderArgument(args);
@@ -456,6 +469,168 @@ go.GraphObject.defineBuilder('CheckBox', (args) => {
     });
     box.add(button);
     // avoid potentially conflicting event handlers on the 'CheckBoxButton'
+    button.mouseEnter = null;
+    button.mouseLeave = null;
+    button.click = null;
+    return box;
+});
+// This defines an "AutoRepeatButton" Panel,
+// which is used by the scrollbar in the "ScrollingTable" Panel.
+// It is basically a custom "Button" that automatically repeats its click
+// action when the user holds down the mouse.
+// The first optional argument may be a number indicating the number of milliseconds
+// to wait between calls to the click function.  Default is 50.
+// The second optional argument may be a number indicating the number of milliseconds
+// to delay before starting calls to the click function.  Default is 500.
+// Example:
+//   go.GraphObject.build("AutoRepeatButton", {
+//       click: (e, button) => doSomething(button.part)
+//     }, 150)  // slower than the default 50 milliseconds between calls
+//     .add(
+//       new go.Shape("Circle", { width: 8, height: 8 })
+//     )
+go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
+    const repeat = go.GraphObject.takeBuilderArgument(args, 50, (x) => typeof x === 'number');
+    const delay = go.GraphObject.takeBuilderArgument(args, 500, (x) => typeof x === 'number');
+    // some internal helper functions for auto-repeating
+    function delayClicking(e, obj) {
+        endClicking(e, obj);
+        if (obj.click) {
+            // wait milliseconds before starting clicks
+            obj._timer = setTimeout(() => repeatClicking(e, obj), delay);
+        }
+    }
+    function repeatClicking(e, obj) {
+        if (obj._timer)
+            clearTimeout(obj._timer);
+        if (obj.click) {
+            obj._timer = setTimeout(() => {
+                if (obj.click) {
+                    obj.click(e, obj);
+                    repeatClicking(e, obj);
+                }
+            }, repeat); // milliseconds between clicks
+        }
+    }
+    function endClicking(e, obj) {
+        if (obj._timer) {
+            clearTimeout(obj._timer);
+            obj._timer = undefined;
+        }
+    }
+    const button = go.GraphObject.build('Button');
+    button.actionDown = (e, btn) => delayClicking(e, btn);
+    button.actionUp = (e, btn) => endClicking(e, btn);
+    button.actionCancel = (e, btn) => endClicking(e, btn);
+    return button;
+});
+// Define a common toggle switch button.  A "ToggleSwitch" is implemented much like a "Button".
+// The first argument is the name of the data property to which the state of this toggle is data bound.
+// If the first argument is not a string or is empty, it raises an error.
+// The second optional argument is a boolean value.  The default value of false
+// results in horizontal toggle switch; a value of true results in a vertical toggle switch.
+// When the switch button is disabled, because Panel.isEnabled is false, a click will not do anything.
+//
+// The normal size is 28x15 (horizontal) or 15x28 (vertical).  If you change the size of this ToggleSwitch,
+// you may want to change the size of its "ButtonIcon", which is normally a "Circle" of size 11x11.
+//
+// Examples:
+// go.GraphObject.build('ToggleSwitch', {
+//     "ButtonBorder.figure": "Rectangle",
+//     "ButtonIcon.figure": "Square"
+//   }, "dataPropertyName")
+// or:
+// go.GraphObject.build('ToggleSwitch',{
+//     "_doClick": function(e, obj) { alert('clicked!'); }
+//   })
+go.GraphObject.defineBuilder('ToggleSwitch', function (args) {
+    // process the one required string argument for this kind of button
+    const propname = go.GraphObject.takeBuilderArgument(args);
+    if (!propname)
+        throw new Error("ToggleSwitch must be data-bound to a property name, not: " + propname);
+    // process an optional boolean argument, true to indicate vertical instead of horizontal
+    const vertical = go.GraphObject.takeBuilderArgument(args, false, v => (typeof v === "boolean"));
+    // default initial colors
+    const ButtonFillOff = "gray";
+    const ButtonBorderOff = "transparent";
+    const ButtonIconFillOff = "white";
+    const ButtonFillOn = "green";
+    const ButtonBorderOn = "transparent";
+    const ButtonIconFillOn = "white";
+    const button = new go.Panel("Auto", { width: vertical ? 15 : 28, height: vertical ? 28 : 15 })
+        .attach({
+        "_buttonFillOff": ButtonFillOff,
+        "_buttonBorderOff": ButtonBorderOff,
+        "_buttonIconFillOff": ButtonIconFillOff,
+        "_buttonFillOn": ButtonFillOn,
+        "_buttonBorderOn": ButtonBorderOn,
+        "_buttonIconFillOn": ButtonIconFillOn,
+    })
+        .add(new go.Shape("Capsule", {
+        name: "ButtonBorder",
+        fill: ButtonFillOff, stroke: ButtonBorderOff, strokeWidth: 1
+    })
+        .bind("fill", propname, (b, shp) => b ? shp.panel["_buttonFillOn"] : shp.panel["_buttonFillOff"])
+        .bind("stroke", propname, (b, shp) => b ? shp.panel["_buttonBorderOn"] : shp.panel["_buttonBorderOff"]))
+        .add(new go.Shape("Circle", {
+        name: "ButtonIcon",
+        width: 11, height: 11,
+        fill: ButtonIconFillOff, stroke: null,
+        alignment: vertical ? go.Spot.Bottom : go.Spot.Left
+    })
+        .bind("fill", propname, (b, shp) => b ? shp.panel["_buttonIconFillOn"] : shp.panel["_buttonIconFillOff"])
+        .bind("alignment", propname, b => b
+        ? (vertical ? go.Spot.Top : go.Spot.Right)
+        : (vertical ? go.Spot.Bottom : go.Spot.Left)));
+    button.click = function (e, btn) {
+        if (!btn.isEnabledObject())
+            return;
+        const diagram = e.diagram;
+        if (diagram === null || diagram.isReadOnly)
+            return;
+        if (propname !== '' && diagram.model.isReadOnly)
+            return;
+        e.handled = true;
+        const panel = btn.findBindingPanel();
+        if (panel !== null) {
+            diagram.startTransaction('toggle switch');
+            diagram.model.set(panel.data, propname, !panel.data[propname]);
+            // support extra side-effects without clobbering the click event handler:
+            if (typeof btn['_doClick'] === 'function')
+                btn['_doClick'](e, btn);
+            diagram.commitTransaction('toggle switch');
+        }
+    };
+    return button;
+});
+// This defines a whole toggle -- including both a 'ToggleSwitch' and whatever you want as the toggle label.
+// Note that mouseEnter/mouseLeave/click events apply to everything in the panel, not just in the 'ToggleSwitch'.
+// Examples:
+// go.GraphObject.build('Toggle', {}, 'aBooleanDataProperty')
+//   .add(new go.TextBlock('the toggle label'))
+// or
+// go.GraphObject.build('Toggle', {
+//     "_doClick": (e, obj) => { ... perform extra side-effects ... }
+//   }, 'someProperty')
+//   .add(new go.TextBlock('A choice'))
+go.GraphObject.defineBuilder('Toggle', function (args) {
+    // process the one required string argument for this kind of button
+    const propname = go.GraphObject.takeBuilderArgument(args);
+    const button = go.GraphObject.build('ToggleSwitch', { name: 'Button' }, propname); // bound to this data property
+    const box = new go.Panel('Horizontal', {
+        cursor: button.cursor,
+        margin: 1,
+        // copy event handlers up to this new Panel
+        mouseEnter: button.mouseEnter,
+        mouseLeave: button.mouseLeave,
+        click: button.click
+    })
+        .attach({
+        // also save original Button behavior, for potential use in a Panel.click event handler
+        '_buttonClick': button.click
+    })
+        .add(button);
+    // avoid potentially conflicting event handlers on the 'ToggleSwitch'
     button.mouseEnter = null;
     button.mouseLeave = null;
     button.click = null;

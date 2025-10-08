@@ -15,52 +15,54 @@
 // which is used by the scrollbar in the "ScrollingTable" Panel.
 // It is basically a custom "Button" that automatically repeats its click
 // action when the user holds down the mouse.
-// The first optional argument may be a number indicating the number of milliseconds
+// The first extra argument may be a number indicating the number of milliseconds
 // to wait between calls to the click function.  Default is 50.
-// The second optional argument may be a number indicating the number of milliseconds
+// The second extra argument may be a number indicating the number of milliseconds
 // to delay before starting calls to the click function.  Default is 500.
 // Example:
-//   $("AutoRepeatButton", 150,  // slower than the default 50 milliseconds between calls
-//     {
+//   go.GraphObject.build("AutoRepeatButton", {
 //       click: (e, button) => doSomething(button.part)
-//     },
-//     $(go.Shape, "Circle", { width: 8, height: 8 })
-//   )
-go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
-    const repeat = go.GraphObject.takeBuilderArgument(args, 50, (x) => typeof x === 'number');
-    const delay = go.GraphObject.takeBuilderArgument(args, 500, (x) => typeof x === 'number');
-    // some internal helper functions for auto-repeating
-    function delayClicking(e, obj) {
-        endClicking(e, obj);
-        if (obj.click) {
-            // wait milliseconds before starting clicks
-            obj._timer = setTimeout(() => repeatClicking(e, obj), delay);
+//     }, 150)  // slower than the default 50 milliseconds between calls
+//     .add(
+//       new go.Shape("Circle", { width: 8, height: 8 })
+//     )
+if (!go.GraphObject.isBuilderDefined || !go.GraphObject.isBuilderDefined('AutoRepeatButton')) {
+    go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
+        const repeat = go.GraphObject.takeBuilderArgument(args, 50, (x) => typeof x === 'number');
+        const delay = go.GraphObject.takeBuilderArgument(args, 500, (x) => typeof x === 'number');
+        // some internal helper functions for auto-repeating
+        function delayClicking(e, obj) {
+            endClicking(e, obj);
+            if (obj.click) {
+                // wait milliseconds before starting clicks
+                obj._timer = setTimeout(() => repeatClicking(e, obj), delay);
+            }
         }
-    }
-    function repeatClicking(e, obj) {
-        if (obj._timer)
-            clearTimeout(obj._timer);
-        if (obj.click) {
-            obj._timer = setTimeout(() => {
-                if (obj.click) {
-                    obj.click(e, obj);
-                    repeatClicking(e, obj);
-                }
-            }, repeat); // milliseconds between clicks
+        function repeatClicking(e, obj) {
+            if (obj._timer)
+                clearTimeout(obj._timer);
+            if (obj.click) {
+                obj._timer = setTimeout(() => {
+                    if (obj.click) {
+                        obj.click(e, obj);
+                        repeatClicking(e, obj);
+                    }
+                }, repeat); // milliseconds between clicks
+            }
         }
-    }
-    function endClicking(e, obj) {
-        if (obj._timer) {
-            clearTimeout(obj._timer);
-            obj._timer = undefined;
+        function endClicking(e, obj) {
+            if (obj._timer) {
+                clearTimeout(obj._timer);
+                obj._timer = undefined;
+            }
         }
-    }
-    const button = go.GraphObject.build('Button');
-    button.actionDown = (e, btn) => delayClicking(e, btn);
-    button.actionUp = (e, btn) => endClicking(e, btn);
-    button.actionCancel = (e, btn) => endClicking(e, btn);
-    return button;
-});
+        const button = go.GraphObject.build('Button');
+        button.actionDown = (e, btn) => delayClicking(e, btn);
+        button.actionUp = (e, btn) => endClicking(e, btn);
+        button.actionCancel = (e, btn) => endClicking(e, btn);
+        return button;
+    });
+}
 // Create a "Table" Panel that supports scrolling.
 // This creates a Panel that contains the "Table" Panel whose topIndex is modified plus a scroll bar panel.
 // That "Table" Panel is given a name that is given as the optional first argument.
@@ -70,9 +72,15 @@ go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
 // The scroll bar can be on either side of the "Table" Panel; it defaults to being on the right side.
 // The side is controlled by whether the column of the "Table" Panel is 0 (the default) or 2.
 // Example use:
-//   $("ScrollingTable", "TABLE",
-//     new go.Binding("TABLE.itemArray", "someArrayProperty"),
-//     ...)
+//   go.GraphObject.build("ScrollingTable", {
+//       // various options
+//       // property settings on the whole "ScrollingTable":
+//       name: "SCROLLER",
+//       desiredSize: new go.Size(. . .),
+//       // and on the table being scrolled, by default named "TABLE":
+//       "TABLE.itemTemplate": new go.Panel(. . .). . .
+//     })
+//     .bind("TABLE.itemArray", "someArrayProperty")
 // Note that if you have more than one of these in a Part,
 // you'll want to make sure each one has a unique name.
 go.GraphObject.defineBuilder('ScrollingTable', (args) => {
@@ -240,7 +248,8 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         column: 0,
         stretch: go.Stretch.Fill,
         background: 'whitesmoke',
-        defaultAlignment: go.Spot.Top
+        defaultAlignment: go.Spot.Top,
+        rowSizing: go.Sizing.None
     }), 
     // this is the scrollbar
     new go.Panel('Table', {

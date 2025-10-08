@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,27 +134,29 @@
 
     myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool({ isResegmenting: true }));
 
-    myDiagram.nodeTemplate = new go.Node({
-      resizable: true,
-      resizeObjectName: 'SHAPE',
-      reshapable: true, // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
-      rotatable: true,
-      rotationSpot: go.Spot.Center
-    })
-      .add(
-        new go.Shape({
-          name: 'SHAPE',
-          fill: 'lightgray',
-          strokeWidth: 1.5
+    myDiagram.nodeTemplate =
+      new go.Node({
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          rotatable: true,
+          rotationSpot: go.Spot.Center,
+          reshapable: true // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
         })
-          .bindTwoWay('geometryString', 'geo')
-      );
+        .add(
+          new go.Shape({
+              name: 'SHAPE',
+              fill: 'lightgray',
+              strokeWidth: 1.5
+            })
+            .bindTwoWay('geometryString', 'geo')
+        );
 
     myDiagram.model = new go.GraphLinksModel([
       { geo: 'F M20 0 40 20 20 40 0 20z' },
       { geo: 'F M0 145 L75 8 C100 20 120 40 131 87 C160 70 180 50 195 0 L249 133z' }
     ]);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

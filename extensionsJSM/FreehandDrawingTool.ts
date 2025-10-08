@@ -41,7 +41,7 @@ export class FreehandDrawingTool extends go.Tool {
     this._archetypePartData = {};
     this._isBackgroundOnly = true;
     // this is the Shape that is shown during a drawing operation
-    this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1.5 });
+    this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: null, strokeWidth: 1 });
     // the Shape has to be inside a temporary Part that is used during the drawing operation
     new go.Part({ layerName: 'Tool' }).add(this._temporaryShape);
     if (init) Object.assign(this, init);
@@ -154,10 +154,7 @@ export class FreehandDrawingTool extends go.Tool {
       const g = new go.Geometry().add(f); // the Shape.geometry consists of a single PathFigure
       shape.geometry = g;
       // position the Shape's Part, accounting for the strokeWidth
-      part.position = new go.Point(
-        viewpt.x - shape.strokeWidth / 2,
-        viewpt.y - shape.strokeWidth / 2
-      );
+      part.location = new go.Point(viewpt.x - shape.strokeWidth / 2, viewpt.y - shape.strokeWidth / 2);
       this.diagram.add(part);
     }
 
@@ -221,8 +218,8 @@ export class FreehandDrawingTool extends go.Tool {
       if (this.temporaryShape.geometry !== null) {
         const geo = this.temporaryShape.geometry.copy();
         const pos = geo.normalize();
-        pos.x = viewpt.x - pos.x;
-        pos.y = viewpt.y - pos.y;
+        pos.x = viewpt.x - pos.x - this.temporaryShape.strokeWidth/2;
+        pos.y = viewpt.y - pos.y - this.temporaryShape.strokeWidth/2;
 
         diagram.startTransaction(this.name);
         // create the node data for the model
@@ -233,10 +230,7 @@ export class FreehandDrawingTool extends go.Tool {
           const part = diagram.findPartForData(d);
           if (part !== null) {
             // assign the location
-            part.location = new go.Point(
-              pos.x + geo.bounds.width / 2,
-              pos.y + geo.bounds.height / 2
-            );
+            part.location = pos;
             // assign the Shape.geometry
             const shape = part.findObject('SHAPE') as go.Shape;
             if (shape !== null) shape.geometry = geo;

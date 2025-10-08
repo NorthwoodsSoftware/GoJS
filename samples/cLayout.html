@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,27 +136,33 @@
     });
 
     // define  the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      // make sure the Node.location is different from the Node.position
-      locationSpot: go.Spot.Center
-    })
-      .bind('text') // for sorting
-      .add(
-        new go.Shape('Ellipse', { // the default value for the Shape.figure property
-          fill: 'lightgray',
-          stroke: null,
-          desiredSize: new go.Size(30, 30)
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          // make sure the Node.location is different from the Node.position
+          locationSpot: go.Spot.Center
         })
-          .bind('figure')
-          .bind('fill')
-          .bind('desiredSize', 'size'),
-        new go.TextBlock().bind('text')
-      );
+        .bind('text') // for sorting
+        .add(
+          new go.Shape('Ellipse', { // the default value for the Shape.figure property
+              fill: 'lightgray',
+              strokeWidth: 0,
+              desiredSize: new go.Size(30, 30)
+            })
+            .bind('figure')
+            .bind('fill')
+            .bind('desiredSize', 'size'),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({ selectable: false }).add(new go.Shape({ strokeWidth: 3, stroke: '#333' }));
+    myDiagram.linkTemplate =
+      new go.Link({ selectable: false })
+        .add(new go.Shape({ strokeWidth: 3, stroke: '#333' }));
+
     // generate a circle using the default values
     buildSettingsMenu();
+
     rebuildGraph();
   }
 
@@ -276,7 +284,7 @@
     myDiagram.model.linkDataArray = linkArray;
   }
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     // Builds the setting menu through calls to respective builder
     buildButtonRow('radius', 10, 6, 'Radius','table1', 0);
     buildButtonRow('aspectRatio', 0.05, 1.00, 'Aspect Ratio','table1', 0, 100, 2);
@@ -289,9 +297,9 @@
     buildDropdown('sorting', 'Sorting','table2', ['Forwards', 'Reverse', 'Ascending', 'Descending', 'Optimized'])
     buildDropdown('nodeDiameterFormula', 'Diameter', 'table2', ['Pythagorean', 'Circular'])
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
     })
   }
 
@@ -355,7 +363,7 @@
     else if (sorting === 'Optimized') lay.sorting = go.CircularSorting.Optimized;
     if (sorting != d.getElementById('sorting').name) code += `\n  sorting: go.CircularSorting.${sorting},`
 
-    if(code === 'new go.CircularLayout({') code = 'new go.CircularLayout()'; // If no changes made to layout
+    if (code === 'new go.CircularLayout({') code = 'new go.CircularLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
     if (window.Prism) window.Prism.highlightAll();
@@ -363,12 +371,11 @@
     myDiagram.zoomToFit();
   }
 
-  function changeLinks(max, value){ // Makes sure min links is less than max links and vice versa
+  function changeLinks(max, value) {  // Makes sure min links is less than max links and vice versa
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxLinks').value = Math.max(e.getElementById('maxLinks').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minLinks').value = Math.max(e.getElementById('minLinks').value - -value, 0);
     }
     if (parseInt(e.getElementById('minLinks').value) > parseInt(e.getElementById('maxLinks').value)) {
@@ -376,28 +383,28 @@
     }
   }
 
-  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+  function changeDropdown(element) {  // Changes dropdowns and updates code block and reset button
     element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function resetButton(element){ // Resets the value of the input box and updates respective divs
+  function resetButton(element) {  // Resets the value of the input box and updates respective divs
     e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+  function changeInput(element, change = true) {  // Changes value and checks for default equality for the reset button
     e = element.parentNode.querySelector('.inputBox');
     change? number = element.name: number = 0;
     const max = element.parentNode.querySelector('.maximum').name;
     const min = element.parentNode.querySelector('.minimum').name;
     const decimal = element.parentNode.querySelector('.decimal').name;
-    var value = (e.value - -number) // Changes by recorded interval
-    if(max !== null) value = Math.min(value, max) // Checks for max and min values
-    if(min !== null) value = Math.max(value, min)
-    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    var value = (e.value - -number); // Changes by recorded interval
+    if (max !== null) value = Math.min(value, max); // Checks for max and min values
+    if (min !== null) value = Math.max(value, min);
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal); // Rounds to assigned place
     element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
@@ -436,41 +443,38 @@
   }
 
   // Disables different inputs based on other properties
-  function heightVisibility(){
+  function heightVisibility() { 
     e = document;
-    if (e.getElementById('circ').checked || e.getElementById('randSizes').checked){
+    if (e.getElementById('circ').checked || e.getElementById('randSizes').checked) { 
       e.getElementById('nodeHeightText').style.opacity = 0.5;
       e.getElementById('nodeHeightForm').style.opacity = 0.4;
       e.getElementById('nodeHeightForm').style.pointerEvents = 'none';
-    }
-    else{
+    } else {
       e.getElementById('nodeHeightText').style.opacity = 1;
       e.getElementById('nodeHeightForm').style.opacity = 1;
       e.getElementById('nodeHeightForm').style.pointerEvents = 'auto';
     }
-    if (e.getElementById('randSizes').checked){
+    if (e.getElementById('randSizes').checked) { 
       e.getElementById('nodeWidthText').style.opacity = 0.5;
       e.getElementById('nodeWidthForm').style.opacity = 0.4;
       e.getElementById('nodeWidthForm').style.pointerEvents = 'none';
-    }
-    else{
+    } else {
       e.getElementById('nodeWidthText').style.opacity = 1;
       e.getElementById('nodeWidthForm').style.opacity = 1;
       e.getElementById('nodeWidthForm').style.pointerEvents = 'auto';
     }
   }
 
-  function linkVisibility(){
+  function linkVisibility() { 
     e = document;
-    if (e.getElementById('cyclic').checked){
+    if (e.getElementById('cyclic').checked) { 
       e.getElementById('minLinkText').style.opacity = 0.5;
       e.getElementById('maxLinkText').style.opacity = 0.5;
       e.getElementById('minLinksForm').style.opacity = 0.4;
       e.getElementById('minLinksForm').style.pointerEvents = 'none';
       e.getElementById('maxLinksForm').style.opacity = 0.4;
       e.getElementById('maxLinksForm').style.pointerEvents = 'none';
-    }
-    else{
+    } else {
       e.getElementById('minLinkText').style.opacity = 1;
       e.getElementById('maxLinkText').style.opacity = 1;
       e.getElementById('minLinksForm').style.opacity = 1;
@@ -480,7 +484,7 @@
     }
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -492,7 +496,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -548,7 +552,7 @@
 
 <template id="buttonRow">
   <div class="row tooltip" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
@@ -580,7 +584,7 @@
 
 <template id="dropdown">
   <div class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>

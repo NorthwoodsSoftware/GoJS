@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,11 +136,15 @@
     // install the RescalingTool as a mouse-down tool
     myDiagram.toolManager.mouseDownTools.add(new RescalingTool());
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 }).bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }).bind('text')
-      ).bindTwoWay('scale');
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('scale')
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 })
+            .bind('text')
+        );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -157,6 +163,7 @@
       ]
   });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

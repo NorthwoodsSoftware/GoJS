@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,6 +125,7 @@
             
 
 <script id="code">
+
   // This variation on ForceDirectedLayout does not move any selected Nodes
   // but does move all other nodes (vertexes).
   class ContinuousForceDirectedLayout extends go.ForceDirectedLayout {
@@ -141,7 +144,7 @@
         this._isObserving = true;
         // cacheing the network means we need to recreate it if nodes or links have been added or removed or relinked,
         // so we need to track structural model changes to discard the saved network.
-        this.diagram.addModelChangedListener((e) => {
+        this.diagram.addModelChangedListener(e => {
           // modelChanges include a few cases that we don't actually care about, such as
           // "nodeCategory" or "linkToPortId", but we'll go ahead and recreate the network anyway.
           // Also clear the network when replacing the model.
@@ -156,7 +159,7 @@
         this.network = net = this.makeNetwork(coll);
       } else {
         // but on reuse we need to update the LayoutVertex.bounds for selected nodes
-        this.diagram.nodes.each((n) => {
+        this.diagram.nodes.each(n => {
           var v = net.findVertex(n);
           if (v !== null) v.bounds = n.actualBounds;
         });
@@ -168,7 +171,7 @@
       this.network = net;
 
       // in the future, don't allow nodes to move as far
-      //this.initialTemperature = (x) => 10;
+      //this.initialTemperature = x => 10;
     }
   }
   // end ContinuousForceDirectedLayout
@@ -181,7 +184,7 @@
         defaultSpringLength: 150
       }),
       // do an extra layout at the end of a move
-      SelectionMoved: (e) => e.diagram.layout.invalidateLayout()
+      SelectionMoved: e => e.diagram.layout.invalidateLayout()
     });
 
     // dragging a node invalidates the Diagram.layout, causing a layout during the drag
@@ -192,44 +195,47 @@
     };
 
     // define each Node's appearance
-    myDiagram.nodeTemplate = new go.Node('Auto') // the whole node panel
-      // define the node's outer shape, which will surround the TextBlock
-      .add(
-        new go.Shape('Circle', {
-          fill: 'CornflowerBlue',
-          stroke: 'black',
-          spot1: new go.Spot(0, 0, 5, 5),
-          spot2: new go.Spot(1, 1, -5, -5)
-        }),
-        new go.TextBlock({
-          font: 'bold 10pt helvetica, bold arial, sans-serif',
-          textAlign: 'center',
-          maxSize: new go.Size(100, NaN)
-        })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the whole node panel
+        // define the node's outer shape, which will surround the TextBlock
+        .add(
+          new go.Shape('Circle', {
+            fill: 'CornflowerBlue',
+            stroke: 'black',
+            spot1: new go.Spot(0, 0, 5, 5),
+            spot2: new go.Spot(1, 1, -5, -5)
+          }),
+          new go.TextBlock({
+              font: 'bold 10pt helvetica, bold arial, sans-serif',
+              textAlign: 'center',
+              maxSize: new go.Size(100, NaN)
+            })
+            .bind('text')
+        );
+
     // the rest of this app is the same as samples/conceptMap.html
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link() // the whole link panel
-      .add(
-        new go.Shape({ stroke: 'black' }), // the link shape
-        new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ // the label background, which becomes transparent around the edges
-              fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-              stroke: null
-            }),
-            new go.TextBlock({ // the label text
-              textAlign: 'center',
-              font: '10pt helvetica, arial, sans-serif',
-              stroke: '#555555',
-              margin: 4
-            })
-              .bind('text')
-          )
-      );
+    myDiagram.linkTemplate =
+      new go.Link() // the whole link panel
+        .add(
+          new go.Shape({ stroke: 'black' }), // the link shape
+          new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ // the label background, which becomes transparent around the edges
+                fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+                stroke: null
+              }),
+              new go.TextBlock({ // the label text
+                  textAlign: 'center',
+                  font: '10pt helvetica, arial, sans-serif',
+                  stroke: '#555555',
+                  margin: 4
+                })
+                .bind('text')
+            )
+        );
 
     // create the model for the concept map
     var nodeDataArray = [

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,98 +132,108 @@
       'undoManager.isEnabled': true // enable undo & redo
     });
 
-    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.AvoidsNodes, corner: 5 })
-      .add(new go.Shape({ strokeWidth: 1.5 }), new go.Shape({ toArrow: 'OpenTriangle' }));
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.AvoidsNodes, corner: 5 })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'OpenTriangle' })
+        );
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      desiredSize: new go.Size(80, 80),
-      // rearrange the link points evenly along the sides of the nodes as links are
-      // drawn or reconnected -- these event handlers only make sense when the fromSpot
-      // and toSpot are Spot.xxxSides
-      linkConnected: (node, link, port) => {
-        if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-        if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-      },
-      linkDisconnected: (node, link, port) => {
-        if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
-        if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
-      },
-      locationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape({
-          name: 'SHAPE', // named so that changeColor can modify it
-          strokeWidth: 0, // no border
-          fill: 'lightgray', // default fill color
-          portId: '',
-          // use the following property if you want users to draw new links
-          // interactively by dragging from the Shape, and re-enable the LinkingTool
-          // in the initialization of the Diagram
-          //cursor: "pointer",
-          fromSpot: go.Spot.AllSides,
-          fromLinkable: true,
-          fromLinkableDuplicates: true,
-          fromLinkableSelfNode: true,
-          toSpot: go.Spot.AllSides,
-          toLinkable: true,
-          toLinkableDuplicates: true,
-          toLinkableSelfNode: true
-        }).bindTwoWay('fill', 'color'),
-        new go.TextBlock({
-          name: 'TEXTBLOCK', // named so that editText can start editing it
-          margin: 3,
-          // use the following property if you want users to interactively start
-          // editing the text by clicking on it or by F2 if the node is selected:
-          //editable: true,
-          overflow: go.TextOverflow.Ellipsis,
-          maxLines: 5
-        }).bindTwoWay('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          desiredSize: new go.Size(80, 80),
+          // rearrange the link points evenly along the sides of the nodes as links are
+          // drawn or reconnected -- these event handlers only make sense when the fromSpot
+          // and toSpot are Spot.xxxSides
+          linkConnected: (node, link, port) => {
+            if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+            if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
+          },
+          linkDisconnected: (node, link, port) => {
+            if (link.fromNode !== null) link.fromNode.invalidateConnectedLinks();
+            if (link.toNode !== null) link.toNode.invalidateConnectedLinks();
+          },
+          locationSpot: go.Spot.Center
+        })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({
+              name: 'SHAPE', // named so that changeColor can modify it
+              strokeWidth: 0, // no border
+              fill: 'lightgray', // default fill color
+              portId: '',
+              // use the following property if you want users to draw new links
+              // interactively by dragging from the Shape, and re-enable the LinkingTool
+              // in the initialization of the Diagram
+              //cursor: "pointer",
+              fromSpot: go.Spot.AllSides,
+              fromLinkable: true,
+              fromLinkableDuplicates: true,
+              fromLinkableSelfNode: true,
+              toSpot: go.Spot.AllSides,
+              toLinkable: true,
+              toLinkableDuplicates: true,
+              toLinkableSelfNode: true
+            })
+            .bindTwoWay('fill', 'color'),
+          new go.TextBlock({
+              name: 'TEXTBLOCK', // named so that editText can start editing it
+              margin: 3,
+              // use the following property if you want users to interactively start
+              // editing the text by clicking on it or by F2 if the node is selected:
+              //editable: true,
+              overflow: go.TextOverflow.Ellipsis,
+              maxLines: 5
+            })
+            .bindTwoWay('text')
+        );
 
     // a selected node shows an Adornment that includes both a blue border
     // and a row of Buttons above the node
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ stroke: 'dodgerblue', strokeWidth: 2, fill: null }),
-            new go.Placeholder()
-          ),
-        new go.Panel('Horizontal', { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom })
-          .add(
-            go.GraphObject.build('Button', {
-              click: editText
-            }) // defined below, to support editing the text of the node
-              .add(
-                new go.TextBlock('t', {
-                  font: 'bold 10pt sans-serif',
-                  desiredSize: new go.Size(15, 15),
-                  textAlign: 'center'
+    myDiagram.nodeTemplate.selectionAdornmentTemplate =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ stroke: 'dodgerblue', strokeWidth: 2, fill: null }),
+              new go.Placeholder()
+            ),
+          new go.Panel('Horizontal', { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom })
+            .add(
+              go.GraphObject.build('Button', {
+                  click: editText
+                }) // defined below, to support editing the text of the node
+                .add(
+                  new go.TextBlock('t', {
+                    font: 'bold 10pt sans-serif',
+                    desiredSize: new go.Size(15, 15),
+                    textAlign: 'center'
+                  })
+                ),
+              go.GraphObject.build('Button', {
+                  click: changeColor
+                }) // defined below, to support changing the color of the node
+                .bind('ButtonBorder.fill', 'color', nextColor)
+                .add(new go.Shape({ fill: null, stroke: null, desiredSize: new go.Size(14, 14) })),
+              go.GraphObject.build('Button', {
+                  // drawLink is defined below, to support interactively drawing new links
+                  click: drawLink, // click on Button and then click on target node
+                  actionMove: drawLink // drag from Button to the target node
                 })
-              ),
-            go.GraphObject.build('Button', {
-              click: changeColor
-            }) // defined below, to support changing the color of the node
-              .bind('ButtonBorder.fill', 'color', nextColor)
-              .add(new go.Shape({ fill: null, stroke: null, desiredSize: new go.Size(14, 14) })),
-            go.GraphObject.build('Button', {
-              // drawLink is defined below, to support interactively drawing new links
-              click: drawLink, // click on Button and then click on target node
-              actionMove: drawLink // drag from Button to the target node
-            }).add(new go.Shape({ geometryString: 'M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14' })),
-            go.GraphObject.build('Button', {
-              actionMove: dragNewNode, // defined below, to support dragging from the button
-              _dragData: { text: 'a Node', color: 'lightgray' }, // node data to copy
-              click: clickNewNode // defined below, to support a click on the button
-            }).add(
-              new go.Shape({
-                geometryString: 'M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z',
-                fill: 'gray'
-              })
+                .add(new go.Shape({ geometryString: 'M0 0 L8 0 8 12 14 12 M12 10 L14 12 12 14' })),
+              go.GraphObject.build('Button', {
+                  actionMove: dragNewNode, // defined below, to support dragging from the button
+                  _dragData: { text: 'a Node', color: 'lightgray' }, // node data to copy
+                  click: clickNewNode // defined below, to support a click on the button
+                })
+                .add(
+                  new go.Shape({
+                    geometryString: 'M0 0 L3 0 3 10 6 10 x F1 M6 6 L14 6 14 14 6 14z',
+                    fill: 'gray'
+                  })
+                )
             )
-          )
-      );
+        );
 
     function editText(e, button) {
       var node = button.part.adornedPart;
@@ -324,6 +336,7 @@
 
     myDiagram.findNodeForKey(4).isSelected = true;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -368,7 +381,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

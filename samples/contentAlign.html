@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,10 +134,14 @@
       myDiagram.add(
         // add an unbound Node to the diagram at a random position
         new go.Node({
-          position: new go.Point(Math.random() * 251, Math.random() * 251)
-        })
+            position: new go.Point(Math.random() * 251, Math.random() * 251)
+          })
           .add(
-            new go.Shape('Circle', { fill: go.Brush.randomColor(150), strokeWidth: 2, desiredSize: new go.Size(30, 30) })
+            new go.Shape('Circle', {
+              fill: go.Brush.randomColor(150),
+              strokeWidth: 2,
+              desiredSize: new go.Size(30, 30)
+            })
           )
       );
     }
@@ -222,6 +228,7 @@
 
     setDisabled(document.getElementById('scaleP'), scaleType !== 'None');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -281,10 +288,10 @@
         <p id="autoP">
           Diagram.autoScale:<br />
           <input type="radio" name="autoScale" onclick="changeAutoScale(this.value)" id="DiagramNone" value="None" checked /><label for="DiagramNone"
-            >CycleMode.None</label
+            >AutoScale.None</label
           ><br />
-          <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="Uniform" /><label for="Uniform">CycleMode.Uniform</label><br />
-          <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="UniformToFill" /><label for="UniformToFill">CycleMode.UniformToFill</label
+          <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="Uniform" /><label for="Uniform">AutoScale.Uniform</label><br />
+          <input type="radio" name="autoScale" onclick="changeAutoScale(this.id)" id="UniformToFill" /><label for="UniformToFill">AutoScale.UniformToFill</label
           ><br />
           (but no greater than CommandHandler.defaultScale)
         </p>

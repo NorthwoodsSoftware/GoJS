@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -174,25 +176,24 @@
 <script src="../extensions/LightBoxContextMenu.js"></script>
 
 <script id="code">
-  var myDiagram = null;
-
   function init() {
 
     // Initialize the Diagram
     myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
 
     // define a simple Node template (but use the default Link template)
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      contextMenu: window.myHTMLLightBox // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
-    })
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          contextMenu: window.myHTMLLightBox // window.myHTMLLightBox is defined in extensions/LightBoxContextMenu.js
+        })
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(

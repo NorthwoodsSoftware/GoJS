@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -167,7 +169,7 @@
       go.ResizingTool.prototype.doMouseUp.call(this);
     },
     // if text has changed, maybe the node bounds has changed too
-    TextEdited: (e) => {
+    TextEdited: e => {
       var node = e.subject.part;
       node.ensureBounds(); // has been resized, compute its new bounds
       var pt = limitPoint(node.location);
@@ -179,12 +181,12 @@
   // it includes the fixed bounds of the diagram contents
   myDiagram.add(
     new go.Part('Grid', {
-      layerName: 'Grid',
-      position: pageBounds.position,
-      desiredSize: pageSize,
-      isShadowed: true,
-      background: 'floralwhite'
-    })
+        layerName: 'Grid',
+        position: pageBounds.position,
+        desiredSize: pageSize,
+        isShadowed: true,
+        background: 'floralwhite'
+      })
       .add(
         new go.Shape('LineH', { stroke: 'lightgray', strokeWidth: 0.5 }),
         new go.Shape('LineV', { stroke: 'lightgray', strokeWidth: 0.5 })
@@ -231,20 +233,25 @@
     return new go.Point(Math.max(usableArea.left, Math.min(p.x, usableArea.right)), Math.max(usableArea.top, Math.min(p.y, usableArea.bottom)));
   }
 
-  myDiagram.nodeTemplate = new go.Node('Auto', {
-    resizable: true, // but limited by overrides of ResizingTool methods, above
-    dragComputation: stayInFixedArea // this limits the DraggingTool
-  })
-    .add(
-      new go.Shape({ fill: 'white', portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' }).bind('fill', 'color'),
-      new go.TextBlock({ margin: 8, editable: true }).bindTwoWay('text')
-    );
+  myDiagram.nodeTemplate =
+    new go.Node('Auto', {
+        resizable: true, // but limited by overrides of ResizingTool methods, above
+        dragComputation: stayInFixedArea // this limits the DraggingTool
+      })
+      .add(
+        new go.Shape({ fill: 'white', portId: '', fromLinkable: true, toLinkable: true, cursor: 'pointer' })
+          .bind('fill', 'color'),
+        new go.TextBlock({ margin: 8, editable: true })
+          .bindTwoWay('text')
+      );
 
-  myDiagram.linkTemplate = new go.Link({ relinkableFrom: true, relinkableTo: true })
-    .add(
-      new go.Shape(),
-      new go.Shape({ toArrow: 'OpenTriangle' })
-    );
+  myDiagram.linkTemplate =
+    new go.Link({ relinkableFrom: true, relinkableTo: true })
+      .add(
+        new go.Shape(),
+        new go.Shape({ toArrow: 'OpenTriangle' })
+      );
+
   // The Legend Part, presumably a singleton
 
   function makeField(name, propname, row, col, span) {
@@ -261,14 +268,15 @@
         isMultiline: false
       }),
       new go.TextBlock({
-        row: row,
-        column: col,
-        columnSpan: span,
-        alignment: go.Spot.Center,
-        margin: new go.Margin(16, 4, 1, 4),
-        textAlign: 'center',
-        editable: true
-      }).bindTwoWay('text', propname)
+          row: row,
+          column: col,
+          columnSpan: span,
+          alignment: go.Spot.Center,
+          margin: new go.Margin(16, 4, 1, 4),
+          textAlign: 'center',
+          editable: true
+        })
+        .bindTwoWay('text', propname)
     ];
   }
 
@@ -276,17 +284,16 @@
     return new go.Shape('LineV', { row: row, column: col, width: 0, stretch: go.Stretch.Vertical, stroke: 'gray' });
   }
 
-  myDiagram.nodeTemplateMap.add(
-    'Legend',
+  myDiagram.nodeTemplateMap.add('Legend',
     new go.Part('Auto', {
-      layerName: 'Background',
-      locationSpot: go.Spot.BottomRight,
-      location: new go.Point().setRectSpot(usableArea, go.Spot.BottomRight),
-      deletable: false,
-      movable: false,
-      copyable: false,
-      selectionAdorned: false
-    })
+        layerName: 'Background',
+        locationSpot: go.Spot.BottomRight,
+        location: new go.Point().setRectSpot(usableArea, go.Spot.BottomRight),
+        deletable: false,
+        movable: false,
+        copyable: false,
+        selectionAdorned: false
+      })
       .add(
         new go.Shape({ fill: 'white', stroke: 'gray' }),
         new go.Panel('Table', { defaultRowSeparatorStroke: 'gray' })

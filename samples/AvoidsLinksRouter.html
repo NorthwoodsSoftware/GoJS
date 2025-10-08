@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,7 +127,7 @@
 
 <script src="../extensions/AvoidsLinksRouter.js"></script>
 <script id="code">
-  var myRouter = new AvoidsLinksRouter();
+  var myRouter = new AvoidsLinksRouter({ epsilonDistance: 2 });
   var myDiagram;
 
   function init() {
@@ -134,37 +136,41 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto').bind('position', 'pos', go.Point.parse)
-      .add(
-        new go.Shape({
-          fill: 'white',
-          portId: '',
-          fromSpot: go.Spot.AllSides,
-          toSpot: go.Spot.AllSides
-        }).bind('fill', 'color'),
-        new go.TextBlock({ font: '15px serif', margin: 8 }).bind('text')
-      );
-    myRouter.epsilonDistance = 2; // increase
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bind('position', 'pos', go.Point.parse)
+        .add(
+          new go.Shape({
+              fill: 'white',
+              portId: '',
+              fromSpot: go.Spot.AllSides,
+              toSpot: go.Spot.AllSides
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ font: '15px serif', margin: 8 })
+            .bind('text')
+        );
     myDiagram.routers.push(myRouter);
 
-    myDiagram.nodeTemplateMap.add(
-      'Block',
+    myDiagram.nodeTemplateMap.add('Block',
       new go.Node({
-        layerName: 'Background',
-        background: '#6e6e6e'
-      })
+          layerName: 'Background',
+          background: '#6e6e6e'
+        })
         .bind('desiredSize', 'size', go.Size.parse)
         .bind('position', 'pos', go.Point.parse)
-    );
-
-    myDiagram.linkTemplate = new go.Link({ routing: go.Link.AvoidsNodes, corner: 10 })
-      .bind('fromSpot')
-      .bind('toSpot')
-      .add(
-        // use a binding to create a different color for each node
-        new go.Shape({ strokeWidth: 1 }).bind('stroke', '', linkStroke),
-        new go.Shape({ toArrow: 'Triangle', scale: 0.4 })
       );
+
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Link.AvoidsNodes, corner: 10 })
+        .bind('fromSpot')
+        .bind('toSpot')
+        .add(
+          // use a binding to create a different color for each node
+          new go.Shape({ strokeWidth: 1 })
+            .bind('stroke', '', linkStroke),
+          new go.Shape({ toArrow: 'Triangle', scale: 0.4 })
+        );
 
     let lastColor = 'red';
     let colors = 0;
@@ -292,7 +298,7 @@ More information can be found in the <a href="../intro/links.html">GoJS Intro</a
 <p>
   Each Link performs a very fast default computation of its desired path, its "route",
   based only on the properties of the Link and the properties of the port objects that it is connected with.
-  GoJS 3.0 provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  GoJS provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
   <a>Router</a> class.
 </p>
 <p>

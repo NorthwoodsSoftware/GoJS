@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,48 +136,48 @@
     });
 
     // define each Node's appearance
-    myDiagram.nodeTemplate = new go.Node('Auto', { // the whole node panel
-      locationSpot: go.Spot.Center
-    })
-      .add(
-        // define the node's outer shape, which will surround the TextBlock
-        new go.Shape('Rectangle', {
-          fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
-          stroke: 'black'
-        }),
-        new go.TextBlock({ font: 'bold 10pt helvetica, bold arial, sans-serif', margin: 4 })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { // the whole node panel
+          locationSpot: go.Spot.Center
+        })
+        .add(
+          // define the node's outer shape, which will surround the TextBlock
+          new go.Shape('Rectangle', {
+            fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
+            stroke: 'black'
+          }),
+          new go.TextBlock({ font: 'bold 10pt helvetica, bold arial, sans-serif', margin: 4 })
+            .bind('text')
+        );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link() // the whole link panel
-      .add(
-        new go.Shape({ stroke: 'black' }), // the link shape
-        new go.Shape({ // the arrowhead
-          toArrow: 'standard',
-          stroke: null
-        }),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ // the label background, which becomes transparent around the edges
-              fill: new go.Brush('Radial', {
-                0: 'rgb(240, 240, 240)',
-                0.3: 'rgb(240, 240, 240)',
-                1: 'rgba(240, 240, 240, 0)'
+    myDiagram.linkTemplate =
+      new go.Link() // the whole link panel
+        .add(
+          new go.Shape({ stroke: 'black' }), // the link shape
+          new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ // the label background, which becomes transparent around the edges
+                fill: new go.Brush('Radial', {
+                  0: 'rgb(240, 240, 240)',
+                  0.3: 'rgb(240, 240, 240)',
+                  1: 'rgba(240, 240, 240, 0)'
+                }),
+                stroke: null
               }),
-              stroke: null
-            }),
-            new go.TextBlock({ // the label text
-              textAlign: 'center',
-              font: '10pt helvetica, arial, sans-serif',
-              stroke: '#555555',
-              margin: 4
-            }).bind('text')
-          )
-      );
+              new go.TextBlock({ // the label text
+                  textAlign: 'center',
+                  font: '10pt helvetica, arial, sans-serif',
+                  stroke: '#555555',
+                  margin: 4
+                })
+                .bind('text')
+            )
+        );
 
     // create the model for the concept map
-    var nodeDataArray = [
+    const nodeDataArray = [
       { key: 1, text: 'Concept Maps' },
       { key: 2, text: 'Organized Knowledge' },
       { key: 3, text: 'Context Dependent' },
@@ -197,7 +199,7 @@
       { key: 19, text: 'Infants' },
       { key: 20, text: 'Different Map Segments' }
     ];
-    var linkDataArray = [
+    const linkDataArray = [
       { from: 1, to: 2, text: 'represent' },
       { from: 2, to: 3, text: 'is' },
       { from: 2, to: 4, text: 'is' },
@@ -225,6 +227,7 @@
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

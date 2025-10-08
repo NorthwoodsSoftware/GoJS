@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -122,26 +124,26 @@
             
             
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
 <script id="code">
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       layout: new go.TreeLayout()
     });
 
-    myDiagram.nodeTemplate = new go.Node('Vertical')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ fill: 'transparent' }).bind('stroke', 'color'),
-            new go.Picture({ width: 300, height: 150, portId: '' }).bind(
-              'element',
-              'datasets',
-              makeLineChart
-            )
-          ),
-        new go.TextBlock({ margin: 8 }).bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: 'transparent' })
+                .bind('stroke', 'color'),
+              new go.Picture({ width: 300, height: 150, portId: '' })
+                .bind('element', 'datasets', makeLineChart)
+            ),
+          new go.TextBlock({ margin: 8 })
+            .bind('text')
+        );
 
     // This Binding conversion function creates a Canvas element for a Picture
     // that has a rendering of a line chart drawn by Chart.js.
@@ -254,7 +256,7 @@
   }
 
   function addNode() {
-    myDiagram.model.commit((m) => {
+    myDiagram.model.commit(m => {
       var firstnode = myDiagram.nodes.first();
       var color = go.Brush.darken(go.Brush.randomColor());
       var data = {
@@ -281,8 +283,8 @@
   }
 
   function modifyNodes() {
-    myDiagram.commit((diag) => {
-      diag.selection.each((node) => {
+    myDiagram.commit(diag => {
+      diag.selection.each(node => {
         var oldset = node.data.datasets;
         if (!oldset) return; // if it's a link, there's no datasets property
         diag.model.set(node.data, 'datasets', [
@@ -297,6 +299,7 @@
       });
     }, 'modified selected nodes');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -104,6 +104,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,836 +127,269 @@
 <p id="ver"></p>
 
 <p>
-  We maintain a <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub
-    Repository</a>, which
-  you can star to follow version updates. We also notify of changes on
-  <a href="https://twitter.com/NorthwoodsGo" target="_blank" rel="noopener">Twitter</a>.
+  We maintain a
+  <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener"
+    >GitHub Repository</a
+  >
+  that you can star to follow version updates.
 </p>
 
+<h2>GoJS 3.1</h2>
 
-<h2>GoJS 3.0</h2>
-
-<p>GoJS 3.0 brings a number of new features for advanced Diagram control, such as custom routing via
-  <a target="_blank" href="intro/routers.html">Routers</a> and data-bound theming
-  with <a target="_blank" href="intro/theming.html">Themes</a>. We have also rewritten some of the internals
-  to take advantage of modern JavaScript, and rewritten the API to use clearer enumerations. These changes are largely
-  backwards-compatible.
-</p>
-
-<p>There are a number of other changes, <a href="#3.0">detailed below.</a></p>
-
-<h3 id="3.0.27">Changes for 3.0.27</h3>
-<ul>
-  <li>
-    SVG Rendering context: Fixed TextBlock rendering when <a>TextBlock.maxLines</a> was set and the lines were affected by clipping.
-  </li>
-</ul>
-
-<h3 id="3.0.26">Changes for 3.0.26</h3>
-<ul>
-  <li>
-    SVG Rendering context: Fixed re-adding removed elements from the DOM, for example if <code>GraphObject.visible</code> is toggled.
-  </li>
-</ul>
-
-<h3 id="3.0.25">Changes for 3.0.25</h3>
-<ul>
-  <li>
-    Fixed <a>Diagram.transformDocToView</a> when called by a "ViewportBoundsChanged" DiagramEvent listener
-    when the <a>Diagram.scale</a> has changed.
-  </li>
-  <li>
-    Fix for undocumented <code>GraphObject.filter</code> setter in the SVG rendering context.
-  </li>
-</ul>
-
-<h3 id="3.0.24">Changes for 3.0.24</h3>
-<ul>
-  <li>Fixed an error in ForceDirectedLayout which previously caused some graphs with few nodes to be drawn sub-optimally.</li>
-</ul>
-
-<h3 id="3.0.23">Changes for 3.0.23</h3>
-<ul>
-  <li>Removed <code>static { . . . }</code> initialization blocks, an ES2022 feature, from the library.</li>
-  <li>Setting the <a>Diagram.renderer</a> to "svg" no longer throws an error in non-DOM environments.</li>
-  <li>Remove <code>instanceof</code> checks for the browser interface <code>Path2D</code>, in case some systems have their own implementation.</li>
-</ul>
-
-<h3 id="3.0.22">Changes for 3.0.22</h3>
-<ul>
-  <li>Fixed the potential creation of DOM elements on library load, which may interfere with some non-DOM environments or setting <a>Diagram.useDom</a>.</li>
-</ul>
-
-<h3 id="3.0.21">Changes for 3.0.21</h3>
-<ul>
-  <li>Simplified some minified names for simpler debugging.</li>
-  <li>Licensing fixes on some systems.</li>
-</ul>
-
-<h3 id="3.0.20">Changes for 3.0.20</h3>
-<ul>
-  <li>Fixed <a>Diagram.allowDragOut</a> causing a Diagram's <a>Diagram.documentBounds</a> to fluctuate while dragging Parts out of the Diagram.</li>
-  <li>Fixed an unusual initialization exception involving Links with AvoidsNodes routing and collapsed Groups.</li>
-</ul>
-
-<h3 id="3.0.19">Changes for 3.0.19</h3>
-<ul>
-  <li>Fixed the <a>Brush</a> constructor when the first argument is an initialization object, rather than a <a>BrushType</a>.</li>
-  <li>Fixed <a>Diagram.zoomToFit</a> or <a>CommandHandler.zoomToFit</a> failing to account for any <a>Diagram.scrollMargin</a>.</li>
-  <li>Fixed the undoing/redoing of removing a label node key from a link data's label keys Array.</li>
-  <li>Fixed the <a>Overview.box</a> not updating on large observed Diagram scrolls.</li>
-</ul>
-
-<h3 id="3.0.18">Changes for 3.0.18</h3>
-<ul>
-  <li>Fixed an internal problem introduced in 3.0.17 with Bindings evaluated when there's no Diagram.</li>
-</ul>
-
-<h3 id="3.0.17">Changes for 3.0.17</h3>
-<ul>
-  <li>Fixed some <a>TextBlock</a> properties not updating when using the SVG renderer.</li>
-  <li>Fixed <a>DraggingTool</a> not updating completely when modifier keys change without a mouse/pointer movement.</li>
-  <li>Fixed pointerMove events when dragging between <a>Diagram</a>s separated by a shadow DOM</li>
-  <li>Fixed the measuring of some multiple lines when <a>TextBlock.maxLines</a> is used</li>
-</ul>
-
-<h3 id="3.0.16">Changes for 3.0.16</h3>
-<ul>
-  <li>
-    Enabled modifying the <a>Part.layerName</a> of the <a>DraggingTool.draggedParts</a> during a drag.
-  </li>
-  <li>
-    Fixed control-drag-copying of subtrees when using a <a>TreeModel</a> and when <a>CommandHandler.copiesParentKey</a> is true,
-    to make sure the copied subtree roots have the same parents as what was copied.
-  </li>
-  <li>
-    Fixed Node position values in the <a>UndoManager</a> when stopping an ongoing animation that modifies Node positions.
-  </li>
-</ul>
-
-<h3 id="3.0.15">Changes for 3.0.15</h3>
-<ul>
-  <li>
-    Fixed SVG rendering context when updating <a>TextBlock.stroke</a>
-  </li>
-</ul>
-
-<h3 id="3.0.14">Changes for 3.0.14</h3>
-<ul>
-  <li>
-    Fixed Table Panel layout when some previously-visible elements were set to invisible.
-  </li>
-  <li>
-    Added keyboard command bindings: Ctrl-Shift-Z for <a>CommandHandler.redo</a>, and
-    Shift-F10 or Ctrl-Shift-\ (backslash) for <a>CommandHandler.showContextMenu</a>.
-    (Use Command key instead of Ctrl on a Mac.)
-  </li>
-  <li>
-    Fixed colors of Buttons whose actions change the button's <a>Panel.isEnabled</a> property.
-  </li>
-  <li>
-    Added support for bindings on the <a>RelinkingTool.fromHandleArchetype</a>, <a>RelinkingTool.toHandleArchetype</a>,
-    and <a>RotatingTool.handleArchetype</a>.
-  </li>
-  <li>
-    Fixed the signature of <a>Router.routeLinks</a> because the second argument is never undefined.
-  </li>
-  <li>
-    Fixed clipping regions when using the SVG rendering context.
-  </li>
-</ul>
-
-<h3 id="3.0.13">Changes for 3.0.13</h3>
-<ul>
-  <li>
-    Fixed SVG rendering context not updating the undocumented <code>GraphObject.filter</code> property.
-  </li>
-  <li>
-    Fixed SVG rendering context not updating (removing) Nodes when they became zero-sized.
-  </li>
-  <li>
-    Fixed SVG rendering context drawing Parts with non-real <a>Part.location</a>s.
-  </li>
-  <li>
-    Fixed grid updating when toggling <a>Diagram.grid</a> values.
-  </li>
-  <li>
-    Fixed a case where Diagram and Layer <code>findObject...</code> methods would only partially update a Part's location or position.
-  </li>
-  <li>
-    Added a work-around for improper minification by Terser so that calls to <code>toString</code>
-    on instances of GoJS classes produce the expected output.
-  </li>
-</ul>
-
-<h3 id="3.0.12">Changes for 3.0.12</h3>
-<ul>
-  <li>
-    <a>TreeModel.setDataProperty</a> now calls <a>TreeModel.setParentLinkCategoryForNodeData</a> when the property name
-    matches the <a>TreeModel.parentLinkCategoryProperty</a>.
-  </li>
-  <li>
-    Improved the default values for <a>Shape.spot1</a> and <a>Shape.spot2</a> for the "Capsule" figure.
-  </li>
-  <li>
-    Fixed clipping regions in rendered SVG when using Spot panels with <a>Panel.isClipping</a> set to true.
-  </li>
-  <li>
-    Fixed the type signature for the <a>Brush</a> constructor.
-  </li>
-  <li>
-    Setting <a>GraphObject.fromEndSegmentLength</a> or <a>GraphObject.toEndSegmentLength</a>
-    when the port or link spot is a "...Side" Spot now automatically invalidates the routing of the link.
-  </li>
-  <li>
-    Fixed Link JumpOver geometry after some animations.
-  </li>
-</ul>
-
-<h3 id="3.0.11">Changes for 3.0.11</h3>
-<ul>
-  <li>
-    TextBlocks inside "Graduated" Panels are no longer drawn as tiny lines when the scale is very small.
-  </li>
-  <li>
-    Fixed SVG rendering for some multi-line text.
-  </li>
-  <li>
-    Fixed incorrect <a>Diagram.position</a> setting when panning with some animations.
-  </li>
-</ul>
-
-
-
-<h3 id="3.0.10">Changes for 3.0.10</h3>
-<ul>
-  <li>
-    Fixed a regression from 3.0.5: the built-in AvoidsNodes <a>Router</a> was not calling the base method <a>Router.canRoute</a>.
-  </li>
-  <li>
-    Unnecessary "Change not within a transaction" fix for images loading during animations.
-  </li>
-  <li>
-    Fixed some animations that were erratically changing the Diagram position when a <a>Diagram.contentAlignment</a> is set.
-  </li>
-  <li>
-    The AvoidsNodes router no longer routes during the default animation, and preserves AvoidsNodes routes during animation.
-  </li>
-</ul>
-
-
-<h3 id="3.0.9">Changes for 3.0.9</h3>
-<ul>
-  <li>
-    Fixed updating Bindings in Adornments when data in itemArrays change.
-  </li>
-</ul>
-
-<h3 id="3.0.8">Changes for 3.0.8</h3>
-<ul>
-  <li>
-    <a>LinkingBaseTool.isValidCycle</a>, when using a <a>TreeModel</a>, now correctly assumes that
-    <a>Diagram.validCycle</a> is either <a>CycleMode.DestinationTree</a> or <a>CycleMode.SourceTree</a>,
-    depending on the value of <a>Diagram.isTreePathToChildren</a>.
-  </li>
-  <li>
-    Fixed setting the visibility of <a>Diagram.grid</a> in certain circumstances when initializing a Diagram.
-  </li>
-  <li>
-    Fixed confusion with <a>InputEvent</a>s when calling <a>CommandHandler.showContextMenu</a> during a
-    <a>GraphObject.click</a> or <a>Diagram.click</a> event.
-  </li>
-</ul>
-
-<h3 id="3.0.7">Changes for 3.0.7</h3>
-<ul>
-  <li>
-    Added <a>InputEvent.commandKey</a>, which returns a normalized key string based on the <a>InputEvent.key</a> and <a>InputEvent.code</a>.
-    This is convenient to use in <a>CommandHandler.doKeyDown</a> or <a>Tool.doKeyDown</a> and their overrides.
-  </li>
-  <li>
-    Fixed keyboard shortcuts for QWERTZ-layout keyboards.
-  </li>
-</ul>
-
-<h3 id="3.0.6">Changes for 3.0.6</h3>
-<ul>
-  <li>
-    Added another work-around for Babel transpilation bug.
-  </li>
-  <li>
-    Fixed the <a>Robot</a> extension to handle "Delete" key events.
-  </li>
-  <li>
-    Fixed <a>GridLayout</a> when <a>GridLayout.alignment</a> is <code>Position</code> for Parts that have
-    non-zero <a>GraphObject.margin</a> on the left or top sides.
-    Fixed other built-in Layouts that use LayoutNetworks when Nodes have non-zero
-    <a>GraphObject.margin</a> on the left or top sides.
-  </li>
-</ul>
-
-<h3 id="3.0.5">Changes for 3.0.5</h3>
-<ul>
-  <li>
-    Added work-around for Babel transpilation bug.
-  </li>
-  <li>
-    Fixed some cases of AvoidsNodes routing within Groups.
-  </li>
-  <li>
-    Optimized the built-in AvoidsNodes <a>Router</a> to never start when there are no AvoidsNodes links.
-  </li>
-  <li>
-    Fixed <a>ForceDirectedLayout</a> not moving nodes that are <a>ForceDirectedVertex.isFixed</a>.
-  </li>
-  <li>
-    Fixed the updating of <a>Diagram.documentBounds</a> when dragging between diagrams.
-  </li>
-</ul>
-
-<h3 id="3.0.4">Changes for 3.0.4</h3>
-<ul>
-  <li>
-    Fixed keyboard shortcuts for AZERTY-layout keyboards.
-  </li>
-  <li>
-    Added a convenience method overload for <a>GraphObject.trigger</a> that accepts parameters taken by the <a>AnimationTrigger</a> constructor.
-  </li>
-  <li>
-    Fixed an error on animations of <a>GraphObject.desiredSize</a>.
-  </li>
-</ul>
-
-<h3 id="3.0.3">Changes for 3.0.3</h3>
-<ul>
-  <li>
-    Fixed some Group layouts failing to invalidate link routes.
-  </li>
-  <li>
-    Efficiency improvements for AvoidsNodes Routing.
-  </li>
-</ul>
-
-<h3 id="3.0.2">Changes for 3.0.2</h3>
-<ul>
-  <li>
-    Fixed some interactions with mouse-over events during animations leading to incorrect Part positions.
-  </li>
-  <li>
-    Fixed an issue where <a>Binding.ofModel</a> Bindings could cause problems with the clipboard.
-  </li>
-  <li>
-    Removed erroneous <code>position: absolute</code> inline CSS from <a>Diagram.makeSVG</a> output elements.
-  </li>
-  <li>
-    Fixed some <a>Adornment</a> locations when a <a>Part.locationObjectName</a> is set and there is no <a>Adornment.placeholder</a>.
-  </li>
-  <li>
-    <a href="samples/LinkLabelRouter.html">LinkLabelRouter</a> will no longer unnecessarily move labels after an initial run.
-  </li>
-</ul>
-
-<h3 id="3.0.1">Changes for 3.0.1</h3>
-<ul>
-  <li>
-    <strong>Potentially incompatible:</strong>
-    We have added <a>InputEvent.code</a> to correspond to <code>KeyboardEvent.code</code>
-    <a>CommandHandler.doKeyDown</a> now uses <code>KeyboardEvent.code</code> instead of <code>KeyboardEvent.key</code> for better cross-language shortcut support.
-    This may lead to incompatibilities if you have code (such as testing code) that sets an <a>InputEvent.key</a> value. You may need to additionally set <a>InputEvent.code</a>.
-    If your code does not modify the value of <a>InputEvent.key</a> anywhere (such as in a tool customization or in a <a>CommandHandler.doKeyDown</a> override),
-    you do not need to do anything.
-  </li>
-  <li>
-    Fixed some initial positions when <a>Diagram.autoScale</a> scales initial contents, but a scrollbar is still required.
-  </li>
-  <li>
-    Fixed some <a>Iterator</a>s returned by GoJS (such as from <a>Node.findLinksInto</a>) returning faulty values when
-    using <code>Symbol.iterator</code>.
-  </li>
-  <li>
-    Fixed a bug where large nodes in a <a>ForceDirectedLayout</a> would sometimes overlap unnecessarily.
-  </li>
-</ul>
-
-<h2 id="3.0">Changes for 3.0</h2>
-
-<h3 id="npmpackages">New npm packages</h3>
-<p>For 3.0, the <code>gojs</code> npm package contains only the release libraries, and no extensions, documentation or
-  sample code.
-  The documentation, sample, and extensions code can be downloaded separately, via <code>npm create gojs-kit@latest</code>,
-  or from our <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub repository</a>,
-  or from our <a href="download.html">web site</a>.
-</p>
-
-
-<h3 id="Performance">Performance</h3>
-<p>GoJS 3.0 leverages modern JavaScript and more modern Canvas API features for increased performance.
-  However, this also means dropping support for old browsers such as IE11,
-  and there are a number of minor incompatibilities detailed below.</p>
-
-<p>Diagram rendering is now generally faster, and Diagram heap size has been significantly reduced, especially for large
-  graphs.
-</p>
-
-
-<h3 id="Routers">Routers</h3>
-<div class="flex flex-row">
-  <div class="flex flex-col items-center">
-
-    <img class="h-80" src="assets/images/fp/changelog/3.0avoidsLinks.gif">
-    <p><a href="samples/AvoidsLinksRouter.html"><span class="text-xs italic">AvoidsLinks Router</span></a></p>
-  </div>
-  <div class="flex-1">
-    <p>
-      One has always been able to customize the computed paths for Links by setting properties
-      on a Link or on its connected port elements, or by overriding methods on a custom Link subclass.
-      There is now support for a separate routing phase where instances of <a>Router</a> can modify Links.
-      See the <a href="intro/routers.html">intro page on routers</a> for more information.
-    </p>
-    <p>
-      GoJS 3.0 introduces the <a href="samples/AvoidsLinksRouter.html">AvoidsLinks Router</a>, which attempts to
-      separate parallel link segments, and can work alongside AvoidsNodes routing.
-    </p>
-  </div>
-</div>
-
-<h3 id="Theming">Theming</h3>
 <p>
-  GoJS now provides functionality to define and manage themes, and GraphObjects can now be themed via theme bindings.
-  This allows for applications to more easily provide multiple themes, especially light and dark mode.
-  See the <a href="intro/theming.html">intro page in theming</a> for more information.
+  GoJS 3.1 brings a number of new features, including the ability to manipulate any
+  diagram using
+  <a href="intro/accessibility.html" target="_blank" rel="noopener">only the keyboard</a>,
+  and support for screen readers.
 </p>
 
+<!--
+<p>The complete list of new features is <a href="#3.1">detailed below</a>.</p>
 
-<h3 id="ViewportLayers">Viewport Layers</h3>
+<h3 id="3.1.1">Changes for 3.1.1</h3>
+<ul>
+</ul>
+-->
+
+<h2 id="3.1">New Features and Changes for GoJS 3.1</h2>
+
+<h3>Keyboard Controlled Focus Navigation and Virtual Pointer</h3>
 <p>
-  There are two new default layers in each Diagram, <code>"ViewportBackground"</code> and
-  <code>"ViewportForeground"</code>.
-  These layers have the new property <a>Layer.isViewportAligned</a> set to <code>true</code>.
-  Parts in viewport aligned layers will not obey the <a>Diagram.position</a> or <a>Diagram.scale</a> properties,
-  so as the user scrolls or pans or zooms they will remain fixed in the viewport.
+  The <a>CommandHandler</a> now supports keyboard-controlled focus navigation and a
+  virtual pointer, so that the user need not use a mouse. Enable it in any Diagram with
+  the <code>Ctrl-Alt-Enter</code> command.
 </p>
 <p>
-  Layers with <a>Layer.isViewportAligned</a> set to <code>true</code> will automatically position and scale their Parts
-  to be relative to the viewport, based on the Part's <a>GraphObject.alignment</a> and <a>GraphObject.alignmentFocus</a>
-  values,
-  not on its <a>Part.location</a> or <a>GraphObject.position</a>.
+  This new functionality includes built-in minimal support for screen readers. However,
+  each application will need to customize what is read in each situation. The
+  <a>AriaCommandHandler</a> extension is now deprecated.
 </p>
-
-
-<h3 id="Enumerations">Enumerations</h3>
 <p>
-  GoJS now uses Typescript enumerations to represent possible values for many properties.
-  This enables autocompletion in some text editors.
-  Some examples:
-</p>
-<ul>
-  <li>
-    Where one wrote:
-    <code>new go.Panel({ stretch: go.GraphObject.Fill })</code>,
-    <br>one can now write:
-    <code>new go.Panel({ stretch: go.Stretch.Fill })</code>.
-  </li>
-  <li>
-    Where one wrote:
-    <code>new go.RowColumnDefinition({ column: 1, sizing: go.RowColumnDefinition.None })</code>,
-    <br>one can now write:
-    <code>new go.RowColumnDefinition({ column: 1, sizing: go.Sizing.None })</code>.
-  </li>
-  <li>
-    Where one wrote:
-    <code>new go.TreeLayout({ alignment: go.TreeLayout.AlignmentStart })</code>,
-    <br>one can now write:
-    <code>new go.TreeLayout({ alignment: go.TreeAlignment.Start })</code>.
-  </li>
-</ul>
-<p>
-  The original static EnumValue properties have been deprecated in favor of these new enumerations,
-  but continue to exist for compatibility. So, for example:
-  <code>go.GraphObject.Fill === go.Stretch.Fill</code>.
-  The never-documented <b>EnumValue</b> class has been removed from the library.
-  The new enum values are numbers.
+  Read a summary at
+  <a
+    href="learn/interactivity.html#FocusKeyboardControlTools"
+    target="_blank"
+    rel="noopener"
+    >Focus and Keyboard Control</a
+  >. Read more details at
+  <a href="intro/accessibility.html" target="_blank" rel="noopener">Accessibility</a>.
 </p>
 
+<h3>Using CSS variables for theming</h3>
+<p>
+  The <a>ThemeManager</a> can now read CSS variables such that your GoJS templates can
+  reuse variables from other parts of your UI. This functionality is controlled by the new
+  <a>ThemeManager.readsCssVariables</a> property, which defaults to true. Read more at
+  <a href="intro/theming.html#ThemeCSS" target="_blank" rel="noopener"
+    >Using CSS variables for theming</a
+  >.
+</p>
+
+<h3>Link routing improvements</h3>
+<p>
+  Link routing is improved for links connecting member Nodes with their containing Groups,
+  and for <code>...Side</code> Spot links that do not cross adjacent links.
+</p>
+<p>
+  Link routing for AvoidsNodes has also been improved when links are fully within Groups.
+</p>
+
+<h3>Licensing improvements</h3>
+<p>
+  3.1 comes with a new licensing mechanism for unlimited domains. If you have trouble
+  upgrading, please contact support.
+</p>
+
+<h3>The <b>LassoSelectingTool</b> extension</h3>
+<p>
+  The <a>LassoSelectingTool</a> is an optional replacement for the standard
+  <a>DragSelectingTool</a> that allows the user to freehand draw a line around the Parts
+  that they want to select. Try it in the
+  <a href="samples/LassoSelecting.html" target="_blank" rel="noopener">Lasso Selecting</a>
+  sample.
+</p>
 
 <h3 id="OtherNewFeatures">Other New Features</h3>
 <ul>
   <li>
-    Improved Rounded Rectangles: The commonly used <code>"RoundedRectangle"</code> <a>Shape.figure</a>
-    now considers the <a>Shape.parameter2</a> option to be a bit flag mask that determines which corners to round.
-    1: top-left, 2: top-right, 4: bottom-right, 8: bottom-left.
-    This makes it easier to round only the bottom or top corners, or a single corner.
-    For compatibility, the default flags value rounds all four corners.
+    "Toggle" switches are a new kind of predefined button which is commonly requested for
+    the more complex node templates. See the
+    <a href="samples/Toggles.html" target="_blank" rel="noopener">Toggle switches</a>
+    sample.
   </li>
   <li>
-    Added the predefined <code>"Capsule"</code> figure, as yet another kind of rounded rectangle.
-    See the <a href="./samples/shapes.html">Shapes sample</a> for an example.
+    The "AutoRepeatButton" has been moved from the "ScrollingTable" extension to be a
+    built-in builder, as another type of predefined button. This makes it easier for you
+    to use auto-repeating buttons in your diagrams.
   </li>
   <li>
-    Added the predefined <code>"Borders"</code> figure, as yet another kind of rectangle where
-    the <a>Shape.parameter1</a> option is a bit flag mask that determines which sides are drawn.
-    1: top, 2: right, 4: bottom, 8: left.
-    See the <a href="./samples/shapes.html">Shapes sample</a> for an example.
+    The <a>GuidedDraggingTool</a> extension has been improved to support centering a Part
+    to have equal space on both sides. Try the tool in the
+    <a href="samples/GuidedDragging.html" target="_blank" rel="noopener"
+      >Guided Dragging</a
+    >
+    sample.
   </li>
   <li>
-    Added methods <a>GraphObject.bindModel</a>, <a>GraphObject.bindObject</a>, and <a>GraphObject.bindTwoWay</a>,
-    as convenience functions for adding a Binding to a GraphObject,
-    which additionally call <a>Binding.ofModel</a>, <a>Binding.ofObject</a>, and <a>Binding.makeTwoWay</a>,
-    respectively.
-    The fourth argument to <a>GraphObject.bind</a> has been deprecated -- if you want a TwoWay Binding,
-    call <a>GraphObject.bindTwoWay</a>, which is a clearer declaration of intent.
+    The <a>CommandHandler.zoomToFit</a> command now takes an optional argument so that you
+    can easily perform an animated zoom to a particular Rect in document coordinates.
   </li>
   <li>
-    The <a>ForceDirectedLayout</a> class has been rewritten, although the API remains compatible.
-    For small to medium-sized simple graphs (up to around 1000 nodes), these changes should not be noticeable,
-    however for large or complex graphs node placements should be better.
-    Several properties have been added to <a>ForceDirectedLayout</a> -- look for names with "prelayout" in them.
+    The new <a>CommandHandler.storageLocation</a> property may be set to "localStorage" or
+    "sessionStorage" in order to save the clipboard state in a <b>Storage</b> object. For
+    compatibility the value defaults to "memory". This subsumes the implementation in the
+    <a>LocalStorageCommandHandler</a> extension, which remains for compatibility in
+    versions of GoJS older than 3.1, but is now deprecated.
   </li>
   <li>
-    <a>LayeredDigraphLayout</a> has improved the routing of some links that go "backward" to form a cycle.
+    The new <a>CommandHandler.downloadSvg</a> command makes it easy for your app to
+    download an image of your diagram as SVG. For example, see the
+    <a href="samples/genogram.html" target="_blank" rel="noopener">Genogram</a> sample.
   </li>
   <li>
-    Added static functions <a>Point.stringifyFixed</a>, <a>Size.stringifyFixed</a>, <a>Rect.stringifyFixed</a>,
-    <a>Margin.stringifyFixed</a>, <a>Spot.stringifyFixed</a>, and <a>Geometry.stringifyFixed</a>
-    to produce <a>Binding.backConverter</a>s
-    that reduce the size of the output JSON and to make it easier to read and compare.
-    Added the property <a>Model.pointsDigits</a> to control how many decimal digits are written for the
-    <a>Link.points</a> list by <a>Model.toJson</a>.
+    The <a>DrawCommandHandler</a> extension has been extended with the
+    <a>DrawCommandHandler.saveLocalFile</a> and
+    <a>DrawCommandHandler.loadLocalFile</a> methods. This supports downloading a
+    JSON-formatted text file produced by <a>Model.toJson</a>, and loading such a file via
+    either a <a>DrawCommandHandler.localFileInput</a> &lt;input&gt; element or a
+    <a>DrawCommandHandler.localFileDropElement</a> drop-handling element. Try it in the
+    <a href="samples/saveAndLoadLocalFiles.html" target="_blank" rel="noopener"
+      >Local Files</a
+    >
+    sample.
   </li>
   <li>
-    Added the static function <a>TextBlock.isValidFont</a> to allow dynamically deciding
-    whether a CSS font string is valid or not.
-    This is like the existing <a>Brush.isValidColor</a> for checking CSS color strings.
+    <a>SvgRendererOptions</a> now has the "svgFinished" option to allow modifying the
+    whole &lt;svg&gt; element after it has been rendered by <a>Diagram.makeSvg</a>. This
+    is useful if you need to modify the SVG each time it is produced.
   </li>
   <li>
-    Added the read-only property <a>Node.isTreeRoot</a> as a quick way to decide whether a node is a "root" node,
-    while ignoring links that are not <a>Link.isTreeLink</a>, ignoring reflexive links, and considering
-    <a>Diagram.isTreePathToChildren</a>.
+    <a>TextBlock.letterSpacing</a> and <a>TextBlock.wordSpacing</a> are new properties
+    that affect the measurement and rendering of text. Caution: these properties are not
+    supported on all platforms.
   </li>
   <li>
-    Code that depends on a <a>Group.placeholder</a> or an <a>Adornment.placeholder</a>
-    now also checks that the placeholder is <a>GraphObject.isVisibleObject</a>,
-    to make it possible to dynamically control whether the placeholder determines the position and size of the Group or
-    Adornment.
+    New Node methods <a>Node.findSuccessorParts</a> and
+    <a>Node.findPredecessorParts</a> walk the graph starting at a Node, collecting all of
+    the Links and Nodes it sees, but not including the original Node itself. Basically
+    <a>Node.findSuccessorParts</a> returns a <a>Set</a> of all Nodes and Links that are
+    "downstream" from this Node or are "descendants" of this Node.
+    <a>Node.findPredecessorParts</a> does the same, but walking backwards "upstream" or to
+    "ancestors" of the Node.
   </li>
   <li>
-    Calls to <a>Model.toIncrementalJson</a> or <a>Model.toIncrementalData</a> no longer signal an error
-    if the model is a <a>GraphLinksModel</a> and <a>GraphLinksModel.linkKeyProperty</a> is the empty string.
-    Instead, it first modifies the model so that <a>GraphLinksModel.linkKeyProperty</a> is set to <code>"key"</code>,
-    thereby assigning unique key values to all of the link data objects, before producing the resulting text or data.
+    <a>Link.corner</a> is now supported for non-orthogonal link segments, so link path
+    turns can look softer without using Bezier <a>Link.curve</a>. For example, see the
+    <a href="samples/doubleTree.html" target="_blank" rel="noopener">Double Tree</a>
+    sample, to which we added the setting <code>corner: 10</code>.
   </li>
   <li>
-    Added the property <a>LinkReshapingTool.resegmentingDistance</a>, to control the distance from a straight line that
-    two adjacent nearly straight segments should be combined into a single segment.
+    The <a>LayeredDigraphLayout.centered</a> and
+    <a>LayeredDigraphVertex.centered</a> properties control whether the nodes in each
+    layer are aligned to the center (the default) or to the closer side (typically top or
+    left side) of the layer.
   </li>
   <li>
-    Group animations such as group expansion and adding members have been improved.
+    The <a>Router.isRoutable</a> method is an overridable predicate to help decide if a
+    particular <a>Link</a> needs to be routed.
+  </li>
+  <li>
+    One can now pass arguments to be passed to <a>GraphObject.apply</a> functions, to
+    parameterize a call to an initialization function applied to GraphObjects. For
+    examples, search the samples for calls to <a>GraphObject.apply</a> that have two (or
+    more) arguments. Note how those applied functions also take two (or more) arguments.
+  </li>
+  <li>
+    The <a>Rect.nearestSideDirection</a> and <a>Rect.nearestSideDirectionPoint</a>
+    decide which side of a Rect is closest to the given point.
+  </li>
+  <li>
+    The <a>Geometry</a> constructor now takes an optional second argument that is used as
+    an initialization object.
+  </li>
+  <li>
+    The "ToolTip" Adornment now detects <a>GraphObject.mouseOver</a> events and
+    automatically extends how long the tooltip will stay visible by
+    <a>ToolManager.toolTipDuration</a> milliseconds.
+  </li>
+  <li>
+    If the <a>ToolManager.currentToolTip</a> is visible, the Escape key will hide it. Hit
+    Escape again to clear the <a>Diagram.selection</a> and stop any ongoing tool.
+  </li>
+  <li>
+    The <a>ContextMenuTool</a> now handles mouse wheel events in the standard fashion when
+    that tool is running, including zooming the diagram scale.
+  </li>
+  <li>
+    The <a>ResizingTool</a> can now resize the labels of Links, and the
+    <a>RotatingTool</a> can now rotate the labels of Links, although they continue not to
+    be able to resize or rotate whole Links or their Link paths.
+  </li>
+  <li>
+    Animation performance has improved when starting and stopping multiple animations.
+  </li>
+  <li>
+    An example Playwright test file is now in the Introduction page about
+    <a href="intro/testing.html" target="_blank" rel="noopener">Testing</a>.
+  </li>
+  <li>
+    We have added a
+    <a href="samples/venn.html" target="_blank" rel="noopener">Venn Diagram</a> sample.
+  </li>
+  <li>
+    Minor API incompatibility: <a>ThemeBinding.themeSource</a> no longer accepts null as a
+    value -- use the empty string instead.
   </li>
 </ul>
 
-
-<h2 id="Changes">Changes and Incompatibilities</h2>
-
-<h3 id="Diagraminherit">Diagram.inherit</h3>
-<p>
-  The <b>Diagram.inherit</b> static function has been removed from the API.
-  Now the only supported way to define subclasses is to use <code>class ... extends ... { ... }</code>.
-</p>
-<p>
-  However, this is still a JavaScript library, so it is still possible to dynamically override an
-  individual method on an individual object just by assigning it to a <code>function(...) { ... }</code>.
-  A number of samples continue to demonstrate this by assigning a method on a <a>Tool</a>
-  or on the <a>CommandHandler</a> during <a>Diagram</a> initialization.
-</p>
-
-
-<h3 id="SetMapList">GoJS Set and Map and List</h3>
-<p>The GoJS <a>Set</a> and <a>Map</a> and <a>List</a> collection classes,
-  and their iterators, now implement the JavaScript <code>Symbol.iterator</code> static property.
-  This means that they can be used with <code>for ... of</code> statements and spread syntax <code>[...x]</code>.
-</p>
-<pre><code class="language-js">  const s = new go.Set();
-  s.add(1); s.add(2); s.add(3);
-
-  for (let x of s.iterator) {
-    console.log(x);
-  }
-  // prints:
-  // 1
-  // 2
-  // 3
-
-  [...s] // returns the array [1, 2, 3]
-  [...s.iterator] // also returns the array [1, 2, 3]
-</code></pre>
-
-<p>
-  However, for compatibility, iterators are otherwise unchanged, and <a>Set.iterator</a>, <a>Map.iterator</a>,
-  and <a>List.iterator</a> return GoJS iterators, not the built-in JS iterators.
-</p>
-<p>
-  GoJS <a>Set</a> and <a>Map</a> used to consider both a string and a number of the
-  same value (e.g. "3.14159" and 3.14159) as the same key. They are now considered different keys.
-  Be sure to always get with the same type of value that you added to the Set or set in the Map.
-</p>
-<p>
-  GoJS <a>Set</a> and <a>Map</a> no longer warn about potential collection modification
-  while iterating over the collection.
-</p>
-
-
-<h3 id="InputEventkey">InputEvent.key, InputEvent.code, and InputEvent.commandKey</h3>
-<p>
-  The value of <a>InputEvent.key</a> now exactly reflects the browser <code>KeyboardEvent.key</code> value.
-  If your code does not use the value of <a>InputEvent.key</a> anywhere
-  (such as in a tool customization or in a <a>CommandHandler.doKeyDown</a> override),
-  you do not need to do anything.
-  For some keys, these strings are slightly different. The differences are:
-  <style>
-    table {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-
-    th {
-      border: 1px solid black;
-    }
-
-    td {
-      border: 1px solid black;
-    }
-  </style>
-<table>
-  <tr>
-    <th>GoJS 2.3</th>
-    <th>GoJS 3.0</th>
-  </tr>
-  <tr>
-    <td>"Esc"</td>
-    <td>"Escape"</td>
-  </tr>
-  <tr>
-    <td>"Subtract"</td>
-    <td>"-"</td>
-  </tr>
-  <tr>
-    <td>"Add"</td>
-    <td>"+"</td>
-  </tr>
-  <tr>
-    <td>"Add"</td>
-    <td>"="</td>
-  </tr>
-  <tr>
-    <td>"Up"</td>
-    <td>"ArrowUp"</td>
-  </tr>
-  <tr>
-    <td>"Down"</td>
-    <td>"ArrowDown"</td>
-  </tr>
-  <tr>
-    <td>"Right"</td>
-    <td>"ArrowRight"</td>
-  </tr>
-  <tr>
-    <td>"Left"</td>
-    <td>"ArrowLeft"</td>
-  </tr>
-  <tr>
-    <td>"Del"</td>
-    <td>"Delete"</td>
-  </tr>
-</table>
-</p>
-<p>
-  GoJS 3.0 now reports the <a>InputEvent.key</a> faithfully as 'a' or 'A'.
-  In GoJS 2.3 it uppercased each letter key.
-  Note that GoJS treats both "+" and "=" (formerly "Add") as default commands to increase zoom.
-</p>
-
-<p>
-  As of GoJS 3.0.7, GoJS uses <a>InputEvent.commandKey</a> to determine
-  if any command shall be invoked by <a>CommandHandler.doKeyDown</a>.
-  This readonly property considers the values of both <a>InputEvent.code</a> and <a>InputEvent.key</a>
-  and normalizes the output to be consistent across keyboard languages.
-  If you are overriding Tool or CommandHandler behavior, considering the value of
-  <a>InputEvent.commandKey</a> rather than <a>InputEvent.code</a> or <a>InputEvent.key</a>
-  will lead to more consistent behavior.
-</p>
-
-<h3 id="MinorIncompatibilities">Minor Incompatibilities</h3>
+<h3 id="Fixes">Bug fix changes in 3.1 since 3.0</h3>
 <ul>
   <li>
-    <a>Diagram.initialDocumentSpot</a> and <a>Diagram.initialViewportSpot</a> have had their default value changed from
-    <a>Spot.TopLeft</a> to <a>Spot.None</a>. As a consequence, when they are set to a non-None Spot,
-    they will take precedence over any <a>Diagram.initialContentAlignment</a>.
+    Bindings with
+    <a href="intro/itemArrays.html" target="_blank" rel="noopener">Item Templates</a> that
+    use a named data source will not update unless explicitly updated via
+    <a>Model.set</a> or equivalent. Binding updates on the containing Part will no longer
+    indiscriminately update Item Template bindings.
   </li>
   <li>
-    <code>go.licenseKey</code>, deprecated when 2.0 was released, has been removed.
-    Set the static property <code>go.Diagram.licenseKey</code> instead.
+    Links between a Group and members of that Group are now routed more consistently to
+    stay within the group if the group's port completely contains the member node's port.
+    Routes tend to be shorter than they used to be.
   </li>
   <li>
-    Some default templates have been updated to be themed by default.
-    If you are using default templates in your diagram,
-    you may need to make some minor adjustments to the default themes to better suit the look and feel of your app.
-    Most notably, the default link template is themed such that links are white when using the default dark theme.
-    If your diagram has a dark mode and uses the default link template, define your own link template or use
-    the new theming functionality of v3.0.
+    Elements of Table Panels that stretch and also span multiple rows or columns no longer
+    consider empty rows/columns to have infinite available space, and will not expand into
+    them. Instead, those empty rows/columns will be considered of minimum size for
+    measuring spanning elements, normally zero. This may make some Table elements smaller
+    than they have been in previous versions, which will fix some designs where they were
+    measured bigger than one would expect, causing other rows/columns to be clipped
+    unnecessarily.
   </li>
   <li>
-    <code>"Button"</code> builders no longer have a "pressed" state.
-    <code>"ContextMenuButton"</code>s now have more padding.
+    Replacing the <a>Diagram.model</a> will first clear the <a>Diagram.selection</a> and
+    the <a>Diagram.highlighteds</a> collections, allowing for any side effects to be
+    performed to clean up from the old diagram.
   </li>
   <li>
-    <b>GraphObject.areaBackground</b>, formerly deprecated, has been removed.
-    To get the old behavior, wrap a <a>Panel</a> around the GraphObject and set that Panel's
-    <a>GraphObject.background</a> instead.
+    Fixed SVG rendering of panels with a background where one or more elements are
+    invisible within the panel. It was possible this would draw the background in front of
+    the remaining elements.
   </li>
+  <li>Fixed <a>Placeholder</a>s incorrectly computing size during some animations.</li>
   <li>
-    The initial value of <a>Model.copiesKey</a> has changed from true to false.
-    For example, this is useful to prevent nodes copied from a <a>Palette</a> to a <a>Diagram</a>
-    to keep the same key in the target diagram's model that it had in the palette's model.
-    To get the old behavior, set <code>copiesKey: true</code> on the model.
-  </li>
-  <li>
-    The initial value of <a>CommandHandler.isZoomToFitRestoreEnabled</a> has changed from true to false.
-    This removes the ability for repeated Shift-Z commands to restore the original diagram scale and position.
-    But it means that repeated programmatic calls to <a>CommandHandler.zoomToFit</a> will actually zoom-to-fit.
-    To get the old behavior, set <code>isZoomToFitRestoreEnabled: true</code> on the <a>CommandHandler</a>.
-  </li>
-  <li>
-    The <a>LayeredDigraphLayout.alignOption</a> property now defaults to the value <a>LayeredDigraphAlign.All</a>.
-    The new align code is usually better and faster than the old pack code, sometimes significantly faster.
-    To get the old behavior, set <code>alignOption: go.LayeredDigraphAlign.None</code>.
-  </li>
-  <li>
-    <a>Layout.getLayoutBounds</a> now respects each Part's <a>GraphObject.margin</a>, which makes it easier
-    to pretend that nodes are smaller or bigger than they actually are.
-    To get the old behavior, don't set <b>Node.margin</b> or set it to zero.
-    <a>TableLayout</a> has been updated to maintain the original behavior because it has always
-    treated <b>Node.margin</b> differently from all other layouts.
-  </li>
-  <li>
-    Setting <a>Layer.isTemporary</a> to true no longer automatically sets <a>Layer.isInDocumentBounds</a> to false.
-    If you have added new temporary Layers and you want Parts in those Layers not to be considered when computing the
-    document bounds, you'll need to set that property to false explicitly.
-  </li>
-  <li>
-    We have fixed the behavior of <a>CommandHandler.selectAll</a> not to select Parts/Nodes/Links that
-    are not selectable.
-  </li>
-  <li>
-    Bundled <a>AnimationTrigger</a>s no longer use the <a>AnimationManager.defaultAnimation</a>.
-    This means that <code>"Trigger"</code> is no longer a reason for <a>AnimationManager.canStart</a>.
-    This allows bundled animations to run in parallel with default animations.
-    Bundled animations will no longer raise the <code>"AnimationStarting"</code> or
-    <code>"AnimationFinished"</code> <a>DiagramEvent</a>s.
-  </li>
-  <li>
-    <a>Binding.isToModel</a> is no longer settable. Instead, one should call <a>Binding.ofModel</a>.
-  </li>
-  <li>
-    <a>LayeredDigraphLayout</a> no longer spreads overlapping link segments apart by default.
-    If you want to regain that functionality, add an <a>AvoidsLinksRouter</a> to your <a>Diagram.routers</a> List.
+    Fixed <a>LayeredDigraphLayout</a> routing of Bezier curve Links when the link spots
+    are <code>Spot.Center</code> or offset from there.
   </li>
 </ul>
-
-<h3 id="Fixes">Fixes</h3>
-<ul>
-  <li>Moving a collection of Parts no longer invalidates the Link routes in the collection.</li>
-  <li>Scrollbars no longer flicker on completion of initial animation.</li>
-  <li>Reduced possible duplicate LayoutCompleted events in diagrams with multiple Group layouts.</li>
-</ul>
-
-<h3 id="ExtensionsSamples">Changes to Extensions and Samples</h3>
-<p>
-  All extensions and samples are now in the <code>create-gojs-kit</code> npm package rather than in the
-  <code>gojs</code> package.
-  We suggest that you download them by executing <code>npm create gojs-kit@latest</code>.
-  However you can continue to download everything from the GoJS
-  <a href="https://github.com/NorthwoodsSoftware/GoJS">GitHub repository</a>
-  or from our <a href="download.html">web site</a>.
-</p>
-<p>
-  Direct script references to extensions in the <code>gojs</code> package will no longer work because that package no
-  longer
-  contains any extensions. However it is possible to refer to them in the <code>create-gojs-kit</code> package:
-</p>
-<pre><code class="language-js">&lt;script src="https://cdn.jsdelivr.net/npm/create-gojs-kit/dist/extensions/AvoidsLinksRouter.js"&gt;&lt;/script&gt;
-</code></pre>
-<p>
-  There is now an <a>AvoidsLinksRouter</a> extension that helps reduce overlapping orthogonal link segments
-  for links that are unrelated to each other.
-  It is demonstrated in the <a href="./samples/AvoidsLinksRouter.html">AvoidsLinksRouter sample</a>.
-</p>
-<p>
-  There is now an <a>LinkLabelRouter</a> extension.
-  It is demonstrated in the <a href="./samples/LinkLabelRouter.html">LinkLabelRouter sample</a>.
-</p>
-<p>
-  There is now an <a>AriaCommandHandler</a> extension.
-  We have added an <a href="./samples/Accessibility.html">Accessibility extension sample</a> to demonstrate
-  accessibility in GoJS.
-</p>
-<p>
-  The <a href="./extensions/Themes.js">Themes.js</a> extension offers some suggested theming choices.
-</p>
-<p>
-  We have added the <code>"ChamferedRectangle"</code> figure to the <a href="./extensions/Figures.js">Figures.js</a>
-  file,
-  which is just like <code>"RoundedRectangle"</code>, except the corners are cut off straight at 45 degrees
-  no matter the aspect ratio of the shape.
-  <a>Shape.parameter1</a> controls the length of both sides of the cut-off triangle.
-  <a>Shape.parameter2</a> controls which corners are cut off.
-  1: top-left, 2: top-right, 4: bottom-right, 8: bottom-left.
-</p>
-<p>
-  The extensions <a href="./extensions/Figures.js">Figures.js</a> file no longer redefines the built-in figures.
-</p>
-<p>
-  We have added new samples:
-</p>
-<ul>
-  <li><a href="./samples/warehouse.html">Warehouse</a></li>
-  <li><a href="./samples/industrialDiagram.html">Industrial Diagram</a></li>
-</ul>
-
-<p>
-  We have deleted the <code>extensionsTS</code> subdirectory.
-  The <code>extensionsJSM</code> subdirectory includes .TS TypeScript files for all of the extensions,
-  along with the compiled .JS JavaScript files that can be loaded as ECMAScript modules.
-</p>
-<p>
-  The JavaScript files in the <code>extensions</code> subdirectory are now all
-  generated from the compiled TypeScript files in <code>extensionsJSM</code>,
-  which reduces the potential variation in functionality between the two extensions directories.
-</p>
-<p>
-  The sample HTML pages in both <code>extensions</code> and <code>extensionsJSM</code>
-  have been moved to the <code>samples</code> subdirectory, thereby removing duplicate samples.
-</p>
-<p>
-  A few samples have been moved from the <code>projects</code> subdirectory into the <code>samples</code> subdirectory.
-  The <code>projects</code> subdirectory has been deleted.
-</p>
-<p>
-  We have deleted the <code>RoundedRectangles.js</code> file from the extensions and extensionsJSM directories.
-  The figures that had been defined there are now predefined in the GoJS library.
-</p>
-<p>
-  We have deleted the Storage extensions. If you need them, copy the code from version 2.
-</p>
 
 <hr />
 
-
-
 <h3 id="OldChangeLogs">Old Change Logs</h3>
-<h4><a href="../2.3.19/changelog.html">Change log for 2.3</a></h4>
-<h4><a href="../2.2.23/changelog.html">Change log for 2.2</a></h4>
-<h4><a href="../2.1.56/changelog.html">Change log for 2.1</a></h4>
-<h4><a href="../2.0.21/changelog.html">Change log for 2.0</a></h4>
+<h4><a href="../3.0.27/changelog.html">Change log for 3.0</a></h4>
+<h4><a href="../2.3.17/changelog.html">Change log for 2.3</a></h4>
+<h4><a href="../2.2.23/changelog.html">Change log for 2.2</a> (unsupported)</h4>
+<h4><a href="../2.1.56/changelog.html">Change log for 2.1</a> (unsupported)</h4>
+<h4><a href="../2.0.21/changelog.html">Change log for 2.0</a> (unsupported)</h4>
 <h4><a href="../1.8.38/changelog.html">Change log for 1.*</a> (unsupported)</h4>
 
         
@@ -1005,7 +440,9 @@
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

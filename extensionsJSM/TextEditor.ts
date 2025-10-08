@@ -34,11 +34,12 @@ import * as go from 'gojs';
 //    myDiagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
 // ```
 // ```js
-//   $(go.Node, . . .,
-//     . . .
-//       $(go.TextBlock, { textEditor: window.TextEditor, . . . })
-//     . . .
-//   )
+//   new go.Node(. . .)
+//     .add(
+//       . . .
+//       new go.TextBlock({ textEditor: window.TextEditor, . . . })
+//       . . .
+//     )
 // ```
 // If you do use this code, copy it into your project and modify it there.
 // See also TextEditor.html
@@ -107,7 +108,7 @@ import * as go from 'gojs';
   (TextEditor as any).tool = null; // Initialize
 
   // used to be in doActivate
-  TextEditor.show = (textBlock: go.GraphObject, diagram: go.Diagram, tool: go.Tool) => {
+  TextEditor.show = (textBlock: go.GraphObject | null, diagram: go.Diagram, tool: go.Tool) => {
     if (!(textBlock instanceof go.TextBlock)) return;
     if (!diagram || !diagram.div) return;
     if (!(tool instanceof go.TextEditingTool)) return;

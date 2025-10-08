@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="An implementation of Toggles as GoJS objects to show and edit a boolean data property." />
+<meta itemprop="description" content="An implementation of Toggles as GoJS objects to show and edit a boolean data property." />
+<meta property="og:description" content="An implementation of Toggles as GoJS objects to show and edit a boolean data property." />
+<meta name="twitter:description" content="An implementation of Toggles as GoJS objects to show and edit a boolean data property." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Various Styles of Toggles in Nodes" />
+<meta property="og:title" content="Various Styles of Toggles in Nodes" />
+<meta name="twitter:title" content="Various Styles of Toggles in Nodes" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/Toggles.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/Toggles.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/Toggles.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/Toggles.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/Toggles.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Various Styles of Toggles in Nodes | GoJS Diagramming Library
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+          <link rel="stylesheet" href="../assets/css/prism.css"/>
+          <script src="../assets/js/prism.js"></script>
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      ModelChanged: e => {
+        if (!e.isTransactionFinished) return
+        document.getElementById('mySavedModel').innerHTML = myDiagram.model.toJson();
+        if (window.Prism) window.Prism.highlightAll();
+      },
+      'undoManager.isEnabled': true // enable undo & redo
+    });
+
+    myDiagram.nodeTemplate =
+      new go.Node("Auto")
+        .add(
+          new go.Shape("RoundedRectangle", { fill: "lightgray" }),
+          new go.Panel("Vertical", { margin: 8 })
+            .add(
+              new go.TextBlock({ font: "bold 10pt sans-serif", margin: 2 })
+                .bind("text"),
+              new go.Panel("Horizontal")
+                .add(
+                  // without a label, default
+                  go.GraphObject.build("ToggleSwitch", { margin: 2 }, "tog0"),
+                  // without a label, vertical
+                  go.GraphObject.build("ToggleSwitch", { margin: 2 }, "togV", true)
+                ),
+              // without a label, but lots of customizations
+              go.GraphObject.build("ToggleSwitch", {
+                  margin: 2,
+                  width: 50, height: 20,
+                }, "tog1")
+                .attach({
+                  "ButtonIcon.width": 15, "ButtonIcon.height": 15,
+                  "ButtonBorder.figure": "Rectangle", "ButtonIcon.figure": "Square",
+                  "ButtonBorder.fill": "#AAAAAA", "ButtonBorder.stroke": "gray", "ButtonIcon.fill": "lightgray",
+                  "_buttonFillOff": "#AAAAAA", "_buttonBorderOff": "gray", "_buttonIconFillOff": "lightgray",
+                  "_buttonFillOn": "skyblue", "_buttonBorderOn": "deepskyblue", "_buttonIconFillOn": "deepskyblue",
+                }),
+              // with a label, bound color, label first
+              go.GraphObject.build("Toggle", {
+                  margin: 2, isOpposite: true,  // label first
+                  "Button._buttonIconFillOn": "gold", "Button._buttonIconFillOff": "#FFFF0040",
+                }, "tog2")
+                .bind("Button._buttonFillOn", "color")
+                .bind("Button._buttonBorderOn", "color")
+                .bind("ButtonBorder.fill", "", (d, border) => d.tog2 ? d.color : border.panel["_buttonFillOff"])
+                .bind("ButtonBorder.stroke", "", (d, border) => d.tog2 ? d.color : border.panel["_buttonBorderOff"])
+                .add(new go.TextBlock("Toggle 2:", { margin: new go.Margin(0, 2, 0, 0) })),
+              go.GraphObject.build("Toggle", { margin: 2, type: go.Panel.Vertical }, "tog3")
+                .add(new go.TextBlock("label below")),
+              go.GraphObject.build("Toggle", { margin: 2, isEnabled: false }, "tog4")
+                .add(new go.TextBlock("(disabled)", { font: "italic 10pt sans-serif" }))
+            )
+        );
+
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: "Alpha", color: "lightblue", tog0: true, togV: true, tog1: true, tog2: true, tog3: true, tog4: true },
+        { key: 2, text: "Beta", color: "orange", tog0: false, togV: false, tog1: false, tog2: false, tog3: false, tog4: false },
+        { key: 3, text: "Gamma", color: "lightgreen", togV: true, tog1: false, tog2: true },
+        { key: 4, text: "Delta", color: "pink", tog0: true, tog1: true, tog2: true, tog3: true }
+      ]);
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width: 500px; height: 500px"></div>
+  <p>
+    This sample shows many examples of how to use the predefined toggle buttons 
+    inside GoJS and how they can be customized. These premade <a>Panel</a>s exist for 
+    common structures needed in many <a>Node</a> templates. To create a toggle switch call:
+  </p>
+
+  <pre class="lang-js" style="width: min-content;"><code>go.GraphObject.build('Toggle', null, 'choice1')</code></pre>
+
+  <p>
+    <code>null</code> is in the place of the optional properties object,
+    <code>'choice1'</code> is the name of the boolean data property whose value is toggled by this button.
+    This represents the value of the toggle switch.
+  </p>
+  <p>
+    Add a GraphObject to the "Toggle" to provide a label for the switch.
+  </p>
+  <p>
+    For more information on these predefined panels see 
+    <a href="../intro/buttons.html">Buttons</a>. You can see how they are defined 
+    in <a href="../extensions/Buttons.js">Buttons.js</a>.
+  </p>
+  <p>
+    Below is the <a>Diagram.model</a>'s <a>Model.modelData</a>. It will update 
+    automatically as you toggle the switches above, which update the model data.
+  </p>
+  <pre class="lang-js"><code id="mySavedModel" style="width: 100%; height: 300px"></code></pre>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

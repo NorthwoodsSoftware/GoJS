@@ -21,19 +21,19 @@ import * as go from 'gojs';
 // This "HyperlinkText" builder is not pre-defined in the GoJS library, so you will need to load this definition.
 
 // Typical usages:
-//    $("HyperlinkText", "https://gojs.net", "Visit GoJS")
+//    go.GraphObject.build("HyperlinkText", "https://gojs.net", "Visit GoJS")
 //
-//    $("HyperlinkText",
+//    go.GraphObject.build("HyperlinkText",
 //        node => "https://gojs.net/" + node.data.version,
 //        node => "Visit GoJS version " + node.data.version)
 //
-//    $("HyperlinkText",
+//    go.GraphObject.build("HyperlinkText",
 //        node => "https://gojs.net/" + node.data.version,
-//        $(go.Panel, "Auto",
-//            $(go.Shape, ...),
-//            $(go.TextBlock, ...)
-//        )
-//    )
+//        new go.Panel("Auto", . . .)
+//          .add(
+//            new go.Shape(. . .),
+//            new go.TextBlock(. . .)
+//          ))
 
 // The first argument to the "HyperlinkText" builder should be either the URL string or a function
 // that takes the data-bound Panel and returns the URL string.

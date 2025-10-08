@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,59 +134,60 @@
       'clickCreatingTool.archetypeNodeData': { text: 'node' }
     });
 
-    blueDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('RoundedRectangle', {
-          fill: new go.Brush('Linear', { 0: '#00ACED', 0.5: '#00ACED', 1: '#0079A6' }),
-          stroke: '#0079A6',
-          portId: '',
-          cursor: 'pointer', // the node's only port is the Shape
-          fromLinkable: true,
-          fromLinkableDuplicates: true,
-          fromLinkableSelfNode: true,
-          toLinkable: true,
-          toLinkableDuplicates: true,
-          toLinkableSelfNode: true
-        }),
-      new go.TextBlock({ margin: 3, font: 'bold 10pt Arial, sans-serif', stroke: 'whitesmoke', editable: true }).bindTwoWay('text')
-    ).bindTwoWay('location', 'loc');
-
-    blueDiagram.linkTemplate = new go.Link({
-      curve: go.Curve.Bezier,
-      adjusting: go.LinkAdjusting.Stretch,
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true
-    })
-      .add(
-        new go.Shape({ strokeWidth: 2, stroke: 'blue' }), // the link shape
-        new go.Shape({ // the arrowhead
-          toArrow: 'standard',
-          fill: 'blue',
-          stroke: null
-        })
+    blueDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('location', 'loc')
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: new go.Brush('Linear', { 0: '#00ACED', 0.5: '#00ACED', 1: '#0079A6' }),
+            stroke: '#0079A6',
+            portId: '',
+            cursor: 'pointer', // the node's only port is the Shape
+            fromLinkable: true,
+            fromLinkableDuplicates: true,
+            fromLinkableSelfNode: true,
+            toLinkable: true,
+            toLinkableDuplicates: true,
+            toLinkableSelfNode: true
+          }),
+        new go.TextBlock({ margin: 3, font: 'bold 10pt Arial, sans-serif', stroke: 'whitesmoke', editable: true })
+          .bindTwoWay('text')
       );
+
+    blueDiagram.linkTemplate =
+      new go.Link({
+          curve: go.Curve.Bezier,
+          adjusting: go.LinkAdjusting.Stretch,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          toShortLength: 2
+        })
+        .add(
+          new go.Shape({ strokeWidth: 2, stroke: 'blue' }), // the link shape
+          new go.Shape({ toArrow: 'standard', fill: 'blue', stroke: null }) // the arrowhead
+        );
 
     greenDiagram = new go.Diagram('greenDiagram', {
       // double-click in background creates a new node there
       'clickCreatingTool.archetypeNodeData': { key: 'node' }
     });
 
-    greenDiagram.nodeTemplate = new go.Node('Vertical')
-      .add(
-        new go.Shape('Ellipse', { fill: 'lightgreen', width: 20, height: 20, portId: '' }),
-        new go.TextBlock({ margin: 3, font: 'bold 12px Georgia, sans-serif' }).bind('text')
-      ).bindTwoWay('location', 'loc');
+    greenDiagram.nodeTemplate =
+      new go.Node('Vertical')
+        .bindTwoWay('location', 'loc')
+        .add(
+          new go.Shape('Ellipse', { fill: 'lightgreen', width: 20, height: 20, portId: '' }),
+          new go.TextBlock({ margin: 3, font: 'bold 12px Georgia, sans-serif' })
+            .bind('text')
+        );
 
-    greenDiagram.linkTemplate = new go.Link()
-      .add(
-        new go.Shape({ strokeWidth: 2, stroke: '#76C176' }), // the link shape
-        new go.Shape({ // the arrowhead
-          toArrow: 'standard',
-          fill: '#76C176',
-          stroke: null
-        })
-      );
+    greenDiagram.linkTemplate =
+      new go.Link({ toShortLength: 2 })
+        .add(
+          new go.Shape({ strokeWidth: 2, stroke: '#76C176' }), // the link shape
+          new go.Shape({ toArrow: 'standard', fill: '#76C176', stroke: null }) // the arrowhead
+        );
 
     // create the model data that will be represented in both diagrams simultaneously
     var model = new go.GraphLinksModel(
@@ -233,7 +236,8 @@
         new go.Panel('Horizontal', { position: new go.Point(16, 0) })
           .bind('background', 'color')
           .add(
-            new go.TextBlock({ margin: 2 }).bind('text')
+            new go.TextBlock({ margin: 2 })
+              .bind('text')
           )
       );
 
@@ -250,7 +254,7 @@
     var editToRedo = null; // a node in the undoDisplay
     var editList = [];
 
-    model.addChangedListener((e) => {
+    model.addChangedListener(e => {
       // do not display some uninteresting kinds of transaction notifications
       if (e.change === go.ChangeType.Transaction) {
         if (e.propertyName === 'CommittingTransaction' || e.modelChange === 'SourceChanged') return;
@@ -287,7 +291,7 @@
           if (tx !== null) {
             var allChanges = tx.changes;
             var odd = true;
-            allChanges.each((change) => {
+            allChanges.each(change => {
               var childData = {
                 color: odd ? 'white' : '#E0FFED',
                 text: change.toString(),
@@ -325,6 +329,7 @@
   function clearLog() {
     var div = (document.getElementById('modelChangedLog').innerHTML = '');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -425,7 +430,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

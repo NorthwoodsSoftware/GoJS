@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -142,29 +144,35 @@
       layout: new go.Layout({ isInitial: false, isOngoing: false }), // never invalidates
 
       // Define the template for Nodes, used by virtualization.
-      nodeTemplate: new go.Node('Auto', {
-        isLayoutPositioned: false,
-        width: 70, height: 20, // in cooperation with the load function, below
-        toolTip: go.GraphObject.build('ToolTip')
+      nodeTemplate:
+        new go.Node('Auto', {
+            isLayoutPositioned: false,
+            width: 70, height: 20, // in cooperation with the load function, below
+            toolTip:
+              go.GraphObject.build('ToolTip')
+                .add(
+                  new go.TextBlock({ margin: 3 })
+                    .bind('text', '', d => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString())
+                )
+          }) // optimization
+          .bindTwoWay('position', 'bounds', b => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
           .add(
-            new go.TextBlock({ margin: 3 }).bind('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString())
-          )
-      }) // optimization
-        .bindTwoWay('position', 'bounds', (b) => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
-        .add(
-          new go.Shape('Rectangle').bind('fill', 'color'),
-          new go.TextBlock({ margin: 2 }).bind('text', 'color')
-        ),
+            new go.Shape('Rectangle')
+              .bind('fill', 'color'),
+            new go.TextBlock({ margin: 2 })
+              .bind('text', 'color')
+          ),
 
       // Define the template for Links
-      linkTemplate: new go.Link({
-        isLayoutPositioned: false, // optimization
-        fromSpot: HORIZONTAL ? go.Spot.Right : go.Spot.Bottom,
-        toSpot: HORIZONTAL ? go.Spot.Left : go.Spot.Top
-      })
-        .add(
-          new go.Shape()
-        ),
+      linkTemplate:
+        new go.Link({
+            isLayoutPositioned: false, // optimization
+            fromSpot: HORIZONTAL ? go.Spot.Right : go.Spot.Bottom,
+            toSpot: HORIZONTAL ? go.Spot.Left : go.Spot.Top
+          })
+          .add(
+            new go.Shape()
+          ),
 
       'animationManager.isEnabled': false
     });
@@ -185,11 +193,12 @@
 
     // This is a status message
     const textBlock = new go.TextBlock('loading...', { stroke: 'red', font: '20pt sans-serif' });
-    myLoading = new go.Part({ layerName: 'ViewportForeground', alignment: go.Spot.Center })
-      .add(textBlock);
+    myLoading =
+      new go.Part({ layerName: 'ViewportForeground', alignment: go.Spot.Center })
+        .add(textBlock);
 
     // // temporarily add the status indicator
-    // const animate = (state) => {
+    // const animate = state => {
     //   textBlock.text = 'loading' + '.'.repeat(state);
     //   setTimeout(() => {
     //     animate(state++);
@@ -339,7 +348,7 @@
       if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
         // even if the node is out of the viewport, keep it if it is selected or
         // if any link connecting with the node is still in the viewport
-        if (!n.linksConnected.any((l) => l.actualBounds.intersectsRect(viewb))) {
+        if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
           remove.push(d);
         }
       }
@@ -433,6 +442,7 @@
     document.getElementById('myMessage2').textContent = myDiagram.nodes.count;
     document.getElementById('myMessage4').textContent = myDiagram.links.count;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -485,7 +495,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

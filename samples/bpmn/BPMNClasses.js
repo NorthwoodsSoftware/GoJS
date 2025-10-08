@@ -88,7 +88,7 @@ export class BPMNLinkingTool extends go.LinkingTool {
         // orthogonal routing during linking
         this.temporaryLink.routing = go.Routing.Orthogonal;
         // link validation using the validate methods defined below
-        this.linkValidation = (fromnode, fromport, tonode, toport) => BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
+        this.linkValidation = (fromnode, fromport, tonode, toport, link) => BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
             BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
         if (init)
             Object.assign(this, init);
@@ -121,6 +121,8 @@ export class BPMNLinkingTool extends go.LinkingTool {
      * Validate that sequence links don't cross subprocess or pool boundaries.
      */
     static validateSequenceLinkConnection(fromnode, fromport, tonode, toport) {
+        if (!fromnode || !fromport || !tonode || !toport)
+            return false;
         if (fromnode.category === null || tonode.category === null)
             return true;
         // if either node is in a subprocess, both nodes must be in same subprocess (even for Message Flows)
@@ -139,6 +141,8 @@ export class BPMNLinkingTool extends go.LinkingTool {
      * Validate that message links cross pool boundaries.
      */
     static validateMessageLinkConnection(fromnode, fromport, tonode, toport) {
+        if (!fromnode || !fromport || !tonode || !toport)
+            return false;
         if (fromnode.category === null || tonode.category === null)
             return true;
         if (fromnode.category === 'privateProcess' || tonode.category === 'privateProcess')
@@ -167,7 +171,7 @@ export class BPMNRelinkingTool extends go.RelinkingTool {
         // orthogonal routing during linking
         this.temporaryLink.routing = go.Routing.Orthogonal;
         // link validation using the validate methods defined below
-        this.linkValidation = (fromnode, fromport, tonode, toport) => BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
+        this.linkValidation = (fromnode, fromport, tonode, toport, link) => BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
             BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
         if (init)
             Object.assign(this, init);

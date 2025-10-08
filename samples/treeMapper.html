@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,6 +128,7 @@
             
 
 <script id="code">
+
   // Use a TreeNode so that when a node is not visible because a parent is collapsed,
   // connected links seem to be connected with the lowest visible parent node.
   class TreeNode extends go.Node {
@@ -201,8 +204,8 @@
 
   function init() {
     function handleTreeCollapseExpand(e) {
-      e.subject.each((n) => {
-        n.findExternalTreeLinksConnected().each((l) => l.invalidateRoute());
+      e.subject.each(n => {
+        n.findExternalTreeLinksConnected().each(l => l.invalidateRoute());
       });
     }
 
@@ -216,7 +219,7 @@
       'linkingTool.linkValidation': checkLink,
       'relinkingTool.linkValidation': checkLink,
       'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
           document.getElementById('mySavedModel').innerHTML = e.model.toJson();
@@ -237,49 +240,47 @@
     }
 
     // Each node in a tree is defined using the default nodeTemplate.
-    myDiagram.nodeTemplate = new TreeNode({
-      movable: false,
-      copyable: false,
-      deletable: false, // user cannot move an individual node
-      // no Adornment: instead change panel background color by binding to Node.isSelected
+    myDiagram.nodeTemplate =
+      new TreeNode({
+          movable: false,
+          copyable: false,
+          deletable: false, // user cannot move an individual node
+          // no Adornment: instead change panel background color by binding to Node.isSelected
 
-      selectionAdorned: false,
-      background: 'white',
-      mouseEnter: (e, node) => (node.background = 'aquamarine'),
-      mouseLeave: (e, node) => (node.background = node.isSelected ? 'skyblue' : 'white')
-    })
-      .bindObject('background', 'isSelected', (s) => (s ? 'skyblue' : 'white'))
-      // whether the user can start drawing a link from or to this node depends on which group it's in
-      .bind('fromLinkable', 'group', (k) => k === -1)
-      .bind('toLinkable', 'group', (k) => k === -2)
-      .add(
-        go.GraphObject.build(
-          'TreeExpanderButton', // support expanding/collapsing subtrees
-          {
-            width: 14,
-            height: 14,
-            'ButtonIcon.stroke': 'white',
-            'ButtonIcon.strokeWidth': 2,
-            'ButtonBorder.fill': 'goldenrod',
-            'ButtonBorder.stroke': null,
-            'ButtonBorder.figure': 'Rectangle',
-            _buttonFillOver: 'darkgoldenrod',
-            _buttonStrokeOver: null,
-            _buttonFillPressed: null
-          }
-        ),
-        new go.Panel('Horizontal', { position: new go.Point(16, 0) })
-          .add(
-            //// optional icon for each tree node
-            // new go.Picture(
-            //  { width: 14, height: 14,
-            //    margin: new go.Margin(0, 4, 0, 0),
-            //    imageStretch: go.ImageStretch.Uniform,
-            //    source: "images/defaultIcon.png" })
-            //  .bind("source", "src"),
-            new go.TextBlock().bind('text', 'key', (s) => 'item ' + s)
-          )
-      );
+          selectionAdorned: false,
+          background: 'white',
+          mouseEnter: (e, node) => (node.background = 'aquamarine'),
+          mouseLeave: (e, node) => (node.background = node.isSelected ? 'skyblue' : 'white')
+        })
+        .bindObject('background', 'isSelected', s => s ? 'skyblue' : 'white')
+        // whether the user can start drawing a link from or to this node depends on which group it's in
+        .bind('fromLinkable', 'group', k => k === -1)
+        .bind('toLinkable', 'group', k => k === -2)
+        .add(
+          go.GraphObject.build('TreeExpanderButton', { // support expanding/collapsing subtrees
+              width: 14,
+              height: 14,
+              'ButtonIcon.stroke': 'white',
+              'ButtonIcon.strokeWidth': 2,
+              'ButtonBorder.fill': 'goldenrod',
+              'ButtonBorder.stroke': null,
+              'ButtonBorder.figure': 'Rectangle',
+              _buttonFillOver: 'darkgoldenrod',
+              _buttonStrokeOver: null
+            }),
+          new go.Panel('Horizontal', { position: new go.Point(16, 0) })
+            .add(
+              //// optional icon for each tree node
+              // new go.Picture(
+              //  { width: 14, height: 14,
+              //    margin: new go.Margin(0, 4, 0, 0),
+              //    imageStretch: go.ImageStretch.Uniform,
+              //    source: "images/defaultIcon.png" })
+              //  .bind("source", "src"),
+              new go.TextBlock()
+                .bind('text', 'key', s => 'item ' + s)
+            )
+        );
 
     // These are the links connecting tree nodes within each group.
 
@@ -287,42 +288,45 @@
 
     myDiagram.linkTemplate = // with lines
       new go.Link({
-        selectable: false,
-        routing: go.Routing.Orthogonal,
-        fromEndSegmentLength: 4,
-        toEndSegmentLength: 4,
-        fromSpot: new go.Spot(0.001, 1, 7, 0),
-        toSpot: go.Spot.Left
-      }).add(new go.Shape({ stroke: 'lightgray' }));
+          selectable: false,
+          routing: go.Routing.Orthogonal,
+          fromEndSegmentLength: 4,
+          toEndSegmentLength: 4,
+          fromSpot: new go.Spot(0.001, 1, 7, 0),
+          toSpot: go.Spot.Left
+        })
+        .add(new go.Shape({ stroke: 'lightgray' }));
 
     // These are the blue links connecting a tree node on the left side with one on the right side.
-    myDiagram.linkTemplateMap.add(
-      'Mapping',
+    myDiagram.linkTemplateMap.add('Mapping',
       new MappingLink({
-        isTreeLink: false,
-        isLayoutPositioned: false,
-        layerName: 'Foreground',
-        fromSpot: go.Spot.Right,
-        toSpot: go.Spot.Left,
-        relinkableFrom: true,
-        relinkableTo: true
-      }).add(new go.Shape({ stroke: 'blue', strokeWidth: 2 }))
+          isTreeLink: false,
+          isLayoutPositioned: false,
+          layerName: 'Foreground',
+          fromSpot: go.Spot.Right,
+          toSpot: go.Spot.Left,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
+        .add(new go.Shape({ stroke: 'blue', strokeWidth: 2 }))
     );
 
-    myDiagram.groupTemplate = new go.Group('Auto', { deletable: false, layout: makeGroupLayout() })
-      .bindTwoWay('position', 'xy', go.Point.parse, go.Point.stringify)
-      .bind('layout', 'width', makeGroupLayout)
-      .add(
-        new go.Shape({ fill: 'white', stroke: 'lightgray' }),
-        new go.Panel('Vertical', { defaultAlignment: go.Spot.Left })
-          .add(
-            new go.TextBlock({
-              font: 'bold 14pt sans-serif',
-              margin: new go.Margin(5, 5, 0, 5)
-            }).bind('text'),
-            new go.Placeholder({ padding: 5 })
-          )
-      );
+    myDiagram.groupTemplate =
+      new go.Group('Auto', { deletable: false, layout: makeGroupLayout() })
+        .bindTwoWay('position', 'xy', go.Point.parse, go.Point.stringify)
+        .bind('layout', 'width', makeGroupLayout)
+        .add(
+          new go.Shape({ fill: 'white', stroke: 'lightgray' }),
+          new go.Panel('Vertical', { defaultAlignment: go.Spot.Left })
+            .add(
+              new go.TextBlock({
+                  font: 'bold 14pt sans-serif',
+                  margin: new go.Margin(5, 5, 0, 5)
+                })
+                .bind('text'),
+              new go.Placeholder({ padding: 5 })
+            )
+        );
 
     function makeGroupLayout() {
       return new go.TreeLayout({ // taken from samples/treeView.html
@@ -400,23 +404,24 @@
     }
     return count;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 
   function updateNodeWidths(group, width) {
     if (isNaN(width)) {
-      group.memberParts.each((n) => {
+      group.memberParts.each(n => {
         if (n instanceof go.Node) n.width = NaN; // back to natural width
       });
     } else {
       var minx = Infinity; // figure out minimum group width
-      group.memberParts.each((n) => {
+      group.memberParts.each(n => {
         if (n instanceof go.Node) {
           minx = Math.min(minx, n.actualBounds.x);
         }
       });
       if (minx === Infinity) return;
       var right = minx + width;
-      group.memberParts.each((n) => {
+      group.memberParts.each(n => {
         if (n instanceof go.Node) n.width = Math.max(0, right - n.actualBounds.x);
       });
     }
@@ -434,11 +439,11 @@
       }
     }
     if (stylename !== ROUTINGSTYLE) {
-      myDiagram.commit((diag) => {
+      myDiagram.commit(diag => {
         ROUTINGSTYLE = stylename;
-        diag.findTopLevelGroups().each((g) => updateNodeWidths(g, NaN));
+        diag.findTopLevelGroups().each(g => updateNodeWidths(g, NaN));
         diag.layoutDiagram(true); // force layouts to happen again
-        diag.links.each((l) => l.invalidateRoute());
+        diag.links.each(l => l.invalidateRoute());
       });
     }
   }
@@ -533,7 +538,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

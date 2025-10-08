@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,10 +134,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -145,7 +147,7 @@
 
     // when the diagram is vertically oriented, "left" means "top" and "right" means "bottom"
     function makePort(name, leftside) {
-      var port = new go.Shape('Circle', {
+      const port = new go.Shape('Circle', {
         fill: '#555555',
         stroke: null,
         desiredSize: new go.Size(10, 10),
@@ -154,12 +156,12 @@
         cursor: 'pointer' // show a different cursor to indicate potential link point
       });
 
-      var lab = new go.TextBlock(
+      const lab = new go.TextBlock(
         name, // the name of the port
         { font: '7pt sans-serif' }
       );
 
-      var panel = new go.Panel('Vertical', { margin: new go.Margin(0, 2) });
+      const panel = new go.Panel('Vertical', { margin: new go.Margin(0, 2) });
 
       if (leftside) {
         port.toSpot = go.Spot.Top;
@@ -180,62 +182,58 @@
     }
 
     function makeTemplate(typename, icon, background, inports, outports) {
-      var node = new go.Node('Spot', { selectionAdorned: false })
-        .add(
-          new go.Panel('Auto', { width: 200, height: 90 })
-            .add(
-              new go.Shape('RoundedRectangle', {
-                fill: go.Brush.lighten(background),
-                stroke: 'gray',
-                spot1: go.Spot.TopLeft,
-                spot2: go.Spot.BottomRight
-              }).bindObject('fill', 'isSelected', (s) =>
-                s ? 'dodgerblue' : background
+      myDiagram.nodeTemplateMap.set(typename, 
+        new go.Node('Spot', { selectionAdorned: false })
+          .add(
+            new go.Panel('Auto', { width: 200, height: 90 })
+              .add(
+                new go.Shape('RoundedRectangle', {
+                    fill: go.Brush.lighten(background),
+                    stroke: 'gray',
+                    spot1: go.Spot.TopLeft,
+                    spot2: go.Spot.BottomRight
+                  })
+                  .bindObject('fill', 'isSelected', s => s ? 'dodgerblue' : background),
+                new go.Panel('Table')
+                  .add(
+                    new go.TextBlock(typename, {
+                      column: 0,
+                      margin: 3,
+                      maxSize: new go.Size(80, NaN),
+                      stroke: 'black',
+                      font: 'bold 11pt sans-serif'
+                    }),
+                    new go.Picture(icon, { column: 1, width: 55, height: 55 }),
+                    new go.TextBlock({
+                        column: 2,
+                        margin: 3,
+                        editable: true,
+                        maxSize: new go.Size(80, 40),
+                        stroke: 'black',
+                        font: 'bold 9pt sans-serif'
+                      })
+                      .bindTwoWay('text', 'name')
+                  )
               ),
-              new go.Panel('Table')
-                .add(
-                  new go.TextBlock(typename, {
-                    column: 0,
-                    margin: 3,
-                    maxSize: new go.Size(80, NaN),
-                    stroke: 'black',
-                    font: 'bold 11pt sans-serif'
-                  }),
-                  new go.Picture(icon, { column: 1, width: 55, height: 55 }),
-                  new go.TextBlock({
-                    column: 2,
-                    margin: 3,
-                    editable: true,
-                    maxSize: new go.Size(80, 40),
-                    stroke: 'black',
-                    font: 'bold 9pt sans-serif'
-                  }).bindTwoWay('text', 'name')
-                )
-            ),
-          new go.Panel('Horizontal', {
-            alignment: go.Spot.Top,
-            alignmentFocus: new go.Spot(0.5, 0, 0, 4)
-          }).add(...inports),
-          new go.Panel('Horizontal', {
-            alignment: go.Spot.Bottom,
-            alignmentFocus: new go.Spot(0.5, 1, 0, -4)
-          }).add(...outports)
-        );
-      myDiagram.nodeTemplateMap.set(typename, node);
+            new go.Panel('Horizontal', {
+                alignment: go.Spot.Top,
+                alignmentFocus: new go.Spot(0.5, 0, 0, 4)
+              })
+              .add(...inports),
+            new go.Panel('Horizontal', {
+                alignment: go.Spot.Bottom,
+                alignmentFocus: new go.Spot(0.5, 1, 0, -4)
+              })
+              .add(...outports)
+          ));
     }
 
-    makeTemplate(
-      'Table',
-      'images/table.svg',
-      'forestgreen',
+    makeTemplate('Table', 'images/table.svg', 'forestgreen',
       [],
       [makePort('OUT', false)]
     );
 
-    makeTemplate(
-      'Join',
-      'images/join.svg',
-      'mediumorchid',
+    makeTemplate('Join', 'images/join.svg', 'mediumorchid',
       [makePort('L', true), makePort('R', true)],
       [
         makePort('UL', false),
@@ -246,53 +244,42 @@
       ]
     );
 
-    makeTemplate(
-      'Project',
-      'images/project.svg',
-      'darkcyan',
+    makeTemplate('Project', 'images/project.svg', 'darkcyan',
       [makePort('', true)],
       [makePort('OUT', false)]
     );
 
-    makeTemplate(
-      'Filter',
-      'images/filter.svg',
-      'cornflowerblue',
+    makeTemplate('Filter', 'images/filter.svg', 'cornflowerblue',
       [makePort('', true)],
       [makePort('OUT', false), makePort('INV', false)]
     );
 
-    makeTemplate(
-      'Group',
-      'images/group.svg',
-      'mediumpurple',
+    makeTemplate('Group', 'images/group.svg', 'mediumpurple',
       [makePort('', true)],
       [makePort('OUT', false)]
     );
 
-    makeTemplate(
-      'Sort',
-      'images/sort.svg',
-      'sienna',
+    makeTemplate('Sort', 'images/sort.svg', 'sienna',
       [makePort('', true)],
       [makePort('OUT', false)]
     );
 
-    makeTemplate(
-      'Export',
-      'images/upload.svg',
-      'darkred',
+    makeTemplate('Export', 'images/upload.svg', 'darkred',
       [makePort('', true)],
       []
     );
 
-    myDiagram.linkTemplate = new go.Link({
-      curve: go.Curve.Bezier,
-      fromEndSegmentLength: 30,
-      toEndSegmentLength: 30,
-      relinkableFrom: true,
-      relinkableTo: true
-    }).add(new go.Shape({ stroke: '#555555', strokeWidth: 2 }));
+    myDiagram.linkTemplate =
+      new go.Link({
+          curve: go.Curve.Bezier,
+          fromEndSegmentLength: 30,
+          toEndSegmentLength: 30,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
+        .add(
+          new go.Shape({ stroke: '#555555', strokeWidth: 2 })
+        );
 
     load();
   }
@@ -307,6 +294,7 @@
       document.getElementById('mySavedModel').value
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

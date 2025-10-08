@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,111 +136,111 @@
       })
     });
 
-    myDiagram.nodeTemplate = new go.Node('Vertical', {
-      defaultStretch: go.Stretch.Horizontal,
-      fromSpot: go.Spot.RightSide,
-      toSpot: go.Spot.LeftSide
-    })
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedTopRectangle', { fill: 'white' })
-              .bind('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white')),
-            new go.TextBlock({
-              margin: new go.Margin(2, 2, 0, 2),
-              textAlign: 'center'
-            })
-              .bind('text', 'header')
-          ),
-        new go.Panel('Auto', { minSize: new go.Size(NaN, 70) })
-          .add(
-            new go.Shape('Rectangle', { fill: 'white' }),
-            new go.TextBlock({
-              width: 120,
-              margin: new go.Margin(2, 2, 0, 2),
-              textAlign: 'center'
-            })
-              .bind('text'),
-            new go.Shape('BpmnActivityLoop', {
-              visible: false,
-              width: 10,
-              height: 10,
-              alignment: new go.Spot(0.5, 1, 0, -3),
-              alignmentFocus: go.Spot.Bottom
-            })
-              .bind('visible', 'loop')
-          ),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedBottomRectangle', { fill: 'white' })
-              .bind('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white')),
-            new go.TextBlock({
-              margin: new go.Margin(2, 2, 0, 2),
-              textAlign: 'center'
-            })
-              .bind('text', 'footer')
-          )
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical', {
+          defaultStretch: go.Stretch.Horizontal,
+          fromSpot: go.Spot.RightSide,
+          toSpot: go.Spot.LeftSide
+        })
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedTopRectangle', { fill: 'white' })
+                .bind('fill', 'role', r => r[0] === 't' ? 'lightgray' : 'white'),
+              new go.TextBlock({
+                  margin: new go.Margin(2, 2, 0, 2),
+                  textAlign: 'center'
+                })
+                .bind('text', 'header')
+            ),
+          new go.Panel('Auto', { minSize: new go.Size(NaN, 70) })
+            .add(
+              new go.Shape('Rectangle', { fill: 'white' }),
+              new go.TextBlock({
+                  width: 120,
+                  margin: new go.Margin(2, 2, 0, 2),
+                  textAlign: 'center'
+                })
+                .bind('text'),
+              new go.Shape('BpmnActivityLoop', {
+                  visible: false,
+                  width: 10,
+                  height: 10,
+                  alignment: new go.Spot(0.5, 1, 0, -3),
+                  alignmentFocus: go.Spot.Bottom
+                })
+                .bind('visible', 'loop')
+            ),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedBottomRectangle', { fill: 'white' })
+                .bind('fill', 'role', r => r[0] === 'b' ? 'lightgray' : 'white'),
+              new go.TextBlock({
+                  margin: new go.Margin(2, 2, 0, 2),
+                  textAlign: 'center'
+                })
+                .bind('text', 'footer')
+            )
+        );
 
-    myDiagram.groupTemplate = new go.Group('Vertical', {
-      layout: new go.TreeLayout({
-        setsPortSpot: false,
-        setsChildPortSpot: false
-      }),
-      defaultStretch: go.Stretch.Horizontal,
-      fromSpot: go.Spot.RightSide,
-      toSpot: go.Spot.LeftSide
-    })
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', { // Rounded top rectangle via parameter2
-              fill: 'white',
-              parameter2: 1 | 2
-            })
-              .bind('fill', 'role', (r) => (r[0] === 't' ? 'lightgray' : 'white')),
-            new go.TextBlock({
-              margin: new go.Margin(2, 2, 0, 2),
-              textAlign: 'center'
-            })
-              .bind('text', 'header')
-          ),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ fill: 'white' }),
-            new go.Placeholder({ padding: 20 }),
-            new go.Shape('BpmnActivityLoop', {
-              visible: false,
-              width: 10,
-              height: 10,
-              alignment: new go.Spot(0.5, 1, 0, -3),
-              alignmentFocus: go.Spot.Bottom
-            })
-              .bind('visible', 'loop')
-          ),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', { // Rounded bottom rectangle via parameter2
-              fill: 'white',
-              parameter2: 4 | 8
-            })
-              .bind('fill', 'role', (r) => (r[0] === 'b' ? 'lightgray' : 'white')),
-            new go.TextBlock({
-              margin: new go.Margin(2, 2, 0, 2),
-              textAlign: 'center'
-            })
-              .bind('text', 'footer')
-          )
-      );
+    myDiagram.groupTemplate =
+      new go.Group('Vertical', {
+          layout: new go.TreeLayout({
+            setsPortSpot: false,
+            setsChildPortSpot: false
+          }),
+          defaultStretch: go.Stretch.Horizontal,
+          fromSpot: go.Spot.RightSide,
+          toSpot: go.Spot.LeftSide
+        })
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', { // Rounded top rectangle via parameter2
+                  fill: 'white',
+                  parameter2: 1 | 2
+                })
+                .bind('fill', 'role', r => r[0] === 't' ? 'lightgray' : 'white'),
+              new go.TextBlock({
+                  margin: new go.Margin(2, 2, 0, 2),
+                  textAlign: 'center'
+                })
+                .bind('text', 'header')
+            ),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: 'white' }),
+              new go.Placeholder({ padding: 20 }),
+              new go.Shape('BpmnActivityLoop', {
+                  visible: false,
+                  width: 10,
+                  height: 10,
+                  alignment: new go.Spot(0.5, 1, 0, -3),
+                  alignmentFocus: go.Spot.Bottom
+                })
+                .bind('visible', 'loop')
+            ),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', { // Rounded bottom rectangle via parameter2
+                  fill: 'white',
+                  parameter2: 4 | 8
+                })
+                .bind('fill', 'role', r => r[0] === 'b' ? 'lightgray' : 'white'),
+              new go.TextBlock({
+                  margin: new go.Margin(2, 2, 0, 2),
+                  textAlign: 'center'
+                })
+                .bind('text', 'footer')
+            )
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      corner: 5
-    })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'Triangle' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Triangle' })
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -260,6 +262,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

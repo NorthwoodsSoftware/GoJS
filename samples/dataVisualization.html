@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -185,14 +187,13 @@
   var lastStroked = null; // this remembers the last highlight Shape
 
   function init() {
-    var myToolTip = new go.HTMLInfo({
+    const myToolTip = new go.HTMLInfo({
       show: showToolTip
       // do nothing on hide: This tooltip doesn't hide unless the mouse leaves the diagram
     });
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      'animationManager.initialAnimationStyle':
-        go.AnimationStyle.AnimateLocations,
+      'animationManager.initialAnimationStyle': go.AnimationStyle.AnimateLocations,
       contentAlignment: go.Spot.Center, // content is always centered in the viewport
       autoScale: go.AutoScale.Uniform, // scale always has all content fitting in the viewport
       'toolManager.hoverDelay': 10, // how quickly tooltips are shown
@@ -202,36 +203,34 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      selectable: false,
-      toolTip: myToolTip
-    })
-      //.trigger('position', null, go.TriggerStart.Bundled)
-      .bind('location', '', (nothing, elt) => {
-        return new go.Point(
-          elt.data[myLocation.x] * 200,
-          elt.data[myLocation.y] * 200
-        );
-      })
-      .add(
-        new go.Shape('Hexagon', {
-          name: 'SHAPE',
-          width: 20,
-          height: 20,
-          strokeWidth: 4,
-          stroke: null
-        }).bind('fill', 'species', (name) => {
-          switch (name) {
-            case 'Iris-setosa':
-              return 'rgba(240, 120,  50, .6)';
-            case 'Iris-versicolor':
-              return 'rgba(240, 230, 120, .6)';
-            case 'Iris-virginica':
-              return 'rgba(125, 200, 120, .6)';
-          }
-          return 'black';
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          selectable: false,
+          toolTip: myToolTip
         })
-      );
+        //.trigger('position', null, go.TriggerStart.Bundled)
+        .bind('location', '',
+              data => new go.Point(data[myLocation.x] * 200, data[myLocation.y] * 200))
+        .add(
+          new go.Shape('Hexagon', {
+              name: 'SHAPE',
+              width: 20,
+              height: 20,
+              strokeWidth: 4,
+              stroke: null
+            })
+            .bind('fill', 'species', name => {
+                switch (name) {
+                  case 'Iris-setosa':
+                    return 'rgba(240, 120,  50, .6)';
+                  case 'Iris-versicolor':
+                    return 'rgba(240, 230, 120, .6)';
+                  case 'Iris-virginica':
+                    return 'rgba(125, 200, 120, .6)';
+                }
+                return 'black';
+              })
+        );
 
     // This is the fundamental data set, taken from:
     // https://en.wikipedia.org/wiki/Iris_flower_data_set
@@ -416,12 +415,12 @@
         doc,
         100,
         null,
-        (x) => x instanceof go.Node
+        x => x instanceof go.Node
       );
       // now find the one that is closest to e.documentPoint
       var closest = null;
       var closestDist = 999999999;
-      list.each((node) => {
+      list.each(node => {
         var dist = doc.distanceSquaredPoint(
           node.getDocumentPoint(go.Spot.Center)
         );
@@ -440,8 +439,9 @@
         var e = diagram.lastInput;
         var shape = node.findObject('SHAPE');
         shape.stroke = 'white';
-        if (lastStroked !== null && lastStroked !== shape)
+        if (lastStroked !== null && lastStroked !== shape) {
           lastStroked.stroke = null;
+        }
         lastStroked = shape;
         updateInfoBox(e.viewPoint, node.data);
       } else {
@@ -453,8 +453,7 @@
 
     // Make sure the infoBox is momentarily hidden if the user tries to mouse over it
     var infoBoxH = document.getElementById('infoBoxHolder');
-    infoBoxH.addEventListener(
-      'mousemove',
+    infoBoxH.addEventListener('mousemove',
       () => {
         var box = document.getElementById('infoBoxHolder');
         box.style.left = parseInt(box.style.left) + 'px';
@@ -465,9 +464,8 @@
 
     var diagramDiv = document.getElementById('myDiagramDiv');
     // Make sure the infoBox is hidden when the mouse is not over the Diagram
-    diagramDiv.addEventListener(
-      'mouseout',
-      (e) => {
+    diagramDiv.addEventListener('mouseout',
+      e => {
         if (lastStroked !== null) lastStroked.stroke = null;
         lastStroked = null;
 
@@ -492,13 +490,13 @@
   // This function is called to update the tooltip information
   // depending on the bound data of the Node that is closest to the pointer.
   function updateInfoBox(mousePt, data) {
-    var box = document.getElementById('infoBoxHolder');
+    const box = document.getElementById('infoBoxHolder');
     box.innerHTML = '';
-    var infobox = document.createElement('div');
+    const infobox = document.createElement('div');
     infobox.id = 'infoBox';
     box.appendChild(infobox);
-    for (var i = 0; i < 9; i++) {
-      var child = document.createElement('div');
+    for (let i = 0; i < 9; i++) {
+      const child = document.createElement('div');
       switch (i) {
         case 0:
           child.textContent = data.species;
@@ -556,6 +554,7 @@
     myDiagram.updateAllTargetBindings();
     myDiagram.commitTransaction('updateBindings');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -693,7 +692,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

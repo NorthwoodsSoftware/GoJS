@@ -26,11 +26,12 @@
 // ```
 // or:
 // ```js
-//   $(go.Node, . . .,
-//     . . .
-//       $(go.TextBlock, { textEditor: window.TextEditorRadioButtons, . . . })
-//     . . .
-//   )
+//   new go.Node(. . .)
+//     .add(
+//       . . .
+//       new go.TextBlock({ textEditor: window.TextEditorRadioButtons, . . . })
+//       . . .
+//     )
 // ```
 // If you do use this code, copy it into your project and modify it there.
 // see /samples/customTextEditingTool.html

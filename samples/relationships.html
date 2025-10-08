@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -135,53 +137,55 @@
     });
 
     // this typically represents a person
-    myDiagram.nodeTemplate = new go.Node('Vertical')
-      .add(
-        new go.Shape('Circle', {
-          desiredSize: new go.Size(28, 28),
-          fill: 'white',
-          strokeWidth: 1.5,
-          portId: ''
-        })
-          .bind('figure'),
-        new go.TextBlock('name')
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical')
+        .add(
+          new go.Shape('Circle', {
+              desiredSize: new go.Size(28, 28),
+              fill: 'white',
+              strokeWidth: 1.5,
+              portId: ''
+            })
+            .bind('figure'),
+          new go.TextBlock('name')
+            .bind('text')
+        );
 
     // this template works for all kinds of relationships
-    myDiagram.linkTemplate = new go.Link({
-      curve: go.Curve.Bezier, // slightly curved, by default
-      reshapable: true
-    }) // users can reshape the link route
-      .add(
-        new go.Shape({ // the link's path shape
-          isPanelMain: true,
-          stroke: 'transparent'
-        })
-          .bind('stroke', 'patt', (f) => (f === '' ? 'black' : 'transparent'))
-          .bind('pathPattern', 'patt', convertPathPatternToShape),
-        new go.Shape({ // the link's path shape
-          isPanelMain: true,
-          stroke: 'transparent',
-          strokeWidth: 3
-        })
-          .bind('pathPattern', 'patt2', convertPathPatternToShape),
-        new go.Shape({ // the "to" arrowhead
-          toArrow: '',
-          fill: null,
-          scale: 1.2
-        })
-          .bind('toArrow')
-          .bind('stroke', 'patt', convertPathPatternToColor),
-        new go.TextBlock({ // show the path object name
-          segmentOffset: new go.Point(0, 12)
-        })
-          .bind('text', 'patt'),
-        new go.TextBlock({ // show the second path object name, if any
-          segmentOffset: new go.Point(0, -12)
-        })
-          .bind('text', 'patt2')
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          curve: go.Curve.Bezier, // slightly curved, by default
+          reshapable: true
+        }) // users can reshape the link route
+        .add(
+          new go.Shape({ // the link's path shape
+              isPanelMain: true,
+              stroke: 'transparent'
+            })
+            .bind('stroke', 'patt', f => f === '' ? 'black' : 'transparent')
+            .bind('pathPattern', 'patt', convertPathPatternToShape),
+          new go.Shape({ // the link's path shape
+              isPanelMain: true,
+              stroke: 'transparent',
+              strokeWidth: 3
+            })
+            .bind('pathPattern', 'patt2', convertPathPatternToShape),
+          new go.Shape({ // the "to" arrowhead
+              toArrow: '',
+              fill: null,
+              scale: 1.2
+            })
+            .bind('toArrow')
+            .bind('stroke', 'patt', convertPathPatternToColor),
+          new go.TextBlock({ // show the path object name
+              segmentOffset: new go.Point(0, 12)
+            })
+            .bind('text', 'patt'),
+          new go.TextBlock({ // show the second path object name, if any
+              segmentOffset: new go.Point(0, -12)
+            })
+            .bind('text', 'patt2')
+        );
 
     // Conversion functions that make use of the PathPatterns store of pattern Shapes
     function convertPathPatternToShape(name) {
@@ -288,6 +292,7 @@
     addLinks('Double', 'ZigzagR', 'Double', 'BigZigzagR');
     addLinks('Triple', 'ZigzagR', 'Triple', 'BigZigzagR');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

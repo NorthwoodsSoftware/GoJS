@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,73 +131,93 @@
     });
 
     // define the node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      toEndSegmentLength: 30,
-      fromEndSegmentLength: 30,
-      //  define a tooltip for each node that displays its information
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
-    })
-      .bindTwoWay('location')
-      .add(
-        new go.Shape('Rectangle', {
-          name: 'OBJSHAPE',
-          fill: 'white',
-          desiredSize: new go.Size(30, 30)
-        }),
-        new go.TextBlock({ margin: 4 }).bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Center,
+          toEndSegmentLength: 30,
+          fromEndSegmentLength: 30,
+          //  define a tooltip for each node that displays its information
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 })
+                  .bind('text', '', getInfo)
+              )
+        })
+        .bindTwoWay('location')
+        .add(
+          new go.Shape('Rectangle', {
+            name: 'OBJSHAPE',
+            fill: 'white',
+            desiredSize: new go.Size(30, 30)
+          }),
+          new go.TextBlock({ margin: 4 })
+            .bind('text', 'key')
+        );
 
     // define the link template
-    myDiagram.linkTemplate = new go.Link({
-      selectionAdornmentTemplate: new go.Adornment()
+    myDiagram.linkTemplate =
+      new go.Link({
+          selectionAdornmentTemplate:
+            new go.Adornment()
+              .add(
+                new go.Shape({ isPanelMain: true, stroke: 'dodgerblue', strokeWidth: 3 }),
+                new go.Shape({ toArrow: 'Standard', fill: 'dodgerblue', stroke: null, scale: 1 })
+              ),
+          routing: go.Routing.Normal,
+          curve: go.Curve.Bezier,
+          toShortLength: 2,
+          //  define a tooltip for each link that displays its information
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 })
+                  .bind('text', '', getInfo)
+              )
+        })
         .add(
-          new go.Shape({ isPanelMain: true, stroke: 'dodgerblue', strokeWidth: 3 }),
-          new go.Shape({ toArrow: 'Standard', fill: 'dodgerblue', stroke: null, scale: 1 })
-        ),
-      routing: go.Routing.Normal,
-      curve: go.Curve.Bezier,
-      toShortLength: 2,
-      //  define a tooltip for each link that displays its information
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
-    })
-      .add(
-        new go.Shape({ name: 'OBJSHAPE' }), //  the link shape
-        new go.Shape({ name: 'ARWSHAPE', toArrow: 'Standard' }) //  the arrowhead
-      );
+          new go.Shape({ name: 'OBJSHAPE' }), //  the link shape
+          new go.Shape({ name: 'ARWSHAPE', toArrow: 'Standard' }) //  the arrowhead
+        );
 
     // define the group template
-    myDiagram.groupTemplate = new go.Group('Spot', {
-      // adornment when a group is selected
-      selectionAdornmentTemplate: new go.Adornment('Auto')
-        .add(
-          new go.Shape('Rectangle', { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
-          new go.Placeholder()
-        ),
-      toSpot: go.Spot.AllSides, // links coming into groups at any side
-      toEndSegmentLength: 30,
-      fromEndSegmentLength: 30,
-      //  define a tooltip for each group that displays its information
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4 }).bind('text', '', getInfo))
-    })
+    myDiagram.groupTemplate =
+      new go.Group('Spot', {
+        // adornment when a group is selected
+        selectionAdornmentTemplate:
+          new go.Adornment('Auto')
+            .add(
+              new go.Shape('Rectangle', { fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
+              new go.Placeholder()
+            ),
+        toSpot: go.Spot.AllSides, // links coming into groups at any side
+        toEndSegmentLength: 30,
+        fromEndSegmentLength: 30,
+        //  define a tooltip for each group that displays its information
+        toolTip:
+          go.GraphObject.build('ToolTip')
+            .add(
+              new go.TextBlock({ margin: 4 })
+                .bind('text', '', getInfo)
+            )
+      })
       .add(
         new go.Panel('Auto')
           .add(
             new go.Shape('Rectangle', {
-              name: 'OBJSHAPE',
-              parameter1: 14,
-              fill: 'rgba(255,0,0,0.10)'
-            })
+                name: 'OBJSHAPE',
+                parameter1: 14,
+                fill: 'rgba(255,0,0,0.10)'
+              })
               .bind('desiredSize', 'ds'),
             new go.Placeholder({ padding: 16 })
           ),
         new go.TextBlock({
-          name: 'GROUPTEXT',
-          alignment: go.Spot.TopLeft,
-          alignmentFocus: new go.Spot(0, 0, -4, -4),
-          font: 'Bold 10pt Sans-Serif'
-        })
+            name: 'GROUPTEXT',
+            alignment: go.Spot.TopLeft,
+            alignmentFocus: new go.Spot(0, 0, -4, -4),
+            font: 'Bold 10pt Sans-Serif'
+          })
           .bind('text', 'key')
       );
 
@@ -243,8 +265,8 @@
   // Parameter e is the checked radio button.
   function updateHighlights(e) {
     // Set highlight to 0 for everything before updating
-    myDiagram.nodes.each((node) => (node.highlight = 0));
-    myDiagram.links.each((link) => (link.highlight = 0));
+    myDiagram.nodes.each(node => (node.highlight = 0));
+    myDiagram.links.each(link => (link.highlight = 0));
 
     // Get the selected GraphObject and run the appropriate method
     var sel = myDiagram.selection.first();
@@ -294,14 +316,14 @@
 
     // Give everything the appropriate highlighting ( color and width of stroke )
     // nodes, including groups
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       var shp = node.findObject('OBJSHAPE');
       var grp = node.findObject('GROUPTEXT');
       var hl = node.highlight;
       highlight(shp, grp, hl);
     });
     // links
-    myDiagram.links.each((link) => {
+    myDiagram.links.each(link => {
       var hl = link.highlight;
       var shp = link.findObject('OBJSHAPE');
       var arw = link.findObject('ARWSHAPE');
@@ -316,21 +338,21 @@
   // if the link connects to this node, highlight it
   function linksTo(x, i) {
     if (x instanceof go.Node) {
-      x.findLinksInto().each((link) => (link.highlight = i));
+      x.findLinksInto().each(link => (link.highlight = i));
     }
   }
 
   // if the link comes from this node, highlight it
   function linksFrom(x, i) {
     if (x instanceof go.Node) {
-      x.findLinksOutOf().each((link) => (link.highlight = i));
+      x.findLinksOutOf().each(link => (link.highlight = i));
     }
   }
 
   // highlight all links connected to this node
   function linksAll(x, i) {
     if (x instanceof go.Node) {
-      x.linksConnected.each((link) => (link.highlight = i));
+      x.linksConnected.each(link => (link.highlight = i));
     }
   }
 
@@ -343,7 +365,7 @@
       x.fromNode.highlight = i;
       nodesToList.add(x.data.from);
     } else {
-      x.findNodesInto().each((node) => {
+      x.findNodesInto().each(node => {
         node.highlight = i;
         nodesToList.add(node.data.key);
       });
@@ -358,7 +380,7 @@
       x.toNode.highlight = i;
       nodesFromList.add(x.data.to);
     } else {
-      x.findNodesOutOf().each((node) => {
+      x.findNodesOutOf().each(node => {
         node.highlight = i;
         nodesFromList.add(node.data.key);
       });
@@ -375,7 +397,7 @@
       x.toNode.highlight = i;
       nodesReach(x.toNode, i + 1);
     } else {
-      x.findNodesOutOf().each((node) => {
+      x.findNodesOutOf().each(node => {
         if (node.highlight === 0 || node.highlight > i) {
           node.highlight = i;
           nodesReach(node, i + 1);
@@ -390,7 +412,7 @@
       x.toNode.highlight = i;
       x.fromNode.highlight = i;
     } else {
-      x.findNodesConnected().each((node) => (node.highlight = i));
+      x.findNodesConnected().each(node => (node.highlight = i));
     }
   }
 
@@ -415,7 +437,7 @@
   function childNodes(x, i) {
     var childLst = new go.List(/*"string"*/);
     if (x instanceof go.Group) {
-      myDiagram.nodes.each((node) => {
+      myDiagram.nodes.each(node => {
         if (node.containingGroup === x) {
           node.highlight = i;
           childLst.add(node.data.key);
@@ -428,7 +450,7 @@
   // same as childNodes, then run allMemberNodes for each child Group with the next color
   function allMemberNodes(x, i) {
     if (x instanceof go.Group) {
-      myDiagram.nodes.each((node) => {
+      myDiagram.nodes.each(node => {
         if (node.containingGroup === x) {
           node.highlight = i;
           allMemberNodes(node, i + 1);
@@ -440,7 +462,7 @@
   // if the link"s containing Group is x, highlight it
   function childLinks(x, i) {
     var childLst = new go.List(/*go.Link*/);
-    myDiagram.links.each((link) => {
+    myDiagram.links.each(link => {
       if (link.containingGroup === x) {
         link.highlight = i;
         childLst.add(link);
@@ -452,7 +474,7 @@
   // same as childLinks, then run allMemberLinks for each child Group with the next color
   function allMemberLinks(x, i) {
     childLinks(x, i);
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       if (node instanceof go.Group && node.containingGroup === x) {
         allMemberLinks(node, i + 1);
       }
@@ -503,7 +525,7 @@
       if (toLst.count > 0) {
         toLst.sort((a, b) => (a < b ? -1 : 1));
         text += '\nNodes into: ';
-        toLst.each((key) => {
+        toLst.each(key => {
           if (key !== text.substring(text.length - 3, text.length - 2)) {
             text += key + ', ';
           }
@@ -514,7 +536,7 @@
       if (frLst.count > 0) {
         frLst.sort((a, b) => (a < b ? -1 : 1));
         text += '\nNodes out of: ';
-        frLst.each((key) => {
+        frLst.each(key => {
           if (key !== text.substring(text.length - 3, text.length - 2)) {
             text += key + ', ';
           }
@@ -528,7 +550,7 @@
         text += '\nMember nodes: ';
         var children = childNodes(x, 0);
         children.sort((a, b) => (a < b ? -1 : 1));
-        children.each((key) => {
+        children.each(key => {
           if (key !== text.substring(text.length - 3, text.length - 2)) {
             text += key + ', ';
           }
@@ -539,11 +561,11 @@
         if (linkChildren.count > 0) {
           text += '\nMember links: ';
           var linkStrings = new go.List(/*"string"*/);
-          linkChildren.each((link) => {
+          linkChildren.each(link => {
             linkStrings.add(link.data.from + ' --> ' + link.data.to);
           });
           linkStrings.sort((a, b) => (a < b ? -1 : 1));
-          linkStrings.each((str) => {
+          linkStrings.each(str => {
             text += str + ', ';
           });
           text = text.substring(0, text.length - 2);
@@ -557,6 +579,7 @@
     }
     return text;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -677,7 +700,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

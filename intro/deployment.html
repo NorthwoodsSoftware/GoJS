@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -246,28 +249,24 @@
         
 <h1>Deployment and License Keys</h1>
 <p>
-  The <b>GoJS</b> library is software that is licensed under a commercial <a href="../license.html">license
-    agreement</a>. It is not open-source. If you have
-  downloaded a copy of the <b>GoJS</b> library from <a href="https://gojs.net">gojs.net</a> or npm or GitHub for use in
-  your own app, you may have noticed that
+  The <b>GoJS</b> library is software that is licensed under a commercial <a href="../license.html">license agreement</a>.
+  It is not open-source. If you have downloaded a copy of the <b>GoJS</b> library from
+  <a href="https://gojs.net">gojs.net</a> or npm or GitHub for use in your own app, you may have noticed that
   a watermark appears in the diagram.
 </p>
 <p>
   After you have
   <a href="https://nwoods.com/sales/index.html?p=GoJS" target="_blank">purchased a license</a> and are ready to deploy
-  to your web site your app that uses
-  <b>GoJS</b>, you will need to request a license key at:
+  to your web site your app that uses <b>GoJS</b>, you will need to request a license key at:
   <a href="https://nwoods.com/activate.html?sku=gojs" target="_blank">https://nwoods.com/activate.html?sku=gojs</a>.
 </p>
 <p>
   Enter your e-mail address and the e-mail address of the person who purchased a license for
-  <b>GoJS</b>, the order number for that purchase, and your web site's domain name or your Electron app's
-  <code>package.json</code> "name" attribute, or
-  "productName" attribute if it is specified. Please make sure that e-mail from "nwoods.com" is not caught in your
-  corporate or personal spam filter. If you
+  <b>GoJS</b>, the order number for that purchase, and your web site's domain name or your Electron app's name
+  (see below, <a href="#ForElectron">For Electron</a>).
+  Please make sure that e-mail from "nwoods.com" is not caught in your corporate or personal spam filter. If you
   <a href="https://nwoods.com/contact.html">contact us</a> for further help either via our web site or by sending us
-  email, please include the e-mail that
-  our web server sent to you.
+  email, please include the e-mail that our web server sent to you.
 </p>
 <p>
   Regarding domain names, if your app will be at:
@@ -280,20 +279,16 @@
 <p>
   The license key will also work when the HTML page is served from a subdomain of the licensed domain, such as from
   <code>editors.example.com</code>. Any valid license key will automatically also work at the <code>localhost</code>
-  domain, which is useful when debugging and
-  testing.
+  domain, which is useful when debugging and testing.
 </p>
 <p>
   The GoJS library never "phones home" -- it will never initiate any network traffic other than when explicitly directed
-  to do so, such as for downloading image
-  files to show in
-  <a>Picture</a> objects.
+  to do so, such as for downloading image files to show in <a>Picture</a> objects.
 </p>
 
 <p>
   Our server will generate a GoJS license key for you, in the form of a JavaScript statement that you will need to
-  include with your code. It must execute after
-  the GoJS library file has been loaded, but before you create your first
+  include with your code. It must execute after the GoJS library file has been loaded, but before you create your first
   <a>Diagram</a>.
 </p>
 <pre class="lang-js"><code>// Must execute after loading the library and before you create your first Diagram:
@@ -312,34 +307,29 @@ go.Diagram.licenseKey = "...YourKeyHere...";
 </p>
 <p>
   Once your key is in place, you can continue to use the same key while updating the patch/baselevel version of GoJS.
-  For example, a license key for version
-  2.0.1 will work for all versions 2.0.*. Remember to get a new license key when upgrading to a new major or minor
-  version of GoJS. For example, when upgrading
-  from version 2.0.1 to version 2.1.0, you will need a new license key.
+  For example, a license key for version 2.0.1 will work for all versions 2.0.*.
+  Remember to get a new license key when upgrading to a new major or minor version of GoJS.
+  For example, when upgrading from version 2.0.1 to version 2.1.0, you will need a new license key.
 </p>
 <p>
-  License keys only depend on the major/minor version number and the domain from which the HTML page was served. License
-  keys are valid forever, as long as the
-  major and minor version number of the library do not change and as long as the HTML page is served from the same
-  domain.
+  License keys only depend on the major/minor version number and the domain from which the HTML page was served.
+  License keys are valid forever, as long as the major and minor version number of the library do not change and
+  as long as the HTML page is served from the same domain.
 </p>
 
 <h2 id="ForElectron">For Electron</h2>
 <p>
   When building a desktop application using Electron, your HTML page is not being served from a web server at a domain.
-  You will need to activate with the
-  <code>"name"</code> you have specified in your project's <code>package.json</code>
+  You will need to activate with the <code>"name"</code> you have specified in your project's <code>package.json</code>,
+  or <code>"productName"</code> attribute if it is specified,
   to make sure your Diagram does not display a watermark.
 </p>
 
 <h2 id="ForUnlimitedDomainsCustomers">For Unlimited Domains Customers</h2>
 <p>
   If you are an ISV and intend to distribute your app to run on many customers' web sites, or if your app is hosted in a
-  WebView as part of a desktop
-  application,
-  <a href="https://nwoods.com/contact.html">Contact sales</a> for our our Unlimited Domains option and instructions.
-</p>
-<p>
+  WebView as part of a desktop application,
+  <a href="https://nwoods.com/contact.html">contact sales</a> for our our Unlimited Domains option and instructions.
   When requesting a license key at
   <a href="https://nwoods.com/activate.html?sku=gojs" target="_blank">Activate</a>, you do not need to specify a domain
   name.
@@ -351,24 +341,26 @@ go.Diagram.licenseKey = "...YourKeyHere...";
     target="samples">Japanese Family Tree</a>.
 </p>
 <p>
-  The <b>GoJS</b> library does not manipulate currency values or date/time values or addresses, so there are no
-  localization issues with those data types and
-  values. The library does not contain any of its own icons (images) or cursors.
+  The <b>GoJS</b> library does not manipulate currency values or date/time values or addresses,
+  so there are no localization issues with those data types and values.
+  The library does not contain any of its own icons (images) or cursors.
 </p>
 <p>
-  Nor does <b>GoJS</b> display any built-in text strings, so no translation is needed. There are error and warning
-  messages that may be output to the console,
-  but those messages are only meant for debugging by programmers, not for consumption by end users. Reading and writing
-  of numeric values is only performed
-  internally when reading and writing JSON or geometry path strings or CSS colors, which are all defined to use
-  non-localized formats.
+  Nor does <b>GoJS</b> display any built-in text strings, so no translation is needed.
+  There are error and warning messages that may be output to the console,
+  but those messages are only meant for debugging by programmers, not for consumption by end users.
+  Reading and writing of numeric values is only performed internally when reading and writing JSON or
+  geometry path strings or CSS colors, which are all defined to use non-localized formats.
 </p>
 <p>
-  All user-visible text is completely under the control of the programmer. For localizability you may find it convenient
-  to use conversion functions in
-  <a>Binding</a>s. The <a>TextEditingTool</a> uses an HTML TextArea element to implement in-place text input and text
-  editing, thereby utilising the browser's
-  support for input method editors.
+  All user-visible text is completely under the control of the programmer.
+  For localizability you may find it convenient to use conversion functions in <a>Binding</a>s.
+  The <a>TextEditingTool</a> uses an HTML TextArea element to implement in-place text input and text
+  editing, thereby utilising the browser's support for input method editors.
+</p>
+<p>
+  However, the <a>CommandHandler.describe</a> method, which is called for screen reader consumption,
+  uses English words and will need to be replaced and generalized for localization.
 </p>
 
       </div>
@@ -418,7 +410,9 @@ go.Diagram.licenseKey = "...YourKeyHere...";
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

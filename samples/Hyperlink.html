@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -128,24 +130,27 @@
 
     myDiagram = new go.Diagram('myDiagramDiv');
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('Ellipse', { fill: 'lightskyblue' }),
-        go.GraphObject.build('HyperlinkText',
-          { margin: 10 },
-          (node) => 'https://gojs.net/' + node.data.version,
-          (node) => 'Visit GoJS ' + node.data.version
-        )
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('Ellipse', { fill: 'lightskyblue' }),
+          go.GraphObject.build('HyperlinkText', { margin: 10 },
+            node => 'https://gojs.net/' + node.data.version,
+            node => 'Visit GoJS' +
+                    ("0123456789".includes(node.data.version[0]) ? ", v" : " ") +
+                    node.data.version
+          )
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
-        { key: 1, version: '2.2.23' },
+        { key: 1, version: '3.0.22' },
         { key: 2, version: 'latest' }
       ],
       [{ from: 1, to: 2 }]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,7 +125,8 @@
             
 
 <script src="../extensions/Figures.js"></script>
-<script src="../extensions/AvoidsLinksRouter.js"></script>
+<script src="../extensions/PolylineLinkingTool.js"></script>
+<script src="../extensions/OrthogonalLinkReshapingTool.js"></script>
 
 <script id="code">
   const red = '#b91c1c';
@@ -134,16 +137,21 @@
   const gray = '#cbd5e1';
   const darkGray = '#334155';
 
+  const CELLSIZE = 10;
+
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       'draggingTool.isGridSnapEnabled': true, // dragged nodes will snap to a grid of 10x10 cells
+      linkReshapingTool: new OrthogonalLinkReshapingTool(),
+      'grid.gridCellSize': new go.Size(CELLSIZE, CELLSIZE),
       'undoManager.isEnabled': true,
-      'grid.visible': true
+      'grid.visible': true,
+      initialAutoScale: go.AutoScale.Uniform
     });
 
-    const avoidLinksRouter = new AvoidsLinksRouter();
-    avoidLinksRouter.epsilonDistance = 6; // increase distance between links
-    myDiagram.routers.push(avoidLinksRouter);
+    // Enables the polyline linking tool to manually add link points
+    myDiagram.toolManager.linkingTool = new PolylineLinkingTool();
+    myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Routing.Orthogonal;
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener('Modified', (e) => {
@@ -157,23 +165,32 @@
       }
     });
 
-    const palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
+    // create a new Palette in the HTML DIV element "palette"
+    const palette = new go.Palette('palette', { 
+      layout: new go.GridLayout({ 
+        wrappingColumn: 1,
+        spacing: new go.Size(0, 20)
+      }),
+    }); 
 
     // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
     myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
+      routing: go.Routing.Orthogonal,
+      adjusting: go.LinkAdjusting.End, // Allows nodes to be dragged while keeping most link points
       curve: go.Curve.JumpOver,
       corner: 3,
+      reshapable: true,
       relinkableFrom: true,
       relinkableTo: true,
-      selectionAdorned: false, // Links are not adorned when selected so that their color remains visible.
+      selectionAdorned: false, // Links are not adorned when selected so that their color remains visible
       shadowOffset: new go.Point(0, 0),
       shadowBlur: 5,
       shadowColor: 'blue',
       layerName: 'Background'
     })
+      .bindTwoWay('points') // Saves link points to model data
       .bindObject('isShadowed', 'isSelected')
-      .add(new go.Shape({ name: 'SHAPE', strokeWidth: 3, stroke: red }));
+      .add(new go.Shape({ name: 'SHAPE', strokeWidth: 2, stroke: red }));
 
     // node template helpers
     const sharedToolTip = go.GraphObject.build('ToolTip', {
@@ -183,6 +200,7 @@
     // define some common property settings
     function nodeStyle() {
       return {
+        locationSpot: go.Spot.Center,
         selectionAdorned: false,
         shadowOffset: new go.Point(0, 0),
         shadowBlur: 15,
@@ -225,7 +243,8 @@
 
     // define templates for each type of node
 
-    const inputTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const inputTemplate = new go.Node('Spot', nodeStyle())
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       .set({
         cursor: 'pointer',
         margin: new go.Margin(-15, 0, 0, 0),
@@ -238,6 +257,18 @@
 
           updateStates();
           e.diagram.commitTransaction('Toggle Input');
+        },
+        mouseEnter: (e, obj) => {
+          while (obj.part && obj.part !== obj) obj = obj.part;
+          e.diagram.commit(diag => {
+            obj.isShadowed = true;
+          })
+        },
+        mouseLeave: (e, obj) => {
+          while (obj.part && obj.part !== obj) obj = obj.part;
+          e.diagram.commit(diag => {
+            obj.isShadowed = false;
+          })
         }
       })
       .add(
@@ -267,13 +298,48 @@
           })
       );
 
-    const switchTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
+    const switchTemplate = new go.Node('Spot', nodeStyle())
+      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
       .set({
-        shadowOffset: new go.Point(0, 0),
-        shadowBlur: 5,
-        margin: new go.Margin(-35, 0, 0, 0)
+        isShadowed: true,
+        margin: new go.Margin(-35, 0, 0, 0),
+        mouseEnter: (e, obj) => {
+          while (obj.part && obj !== obj.part) obj = obj.part;
+          e.diagram.commit(diag => {
+            // Shadows the shadow shape when the switch is closed, shadows the 
+            // switch itself when its open
+            if (!obj.data.isOn) {
+              obj.findObject('NODESHAPE').shadowVisible = true;
+            } else {
+              obj.findObject('SHADOWSHAPE').visible = true;
+            }
+          })
+        },
+        mouseLeave: (e, obj) => {
+          while (obj.part && obj !== obj.part) obj = obj.part;
+          e.diagram.commit(diag => {
+            if (!obj.data.isOn) {
+              obj.findObject('NODESHAPE').shadowVisible = false;
+            } else {
+              obj.findObject('SHADOWSHAPE').visible = false;
+            }
+          })
+        }
       })
       .add(
+        // Creates shadow for the switch shape since it is being clipped when closed
+        new go.Shape('Rectangle', {
+          name: 'SHADOWSHAPE',
+          desiredSize: new go.Size(40, 5),
+          fill: 'white',
+          stroke: null,
+          alignment: go.Spot.Center,
+          shadowVisible: true,
+          visible: false,
+          shadowBlur: 15,
+          shadowOffset: new go.Point(0, 0),
+          shadowColor: 'blue'
+        }),
         new go.Panel('Horizontal', {
           // this prevents the ports from moving when the shape rotates
           minSize: new go.Size(42, 60)
@@ -293,7 +359,7 @@
                     new go.Shape({width: 1, height: 1}),
                     new go.Shape(shapeStyle())
                       .set({
-                        strokeWidth: 0,
+                        strokeWidth: 1,
                         fill: green,
                         width: 40,
                         height: 4,
@@ -312,8 +378,6 @@
         // this rectangle is the clickable area
         new go.Shape('Rectangle', {
           fill: 'transparent',
-          // fill: 'skyblue',
-          // opacity: 0.6,
           strokeWidth: 0,
           width: 40,
           height: 30,
@@ -328,8 +392,10 @@
             const shp = obj.findObject('NODESHAPE');
             const isOn = !obj.data.isOn;
             myDiagram.model.setDataProperty(obj.data, 'isOn', isOn);
+            obj.findObject('SHADOWSHAPE').visible = false;
 
             e.diagram.commitTransaction('Toggle Switch');
+
             if (!obj.data.isOn)
               updateStates();
           }
@@ -337,26 +403,32 @@
         // ports
         new go.Shape(portStyle(false)) // the only port
           .set({
+            figure: 'Circle',
             portId: 'out',
-            desiredSize: new go.Size(5, 5),
-            alignment: new go.Spot(1, 0.5)
+            desiredSize: new go.Size(7, 7),
+            alignment: new go.Spot(1, 0.5),
+            fromSpot: new go.Spot(1, 0.5, -5, 0),
+            toSpot: new go.Spot(1, 0.5, -5, 0)
           }),
         new go.Shape(portStyle(true)) // the only port
           .set({
+            figure: 'Circle',
             portId: 'in',
-            desiredSize: new go.Size(5, 5),
-            alignment: new go.Spot(0, 0.5)
+            desiredSize: new go.Size(7, 7),
+            alignment: new go.Spot(0, 0.5),
+            fromSpot: new go.Spot(0, 0.5, 5, 0),
+            toSpot: new go.Spot(0, 0.5, 5, 0)
           })
       );
 
     // brush for the "light" in the LED
     const outBrush = new go.Brush('Radial', {
       0.0: 'rgba(255, 255, 255, 0.2)',
-      0.5: 'rgba(0,255,0,0.8)',
-      0.75: 'rgba(0,255,0,0.3)',
-      0.85: 'rgba(0,255,0,0.1)',
-      0.95: 'rgba(0,255,0,0.05)',
-      1: 'rgba(0,255,0,0)',
+      0.5: 'rgba(250,215,87,0.8)',
+      0.75: 'rgba(250,215,87,0.5)',
+      0.85: 'rgba(250,215,87,0.2)',
+      0.95: 'rgba(250,215,87,0.1)',
+      1: 'rgba(250,215,87,0)',
       start: new go.Spot(0.5, 0.8)
     })
 
@@ -402,16 +474,17 @@
         })
       );
 
+    // Nodes space their ports based on the cell size so that links can line up horizontally
     const andTemplate = applyNodeBindings(new go.Node('Spot', nodeStyle()))
       .add(
         new go.Shape('AndGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0, 0.3)
+          alignment: new go.Spot(0, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0, 0.7)
+          alignment: new go.Spot(0, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -424,11 +497,11 @@
         new go.Shape('OrGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0.16, 0.3)
+          alignment: new go.Spot(0.16, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0.16, 0.7)
+          alignment: new go.Spot(0.16, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -441,11 +514,11 @@
         new go.Shape('XorGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0.26, 0.3)
+          alignment: new go.Spot(0.26, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0.26, 0.7)
+          alignment: new go.Spot(0.26, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -458,11 +531,11 @@
         new go.Shape('NorGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0.16, 0.3)
+          alignment: new go.Spot(0.16, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0.16, 0.7)
+          alignment: new go.Spot(0.16, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -476,11 +549,11 @@
         new go.Shape('XnorGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0.26, 0.3)
+          alignment: new go.Spot(0.26, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0.26, 0.7)
+          alignment: new go.Spot(0.26, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -494,11 +567,11 @@
         new go.Shape('NandGate', shapeStyle()),
         new go.Shape(portStyle(true)).set({
           portId: 'in1',
-          alignment: new go.Spot(0, 0.3)
+          alignment: new go.Spot(0, 0.5, 0, -CELLSIZE)
         }),
         new go.Shape(portStyle(true)).set({
           portId: 'in2',
-          alignment: new go.Spot(0, 0.7)
+          alignment: new go.Spot(0, 0.5, 0, CELLSIZE)
         }),
         new go.Shape(portStyle(false)).set({
           portId: 'out',
@@ -708,7 +781,7 @@
         background-color: #f3f4f6;
         border: solid 1px black;
       "></div>
-    <div id="myDiagramDiv" style="background-color: #f3f4f6; flex-grow: 1; height: 500px; border: solid 1px black"></div>
+    <div id="myDiagramDiv" style="background-color: #f3f4f6; flex-grow: 1; height: 600px; border: solid 1px black"></div>
   </div>
   <p>
     Try clicking on the switch or the battery to toggle them.
@@ -744,93 +817,93 @@
       Diagram Model saved in JSON format:
     </div>
     <textarea id="mySavedModel" style="width: 100%; height: 200px">
-      { "class": "GraphLinksModel",
-      "linkFromPortIdProperty": "fromPort",
-      "linkToPortIdProperty": "toPort",
-      "nodeDataArray": [
-    {"category":"xor","key":-1,"loc":"-230 -860"},
-    {"category":"xor","key":-2,"loc":"-120 -880"},
-    {"category":"and","key":-3,"loc":"-150 -810"},
-    {"category":"and","key":-4,"loc":"-150 -740"},
-    {"category":"switch","isOn":true,"key":-5,"loc":"-340 -890"},
-    {"category":"switch","isOn":true,"key":-6,"loc":"-320 -710"},
-    {"category":"or","key":-7,"loc":"-80 -780"},
-    {"category":"or","key":-8,"loc":"80 -550"},
-    {"category":"switch","isOn":true,"key":-9,"loc":"-210 -620"},
-    {"category":"switch","isOn":true,"key":-10,"loc":"-190 -680"},
-    {"category":"and","key":-11,"loc":"-10 -510"},
-    {"category":"and","key":-12,"loc":"-10 -580"},
-    {"category":"xor","key":-13,"loc":"-10 -650"},
-    {"category":"xor","key":-14,"loc":"-90 -630"},
-    {"category":"or","key":-15,"loc":"220 -370"},
-    {"category":"switch","isOn":true,"key":-16,"loc":"-130 -390"},
-    {"category":"switch","isOn":true,"key":-17,"loc":"-100 -440"},
-    {"category":"and","key":-18,"loc":"30 -370"},
-    {"category":"and","key":-19,"loc":"150 -420"},
-    {"category":"xor","key":-20,"loc":"150 -500"},
-    {"category":"xor","key":-21,"loc":"50 -450"},
-    {"category":"output","key":-22,"loc":"40 -950","isOn":true},
-    {"category":"output","key":-23,"loc":"90 -950","isOn":true},
-    {"category":"output","key":-24,"loc":"140 -950","isOn":false},
-    {"category":"output","key":-25,"loc":"-10 -950","isOn":true},
-    {"category":"switch","isOn":true,"key":-26,"loc":"-430 -690"},
-    {"category":"switch","isOn":true,"key":-27,"loc":"-430 -660"},
-    {"category":"switch","isOn":true,"key":-28,"loc":"-430 -630"},
-    {"category":"switch","isOn":true,"key":-29,"loc":"-430 -510"},
-    {"category":"switch","isOn":true,"key":-30,"loc":"-430 -480"},
-    {"category":"switch","isOn":true,"key":-31,"loc":"-430 -450"},
-    {"category":"input","isOn":true,"key":-32,"loc":"-520 -640"},
-    {"category":"input","isOn":true,"key":-33,"loc":"-520 -460"},
-    {"category":"input","isOn":false,"key":-34,"loc":"-480 -910"}
-    ],
-      "linkDataArray": [
-    {"from":-5,"to":-1,"fromPort":"out","toPort":"in1"},
-    {"from":-6,"to":-1,"fromPort":"out","toPort":"in2"},
-    {"from":-1,"to":-2,"fromPort":"out","toPort":"in2"},
-    {"from":-1,"to":-3,"fromPort":"out","toPort":"in1"},
-    {"from":-6,"to":-4,"fromPort":"out","toPort":"in2"},
-    {"from":-3,"to":-7,"fromPort":"out","toPort":"in1"},
-    {"from":-4,"to":-7,"fromPort":"out","toPort":"in2"},
-    {"from":-9,"to":-11,"fromPort":"out","toPort":"in2"},
-    {"from":-11,"to":-8,"fromPort":"out","toPort":"in2"},
-    {"from":-12,"to":-8,"fromPort":"out","toPort":"in1"},
-    {"from":-10,"to":-14,"fromPort":"out","toPort":"in1"},
-    {"from":-9,"to":-14,"fromPort":"out","toPort":"in2"},
-    {"from":-14,"to":-13,"fromPort":"out","toPort":"in1"},
-    {"from":-14,"to":-12,"fromPort":"out","toPort":"in1"},
-    {"from":-7,"to":-13,"fromPort":"out","toPort":"in2"},
-    {"from":-7,"to":-12,"fromPort":"out","toPort":"in2"},
-    {"from":-16,"to":-18,"fromPort":"out","toPort":"in2"},
-    {"from":-18,"to":-15,"fromPort":"out","toPort":"in2"},
-    {"from":-19,"to":-15,"fromPort":"out","toPort":"in1"},
-    {"from":-17,"to":-21,"fromPort":"out","toPort":"in1"},
-    {"from":-16,"to":-21,"fromPort":"out","toPort":"in2"},
-    {"from":-21,"to":-20,"fromPort":"out","toPort":"in1"},
-    {"from":-21,"to":-19,"fromPort":"out","toPort":"in1"},
-    {"from":-8,"to":-20,"fromPort":"out","toPort":"in2"},
-    {"from":-8,"to":-19,"fromPort":"out","toPort":"in2"},
-    {"from":-2,"to":-24,"fromPort":"out","toPort":""},
-    {"from":-13,"to":-23,"fromPort":"out","toPort":""},
-    {"from":-20,"to":-22,"fromPort":"out","toPort":""},
-    {"from":-15,"to":-25,"fromPort":"out","toPort":""},
-    {"from":-32,"to":-26,"fromPort":"","toPort":"in"},
-    {"from":-32,"to":-27,"fromPort":"","toPort":"in"},
-    {"from":-32,"to":-28,"fromPort":"","toPort":"in"},
-    {"from":-33,"to":-29,"fromPort":"","toPort":"in"},
-    {"from":-33,"to":-30,"fromPort":"","toPort":"in"},
-    {"from":-33,"to":-31,"fromPort":"","toPort":"in"},
-    {"from":-26,"to":-5,"fromPort":"out","toPort":"in"},
-    {"from":-29,"to":-6,"fromPort":"out","toPort":"in"},
-    {"from":-34,"to":-3,"fromPort":"","toPort":"in2"},
-    {"from":-27,"to":-10,"fromPort":"out","toPort":"in"},
-    {"from":-30,"to":-9,"fromPort":"out","toPort":"in"},
-    {"from":-28,"to":-17,"fromPort":"out","toPort":"in"},
-    {"from":-31,"to":-16,"fromPort":"out","toPort":"in"},
-    {"from":-10,"to":-11,"fromPort":"out","toPort":"in1"},
-    {"from":-17,"to":-18,"fromPort":"out","toPort":"in1"},
-    {"from":-5,"to":-4,"fromPort":"out","toPort":"in1"},
-    {"from":-34,"to":-2,"fromPort":"","toPort":"in1"}
-    ]}
+{ "class": "GraphLinksModel",
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+{"category":"xor","key":-1,"loc":"-210 -870"},
+{"category":"xor","key":-2,"loc":"-120 -900"},
+{"category":"and","key":-3,"loc":"-150 -810"},
+{"category":"and","key":-4,"loc":"-150 -730"},
+{"category":"switch","isOn":true,"key":-5,"loc":"-330 -880"},
+{"category":"switch","isOn":true,"key":-6,"loc":"-330 -720"},
+{"category":"or","key":-7,"loc":"-80 -770"},
+{"category":"or","key":-8,"loc":"60 -550"},
+{"category":"switch","isOn":true,"key":-9,"loc":"-230 -500"},
+{"category":"switch","isOn":true,"key":-10,"loc":"-230 -690"},
+{"category":"and","key":-11,"loc":"-10 -510"},
+{"category":"and","key":-12,"loc":"-10 -590"},
+{"category":"xor","key":-13,"loc":"60 -640"},
+{"category":"xor","key":-14,"loc":"-150 -650"},
+{"category":"or","key":-15,"loc":"230 -400"},
+{"category":"switch","isOn":true,"key":-16,"loc":"-230 -400"},
+{"category":"switch","isOn":true,"key":-17,"loc":"-230 -450"},
+{"category":"and","key":-18,"loc":"-10 -390"},
+{"category":"and","key":-19,"loc":"160 -430"},
+{"category":"xor","key":-20,"loc":"160 -510"},
+{"category":"xor","key":-21,"loc":"60 -440"},
+{"category":"output","key":-22,"loc":"40 -960","isOn":true},
+{"category":"output","key":-23,"loc":"90 -960","isOn":true},
+{"category":"output","key":-24,"loc":"140 -960","isOn":false},
+{"category":"output","key":-25,"loc":"-10 -960","isOn":true},
+{"category":"switch","isOn":true,"key":-26,"loc":"-430 -680"},
+{"category":"switch","isOn":true,"key":-27,"loc":"-430 -650"},
+{"category":"switch","isOn":true,"key":-28,"loc":"-430 -620"},
+{"category":"switch","isOn":true,"key":-29,"loc":"-430 -530"},
+{"category":"switch","isOn":true,"key":-30,"loc":"-430 -500"},
+{"category":"switch","isOn":true,"key":-31,"loc":"-430 -470"},
+{"category":"input","isOn":true,"key":-32,"loc":"-520 -650"},
+{"category":"input","isOn":true,"key":-33,"loc":"-520 -500"},
+{"category":"input","isOn":false,"key":-34,"loc":"-520 -800"}
+],
+  "linkDataArray": [
+{"from":-5,"to":-1,"fromPort":"out","toPort":"in1","points":[-307.5,-880,-297.5,-880,-280.04,-880,-280.04,-880,-234.58,-880,-224.58,-880]},
+{"from":-6,"to":-1,"fromPort":"out","toPort":"in2","points":[-307.5,-720,-297.5,-720,-275.8650862905213,-720,-275.8650862905213,-860,-234.58,-860,-224.58,-860]},
+{"from":-1,"to":-2,"fromPort":"out","toPort":"in2","points":[-189.5,-870,-179.5,-870,-177.2874653558896,-870,-177.2874653558896,-890,-144.58,-890,-134.58,-890]},
+{"from":-1,"to":-3,"fromPort":"out","toPort":"in1","points":[-189.5,-870,-179.5,-870,-177.58820721908566,-870,-177.58820721908566,-820,-183,-820,-173,-820]},
+{"from":-6,"to":-4,"fromPort":"out","toPort":"in2","points":[-307.5,-720,-297.5,-720,-234.25,-720,-234.25,-720,-183,-720,-173,-720]},
+{"from":-3,"to":-7,"fromPort":"out","toPort":"in1","points":[-127,-810,-117,-810,-112.89,-810,-112.89,-780,-108.78,-780,-98.78,-780]},
+{"from":-4,"to":-7,"fromPort":"out","toPort":"in2","points":[-127,-730,-117,-730,-112.89,-730,-112.89,-760,-108.78,-760,-98.78,-760]},
+{"from":-9,"to":-11,"fromPort":"out","toPort":"in2","points":[-207.5,-500,-197.5,-500,-179.7643563068775,-500,-179.7643563068775,-500,-43,-500,-33,-500]},
+{"from":-11,"to":-8,"fromPort":"out","toPort":"in2","points":[13,-510,23,-510,28.39911648605326,-510,28.39911648605326,-540,31.22,-540,41.22,-540]},
+{"from":-12,"to":-8,"fromPort":"out","toPort":"in1","points":[13,-590,23,-590,28.462564136516566,-590,28.462564136516566,-560,31.22,-560,41.22,-560]},
+{"from":-10,"to":-14,"fromPort":"out","toPort":"in1","points":[-207.5,-690,-197.5,-690,-179.91225278010745,-690,-179.91225278010745,-660,-174.58,-660,-164.58,-660]},
+{"from":-9,"to":-14,"fromPort":"out","toPort":"in2","points":[-207.5,-500,-197.5,-500,-179.6604290554186,-500,-179.6604290554186,-640,-174.58,-640,-164.58,-640]},
+{"from":-14,"to":-13,"fromPort":"out","toPort":"in1","points":[-129.5,-650,-119.5,-650,-47.04,-650,-47.04,-650,35.42,-650,45.42,-650]},
+{"from":-14,"to":-12,"fromPort":"out","toPort":"in1","points":[-129.5,-650,-119.5,-650,-42.41809671174902,-650,-42.41809671174902,-600,-43,-600,-33,-600]},
+{"from":-7,"to":-13,"fromPort":"out","toPort":"in2","points":[-59.5,-770,-49.5,-770,-25.941227682576745,-770,-25.941227682576745,-630,35.42,-630,45.42,-630]},
+{"from":-7,"to":-12,"fromPort":"out","toPort":"in2","points":[-59.5,-770,-49.5,-770,-52.404614822261685,-770,-52.404614822261685,-580,-43,-580,-33,-580]},
+{"from":-16,"to":-18,"fromPort":"out","toPort":"in2","points":[-207.5,-400,-197.5,-400,-100.16135474889069,-400,-100.16135474889069,-380,-43,-380,-33,-380]},
+{"from":-18,"to":-15,"fromPort":"out","toPort":"in2","points":[13,-390,23,-390,127.11,-390,127.11,-390,201.22,-390,211.22,-390]},
+{"from":-19,"to":-15,"fromPort":"out","toPort":"in1","points":[183,-430,193,-430,191.39010469700875,-430,191.39010469700875,-410,201.22,-410,211.22,-410]},
+{"from":-17,"to":-21,"fromPort":"out","toPort":"in1","points":[-207.5,-450,-197.5,-450,-20.04,-450,-20.04,-450,35.42,-450,45.42,-450]},
+{"from":-16,"to":-21,"fromPort":"out","toPort":"in2","points":[-207.5,-400,-197.5,-400,-100.09531642451535,-400,-100.09531642451535,-430,35.42,-430,45.42,-430]},
+{"from":-21,"to":-20,"fromPort":"out","toPort":"in1","points":[80.5,-440,90.5,-440,99.61149109468168,-440,99.61149109468168,-520,135.42,-520,145.42,-520]},
+{"from":-21,"to":-19,"fromPort":"out","toPort":"in1","points":[80.5,-440,90.5,-440,98.75,-440,98.75,-440,127,-440,137,-440]},
+{"from":-8,"to":-20,"fromPort":"out","toPort":"in2","points":[80.5,-550,90.5,-550,130.01322353171253,-550,130.01322353171253,-500,135.42,-500,145.42,-500]},
+{"from":-8,"to":-19,"fromPort":"out","toPort":"in2","points":[80.5,-550,90.5,-550,117.28941911474058,-550,117.28941911474058,-420,127,-420,137,-420]},
+{"from":-2,"to":-24,"fromPort":"out","toPort":"","points":[-99.5,-900,-89.5,-900,140,-900,140,-925.8000000000001,140,-925.8000000000001,140,-935.8000000000001]},
+{"from":-13,"to":-23,"fromPort":"out","toPort":"","points":[80.5,-640,90.5,-640,90,-640,90,-925.8000000000001,90,-925.8000000000001,90,-935.8000000000001]},
+{"from":-20,"to":-22,"fromPort":"out","toPort":"","points":[180.5,-510,190.5,-510,190.5,-731.9000000000001,40,-731.9000000000001,40,-925.8000000000001,40,-935.8000000000001]},
+{"from":-15,"to":-25,"fromPort":"out","toPort":"","points":[250.5,-400,260.5,-400,260.5,-666.9000000000001,-10,-666.9000000000001,-10,-925.8000000000001,-10,-935.8000000000001]},
+{"from":-32,"to":-26,"fromPort":"","toPort":"in","points":[-500.3125,-650,-490.3125,-650,-477.40625,-650,-477.40625,-680,-462.5,-680,-452.5,-680]},
+{"from":-32,"to":-27,"fromPort":"","toPort":"in","points":[-500.3125,-650,-490.3125,-650,-477.40625,-650,-477.40625,-650,-462.5,-650,-452.5,-650]},
+{"from":-32,"to":-28,"fromPort":"","toPort":"in","points":[-500.3125,-650,-490.3125,-650,-477.40625,-650,-477.40625,-620,-462.5,-620,-452.5,-620]},
+{"from":-33,"to":-29,"fromPort":"","toPort":"in","points":[-500.3125,-500,-490.3125,-500,-477.40625,-500,-477.40625,-530,-462.5,-530,-452.5,-530]},
+{"from":-33,"to":-30,"fromPort":"","toPort":"in","points":[-500.3125,-500,-490.3125,-500,-477.40625,-500,-477.40625,-500,-462.5,-500,-452.5,-500]},
+{"from":-33,"to":-31,"fromPort":"","toPort":"in","points":[-500.3125,-500,-490.3125,-500,-477.40625,-500,-477.40625,-470,-462.5,-470,-452.5,-470]},
+{"from":-26,"to":-5,"fromPort":"out","toPort":"in","points":[-407.5,-680,-397.5,-680,-385,-680,-385,-880,-362.5,-880,-352.5,-880]},
+{"from":-29,"to":-6,"fromPort":"out","toPort":"in","points":[-407.5,-530,-397.5,-530,-375,-530,-375,-720,-362.5,-720,-352.5,-720]},
+{"from":-34,"to":-3,"fromPort":"","toPort":"in2","points":[-500.3125,-800,-490.3125,-800,-316.65625,-800,-316.65625,-800,-183,-800,-173,-800]},
+{"from":-27,"to":-10,"fromPort":"out","toPort":"in","points":[-407.5,-650,-397.5,-650,-300.1347886532465,-650,-300.1347886532465,-690,-262.5,-690,-252.5,-690]},
+{"from":-30,"to":-9,"fromPort":"out","toPort":"in","points":[-407.5,-500,-397.5,-500,-326.35678231764655,-500,-326.35678231764655,-500,-262.5,-500,-252.5,-500]},
+{"from":-28,"to":-17,"fromPort":"out","toPort":"in","points":[-407.5,-620,-397.5,-620,-299.7719252242147,-620,-299.7719252242147,-450,-262.5,-450,-252.5,-450]},
+{"from":-31,"to":-16,"fromPort":"out","toPort":"in","points":[-407.5,-470,-397.5,-470,-324.6448525201331,-470,-324.6448525201331,-400,-262.5,-400,-252.5,-400]},
+{"from":-10,"to":-11,"fromPort":"out","toPort":"in1","points":[-207.5,-690,-197.5,-690,-85.75108112090732,-690,-85.75108112090732,-520,-43,-520,-33,-520]},
+{"from":-17,"to":-18,"fromPort":"out","toPort":"in1","points":[-207.5,-450,-197.5,-450,-60.6494063519714,-450,-60.6494063519714,-400,-43,-400,-33,-400]},
+{"from":-5,"to":-4,"fromPort":"out","toPort":"in1","points":[-307.5,-880,-297.5,-880,-250.5495083496439,-880,-250.5495083496439,-740,-183,-740,-173,-740]},
+{"from":-34,"to":-2,"fromPort":"","toPort":"in1","points":[-500.3125,-800,-490.3125,-800,-405.2145817859016,-800,-405.2145817859016,-910,-144.58,-910,-134.58,-910]}
+]}
     </textarea>
   </div>
 </div>
@@ -856,7 +929,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

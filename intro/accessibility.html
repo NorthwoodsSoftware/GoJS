@@ -1,0 +1,1236 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Accessibility: Keyboard Control of GoJS Diagrams and Screen Readers" />
+<meta property="og:title" content="Accessibility: Keyboard Control of GoJS Diagrams and Screen Readers" />
+<meta name="twitter:title" content="Accessibility: Keyboard Control of GoJS Diagrams and Screen Readers" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/intro/accessibility.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/accessibility.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Accessibility: Keyboard Control of GoJS Diagrams and Screen Readers | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
+  </head>
+  <script>
+    window.diagrams = [];
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
+    
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="typings.html">Typings</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="tooltips.html">ToolTips</a>
+  <a href="contextMenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGContext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="testing.html">Testing</a>
+  <a href="performance.html">Performance</a>
+  <a href="platforms.html">Platforms</a>
+  <a href="deployment.html">Deployment</a>
+
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
+<h1>Accessibility</h1>
+<p>
+  If you haven't already, please read about ARIA and WCAG accessibility guidelines, as introduced at
+  <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Information_for_Web_authors" target="_blank">Accessibility Information (MDN)</a>.
+</p>
+<p>
+  By default each GoJS Diagram provides the ability for users who cannot or do not want to use a mouse
+  but who can use a keyboard to use most tools that diagrams provide for manipulation.
+  The focus navigation and virtual pointer capabilities must be enabled in each diagram,
+  either programmatically or interactively.
+</p>
+<p>
+  By default each GoJS Diagram provides generic support for screen readers when using focus navigation.
+  However, because the GoJS library cannot know what is important to say and when,
+  it is important for each diagram to customize exactly what is said for each state that the diagram might be in.
+</p>
+
+<h2>Focus Navigation and Virtual Pointer</h2>
+<p>
+  With version 3.1 the <a>CommandHandler</a> supports a "keyboard control" mode in which
+  the user can use the keyboard to interact with a diagram without using the mouse.
+  Nearly any kind of diagram can be controlled this way, except for commands or tools that
+  are very time-dependent or that require specific pointing precision such as freehand drawing
+  or cursive writing.
+</p>
+<p>
+  This keyboard control mechanism supports a way to use the keyboard instead of the mouse
+  to focus on a node or a link or on a button or editable TextBlock or port within a node or a link,
+  and to act on it or to change focus to a nearby or related node or link or button or port.
+  This kind of GoJS focus depends on but is in addition to the regular HTML DOM focus mechanism,
+  because <a>GraphObject</a>s are not HTML elements and cannot by themselves receive DOM keyboard events.
+</p>
+<p>
+  This mechanism only works as long as the diagram has HTML keyboard focus.
+  If another HTML element gains HTML focus, including when the user <code>Tab</code>s out of the diagram,
+  the commands described in this page no longer apply.
+</p>
+<p>
+  The GoJS focus navigation mechanism is independent of the diagram's selection mechanism,
+  although it does make it easy to select or deselect a focused node or link.
+  Focus is shown using a single <a>Adornment</a> that is the <a>CommandHandler.focusBox</a>.
+  It is added to the <a>GraphObject</a> that is the <a>CommandHandler.focus</a>, the GraphObject that has GoJS focus.
+</p>
+<p>
+  The keyboard control mechanism also supports a virtual pointer to allow keyboard events to produce
+  mouse <a>InputEvent</a>s for invoking and controlling tools.
+  The virtual pointer is shown as a single <a>Part</a>, the <a>CommandHandler.virtualPointerBox</a>
+  in the "Tool" <a>Layer</a>, when a <code>Shift</code> key is held down.
+  <code>Shift</code>-arrow or numpad keys move it around, and other <code>Shift</code> modified keys
+  perform actions to generate mouse <a>InputEvent</a>s or modify future generated mouse <a>InputEvent</a>s.
+</p>
+<p>
+  Enable the GoJS keyboard control functionality in any Diagram by <code>Ctrl-Alt-Enter</code>.
+  That command actually toggles whether or not the focus navigation and virtual pointer system are enabled.
+  When <a>CommandHandler.isFocusEnabled</a> and <a>CommandHandler.isVirtualPointerEnabled</a> are false (the default)
+  there is no difference in behavior from earlier version libraries,
+  except for the addition of this <code>Ctrl-Alt-Enter</code> command to toggle those two properties on and off.
+</p>
+
+<h3 id="KeyboardCommandTable">Keyboard Command Table</h3>
+<p>
+  For all of these commands, you can freely interchange <code>Meta</code> (the Command key on macOS) with <code>Ctrl</code>.
+</p>
+<p>
+  Activating a GraphObject (including a Part) means calling its <b>click</b> event handler,
+  or editing a TextBlock if it is <a>TextBlock.editable</a>, or showing its <b>toolTip</b>.
+  Use the <code>ContextMenu</code> key to show a <a>GraphObject.contextMenu</a>.
+</p>
+<table class="keytable">
+  <tr>
+    <th>Keys</th> <th>Focus and Virtual Pointer Effect</th>
+  </tr>
+  <tr>
+    <td><code>Ctrl-Alt-Enter</code> or <code>Ctrl-Alt-NumpadEnter</code></td>
+    <td>toggle keyboard control mode</td>
+  </tr>
+  <tr>
+    <td><code>ArrowUp</code> and <code>ArrowDown</code> and <code>ArrowLeft</code> and <code>ArrowRight</code></td>
+    <td>
+      change focus to nearby object within scope
+      (top-level Parts, Group members, or GraphObjects within a Part)
+    </td>
+  </tr>
+  <tr>
+    <td><code>Ctrl-ArrowUp</code> and <code>Ctrl-ArrowDown</code> and <code>Ctrl-ArrowLeft</code> and <code>Ctrl-ArrowRight</code></td>
+    <td>change focus from Node to a connected Link or to the next or the previous connected Link or Node</td>
+  </tr>
+  <tr>
+    <td><code>Enter</code> or <code>NumpadEnter</code></td>
+    <td>focus enters Group subgraph or Part's GraphObjects or activates focused GraphObject within a Part</td>
+  </tr>
+  <tr>
+    <td><code>Escape</code></td>
+    <td>focus leaves for containing Part or containing Group</td>
+  </tr>
+  <tr>
+    <td><code>Ctrl-Enter</code> or <code>Ctrl-NumpadEnter</code></td>
+    <td>activates focused GraphObject, even if the focus is a Part</td>
+  </tr>
+  <tr>
+    <td><code>Space</code></td>
+    <td>select focused Part or show tooltip for focused GraphObject</td>
+  </tr>
+  <tr>
+    <td><code>Ctrl-Space</code></td>
+    <td>toggle focused Part selection or show tooltip for focused GraphObject</td>
+  </tr>
+  <tr>
+    <td><code>Shift-Space</code></td>
+    <td>add focused Part to selection or show tooltip for focused GraphObject</td>
+  </tr>
+  <tr>
+    <td><code>ShiftLeft</code> or <code>ShiftRight</code></td>
+    <td>show virtual pointer when a <code>Shift</code> key is down and not when the key is up</td>
+  </tr>
+  <tr>
+    <td><code>Shift-ArrowUp</code> and <code>Shift-ArrowDown</code> and <code>Shift-ArrowLeft</code> and <code>Shift-ArrowRight</code></td>
+    <td>move virtual pointer 10 units in given direction</td>
+  </tr>
+  <tr>
+    <td><code>Ctrl-Shift-ArrowUp</code> and <code>Ctrl-Shift-ArrowDown</code> and <code>Ctrl-Shift-ArrowLeft</code> and <code>Ctrl-Shift-ArrowRight</code></td>
+    <td>move virtual pointer 1 unit in given direction</td>
+  </tr>
+  <tr>
+    <td><code>Shift-Numpad1</code> through <code>Shift-Numpad9</code>, except for <code>Shift-Numpad5</code></td>
+    <td>move virtual pointer 10 units in given direction; 2, 4, 6, 8 down, left, right, up; 1, 3, 7, and 9 on the diagonal</td>
+  </tr>
+  <tr>
+    <td><code>Ctrl-Shift-Numpad1</code> through <code>Ctrl-Shift-Numpad9</code>, except for <code>Ctrl-Shift-Numpad5</code></td>
+    <td>move virtual pointer 1 unit in given direction; 2, 4, 6, 8 down, left, right, up; 1, 3, 7, and 9 on the diagonal</td>
+  </tr>
+  <tr>
+    <td><code>Shift-Enter</code> or <code>Shift-NumpadEnter</code> or <code>Shift-Numpad5</code></td>
+    <td>mouse button down or up</td>
+  </tr>
+  <tr>
+    <td><code>Shift-A</code></td>
+    <td>toggle alt modifier for next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-C</code></td>
+    <td>toggle control modifier for next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-D</code> or <code>Shift-NumpadDecimal</code></td>
+    <td>toggles the click count between 1 and 2 for the next mouse button up event, which auto-resets to 1</td>
+  </tr>
+  <tr>
+    <td><code>Shift-M</code></td>
+    <td>toggle meta modifier for next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-S</code></td>
+    <td>toggle shift modifier for next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-1</code></td>
+    <td>use left button modifier on next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-2</code></td>
+    <td>use middle button modifier on next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-3</code></td>
+    <td>use right button modifier on next mouse button event</td>
+  </tr>
+  <tr>
+    <td><code>Shift-Numpad0</code></td>
+    <td>toggles between the left and right button modifiers for the next mouse button event</td>
+  </tr>
+</table>
+<p>
+  All other commands operate in the standard manner, as listed in
+  <a href="./commands.html#KeyboardCommandBindings">Standard Keyboard Commands</a>.
+  They mostly operate on the current <a>Diagram.selection</a>;
+  none of them operate on the current <a>CommandHandler.focus</a>.
+</p>
+
+<h3>Focus Navigation</h3>
+<p>
+  The focus navigation mode handles arrow keys and the <code>Enter</code>, <code>Escape</code>, <code>Space</code>,
+  and <code>ContextMenu</code> keys to allow the user to change
+  which GraphObject has focus and to perform operations on what has focus.  The focus is completely independent of
+  the <a>Diagram.selection</a> and <a>Diagram.highlighteds</a> collections and mechanisms.
+  All other keyboard commands should operate normally.
+  For example, the <code>Delete</code> command will always operate on the selection, not on the focus.
+</p>
+<p>
+  As focus changes, either a built-in element or a programmer supplied one can provide a screen reader
+  some descriptive text to read aloud.
+  Read more about this at <a href="#CustomizingforScreenReaders">Customizing for Screen Readers</a>.
+</p>
+
+<h4>A Simulation</h4>
+<p>
+  Here is a simulation, using the <a>Robot</a> extension, of using Arrow keys and Enter, Space, and Escape
+  as if the user is controlling the focus in a diagram.
+  As the Robot simulates keyboard commands, they are recorded in a list that you can see.
+</p>
+<p>
+  The first keyboard command is <code>Ctrl-Alt-Enter</code> in order to enable <a>CommandHandler.isFocusEnabled</a>.
+  Focus is given to a root Node, in this case the "Alpha" Node.
+</p>
+<p>
+  <code>Ctrl</code>-arrow keys follow connected Links from a focused Node, so
+  the first <code>Ctrl-ArrowDown</code> key changes focus from the "Alpha" Node to the Link going to the "Beta" Node.
+  A <code>Ctrl-ArrowRight</code> would change focus to the second Link coming out of the "Alpha" Node.
+  The next command, <code>Ctrl-ArrowDown</code>, changes focus to that "Beta" Node.
+</p>
+<p>
+  Then the <code>Enter</code> key changes focus to be on editable TextBlocks, buttons, and ports of the Node.
+  Now the arrow keys focus on the next GraphObject within the Node in the direction determined by the arrow key.
+  The <code>ArrowRight</code> key focuses on the "TreeExpanderButton", which is then clicked twice with the <code>Enter</code> key.
+</p>
+<p>
+  The <code>Escape</code> key leaves the context inside the Node back to the Node itself.
+  Then the <code>ArrowRight</code> key chooses the first Part to the right of the current focus, which is the "Gamma" Node.
+  It is selected with the <code>Space</code> key, and deleted by the <code>Delete</code> key.
+  (Remember that <a>CommandHandler</a> commands operate on the selection, not on the focus.)
+</p>
+<p>
+  Then it undoes the deletion, and programmatically focuses on the "Epsilon" Node.
+  A couple arrow key commands changes focus to the "Delta" Node and then the "Beta" Node.
+  The <code>ContextMenu</code> key brings up the context menu.
+</p>
+<p>
+  There are two "ContextMenuButtons", with focus on the first one, which is invoked by the <code>Enter</code> key.
+  The context menu command puts out a string to the Robot Log.
+  Focus is automatically returned to the Node, and finally an <code>ArrowUp</code> key changes focus back to the "Alpha" node.
+</p>
+<script src="../extensions/Robot.js"></script>
+<pre class="lang-js" id="focus" style="display: none"><code>
+  diagram.layout = new go.LayeredDigraphLayout({ direction: 90 });
+
+  diagram.nodeTemplate =
+    new go.Node("Spot", {
+        contextMenu:
+          go.GraphObject.build("ContextMenu")
+            .add(
+              go.GraphObject.build("ContextMenuButton", {
+                  click: (e, button) => log1("'Hello World!'")
+                })
+                .add(new go.TextBlock("Log 'Hello'")),
+              go.GraphObject.build("ContextMenuButton", {
+                  click: (e, button) => log1(`'Bye ${button.part.adornedPart.data.text}'`)
+                })
+                .add(new go.TextBlock("Log 'Goodbye'"))
+            )
+      })
+      .add(
+        new go.Panel("Auto", { portId: "" })
+          .add(
+            new go.Shape({ fill: "lightgray" }),
+            new go.TextBlock({ margin: 8, editable: true })
+              .bind("text")
+          ),
+        go.GraphObject.build("TreeExpanderButton", {
+          alignment: go.Spot.Right, alignmentFocus: go.Spot.Left
+        })
+      );
+
+  diagram.model =
+    new go.GraphLinksModel({
+        nodeDataArray: [
+          { key: 1, text: "Alpha" },
+          { key: 2, text: "Beta" },
+          { key: 3, text: "Gamma" },
+          { key: 4, text: "Delta" },
+          { key: 5, text: "Epsilon" },
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 2, to: 4 },
+          { from: 2, to: 5 },
+        ]
+      });
+
+  diagram.undoManager.isEnabled = true;
+
+  // implement a log of Robot actions
+  const myLog1 =
+    new go.Part("Auto", {
+        layerName: "ViewportBackground",
+        selectable: false, pickable: false,
+        alignment: new go.Spot(1, 0, -5, 5), alignmentFocus: go.Spot.TopRight,
+        minSize: new go.Size(110, 290)
+      })
+      .add(
+        new go.Shape({ fill: "white" }),
+        new go.Panel("Vertical", {
+            margin: 5,
+            alignment: go.Spot.TopLeft, stretch: go.Stretch.Horizontal
+          })
+          .add(
+            new go.TextBlock("Robot Log", { font: "bold 11pt sans-serif" }),
+            new go.Panel("Vertical", {
+                alignment: go.Spot.Left,
+                defaultAlignment: go.Spot.Left,
+                itemTemplate:
+                  new go.Panel()
+                    .add(
+                      new go.TextBlock()
+                        .bind("text", "")
+                    )
+              })
+              .bind("itemArray", "logs")
+          )
+      )
+  diagram.add(myLog1);
+  myLog1.data = { logs: [] };
+
+  function log1(str) {
+    diagram.model.commit(m => {
+      m.addArrayItem(myLog1.data.logs, str);
+    }, null);  // skipsUndoManager
+  }
+
+  // implement simulation of keyboard input using the Robot extension
+  const myRobot1 = new Robot(diagram);
+  let t = 0;
+
+  function doKey1(key, options) {
+    log1(`${options?.control ? "Ctrl-" : ""}${options?.alt ? "Alt-" : ""}${options?.shift ? "Shift-" : ""}${key}`);
+    myRobot1.keyDown(key, t++, options);
+  }
+
+  let myActions1 = [];
+  function queueActions1() {
+    myActions1 = [
+      () => doKey1('Enter', { control: true, alt: true }),  // turn on isFocusEnabled, focus on root Node
+      () => doKey1('ArrowDown', { control: true }),  // focus on link to Beta Node
+      () => doKey1('ArrowDown', { control: true }),  // focus on Beta Node
+      () => doKey1('Enter'),  // focus on Beta TextBlock
+      () => doKey1('ArrowRight'),  // focus on Beta Node's TreeExpanderButton
+      () => doKey1('Enter'),  // click on that button, collapsing subtree
+      () => doKey1('Enter'),  // click on that button again, expanding subtree
+      () => doKey1('Escape'),  // focus on Node again
+      () => doKey1('ArrowRight'),  // focus on Gamma Node
+      () => doKey1('Space'),  // select the Gamma Node
+      () => doKey1('Delete'),  // delete the selection
+      () => doKey1('z', { control: true }),  // undo
+      () => { diagram.commandHandler.focus = diagram.findNodeForKey(5) },  // focus on Epsilon
+      () => doKey1('ArrowLeft'),  // focus on Delta Node
+      () => doKey1('ArrowUp'),  // focus on Beta Node
+      () => doKey1('ContextMenu'),  // activate contextMenu
+      () => doKey1('Enter'),  // click on Log 'Hello' context menu button
+      () => doKey1('ArrowUp'),  // focus on Alpha Node
+      () => {
+        setTimeout(() => {  // reset and restart
+          diagram.commandHandler.isFocusEnabled = false;
+          diagram.commandHandler.isVirtualPointerEnabled = false;
+          diagram.model.commit(m => m.set(myLog1.data, "logs", []), null);
+          queueActions1();
+          execute1();
+        }, 4000);
+      }
+    ];
+  }
+
+  function execute1() {
+    const act = myActions1.shift();
+    if (act) {
+      act();
+      setTimeout(execute1, 1500);
+    }
+  }
+
+  queueActions1();
+  execute1();
+</code></pre>
+<script>
+  goCode('focus', 500, 300);
+</script>
+<p>
+  There are no Groups in this example, but if there had been, once a Group gets focus, the <code>Enter</code> key acts
+  just as it does on any Node -- it changes focus to a GraphObject in the Group that is a button or port or editable TextBlock.
+  Hitting <code>Escape</code>, if the Group has any member Parts, would change focus to one of those member Nodes.
+  Once a member Part has focus, the <code>Escape</code> key changes focus back up to the Group itself.
+</p>
+
+<h4>Try it</h4>
+<p>
+  You can try using focus navigation in any of our samples, or in your own app.
+  For example you can try it in the <a href="../samples/incrementalTree.html" target="_blank">Incremental Tree</a> sample.
+  Click in the diagram and type <code>Ctrl-Alt-Enter</code> to enable focus changing behavior.
+</p>
+<p>
+  When a Node (or a Link) has focus you need to type <code>Enter</code> to change focus to any buttons 
+  (clickable GraphObjects) or editable TextBlocks or ports or GraphObjects with context menus or tool tips
+  that are within the Node.
+  When there is more than one, use the arrow keys to get to the GraphObject that you want.
+  In the case of the Incremental Tree sample, the only eligible GraphObject within the Node is a "TreeExpanderButton".
+  When it has focus you can type <code>Enter</code> to click on the button,
+  expanding or collapsing its subtree.
+</p>
+<p>
+  When you are navigating amongst the GraphObjects of a Node or a Link, the arrow keys stay within the Part.
+  They only change focus to other eligible GraphObjects within that Part, if there are any.
+  Remember to type <code>Escape</code> to change focus back to the containing Node,
+  so that you can use the arrow keys to navigate to a different Node.
+</p>
+<p>
+  If you are navigating in a diagram with Groups, you need to <code>Enter</code> a Group in order to focus on
+  any of its member Parts.
+  The arrow keys are limited to navigating amongst the member Parts of that one Group.
+  You need to <code>Escape</code> to leave the subgraph and focus on the Group as a whole again,
+  so that you can navigate to other Nodes in the diagram.
+</p>
+
+<h3>Virtual Pointer</h3>
+<p>
+  When the user holds down a <code>Shift</code> key, it goes into virtual pointer mode, where the <a>virtualPointerBox</a> shows where the virtual pointer is,
+  and <code>Shift</code>-arrow keys move that <a>virtualPointerBox</a> around.  Moving the <a>virtualPointerBox</a> results in mouse-move <a>InputEvent</a>s.
+  Also holding down the <code>Ctrl</code> modifier when typing arrow keys offers finer positioning at one document unit per keystroke.
+  <code>Shift-Enter</code> toggles whether the virtual pointer is 'down' or 'up', also shown in the <a>virtualPointerBox</a> with a thick dark-cyan circle
+  indicating 'down', and results in mouse-down or mouse-up <a>InputEvent</a>s.
+</p>
+<p>
+  Basically, to drag a node, type <code>Shift-Enter</code> to do the mouse-down,
+  type <code>Shift</code>-arrow keys to move the virtual pointer around,
+  and finally type <code>Shift-Enter</code> again to do the mouse-up and stop the drag.
+  Note that <code>Shift</code> does not need to be held down the whole time during what would be a mouse-down/moves/up sequence.
+  This allows almost any mouse <a>Tool</a> to run, except ones that involve timing which can be hard to control.
+  Changing the current <a>focus</a> object automatically cancels any <a>Tool</a> running due to the virtual pointer mechanism,
+  which helps with the times that the user forgets to do the second <code>Shift-Enter</code> for the mouse-up effect.
+</p>
+<p>
+  <code>Shift-Space</code> changes the <a>focus</a> to be the <a>Part</a> at the current <a>virtualPointerLocation</a>.
+</p>
+<p>
+  Because <code>Shift</code> and <code>Ctrl</code> are used to control the virtual pointer, there is no natural way to specify modifiers
+  during virtual mouse events, such as control-drag-and-drop in order to copy the selection.
+  Nor is there a reasonable way to specify which button to use for mouse-down or mouse-up events,
+  nor to control whether it's a single click or a double click.  So there are additional commands to control those
+  aspects of future simulated mouse input events:
+  <ul>
+    <li>
+      Type <code>Shift-A</code>, <code>Shift-S</code>, <code>Shift-C</code>, <code>Shift-M</code> to toggle each of
+      <a>InputEvent.alt</a>, <a>InputEvent.shift</a>, <a>InputEvent.control</a>, <a>InputEvent.meta</a>
+    </li>
+    <li>
+      Type <code>Shift-1</code>, <code>Shift-2</code>, <code>Shift-3</code> for one of
+      <a>InputEvent.left</a>, <a>InputEvent.middle</a>, <a>InputEvent.right</a>.
+      Or type <code>Shift-Numpad0</code> to toggle between left and right mouse buttons.
+    </li>
+    <li>
+      Type <code>Shift-D</code> (or <code>Shift-NumpadDecimal</code>) to specify a <a>InputEvent.clickCount</a> of 2
+      for the next <code>Shift-Enter</code> event that performs a mouse-up.
+      After a simulated mouse up event the <a>InputEvent.clickCount</a> is automatically reset to 1.
+    </li>
+  </ul>
+</p>
+
+<h4>Virtual Pointer Appearance</h4>
+<p>
+  The current modifiers/button/clickCount state is reflected in the standard <a>virtualPointerBox</a>,
+  as shown in the following simulation controlled by another instance of <a>Robot</a>.
+  The <a>Diagram.contextClick</a> event handler has been set to a function that logs "context clicked!".
+</p>
+<pre class="lang-js" id="virtualpointerappearance" style="display: none"><code>
+  diagram.contextClick = e => logA("context clicked!");
+
+  // implement a log of Robot actions
+  const myLogA =
+    new go.Part("Auto", {
+      layerName: "ViewportBackground",
+      selectable: false, pickable: false,
+      alignment: new go.Spot(1, 0, -5, 5), alignmentFocus: go.Spot.TopRight,
+      minSize: new go.Size(110, 190)
+    })
+    .add(
+      new go.Shape({ fill: "white" }),
+      new go.Panel("Vertical", {
+          margin: 5,
+          alignment: go.Spot.TopLeft, stretch: go.Stretch.Horizontal
+        })
+        .add(
+          new go.TextBlock("Robot Log", { font: "bold 11pt sans-serif" }),
+          new go.Panel("Vertical", {
+              alignment: go.Spot.Left,
+              defaultAlignment: go.Spot.Left,
+              itemTemplate:
+                new go.Panel()
+                  .add(
+                    new go.TextBlock()
+                      .bind("text", "")
+                  )
+            })
+            .bind("itemArray", "logs")
+        )
+    )
+  diagram.add(myLogA);
+  myLogA.data = { logs: [] };
+
+  function logA(str) {
+    diagram.model.commit(m => {
+      m.addArrayItem(myLogA.data.logs, str);
+    }, null);  // skipsUndoManager
+  }
+
+  // implement simulation of keyboard input using the Robot extension
+  const myRobotA = new Robot(diagram);
+  let t = 0;
+
+  function doKeyA(key, options) {
+    logA(`${options?.control ? "Ctrl-" : ""}${options?.alt ? "Alt-" : ""}${options?.shift ? "Shift-" : ""}${key}`);
+    myRobotA.keyDown(key, t++, options);
+  }
+
+  let myActionsA = [];
+  function queueActionsA() {
+    const shift = { shift: true };
+    myActionsA = [
+      () => doKeyA('Enter', { control: true, alt: true }),  // turn on isVirtualPointerEnabled
+      () => doKeyA('ShiftLeft', shift),  // show virtual pointer
+      () => doKeyA('ArrowRight', shift), // move the virtual pointer
+      () => doKeyA('ArrowRight', shift), // move the virtual pointer
+      () => doKeyA('Digit3', shift),     // use right mouse button
+      () => doKeyA('Digit1', shift),     // no, use left mouse button?
+      () => doKeyA('Digit3', shift),     // yes, use right mouse button after all
+      () => doKeyA('Enter', shift),      // right mouse button down
+      () => doKeyA('Enter', shift),      // right mouse button up
+      () => {
+        setTimeout(() => {  // reset and restart
+          diagram.commandHandler.isFocusEnabled = false;
+          diagram.commandHandler.isVirtualPointerEnabled = false;
+          diagram.commandHandler.virtualPointerLocation = diagram.viewportBounds.center;
+          diagram.model.commit(m => m.set(myLogA.data, "logs", []), null);
+          queueActionsA();
+          executeA();
+        }, 4000);
+      }
+    ];
+  }
+
+  function executeA() {
+    const act = myActionsA.shift();
+    if (act) {
+      act();
+      setTimeout(executeA, 1500);
+    }
+  }
+
+  queueActionsA();
+  executeA();
+</code></pre>
+<script>
+  goCode('virtualpointerappearance', 400, 200);
+</script>
+
+<h4>A Simulation</h4>
+<p>
+  This demonstration involves both focus navigation and use of the virtual pointer to draw a new Link and to resize a Node.
+</p>
+<p>
+  First the user types <code>Ctrl-Alt-Enter</code> in order to enable <a>CommandHandler.isVirtualPointerEnabled</a>.
+  The user then uses the arrow keys to navigate to the "Delta" Node.
+  An <code>Enter</code> changes focus to the GraphObjects within the Node.
+  Arrow keys change focus to the bottom left port.
+</p>
+<p>
+  Now the user starts the virtual pointer mode by holding down the <code>Shift</code> key.
+  The virtual pointer starts at the center of the current <a>CommandHandler.focus</a>.
+  An <code>Enter</code> key produces a mouse down event.
+  Note that the virtual pointer has a darker circle, showing that the mouse is down during the mouse move.
+  Then the following <code>Shift</code>-arrow keys start the <a>LinkingTool</a> to draw a new link.
+  Then an <code>Enter</code> key produces a mouse up event, finishing drawing the new link.
+</p>
+<p>
+  The focus has remained on the starting port in the "Delta" Node, so an <code>Escape</code> key changes focus to that Node.
+  An <code>ArrowDown</code> and a <code>Space</code> key cause the "Epsilon" Node to be selected, showing its resize handles.
+</p>
+<p>
+  The virtual pointer starts with a <code>Shift</code>, and right arrow keys move it to the resize handle on the right side.
+  Note that one can use the <code>Ctrl</code> modifier with the <code>Shift</code>-arrow keys in order to move it just one document unit at a time,
+  instead of the default 10 document units.
+</p>
+<p>
+  The <a>ResizingTool</a> is started by a mouse down caused by a <code>Shift-Enter</code>.
+  Following <code>Shift</code>-arrow keys drag that resize handle, and another <code>Shift-Enter</code> produces a mouse up event,
+  finishing the resizing of the node.
+</p>
+<pre class="lang-js" id="virtualpointer" style="display: none"><code>
+  diagram.layout = new go.LayeredDigraphLayout({ direction: 90, isOngoing: false });
+
+  function makePort(name, spot, output) {
+    // the port is basically just a small transparent circle
+    return new go.Shape({
+      fill: '#555',
+      stroke: null,
+      desiredSize: new go.Size(8, 8),
+      alignment: spot, // align the port on the main Shape
+      alignmentFocus: spot.opposite(), // just inside the Shape
+      portId: name, // declare this object to be a "port"
+      fromSpot: go.Spot.Bottom,
+      toSpot: go.Spot.Top, // declare where links may connect at this port
+      fromLinkable: output,
+      toLinkable: !output, // declare whether the user may draw links to/from here
+      cursor: 'pointer' // show a different cursor to indicate potential link point
+    });
+  }
+
+  diagram.nodeTemplate =
+    new go.Node("Spot", {
+        selectionObjectName: "BODY",
+        resizable: true, resizeObjectName: "BODY"
+      })
+      .bindTwoWay("location", "loc", go.Point.parse, go.Point.stringify)
+      .add(
+        new go.Panel("Auto", { name: "BODY" })
+          .bindTwoWay("desiredSize", "size", go.Size.parse, go.Size.stringify)
+          .add(
+            new go.Shape({ fill: "lightgray" }),
+            new go.TextBlock({ margin: 8, editable: true })
+              .bind("text")
+          ),
+          makePort("i0", new go.Spot(0.25, 0), false),
+          makePort("i1", new go.Spot(0.5, 0), false),
+          makePort("i2", new go.Spot(0.75, 0), false),
+          makePort("o0", new go.Spot(0.25, 1), true),
+          makePort("o1", new go.Spot(0.5, 1), true),
+          makePort("o2", new go.Spot(0.75, 1), true)
+        );
+
+  // implement a log of Robot actions
+  let myLog2 = null;
+
+  function loadModel() {
+    diagram.model =
+      new go.GraphLinksModel({
+        linkFromPortIdProperty: "fid",
+        linkToPortIdProperty: "tid",
+        nodeDataArray: [
+          { key: 1, text: "Alpha" },
+          { key: 2, text: "Beta" },
+          { key: 3, text: "Gamma" },
+          { key: 4, text: "Delta" },
+          { key: 5, text: "Epsilon" },
+        ],
+        linkDataArray: [
+          { from: 1, fid: "o1", to: 3, tid: "i0" },
+          { from: 2, fid: "o0", to: 3, tid: "i2" },
+          { from: 2, fid: "o2", to: 4, tid: "i1" },
+          { from: 3, fid: "o2", to: 5, tid: "i0" },
+          { from: 4, fid: "o1", to: 5, tid: "i1" },
+        ]
+      });
+
+    myLog2 =
+      new go.Part("Auto", {
+        layerName: "ViewportBackground",
+        selectable: false, pickable: false,
+        alignment: new go.Spot(1, 0, -5, 5), alignmentFocus: go.Spot.TopRight,
+        minSize: new go.Size(110, 440)
+      })
+      .add(
+        new go.Shape({ fill: "white" }),
+        new go.Panel("Vertical", {
+            margin: 5,
+            alignment: go.Spot.TopLeft, stretch: go.Stretch.Horizontal
+          })
+          .add(
+            new go.TextBlock("Robot Log", { font: "bold 11pt sans-serif" }),
+            new go.Panel("Vertical", {
+                alignment: go.Spot.Left,
+                defaultAlignment: go.Spot.Left,
+                itemTemplate:
+                  new go.Panel()
+                    .add(
+                      new go.TextBlock()
+                        .bind("text", "")
+                    )
+              })
+              .bind("itemArray", "logs")
+          )
+    )
+    diagram.add(myLog2);
+    myLog2.data = { logs: [] };
+
+    diagram.undoManager.isEnabled = true;
+  }
+  loadModel();
+
+  function log2(str) {
+    diagram.model.commit(m => {
+      m.addArrayItem(myLog2.data.logs, str);
+    }, null);  // skipsUndoManager
+  }
+
+  // implement simulation of keyboard input using the Robot extension
+  const myRobot2 = new Robot(diagram);
+  let t = 0;
+
+  function doKey2(key, options) {
+    log2(`${options?.control ? "Ctrl-" : ""}${options?.alt ? "Alt-" : ""}${options?.shift ? "Shift-" : ""}${key}`);
+    myRobot2.keyDown(key, t++, options);
+  }
+
+  let myActions2 = [];
+  function queueActions2() {
+    const shift = { shift: true };
+    myActions2 = [
+      () => doKey2('Enter', { control: true, alt: true }),  // turn on isVirtualPointerEnabled
+      () => doKey2('ArrowRight'),  // focus on Beta Node
+      () => doKey2('ArrowDown', { control: true }),  // focus on Link to Gamma Node
+      () => doKey2('ArrowRight', { control: true }),  // focus on Link to Delta Node
+      () => doKey2('ArrowDown', { control: true }),  // focus on Gamma Node
+      () => doKey2('Enter'),  // focus on editable TextBlock of Delta Node
+      () => doKey2('ArrowDown'),  // focus on Delta Node's middle output port
+      () => doKey2('ArrowLeft'),  // focus on Delta Node's left output port
+      () => doKey2('ShiftLeft', shift),  // start virtual pointer at middle of port
+      () => doKey2('Enter', shift),  // mouse down, starting drawing new Link
+      () => doKey2('ArrowDown', shift),  // move the virtual pointer
+      () => doKey2('ArrowDown', shift),  // move the virtual pointer
+      () => doKey2('ArrowRight', shift),  // change target port
+      () => doKey2('ArrowDown', shift),  // move the virtual pointer
+      () => doKey2('Enter', shift),  // mouse up, finish drawing new Link
+      () => doKey2('Escape'),  // change focus back up to Delta Node
+      () => doKey2('ArrowDown'),  // focus on Epsilon Node
+      () => doKey2('Space'),  // select Epsilon Node (for resizing)
+      () => doKey2('ShiftLeft', shift),  // start virtual pointer
+      () => doKey2('ArrowRight', shift), // move virtual pointer rightward
+      () => doKey2('ArrowRight', shift), // move virtual pointer rightward
+      () => doKey2('ArrowRight', shift), // move virtual pointer rightward
+      () => doKey2('Enter', shift),  // mouse down, start resizing Node
+      () => doKey2('ArrowRight', shift),  // resize rightward
+      () => doKey2('ArrowRight', shift),  // resize rightward
+      () => doKey2('Enter', shift),  // mouse up, finish resizing Node
+      () => doKey2('Escape'),  // remove focus box
+      () => {
+        setTimeout(() => {  // reset and restart
+          diagram.commandHandler.isFocusEnabled = false;
+          diagram.commandHandler.isVirtualPointerEnabled = false;
+          diagram.model.commit(m => m.set(myLog2.data, "logs", []), null);
+          loadModel();
+          queueActions2();
+          execute2();
+        }, 4000);
+      }
+    ];
+  }
+
+  function execute2() {
+    const act = myActions2.shift();
+    if (act) {
+      act();
+      setTimeout(execute2, 1500);
+    }
+  }
+
+  queueActions2();
+  execute2();
+</code></pre>
+<script>
+  goCode('virtualpointer', 500, 450);
+</script>
+
+<h3>General Concepts</h3>
+<p>
+  The <code>Ctrl</code> and <code>Meta</code> modifier keys are interchangeable for all built-in command keyboard shortcuts.
+  Use whatever works well on your keyboard.  But note that not all Tools are that way.
+  For example, the <code>Ctrl</code> modifier when using the <a>DraggingTool</a> is replaced by the <code>Alt</code>
+  modifier on macOS, following the convention there.
+</p>
+<p>
+  The <code>Caps Lock</code>, <code>Insert</code>, and <code>Scroll Lock</code>
+  keys are not used for GoJS keyboard control, and thus can be used by screen readers.
+</p>
+<p>
+  <code>Tab</code> normally changes the HTML element that has DOM keyboard focus,
+  and that behavior is unmodified while the diagram has keyboard focus.
+  If the diagram is showing scrollbars, <code>Tab</code> will focus on the diagram's HTML element holding the scrollbars,
+  allowing for the arrow keys to scroll normally.
+</p>
+<p>
+  Note that nearly all of the regular keyboard-shortcut commands are unaffected by focus navigation.
+  This includes the <a href="./commands.html#KeyboardCommandBindings">common commands</a>:
+  delete, cut, copy, paste, selectAll, undo, redo, *Zoom, group, ungroup, editTextBlock.
+  However the arrow keys do not scroll, and the <code>ContextMenu</code> key works on the focus, not on the selection,
+  unless there is no focus object.
+</p>
+<p>
+  Events from an actual mouse input device, perhaps caused by accidentally moving it,
+  may interfere with the intended behaviors using the virtual pointer.
+</p>
+
+<h2 id="CustomizingforScreenReaders">Customizing for Screen Readers</h2>
+<p>
+  You will want to provide your own function as the <a>CommandHandler.focusChanged</a> event handler
+  in order to customize exactly what is said and shown as the user changes the <a>CommandHandler.focus</a>
+  to a new Node or Link, or to a button or editable TextBlock or port within a Node, or to null.
+</p>
+<p>
+  Your page will probably want to have an element
+  that is updated as your <a>CommandHandler.focusChanged</a> function is called.
+  The CommandHandler needs to know about that element, so you also need to set <a>CommandHandler.liveElementId</a>
+  to refer to that element.
+  It will set the <code>aria-labelledby</code> attribute to refer to your element.
+  Do <em>not</em> set the <code>aria-live</code> attribute on that element.
+</p>
+<p>
+  Exactly what information you put there should be very specific to your particular diagram.
+  Only you the programmer can know exactly what your users will want or need to know as they traverse your diagram,
+  and what language and terminology they will be expecting.
+</p>
+<p>
+  You can call <a>CommandHandler.describe</a> in order to generate the default description for a focused
+  GraphObject, given the previous focus.
+</p>
+<p>
+  In Windows Narrator, when focus gets to the diagram,
+  turn off scan mode (<code>CapsLock-Space</code>) so that the diagram is not considered a simple image,
+  thereby allowing GoJS focus navigation.
+  This action is not needed when using NVDA on Windows or Voice Over on macOS.
+</p>
+<p>
+  Although you can programmatically turn on focus navigation mode in the diagram by setting the
+  <a>CommandHandler.isFocusEnabled</a> and <a>CommandHandler.isVirtualPointerEnabled</a> properties,
+  you could document to your users that they can invoke the <code>Ctrl-Alt-Enter</code> keyboard command
+  in order to enable all of this functionality.
+</p>
+<p>
+  For examples, examine the <a href="../samples/Accessibility.html">Accessibility</a> sample,
+  which provides some customizations for the Org Chart Editor sample,
+  or the <a href="../samples/IVRtree.html">IVR Tree</a> sample.
+</p>
+<p>
+  If you compare the implementations of the <a href="../samples/Accessibility.html">Accessibility</a>
+  and <a href="../samples/orgChartEditor.html">Org Chart Editor</a> samples,
+  you will see that a function named <code>describe</code> has been added to better describe
+  each of the Nodes, Links, and GraphObjects within Nodes.
+</p>
+<ul>
+  <li>
+    When the <a>CommandHandler.focus</a> is a Node, instead of reading all of the text visible in the node,
+    it reads the important information, plus it lists the employees who report to that person.
+    It uses application-specific terminology such as "employee" instead of "node".
+  </li>
+  <li>
+    When the focus is a Link, it reads the standard information about a Link by calling the <a>CommandHandler.describe</a> method.
+  </li>
+  <li>
+    For focused objects within a Node, it uses the standard description but also adds tooltip information.
+    This is useful in providing meaningful information about the buttons that have no text.
+  </li>
+  <li>
+    When there is no <a>CommandHandler.focus</a> GraphObject, it reads summary information about the diagram.
+  </li>
+  <li>
+    When an employee role is added to the diagram, focus is changed to that new Node.
+  </li>
+</ul>
+      </div>
+    </div>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="../samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="../learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="../intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="../api/index.html">API</a>
+          </li>
+          <li>
+            <a href="../changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2025 <a href="https://nwoods.com">Northwoods Software</a>
+    </p>
+  </div>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
+  const params = new URL(document.location).searchParams
+  let a = params.get('a');
+  if (a) localStorage.setItem('a', a);
+  a = localStorage.getItem('a');
+  if (a) {
+    const links = [...document.body.getElementsByTagName("a")].filter((l) => l.href.includes('nwoods.com'));
+    for (const l of links) {
+      const url = new URL(l.href);
+      url.searchParams.set('a', a);
+      l.href = url;
+    }
+  }
+
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra)
+        window.extra();
+      }
+    );
+  </script>
+</html>

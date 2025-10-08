@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,6 +125,7 @@
             
 
 <script id="code">
+
   // Assume that a Link may have a  linkdata.colors  property that is an Array of CSS color strings.
   // Also assume that each Link has as many Shapes in it that are marked with  isPanelMain: true
   // as you want to get a color from the linkdata.colors Array, because each Shape can only show one color.
@@ -137,7 +140,7 @@
       const colors = this.data.colors;
       if (Array.isArray(colors) && colors.length > 0) {
         const paths = []; // find all path Shapes
-        this.elements.each((elt) => {
+        this.elements.each(elt => {
           if (elt.isPanelMain && elt instanceof go.Shape) {
             paths.push(elt);
           }
@@ -174,19 +177,15 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      fromSpot: go.Spot.AllSides,
-      toSpot: go.Spot.AllSides
-    })
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides
+        })
         .add(
-          new go.Shape({
-            fill: 'white',
-            strokeWidth: 0
-          })
+          new go.Shape({ fill: 'white', strokeWidth: 0 })
             .bind('fill', 'color'),
-          new go.TextBlock({
-            margin: 12
-          })
+          new go.TextBlock({ margin: 12 })
             .bind('text')
         );
 
@@ -198,21 +197,22 @@
       });
     }
 
-    myDiagram.linkTemplate = new MultiColorLink({
-      routing: go.Routing.AvoidsNodes,
-      corner: 10,
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      resegmentable: true
-    })
-      .add(
-        linkPath(), // this template can show at most 5 colors,
-        linkPath(), // one for each link path Shape
-        linkPath(),
-        linkPath(),
-        linkPath() // remove any unneeded path Shapes here, if you never need to show 5 colors at once in a single link
-      );
+    myDiagram.linkTemplate =
+      new MultiColorLink({  // defined above
+          routing: go.Routing.AvoidsNodes,
+          corner: 10,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true
+        })
+        .add(
+          linkPath(), // this template can show at most 5 colors,
+          linkPath(), // one for each link path Shape
+          linkPath(),
+          linkPath(),
+          linkPath() // remove any unneeded path Shapes here, if you never need to show 5 colors at once in a single link
+        );
 
     load();
   }
@@ -225,6 +225,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

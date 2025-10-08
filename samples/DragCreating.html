@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -128,32 +130,32 @@
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       // Define the template for Nodes, just some text inside a colored rectangle
-      nodeTemplate: new go.Node('Auto', {
-        minSize: new go.Size(60, 20),
-        resizable: true
-      })
-        .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
-        // temporarily put selected nodes in Foreground layer
-        .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
-        .add(
-          new go.Shape('Rectangle')
-            .bind('fill', 'color'),
-          new go.TextBlock({ margin: 2 })
-            .bind('text', 'color')
-        ),
+      nodeTemplate:
+        new go.Node('Auto', {
+            minSize: new go.Size(60, 20),
+            resizable: true
+          })
+          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+          .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
+          // temporarily put selected nodes in Foreground layer
+          .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
+          .add(
+            new go.Shape('Rectangle')
+              .bind('fill', 'color'),
+            new go.TextBlock({ margin: 2 })
+              .bind('text', 'color')
+          ),
         'undoManager.isEnabled': true
       });
 
     myDiagram.add(
       new go.Part({
-        layerName: 'Grid',
-        location: new go.Point(0, 0)
-      })
+          layerName: 'Grid',
+          location: new go.Point(0, 0)
+        })
         .add(
-          new go.TextBlock('Mouse-down and then drag in the background\nto add a Node there with the drawn size.', {
-            stroke: 'brown'
-          })
+          new go.TextBlock('Mouse-down and then drag in the background\nto add a Node there with the drawn size.',
+                           { stroke: 'brown' })
         )
       );
 
@@ -167,18 +169,18 @@
       new DragCreatingTool({
         isEnabled: true, // disabled by the checkbox
         delay: 0, // always canStart(), so PanningTool never gets the chance to run
-        box: new go.Part({ layerName: 'Tool' })
-          .add(
-            new go.Shape({
-              name: 'SHAPE',
-              fill: null,
-              stroke: 'cyan',
-              strokeWidth: 2
-            })
-          ),
+        box:
+          new go.Part({ layerName: 'Tool' })
+            .add(
+              new go.Shape({
+                name: 'SHAPE',
+                fill: null,
+                stroke: 'cyan',
+                strokeWidth: 2
+              })
+            ),
         archetypeNodeData: { color: 'white' }, // initial properties shared by all nodes
-        insertPart: function (bounds) {
-          // method override of DragCreatingTool.insertPart
+        insertPart: function (bounds) {  // method override of DragCreatingTool.insertPart
           // use a different color each time
           this.archetypeNodeData.color = go.Brush.randomColor();
           // call the base method to do normal behavior and return its result
@@ -193,6 +195,7 @@
     var tool = myDiagram.toolManager.findTool('DragCreating');
     if (tool !== null) tool.isEnabled = enable;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

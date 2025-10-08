@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,21 +129,21 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       // what to do when a drag-drop occurs in the Diagram's background
-      mouseDrop: (e) => finishDrop(e, null),
+      mouseDrop: e => finishDrop(e, null),
       // Diagram has simple horizontal layout
       layout: new go.GridLayout({
-          wrappingWidth: Infinity,
-          alignment: go.GridAlignment.Position,
-          cellSize: new go.Size(1, 1)
-        }),
+        wrappingWidth: Infinity,
+        alignment: go.GridAlignment.Position,
+        cellSize: new go.Size(1, 1)
+      }),
       'commandHandler.archetypeGroupData': { isGroup: true, category: 'OfNodes' },
       'undoManager.isEnabled': true,
       // when a node is selected in the main Diagram, select the corresponding tree node
-      ChangedSelection: (e) => {
+      ChangedSelection: e => {
         if (myChangingSelection) return;
         myChangingSelection = true;
         var diagnodes = new go.Set();
-        myDiagram.selection.each((n) => diagnodes.add(myTreeView.findNodeForData(n.data)));
+        myDiagram.selection.each(n => diagnodes.add(myTreeView.findNodeForData(n.data)));
         myTreeView.clearSelection();
         myTreeView.selectCollection(diagnodes);
         myChangingSelection = false;
@@ -151,10 +153,10 @@
     var myChangingSelection = false; // to protect against recursive selection changes
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('saveModel');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('saveModel');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -190,136 +192,125 @@
       if (!ok) e.diagram.currentTool.doCancel();
     }
 
+    // common styling for Groups
+    function groupStyle(grp) {
+      grp.background = 'transparent';
+      grp.ungroupable = true;  // allow the user to remove the Group while keeping its members
+      // when selected, move the whole Group into the "Foreground" Layer
+      grp.selectionChanged = g => {
+        const newlay = g.isSelected ? "Foreground" : "";
+        g.layerName = newlay;
+        g.findSubGraphParts().each(m => m.layerName = newlay);
+      };
+      // highlight when dragging into the Group
+      grp.mouseDragEnter = (e, grp, prev) => highlightGroup(e, grp, true);
+      grp.mouseDragLeave = (e, grp, next) => highlightGroup(e, grp, false);
+      grp.computesBoundsAfterDrag = true;
+      grp.computesBoundsIncludingLocation = true;
+      // when the selection is dropped into a Group, add the selected Parts into that Group;
+      // if it fails, cancel the tool, rolling back any changes
+      grp.mouseDrop = finishDrop;
+      grp.handlesDragDropForMembers = true; // don't need to define handlers on member Nodes and Links
+      grp.bindObject('background', 'isHighlighted', h => h ? 'rgba(255,0,0,0.2)' : 'transparent')
+    }
+
     myDiagram.groupTemplateMap.add('OfGroups',
       new go.Group("Auto", {
-        background: 'transparent',
-        // highlight when dragging into the Group
-        mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
-        mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
-        computesBoundsAfterDrag: true,
-        computesBoundsIncludingLocation: true,
-        // when the selection is dropped into a Group, add the selected Parts into that Group;
-        // if it fails, cancel the tool, rolling back any changes
-        mouseDrop: finishDrop,
-        handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
-        // Groups containing Groups lay out their members horizontally
-        layout: new go.GridLayout({
-          wrappingWidth: Infinity,
-          alignment: go.GridAlignment.Position,
-          cellSize: new go.Size(1, 1),
-          spacing: new go.Size(4, 4)
+          // Groups containing Groups lay out their members horizontally
+          layout: new go.GridLayout({
+            wrappingWidth: Infinity,
+            alignment: go.GridAlignment.Position,
+            cellSize: new go.Size(1, 1),
+            spacing: new go.Size(4, 4)
+          })
         })
-      })
-        .bindObject('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent'))
+        .apply(groupStyle)
         .add(
           new go.Shape('Rectangle', { fill: null, stroke: '#E69900', strokeWidth: 2 }),
           new go.Panel('Vertical') // title above Placeholder
             .add(
               new go.Panel('Horizontal', { // button next to TextBlock
-                stretch: go.Stretch.Horizontal,
-                background: '#FFDD33',
-                margin: 1
-              })
+                  stretch: go.Stretch.Horizontal,
+                  background: '#FFDD33',
+                  margin: 1
+                })
                 .add(
-                  go.GraphObject.build('SubGraphExpanderButton', {
-                    alignment: go.Spot.Right,
-                    margin: 5
-                  }),
+                  go.GraphObject.build('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
                   new go.TextBlock({
-                    alignment: go.Spot.Left,
-                    editable: true,
-                    margin: 5,
-                    font: 'bold 18px sans-serif',
-                    stroke: '#9A6600'
-                  })
+                      alignment: go.Spot.Left,
+                      editable: true,
+                      margin: 5,
+                      font: 'bold 18px sans-serif',
+                      stroke: '#9A6600'
+                    })
                     .bindTwoWay('text')
                 ), // end Horizontal Panel
-              new go.Placeholder({
-                padding: 5,
-                alignment: go.Spot.TopLeft
-              })
+              new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft })
             ) // end Vertical Panel
         )
     ); // end Group and call to add to template Map
 
     myDiagram.groupTemplateMap.add('OfNodes',
       new go.Group("Auto", {
-        background: 'transparent',
-        ungroupable: true,
-        // highlight when dragging into the Group
-        mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
-        mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
-        computesBoundsAfterDrag: true,
-        computesBoundsIncludingLocation: true,
-        // when the selection is dropped into a Group, add the selected Parts into that Group;
-        // if it fails, cancel the tool, rolling back any changes
-        mouseDrop: finishDrop,
-        handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
-        // Groups containing Nodes lay out their members vertically
-        layout: new go.GridLayout({
-          wrappingColumn: 1,
-          alignment: go.GridAlignment.Position,
-          cellSize: new go.Size(1, 1),
-          spacing: new go.Size(4, 4)
+          // Groups containing Nodes lay out their members vertically
+          layout: new go.GridLayout({
+            wrappingColumn: 1,
+            alignment: go.GridAlignment.Position,
+            cellSize: new go.Size(1, 1),
+            spacing: new go.Size(4, 4)
+          })
         })
-      })
-        .bindObject('background', 'isHighlighted', (h) => (h ? 'rgba(255,0,0,0.2)' : 'transparent'))
+        .apply(groupStyle)
         .add(
-          new go.Shape('Rectangle', {
-            fill: null,
-            stroke: '#0099CC',
-            strokeWidth: 2
-          }),
+          new go.Shape('Rectangle', { fill: null, stroke: '#0099CC', strokeWidth: 2 }),
           new go.Panel('Vertical') // title above Placeholder
             .add(
               new go.Panel('Horizontal', { // button next to TextBlock
-                stretch: go.Stretch.Horizontal,
-                background: '#33D3E5',
-                margin: 1
-              })
+                  stretch: go.Stretch.Horizontal,
+                  background: '#33D3E5',
+                  margin: 1
+                })
                 .add(
                   go.GraphObject.build('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
                   new go.TextBlock({
-                    alignment: go.Spot.Left,
-                    editable: true,
-                    margin: 5,
-                    font: 'bold 16px sans-serif',
-                    stroke: '#006080'
-                  })
+                      alignment: go.Spot.Left,
+                      editable: true,
+                      margin: 5,
+                      font: 'bold 16px sans-serif',
+                      stroke: '#006080'
+                    })
                     .bindTwoWay('text')
                 ), // end Horizontal Panel
-              new go.Placeholder({
-                padding: 5,
-                alignment: go.Spot.TopLeft
-              })
+              new go.Placeholder({ padding: 5, alignment: go.Spot.TopLeft })
             ) // end Vertical Panel
         )
     ); // end Group and call to add to template Map
 
     // Nodes have a trivial definition
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-        // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-        mouseDrop: (e, nod) => finishDrop(e, nod.containingGroup)
-      })
-      .add(
-        new go.Shape('Rectangle', {
-          fill: '#ACE600',
-          stroke: '#558000',
-          strokeWidth: 2
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
+          mouseDrop: (e, nod) => finishDrop(e, nod.containingGroup)
         })
-          .bind('fill', 'color'),
-        new go.TextBlock({
-          margin: 5,
-          editable: true,
-          font: 'bold 13px sans-serif',
-          stroke: '#446700'
-        })
-          .bindTwoWay('text')
-      );
+        .add(
+          new go.Shape('Rectangle', {
+              fill: '#ACE600',
+              stroke: '#558000',
+              strokeWidth: 2
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              margin: 5,
+              editable: true,
+              font: 'bold 13px sans-serif',
+              stroke: '#446700'
+            })
+            .bindTwoWay('text')
+        );
 
     var myChangingModel = false; // to protect against recursive model changes
 
-    myDiagram.addModelChangedListener((e) => {
+    myDiagram.addModelChangedListener(e => {
       if (e.model.skipsUndoManager) return;
       if (myChangingModel) return;
       myChangingModel = true;
@@ -367,42 +358,43 @@
         arrangementSpacing: new go.Size(0, 0)
       }),
       // when a node is selected in the tree, select the corresponding node in the main diagram
-      ChangedSelection: (e) => {
+      ChangedSelection: e => {
         if (myChangingSelection) return;
         myChangingSelection = true;
         var diagnodes = new go.Set();
-        myTreeView.selection.each((n) => diagnodes.add(myDiagram.findNodeForData(n.data)));
+        myTreeView.selection.each(n => diagnodes.add(myDiagram.findNodeForData(n.data)));
         myDiagram.clearSelection();
         myDiagram.selectCollection(diagnodes);
         myChangingSelection = false;
       }
     });
 
-    myTreeView.nodeTemplate = new go.Node({ selectionAdorned: false })
-      .add(
-        // no Adornment: instead change panel background color by binding to Node.isSelected
-        go.GraphObject.build('TreeExpanderButton', {
-          width: 14,
-          'ButtonBorder.fill': 'white',
-          'ButtonBorder.stroke': null,
-          _buttonFillOver: 'rgba(0,128,255,0.25)',
-          _buttonStrokeOver: null
-        }),
-        new go.Panel('Horizontal', { position: new go.Point(16, 0) })
-          .bindObject('background', 'isSelected', (s) => (s ? 'lightblue' : 'white'))
-          .add(
-            // Icon is not needed?
-            //new go.Picture(
-            //  {
-            //    width: 14, height: 14,
-            //    margin: new go.Margin(0, 4, 0, 0),
-            //    imageStretch: go.ImageStretch.Uniform,
-            //    source: "images/50x40.png"
-            //  }),
-            new go.TextBlock({ editable: true })
-              .bindTwoWay('text')
-          ) // end Horizontal Panel
-      ); // end Node
+    myTreeView.nodeTemplate =
+      new go.Node({ selectionAdorned: false })
+        .add(
+          // no Adornment: instead change panel background color by binding to Node.isSelected
+          go.GraphObject.build('TreeExpanderButton', {
+            width: 14,
+            'ButtonBorder.fill': 'white',
+            'ButtonBorder.stroke': null,
+            _buttonFillOver: 'rgba(0,128,255,0.25)',
+            _buttonStrokeOver: null
+          }),
+          new go.Panel('Horizontal', { position: new go.Point(16, 0) })
+            .bindObject('background', 'isSelected', s => s ? 'lightblue' : 'white')
+            .add(
+              // Icon is not needed?
+              //new go.Picture(
+              //  {
+              //    width: 14, height: 14,
+              //    margin: new go.Margin(0, 4, 0, 0),
+              //    imageStretch: go.ImageStretch.Uniform,
+              //    source: "images/50x40.png"
+              //  }),
+              new go.TextBlock({ editable: true })
+                .bindTwoWay('text')
+            ) // end Horizontal Panel
+        ); // end Node
 
     // without lines
     myTreeView.linkTemplate = new go.Link();
@@ -411,7 +403,7 @@
     // pretending the "group" relationship is the "tree parent" relationship
     myTreeView.model = new go.TreeModel({ nodeParentKeyProperty: 'group' });
 
-    myTreeView.addModelChangedListener((e) => {
+    myTreeView.addModelChangedListener(e => {
       if (e.model.skipsUndoManager) return;
       if (myChangingModel) return;
       myChangingModel = true;
@@ -454,6 +446,7 @@
     // share the UndoManager too!
     myTreeView.model.undoManager = myDiagram.model.undoManager;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -581,7 +574,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -590,6 +583,32 @@ More information can be found in the <a href="../intro/buttons.html">GoJS Intro<
 </p>
             <p>
               <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

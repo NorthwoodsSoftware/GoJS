@@ -162,9 +162,9 @@ async function goDownload(dontDownload) {
   b1.remove();
   b2.remove();
   const hasPrism = typeof window.Prism !== 'undefined';
-  const includeNonModule = `<script src="https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go.js"><\/script>`;
+  const includeNonModule = `<script src="https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go-debug.js"><\/script>`;
   const includeModule =`<script type="importmap">
-    { "imports": { "gojs": "https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go-module.js" } }
+    { "imports": { "gojs": "https://cdn.jsdelivr.net/npm/gojs@${go.version}/release/go-debug-module.js" } }
   </script>`
   const scriptInclude = sampleHTML.includes("import * as go from 'gojs'") ? includeModule : includeNonModule;
 

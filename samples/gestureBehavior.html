@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -122,11 +124,12 @@
             
             
 
-    <script id="code">
-    function init() {
+<script id="code">
+  function init() {
 
-      // define a simple Node template
-      var myNodeTemplate = new go.Node('Auto')
+    // define a simple Node template
+    const myNodeTemplate =
+      new go.Node('Auto')
         .add(
           new go.Shape('RoundedRectangle', { strokeWidth: 0 })
             .bind('fill', 'color'),
@@ -134,47 +137,47 @@
             .bind('text')
         );
 
-      var myModel = new go.GraphLinksModel(
-        [
-          { key: 1, text: 'Alpha', color: 'lightblue' },
-          { key: 2, text: 'Beta', color: 'orange' },
-          { key: 3, text: 'Gamma', color: 'lightgreen' },
-          { key: 4, text: 'Delta', color: 'pink' }
-        ],
-        [
-          { from: 1, to: 2 },
-          { from: 1, to: 3 },
-          { from: 2, to: 2 },
-          { from: 3, to: 4 },
-          { from: 4, to: 1 }
-        ]);
+    const myModel = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue' },
+        { key: 2, text: 'Beta', color: 'orange' },
+        { key: 3, text: 'Gamma', color: 'lightgreen' },
+        { key: 4, text: 'Delta', color: 'pink' }
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 }
+      ]);
 
-      myDiagram = new go.Diagram('myDiagramDiv', {
-        allowHorizontalScroll: false, allowVerticalScroll: false,
-        'panningTool.isEnabled': false,
-        'toolManager.gestureBehavior': go.GestureMode.Cancel,
-        model: myModel,
-        nodeTemplate: myNodeTemplate
-      });
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowHorizontalScroll: false, allowVerticalScroll: false,
+      'panningTool.isEnabled': false,
+      'toolManager.gestureBehavior': go.GestureMode.Cancel,
+      model: myModel,
+      nodeTemplate: myNodeTemplate
+    });
 
+  }
+
+  function changegestureBehavior(id) {
+    switch (id) {
+      case 'GestureZoom':
+        myDiagram.toolManager.gestureBehavior = go.GestureMode.Zoom;
+        break;
+      case 'GestureCancel':
+        myDiagram.toolManager.gestureBehavior = go.GestureMode.Cancel;
+        break;
+      case 'GestureNone':
+        myDiagram.toolManager.gestureBehavior = go.GestureMode.None;
+        break;
     }
+  }
 
-    function changegestureBehavior(id) {
-      switch (id) {
-        case 'GestureZoom':
-          myDiagram.toolManager.gestureBehavior = go.GestureMode.Zoom;
-          break;
-        case 'GestureCancel':
-          myDiagram.toolManager.gestureBehavior = go.GestureMode.Cancel;
-          break;
-        case 'GestureNone':
-          myDiagram.toolManager.gestureBehavior = go.GestureMode.None;
-          break;
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 <div id="sample">
 

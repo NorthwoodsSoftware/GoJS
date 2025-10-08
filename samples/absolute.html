@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,51 +129,52 @@
 
 <script id="code">
   function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      fixedBounds: new go.Rect(0, 0, 500, 300), // document is always 500x300 units
-      contentAlignment: go.Spot.Center,
-      allowHorizontalScroll: false, // disallow scrolling or panning
-      allowVerticalScroll: false,
-      allowZoom: false, // disallow zooming
-      'animationManager.isEnabled': false,
-      'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
-        // just for demonstration purposes,
-        if (e.isTransactionFinished) {
-          // show the model data in the page's TextArea
-          document.getElementById('mySavedModel').innerHTML = e.model.toJson();
-          if (window.Prism) window.Prism.highlightAll();
+    myDiagram =
+      new go.Diagram('myDiagramDiv', {
+        fixedBounds: new go.Rect(0, 0, 500, 300), // document is always 500x300 units
+        contentAlignment: go.Spot.Center,
+        allowHorizontalScroll: false, // disallow scrolling or panning
+        allowVerticalScroll: false,
+        allowZoom: false, // disallow zooming
+        'animationManager.isEnabled': false,
+        'undoManager.isEnabled': true,
+        ModelChanged: e => {
+          // just for demonstration purposes,
+          if (e.isTransactionFinished) {
+            // show the model data in the page's TextArea
+            document.getElementById('mySavedModel').innerHTML = e.model.toJson();
+            if (window.Prism) window.Prism.highlightAll();
+          }
         }
-      }
-    });
+      });
 
     // the background Part showing the fixed bounds of the diagram contents
     myDiagram.add(
       new go.Part({
-        layerName: 'ViewportBackground',
-        alignment: go.Spot.Center,
-        isShadowed: true,
-        padding: 1
-      }).add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({strokeWidth: 0}),
-            new go.Shape({
-              fill: new go.Brush('Linear', {
-                0: go.Brush.lightenBy('oldlace', 0.5),
-                0.5: 'oldlace',
-                1: go.Brush.darkenBy('oldlace', 0.01),
-                start: go.Spot.TopLeft,
-                end: go.Spot.BottomRight
-              }),
-              strokeWidth: 1,
-              stroke: 'transparent',
-              desiredSize: myDiagram.fixedBounds.size,
-              margin: 1
-            })
-          )
-      )
-    );
+          layerName: 'ViewportBackground',
+          alignment: go.Spot.Center,
+          isShadowed: true,
+          padding: 1
+        })
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({strokeWidth: 0}),
+              new go.Shape({
+                fill: new go.Brush('Linear', {
+                  0: go.Brush.lightenBy('oldlace', 0.5),
+                  0.5: 'oldlace',
+                  1: go.Brush.darkenBy('oldlace', 0.01),
+                  start: go.Spot.TopLeft,
+                  end: go.Spot.BottomRight
+                }),
+                strokeWidth: 1,
+                stroke: 'transparent',
+                desiredSize: myDiagram.fixedBounds.size,
+                margin: 1
+              })
+            )
+        ));
 
     // This function is the Node.dragComputation, to limit the movement of the parts.
     function stayInFixedArea(part, pt, gridpt) {
@@ -187,8 +190,7 @@
       var r = v.right - (bnd.right - loc.x);
       var t = v.y + (loc.y - bnd.y);
       var b = v.bottom - (bnd.bottom - loc.y);
-      if (l <= gridpt.x && gridpt.x <= r && t <= gridpt.y && gridpt.y <= b)
-        return gridpt;
+      if (l <= gridpt.x && gridpt.x <= r && t <= gridpt.y && gridpt.y <= b) return gridpt;
       var p = gridpt.copy();
       if (diagram.toolManager.draggingTool.isGridSnapEnabled) {
         // find a location that is inside V but also keeps the part's bounds within V
@@ -210,20 +212,22 @@
       }
     }
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      dragComputation: stayInFixedArea
-    })
-      .bind('desiredSize', 'size', go.Size.parse) // get the size from the model data
-      .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify) // get and set the position
-      .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : '')) // temporarily put selected nodes in Foreground layer
-      .add(
-        new go.Shape('Rectangle', {
-          strokeWidth: 1
-        }) // avoid extra thickness from the stroke
-          .bind('fill', 'color')
-          .bind('stroke', 'color', (value) => (go.Brush.darken(value))),
-        new go.TextBlock().bind('text', 'color')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          dragComputation: stayInFixedArea
+        })
+        .bind('desiredSize', 'size', go.Size.parse) // get the size from the model data
+        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify) // get and set the position
+        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '') // temporarily put selected nodes in Foreground layer
+        .add(
+          new go.Shape('Rectangle', {
+              strokeWidth: 1
+            }) // avoid extra thickness from the stroke
+            .bind('fill', 'color')
+            .bind('stroke', 'color', value => go.Brush.darken(value)),
+          new go.TextBlock()
+            .bind('text', 'color')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -240,8 +244,8 @@
       ]
     );
   }
-  window.addEventListener('DOMContentLoaded', init);
 
+  window.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div id="sample">

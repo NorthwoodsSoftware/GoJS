@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,7 +134,7 @@
     myDiagram = new go.Diagram('myDiagramDiv', {
       rotatingTool: new SpotRotatingTool(),
       'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           document.getElementById('mySavedModel').innerHTML = myDiagram.model.toJson();
           if (window.Prism) window.Prism.highlightAll();
@@ -140,29 +142,30 @@
       }
     });
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationObjectName: 'SHAPE',
-      locationSpot: go.Spot.Center,
-      selectionObjectName: 'SHAPE',
-      resizable: true,
-      resizeObjectName: 'SHAPE', // name of the graph object to be resized
-      rotatable: true,
-      rotateObjectName: 'SHAPE', // name of the graph object to be rotate
-      rotationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .bindTwoWay('rotationSpot', 'rotSpot', go.Spot.parse, go.Spot.stringify)
-      .add(
-        new go.Shape('RoundedRectangle', {
-          name: 'SHAPE',
-          fill: 'orange',
-          strokeWidth: 2
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationObjectName: 'SHAPE',
+          locationSpot: go.Spot.Center,
+          selectionObjectName: 'SHAPE',
+          resizable: true,
+          resizeObjectName: 'SHAPE', // name of the graph object to be resized
+          rotatable: true,
+          rotateObjectName: 'SHAPE', // name of the graph object to be rotate
+          rotationSpot: go.Spot.Center
         })
-          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-          .bindTwoWay('angle'),
-        new go.TextBlock()
-          .bind('text')
-      );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('rotationSpot', 'rotSpot', go.Spot.parse, go.Spot.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+              name: 'SHAPE',
+              fill: 'orange',
+              strokeWidth: 2
+            })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindTwoWay('angle'),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -178,6 +181,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

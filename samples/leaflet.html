@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -138,6 +140,23 @@
 </style>
 
 <script id="code">
+
+  // customize dragging to avoid built-in dragging by Leaflet
+  class LeafletDraggingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+    doActivate() {
+      myLeafletMap.dragging.disable();
+      super.doActivate();
+    }
+    doDeactivate() {
+      myLeafletMap.dragging.enable();
+      super.doDeactivate();
+    }
+  }
+
   function init() {
 
     /* Leaflet init */
@@ -147,7 +166,7 @@
 
     myLeafletMap = L.map('map', {}).setView(defaultOrigin, defaultZoom);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-      attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 18,
       minZoom: 2,
       tileSize: 512,
@@ -165,8 +184,8 @@
     function updateNodes() {
       // called when zoom level has changed
       myUpdatingGoJS = true;
-      myDiagram.commit((diag) => {
-        diag.nodes.each((n) => n.updateTargetBindings('latlong')); // without virtualization this can be slow if there are many nodes
+      myDiagram.commit(diag => {
+        diag.nodes.each(n => n.updateTargetBindings('latlong')); // without virtualization this can be slow if there are many nodes
       }, null);
       myUpdatingGoJS = false;
     }
@@ -179,7 +198,8 @@
 
     /* GoJS init */
     myDiagram = new go.Diagram('myDiagramDiv', {
-      InitialLayoutCompleted: (e) => updatePosition(),
+      InitialLayoutCompleted: e => updatePosition(),
+      draggingTool: new LeafletDraggingTool(),
       'dragSelectingTool.isEnabled': false,
       'animationManager.isEnabled': false,
       scrollMode: go.ScrollMode.Infinite,
@@ -192,70 +212,68 @@
       defaultCursor: 'default',
       'toolManager.hoverDelay': 100, // how quickly tooltips are shown
       'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
-        if (e.change === go.ChangeType.Transaction && (e.propertyName === 'FinishedUndo' || e.propertyName === 'FinishedRedo')) {
+      ModelChanged: e => {
+        if (e.change === go.ChangeType.Transaction &&
+            (e.propertyName === 'FinishedUndo' || e.propertyName === 'FinishedRedo')) {
           setTimeout(() => updateNodes());
         }
       }
     });
 
     // the node template describes how each Node should be constructed
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      cursor: 'pointer',
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(
-          new go.TextBlock(
-            { margin: 4, textAlign: 'center' })
-            .bind('text', '', (d) => `${d.key}\n[${d.latlong[0].toFixed(6)}, ${d.latlong[1].toFixed(6)}]`)
-        )
-    })
-      // A two-way data binding with an Array of latitude,longitude numbers.
-      // We have to explicitly avoid updating the source data Array
-      // when myUpdatingGoJS is true; otherwise there would be accumulating errors.
-      .bindTwoWay('location', 'latlong', (data) => {
-        const pos = myLeafletMap.project(data, myLeafletMap.getZoom());
-        return new go.Point(pos.x, pos.y);
-      }, (pt, data) => {
-        if (myUpdatingGoJS) {
-          return data.latlong; // no-op
-        } else {
-          const ll = myLeafletMap.unproject(L.point(pt.x, pt.y), myLeafletMap.getZoom());
-          return [ll.lat, ll.lng];
-        }
-      })
-      .add(
-        new go.Shape('Circle', {
-          fill: 'rgba(0, 255, 0, .4)',
-          stroke: '#082D47',
-          strokeWidth: 1,
-          width: 7,
-          height: 7
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Center,
+          cursor: 'pointer',
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4, textAlign: 'center' })
+                  .bind('text', '',
+                        d => `${d.key}\n[${d.latlong[0].toFixed(6)}, ${d.latlong[1].toFixed(6)}]`)
+              )
         })
-      );
+        // A two-way data binding with an Array of latitude,longitude numbers.
+        // We have to explicitly avoid updating the source data Array
+        // when myUpdatingGoJS is true; otherwise there would be accumulating errors.
+        .bindTwoWay('location', 'latlong',
+          data => {
+            const pos = myLeafletMap.project(data, myLeafletMap.getZoom());
+            return new go.Point(pos.x, pos.y);
+          },
+          (pt, data) => {
+            if (myUpdatingGoJS) {
+              return data.latlong; // no-op
+            } else {
+              const ll = myLeafletMap.unproject(L.point(pt.x, pt.y), myLeafletMap.getZoom());
+              return [ll.lat, ll.lng];
+            }
+          })
+        .add(
+          new go.Shape('Circle', {
+            fill: 'rgba(0, 255, 0, .4)',
+            stroke: '#082D47',
+            strokeWidth: 1,
+            width: 7,
+            height: 7
+          })
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      layerName: 'Background',
-      curve: go.Curve.Bezier,
-      curviness: 5,
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock({ margin: 4, textAlign: 'center' }).bind('text', '', (d) => `${d.from} -- ${d.to}`))
-    })
-      .add(
-        new go.Shape({ strokeWidth: 3, stroke: 'rgba(100,100,255,.7)' })
-      );
-
-    // DraggingTool needs to disable panning of Leaflet map
-    myDiagram.toolManager.draggingTool.doActivate = function () {
-      // method override must be function, not =>
-      myLeafletMap.dragging.disable();
-      go.DraggingTool.prototype.doActivate.call(this);
-    };
-
-    myDiagram.toolManager.draggingTool.doDeactivate = function () {
-      // method override must be function, not =>
-      myLeafletMap.dragging.enable();
-      go.DraggingTool.prototype.doDeactivate.call(this);
-    };
+    myDiagram.linkTemplate =
+      new go.Link({
+          layerName: 'Background',
+          curve: go.Curve.Bezier,
+          curviness: 5,
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4, textAlign: 'center' })
+                  .bind('text', '', d => `${d.from} -- ${d.to}`)
+              )
+        })
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: 'rgba(100,100,255,.7)' })
+        );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
@@ -359,7 +377,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

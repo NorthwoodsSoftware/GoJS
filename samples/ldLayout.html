@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -136,23 +138,25 @@
     );
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', { locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape('Rectangle', {
-          fill: 'lightgray', // the initial value, but data binding may provide different value
-          stroke: null,
-          desiredSize: new go.Size(30, 30)
-        })
-          .bind('fill'),
-        new go.TextBlock()
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Rectangle', {
+              fill: 'lightgray', // the initial value, but data binding may provide different value
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            })
+            .bind('fill'),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     // define the Link template to be minimal
-    myDiagram.linkTemplate = new go.Link({ selectable: false })
-      .add(
-        new go.Shape({ strokeWidth: 3, stroke: '#333' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ selectable: false, corner: 10 })
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: '#333' })
+        );
 
     // generate a tree with the default values
     buildSettingsMenu();
@@ -242,7 +246,7 @@
     else if (direction === 'Down') lay.direction = 90;
     else if (direction === 'Left') lay.direction = 180;
     else if (direction === 'Up') lay.direction = 270;
-    if(direction != d.getElementById('direction').name) code += `\n  direction: ${lay.direction},`
+    if (direction != d.getElementById('direction').name) code += `\n  direction: ${lay.direction},`
 
     var layerSpacing = d.getElementById('layerSpacing').value;
     layerSpacing = parseFloat(layerSpacing, 10);
@@ -295,7 +299,7 @@
     disable('straightenPack', !(alignOption == 0));
     disable('expandPack', !(alignOption == 0));
 
-    if (alignOption == 0){
+    if (alignOption == 0) { 
       var medianPack = d.getElementById('medianPack').checked;
       var straightenPack = d.getElementById('straightenPack').checked;
       var expandPack = d.getElementById('expandPack').checked;
@@ -308,7 +312,7 @@
       else if (packOption == 7) code += ''
       else code += `\n  packOption: ${packOption},`
     }
-    if(code === 'new go.LayeredDigraphLayout({') code = 'new go.LayeredDigraphLayout()'; // If no changes made to layout
+    if (code === 'new go.LayeredDigraphLayout({') code = 'new go.LayeredDigraphLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
 
@@ -317,12 +321,12 @@
     if (window.Prism) window.Prism.highlightAll();
   }
 
-  function disable(element, bool){
+  function disable(element, bool) { 
     document.getElementById(element + 'Row').style.opacity = (bool)? 0.5 : 1;
     document.getElementById(element + 'Row').style.pointerEvents = (bool)? 'none' : 'auto';
   }
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     // Calls to build each setting to the respective builder - Default Properties
     buildButtonRow('layerSpacing', 5, 25, 'Layer Spacing', 'table1', 0);
     buildButtonRow('columnSpacing', 5, 25, 'Column Spacing', 'table1', 0);
@@ -343,18 +347,17 @@
     buildSwitch('straightenPack', 'Straighten', 'table4', 'checked');
     buildSwitch('expandPack', 'Expand', 'table4', 'checked');
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = ''; })
     })
   }
 
-  function changeNodes(max, value){ // Allows for Node property to be changed and to make sure max and min never cross each other
+  function changeNodes(max, value) {  // Allows for Node property to be changed and to make sure max and min never cross each other
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxNodes').value = Math.max(e.getElementById('maxNodes').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minNodes').value = Math.max(e.getElementById('minNodes').value - -value, 0);
     }
     if (parseInt(e.getElementById('minNodes').value) > parseInt(e.getElementById('maxNodes').value)) {
@@ -362,28 +365,28 @@
     }
   }
 
-  function changeDropdown(element){ // Changes dropdowns and updates code block and reset button
+  function changeDropdown(element) {  // Changes dropdowns and updates code block and reset button
     element.parentNode.querySelector('.button1').style = (element.value != element.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function resetButton(element){ // Sets property back to original and changes related divs accordingly
+  function resetButton(element) {  // Sets property back to original and changes related divs accordingly
     e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+  function changeInput(element, change = true) {  // Changes value and checks for default equality for the reset button
     e = element.parentNode.querySelector('.inputBox');
     change? number = element.name: number = 0;
     const max = element.parentNode.querySelector('.maximum').name;
     const min = element.parentNode.querySelector('.minimum').name;
     const decimal = element.parentNode.querySelector('.decimal').name;
-    var value = (e.value - -number) // Changes by recorded interval
-    if(max !== null) value = Math.min(value, max) // Checks for max and min values
-    if(min !== null) value = Math.max(value, min)
-    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    var value = (e.value - -number); // Changes by recorded interval
+    if (max !== null) value = Math.min(value, max); // Checks for max and min values
+    if (min !== null) value = Math.max(value, min);
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal); // Rounds to assigned place
     element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
@@ -434,7 +437,7 @@
     document.getElementById(table).appendChild(clone);
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -446,7 +449,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -504,7 +507,7 @@
 
 <template id="buttonRow">
   <div class="row" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>
@@ -536,7 +539,7 @@
 
 <template id="dropdown">
   <div class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 17px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none pt-4"></div>
@@ -555,7 +558,7 @@
 
 <template id="switch">
   <label class="row">
-    <svg  onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg  onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-top: 2px; margin-right: 2px; margin-left: 4px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap select-none pt-2"></div>

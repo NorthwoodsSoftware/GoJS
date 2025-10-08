@@ -12,6 +12,7 @@
 import * as go from 'gojs';
 /**
  * This custom CommandHandler is an example of how screen reader accessibility can be added to diagrams with an `aria-live` DIV.
+ * Its functionality is mostly superceded by the built-in CommandHandler support for focus navigation.
  *
  * This CommandHandler adds more key commands for a user:
  * - Arrow keys: Change selection to a new node, if possible, based on direction/tree realationship/linked nodes. This is added to an internal navigation history.
@@ -23,9 +24,8 @@ import * as go from 'gojs';
  * Certain data and attributes of nodes that are different between diagrams may be important to the accessibility interpretation.
  * When describing a Part, this example calls {@link getPartText}, which uses the `Part.text` if it is specified, otherwise the `Part.key`.
  * You'll want to modify this to suit your needs.
- *
- * If you want to experiment with this extension, try the <a href="../../samples/Accessibility.html">Accessibility</a> sample.
  * @category Extension
+ * @deprecated See {@link CommandHandler}
  */
 export class AriaCommandHandler extends go.CommandHandler {
     /**

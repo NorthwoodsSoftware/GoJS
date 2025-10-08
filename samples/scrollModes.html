@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -124,32 +126,34 @@
           
             
             
-
-    <script id="code">
+  
+  <script id="code">
     function init() {
 
       myDiagram = new go.Diagram('myDiagramDiv', {
         minScale: 0.25,  // so that the contents and the grid cannot appear too small
-        grid: new go.Panel('Grid')
-          .add(
-            new go.Shape('LineH', { stroke: 'gray', strokeWidth: .5 }),
-            new go.Shape('LineH', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 }),
-            new go.Shape('LineV', { stroke: 'gray', strokeWidth: .5 }),
-            new go.Shape('LineV', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 })
-          ),
+        grid:
+          new go.Panel('Grid')
+            .add(
+              new go.Shape('LineH', { stroke: 'gray', strokeWidth: .5 }),
+              new go.Shape('LineH', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 }),
+              new go.Shape('LineV', { stroke: 'gray', strokeWidth: .5 }),
+              new go.Shape('LineV', { stroke: 'darkslategray', strokeWidth: 1.5, interval: 10 })
+            ),
         'draggingTool.isGridSnapEnabled': true,
         'undoManager.isEnabled': true  // enable undo & redo
       });
 
-      myDiagram.nodeTemplate = new go.Node('Auto')  // the Shape will go around the TextBlock
-        .add(
-          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-            // Shape.fill is bound to Node.data.color
-            .bind('fill', 'color'),
-          new go.TextBlock({ margin: 8 })  // some room around the text
-            // TextBlock.text is bound to Node.data.text
-            .bind('text')
-        );
+      myDiagram.nodeTemplate =
+        new go.Node('Auto')  // the Shape will go around the TextBlock
+          .add(
+            new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+              // Shape.fill is bound to Node.data.color
+              .bind('fill', 'color'),
+            new go.TextBlock({ margin: 8 })  // some room around the text
+              // TextBlock.text is bound to Node.data.text
+              .bind('text')
+          );
 
       // create the model data that will be represented by Nodes and Links
       myDiagram.model = new go.GraphLinksModel(

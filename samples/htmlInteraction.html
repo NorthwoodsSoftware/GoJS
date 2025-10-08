@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -187,20 +189,19 @@
     });
 
     // define several shared Brushes
-    var fill1 = 'rgb(105,210,231)';
-    var brush1 = 'rgb(65,180,181)';
+    const fill1 = 'rgb(105,210,231)';
+    const brush1 = 'rgb(65,180,181)';
 
-    var fill2 = 'rgb(167,219,216)';
-    var brush2 = 'rgb(127,179,176)';
+    const fill2 = 'rgb(167,219,216)';
+    const brush2 = 'rgb(127,179,176)';
 
-    var fill3 = 'rgb(224,228,204)';
-    var brush3 = 'rgb(184,188,164)';
+    const fill3 = 'rgb(224,228,204)';
+    const brush3 = 'rgb(184,188,164)';
 
-    var fill4 = 'rgb(243,134,48)';
-    var brush4 = 'rgb(203,84,08)';
+    const fill4 = 'rgb(243,134,48)';
+    const brush4 = 'rgb(203,84,08)';
 
-    myDiagram.nodeTemplateMap.add(
-      '', // default category
+    myDiagram.nodeTemplateMap.add('', // default category
       new go.Node('Auto', { locationSpot: go.Spot.Center })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
@@ -209,20 +210,20 @@
             .bind('fill', 'fill')
             .bind('stroke', 'stroke'),
           new go.TextBlock({
-            margin: 5,
-            maxSize: new go.Size(200, NaN),
-            wrap: go.Wrap.Fit,
-            textAlign: 'center',
-            editable: true,
-            font: 'bold 9pt Helvetica, Arial, sans-serif',
-            name: 'TEXT'
-          })
+              margin: 5,
+              maxSize: new go.Size(200, NaN),
+              wrap: go.Wrap.Fit,
+              textAlign: 'center',
+              editable: true,
+              font: 'bold 9pt Helvetica, Arial, sans-serif',
+              name: 'TEXT'
+            })
             .bindTwoWay('text')
         )
     );
 
     // On selection changed, make sure infoDraggable will resize as necessary
-    myDiagram.addDiagramListener('ChangedSelection', (diagramEvent) => {
+    myDiagram.addDiagramListener('ChangedSelection', diagramEvent => {
       var idrag = document.getElementById('infoDraggable');
       idrag.style.width = '';
       idrag.style.height = '';
@@ -246,7 +247,7 @@
       { text: 'Goldfish', fill: fill4, stroke: brush4, figure: 'Octagon' }
     ]);
 
-    myPalette.addDiagramListener('InitialLayoutCompleted', (diagramEvent) => {
+    myPalette.addDiagramListener('InitialLayoutCompleted', diagramEvent => {
       var pdrag = document.getElementById('paletteDraggable');
       var palette = diagramEvent.diagram;
       pdrag.style.width = palette.documentBounds.width + 28 + 'px'; // account for padding/borders

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,9 +132,7 @@
     // conversion functions for Bindings in the Node template:
 
     function nodeTypeImage(type) {
-      switch (
-        type // Image sizes
-      ) {
+      switch (type) { // Image sizes
         case 'S2':
           return 'images/voice atm switch.jpg'; // 55x55
         case 'S3':
@@ -190,50 +190,51 @@
       return 'green';
     }
 
-    myDiagram.nodeTemplate = new go.Node('Vertical', {
-      locationObjectName: 'ICON',
-      locationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Panel('Spot')
-          .add(
-            new go.Panel('Auto', { name: 'ICON' })
-              .add(
-                new go.Shape({
-                  fill: null,
-                  stroke: null,
-                  background: 'rgba(0,0,0,0)'
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical', {
+          locationObjectName: 'ICON',
+          locationSpot: go.Spot.Center
+        })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Panel('Auto', { name: 'ICON' })
+                .add(
+                  new go.Shape({
+                      fill: null,
+                      stroke: null,
+                      background: 'rgba(0,0,0,0)'
+                    })
+                    .bind('background', 'problem', nodeProblemConverter)
+                    //you really should just be able to do .trigger('background') here--if you're reading this that has
+                    //probably been fixed by now
+                    .trigger(new go.AnimationTrigger('background')),
+                  new go.Picture({ margin: 5 })
+                    .bind('source', 'type', nodeTypeImage)
+                    .bind('desiredSize', 'type', nodeTypeSize)
+                ), // end Auto Panel
+              new go.Shape('Circle', {
+                  alignment: go.Spot.TopLeft,
+                  alignmentFocus: go.Spot.TopLeft,
+                  width: 12,
+                  height: 12,
+                  fill: 'orange'
                 })
-                  .bind('background', 'problem', nodeProblemConverter)
-                  //you really should just be able to do .trigger('background') here--if you're reading this that has
-                  //probably been fixed by now
-                  .trigger(new go.AnimationTrigger('background')),
-                new go.Picture({ margin: 5 })
-                  .bind('source', 'type', nodeTypeImage)
-                  .bind('desiredSize', 'type', nodeTypeSize)
-              ), // end Auto Panel
-            new go.Shape('Circle', {
-              alignment: go.Spot.TopLeft,
-              alignmentFocus: go.Spot.TopLeft,
-              width: 12,
-              height: 12,
-              fill: 'orange'
-            })
-              .bind('figure', 'operation', nodeOperationConverter),
-            new go.Shape('Triangle', {
-              alignment: go.Spot.TopRight,
-              alignmentFocus: go.Spot.TopRight,
-              width: 12,
-              height: 12,
-              fill: 'blue'
-            })
-              .bind('fill', 'status', nodeStatusConverter)
-              .trigger(new go.AnimationTrigger('fill'))
-          ), // end Spot Panel
-        new go.TextBlock()
-          .bind('text')
-      ); // end Node
+                .bind('figure', 'operation', nodeOperationConverter),
+              new go.Shape('Triangle', {
+                  alignment: go.Spot.TopRight,
+                  alignmentFocus: go.Spot.TopRight,
+                  width: 12,
+                  height: 12,
+                  fill: 'blue'
+                })
+                .bind('fill', 'status', nodeStatusConverter)
+                .trigger(new go.AnimationTrigger('fill'))
+            ), // end Spot Panel
+          new go.TextBlock()
+            .bind('text')
+        ); // end Node
 
     // conversion function for Bindings in the Link template:
 
@@ -242,25 +243,20 @@
       return 'gray';
     }
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 3
-    })
-      .add(
-        new go.Shape({
-          strokeWidth: 2,
-          stroke: 'gray'
-        })
-          .bind('stroke', 'problem', linkProblemConverter)
-          .trigger(new go.AnimationTrigger('stroke'))
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.AvoidsNodes, corner: 3 })
+        .add(
+          new go.Shape({ strokeWidth: 2, stroke: 'gray' })
+            .bind('stroke', 'problem', linkProblemConverter)
+            .trigger(new go.AnimationTrigger('stroke'))
+        );
 
     load();
 
     // simulate some real-time problem monitoring, once every two seconds:
     function randomProblems() {
       var model = myDiagram.model;
-      model.commit((m) => {
+      model.commit(m => {
         // update all nodes
         var arr = m.nodeDataArray;
         for (var i = 0; i < arr.length; i++) {
@@ -290,6 +286,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

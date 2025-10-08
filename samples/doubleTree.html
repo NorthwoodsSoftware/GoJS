@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,39 +131,41 @@
         layout: new DoubleTreeLayout({
             //vertical: true,  // default directions are horizontal
             // choose whether this subtree is growing towards the right or towards the left:
-            directionFunction: (n) => n.data && n.data.dir !== 'left'
+            directionFunction: n => n.data && n.data.dir !== 'left'
             // controlling the parameters of each TreeLayout:
             //bottomRightOptions: { nodeSpacing: 0, layerSpacing: 20 },
             //topLeftOptions: { alignment: go.TreeAlignment.Start },
-          }
-        )
-      }
-    );
+          })
+      });
 
     // define all of the gradient brushes
-    var graygrad = new go.Brush('Linear', { 0: '#F5F5F5', 1: '#F1F1F1' });
-    var bluegrad = new go.Brush('Linear', { 0: '#CDDAF0', 1: '#91ADDD' });
-    var yellowgrad = new go.Brush('Linear', { 0: '#FEC901', 1: '#FEA200' });
-    var lavgrad = new go.Brush('Linear', { 0: '#EF9EFA', 1: '#A570AD' });
+    const graygrad = new go.Brush('Linear', { 0: '#F5F5F5', 1: '#F1F1F1' });
+    const bluegrad = new go.Brush('Linear', { 0: '#CDDAF0', 1: '#91ADDD' });
+    const yellowgrad = new go.Brush('Linear', { 0: '#FEC901', 1: '#FEA200' });
+    const lavgrad = new go.Brush('Linear', { 0: '#EF9EFA', 1: '#A570AD' });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { isShadowed: true })
-      .add(
-        // define the node's outer shape
-        new go.Shape('RoundedRectangle', {
-          fill: graygrad, // default fill is gray
-          stroke: '#D8D8D8'
-        }).bind('fill', 'color'),
-        // define the node's text
-        new go.TextBlock({
-          margin: 5,
-          font: 'bold 11px Helvetica, bold Arial, sans-serif'
-        }).bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { isShadowed: true })
+        .add(
+          // define the node's outer shape
+          new go.Shape('RoundedRectangle', {
+              fill: graygrad, // default fill is gray
+              stroke: '#D8D8D8'
+            })
+            .bind('fill', 'color'),
+          // define the node's text
+          new go.TextBlock({
+              margin: 5,
+              font: 'bold 11px Helvetica, bold Arial, sans-serif'
+            })
+            .bind('text', 'key')
+        );
 
-    myDiagram.linkTemplate = new go.Link({ selectable: false }) // the whole link panel
-      .add(
-        new go.Shape() // the link shape
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ selectable: false, corner: 10 }) // the whole link panel
+        .add(
+          new go.Shape() // the link shape
+        );
 
     // create the model for the double tree; could be eiher TreeModel or GraphLinksModel
     myDiagram.model = new go.TreeModel([
@@ -185,6 +189,7 @@
       { key: 'leaf17', parent: 'Right3' }
     ]);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

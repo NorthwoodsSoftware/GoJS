@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -151,152 +153,151 @@
       }
 
       // the item template for properties
-      var propertyTemplate = new go.Panel('Horizontal')
-        .add(
-          // property visibility/access
-          new go.TextBlock({ isMultiline: false, editable: false, width: 12 })
-            .bind('text', 'visibility', convertVisibility),
-          // property name, underlined if scope=="class" to indicate static property
-          new go.TextBlock({ isMultiline: false, editable: true })
-            .bindTwoWay('text', 'name')
-            .bind('isUnderline', 'scope', s => s[0] === 'c'),
-          // property type, if known
-          new go.TextBlock('')
-            .bind('text', 'type', t => t ? ': ' : ''),
-          new go.TextBlock({ isMultiline: false, editable: true })
-            .bindTwoWay('text', 'type'),
-          // property default value, if any
-          new go.TextBlock({ isMultiline: false, editable: false })
-            .bind('text', 'default', s => s ? ' = ' + s : '')
-        );
+      var propertyTemplate =
+        new go.Panel('Horizontal')
+          .add(
+            // property visibility/access
+            new go.TextBlock({ isMultiline: false, editable: false, width: 12 })
+              .bind('text', 'visibility', convertVisibility),
+            // property name, underlined if scope=="class" to indicate static property
+            new go.TextBlock({ isMultiline: false, editable: true })
+              .bindTwoWay('text', 'name')
+              .bind('isUnderline', 'scope', s => s[0] === 'c'),
+            // property type, if known
+            new go.TextBlock('')
+              .bind('text', 'type', t => t ? ': ' : ''),
+            new go.TextBlock({ isMultiline: false, editable: true })
+              .bindTwoWay('text', 'type'),
+            // property default value, if any
+            new go.TextBlock({ isMultiline: false, editable: false })
+              .bind('text', 'default', s => s ? ' = ' + s : '')
+          );
 
       // the item template for methods
-      var methodTemplate = new go.Panel('Horizontal')
-        .add(
-          // method visibility/access
-          new go.TextBlock({ isMultiline: false, editable: false, width: 12 })
-            .bind('text', 'visibility', convertVisibility),
-          // method name, underlined if scope=="class" to indicate static method
-          new go.TextBlock({ isMultiline: false, editable: true })
-            .bindTwoWay('text', 'name')
-            .bind('isUnderline', 'scope', s => s[0] === 'c'),
-          // method parameters
-          new go.TextBlock('()')
-            // this does not permit adding/editing/removing of parameters via inplace edits
-            .bind('text', 'parameters', parr => {
-              var s = '(';
-              for (var i = 0; i < parr.length; i++) {
-                var param = parr[i];
-                if (i > 0) s += ', ';
-                s += param.name + ': ' + param.type;
-              }
-              return s + ')';
-            }),
-          // method return type, if any
-          new go.TextBlock('')
-            .bind('text', 'type', t => t ? ': ' : ''),
-          new go.TextBlock({ isMultiline: false, editable: true })
-            .bindTwoWay('text', 'type')
-        );
+      var methodTemplate =
+        new go.Panel('Horizontal')
+          .add(
+            // method visibility/access
+            new go.TextBlock({ isMultiline: false, editable: false, width: 12 })
+              .bind('text', 'visibility', convertVisibility),
+            // method name, underlined if scope=="class" to indicate static method
+            new go.TextBlock({ isMultiline: false, editable: true })
+              .bindTwoWay('text', 'name')
+              .bind('isUnderline', 'scope', s => s[0] === 'c'),
+            // method parameters
+            new go.TextBlock('()')
+              // this does not permit adding/editing/removing of parameters via inplace edits
+              .bind('text', 'parameters', parr => {
+                var s = '(';
+                for (var i = 0; i < parr.length; i++) {
+                  var param = parr[i];
+                  if (i > 0) s += ', ';
+                  s += param.name + ': ' + param.type;
+                }
+                return s + ')';
+              }),
+            // method return type, if any
+            new go.TextBlock('')
+              .bind('text', 'type', t => t ? ': ' : ''),
+            new go.TextBlock({ isMultiline: false, editable: true })
+              .bindTwoWay('text', 'type')
+          );
 
       // this simple template does not have any buttons to permit adding or
       // removing properties or methods, but it could!
 
       myDiagram.nodeTemplate =
         new go.Node('Auto', {
-          locationSpot: go.Spot.Center,
-          fromSpot: go.Spot.AllSides,
-          toSpot: go.Spot.AllSides
-        })
+            locationSpot: go.Spot.Center,
+            fromSpot: go.Spot.AllSides,
+            toSpot: go.Spot.AllSides
+          })
           .add(
             new go.Shape({ fill: 'lightyellow' }),
             new go.Panel('Table', { defaultRowSeparatorStroke: 'black' })
               .add(
                 // header
                 new go.TextBlock({
-                  row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
-                  font: 'bold 12pt sans-serif',
-                  isMultiline: false, editable: true
-                })
+                    row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
+                    font: 'bold 12pt sans-serif',
+                    isMultiline: false, editable: true
+                  })
                   .bindTwoWay('text', 'name'),
                 // properties
                 new go.TextBlock('Properties', { row: 1, font: 'italic 10pt sans-serif' })
                   .bindObject('visible', 'visible', v => !v, undefined, 'PROPERTIES'),
                 new go.Panel('Vertical', {
-                  name: 'PROPERTIES',
-                  row: 1,
-                  margin: 3,
-                  stretch: go.Stretch.Horizontal,
-                  defaultAlignment: go.Spot.Left,
-                  background: 'lightyellow',
-                  itemTemplate: propertyTemplate
-                })
+                    name: 'PROPERTIES',
+                    row: 1,
+                    margin: 3,
+                    stretch: go.Stretch.Horizontal,
+                    defaultAlignment: go.Spot.Left,
+                    background: 'lightyellow',
+                    itemTemplate: propertyTemplate
+                  })
                   .bind('itemArray', 'properties'),
                 go.GraphObject.build("PanelExpanderButton", {
-                  row: 1,
-                  column: 1,
-                  alignment: go.Spot.TopRight,
-                  visible: false
-                }, "PROPERTIES")
+                    row: 1,
+                    column: 1,
+                    alignment: go.Spot.TopRight,
+                    visible: false
+                  }, "PROPERTIES")
                   .bind('visible', 'properties', arr => arr.length > 0),
                 // methods
                 new go.TextBlock('Methods', { row: 2, font: 'italic 10pt sans-serif' })
                   .bindObject('visible', 'visible', v => !v, undefined, 'METHODS'),
                 new go.Panel('Vertical', {
-                  name: 'METHODS',
-                  row: 2,
-                  margin: 3,
-                  stretch: go.Stretch.Horizontal,
-                  defaultAlignment: go.Spot.Left,
-                  background: 'lightyellow',
-                  itemTemplate: methodTemplate
-                })
+                    name: 'METHODS',
+                    row: 2,
+                    margin: 3,
+                    stretch: go.Stretch.Horizontal,
+                    defaultAlignment: go.Spot.Left,
+                    background: 'lightyellow',
+                    itemTemplate: methodTemplate
+                  })
                   .bind('itemArray', 'methods'),
                 go.GraphObject.build("PanelExpanderButton", {
-                  row: 2,
-                  column: 1,
-                  alignment: go.Spot.TopRight,
-                  visible: false
-                }, "METHODS")
+                    row: 2,
+                    column: 1,
+                    alignment: go.Spot.TopRight,
+                    visible: false
+                  }, "METHODS")
                   .bind('visible', 'methods', arr => arr.length > 0)
               )
           );
 
-      function linkStyle() {
-        return { isTreeLink: false, fromEndSegmentLength: 0, toEndSegmentLength: 0 };
-      }
+      const LinkStyle = { isTreeLink: false, fromEndSegmentLength: 0, toEndSegmentLength: 0 };
 
-      myDiagram.linkTemplate = new go.Link({ // by default, "Inheritance" or "Generalization"
-          ...linkStyle(),
-          isTreeLink: true
-        })
-        .add(
-          new go.Shape(),
-          new go.Shape({ toArrow: 'Triangle', fill: 'white' })
-        );
+      myDiagram.linkTemplate =
+        new go.Link(LinkStyle) // by default, "Inheritance" or "Generalization"
+          .set({ isTreeLink: true })
+          .add(
+            new go.Shape(),
+            new go.Shape({ toArrow: 'Triangle', fill: 'white' })
+          );
 
       myDiagram.linkTemplateMap.add('Association',
-        new go.Link(linkStyle())
+        new go.Link(LinkStyle)
           .add(
             new go.Shape()
           ));
 
       myDiagram.linkTemplateMap.add('Realization',
-        new go.Link(linkStyle())
+        new go.Link(LinkStyle)
           .add(
             new go.Shape({ strokeDashArray: [3, 2] }),
             new go.Shape({ toArrow: 'Triangle', fill: 'white' })
           ));
 
       myDiagram.linkTemplateMap.add('Dependency',
-        new go.Link(linkStyle())
+        new go.Link(LinkStyle)
           .add(
             new go.Shape({ strokeDashArray: [3, 2] }),
             new go.Shape({ toArrow: 'OpenTriangle' })
           ));
 
       myDiagram.linkTemplateMap.add('Composition',
-        new go.Link(linkStyle())
+        new go.Link(LinkStyle)
           .add(
             new go.Shape(),
             new go.Shape({ fromArrow: 'StretchedDiamond', scale: 1.3 }),
@@ -304,7 +305,7 @@
           ));
 
       myDiagram.linkTemplateMap.add('Aggregation',
-        new go.Link(linkStyle())
+        new go.Link(LinkStyle)
           .add(
             new go.Shape(),
             new go.Shape({ fromArrow: 'StretchedDiamond', fill: 'white', scale: 1.3 }),
@@ -378,8 +379,7 @@
         { from: 13, to: 11 },
         { from: 14, to: 13, relationship: 'Association' }
       ];
-      myDiagram.model = new go.GraphLinksModel(
-        {
+      myDiagram.model = new go.GraphLinksModel({
           copiesArrays: true,
           copiesArrayObjects: true,
           linkCategoryProperty: 'relationship',
@@ -471,7 +471,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

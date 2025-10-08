@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,17 +134,16 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', { resizable: true })
-      .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-        new go.TextBlock({
-          margin: 8 // some room around the text
-        })
-          .bind('text') // TextBlock.text is bound to Node.data.text
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { resizable: true })
+        .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+          new go.TextBlock({ margin: 8 }) // some room around the text
+            .bind('text') // TextBlock.text is bound to Node.data.text
+        );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -137,7 +139,7 @@
       var node = port.part;
       node.diagram.startTransaction('expand/collapse');
       var portid = port.portId;
-      node.findLinksOutOf(portid).each((l) => {
+      node.findLinksOutOf(portid).each(l => {
         if (l.visible) {
           // collapse whole subtree recursively
           collapseTree(node, portid);
@@ -157,7 +159,7 @@
 
     // recursive function for collapsing complete subtree
     function collapseTree(node, portid) {
-      node.findLinksOutOf(portid).each((l) => {
+      node.findLinksOutOf(portid).each(l => {
         l.visible = false;
         var n = l.getOtherNode(node);
         if (n !== null) {
@@ -181,21 +183,24 @@
     }
 
     // define tooltips for buttons
-    var tooltipTemplate = go.GraphObject.build('ToolTip', { 'Border.fill': 'whitesmoke', 'Border.stroke': 'lightgray' })
-      .add(
-        new go.TextBlock({
-          font: '8pt Roboto, sans-serif',
-          wrap: go.Wrap.Fit,
-          desiredSize: new go.Size(200, NaN),
-          alignment: go.Spot.Center,
-          margin: 6
+    var tooltipTemplate =
+      go.GraphObject.build('ToolTip', {
+          'Border.fill': 'whitesmoke',
+          'Border.stroke': 'lightgray'
         })
-          .bind('text', '', tooltipTextConverter)
-      );
+        .add(
+          new go.TextBlock({
+              font: '8pt Roboto, sans-serif',
+              wrap: go.Wrap.Fit,
+              desiredSize: new go.Size(200, NaN),
+              alignment: go.Spot.Center,
+              margin: 6
+            })
+            .bind('text', '', tooltipTextConverter)
+        );
 
     // define the Node template for non-leaf nodes
-    myDiagram.nodeTemplateMap.add(
-      'decision',
+    myDiagram.nodeTemplateMap.add('decision',
       new go.Node('Auto')
         .bind('text', 'key')
         // define the node's outer shape, which will surround the Horizontal Panel
@@ -204,30 +209,34 @@
           // define a horizontal Panel to place the node's text alongside the buttons
           new go.Panel('Horizontal')
             .add(
-              new go.TextBlock({ font: '30px Roboto, sans-serif', margin: 5 }).bind('text', 'key'),
+              new go.TextBlock({ font: '30px Roboto, sans-serif', margin: 5 })
+                .bind('text', 'key'),
               // define a vertical panel to place the node's two buttons one above the other
               new go.Panel('Vertical', { defaultStretch: go.Stretch.Fill, margin: 3 })
                 .add(
                   go.GraphObject.build('Button', { // button A
-                    name: 'ButtonA',
-                    click: buttonExpandCollapse,
-                    toolTip: tooltipTemplate
-                  })
+                      name: 'ButtonA',
+                      click: buttonExpandCollapse,
+                      toolTip: tooltipTemplate
+                    })
                     .bind('portId', 'a')
-                    .add(new go.TextBlock({ font: '900 16px Roboto, sans-serif' }).bind('text', 'aText'))
-                  , // end button A
+                    .add(
+                      new go.TextBlock({ font: '900 16px Roboto, sans-serif' })
+                        .bind('text', 'aText')
+                    ), // end button A
                   go.GraphObject.build('Button', { // button B
-                    name: 'ButtonB',
-                    click: buttonExpandCollapse,
-                    toolTip: tooltipTemplate
-                  })
+                      name: 'ButtonB',
+                      click: buttonExpandCollapse,
+                      toolTip: tooltipTemplate
+                    })
                     .bind('portId', 'b')
-                    .add(new go.TextBlock({ font: '900 16px Roboto, sans-serif' }).bind('text', 'bText'))
-                   // end button B
+                    .add(
+                      new go.TextBlock({ font: '900 16px Roboto, sans-serif' })
+                        .bind('text', 'bText')
+                    ) // end button B
                 ) // end Vertical Panel
             ) // end Horizontal Panel
-        )
-    ); // end Node and call to add
+        )); // end Node and call to add
 
     // define the Node template for leaf nodes
     myDiagram.nodeTemplateMap.add('personality',
@@ -236,21 +245,21 @@
         .add(
           new go.Shape('Rectangle', { fill: 'whitesmoke', stroke: 'lightgray' }),
           new go.TextBlock({
-            font: '13px Roboto, sans-serif',
-            wrap: go.Wrap.Fit,
-            desiredSize: new go.Size(200, NaN),
-            margin: 5
-          })
+              font: '13px Roboto, sans-serif',
+              wrap: go.Wrap.Fit,
+              desiredSize: new go.Size(200, NaN),
+              margin: 5
+            })
             .bind('text', 'text')
-        )
-    );
+        ));
 
     // define the only Link template
-    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, fromPortId: '' }) // the whole link panel
-      .bind('fromPortId', 'fromport')
-      .add(
-        new go.Shape({ stroke: 'lightblue', strokeWidth: 2 }) // the link shape
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, fromPortId: '' }) // the whole link panel
+        .bind('fromPortId', 'fromport')
+        .add(
+          new go.Shape({ stroke: 'lightblue', strokeWidth: 2 }) // the link shape
+        );
 
     // create the model for the decision tree
     var model = new go.GraphLinksModel({ linkFromPortIdProperty: 'fromport' });
@@ -260,10 +269,10 @@
     myDiagram.model = model;
 
     // make all but the start node invisible
-    myDiagram.nodes.each((n) => {
+    myDiagram.nodes.each(n => {
       if (n.text !== 'Start') n.visible = false;
     });
-    myDiagram.links.each((l) => {
+    myDiagram.links.each(l => {
       l.visible = false;
     });
   }
@@ -435,6 +444,7 @@
     }
     model.linkDataArray = linkDataArray;
   }
+
   window.addEventListener('DOMContentLoaded', () => {
     const roboto = new FontFace("Roboto", "url(https://fonts.cdnfonts.com/s/12165/Roboto-Regular.woff)");
     document.fonts.add(roboto);
@@ -492,7 +502,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -509,7 +519,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,63 +127,63 @@
 <script id="code">
   function init() {
 
-    var blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
+    const blues = ['#E1F5FE', '#B3E5FC', '#81D4FA', '#4FC3F7', '#29B6F6', '#03A9F4', '#039BE5', '#0288D1', '#0277BD', '#01579B'];
 
     myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
-        initialContentAlignment: go.Spot.Center,
-        layout: new go.ForceDirectedLayout(),
-        // moving and copying nodes also moves and copies their subtrees
-        'commandHandler.copiesTree': true, // for the copy command
-        'commandHandler.deletesTree': true, // for the delete command
-        'draggingTool.dragsTree': true, // dragging for both move and copy
-        'undoManager.isEnabled': true
-      }
-    );
+      initialContentAlignment: go.Spot.Center,
+      layout: new go.ForceDirectedLayout(),
+      // moving and copying nodes also moves and copies their subtrees
+      'commandHandler.copiesTree': true, // for the copy command
+      'commandHandler.deletesTree': true, // for the delete command
+      'draggingTool.dragsTree': true, // dragging for both move and copy
+      'undoManager.isEnabled': true
+    });
 
     // Define the Node template.
     // This uses a Spot Panel to position a button relative
     // to the ellipse surrounding the text.
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      selectionObjectName: 'PANEL',
-      isTreeExpanded: false,
-      isTreeLeaf: false
-    })
-      // the node's outer shape, which will surround the text
-      .add(
-        new go.Panel('Auto', { name: 'PANEL' })
-          .add(
-            new go.Shape('Circle', {
-              fill: 'whitesmoke',
-              stroke: 'black'
-            })
-              .bind('fill', 'rootdistance', (dist) => {
-                dist = Math.min(blues.length - 1, dist);
-                return blues[dist];
-              }),
-            new go.TextBlock({
-              font: '12pt sans-serif',
-              margin: 5
-            })
-              .bind('text', 'key')
-          ),
-        // the expand/collapse button, at the top-right corner
-        go.GraphObject.build('TreeExpanderButton', {
-          name: 'TREEBUTTON',
-          width: 20,
-          height: 20,
-          alignment: go.Spot.TopRight,
-          alignmentFocus: go.Spot.Center,
-          // customize the expander behavior to
-          // create children if the node has never been expanded
-          click: (e, obj) => {
-            // OBJ is the Button
-            var node = obj.part; // get the Node containing this Button
-            if (node === null) return;
-            e.handled = true;
-            expandNode(node);
-          }
-        }) // end TreeExpanderButton
-      ); // end Node
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          selectionObjectName: 'PANEL',
+          isTreeExpanded: false,
+          isTreeLeaf: false
+        })
+        // the node's outer shape, which will surround the text
+        .add(
+          new go.Panel('Auto', { name: 'PANEL' })
+            .add(
+              new go.Shape('Circle', {
+                  fill: 'whitesmoke',
+                  stroke: 'black'
+                })
+                .bind('fill', 'rootdistance', dist => {
+                  dist = Math.min(blues.length - 1, dist);
+                  return blues[dist];
+                }),
+              new go.TextBlock({
+                  font: '12pt sans-serif',
+                  margin: 5
+                })
+                .bind('text', 'key')
+            ),
+          // the expand/collapse button, at the top-right corner
+          go.GraphObject.build('TreeExpanderButton', {
+            name: 'TREEBUTTON',
+            width: 20,
+            height: 20,
+            alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.Center,
+            // customize the expander behavior to
+            // create children if the node has never been expanded
+            click: (e, obj) => {
+              // OBJ is the Button
+              var node = obj.part; // get the Node containing this Button
+              if (node === null) return;
+              e.handled = true;
+              expandNode(node);
+            }
+          }) // end TreeExpanderButton
+        ); // end Node
 
     // create the model with a root node data
     myDiagram.model = new go.TreeModel([{ key: 0, color: blues[0], everExpanded: false }]);
@@ -252,12 +254,13 @@
 
   function expandAtRandom() {
     var eligibleNodes = [];
-    myDiagram.nodes.each((n) => {
+    myDiagram.nodes.each(n => {
       if (!n.isTreeExpanded) eligibleNodes.push(n);
     });
     var node = eligibleNodes[Math.floor(Math.random() * eligibleNodes.length)];
     expandNode(node);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -324,7 +327,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -333,6 +336,32 @@ More information can be found in the <a href="../intro/buttons.html">GoJS Intro<
 </p>
             <p>
               <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

@@ -121,10 +121,11 @@ export class BPMNLinkingTool extends go.LinkingTool {
     this.temporaryLink.routing = go.Routing.Orthogonal;
     // link validation using the validate methods defined below
     this.linkValidation = (
-      fromnode: go.Node,
-      fromport: go.GraphObject,
-      tonode: go.Node,
-      toport: go.GraphObject
+      fromnode: go.Node | null,
+      fromport: go.GraphObject | null,
+      tonode: go.Node | null,
+      toport: go.GraphObject | null,
+      link?: go.Link | null
     ) =>
       BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
       BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);
@@ -167,11 +168,12 @@ export class BPMNLinkingTool extends go.LinkingTool {
    * Validate that sequence links don't cross subprocess or pool boundaries.
    */
   public static validateSequenceLinkConnection(
-    fromnode: go.Node,
-    fromport: go.GraphObject,
-    tonode: go.Node,
-    toport: go.GraphObject
+    fromnode: go.Node | null,
+    fromport: go.GraphObject | null,
+    tonode: go.Node | null,
+    toport: go.GraphObject | null
   ): boolean {
+    if (!fromnode || !fromport || !tonode || !toport) return false;
     if (fromnode.category === null || tonode.category === null) return true;
 
     // if either node is in a subprocess, both nodes must be in same subprocess (even for Message Flows)
@@ -192,11 +194,12 @@ export class BPMNLinkingTool extends go.LinkingTool {
    * Validate that message links cross pool boundaries.
    */
   public static validateMessageLinkConnection(
-    fromnode: go.Node,
-    fromport: go.GraphObject,
-    tonode: go.Node,
-    toport: go.GraphObject
+    fromnode: go.Node | null,
+    fromport: go.GraphObject | null,
+    tonode: go.Node | null,
+    toport: go.GraphObject | null
   ): boolean {
+    if (!fromnode || !fromport || !tonode || !toport) return false;
     if (fromnode.category === null || tonode.category === null) return true;
 
     if (fromnode.category === 'privateProcess' || tonode.category === 'privateProcess') return true;
@@ -229,10 +232,11 @@ export class BPMNRelinkingTool extends go.RelinkingTool {
     this.temporaryLink.routing = go.Routing.Orthogonal;
     // link validation using the validate methods defined below
     this.linkValidation = (
-      fromnode: go.Node,
-      fromport: go.GraphObject,
-      tonode: go.Node,
-      toport: go.GraphObject
+      fromnode: go.Node | null,
+      fromport: go.GraphObject | null,
+      tonode: go.Node | null,
+      toport: go.GraphObject | null,
+      link?: go.Link | null
     ) =>
       BPMNLinkingTool.validateSequenceLinkConnection(fromnode, fromport, tonode, toport) ||
       BPMNLinkingTool.validateMessageLinkConnection(fromnode, fromport, tonode, toport);

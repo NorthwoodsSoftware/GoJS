@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -144,17 +146,7 @@
       var geo = new go.Geometry()
         .add(
           new go.PathFigure(radius + start.x, radius + start.y) // start point
-            .add(
-              new go.PathSegment(
-                go.SegmentType.Arc,
-                angle,
-                sweep, // angles
-                radius,
-                radius, // center
-                radius,
-                radius
-              )
-            ) // radius
+            .add(new go.PathSegment(go.SegmentType.Arc, angle, sweep, radius, radius, radius, radius))
             .add(new go.PathSegment(go.SegmentType.Line, radius, radius).close())
         )
         .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
@@ -162,31 +154,32 @@
       return geo;
     }
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationSpot: go.Spot.Center,
-      locationObjectName: 'LAMP',
-      selectionObjectName: 'LAMP',
-      selectionAdorned: false
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      // selecting a Node brings it forward in the z-order
-      .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
-      .add(
-        new go.Panel('Spot', { name: 'LAMP' })
-          .add(
-            new go.Shape({ fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 }) // arc
-              .bind('geometry', '', makeSector),
-            new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 })
-          ),
-        new go.TextBlock({
-          alignment: new go.Spot(0.5, 0.5, 0, 3),
-          alignmentFocus: go.Spot.Top,
-          stroke: 'blue',
-          background: 'rgba(255,255,255,0.3)'
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'LAMP',
+          selectionObjectName: 'LAMP',
+          selectionAdorned: false
         })
-          .bindTwoWay('alignment', 'spot', go.Spot.parse, go.Spot.stringify)
-          .bind('text', 'name')
-      );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        // selecting a Node brings it forward in the z-order
+        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
+        .add(
+          new go.Panel('Spot', { name: 'LAMP' })
+            .add(
+              new go.Shape({ fill: 'yellow', stroke: 'lightgray', strokeWidth: 0.5 }) // arc
+                .bind('geometry', '', makeSector),
+              new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 })
+            ),
+          new go.TextBlock({
+              alignment: new go.Spot(0.5, 0.5, 0, 3),
+              alignmentFocus: go.Spot.Top,
+              stroke: 'blue',
+              background: 'rgba(255,255,255,0.3)'
+            })
+            .bindTwoWay('alignment', 'spot', go.Spot.parse, go.Spot.stringify)
+            .bind('text', 'name')
+        );
 
     myDiagram.model = new go.GraphLinksModel([
       { name: 'Alpha', radius: 70, sweep: 120 },
@@ -195,6 +188,7 @@
 
     myDiagram.commandHandler.selectAll(); // to show the tool handles
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

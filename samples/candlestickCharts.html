@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,15 +129,19 @@
     myDiagram = new go.Diagram('myDiagramDiv');
 
     // the template for each attribute in a node's array of item data
-    var itemTempl = new go.Panel('TableRow').add(new go.TextBlock({ column: 0 }).bind('text'))
-      .add(
-        new go.Shape({
-          column: 1,
-          alignment: go.Spot.Left,
-          fill: 'slateblue',
-          stroke: 'darkblue'
-        }).bind('geometry', '', produceRange)
-      );
+    var itemTempl =
+      new go.Panel('TableRow')
+        .add(
+          new go.TextBlock({ column: 0 })
+            .bind('text'),
+          new go.Shape({
+              column: 1,
+              alignment: go.Spot.Left,
+              fill: 'slateblue',
+              stroke: 'darkblue'
+            })
+            .bind('geometry', '', produceRange)
+        );
 
     function produceRange(d) {
       var h = 12; // total height for the markers
@@ -143,13 +149,16 @@
       // using constructors is more efficient than calling go.GraphObject.mak:
       return new go.Geometry()
         .add(
-          new go.PathFigure(d.min, h / 2, false).add(new go.PathSegment(go.SegmentType.Line, d.max, h / 2))
+          new go.PathFigure(d.min, h / 2, false)
+            .add(new go.PathSegment(go.SegmentType.Line, d.max, h / 2))
         )
         .add(
-          new go.PathFigure(d.min, 0, false).add(new go.PathSegment(go.SegmentType.Line, d.min, h))
+          new go.PathFigure(d.min, 0, false)
+            .add(new go.PathSegment(go.SegmentType.Line, d.min, h))
         )
         .add(
-          new go.PathFigure(d.max, 0, false).add(new go.PathSegment(go.SegmentType.Line, d.max, h))
+          new go.PathFigure(d.max, 0, false)
+            .add(new go.PathSegment(go.SegmentType.Line, d.max, h))
         )
         .add(
           new go.PathFigure(d.val - w, 0)
@@ -159,15 +168,18 @@
         );
     }
 
-    myDiagram.nodeTemplate = new go.Node('Auto').add(new go.Shape({ fill: 'white' }))
-      .add(
-        new go.Panel('Table', {
-          margin: 6,
-          itemTemplate: itemTempl
-        }).bind('itemArray', 'items')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ fill: 'white' }),
+          new go.Panel('Table', {
+              margin: 6,
+              itemTemplate: itemTempl
+            })
+            .bind('itemArray', 'items')
+        );
 
-    var nodeDataArray = [
+    const nodeDataArray = [
       {
         items: [
           { text: 'first', min: 10, val: 50, max: 60 },
@@ -177,12 +189,14 @@
         ]
       }
     ];
+
     myDiagram.model = new go.GraphLinksModel({
       copiesArrays: true,
       copiesArrayObjects: true,
       nodeDataArray: nodeDataArray
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

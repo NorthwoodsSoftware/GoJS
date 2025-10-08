@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -147,12 +149,12 @@
 
     myDiagram.linkTemplate =
       new go.Link({
-        reshapable: true,
-        resegmentable: true,
-        relinkableFrom: true,
-        relinkableTo: true,
-        adjusting: go.LinkAdjusting.Stretch
-      })
+          reshapable: true,
+          resegmentable: true,
+          relinkableFrom: true,
+          relinkableTo: true,
+          adjusting: go.LinkAdjusting.Stretch
+        })
         // remember the (potentially) user-modified route
         .bindTwoWay('points')
         // remember any spots modified by LinkShiftingTool
@@ -175,11 +177,12 @@
       linkDataArray: [{ from: 1, to: 2 }]
     });
 
-    myDiagram.addDiagramListener('InitialLayoutCompleted', (e) => {
+    myDiagram.addDiagramListener('InitialLayoutCompleted', e => {
       // select the Link in order to show its two additional Adornments, for shifting the ends
       myDiagram.links.first().isSelected = true;
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

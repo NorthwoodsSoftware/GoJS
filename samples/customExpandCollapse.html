@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,82 +135,85 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Vertical', {
-      portId: '',
-      fromLinkable: true,
-      toLinkable: true
-    })
-      .bind('visible')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({
-              fill: 'white',
-              minSize: new go.Size(30, 30),
-              strokeWidth: 0,
-              cursor: 'pointer' // indicate that linking may start here
-            }).bind('fill', 'color'),
-            new go.TextBlock({
-              margin: 2,
-              fromLinkable: false,
-              toLinkable: false // don't start drawing a link from the text
-            }).bind('text', 'key')
-          ),
-        go.GraphObject.build('Button', {
-          // a replacement for "TreeExpanderButton" that works for non-tree-structured graphs
-          visible: false, // assume initially not visible because there are no links coming out
-          click: (e, obj) => {
-            e.diagram.startTransaction();
-            var node = obj.part;
-            if (node.data.isCollapsed) {
-              expandFrom(node, node);
-            } else {
-              collapseFrom(node, node);
-            }
-            e.diagram.commitTransaction('toggled visibility of dependencies');
-          }
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical', {
+          portId: '',
+          fromLinkable: true,
+          toLinkable: true
         })
-          // bind the button visibility to whether it's not a leaf node
-          .bindObject('visible', 'isTreeLeaf', (leaf) => !leaf)
-          .add(
-            new go.Shape({
-              name: 'ButtonIcon',
-              figure: 'MinusLine',
-              desiredSize: new go.Size(6, 6)
+        .bind('visible')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({
+                  fill: 'white',
+                  minSize: new go.Size(30, 30),
+                  strokeWidth: 0,
+                  cursor: 'pointer' // indicate that linking may start here
+                })
+                .bind('fill', 'color'),
+              new go.TextBlock({
+                  margin: 2,
+                  fromLinkable: false,
+                  toLinkable: false // don't start drawing a link from the text
+                })
+                .bind('text', 'key')
+            ),
+          go.GraphObject.build('Button', {
+              // a replacement for "TreeExpanderButton" that works for non-tree-structured graphs
+              visible: false, // assume initially not visible because there are no links coming out
+              click: (e, obj) => {
+                e.diagram.startTransaction();
+                var node = obj.part;
+                if (node.data.isCollapsed) {
+                  expandFrom(node, node);
+                } else {
+                  collapseFrom(node, node);
+                }
+                e.diagram.commitTransaction('toggled visibility of dependencies');
+              }
             })
-              .bind(
-                'figure',
-                'isCollapsed', // data.isCollapsed remembers "collapsed" or "expanded"
-                (collapsed) => (collapsed ? 'PlusLine' : 'MinusLine')
-              )
-          )
-      );
+            // bind the button visibility to whether it's not a leaf node
+            .bindObject('visible', 'isTreeLeaf', leaf => !leaf)
+            .add(
+              new go.Shape({
+                  name: 'ButtonIcon',
+                  figure: 'MinusLine',
+                  desiredSize: new go.Size(6, 6)
+                })
+                .bind('figure', 'isCollapsed', // data.isCollapsed remembers "collapsed" or "expanded"
+                      collapsed => collapsed ? 'PlusLine' : 'MinusLine')
+            )
+        );
 
     function collapseFrom(node, start) {
       if (node.data.isCollapsed) return;
       node.diagram.model.setDataProperty(node.data, 'isCollapsed', true);
-      if (node !== start)
+      if (node !== start) {
         node.diagram.model.setDataProperty(node.data, 'visible', false);
+      }
       node.findNodesOutOf().each(collapseFrom);
     }
 
     function expandFrom(node, start) {
       if (!node.data.isCollapsed) return;
       node.diagram.model.setDataProperty(node.data, 'isCollapsed', false);
-      if (node !== start)
+      if (node !== start) {
         node.diagram.model.setDataProperty(node.data, 'visible', true);
+      }
       node.findNodesOutOf().each(expandFrom);
     }
 
-    myDiagram.linkTemplate = new go.Link({
-      relinkableFrom: true,
-      relinkableTo: true,
-      corner: 10
-    })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          relinkableFrom: true,
+          relinkableTo: true,
+          corner: 10
+        })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -242,6 +247,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -297,7 +303,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

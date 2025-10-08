@@ -98,7 +98,7 @@ export class Quadtree<T> {
 
   /** @hidden @internal */ private readonly _nodeCapacity: number = 1;
   /** @hidden @internal */ private readonly _maxLevels: number = Infinity;
-  /** @hidden @internal */ private _treeObjectMap: go.Map<T, QuadObj<T>> = new go.Map<
+  /** @hidden @internal */ private _treeObjectMap: Map<T, QuadObj<T>> = new Map<
     T,
     QuadObj<T>
   >();
@@ -964,7 +964,7 @@ export class Quadtree<T> {
     if (owner1 !== null && owner2 !== null) {
       const treeObj1 = this._treeObjectMap.get(obj1);
       const treeObj2 = this._treeObjectMap.get(obj2);
-      if (treeObj1 !== null && treeObj2 !== null) {
+      if (treeObj1 !== undefined && treeObj2 !== undefined) {
         return treeObj1.bounds.center.distanceSquaredPoint(treeObj2.bounds.center);
       }
     }

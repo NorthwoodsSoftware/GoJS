@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,6 +125,244 @@
             
 
 <script id="code">
+
+  // Define a custom DraggingTool
+  class SnappingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
+    // This predicate checks to see if the ports can snap together.
+    // The first letter of the port id should be "U", "F", or "M" to indicate which kinds of port may connect.
+    // The second letter of the port id should be a digit to indicate which direction it may connect.
+    // The ports also need to not already have any link connections and need to face opposite directions.
+    compatiblePorts(p1, p2) {
+      // already connected?
+      const part1 = p1.part;
+      const id1 = p1.portId;
+      if (id1 === null || id1 === '') return false;
+      if (part1.findLinksConnected(id1).filter(l => l.category === '').count > 0) return false;
+      const part2 = p2.part;
+      const id2 = p2.portId;
+      if (id2 === null || id2 === '') return false;
+      if (part2.findLinksConnected(id2).filter(l => l.category === '').count > 0) return false;
+      // compatible fittings?
+      if (
+        (id1[0] === 'U' && id2[0] === 'U') ||
+        (id1[0] === 'F' && id2[0] === 'M') ||
+        (id1[0] === 'M' && id2[0] === 'F')
+      ) {
+        // find their effective sides, after rotation
+        const a1 = this.effectiveAngle(id1, part1.angle);
+        const a2 = this.effectiveAngle(id2, part2.angle);
+        // are they in opposite directions?
+        if (a1 - a2 === 180 || a1 - a2 === -180) return true;
+      }
+      return false;
+    }
+
+    // At what angle can a port connect, adjusting for the node's rotation
+    effectiveAngle(id, angle) {
+      const dir = id[1];
+      let a = 0;
+      if (dir === '1') a = 45;
+      else if (dir === '2') a = 90;
+      else if (dir === '3') a = 135;
+      else if (dir === '4') a = 180;
+      else if (dir === '5') a = 225;
+      else if (dir === '6') a = 270;
+      else if (dir === '7') a = 315;
+      a += angle;
+      if (a < 0) a += 360;
+      else if (a >= 360) a -= 360;
+      return a;
+    }
+
+    // Override this method to find the offset such that a moving port can
+    // be snapped to be coincident with a compatible stationary port,
+    // then move all of the parts by that offset.
+    moveParts(parts, offset, check) {
+      // when moving an actually copied collection of Parts, use the offset that was calculated during the drag
+      if (
+        this._snapOffset &&
+        this.isActive &&
+        this.diagram.lastInput.up &&
+        parts === this.copiedParts
+      ) {
+        super.moveParts(parts, this._snapOffset, check);
+        this._snapOffset = undefined;
+        return;
+      }
+
+      let commonOffset = offset;
+
+      // find out if any snapping is desired for any Node being dragged
+      const sit = parts.iterator;
+      while (sit.next()) {
+        const node = sit.key;
+        if (!(node instanceof go.Node)) continue;
+        const info = sit.value;
+        const newloc = info.point.copy().add(offset);
+
+        // now calculate snap point for this Node
+        const snapoffset = newloc.copy().subtract(node.location);
+        let nearbyports = null;
+        let closestDistance = 20 * 20; // don't bother taking sqrt
+        let closestPort = null;
+        let closestPortPt = null;
+        let nodePort = null;
+        const mit = node.ports;
+        while (mit.next()) {
+          const port = mit.value;
+          if (node.findLinksConnected(port.portId).filter(l => l.category === '').count > 0) continue;
+          const portPt = port.getDocumentPoint(go.Spot.Center);
+          portPt.add(snapoffset); // where it would be without snapping
+
+          if (nearbyports === null) {
+            // this collects the Nodes that intersect with the NODE's bounds,
+            // excluding nodes that are being dragged (i.e. in the PARTS collection)
+            const nearbyparts = this.diagram.findObjectsIn(
+              node.actualBounds,
+              x => x.part,
+              p => !parts.has(p),
+              true
+            );
+
+            // gather a collection of GraphObjects that are stationary "ports" for this NODE
+            nearbyports = new go.Set(/*go.GraphObject*/);
+            nearbyparts.each(n => {
+              if (n instanceof go.Node) {
+                nearbyports.addAll(n.ports);
+              }
+            });
+          }
+
+          const pit = nearbyports.iterator;
+          while (pit.next()) {
+            const p = pit.value;
+            if (!this.compatiblePorts(port, p)) continue;
+            const ppt = p.getDocumentPoint(go.Spot.Center);
+            const d = ppt.distanceSquaredPoint(portPt);
+            if (d < closestDistance) {
+              closestDistance = d;
+              closestPort = p;
+              closestPortPt = ppt;
+              nodePort = port;
+            }
+          }
+        }
+
+        // found something to snap to!
+        if (closestPort !== null) {
+          // move the node so that the compatible ports coincide
+          const noderelpt = nodePort.getDocumentPoint(go.Spot.Center).subtract(node.location);
+          const snappt = closestPortPt.copy().subtract(noderelpt);
+          // save the offset, to ensure everything moves together
+          commonOffset = snappt.subtract(newloc).add(offset);
+          // ignore any node.dragComputation function
+          // ignore any node.minLocation and node.maxLocation
+          break;
+        }
+      }
+
+      // now do the standard movement with the single (perhaps snapped) offset
+      this._snapOffset = commonOffset.copy(); // remember for mouse-up when copying
+      super.moveParts(parts, commonOffset, check);
+    }
+
+    // Establish links between snapped ports,
+    // and remove obsolete links because their ports are no longer coincident.
+    doDropOnto(pt, obj) {
+      super.doDropOnto(pt, obj);
+      // Need to iterate over all of the dropped nodes to see which ports happen to be snapped to stationary ports
+      const coll = this.copiedParts || this.draggedParts;
+      const it = coll.iterator;
+      while (it.next()) {
+        const node = it.key;
+        if (!(node instanceof go.Node)) continue;
+        // connect all snapped ports of this NODE (yes, there might be more than one) with links
+        const pit = node.ports;
+        while (pit.next()) {
+          const port = pit.value;
+          // maybe add a link -- see if the port is at another port that is compatible
+          const portPt = port.getDocumentPoint(go.Spot.Center);
+          if (!portPt.isReal()) continue;
+          const nearbyports = this.diagram.findObjectsAt(
+            portPt,
+            x => {
+              // some GraphObject at portPt
+              let o = x;
+              // walk up the chain of panels
+              while (o !== null && o.portId === null) o = o.panel;
+              return o;
+            },
+            p => {
+              // a "port" Panel
+              // the parent Node must not be in the dragged collection, and
+              // this port P must be compatible with the NODE's PORT
+              if (coll.has(p.part)) return false;
+              const ppt = p.getDocumentPoint(go.Spot.Center);
+              if (portPt.distanceSquaredPoint(ppt) >= 0.25) return false;
+              return this.compatiblePorts(port, p);
+            }
+          );
+          // did we find a compatible port?
+          const np = nearbyports.first();
+          if (np !== null) {
+            // connect the NODE's PORT with the other port found at the same point
+            this.diagram.toolManager.linkingTool.insertLink(node, port, np.part, np);
+          }
+        }
+      }
+    }
+
+    // Just move selected nodes when SHIFT moving, causing nodes to be unsnapped.
+    // When SHIFTing, must disconnect all links that connect with nodes not being dragged.
+    // Without SHIFT, move all nodes that are snapped to selected nodes, even indirectly.
+    computeEffectiveCollection(parts) {
+      if (this.diagram.lastInput.shift) {
+        const links = new go.Set(/*go.Link*/);
+        const coll = super.computeEffectiveCollection(parts);
+        coll.iteratorKeys.each(node => {
+          // disconnect all links of this node that connect with stationary node
+          if (!(node instanceof go.Node)) return;
+          node.findLinksConnected().each(link => {
+            if (link.category !== '') return;
+            // see if this link connects with a node that is being dragged
+            const othernode = link.getOtherNode(node);
+            if (othernode !== null && !coll.has(othernode)) {
+              links.add(link); // remember for later deletion
+            }
+          });
+        });
+        // outside of nested loops we can actually delete the links
+        links.each(l => l.diagram.remove(l));
+        return coll;
+      } else {
+        const map = new go.Map(/*go.Part, Object*/);
+        if (parts === null) return map;
+        parts.iterator.each(n => this.gatherConnecteds(map, n));
+        return map;
+      }
+    }
+
+    // Find other attached nodes.
+    gatherConnecteds(map, node) {
+      if (!(node instanceof go.Node)) return;
+      if (map.has(node)) return;
+      // record the original Node location, for relative positioning and for cancellation
+      map.add(node, new go.DraggingInfo(node.location));
+      // now recursively collect all connected Nodes and the Links to them
+      node.findLinksConnected().each(link => {
+        if (link.category !== '') return; // ignore comment links
+        map.add(link, new go.DraggingInfo());
+        this.gatherConnecteds(map, link.getOtherNode(node));
+      });
+    }
+  }
+  // end SnappingTool class
+
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       initialScale: 1.5,
@@ -130,45 +370,41 @@
       allowLink: false, // no user-drawn links
       // use a custom DraggingTool instead of the standard one, defined below
       draggingTool: new SnappingTool(),
-      contextMenu: go.GraphObject.build('ContextMenu')
-        .add(
-          makeButton(
-            'Paste',
-            (e, obj) =>
-              e.diagram.commandHandler.pasteSelection(
-                e.diagram.toolManager.contextMenuTool.mouseDownPoint
-              ),
-            (o) =>
-              o.diagram.commandHandler.canPasteSelection(
-                o.diagram.toolManager.contextMenuTool.mouseDownPoint
-              )
+      contextMenu:
+        go.GraphObject.build('ContextMenu')
+          .add(
+            makeButton('Paste',
+              (e, obj) => e.diagram.commandHandler.pasteSelection(
+                            e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+              o => o.diagram.commandHandler.canPasteSelection(
+                     o.diagram.toolManager.contextMenuTool.mouseDownPoint)
+            ),
+            makeButton('Undo',
+              (e, obj) => e.diagram.commandHandler.undo(),
+              o => o.diagram.commandHandler.canUndo()
+            ),
+            makeButton('Redo',
+              (e, obj) => e.diagram.commandHandler.redo(),
+              o => o.diagram.commandHandler.canRedo()
+            )
           ),
-          makeButton(
-            'Undo',
-            (e, obj) => e.diagram.commandHandler.undo(),
-            (o) => o.diagram.commandHandler.canUndo()
-          ),
-          makeButton(
-            'Redo',
-            (e, obj) => e.diagram.commandHandler.redo(),
-            (o) => o.diagram.commandHandler.canRedo()
-          )
-        ),
       'undoManager.isEnabled': true
     });
 
     // To simplify this code we define a function for creating a context menu button:
     function makeButton(text, action, visiblePredicate) {
-      const textBlock = new go.TextBlock(text, { click: action });
+      const button =
+        go.GraphObject.build('ContextMenuButton')
+          .add(new go.TextBlock(text, { click: action }));
       // don't bother with binding GraphObject.visible if there's no predicate
-      if (visiblePredicate)
-        textBlock.bindObject('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false));
-
-      return go.GraphObject.build('ContextMenuButton').add(textBlock);
+      if (visiblePredicate) {
+        button.bindObject('visible', '', (o, e) => (o.diagram ? visiblePredicate(o, e) : false));
+      }
+      return button;
     }
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -179,65 +415,68 @@
       }
     });
 
-    myDiagram.nodeTemplateMap.add(
-      'Comment',
+    myDiagram.nodeTemplateMap.add('Comment',
       new go.Node()
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-        .add(new go.TextBlock({ stroke: 'brown', font: '9pt sans-serif' }).bind('text'))
+        .add(
+          new go.TextBlock({ stroke: 'brown', font: '9pt sans-serif' })
+            .bind('text')
+        )
     );
 
     // Define the generic "pipe" Node.
     // The Shape gets it Geometry from a geometry path string in the bound data.
     // This node also gets all of its ports from an array of port data in the bound data.
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationObjectName: 'SHAPE',
-      locationSpot: go.Spot.Center,
-      selectionAdorned: false, // use a Binding on the Shape.stroke to show selection
-      itemTemplate:
-        // each port is an "X" shape whose alignment spot and port ID are given by the item data
-        new go.Panel()
-          .bind('portId', 'id')
-          .bind('alignment', 'spot', go.Spot.parse)
-          .add(
-            new go.Shape('XLine', {
-              width: 6,
-              height: 6,
-              background: 'transparent',
-              fill: null,
-              stroke: 'gray'
-            })
-              .bind('figure', 'id', portFigure) // portFigure converter is defined below
-              .bind('angle', 'angle')
-          ),
-      // hide a port when it is connected
-      linkConnected: (node, link, port) => {
-        if (link.category === '') port.visible = false;
-      },
-      linkDisconnected: (node, link, port) => {
-        if (link.category === '') port.visible = true;
-      }
-    })
-      // this creates the variable number of ports for this Spot Panel, based on the data
-      .bind('itemArray', 'ports')
-      // remember the location of this Node
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      // remember the angle of this Node
-      .bindTwoWay('angle', 'angle')
-      // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
-      .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
-      .add(
-        new go.Shape({
-          name: 'SHAPE',
-          // the following are default values;
-          // actual values may come from the node data object via data binding
-          geometryString: 'F1 M0 0 L20 0 20 20 0 20 z',
-          fill: 'rgba(128, 128, 128, 0.5)'
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationObjectName: 'SHAPE',
+          locationSpot: go.Spot.Center,
+          selectionAdorned: false, // use a Binding on the Shape.stroke to show selection
+          itemTemplate:
+            // each port is an "X" shape whose alignment spot and port ID are given by the item data
+            new go.Panel()
+              .bind('portId', 'id')
+              .bind('alignment', 'spot', go.Spot.parse)
+              .add(
+                new go.Shape('XLine', {
+                    width: 6,
+                    height: 6,
+                    background: 'transparent',
+                    fill: null,
+                    stroke: 'gray'
+                  })
+                  .bind('figure', 'id', portFigure) // portFigure converter is defined below
+                  .bind('angle', 'angle')
+              ),
+          // hide a port when it is connected
+          linkConnected: (node, link, port) => {
+            if (link.category === '') port.visible = false;
+          },
+          linkDisconnected: (node, link, port) => {
+            if (link.category === '') port.visible = true;
+          }
         })
-          // this determines the actual shape of the Shape
-          .bind('geometryString', 'geo')
-          // selection causes the stroke to be blue instead of black
-          .bindObject('stroke', 'isSelected', (s) => (s ? 'dodgerblue' : 'black'))
-      );
+        // this creates the variable number of ports for this Spot Panel, based on the data
+        .bind('itemArray', 'ports')
+        // remember the location of this Node
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        // remember the angle of this Node
+        .bindTwoWay('angle', 'angle')
+        // move a selected part into the Foreground layer, so it isn't obscured by any non-selected parts
+        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
+        .add(
+          new go.Shape({
+              name: 'SHAPE',
+              // the following are default values;
+              // actual values may come from the node data object via data binding
+              geometryString: 'F1 M0 0 L20 0 20 20 0 20 z',
+              fill: 'rgba(128, 128, 128, 0.5)'
+            })
+            // this determines the actual shape of the Shape
+            .bind('geometryString', 'geo')
+            // selection causes the stroke to be blue instead of black
+            .bindObject('stroke', 'isSelected', s => s ? 'dodgerblue' : 'black')
+        );
 
     // Show different kinds of port fittings by using different shapes in this Binding converter
     function portFigure(pid) {
@@ -256,12 +495,12 @@
         makeButton(
           'Cut',
           (e, obj) => e.diagram.commandHandler.cutSelection(),
-          (o) => o.diagram.commandHandler.canCutSelection()
+          o => o.diagram.commandHandler.canCutSelection()
         ),
         makeButton(
           'Copy',
           (e, obj) => e.diagram.commandHandler.copySelection(),
-          (o) => o.diagram.commandHandler.canCopySelection()
+          o => o.diagram.commandHandler.canCopySelection()
         ),
         makeButton(
           'Paste',
@@ -269,7 +508,7 @@
             e.diagram.commandHandler.pasteSelection(
               e.diagram.toolManager.contextMenuTool.mouseDownPoint
             ),
-          (o) =>
+          o =>
             o.diagram.commandHandler.canPasteSelection(
               o.diagram.toolManager.contextMenuTool.mouseDownPoint
             )
@@ -277,17 +516,17 @@
         makeButton(
           'Delete',
           (e, obj) => e.diagram.commandHandler.deleteSelection(),
-          (o) => o.diagram.commandHandler.canDeleteSelection()
+          o => o.diagram.commandHandler.canDeleteSelection()
         ),
         makeButton(
           'Undo',
           (e, obj) => e.diagram.commandHandler.undo(),
-          (o) => o.diagram.commandHandler.canUndo()
+          o => o.diagram.commandHandler.canUndo()
         ),
         makeButton(
           'Redo',
           (e, obj) => e.diagram.commandHandler.redo(),
-          (o) => o.diagram.commandHandler.canRedo()
+          o => o.diagram.commandHandler.canRedo()
         )
       );
 
@@ -300,7 +539,7 @@
       const coll = tool.computeEffectiveCollection(sel).toKeySet();
       const bounds = myDiagram.computePartsBounds(coll);
       const center = bounds.center;
-      coll.each((n) => {
+      coll.each(n => {
         n.angle += angle;
         n.location = n.location.copy().subtract(center).rotate(angle).add(center);
       });
@@ -310,9 +549,9 @@
     function detachSelection() {
       myDiagram.startTransaction('detach');
       const coll = new go.Set(/*go.Link*/);
-      myDiagram.selection.each((node) => {
+      myDiagram.selection.each(node => {
         if (!(node instanceof go.Node)) return;
-        node.linksConnected.each((link) => {
+        node.linksConnected.each(link => {
           if (link.category !== '') return; // ignore comments
           // ignore links to other selected nodes
           if (link.getOtherNode(node).isSelected) return;
@@ -328,8 +567,7 @@
     myDiagram.linkTemplate = new go.Link({ visible: false });
 
     // support optional links from comment nodes to pipe nodes
-    myDiagram.linkTemplateMap.add(
-      'Comment',
+    myDiagram.linkTemplateMap.add('Comment',
       new go.Link({ curve: go.Curve.Bezier })
         .add(
           new go.Shape({ stroke: 'brown', strokeWidth: 2 }),
@@ -563,244 +801,6 @@
     load();
   } // end init
 
-  // Define a custom DraggingTool
-  class SnappingTool extends go.DraggingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    // This predicate checks to see if the ports can snap together.
-    // The first letter of the port id should be "U", "F", or "M" to indicate which kinds of port may connect.
-    // The second letter of the port id should be a digit to indicate which direction it may connect.
-    // The ports also need to not already have any link connections and need to face opposite directions.
-    compatiblePorts(p1, p2) {
-      // already connected?
-      const part1 = p1.part;
-      const id1 = p1.portId;
-      if (id1 === null || id1 === '') return false;
-      if (part1.findLinksConnected(id1).filter((l) => l.category === '').count > 0) return false;
-      const part2 = p2.part;
-      const id2 = p2.portId;
-      if (id2 === null || id2 === '') return false;
-      if (part2.findLinksConnected(id2).filter((l) => l.category === '').count > 0) return false;
-      // compatible fittings?
-      if (
-        (id1[0] === 'U' && id2[0] === 'U') ||
-        (id1[0] === 'F' && id2[0] === 'M') ||
-        (id1[0] === 'M' && id2[0] === 'F')
-      ) {
-        // find their effective sides, after rotation
-        const a1 = this.effectiveAngle(id1, part1.angle);
-        const a2 = this.effectiveAngle(id2, part2.angle);
-        // are they in opposite directions?
-        if (a1 - a2 === 180 || a1 - a2 === -180) return true;
-      }
-      return false;
-    }
-
-    // At what angle can a port connect, adjusting for the node's rotation
-    effectiveAngle(id, angle) {
-      const dir = id[1];
-      let a = 0;
-      if (dir === '1') a = 45;
-      else if (dir === '2') a = 90;
-      else if (dir === '3') a = 135;
-      else if (dir === '4') a = 180;
-      else if (dir === '5') a = 225;
-      else if (dir === '6') a = 270;
-      else if (dir === '7') a = 315;
-      a += angle;
-      if (a < 0) a += 360;
-      else if (a >= 360) a -= 360;
-      return a;
-    }
-
-    // Override this method to find the offset such that a moving port can
-    // be snapped to be coincident with a compatible stationary port,
-    // then move all of the parts by that offset.
-    moveParts(parts, offset, check) {
-      // when moving an actually copied collection of Parts, use the offset that was calculated during the drag
-      if (
-        this._snapOffset &&
-        this.isActive &&
-        this.diagram.lastInput.up &&
-        parts === this.copiedParts
-      ) {
-        super.moveParts(parts, this._snapOffset, check);
-        this._snapOffset = undefined;
-        return;
-      }
-
-      let commonOffset = offset;
-
-      // find out if any snapping is desired for any Node being dragged
-      const sit = parts.iterator;
-      while (sit.next()) {
-        const node = sit.key;
-        if (!(node instanceof go.Node)) continue;
-        const info = sit.value;
-        const newloc = info.point.copy().add(offset);
-
-        // now calculate snap point for this Node
-        const snapoffset = newloc.copy().subtract(node.location);
-        let nearbyports = null;
-        let closestDistance = 20 * 20; // don't bother taking sqrt
-        let closestPort = null;
-        let closestPortPt = null;
-        let nodePort = null;
-        const mit = node.ports;
-        while (mit.next()) {
-          const port = mit.value;
-          if (node.findLinksConnected(port.portId).filter((l) => l.category === '').count > 0)
-            continue;
-          const portPt = port.getDocumentPoint(go.Spot.Center);
-          portPt.add(snapoffset); // where it would be without snapping
-
-          if (nearbyports === null) {
-            // this collects the Nodes that intersect with the NODE's bounds,
-            // excluding nodes that are being dragged (i.e. in the PARTS collection)
-            const nearbyparts = this.diagram.findObjectsIn(
-              node.actualBounds,
-              (x) => x.part,
-              (p) => !parts.has(p),
-              true
-            );
-
-            // gather a collection of GraphObjects that are stationary "ports" for this NODE
-            nearbyports = new go.Set(/*go.GraphObject*/);
-            nearbyparts.each((n) => {
-              if (n instanceof go.Node) {
-                nearbyports.addAll(n.ports);
-              }
-            });
-          }
-
-          const pit = nearbyports.iterator;
-          while (pit.next()) {
-            const p = pit.value;
-            if (!this.compatiblePorts(port, p)) continue;
-            const ppt = p.getDocumentPoint(go.Spot.Center);
-            const d = ppt.distanceSquaredPoint(portPt);
-            if (d < closestDistance) {
-              closestDistance = d;
-              closestPort = p;
-              closestPortPt = ppt;
-              nodePort = port;
-            }
-          }
-        }
-
-        // found something to snap to!
-        if (closestPort !== null) {
-          // move the node so that the compatible ports coincide
-          const noderelpt = nodePort.getDocumentPoint(go.Spot.Center).subtract(node.location);
-          const snappt = closestPortPt.copy().subtract(noderelpt);
-          // save the offset, to ensure everything moves together
-          commonOffset = snappt.subtract(newloc).add(offset);
-          // ignore any node.dragComputation function
-          // ignore any node.minLocation and node.maxLocation
-          break;
-        }
-      }
-
-      // now do the standard movement with the single (perhaps snapped) offset
-      this._snapOffset = commonOffset.copy(); // remember for mouse-up when copying
-      super.moveParts(parts, commonOffset, check);
-    }
-
-    // Establish links between snapped ports,
-    // and remove obsolete links because their ports are no longer coincident.
-    doDropOnto(pt, obj) {
-      super.doDropOnto(pt, obj);
-      // Need to iterate over all of the dropped nodes to see which ports happen to be snapped to stationary ports
-      const coll = this.copiedParts || this.draggedParts;
-      const it = coll.iterator;
-      while (it.next()) {
-        const node = it.key;
-        if (!(node instanceof go.Node)) continue;
-        // connect all snapped ports of this NODE (yes, there might be more than one) with links
-        const pit = node.ports;
-        while (pit.next()) {
-          const port = pit.value;
-          // maybe add a link -- see if the port is at another port that is compatible
-          const portPt = port.getDocumentPoint(go.Spot.Center);
-          if (!portPt.isReal()) continue;
-          const nearbyports = this.diagram.findObjectsAt(
-            portPt,
-            (x) => {
-              // some GraphObject at portPt
-              let o = x;
-              // walk up the chain of panels
-              while (o !== null && o.portId === null) o = o.panel;
-              return o;
-            },
-            (p) => {
-              // a "port" Panel
-              // the parent Node must not be in the dragged collection, and
-              // this port P must be compatible with the NODE's PORT
-              if (coll.has(p.part)) return false;
-              const ppt = p.getDocumentPoint(go.Spot.Center);
-              if (portPt.distanceSquaredPoint(ppt) >= 0.25) return false;
-              return this.compatiblePorts(port, p);
-            }
-          );
-          // did we find a compatible port?
-          const np = nearbyports.first();
-          if (np !== null) {
-            // connect the NODE's PORT with the other port found at the same point
-            this.diagram.toolManager.linkingTool.insertLink(node, port, np.part, np);
-          }
-        }
-      }
-    }
-
-    // Just move selected nodes when SHIFT moving, causing nodes to be unsnapped.
-    // When SHIFTing, must disconnect all links that connect with nodes not being dragged.
-    // Without SHIFT, move all nodes that are snapped to selected nodes, even indirectly.
-    computeEffectiveCollection(parts) {
-      if (this.diagram.lastInput.shift) {
-        const links = new go.Set(/*go.Link*/);
-        const coll = super.computeEffectiveCollection(parts);
-        coll.iteratorKeys.each((node) => {
-          // disconnect all links of this node that connect with stationary node
-          if (!(node instanceof go.Node)) return;
-          node.findLinksConnected().each((link) => {
-            if (link.category !== '') return;
-            // see if this link connects with a node that is being dragged
-            const othernode = link.getOtherNode(node);
-            if (othernode !== null && !coll.has(othernode)) {
-              links.add(link); // remember for later deletion
-            }
-          });
-        });
-        // outside of nested loops we can actually delete the links
-        links.each((l) => l.diagram.remove(l));
-        return coll;
-      } else {
-        const map = new go.Map(/*go.Part, Object*/);
-        if (parts === null) return map;
-        parts.iterator.each((n) => this.gatherConnecteds(map, n));
-        return map;
-      }
-    }
-
-    // Find other attached nodes.
-    gatherConnecteds(map, node) {
-      if (!(node instanceof go.Node)) return;
-      if (map.has(node)) return;
-      // record the original Node location, for relative positioning and for cancellation
-      map.add(node, new go.DraggingInfo(node.location));
-      // now recursively collect all connected Nodes and the Links to them
-      node.findLinksConnected().each((link) => {
-        if (link.category !== '') return; // ignore comment links
-        map.add(link, new go.DraggingInfo());
-        this.gatherConnecteds(map, link.getOtherNode(node));
-      });
-    }
-  }
-  // end SnappingTool class
-
   function save() {
     document.getElementById('mySavedModel').value = myDiagram.model.toJson();
     myDiagram.isModified = false;
@@ -991,7 +991,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>
@@ -1022,6 +1022,32 @@ More information can be found in the <a href="../intro/geometry.html">GoJS Intro
 </p>
             <p>
               <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,10 +127,10 @@
 <script src="../extensions/Figures.js"></script> <!--Needs to be included to add the arrows-->
 <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css" />
 <script id="code">
+
   // A custom Link class that routes directly to the closest vertical point of a "Tower" node.
   // If the regular node is too far above or belown the "Tower" node, the link connects with
   // the closest end of the "Tower" node.
-
   // See "BarLink" in the Network Configuration sample for a similar class for connecting to horizontal Nodes.
   class TowerLink extends go.Link {
     constructor(init) {
@@ -179,101 +181,94 @@
       isReadOnly: true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto').bind('location', 'location', go.Point.parse).add(
-      new go.TextBlock({
-        margin: 3,
-        font: 'bold 15px sans-serif'
-      }).bind('text')
-    );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bind('location', 'location', go.Point.parse)
+        .add(
+          new go.TextBlock({ margin: 3, font: 'bold 15px sans-serif' })
+            .bind('text')
+        );
 
-    myDiagram.nodeTemplateMap.add(
-      'Tower',
-      new go.Node('Position', {}).bind('location', 'location', go.Point.parse).add(
-        new go.Shape('Rectangle', {
-          width: 30,
-          strokeWidth: 1,
-          stroke: 'black'
-        })
-          .bind('fill', 'color', gradientBrush)
-          .bind('height'),
-        new go.Shape({
-          geometryString: 'F M0 0 L30 0 A15 15 15 0 0 0 0',
-          strokeWidth: 1,
-          stroke: 'black'
-        }).bind('fill', 'color', gradientBrush),
-        new go.Shape({
-          geometryString: 'F M0 0 L30 0 A15 15 15 0 1 0 0',
-          strokeWidth: 1,
-          stroke: 'black'
-        })
-          .bind('fill', 'color', gradientBrush)
-          .bind('position', 'height', (height) => {
-            return new go.Point(0, height);
+    myDiagram.nodeTemplateMap.add('Tower',
+      new go.Node('Position', {})
+        .bind('location', 'location', go.Point.parse)
+        .add(
+          new go.Shape('Rectangle', {
+              width: 30,
+              strokeWidth: 1,
+              stroke: 'black'
+            })
+            .bind('fill', 'color', gradientBrush)
+            .bind('height'),
+          new go.Shape({
+              geometryString: 'F M0 0 L30 0 A15 15 15 0 0 0 0',
+              strokeWidth: 1,
+              stroke: 'black'
+            })
+            .bind('fill', 'color', gradientBrush),
+          new go.Shape({
+              geometryString: 'F M0 0 L30 0 A15 15 15 0 1 0 0',
+              strokeWidth: 1,
+              stroke: 'black'
+            })
+            .bind('fill', 'color', gradientBrush)
+            .bind('position', 'height', height => new go.Point(0, height))
+        ));
+
+    myDiagram.nodeTemplateMap.add('Output',
+      new go.Node('Table')
+        .bind('location', 'location', go.Point.parse)
+        .add(
+          new go.Shape('Arrow', {
+              width: 30,
+              height: 30,
+              strokeWidth: 1,
+              stroke: 'black',
+              row: 0
+            })
+            .bind('fill', 'color', gradientBrush)
+            .bind('column', 'textside', side => side === 'right' ? 0 : 1),
+          new go.TextBlock({ margin: 3, font: 'bold 15px sans-serif' })
+            .bind('text')
+            .bind('column', 'textside', side => side === 'right' ? 1 : 0)
+        ));
+
+    myDiagram.nodeTemplateMap.add('Heater',
+      new go.Node('Position')
+        .bind('location', 'location', go.Point.parse)
+        .add(
+          new go.Shape({
+              geometryString: 'F M10 0 L20 0 20 10 30 20 30 40 0 40 0 20 10 10 10 0',
+              strokeWidth: 1,
+              width: 30,
+              height: 40,
+              stroke: 'black'
+            })
+            .bind('fill', 'color', gradientBrush),
+          new go.Shape({
+            geometryString: 'M-15 0 L-10 0 -5 -8 0 8 5 0 10 0',
+            strokeWidth: 2,
+            stroke: 'black',
+            position: new go.Point(2, 18)
           })
-      )
-    );
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Output',
-      new go.Node('Table', {}).bind('location', 'location', go.Point.parse).add(
-        new go.Shape('Arrow', {
-          width: 30,
-          height: 30,
-          strokeWidth: 1,
-          stroke: 'black',
-          row: 0
+    myDiagram.linkTemplate =
+      new TowerLink({
+          routing: go.Routing.Orthogonal,
+          toShortLength: 2
         })
-          .bind('fill', 'color', gradientBrush)
-          .bind('column', 'textside', (side) => {
-            return side === 'right' ? 0 : 1;
-          }),
-        new go.TextBlock({
-          margin: 3,
-          font: 'bold 15px sans-serif'
-        })
-          .bind('text')
-          .bind('column', 'textside', (side) => {
-            return side === 'right' ? 1 : 0;
-          })
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Heater',
-      new go.Node('Position', {}).bind('location', 'location', go.Point.parse).add(
-        new go.Shape({
-          geometryString: 'F M10 0 L20 0 20 10 30 20 30 40 0 40 0 20 10 10 10 0',
-          strokeWidth: 1,
-          width: 30,
-          height: 40,
-          stroke: 'black'
-        }).bind('fill', 'color', gradientBrush),
-        new go.Shape({
-          geometryString: 'M-15 0 L-10 0 -5 -8 0 8 5 0 10 0',
-          strokeWidth: 2,
-          stroke: 'black',
-          position: new go.Point(2, 18)
-        })
-      )
-    );
-
-    myDiagram.linkTemplate = new TowerLink({
-      routing: go.Routing.Orthogonal
-    })
-      .bind('fromSpot', 'fromSpot', go.Spot.parse)
-      .bind('toSpot', 'toSpot', go.Spot.parse)
-      .add(
-        new go.Shape({
-          strokeWidth: 2
-        }),
-        new go.Shape({
-          toArrow: 'Triangle'
-        }),
-        new go.TextBlock({
-          alignmentFocus: go.Spot.Right,
-          segmentOffset: new go.Point(0, 10)
-        }).bind('text', 'text')
-      );
+        .bind('fromSpot', 'fromSpot', go.Spot.parse)
+        .bind('toSpot', 'toSpot', go.Spot.parse)
+        .add(
+          new go.Shape({ strokeWidth: 2 }),
+          new go.Shape({ toArrow: 'Triangle' }),
+          new go.TextBlock({
+              alignmentFocus: go.Spot.Right,
+              segmentOffset: new go.Point(0, 10)
+            })
+            .bind('text')
+        );
 
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').textContent);
   }

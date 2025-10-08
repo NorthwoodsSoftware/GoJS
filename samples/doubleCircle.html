@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,26 +131,27 @@
       'animationManager.isEnabled': false
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .bind('width')
-      .bind('height', 'width')
-      .add(
-        new go.Shape('Circle', { fill: 'gray', stroke: '#D8D8D8' })
-          .bind('fill', 'color'),
-        // define the node's text
-        new go.TextBlock({ margin: 5, font: 'bold 12pt sans-serif' })
-          .bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bind('width')
+        .bind('height', 'width')
+        .add(
+          new go.Shape('Circle', { fill: 'gray', stroke: '#D8D8D8' })
+            .bind('fill', 'color'),
+          // define the node's text
+          new go.TextBlock({ margin: 5, font: 'bold 12pt sans-serif' })
+            .bind('text', 'key')
+        );
 
     // create the model for the double circle
-    var data = [];
+    const data = [];
     // if you want a node in the center, set its layer: 0
     //data.push({ layer: 0, width: 50 });
-    for (var i = 0; i < 10; i++) data.push({ layer: 1, color: 'tomato', width: 50 + Math.random() * 50 });
-    for (var i = 0; i < 20; i++) data.push({ layer: 2, color: 'orange', width: 50 + Math.random() * 50 });
-    for (var i = 0; i < 15; i++) data.push({ layer: 3, color: 'gold', width: 50 + Math.random() * 50 });
-    //for (var i = 0; i < 10; i++) data.push({ layer: 4, color: "lightgreen", width: 50 + Math.random()*50 });
-    //for (var i = 0; i < 5; i++) data.push({ layer: 5, color: "lightblue", width: 50 + Math.random()*50 });
+    for (let i = 0; i < 10; i++) data.push({ layer: 1, color: 'tomato', width: 50 + Math.random() * 50 });
+    for (let i = 0; i < 20; i++) data.push({ layer: 2, color: 'orange', width: 50 + Math.random() * 50 });
+    for (let i = 0; i < 15; i++) data.push({ layer: 3, color: 'gold', width: 50 + Math.random() * 50 });
+    //for (let i = 0; i < 10; i++) data.push({ layer: 4, color: "lightgreen", width: 50 + Math.random()*50 });
+    //for (let i = 0; i < 5; i++) data.push({ layer: 5, color: "lightblue", width: 50 + Math.random()*50 });
     myDiagram.model = new go.GraphLinksModel(data);
 
     doubleCircleLayout(myDiagram);
@@ -157,31 +160,31 @@
   function doubleCircleLayout(diagram) {
     diagram.startTransaction('Multi Circle Layout');
 
-    var radius = NaN;
-    var layer = 1;
-    var nodes = null;
+    let radius = NaN;
+    let layer = 1;
+    let nodes = null;
     while (((nodes = nodesByLayer(diagram, layer)), nodes.count > 0)) {
-      var layout = new go.CircularLayout();
+      const layout = new go.CircularLayout();
       layout.nodeDiameterFormula = go.CircularLayout.Circular;
       layout.radius = radius;
       layout.doLayout(nodes);
       // recenter at (0, 0)
-      var cntr = layout.actualCenter;
+      const cntr = layout.actualCenter;
       diagram.moveParts(nodes, new go.Point(-cntr.x, -cntr.y));
       // next layout uses a larger radius
       let t = 0; // compute how thick the layer needs to be
-      nodes.each((n) => (t = Math.max(t, n.actualBounds.width)));
+      nodes.each(n => (t = Math.max(t, n.actualBounds.width)));
       radius = Math.max(isNaN(radius) ? 0 : radius, layout.actualXRadius) + 10 + t;
       layer++;
     }
 
-    nodesByLayer(diagram, 0).each((n) => (n.location = new go.Point(0, 0)));
+    nodesByLayer(diagram, 0).each(n => { n.location = new go.Point(0, 0) });
 
     diagram.commitTransaction('Multi Circle Layout');
   }
 
   function nodesByLayer(diagram, layer) {
-    return new go.Set(diagram.nodes.filter((n) => n.data.layer === layer));
+    return new go.Set(diagram.nodes.filter(n => n.data.layer === layer));
   }
 
   window.addEventListener('DOMContentLoaded', init);

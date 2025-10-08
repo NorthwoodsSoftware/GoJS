@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -150,7 +152,7 @@
       this.dia.model.addNodeData(this.data);
       this.node = this.dia.findNodeForKey(this.data.key);
 
-      let _loop = (act) => {
+      let _loop = act => {
         this.doActivity(_loop);
         // if (act) console.log('finished ' + act.name);
       };
@@ -166,7 +168,7 @@
     // str=activity name, idx=if multiple results which to look at, default 0
     static findActivityForString(str, idx) {
       str = str.toLowerCase();
-      return Person.activites.filter((act) => act.name.toLowerCase() == str)[idx || 0];
+      return Person.activites.filter(act => act.name.toLowerCase() == str)[idx || 0];
     }
 
     // do specified activity, or a random one if none are specified
@@ -214,8 +216,9 @@
 
       // set toSpot and fromSpot so people go the correct direction more often
       this.dia.findNodeForKey(toNodeData.key).toSpot = dir_dict[act.dir];
-      if (this.#prevActivity)
+      if (this.#prevActivity) {
         this.dia.findNodeForKey(fromNodeData.key).fromSpot = dir_dict[this.#prevActivity.dir];
+      }
 
       // create a link between hidden nodes at the current position and end position
       this.dia.model.addLinkData(linkData);
@@ -224,7 +227,7 @@
 
       // follow the points in the link
       let points;
-      const nextStep = (i) => {
+      const nextStep = i => {
         if (i >= points.length) {
           // once we reach the final point remove the hidden nodes
           const toNode = this.dia.findNodeForKey(toNodeData.key);
@@ -334,84 +337,83 @@
       isBoundaryVisible: false
     };
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes, // this is what performs the "path finding"
-      pickable: false,
-      layername: 'Background'
-    })
-      .add(
-        new go.Shape({
-          name: 'SHAPE',
-          strokeWidth: 2,
-          strokeDashArray: [10, 6]
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes, // this is what performs the "path finding"
+          pickable: false,
+          layername: 'Background'
         })
-          .bindObject('stroke', 'fromNode', (fromNode) => { // make the link the same color as the person
-            return myDiagram.findNodeForKey('person' + fromNode.key.slice(4)).data.color;
-          })
-          .bindModel('opacity', 'isLinkVisible', (isVisisble) => (isVisisble ? 1 : 0))
-      );
+        .add(
+          new go.Shape({
+              name: 'SHAPE',
+              strokeWidth: 2,
+              strokeDashArray: [10, 6]
+            })
+            .bindObject('stroke', 'fromNode', fromNode => // make the link the same color as the person
+              myDiagram.findNodeForKey('person' + fromNode.key.slice(4)).data.color
+            )
+            .bindModel('opacity', 'isLinkVisible', isVisible => isVisible ? 1 : 0)
+        );
 
     // the background image, a floor plan
     myDiagram.add(
       new go.Part({
-        // this Part is not bound to any model data
-        width: 840,
-        height: 570,
-        layerName: 'Background',
-        position: new go.Point(0, 0),
-        selectable: false,
-        pickable: false,
-        avoidable: false
-      })
+          // this Part is not bound to any model data
+          width: 840,
+          height: 570,
+          layerName: 'Background',
+          position: new go.Point(0, 0),
+          selectable: false,
+          pickable: false,
+          avoidable: false
+        })
         .add(
           new go.Picture('https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
         )
     );
 
     // the Node representation of an activity
-    myDiagram.nodeTemplateMap.add(
-      'activity',
+    myDiagram.nodeTemplateMap.add('activity',
       new go.Node({
-        layerName: 'Background',
-        pickable: false,
-        avoidable: false
-      })
+          layerName: 'Background',
+          pickable: false,
+          avoidable: false
+        })
         .bind('location')
         .bind('angle')
         .add(
           new go.Shape({
-            strokeWidth: 0,
-            fill: 'blue'
-          })
-            .bindModel('opacity', 'isActivityVisible', (isVisible) => (isVisible ? 0.5 : 0))
+              strokeWidth: 0,
+              fill: 'blue'
+            })
+            .bindModel('opacity', 'isActivityVisible', isVisible => isVisible ? 0.5 : 0)
             .bind('width')
             .bind('height')
         )
     );
 
     // the Node representation of a boundary
-    myDiagram.nodeTemplateMap.add(
-      'bound',
+    myDiagram.nodeTemplateMap.add('bound',
       new go.Node({
-        layerName: 'Background',
-        pickable: false,
-        avoidable: true
-      })
+          layerName: 'Background',
+          pickable: false,
+          avoidable: true
+        })
         .bind('location')
         .bind('angle')
         .add(
           new go.Shape({
-            strokeWidth: 0,
-            fill: 'black'
-          })
-            .bindModel('opacity', 'isBoundaryVisible', (isVisible) => (isVisible ? 0.5 : 0))
+              strokeWidth: 0,
+              fill: 'black'
+            })
+            .bindModel('opacity', 'isBoundaryVisible', isVisible => isVisible ? 0.5 : 0)
             .bind('width')
             .bind('height')
         )
     );
 
     // load all of the activites and boundaries
-    houseBounds.forEach((b) => {
+    houseBounds.forEach(b => {
       let nodeData = {
         width: b.width,
         height: b.height,
@@ -436,23 +438,22 @@
     });
 
     // default template for people
-    myDiagram.nodeTemplateMap.add(
-      '',
+    myDiagram.nodeTemplateMap.add('',
       new go.Node({
-        locationSpot: go.Spot.Center,
-        avoidable: false,
-        layerName: 'Foreground'
-      })
+          locationSpot: go.Spot.Center,
+          avoidable: false,
+          layerName: 'Foreground'
+        })
         .bindTwoWay('location', 'loc')
         .bind('avoidable')
         .bind('fromSpot')
         .bind('toSpot')
         .add(
           new go.Shape('Ellipse', {
-            width: 18,
-            height: 18,
-            strokeWidth: 2
-          })
+              width: 18,
+              height: 18,
+              strokeWidth: 2
+            })
             .bind('fill', 'color')
             .bind('stroke', 'color', c => {
               if (!c || c == 'rgba(0,0,0,0)') return null;
@@ -463,7 +464,7 @@
         )
     );
 
-    ['red', 'green', 'blue', 'pink', 'lightgreen', 'lightblue'].forEach((c) => {
+    ['red', 'green', 'blue', 'pink', 'lightgreen', 'lightblue'].forEach(c => {
       new Person(myDiagram, c);
     });
   }

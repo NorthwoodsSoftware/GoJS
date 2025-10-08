@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -138,14 +140,14 @@
       'undoManager.isEnabled': true,
       // When a Node is deleted by the user, also delete all of its Comment Nodes.
       // When a Comment Link is deleted, also delete the corresponding Comment Node.
-      SelectionDeleting: (e) => {
+      SelectionDeleting: e => {
         var parts = e.subject; // the collection of Parts to be deleted, the Diagram.selection
         // iterate over a copy of this collection,
         // because we may add to the collection by selecting more Parts
-        parts.copy().each((p) => {
+        parts.copy().each(p => {
           if (p instanceof go.Node) {
             var node = p;
-            node.findNodesConnected().each((n) => {
+            node.findNodesConnected().each(n => {
               // remove every Comment Node that is connected with this node
               if (n.category === 'Comment') {
                 n.isSelected = true; // include in normal deletion process
@@ -163,36 +165,38 @@
       }
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({ fill: 'white' }).bind('fill', 'color'),
-        new go.TextBlock({ margin: 6 }).bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ fill: 'white' })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 6 })
+            .bind('text')
+        );
 
-    myDiagram.linkTemplate = new go.Link()
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }),
-        new go.Shape({ toArrow: 'Standard', stroke: null })
-      );
+    myDiagram.linkTemplate =
+      new go.Link()
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+        );
 
-    myDiagram.nodeTemplateMap.add(
-      'Comment',
+    myDiagram.nodeTemplateMap.add('Comment',
       new go.Node({ background: 'transparent' })
         .add( // this needs to act as a rectangular shape for BalloonLink,
           // which can be accomplished by setting the background.
-          new go.TextBlock({ stroke: 'brown', margin: 3 }).bind('text')
+          new go.TextBlock({ stroke: 'brown', margin: 3 })
+            .bind('text')
         )
     );
 
-    myDiagram.linkTemplateMap.add(
-      'Comment',
+    myDiagram.linkTemplateMap.add('Comment',
       // if the BalloonLink class has been loaded from the Extensions directory, use it
       new (typeof BalloonLink === 'function' ? BalloonLink : go.Link)()
         .add(
           new go.Shape( // the Shape.geometry will be computed to surround the comment node and
             // point all the way to the commented node
-            { stroke: 'brown', strokeWidth: 1, fill: 'lightyellow' }
-          )
+            { stroke: 'brown', strokeWidth: 1, fill: 'lightyellow' })
         )
     );
 
@@ -220,6 +224,7 @@
     document.getElementById('savedModel').innerHTML = `<code>${myDiagram.model.toJson()}</code>`;
     if (window.Prism) window.Prism.highlightAll();
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,16 +141,18 @@
     }
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 }).bind('fill', 'color'),
-        new go.TextBlock({
-          margin: 8, // some room around the text
-          editable: true,
-          textValidation: okName
-        })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the TextBlock
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              margin: 8, // some room around the text
+              editable: true,
+              textValidation: okName
+            })
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [

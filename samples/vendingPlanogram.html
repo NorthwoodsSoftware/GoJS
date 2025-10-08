@@ -1,0 +1,3214 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="An editor for defining planograms: visual displays of merchandise." />
+<meta itemprop="description" content="An editor for defining planograms: visual displays of merchandise." />
+<meta property="og:description" content="An editor for defining planograms: visual displays of merchandise." />
+<meta name="twitter:description" content="An editor for defining planograms: visual displays of merchandise." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Planogram Editor: Drag and Drop sodas onto Vending Machine" />
+<meta property="og:title" content="Planogram Editor: Drag and Drop sodas onto Vending Machine" />
+<meta name="twitter:title" content="Planogram Editor: Drag and Drop sodas onto Vending Machine" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/vendingPlanogram.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/vendingPlanogram.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/vendingPlanogram.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/vendingPlanogram.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/vendingPlanogram.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Planogram Editor: Drag and Drop sodas onto Vending Machine | GoJS Diagramming Library
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+    <style>
+      :root {
+        --light: rgba(235, 243, 235, 1);
+        --dark: rgba(89, 99, 89, 1);
+        --medium: rgba(197, 206, 197, 1);
+
+        --stroke: #2f3c2f;
+      }
+
+      .html-info {
+        display: none; /* hide by default */
+      }
+
+      #height-input-div {
+        padding: 6px;
+        border-radius: 6px;
+        font: 600 15px sans-serif;
+        outline: none;
+        background: var(--light);
+        border: 2px solid var(--dark);
+        color: var(--dark);
+      }
+
+      #height-input-div input {
+        outline: none; /* no outline when focused */
+        border: none;
+        background: var(--light);
+        width: 40px;
+      }
+
+        #height-input-div .arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+      #height-input-div .arrow {
+        width: 16px;
+      }
+
+      .arrow {
+        right: 8px;
+        height: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center; /* center text content (the arrow) horizontally */
+        align-items: center; /* center text content (the arrow) vertically */
+        background-color: var(--medium);
+        border-radius: 3px;
+        font-size: 12px;
+        color: var(--dark);
+        user-select: none; /* no highlight or anything when selected */
+      }
+
+      #add-row-input-div {
+        flex-direction: column;
+        gap: 5px;
+        padding: 6px;
+        border-radius: 6px;
+        font: 600 15px sans-serif;
+        outline: none;
+        background: var(--light);
+        border: 2px solid var(--dark);
+        color: var(--dark);
+        user-select: none; /* no highlight or anything when selected */
+      }
+
+      #add-row-input-div div {
+        display: flex;
+        gap: 4px;
+        width: 130px;
+        height: 18px;
+      }
+
+      #add-row-input-div input {
+        width: 20px;
+        font-size: 10px;
+        border: none;
+        border-radius: 3px;
+        color: var(--dark);
+        padding: 4px;
+        background-color: var(--medium);
+      }
+
+      #add-row-input-div p {
+        width: 40px;
+        font-size: 10px;
+        color: var(--dark);
+      }
+
+      #fill-shelf-button {
+        border: 2px solid var(--stroke);
+        border-radius: 3px;
+        background-color: var(--light);
+        color: var(--stroke);
+      }
+
+      input::selection {
+        background-color: #6b7b6b;
+        color: white;
+      }
+
+      /* This CSS is used to create the accordion for the Palettes */
+      input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        z-index: -1;
+      }
+
+      input[type="radio"]:checked + .tab-label {
+        background: #1a252f;
+        font-size: 25px;
+      }
+      input[type="radio"]:checked + .tab-label::after {
+        transform: rotate(90deg);
+      }
+      input[type="radio"]:checked ~ .tab-content {
+        max-height: 100vh;
+      }
+
+      /* Accordion styles */
+      .tabs {
+        overflow: hidden;
+      }
+
+      .tab {
+        width: 100%;
+        color: white;
+        overflow: hidden;
+      }
+      .tab-label {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5em;
+        background: #1f4963;
+        cursor: pointer;
+      }
+      .tab-label:hover {
+        background: #627f91;
+      }
+      .tab-label::after {
+        content: "❯";
+        width: 1em;
+        height: 1em;
+        text-align: center;
+        transition: all 0.35s;
+      }
+      .tab-content {
+        max-height: 0;
+        color: #2c3e50;
+        background: white;
+      }
+      .tab-close {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1em;
+        font-size: 0.75em;
+        background: #2c3e50;
+        cursor: pointer;
+      }
+      .tab-close:hover {
+        background: #1a252f;
+      }
+
+      .checkbox-wrapper input[type="checkbox"] {
+        height: 0;
+        width: 0;
+        visibility: hidden;
+      }
+
+      .checkbox-wrapper label {
+        cursor: pointer;
+        width: 130px;
+        height: 25px;
+        background: grey;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100px;
+        position: relative;
+        color: white;
+        font-size: 12px;
+      }
+
+      .checkbox-wrapper label:after {
+        content: "";
+        position: absolute;
+        top: 2.5px;
+        left: 2.5px;
+        width: 25px;
+        height: 20px;
+        background: #fff;
+        border-radius: 90px;
+        transition: 0.3s;
+      }
+
+      .checkbox-wrapper input:checked + label {
+        background: #7e9c8f;
+      }
+
+      .checkbox-wrapper input:checked + label:after {
+        left: calc(100% - 2.5%);
+        transform: translateX(-100%);
+      }
+
+      .checkbox-wrapper .slider-text {
+        font-family: sans-serif;
+        text-decoration: line-through;
+        display: inline-block; /* so transform works */
+        transform: translateX(10px);
+        transition: transform 0.3s, text-decoration 0.3s;
+      }
+
+      /* when checked: remove strikethrough and shift left */
+      .checkbox-wrapper input:checked + label .slider-text {
+        text-decoration: none;
+        transform: translateX(-10px);
+      }
+    </style>
+
+    <script id="code">
+      /***********************************************************************
+       *                          GLOBAL VARIABLES                           *
+       ***********************************************************************/
+      const settings = {
+        colors: {
+          exterior: "#6B7B6B",
+          dark: "#4A594A",
+          interior: "#E6F0E6",
+          stroke: "#2F3C2F",
+          keypad: "#B8BCA5",
+          highlight: "#FDFDFD",
+          shadow: "#4A594A",
+          palettes: {
+            green: {
+              fillColor: "#8FA99E",
+              labelColor: "#C3D4CA",
+              stroke: "#4B6257",
+            },
+            blue: {
+              fillColor: "#A3BDD9",
+              labelColor: "#DCE8F7",
+              stroke: "#607B9E",
+            },
+            beige: {
+              fillColor: "#E8DCC1",
+              labelColor: "#F5F0E3",
+              stroke: "#8C7E56",
+            },
+          },
+        },
+
+        paletteXSpacing: 45,
+        paletteYSpacing: 85,
+        defaultShelfHeight: 70,
+
+        // if allowTopLevel is false, that means you can't drag sodas onto the diagram background
+        allowTopLevel: false,
+
+        // settings the user can change:
+        editMode: true,
+        allowDuplicates: true,
+
+        // r is rounding on some things
+        r: 10,
+      };
+
+      const sodaCategories = ["can", "bottle"];
+
+      // will be defined in init()
+      let myDiagram;
+      let palette;
+      let vendingMachinePalette;
+
+      // when you right click a soda (fill shelf button pops up) it stores the data
+      // fillShelf() uses the data - to know:
+      // 1. what type of soda to fill the shelf with
+      // 2. what group & shelf to fill
+      let sodaRightClickedData;
+
+      /***********************************************************************
+       *                       CUSTOM INPUT EDITOR                           *
+       ***********************************************************************/
+
+      // Create an HTMLInfo and dynamically create some HTML to show/hide
+      const customEditor = new go.HTMLInfo();
+
+      // the onclick functions on the arrows for the height input use this
+      function changeHeightInput(change) {
+        inputDiv = document.getElementById("height-input-div");
+        inputBox = inputDiv.querySelector("input");
+        inputBox.value = Math.max(
+          parseInt(inputBox.value) + change,
+          settings.defaultShelfHeight - 20
+        );
+      }
+
+      function placeInput(div, pos, divWidth, divHeight) {
+        div.style.left = `${pos.x - divWidth / 2}px`;
+        div.style.top = `${pos.y - divHeight / 2}px`;
+      }
+
+      function handleAddShelfInput(textBlock, diagram, tool, pos, inputDiv) {
+        const rowInput = document.getElementById("row-input");
+        const heightInput = document.getElementById("height-input");
+
+        function addRow(itemArray, shelfNum, groupKey) {
+          let numRows = parseInt(rowInput.value);
+          let height = parseInt(heightInput.value);
+          if (height < settings.defaultShelfHeight - 20) {
+            height = settings.defaultShelfHeight - 20;
+          }
+          if (isNaN(height)) height = settings.defaultShelfHeight;
+          if (isNaN(numRows)) numRows = 1;
+
+          myDiagram.startTransaction("Add row(s)");
+          for (let i = 0; i < numRows; i++) {
+            // insert a new shelf at the specified index
+            myDiagram.model.insertArrayItem(itemArray, shelfNum, {
+              height: height,
+            });
+          }
+
+          for (const soda of allSodas()) {
+            if (soda.group === groupKey && soda.shelf >= shelfNum) {
+              myDiagram.model.setDataProperty(
+                soda,
+                "shelf",
+                soda.shelf + numRows
+              );
+            }
+          }
+          // we need this to update locations before transaction is finished
+          myDiagram.findNodeForKey(groupKey).ensureBounds();
+          updateInvisibleCells();
+          updateHighlights();
+          myDiagram.updateAllTargetBindings();
+          myDiagram.commitTransaction("Add row(s)");
+        }
+
+        rowInput.value = "1";
+        heightInput.value = "70";
+
+        const shelfData = getDataFromGraphObject(textBlock);
+        const groupData = findGroupData(shelfData);
+        const shelfNum = groupData.itemArray.indexOf(shelfData);
+        const groupKey = groupData.key;
+        // add row above
+        inputDiv.querySelector(".arrow.up").onclick = () => {
+          addRow(groupData.itemArray, shelfNum, groupKey);
+          customEditor.hide(diagram, tool);
+        };
+        // add row below
+        inputDiv.querySelector(".arrow.down").onclick = () => {
+          addRow(groupData.itemArray, shelfNum + 1, groupKey);
+          customEditor.hide(diagram, tool);
+        };
+
+        placeInput(inputDiv, pos, 142, 72);
+      }
+
+      function handleChangeShelfHeightInput(
+        textBlock,
+        diagram,
+        tool,
+        pos,
+        inputDiv,
+        inputBox
+      ) {
+        inputBox.value = textBlock.text;
+
+        // Do a few different things when a user presses a key
+        inputBox.addEventListener(
+          "keydown",
+          (e) => {
+            if (e.isComposing) return;
+            const key = e.key;
+            if (key === "Enter") {
+              // Accept on Enter
+              customEditor.hide(diagram, tool);
+              return;
+            } else if (key === "Tab") {
+              // Accept on Tab
+              customEditor.hide(diagram, tool);
+              e.preventDefault();
+              return false;
+            } else if (key === "Escape") {
+              // Cancel on Esc
+              tool.doCancel();
+            }
+          },
+          false
+        );
+
+        placeInput(inputDiv, pos, 40, 30);
+      }
+
+      function handleFillShelfButton(pos, button) {
+        const mousePoint = myDiagram.lastInput.viewPoint;
+        placeInput(button, mousePoint, 0, 0);
+      }
+
+      customEditor.show = (textBlock, diagram, tool) => {
+        customEditor._textBlockName = textBlock.name; // for use later in valueFunction
+
+        const loc = textBlock.getDocumentPoint(go.Spot.TopLeft);
+        const pos = diagram.transformDocToView(loc);
+
+        let div;
+        let inputBox;
+        if (textBlock.name === "ADD_SHELF_PLACEHOLDER_TEXT") {
+          div = document.getElementById("add-row-input-div");
+          handleAddShelfInput(textBlock, diagram, tool, pos, div);
+        } else if (textBlock.name === "FILL_SHELF_PLACEHOLDER_TEXT") {
+          div = document.getElementById("fill-shelf-button");
+          handleFillShelfButton(pos, div);
+        } else {
+          div = document.getElementById("height-input-div");
+          inputBox = div.querySelector("input");
+          handleChangeShelfHeightInput(
+            textBlock,
+            diagram,
+            tool,
+            pos,
+            div,
+            inputBox
+          );
+        }
+
+        div.style.position = "absolute";
+        div.style.zIndex = 100; // place it in front of the Diagram
+
+        diagram.div.appendChild(div);
+        div.style.display = "flex"; // show the input div
+        if (inputBox) {
+          inputBox.focus();
+        } else {
+          div.focus();
+        }
+      };
+
+      customEditor.hide = (diagram, tool) => {
+        let div;
+        if (tool.textBlock.name === "ADD_SHELF_PLACEHOLDER_TEXT") {
+          div = document.getElementById("add-row-input-div");
+        } else if (tool.textBlock.name === "FILL_SHELF_PLACEHOLDER_TEXT") {
+          div = document.getElementById("fill-shelf-button");
+        } else {
+          div = document.getElementById("height-input-div");
+
+          const inputBox = div.querySelector("input");
+          diagram.startTransaction("change shelf height");
+          tool.textBlock.text = inputBox.value;
+          diagram.layoutDiagram(true); // force layout to redo
+          updateInvisibleCells();
+          updateHighlights();
+          diagram.updateAllTargetBindings();
+          diagram.commitTransaction("change shelf height");
+        }
+
+        if (diagram.div.contains(div)) {
+          div.style.display = "none"; // hide the input div
+        }
+      };
+
+      // This is necessary for HTMLInfo instances that are used as text editors
+      customEditor.valueFunction = () => {
+        if (customEditor._textBlockName !== "ADD_SHELF_PLACEHOLDER_TEXT" &&
+            customEditor._textBlockName !== "FILL_SHELF_PLACEHOLDER_TEXT") {
+          return document
+            .getElementById("height-input-div")
+            .querySelector("input").value;
+        } else {
+          return "";
+        }
+      };
+
+      /***********************************************************************
+       *                       CUSTOM SHAPE (SODA)                           *
+       ***********************************************************************/
+      go.Shape.defineFigureGenerator("Soda", (shape, w, h) => {
+        const geo = new go.Geometry();
+        const mid = w / 2;
+        const capWidth = w / 8;
+        const capX = [mid - capWidth, mid + capWidth];
+        const capY = h / 10;
+        const bottomStartY = h / 4;
+        // corner radius
+        const r =
+          shape && shape.parameter1 ? Math.min(shape.parameter1, 18) : 8;
+        // start x, start y, filled
+        // top left corner of cap
+        const fig = new go.PathFigure(capX[0], 0, true);
+        geo.add(fig);
+        // top right corner of cap
+        fig.add(new go.PathSegment(go.SegmentType.Line, capX[1], 0));
+        // point between neck and cap (right)
+        fig.add(new go.PathSegment(go.SegmentType.Line, capX[1], capY));
+        // right side, soda bottle neck
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.QuadraticBezier,
+            w,
+            bottomStartY + r,
+            w,
+            bottomStartY - r / 4
+          )
+        );
+        // bottom right corner
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            0,
+            90, // start angle and sweep angle (from center point)
+            w - r,
+            h - r, // center x and center y
+            r,
+            r // radius x and radius y
+          )
+        );
+        // bottom left corner
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            90,
+            90, // start angle and sweep angle (from center point)
+            r,
+            h - r, // center x and center y
+            r,
+            r // radius x and radius y
+          )
+        );
+        // left side, soda bottle neck
+        fig.add(new go.PathSegment(go.SegmentType.Line, 0, bottomStartY + r));
+        fig.add(
+          new go.PathSegment(
+            go.SegmentType.QuadraticBezier,
+            capX[0],
+            capY,
+            0,
+            bottomStartY - r / 4
+          ).close()
+        );
+        const capLineFig = new go.PathFigure(capX[0], capY, false);
+        capLineFig.add(new go.PathSegment(go.SegmentType.Line, capX[1], capY));
+        geo.add(capLineFig);
+        return geo;
+      });
+
+      /***********************************************************************
+       *                           HANDLE EVENTS                             *
+       ***********************************************************************/
+
+      // handles item being dropped onto the vending machine
+      function handleVendingMouseDrop(e, grp) {
+        let cancelled = false;
+        grp.diagram.selection.each((node) => {
+          if (cancelled) return;
+          if (node instanceof go.Group) {
+            animateDrop(new go.Set().add(node));
+            return;
+          }
+          const closestCell = getClosestCell(node);
+          if (closestCell === null) {
+            grp.diagram.currentTool.doCancel();
+            cancelled = true;
+            return;
+          }
+
+          myDiagram.startTransaction("drop object");
+          // reset invisible cell back to being invisible
+          closestCell.findObject("SHAPE").fill = "transparent";
+
+          // set shelf location
+          myDiagram.model.setDataProperty(
+            node.data,
+            "shelf",
+            closestCell.data.shelf
+          );
+          myDiagram.model.setDataProperty(
+            node.data,
+            "coil",
+            closestCell.data.coil
+          );
+
+          // update visual
+          myDiagram.updateAllTargetBindings();
+
+          var ok = grp.addMembers([node], true);
+          if (!ok) {
+            grp.diagram.currentTool.doCancel();
+            return;
+          }
+          if (node.data.isFromPalette) {
+            handleItemFromPalette(node.data);
+          }
+
+          myDiagram.commitTransaction("drop object");
+        });
+      }
+
+      /***********************************************************************
+       *                FUNCTIONS FOR MAKING THE TEMPLATES                   *
+       ***********************************************************************/
+
+      // =================== REUSABLE FUNCTIONS ===================
+
+      function buttonStyle(obj) {
+        return obj
+          .set({
+            width: 12,
+            height: 12,
+          })
+          .attach({ "ButtonBorder.strokeWidth": 0 });
+      }
+
+      // use to make a button
+      function button(symbol, click, margin) {
+        const btn = go.GraphObject.build("Button", {
+          click: click,
+        })
+          .apply(buttonStyle)
+          .add(
+            new go.Shape(symbol, {
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+            })
+          );
+        if (margin) {
+          btn.margin = margin;
+        }
+        return btn;
+      }
+
+      function getStrokeColor(color) {
+        return settings.colors.palettes[color].stroke;
+      }
+
+      function sodaStyle(template) {
+        template
+          .findObject("MAIN_SHAPE")
+          .set({
+            width: 35,
+            fill: settings.colors.dark,
+            strokeWidth: 2,
+            stroke: settings.colors.stroke,
+          })
+          .bind(
+            "fill",
+            "color",
+            (color) => settings.colors.palettes[color].fillColor
+          )
+          .bind("stroke", "color", getStrokeColor);
+        template
+          .findObject("LABEL_SHAPE")
+          .set({
+            fill: settings.colors.exterior,
+            strokeWidth: 2,
+            stroke: settings.colors.stroke,
+          })
+          .bind(
+            "fill",
+            "color",
+            (color) => settings.colors.palettes[color].labelColor
+          )
+          .bind("stroke", "color", getStrokeColor);
+        template
+          .findObject("LABEL_TEXT")
+          .set({
+            stroke: settings.colors.stroke,
+          })
+          .bind("stroke", "color", getStrokeColor);
+        template.findObject("HIGHLIGHT").set({
+          name: "HIGHLIGHT",
+          width: 15,
+          strokeWidth: 0,
+          alignment: go.Spot.Left,
+          opacity: 0.4,
+          fill: "white",
+        });
+        template
+          .findObject("DUPLICATE_OUTLINE")
+          .set({
+            fill: null,
+            stroke: "red",
+            strokeWidth: 2,
+            width: 35,
+            visible: false,
+          })
+          .bind("visible", "", (data) => {
+            return (
+              (data.duplicate && !settings.allowDuplicates) ||
+              data.toDelete === true
+            );
+          })
+          .bind("stroke", "toDelete", (toDelete) => {
+            return toDelete ? "blue" : "red";
+          });
+
+        return template
+          .add(new go.TextBlock({ name: "FILL_SHELF_PLACEHOLDER_TEXT" }))
+          .set({
+            // handle right click
+            contextClick: (e, obj) => {
+              const tb = obj.findObject("FILL_SHELF_PLACEHOLDER_TEXT");
+              e.diagram.commandHandler.editTextBlock(tb);
+              sodaRightClickedData = obj.data;
+            },
+            locationSpot: go.Spot.Center,
+            zOrder: 3,
+            // it must be in the foreground or you can't click on sodas because of the invisible cells being in front
+            mouseDrop: (e, node) => {
+              handleVendingMouseDrop(e, node.containingGroup);
+            },
+          })
+          .bindObject("zOrder", "", (obj) => {
+            if (obj.isSelected) {
+              return highestZOrder() * 4 + 4;
+            }
+            const data = obj.data;
+            const groupData = myDiagram.model.findNodeDataForKey(data.group);
+            if (!groupData) return 0;
+            const zOrder = groupData.zOrder;
+            return zOrder * 4 + 2;
+
+            /* each group has a block of 4 z-orders for nodes related to the group
+             * +0: vending machine
+             * +1: invisible cells
+             * +2: soda
+             * +3: highlight
+             */
+          })
+          .bind("location", "", (data) => {
+            let node = myDiagram.findNodeForKey(data.key);
+            if (!node) node = palette.findNodeForKey(data.key);
+            const height = node.actualBounds.height;
+
+            if (data.paletteLocation) {
+              const { x, y } = go.Point.parse(data.paletteLocation);
+              return new go.Point(x, y - height / 2);
+            }
+
+            const { group, shelf, coil } = data;
+            if (
+              group === undefined ||
+              shelf === undefined ||
+              coil === undefined
+            ) {
+              // default
+              const soda = myDiagram.findNodeForKey(data.key);
+              // it will return 0,0 for items in palette i hope that's fine
+              if (soda) {
+                return soda.location;
+              } else {
+                return new go.Point(0, 0);
+              }
+            }
+            const ivc = myDiagram.findNodeForKey(
+              "IVC " + group + " " + shelf + " " + coil
+            );
+            if (ivc) {
+              const { x, y } = ivc.location;
+              return new go.Point(x, y - height / 2);
+            } else {
+              return new go.Point(0, 0);
+            }
+          });
+      }
+
+      function makeCornerDecoration(args) {
+        // set defaults (what they pass in will override what I'm writing here)
+        args = {
+          alignment: "TopLeft",
+          margin: [0],
+          strokeWidth: 5,
+          r: 5,
+          width: 10,
+          height: 10,
+          horizontalDotSpacing: 10,
+          horizontalDotWidth: 0,
+          verticalDotSpacing: 10,
+          verticalDotWidth: 0,
+          stroke: settings.colors.highlight,
+          opacity: 0.7,
+          ...args,
+        };
+        const r = args.r;
+        const isRight = args.alignment.includes("Right") ? 1 : -1;
+        const isTop = args.alignment.includes("Top") ? 1 : -1;
+        let geom = "";
+        if (args.horizontalDotWidth > 0) {
+          geom = `M${args.horizontalDotSpacing + args.horizontalDotWidth} 0 l${
+            isRight * args.horizontalDotWidth
+          } 0 m${isRight * args.horizontalDotSpacing} 0`;
+        } else {
+          geom = "M0 0";
+        }
+        const sweepFlag = isRight === isTop ? 1 : 0;
+        const arcEndX = isRight * r;
+        const arcEndY = isTop * r;
+        geom += `l${
+          isRight * args.width
+        } 0 a${r} ${r} 0 0 ${sweepFlag} ${arcEndX} ${arcEndY} l0 ${
+          isTop * args.height
+        }`;
+        if (args.verticalDotWidth > 0) {
+          geom += `m0 ${isTop * args.verticalDotSpacing} l0 ${
+            isTop * args.verticalDotWidth
+          }`;
+        }
+        return new go.Shape({
+          alignment: go.Spot[args.alignment],
+          geometryString: geom,
+          margin: new go.Margin(...args.margin),
+          strokeWidth: args.strokeWidth,
+          strokeCap: "round",
+          stroke: args.stroke,
+          opacity: args.opacity,
+        });
+      }
+
+      // =================== ONE TIME USE ===================
+
+      const modelTemplate = new go.GraphLinksModel([
+        {
+          key: 1,
+          vendingMachineWidth: 4,
+          isGroup: true,
+          itemArray: [{}, { height: 100 }, {}, {}, {}],
+          zOrder: 1,
+        },
+        {
+          key: 3,
+          category: "bottle",
+          shelf: 1,
+          coil: 1,
+          group: 1,
+          color: "green",
+          duplicate: true,
+        },
+        {
+          key: 4,
+          category: "can",
+          shelf: 0,
+          coil: 3,
+          group: 1,
+          color: "green",
+          duplicate: true,
+        },
+        {
+          key: 5,
+          category: "bottle",
+          shelf: 1,
+          coil: 3,
+          group: 1,
+          color: "green",
+          duplicate: true,
+        },
+        {
+          key: 6,
+          category: "can",
+          color: "beige",
+          shelf: 3,
+          coil: 2,
+          group: 1,
+          duplicate: true,
+        },
+        {
+          key: 2,
+          isGroup: true,
+          vendingMachineWidth: 3,
+          itemArray: [{}, { height: 70 }, {}],
+          position: "320 0",
+          zOrder: 2,
+        },
+        {
+          key: 7,
+          category: "can",
+          color: "blue",
+          shelf: 0,
+          coil: 0,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 8,
+          category: "can",
+          color: "blue",
+          shelf: 0,
+          coil: 2,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 9,
+          category: "can",
+          color: "blue",
+          shelf: 0,
+          coil: 1,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 10,
+          category: "can",
+          color: "beige",
+          shelf: 1,
+          coil: 0,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 11,
+          category: "can",
+          color: "beige",
+          shelf: 1,
+          coil: 1,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 12,
+          category: "can",
+          color: "beige",
+          shelf: 1,
+          coil: 2,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 13,
+          category: "can",
+          color: "green",
+          shelf: 2,
+          coil: 0,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 14,
+          category: "can",
+          color: "green",
+          shelf: 2,
+          coil: 2,
+          group: 2,
+          duplicate: true,
+        },
+        {
+          key: 15,
+          category: "can",
+          color: "green",
+          shelf: 2,
+          coil: 1,
+          group: 2,
+          duplicate: true,
+        },
+      ]);
+
+      // the button on that shelves that displays their heights
+      // when you click it the HTML pops up to change their heights
+      function numberInput() {
+        return go.GraphObject.build("Button", {
+          height: 12,
+          margin: new go.Margin(0, 0, 0, 30),
+          "ButtonBorder.strokeWidth": 0,
+          click: (e, obj) => {
+            const tb = obj.findObject("TEXT");
+            e.diagram.commandHandler.editTextBlock(tb);
+          },
+        }).add(
+          new go.TextBlock({
+            name: "TEXT",
+            text: settings.defaultShelfHeight,
+            font: "8px sans-serif",
+            strokeWidth: 2,
+            stroke: settings.colors.stroke,
+          }).bindTwoWay("text", "height", undefined, (t) =>
+            Math.max(parseInt(t), settings.defaultShelfHeight - 20)
+          )
+        );
+      }
+
+      function addShelfButton() {
+        return new go.Panel("Auto", {
+          click: (e, obj) => {
+            const tb = obj.findObject("ADD_SHELF_PLACEHOLDER_TEXT");
+            e.diagram.commandHandler.editTextBlock(tb);
+          },
+        }).add(
+          go.GraphObject.build("Button", {
+            margin: new go.Margin(0, 3, 0, 0),
+          })
+            .apply(buttonStyle)
+            .add(
+              new go.Shape("PlusLine", {
+                strokeWidth: 2,
+                stroke: settings.colors.stroke,
+              })
+            ),
+          new go.TextBlock({
+            name: "ADD_SHELF_PLACEHOLDER_TEXT",
+          })
+        );
+      }
+
+      function removeShelfButton() {
+        return button("MinusLine", (e, btn) => {
+          const { itemArray, groupKey, shelfNum } = getButtonClickedInfo(btn);
+
+          const affectedSodas = [];
+          for (const soda of allSodas()) {
+            if (soda.group === groupKey && soda.shelf >= shelfNum) {
+              affectedSodas.push(soda);
+            }
+          }
+
+          myDiagram.startTransaction("show modal");
+          let sodaDeleteCount = 0;
+          for (const soda of affectedSodas) {
+            if (soda.shelf === shelfNum) {
+              sodaDeleteCount++;
+              myDiagram.model.setDataProperty(soda, "toDelete", true);
+            }
+          }
+          if (sodaDeleteCount > 0) {
+            showModal(
+              sodaDeleteCount,
+              () => {
+                removeShelf(affectedSodas, shelfNum, itemArray, groupKey);
+              },
+              btn
+            );
+            myDiagram.commitTransaction("show modal");
+          } else {
+            myDiagram.commitTransaction("show modal");
+            removeShelf(affectedSodas, shelfNum, itemArray, groupKey);
+          }
+        }).bind("visible", "", (data) => {
+          nodeData = findGroupData(data);
+          return nodeData.itemArray.length > 1;
+        });
+      }
+
+      // number buttons are just visual decoration on the controls btw
+      // they are not clickable
+      function makeNumberButtons() {
+        const r = 2;
+        const panel = new go.Panel("Table", {
+          width: 46,
+          height: 67,
+        });
+        for (let i = 0; i < 12; i++) {
+          panel.add(
+            new go.Panel("Auto", {
+              row: Math.floor(i / 3),
+              column: i % 3,
+            }).add(
+              // invisible rectangle to make it the right size
+              new go.Shape("RoundedRectangle", {
+                fill: null,
+                stroke: null,
+                width: 14,
+                height: 14,
+              }),
+              new go.TextBlock({
+                text: i < 9 ? i + 1 : ["*", "0", "#"][i - 9],
+                // the 900 makes text thicker
+                font: "900 8px sans-serif",
+                stroke: settings.colors.stroke,
+              }),
+              // shadow for aesthetics
+              makeCornerDecoration({
+                height: 7 - r,
+                width: 7 - r,
+                alignment: "BottomRight",
+                stroke: settings.colors.dark,
+                strokeWidth: 1.5,
+                opacity: 0.8,
+                r: r,
+              }),
+              makeCornerDecoration({
+                alignment: "TopLeft",
+                strokeWidth: 1.5,
+                height: 2,
+                width: 2,
+                r: r,
+              })
+            )
+          );
+        }
+        return panel;
+      }
+
+      function leftAddAndDeleteButtons() {
+        return new go.Panel("Vertical", {
+          // extra space between buttons and window
+          margin: new go.Margin(0, 3, 0, 0),
+        }).add(
+          button("PlusLine", (e, btn) => {
+            myDiagram.startTransaction("add column");
+            // add 1 to vendingMachineWidth
+            const data = getDataFromGraphObject(btn);
+            myDiagram.model.setDataProperty(
+              data,
+              "vendingMachineWidth",
+              data.vendingMachineWidth + 1
+            );
+
+            myDiagram.layoutDiagram(true); // force layout to redo
+            // update invisibleCells' positions
+            updateInvisibleCells();
+            myDiagram.commitTransaction("add column");
+          }).bind("visible", "", () => settings.editMode),
+          button(
+            "MinusLine",
+            (e, btn) => {
+              // subtract 1 from vendingMachineWidth
+              const data = getDataFromGraphObject(btn);
+              const newVendingMachineWidth = data.vendingMachineWidth - 1;
+              const affectedSodas = allSodas().filter(
+                (soda) =>
+                  soda.group === data.key && soda.coil >= newVendingMachineWidth
+              );
+
+              myDiagram.startTransaction("show modal");
+              for (const soda of affectedSodas) {
+                myDiagram.model.setDataProperty(soda, "toDelete", true);
+              }
+
+              if (affectedSodas.length > 0) {
+                showModal(
+                  affectedSodas.length,
+                  () => {
+                    removeColumn(affectedSodas, data, newVendingMachineWidth);
+                  },
+                  btn
+                );
+                myDiagram.commitTransaction("show modal");
+              } else {
+                myDiagram.commitTransaction("show modal");
+                removeColumn(affectedSodas, data, newVendingMachineWidth);
+              }
+            },
+            // space between add and delete button
+            new go.Margin(3, 0, 0, 0)
+          ).bind(
+            "visible",
+            "vendingMachineWidth",
+            (count) => count > 3 && settings.editMode
+          )
+        );
+      }
+
+      function spacerForWhenButtonsArentThere() {
+        return new go.Shape({
+          width: 11,
+          opacity: 0,
+        }).bind("visible", "", () => !settings.editMode);
+      }
+
+      function shelfTop() {
+        return new go.Panel("Horizontal", {
+          height: settings.defaultShelfHeight - 20,
+          itemTemplate: new go.Panel("Horizontal", {
+            height: 37,
+            alignment: go.Spot.Bottom,
+          }).add(
+            new go.Shape({
+              fill: "transparent",
+              name: "COIL",
+              // somewhat vertically stretched half circle
+              geometryString: "M0 0 a20 20 0 0 1 40 0",
+              height: 12,
+              margin: new go.Margin(0, 5),
+              width: 25,
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+              alignment: go.Spot.Bottom,
+            }),
+            new go.Shape("MinusLine", {
+              // height means width because the angle being 90 flips it
+              height: 2,
+              margin: new go.Margin(0, 1.5),
+              angle: 90,
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+            }).bind("visible", "lineVisible")
+          ),
+          itemArray: [{}, {}],
+        })
+          .bind("margin", "height", (h) => new go.Margin(h - 70, 0, 0, 0))
+          .bind("itemArray", "", (data) => {
+            // find group
+            const nodeData = findGroupData(data);
+            if (nodeData) {
+              array = Array(nodeData.vendingMachineWidth)
+                .fill(null)
+                .map(() => ({ lineVisible: true }));
+              array[nodeData.vendingMachineWidth - 1] = {
+                lineVisible: false,
+              };
+              return array;
+            } else {
+              return [];
+            }
+          });
+      }
+
+      // I made this way more complicated than it should have to be because it wasn't arranged right otherwise
+      function shelfLabels() {
+        return new go.Panel("Horizontal", {
+          alignment: go.Spot.Left,
+          itemTemplate: new go.Panel("Horizontal", {}).add(
+            new go.Panel("Auto", {}).add(
+              // invisible shape to force size
+              new go.Shape("Rectangle", {
+                width: 36,
+                opacity: 0,
+              }),
+              // label
+              new go.Panel("Auto").add(
+                new go.Shape("RoundedRectangle", {
+                  height: 10,
+                  width: 20,
+                  fill: "white",
+                  stroke: null,
+                }),
+
+                // labels (A1, A2, etc)
+                new go.TextBlock({
+                  // the 900 makes text thicker
+                  font: "900 8px sans-serif",
+                  stroke: settings.colors.exterior,
+                }).bind("text", "", (data) => {
+                  return data.letter + "" + data.i;
+                })
+              )
+            ),
+            new go.Shape("Rectangle", {
+              // height means width because the angle being 90 flips it
+              width: 6,
+              opacity: 0,
+            }).bind("visible", "lineVisible")
+          ),
+          itemArray: [{}, {}],
+        })
+          .bind("itemArray", "", (data) => {
+            // find group
+            const nodeData = findGroupData(data);
+            if (nodeData) {
+              const row = nodeData.itemArray.indexOf(data);
+              const letter = String.fromCharCode(65 + row);
+
+              array = Array(nodeData.vendingMachineWidth)
+                .fill(null)
+                .map((_, i) => ({
+                  i: i + 1,
+                  lineVisible: true,
+                  letter: letter,
+                }));
+              array[nodeData.vendingMachineWidth - 1].lineVisible = false;
+              return array;
+            } else {
+              return [];
+            }
+          })
+          .bind("visible", "", () => !settings.editMode);
+      }
+
+      function shelfBottom() {
+        return new go.Panel("Auto", {
+          stretch: go.Stretch.Horizontal,
+          height: 20,
+        }).add(
+          new go.Shape("Rectangle", {
+            fill: settings.colors.exterior,
+            stroke: settings.colors.stroke,
+            strokeWidth: 2,
+            alignment: go.Spot.Center,
+            height: 18,
+          }),
+          // shelf + and - buttons
+          new go.Panel("Horizontal")
+            .add(addShelfButton(), removeShelfButton(), numberInput())
+            .bind("visible", "", () => settings.editMode),
+          shelfLabels()
+        );
+      }
+
+      function interior() {
+        return new go.Panel("Horizontal", {
+          stretch: go.Stretch.Horizontal,
+          column: 0,
+          margin: new go.Margin(20, 5),
+        }).add(
+          leftAddAndDeleteButtons(),
+          spacerForWhenButtonsArentThere(),
+          // WINDOW
+          new go.Panel("Auto", {
+            name: "HIGHLIGHT GOES HERE",
+          }).add(
+            // window background
+            new go.Shape("RoundedRectangle", {
+              name: "WINDOW",
+              fill: settings.colors.interior,
+              stroke: null,
+              strokeWidth: 2,
+            }),
+            // shelves
+            new go.Panel("Vertical", {
+              name: "SHELVESLIST",
+              itemTemplate: new go.Panel("Vertical", {
+                margin: new go.Margin(5, 0),
+                opacity: 0.8,
+              })
+                .bind("height", "height")
+                .add(shelfTop(), shelfBottom()),
+            }).bind("itemArray")
+          )
+        );
+      }
+
+      function controls() {
+        const r2 = settings.r - 5;
+        return new go.Panel("Auto", {
+          column: 1,
+          width: 70,
+          height: 180,
+          margin: new go.Margin(0, 10),
+        }).add(
+          // dark background
+          new go.Shape("RoundedRectangle", {
+            stroke: settings.colors.stroke,
+            strokeWidth: 2,
+            fill: settings.colors.dark,
+          }),
+          new go.Panel("Vertical", {}).add(
+            // screen
+            new go.Panel("Auto").add(
+              new go.Shape("RoundedRectangle", {
+                stroke: settings.colors.stroke,
+                strokeWidth: 2,
+                fill: settings.colors.keypad,
+                height: 45,
+                width: 50,
+                margin: new go.Margin(2),
+              }),
+              // highlight for aesthetics
+              makeCornerDecoration({
+                alignment: "TopLeft",
+                margin: [3],
+                r: r2,
+              })
+            ),
+            // arrow
+            new go.Shape("TriangleDown", {
+              stroke: null,
+              strokeWidth: 2,
+              fill: "#e9cf86",
+              width: 15,
+              height: 5,
+              alignment: go.Spot.Center,
+              margin: new go.Margin(2),
+            }),
+            // card slot
+            new go.Panel("Auto", {
+              margin: new go.Margin(2),
+              height: 10,
+              width: 50,
+            }).add(
+              new go.Shape("RoundedRectangle", {
+                stroke: settings.colors.stroke,
+                strokeWidth: 2,
+                fill: settings.colors.keypad,
+              }),
+              new go.Shape("MinusLine", {
+                width: 30,
+                stroke: settings.colors.dark,
+                strokeWidth: 2,
+                fill: settings.colors.keypad,
+              })
+            ),
+            // keypad
+            new go.Panel("Auto").add(
+              new go.Shape("RoundedRectangle", {
+                stroke: settings.colors.stroke,
+                strokeWidth: 2,
+                fill: settings.colors.keypad,
+                height: 70,
+                width: 50,
+                margin: new go.Margin(2),
+              }),
+              makeNumberButtons()
+            )
+          )
+        );
+      }
+
+      function vendingFeet() {
+        return new go.Panel("Table", {
+          stretch: go.Stretch.Horizontal,
+          height: 20,
+        }).add(
+          new go.Shape("RoundedBottomRectangle", {
+            column: 0,
+            width: 30,
+            height: 18,
+            stroke: settings.colors.stroke,
+            strokeWidth: 2,
+            fill: settings.colors.exterior,
+            alignment: go.Spot.Left,
+          }),
+          new go.Shape("RoundedBottomRectangle", {
+            column: 1,
+            width: 30,
+            height: 18,
+            stroke: settings.colors.stroke,
+            strokeWidth: 2,
+            fill: settings.colors.exterior,
+            alignment: go.Spot.Right,
+          })
+        );
+      }
+
+      function vendingTemplate() {
+        return (
+          new go.Group("Vertical", {
+            location: new go.Point(0, 0),
+            locationSpot: go.Spot.BottomLeft,
+            mouseDrop: handleVendingMouseDrop,
+            zOrder: 0,
+          })
+            .bind("zOrder", "zOrder", (zOrder) => zOrder * 4)
+            /* each group has a block of 4 z-orders for nodes related to the group
+             * +0: vending machine
+             * +1: invisible cells
+             * +2: soda
+             * +3: highlight
+             */
+
+            .add(
+              new go.Panel("Auto", {}).add(
+                new go.Shape("RoundedTopRectangle", {
+                  fill: settings.colors.exterior,
+                  strokeWidth: 2,
+                  stroke: settings.colors.stroke,
+                  parameter1: settings.r,
+                }),
+                new go.Panel("Table", {
+                  stretch: go.Stretch.Fill,
+                }).add(
+                  // main part of vending machine
+                  new go.Panel("Table", {
+                    row: 0,
+                    stretch: go.Stretch.Fill,
+                  }).add(interior(), controls()),
+                  // dividing line
+                  new go.Shape("MinusLine", {
+                    row: 1,
+                    height: 5,
+                    stretch: go.Stretch.Horizontal,
+                    strokeWidth: 2,
+                    stroke: settings.colors.stroke,
+                  }),
+                  // pick up box
+                  new go.Panel("Auto", {
+                    row: 2,
+                    margin: new go.Margin(20),
+                    height: 50,
+                    stretch: go.Stretch.Horizontal,
+                  }).add(
+                    new go.Shape("RoundedRectangle", {
+                      fill: settings.colors.dark,
+                      strokeWidth: 2,
+                      stroke: settings.colors.stroke,
+                    }),
+                    // highlights for aesthetics
+                    new go.Shape({
+                      alignment: go.Spot.TopLeft,
+                      geometryString: `M0 0 l5 0 m-20 0 l-50 0 a${settings.r} ${
+                        settings.r
+                      } 0 0 0 ${-settings.r} ${settings.r} l0 20`,
+                      margin: new go.Margin(3),
+                      strokeCap: "round",
+                      stroke: settings.colors.highlight,
+                      strokeWidth: 7,
+                      opacity: 0.2,
+                    })
+                  )
+                ),
+                // highlights for aesthetics
+                makeCornerDecoration({
+                  alignment: "TopLeft",
+                  r: settings.r,
+                  height: 50,
+                  width: 50,
+                  margin: [3],
+                  horizontalDotWidth: 5,
+                  horizontalDotSpacing: 20,
+                  strokeWidth: 10,
+                }),
+                // highlights for aesthetics
+                makeCornerDecoration({
+                  alignment: "TopRight",
+                  r: settings.r,
+                  height: 50,
+                  width: 50,
+                  margin: [3],
+                  verticalDotWidth: 10,
+                  verticalDotSpacing: 20,
+                  strokeWidth: 10,
+                }),
+                // shadows for aesthetics
+                new go.Shape({
+                  alignment: go.Spot.BottomRight,
+                  margin: new go.Margin(6, 2),
+                  strokeCap: "round",
+                  stroke: settings.colors.shadow,
+                  strokeWidth: 10,
+                  opacity: 0.4,
+                }).bind(
+                  "geometryString",
+                  "vendingMachineWidth",
+                  (vendingMachineWidth) =>
+                    `M0 0 l0 50 a${settings.r} ${
+                      settings.r
+                    } 0 0 1 ${-settings.r} ${settings.r} l${
+                      -45 * vendingMachineWidth
+                    } 0`
+                )
+              ),
+              vendingFeet()
+            )
+            .bindTwoWay(
+              "location",
+              "position",
+              go.Point.parse,
+              go.Point.stringify
+            )
+        );
+      }
+
+      function vendingPaletteTemplate() {
+        return new go.Group("Auto").add(
+          new go.Shape("RoundedRectangle", {
+            fill: settings.colors.exterior,
+            strokeWidth: 2,
+            stroke: settings.colors.stroke,
+          }),
+          new go.Panel("Vertical").add(
+            new go.Panel("Horizontal").add(
+              new go.Shape("RoundedRectangle", {
+                fill: settings.colors.interior,
+                strokeWidth: 2,
+                stroke: settings.colors.stroke,
+                height: 100,
+                width: 80,
+                margin: 2,
+              }),
+              new go.Shape("RoundedRectangle", {
+                fill: settings.colors.dark,
+                strokeWidth: 2,
+                stroke: settings.colors.stroke,
+                width: 30,
+                height: 50,
+                margin: 2,
+              })
+            ),
+            new go.Shape("MinusLine", {
+              height: 2,
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+              margin: new go.Margin(2, 0),
+              width: 110,
+            }),
+            new go.Shape("RoundedRectangle", {
+              fill: settings.colors.dark,
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+              height: 20,
+              margin: 2,
+            })
+          )
+        );
+      }
+
+      function highlightTemplate() {
+        return new go.Node("Auto", {
+          pickable: false,
+        })
+          .add(
+            makeCornerDecoration({
+              width: 50,
+              height: 50,
+              horizontalDotSpacing: 20,
+              horizontalDotWidth: 5,
+              r: settings.r,
+              strokeWidth: 10,
+              opacity: 0.7,
+              margin: [6],
+            })
+          )
+          .bind("zOrder", "", (data) => {
+            const groupData = myDiagram.model.findNodeDataForKey(data.group);
+            const zOrder = groupData.zOrder;
+            return zOrder * 4 + 3;
+
+            /* each group has a block of 4 z-orders for nodes related to the group
+             * +0: vending machine
+             * +1: invisible cells
+             * +2: soda
+             * +3: highlight
+             */
+          });
+      }
+
+      function invisibleCellTemplate() {
+        return new go.Node("Auto", {
+          pickable: false,
+          locationSpot: go.Spot.BottomCenter,
+          selectable: false,
+          zOrder: 1,
+          mouseDrop: (e, node) => {
+            // if you drop an item on an invisible cell, it just runs the mouseDrop function for the vending machine it's in
+            // that way the invisible cells don't get in the way
+            node.containingGroup.mouseDrop(e, node.containingGroup);
+          },
+        })
+          .bind("zOrder", "", (data) => {
+            const groupData = myDiagram.model.findNodeDataForKey(data.group);
+            const zOrder = groupData.zOrder;
+            return zOrder * 4 + 1;
+
+            /* each group has a block of 4 z-orders for nodes related to the group
+             * +0: vending machine
+             * +1: invisible cells
+             * +2: soda
+             * +3: highlight
+             */
+          })
+          .add(
+            new go.Shape("Rectangle", {
+              name: "SHAPE",
+              fill: "transparent",
+              stroke: null,
+              opacity: 0.25,
+            })
+              .bindTwoWay("height")
+              .bindTwoWay("width")
+          )
+          .bindTwoWay(
+            "location",
+            "position",
+            go.Point.parse,
+            go.Point.stringify
+          );
+      }
+
+      // =================== SODA TEMPLATES ===================
+
+      const sodaCanTemplate = new go.Node("Auto", {})
+        .add(
+          new go.Panel("Auto").add(
+            // main can body
+            new go.Shape("RoundedRectangle", {
+              name: "MAIN_SHAPE",
+              height: 50,
+              parameter1: 4,
+            }),
+
+            // label
+            new go.Panel("Auto", {
+              width: 30,
+              height: 20,
+              alignment: go.Spot.Center,
+            }).add(
+              new go.Shape("RoundedRectangle", {
+                name: "LABEL_SHAPE",
+                parameter1: 3,
+              }),
+              new go.TextBlock("SODA", {
+                name: "LABEL_TEXT",
+                font: "900 8px sans-serif",
+              })
+            )
+          ),
+
+          // duplicate indicator outline (hidden unless duplicate)
+          // also used (when it's blue) to show which items you're about to delete
+          new go.Shape("Rectangle", {
+            name: "DUPLICATE_OUTLINE",
+            height: 50,
+          }),
+          new go.Shape("RoundedRectangle", {
+            name: "HIGHLIGHT",
+            height: 48,
+            margin: new go.Margin(0, 0, 0, 2),
+          })
+        )
+        .apply(sodaStyle);
+
+      const sodaBottleTemplate = new go.Node("Auto", {})
+        .add(
+          new go.Panel("Spot").add(
+            new go.Shape("Soda", {
+              name: "MAIN_SHAPE",
+              height: 75,
+            }),
+            // label
+            new go.Panel("Auto", {
+              // adding strokeWidth to width so they align
+              height: 25,
+              width: 37,
+              alignment: new go.Spot(0, 0.4),
+              alignmentFocus: go.Spot.TopLeft,
+            }).add(
+              new go.Shape("Rectangle", {
+                name: "LABEL_SHAPE",
+              }),
+              new go.TextBlock("SODA", {
+                name: "LABEL_TEXT",
+                font: "900 10px sans-serif",
+              })
+            )
+          ),
+          // highlight
+          new go.Shape("RoundedRectangle", {
+            name: "HIGHLIGHT",
+            height: 55,
+            margin: new go.Margin(15, 0, 0, 2),
+          }),
+          // duplicate indicator outline (hidden unless duplicate)
+          // also used (when it's blue) to show which items you're about to delete
+          new go.Shape("Rectangle", {
+            name: "DUPLICATE_OUTLINE",
+            height: 75,
+          })
+        )
+        .apply(sodaStyle);
+
+      // =================== MODAL TEMPLATES ===================
+
+      // transparent shape that will fill the whole screen so the user can't do anything until they answer the pop up
+      function modalBackgroundTemplate() {
+        return new go.Node("Auto", {
+          layerName: "Foreground",
+          locationSpot: go.Spot.Center,
+          movable: false,
+          zOrder: 1, // goes behind modal which has z order 2
+        })
+          .add(
+            new go.Shape({
+              fill: settings.colors.interior,
+              opacity: 0.2,
+            })
+              .bind("height", "viewportHeight")
+              .bind("width", "viewportWidth")
+          )
+          .bind("visible");
+      }
+
+      function modalButton(text, margin, name) {
+        const btn = go.GraphObject.build("Button", {
+          "ButtonBorder.strokeWidth": 0,
+          "ButtonBorder.fill": settings.colors.palettes.beige.labelColor,
+          click: () => {
+            hideModal();
+          },
+        }).add(
+          new go.TextBlock(text, {
+            stroke: settings.colors.stroke,
+          })
+        );
+        if (margin) {
+          btn.margin = margin;
+        }
+        if (name) {
+          btn.name = name;
+        }
+        return btn;
+      }
+
+      function modalTemplate() {
+        return new go.Node("Auto", {
+          layerName: "Foreground",
+          zOrder: 2, // goes in front of bg which has z order 1
+          locationSpot: go.Spot.TopLeft,
+          selectionAdorned: false,
+        })
+          .add(
+            new go.Shape("RoundedRectangle", {
+              fill: settings.colors.palettes.beige.fillColor,
+              strokeWidth: 2,
+              stroke: settings.colors.stroke,
+            }),
+            new go.Panel("Vertical", {
+              margin: 10,
+            }).add(
+              // "This will delete x items. Are you sure?"
+              new go.TextBlock({
+                name: "TEXT",
+                font: "15px sans-serif",
+                margin: new go.Margin(0, 0, 5, 0),
+                stroke: settings.colors.stroke,
+              }).bind("text"),
+              new go.Panel("Horizontal").add(
+                modalButton("Yes", new go.Margin(0, 5, 0, 0), "YES"),
+                modalButton("No")
+              )
+            )
+          )
+          .bind("visible");
+      }
+
+      /***********************************************************************
+       *                        HELPFUL FUNCTIONS                            *
+       ***********************************************************************/
+
+      // returns a list of all soda data in diagram model
+      function allSodas() {
+        return myDiagram.model.nodeDataArray.filter((node) =>
+          sodaCategories.includes(node.category)
+        );
+      }
+
+      // returns a list of all group NODES in diagram model
+      function allGroups() {
+        const groups = [];
+        myDiagram.nodes.each((node) => {
+          if (node instanceof go.Group) {
+            groups.push(node);
+          }
+        });
+        return groups;
+      }
+
+      // return data of soda at given spot
+      // or returns false if there's nothing at that location
+      // used in getClosestCell()
+      function sodaAt(group, shelf, coil) {
+        for (const soda of allSodas()) {
+          if (
+            soda.group === group &&
+            soda.shelf === shelf &&
+            soda.coil === coil
+          ) {
+            return soda;
+          }
+        }
+        return false;
+      }
+
+      // runs the filterFunction on all sodas and then runs the actionFunction on each soda that passes the filter
+      function editSoda(filterFunction, actionFunction) {
+        const filteredSodas = allSodas().filter(filterFunction);
+        for (const nodeData of filteredSodas) {
+          actionFunction(nodeData);
+        }
+      }
+
+      function highestZOrder() {
+        let maxZOrder = 0;
+        myDiagram.model.nodeDataArray.forEach((data) => {
+          if (data.isGroup && data.zOrder && data.zOrder > maxZOrder) {
+            maxZOrder = data.zOrder;
+          }
+        });
+        return maxZOrder;
+      }
+
+      // used in removeShelfButton()
+      function getButtonClickedInfo(btn) {
+        // find first panel with data
+        let dataPanel = btn.panel;
+        while (!dataPanel.data) {
+          dataPanel = dataPanel.panel;
+        }
+
+        // return info about it
+        const { itemArray, key } = btn.part.data;
+        const data = dataPanel.data;
+        return {
+          itemArray: itemArray,
+          groupKey: key,
+          shelfNum: itemArray.indexOf(data),
+        };
+      }
+
+      // give an array in the itemArray of the group and it returns the data of the surrounding group
+      function findGroupData(data) {
+        function findGroupDataInModel(diagram) {
+          return diagram.model.nodeDataArray.find(
+            (nodeData) => nodeData.isGroup && nodeData.itemArray.includes(data)
+          );
+        }
+
+        let result = findGroupDataInModel(myDiagram);
+        if (!result) {
+          result = findGroupDataInModel(vendingMachinePalette);
+        }
+        return result;
+      }
+
+      function getDataFromGraphObject(button) {
+        let panel = button.panel;
+        while (!panel.data) {
+          panel = panel.panel;
+        }
+        return panel.data;
+      }
+
+      function topMostGroupKey(location) {
+        // get top most-group
+        const topGroup = myDiagram.findObjectAt(
+          location,
+          (obj) => obj.part,
+          (obj) => obj.part instanceof go.Group
+        );
+        return topGroup ? topGroup.data.key : null;
+      }
+
+      // helper function for getClosestCell()
+      function findIntersectingCells(node, groupKey) {
+        const nodeBounds = node.getDocumentBounds();
+        const intersectingCells = [];
+        const invisibleCells = myDiagram.findNodesByExample({
+          category: "InvisibleCell",
+          group: groupKey,
+        });
+        invisibleCells.each((cell) => {
+          const cellBounds = cell.getDocumentBounds();
+          // if node is touching cell
+          if (nodeBounds.intersectsRect(cellBounds)) {
+            // if node is the right size to fit in cell
+            if (
+              nodeBounds.height <= cellBounds.height &&
+              nodeBounds.width <= cellBounds.width
+            ) {
+              const { group, shelf, coil } = cell.data;
+              // now as long as there's no soda already there, add it to the list
+              const sodaAlreadyThere = sodaAt(group, shelf, coil);
+              if (sodaAlreadyThere.key === node.data.key || !sodaAlreadyThere) {
+                intersectingCells.push(cell);
+              }
+            }
+          }
+        });
+        return intersectingCells;
+      }
+
+      // helper function for getClosestCell()
+      function cellClosestToMouse(cells) {
+        const mousePt = myDiagram.lastInput.documentPoint;
+        closestDist = Infinity;
+        closestCell = null;
+        for (const cell of cells) {
+          const bounds = cell.getDocumentBounds();
+          const bottomLeft = new go.Point(bounds.x, bounds.y + bounds.height);
+          const dist = mousePt.distanceSquaredPoint(bottomLeft);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestCell = cell;
+          }
+        }
+        return closestCell;
+      }
+
+      // give a node (and a groupKey, if you already know the topmost group it should be in)
+      // returns the closest cell that the node can fit into.
+      // (or null if the node isn't touching any cells)
+      function getClosestCell(node, groupKey) {
+        if (!groupKey) {
+          groupKey = topMostGroupKey(node.location);
+          if (!groupKey) return null;
+        }
+
+        const intersectingCells = findIntersectingCells(node, groupKey);
+
+        if (intersectingCells.length > 1) {
+          return cellClosestToMouse(intersectingCells);
+        } else if (intersectingCells.length === 1) {
+          return intersectingCells[0];
+        } else {
+          return null;
+        }
+      }
+
+      // =================== DEAL WITH DUPLICATE SODAS ===================
+
+      // Marks in model data whether for all sodas of this type, whether they are duplicates or not
+      function handleDuplicates(type) {
+        const sodas = allSodas().filter(
+          (soda) => soda.color + soda.category === type
+        );
+        const isDuplicate = sodas.length > 1;
+        for (const soda of sodas) {
+          myDiagram.model.setDataProperty(soda, "duplicate", isDuplicate);
+        }
+        if (!settings.allowDuplicates) findAndRemovePaletteDuplicates();
+      }
+
+      function handleAllDuplicates() {
+        const types = [];
+        for (soda of allSodas()) {
+          const type = soda.color + soda.category;
+          if (!types.includes(type)) {
+            types.push(type);
+          }
+        }
+        for (type of types) {
+          handleDuplicates(type);
+        }
+        if (!settings.allowDuplicates) findAndRemovePaletteDuplicates();
+      }
+
+      // finds all duplicate sodas in the palette and removes them
+      // but only if allowDuplicates is false
+      // regardless of whether it's false or not, if it's from the palette we set it as not from the palette anymore
+      function handleItemFromPalette(data) {
+        myDiagram.model.setDataProperty(data, "isFromPalette", undefined);
+        myDiagram.model.setDataProperty(data, "paletteLocation", undefined);
+        if (!settings.allowDuplicates) {
+          palette.model.removeNodeData(
+            palette.model.findNodeDataForKey(data.type)
+          );
+        }
+        handleDuplicates(data.type);
+        if (!settings.allowDuplicates) findAndRemovePaletteDuplicates();
+      }
+
+      // =================== FUNCTIONS TO EDIT THE MODEL ===================
+
+      // vending machine falling animation when you drop it somewhere
+      function animateDrop(nodes) {
+        myDiagram.startTransaction("drop vending machine");
+        const animation = new go.Animation();
+        animation.duration = 400;
+        nodes.each((selected) => {
+          if (selected instanceof go.Group) {
+            animation.add(
+              selected,
+              "location",
+              selected.location,
+              new go.Point(selected.location.x, 0)
+            );
+            // make it animate all items in the group too
+            selected.memberParts.each((member) => {
+              animation.add(
+                member,
+                "location",
+                member.location,
+                new go.Point(
+                  member.location.x,
+                  member.location.y - selected.location.y
+                )
+              );
+            });
+            const highlight = myDiagram.findNodeForKey(
+              "highlight " + selected.key
+            );
+            if (highlight) {
+              animation.add(
+                highlight,
+                "location",
+                highlight.location,
+                new go.Point(
+                  highlight.location.x,
+                  highlight.location.y - selected.location.y
+                )
+              );
+            }
+            setTimeout(() => {
+              myDiagram.model.setDataProperty(
+                selected.data,
+                "position",
+                selected.location.x + " 0"
+              );
+            }, animation.duration);
+          }
+        });
+        animation.start();
+
+        setTimeout(() => {
+          remakeAllInvisibleCells();
+          updateHighlights();
+          myDiagram.commitTransaction("drop vending machine");
+        }, animation.duration);
+      }
+
+      function fillShelf() {
+        const fillSoda = sodaRightClickedData;
+        myDiagram.startTransaction("fill shelf");
+        const shelfNum = fillSoda.shelf;
+        const groupKey = fillSoda.group;
+        const vendingMachineWidth =
+          myDiagram.model.findNodeDataForKey(groupKey).vendingMachineWidth;
+
+        // delete former sodas
+        editSoda(
+          (soda) =>
+            soda.shelf === shelfNum &&
+            soda.group === groupKey &&
+            soda !== fillSoda,
+          (soda) => {
+            myDiagram.model.removeNodeData(soda);
+          }
+        );
+
+        // fill with new sodas
+        for (let i = 0; i < vendingMachineWidth; i++) {
+          if (i !== fillSoda.coil) {
+            const data = Object.assign({}, fillSoda);
+            data.coil = i;
+            myDiagram.model.addNodeData(data);
+          }
+        }
+        handleDuplicates(fillSoda.color + fillSoda.category);
+        myDiagram.commitTransaction("fill shelf");
+      }
+
+      function removeShelf(affectedSodas, shelfNum, itemArray, groupKey) {
+        myDiagram.startTransaction("Delete row");
+        for (const soda of affectedSodas) {
+          if (soda.shelf === shelfNum) {
+            const type = soda.type;
+            myDiagram.model.removeNodeData(soda);
+            handleDuplicates(type);
+            if (!settings.allowDuplicates) findAndRemovePaletteDuplicates();
+          } else {
+            myDiagram.model.setDataProperty(soda, "shelf", soda.shelf - 1);
+          }
+        }
+
+        handleAllDuplicates();
+        myDiagram.model.removeArrayItem(itemArray, shelfNum);
+        // we need this to update locations before transaction is finished
+        myDiagram.findNodeForKey(groupKey).ensureBounds();
+        updateInvisibleCells();
+        updateHighlights();
+        myDiagram.updateAllTargetBindings();
+        myDiagram.commitTransaction("Delete row");
+      }
+
+      function removeColumn(affectedSodas, data, newVendingMachineWidth) {
+        myDiagram.startTransaction("delete column");
+        myDiagram.model.setDataProperty(
+          data,
+          "vendingMachineWidth",
+          newVendingMachineWidth
+        );
+
+        // get rid of items that were on deleted shelf
+        for (const soda of affectedSodas) {
+          myDiagram.model.removeNodeData(soda);
+        }
+
+        handleAllDuplicates();
+
+        // update invisibleCells' positions
+        updateInvisibleCells();
+        myDiagram.commitTransaction("delete column");
+      }
+
+      // =================== MODAL ===================
+
+      function makeModal() {
+        myDiagram.model.addNodeData({
+          key: "modal",
+          category: "modal",
+          visible: false,
+        });
+        myDiagram.model.addNodeData({
+          key: "modalBg",
+          category: "modalBg",
+          visible: false,
+        });
+      }
+
+      function showModal(sodaDeleteCount, deleteFunction, button) {
+        let modalData = myDiagram.model.findNodeDataForKey("modal");
+        if (!modalData) {
+          makeModal();
+          modalData = myDiagram.model.findNodeDataForKey("modal");
+        }
+        modalNode = myDiagram.findNodeForKey("modal");
+
+        let modalBgData = myDiagram.model.findNodeDataForKey("modalBg");
+        modalBgNode = myDiagram.findNodeForKey("modalBg");
+
+        const center = myDiagram.viewportBounds.center;
+        myDiagram.model.setDataProperty(modalData, "visible", true);
+        myDiagram.model.setDataProperty(modalBgData, "visible", true);
+        myDiagram.model.setDataProperty(
+          modalBgData,
+          "viewportHeight",
+          myDiagram.viewportBounds.height
+        );
+        myDiagram.model.setDataProperty(
+          modalBgData,
+          "viewportWidth",
+          myDiagram.viewportBounds.width
+        );
+        myDiagram.model.setDataProperty(
+          modalData,
+          "text",
+          `This will delete ${sodaDeleteCount} ${
+            sodaDeleteCount === 1 ? "item" : "items"
+          }. Are you sure?`
+        );
+
+        // position modal so it doesn't go off screen
+        modalNode.updateTargetBindings();
+        modalNode.ensureBounds(); // <--- force GoJS to measure now
+        const modalBounds = modalNode.measuredBounds;
+        const { width, height } = modalBounds;
+        modalNode.location = button.getDocumentBounds().center;
+        const rightEdgeX =
+          myDiagram.viewportBounds.center.x +
+          myDiagram.viewportBounds.width / 2;
+        const bottomEdgeY =
+          myDiagram.viewportBounds.center.y +
+          myDiagram.viewportBounds.height / 2;
+        const modalRightEdge = modalNode.location.x + modalBounds.width;
+        if (modalRightEdge > rightEdgeX) {
+          modalNode.location = new go.Point(
+            modalNode.location.x - (modalRightEdge - rightEdgeX),
+            modalNode.location.y
+          );
+        }
+        const modalBottomEdge = modalNode.location.y + modalBounds.height;
+        if (modalBottomEdge > bottomEdgeY) {
+          modalNode.location = new go.Point(
+            modalNode.location.x,
+            modalNode.location.y - (modalBottomEdge - bottomEdgeY)
+          );
+        }
+
+        modalBgNode.location = center;
+        modalNode.findObject("YES").click = () => {
+          deleteFunction();
+          hideModal();
+        };
+        myDiagram.select(modalNode);
+      }
+
+      function hideModal() {
+        myDiagram.startTransaction("hide modal");
+
+        // get rid of all the highlights on the toDelete sodas
+        editSoda(
+          (soda) => soda.toDelete,
+          (soda) => {
+            myDiagram.model.setDataProperty(soda, "toDelete", false);
+          }
+        );
+
+        const modal = myDiagram.model.findNodeDataForKey("modal");
+        const modalBg = myDiagram.model.findNodeDataForKey("modalBg");
+
+        myDiagram.model.setDataProperty(modal, "visible", false);
+        myDiagram.model.setDataProperty(modalBg, "visible", false);
+        myDiagram.commitTransaction("hide modal");
+      }
+
+      /***********************************************************************
+       *                    DIAGRAM SETUP/EDIT FUNCTIONS                     *
+       ***********************************************************************/
+
+      function initPalette() {
+        palette.model = new go.GraphLinksModel([]);
+        let x = 0;
+        let y = 0;
+        for (const key in settings.colors.palettes) {
+          x = 0;
+          for (const style of ["can", "bottle"]) {
+            palette.model.addNodeData({
+              key: key + style,
+              type: key + style,
+              category: style,
+              isFromPalette: true,
+              paletteLocation: x + " " + y,
+              color: key,
+            });
+            x += settings.paletteXSpacing;
+          }
+          y += settings.paletteYSpacing;
+        }
+      }
+
+      function findAndRemovePaletteDuplicates() {
+        const typesInDiagram = new Set();
+        for (soda of allSodas()) {
+          const type = soda.color + soda.category;
+          typesInDiagram.add(type);
+        }
+        const allPossibleTypes = new Set();
+        for (key in settings.colors.palettes) {
+          allPossibleTypes.add(key + "can");
+          allPossibleTypes.add(key + "bottle");
+        }
+        const typesInPalette = allPossibleTypes.difference(typesInDiagram);
+        allPossibleTypes.forEach((type) => {
+          const paletteSoda = palette.model.findNodeDataForKey(type);
+          if (paletteSoda && !typesInPalette.has(type)) {
+            palette.model.removeNodeData(paletteSoda);
+          }
+          if (!paletteSoda && typesInPalette.has(type)) {
+            const match = type.match(/(.*)(bottle|can)/);
+            const color = match[1];
+            const canOrBottle = match[2];
+            const x = ["can", "bottle"].indexOf(canOrBottle);
+            const y = Object.keys(settings.colors.palettes).indexOf(color);
+            palette.model.addNodeData({
+              key: color + canOrBottle,
+              category: canOrBottle,
+              color: color,
+              isFromPalette: true,
+              paletteLocation:
+                x * settings.paletteXSpacing +
+                " " +
+                y * settings.paletteYSpacing,
+            });
+          }
+        });
+      }
+
+      /***********************************************************************
+       *                          EVENT FUNCTIONS                            *
+       ***********************************************************************/
+
+      function handleDiagramMouseDrop(e) {
+        resetAllInvisibleCells();
+        if (settings.allowTopLevel) {
+          // when the selection is dropped in the diagram's background,
+          // make sure the selected Parts no longer belong to any Group
+          if (
+            !e.diagram.commandHandler.addTopLevelParts(
+              e.diagram.selection,
+              true
+            )
+          ) {
+            e.diagram.currentTool.doCancel();
+          }
+        } else {
+          // disallow dropping any regular nodes onto the background, but allow dropping vending machines,
+          // including any selected member nodes
+          if (
+            !e.diagram.selection.all((p) => {
+              return (
+                p instanceof go.Group ||
+                (!p.isTopLevel && p.containingGroup.isSelected)
+              );
+            })
+          ) {
+            e.diagram.currentTool.doCancel();
+          }
+        }
+
+        // if you drop a vending machine somewhere it'll animate it going back to y=0
+        // you can just give the animateDrop function all the dragged parts
+        // it skips non-vending-machines
+        let draggingParts = e.diagram.currentTool.draggingParts;
+        if (draggingParts) {
+          animateDrop(draggingParts);
+        }
+      }
+
+      // handles dropping a vending machine into the diagram from the palette
+      function handleExternalObjectDropped(node) {
+        if (node instanceof go.Group) {
+          // Remakes itemArray on drop
+          // Otherwise, all vending machines from palette share the reference to the same one
+          // So adding a shelf to one affects all the others (that are from the palette)
+          // Fix: remake it so each machine gets its own new itemArray
+          node.data.itemArray = Array(node.data.itemArray.length)
+            .fill(null)
+            .map(() => ({}));
+
+          myDiagram.model.setDataProperty(
+            node.data,
+            "zOrder",
+            highestZOrder() + 1
+          );
+          updateHighlights();
+          animateDrop(new go.Set().add(node));
+        }
+        if (node.data.isFromPalette) {
+          handleItemFromPalette(node.data);
+        }
+      }
+
+      /***********************************************************************
+       *                    INVISIBLE CELLS FUNCTIONS                        *
+       ***********************************************************************/
+
+      function populateWithInvisibleCells() {
+        for (grp of allGroups()) {
+          let shelfnum = 0;
+          const shelves = grp.findObject("SHELVESLIST");
+          let prevMarginBottom = 0;
+          shelves.elements.each((verticalShelf) => {
+            // whole shelf
+            const coils = verticalShelf.elt(0);
+            const shelfHeight =
+              coils.height +
+              coils.margin.top +
+              verticalShelf.margin.top +
+              prevMarginBottom;
+            prevMarginBottom = verticalShelf.margin.bottom;
+            let coilnum = 0;
+            for (const panel of coils.elements) {
+              // found a coil
+              coil = panel.elements.first();
+              if (coil.name === "COIL") {
+                // found a coil
+                const bounds = coil.getDocumentBounds();
+                // bottom center of coil
+                // i just add 10 for the margin, then an extra 4 to the width to make it fill up the whole space. since the divider lines have a margin of 1.5 on each side so you should add 3 but 4 makes it look nicer
+                const coilWidth = bounds.width + 14;
+                myDiagram.model.addNodeData({
+                  // IVC for In-Visible-Cell
+                  key: "IVC " + grp.key + " " + shelfnum + " " + coilnum,
+                  shelf: shelfnum,
+                  coil: coilnum,
+                  group: grp.data.key,
+                  category: "InvisibleCell",
+                  position:
+                    bounds.x +
+                    bounds.width / 2 +
+                    " " +
+                    (bounds.y + bounds.height),
+                  width: coilWidth,
+                  height: shelfHeight,
+                });
+                coilnum++;
+              }
+            }
+            shelfnum++;
+          });
+        }
+      }
+
+      function updateHighlights() {
+        for (grp of allGroups()) {
+          let highlight = myDiagram.findNodeForKey("highlight " + grp.key);
+          if (!highlight) {
+            myDiagram.model.addNodeData({
+              key: "highlight " + grp.key,
+              category: "highlight",
+              group: grp.key,
+            });
+            highlight = myDiagram.findNodeForKey("highlight " + grp.key);
+          }
+          const loc = grp.findObject("HIGHLIGHT GOES HERE").getDocumentBounds();
+          highlight.location = new go.Point(loc.x, loc.y);
+        }
+      }
+
+      function resetAllInvisibleCells() {
+        myDiagram.nodes.each((node) => {
+          if (node.data.category === "InvisibleCell") {
+            node.findObject("SHAPE").fill = "transparent";
+          }
+        });
+      }
+
+      function updateInvisibleCells() {
+        const allCells = myDiagram.model.nodeDataArray.filter(
+          (data) => data.category === "InvisibleCell"
+        );
+        for (cell of allCells) {
+          myDiagram.model.removeNodeData(cell);
+        }
+        populateWithInvisibleCells();
+        // btw this function won't make a visible change unless you do myDiagram.updateAllTargetBindings(); after calling it
+      }
+
+      function remakeAllInvisibleCells() {
+        // definitely not efficient
+        myDiagram.nodes.each((node) => {
+          if (node.data.category === "InvisibleCell") {
+            myDiagram.model.removeNodeData(node.data);
+          }
+        });
+        populateWithInvisibleCells();
+      }
+
+      /***********************************************************************
+       *                                  INIT                               *
+       ***********************************************************************/
+      function init() {
+        // just making sure the checkboxes shows the right thing
+        document.getElementById("showHideButtonsCheckbox").checked =
+          settings.editMode;
+        document.getElementById("settings.allowDuplicatesCheckbox").checked =
+          settings.allowDuplicates;
+
+        myDiagram = new go.Diagram(
+          "myDiagramDiv", // create a Diagram for the HTML Div element
+          {
+            "undoManager.isEnabled": true,
+            "animationManager.initialAnimationStyle": go.AnimationStyle.None,
+          }
+        );
+
+        // =================== OVERRIDING TOOLS ===================
+
+        // this makes it so when you drag a soda it will highlight where it can drop
+        myDiagram.toolManager.draggingTool.doDragOver = function () {
+          // calling super function
+          go.DraggingTool.prototype.doDragOver.call(this);
+
+          resetAllInvisibleCells();
+
+          let draggingGroup = false;
+          this.draggingParts.each((selected) => {
+            if (draggingGroup) return;
+
+            const topGroup = topMostGroupKey(selected.location);
+            if (!topGroup) {
+              if (!settings.allowTopLevel) {
+                myDiagram.currentCursor = "not-allowed";
+              } else {
+                myDiagram.currentCursor = "";
+              }
+              return;
+            }
+
+            if (
+              selected.data.isGroup ||
+              selected.data.category === "InvisibleCell"
+            ) {
+              draggingGroup = true;
+              myDiagram.currentCursor = "";
+              resetAllInvisibleCells();
+              updateHighlights();
+              return;
+            }
+            const closestCell = getClosestCell(selected, topGroup);
+            if (closestCell === null) {
+              myDiagram.currentCursor = "not-allowed";
+            } else {
+              closestCell.findObject("SHAPE").fill = settings.colors.stroke;
+            }
+          });
+        };
+
+        myDiagram.toolManager.draggingTool.doActivate = function () {
+          go.DraggingTool.prototype.doActivate.call(this);
+          this._lastDraggedParts = this.draggingParts;
+          this.draggingParts.each((selected) => {
+            if (selected.data.isGroup) {
+              const z = highestZOrder();
+              if (z !== selected.data.zOrder) {
+                // if the group is not the highest zOrder, set it to the highest zOrder + 1
+                myDiagram.model.setDataProperty(selected.data, "zOrder", z + 1);
+              }
+            }
+
+            myDiagram.updateAllTargetBindings();
+          });
+        };
+
+        // when you delete an item it updates if there are still duplicates - so the red highlight will go away if you deleted a duplicate item
+        myDiagram.commandHandler.deleteSelection = function () {
+          myDiagram.startTransaction("delete");
+          myDiagram.selection.each((node) => {
+            if (node instanceof go.Group) {
+              myDiagram.model.removeNodeData(
+                myDiagram.model.findNodeDataForKey("highlight " + node.key)
+              );
+            }
+          });
+          go.CommandHandler.prototype.deleteSelection.call(this);
+          handleAllDuplicates();
+          myDiagram.updateAllTargetBindings();
+          myDiagram.commitTransaction("delete");
+        };
+
+        // Set the HTMLInfo:
+        myDiagram.toolManager.textEditingTool.defaultTextEditor = customEditor;
+
+        // =================== TEMPLATES ===================
+
+        myDiagram.groupTemplate = vendingTemplate();
+        myDiagram.nodeTemplateMap.add("can", sodaCanTemplate);
+        myDiagram.nodeTemplateMap.add("bottle", sodaBottleTemplate);
+        myDiagram.nodeTemplateMap.add("modal", modalTemplate());
+        myDiagram.nodeTemplateMap.add("modalBg", modalBackgroundTemplate());
+        myDiagram.nodeTemplateMap.add("highlight", highlightTemplate());
+
+        myDiagram.model = modelTemplate;
+
+        /***********************************************************************
+         * INVISIBLE CELL NODES – used only for drop logic
+         *
+         * These are invisible "helper" nodes positioned over the vending
+         * machine coils. They don't show up in the diagram (fill: transparent)
+         * Except when you are dragging a soda over them -
+         * - then they will highlight to show where it will drop.
+         * They're not saved to the JSON when you click the Save button.
+         *
+         * Why we use them:
+         * - They define valid drop zones for soda items
+         * - They let us highlight valid slots when dragging sodas
+         * - They have position/size info to help calculate placement
+         *
+         * Each InvisibleCell is generated dynamically by
+         * populateWithInvisibleCells(), based on current shelves.
+         ***********************************************************************/
+        myDiagram.nodeTemplateMap.add("InvisibleCell", invisibleCellTemplate());
+
+        myDiagram.addDiagramListener("InitialLayoutCompleted", () => {
+          populateWithInvisibleCells();
+          updateHighlights();
+          myDiagram.updateAllTargetBindings();
+        });
+
+        // otherwise the cells go back to being highlighted when you undo
+        myDiagram.addModelChangedListener((e) => {
+          if (e.propertyName === "FinishedUndo") {
+            resetAllInvisibleCells();
+          }
+        });
+
+        palette = new go.Palette("sodaPalette", {
+          // share the templates with the main Diagram
+          nodeTemplateMap: myDiagram.nodeTemplateMap,
+        });
+        // without this not-a-layout, sodas appear in the order they were added instead of the order I put them in
+        class NotALayout extends go.Layout {
+          // does nothing, I just don't want a layout
+        }
+        palette.layout = new NotALayout();
+        initPalette();
+
+        // initialize the Palette
+        vendingMachinePalette = new go.Palette("vendingMachinePaletteDiv", {});
+        vendingMachinePalette.groupTemplate = vendingPaletteTemplate();
+        vendingMachinePalette.model = new go.GraphLinksModel([
+          {
+            key: 3,
+            isGroup: true,
+            vendingMachineWidth: 4,
+            // five rows when you pull the vending machine out of the palette
+            itemArray: [{}, { height: 100 }, {}, {}, {}],
+          },
+        ]);
+
+        myDiagram.mouseDrop = handleDiagramMouseDrop;
+
+        // handles dropping a vending machine into the diagram from the palette
+        myDiagram.addDiagramListener("ExternalObjectsDropped", (e) => {
+          handleExternalObjectDropped(e.subject.first());
+        });
+
+        handleAllDuplicates();
+        if (!settings.allowDuplicates) findAndRemovePaletteDuplicates();
+        save();
+      } // end of init function
+      document.addEventListener("DOMContentLoaded", init);
+
+      // save model but without the invisible cells
+      function save() {
+        const noCellsModel = new go.GraphLinksModel(
+          myDiagram.model.nodeDataArray.filter(
+            (data) =>
+              data.category !== "InvisibleCell" &&
+              data.category !== "modal" &&
+              data.category !== "modalBg" &&
+              data.category !== "highlight"
+          )
+        );
+        noCellsModel.nodeDataArray.forEach((data) => {
+          // remove the dragging property from the saved model
+          delete data.duplicate;
+        });
+        document.getElementById("mySavedModel").value = noCellsModel.toJson();
+        myDiagram.isModified = false;
+      }
+
+      // load the model and add invisible cells back
+      function load() {
+        myDiagram.model = go.Model.fromJson(
+          document.getElementById("mySavedModel").value
+        );
+
+        myDiagram.startTransaction("load");
+
+        handleAllDuplicates();
+        myDiagram.layoutDiagram(true);
+        populateWithInvisibleCells();
+        updateHighlights();
+        myDiagram.updateAllTargetBindings();
+        myDiagram.commitTransaction("load");
+      }
+
+      function toggleEditMode() {
+        // the transaction doesn't actually save it when you undo cause settings.editMode is a global var
+        myDiagram.startTransaction("toggle edit mode");
+        settings.editMode = settings.editMode ? false : true;
+        myDiagram.updateAllTargetBindings();
+
+        myDiagram.commitTransaction("toggle edit mode");
+      }
+
+      function toggleAllowDuplicates() {
+        myDiagram.startTransaction("toggle allow duplicates");
+        settings.allowDuplicates = settings.allowDuplicates ? false : true;
+        handleAllDuplicates();
+        if (settings.allowDuplicates) {
+          initPalette();
+        } else {
+          findAndRemovePaletteDuplicates();
+        }
+        myDiagram.updateAllTargetBindings();
+        myDiagram.commitTransaction("toggle allow duplicates");
+      }
+    </script>
+  </head>
+
+<div id="sample">
+    <div style="width: 100%; display: flex; justify-content: space-between">
+        <div
+        style="
+            width: 135px;
+            margin-right: 2px;
+            background-color: whitesmoke;
+            border: solid 1px black;
+        "
+        >
+        <div class="tabs" id="tabs">
+            <div class="tab">
+            <input type="radio" id="rd1" name="rd" checked="true" />
+            <label class="tab-label" for="rd1">Sodas</label>
+            <div class="tab-content">
+                <div
+                id="sodaPalette"
+                style="
+                    width: 140px;
+                    height: 300px;
+                    background-color: whitesmoke;
+                "
+                ></div>
+            </div>
+            </div>
+            <div class="tab">
+            <input type="radio" id="rd4" name="rd" />
+            <label class="tab-label" for="rd4">Vending Machines</label>
+            <div class="tab-content">
+                <div
+                id="vendingMachinePaletteDiv"
+                style="
+                    width: 140px;
+                    height: 200px;
+                    background-color: whitesmoke;
+                "
+                ></div>
+            </div>
+            </div>
+            <!-- all settings -->
+            <div
+            style="display: flex; align-items: center; flex-direction: column"
+            >
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="showHideButtonsCheckbox" />
+                <label for="showHideButtonsCheckbox" onclick="toggleEditMode();">
+                <span class="slider-text">EDIT</span>
+                </label>
+            </div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="settings.allowDuplicatesCheckbox" />
+                <label
+                for="settings.allowDuplicatesCheckbox"
+                onclick="toggleAllowDuplicates();"
+                >
+                <span class="slider-text">DUPLICATES</span>
+                </label>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div
+        id="myDiagramDiv"
+        style="
+            flex-grow: 1;
+            height: 700px;
+            border: solid 1px black;
+            background-color: #f9f5e9;
+        "
+        ></div>
+    </div>
+    <!-- description! -->
+    <p>
+        A <em>planogram</em> is a visual representation of a store's products or
+        services, often used as a tool to maximize sales. GoJS can be used to build planogramming software for display (such as inventory monitoring)
+        or interactive control and shelf layout.
+    </p>
+    <p>
+        <strong>How it works:</strong>
+        Use the <a>Palette</a> on the left to drag and drop sodas (cans and
+        bottles) onto vending machines in the main diagram area. Sodas are
+        implemented as <a>Node</a>s, while vending machines are <a>Group</a>s.
+        When you drag a soda over a vending machine, valid drop zones are
+        highlighted using invisible helper nodes (they then become visible to show
+        the highlight), making sodas snap into the available slots.
+    </p>
+    <p>
+        <strong>Edit Mode & Duplicates:</strong>
+        Use the HTML toggles under the palette to turn on and off
+        <b>Edit Mode</b> and <b>Allow Duplicate Sodas</b>.
+    </p>
+    <ul>
+        <li>
+        When Edit Mode is enabled: allows the user to click buttons to adjust
+        the vending machine size (add and delete columns and rows) as well as
+        change the heights of rows.
+        </li>
+        <li>
+        When Duplicates are disabled: Dragging a soda out of the palette will
+        delete it from the palette, and the palette only shows the types of
+        sodas that don't already exist in the diagram. Sodas that appear more
+        than once in the diagram get highlighted in red. This sort of feature
+        would be useful for planogramming applications where you want to ensure
+        each item is unique.
+        </li>
+    </ul>
+    <p>
+        <strong>HTML Interaction:</strong>
+        The controls and popups in this sample use custom HTML editors. Clicking
+        shelf height buttons or add shelf buttons opens HTML input dialogs for
+        editing. Right clicking on a soda shows an HTML button allowing you to
+        fill the entire row with that particular type of soda.
+    </p>
+    <p>
+        This sample uses
+        <a href="../intro/geometry.html">Geometry Path Strings</a>
+        to create the shapes of the highlights on the corners of parts of the
+        vending machine. It also uses
+        <a href="../intro/itemArrays.html">itemArray Panels</a> to display a
+        variable number of rows (shelves) in each vending machine, and another
+        itemArray Panel in each shelf to display a variable number of columns.
+    </p>
+    <p>
+        This sample uses <a>Animation</a> to make
+        the vending machines fall back down to the ground when you move them.
+    </p>
+    <p>
+        See also Northwoods Software's planogramming services:
+        <a href="https://goplanogram.com" target="_blank">GoPlanogram</a>.
+    </p>
+    <button id="SaveButton" onclick="save()">Save</button>
+    <button onclick="load()">Load</button>
+    Diagram Model saved in JSON format:
+    <textarea id="mySavedModel" style="width: 100%; height: 300px"></textarea>
+    <!-- everything down here is for the HTMLInfo class. these aren't visible at first but will be visible in the diagram when you click a button that needs a pop up. -->
+    <!-- they can't start out in the diagram cause then they get auto deleted -->
+    <!-- height custom input -->
+    <div class="html-info" id="height-input-div">
+        <input />
+        <div class="arrows">
+            <div class="arrow up" onclick="changeHeightInput(10)">▲</div>
+            <div class="arrow down" onclick="changeHeightInput(-10)">▼</div>
+        </div>
+    </div>
+    <!-- add row custom input -->
+    <div class="html-info" id="add-row-input-div">
+        <div class="arrow up">▲</div>
+        <div>
+        <input id="row-input" />
+        <p>row(s)</p>
+        <input id="height-input" />
+        <p>px tall</p>
+        </div>
+        <div class="arrow down">▼</div>
+    </div>
+    <button class="html-info" id="fill-shelf-button" onclick="fillShelf()">
+        Fill Shelf
+    </button>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Groups</h4>
+<p>
+The <a href="../api/symbols/Group.html" target="api">Group</a> class is used to treat a collection of <a href="../api/symbols/Node.html" target="api">Node</a>s and <a href="../api/symbols/Link.html" target="api">Link</a>s as if they were a single <a href="../api/symbols/Node.html" target="api">Node</a>.
+Those nodes and links are members of the group; together they constitute a subgraph.
+</p>
+<p>
+A subgraph is <em>not</em> another <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, so there is no separate HTML Div element for the subgraph of a group.
+All of the <a href="../api/symbols/Part.html" target="api">Part</a>s that are members of a <a href="../api/symbols/Group.html" target="api">Group</a> belong to the same Diagram as the Group.
+There can be links between member nodes and nodes outside of the group as well as links between the group itself and other nodes.
+There can even be links between member nodes and the containing group itself.
+</p>
+<p>
+More information can be found in the <a href="../intro/groups.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#groups">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Palette</h4>
+<p>
+A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
+can be dragged into the diagram that is being modified by the user.
+The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#palette">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>HTML Interaction</h4>
+<p>
+GoJS Diagrams can be used alongside other HTML elements in a webapp. 
+For custom Text Editors, Context Menus, and ToolTips, which are invoked and hidden via GoJS tool operations, it is best to use the <a href="../api/symbols/HTMLInfo.html" target="api">HTMLInfo</a> class.
+</p>
+<p>
+More information can be found in the <a href="../intro/HTMLinteraction.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#html">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Animation</h4>
+<p>
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+</p>
+<p>
+  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
+  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
+  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#animation">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Buttons</h4>
+<p>
+GoJS defines several <a href="../api/symbols/Panel.html" target="api">Panel</a>s for common uses.
+These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton", and "CheckBoxButton".
+"ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
+"CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+</p>
+<p>
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
+They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
+with pre-set properties and event handlers.
+</p>
+<p>
+More information can be found in the <a href="../intro/buttons.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#buttons">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Geometry Path Strings</h4>
+<p>
+The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
+For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
+However one can also define custom geometries.
+</p>
+<p>
+One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
+But you may find that using the string representation of a Geometry is easier to write and save in a database.
+Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
+</p>
+<p>
+More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Item Arrays</h4>
+<p>
+It is sometimes useful to display a variable number of elements in a node by data binding to a JavaScript Array.
+In GoJS, this is simply achieved by binding (or setting) <a href="../api/symbols/Panel.html#itemArray" target="api">Panel.itemArray</a>.
+The <a href="../api/symbols/Panel.html" target="api">Panel</a> will create an element in the panel for each value in the Array.
+More information can be found in the <a href="../intro/itemArrays.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#itemarrays">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Table Panels</h4>
+<p>
+The "Table" Panel, <a href="../api/symbols/Panel.html#static-Table" target="api">Panel.Table</a>, arranges objects in rows and columns.
+Each object in a Table Panel is put into the cell indexed by the value of <a href="../api/symbols/GraphObject.html#row" target="api">GraphObject.row</a> and <a href="../api/symbols/GraphObject.html#column" target="api">GraphObject.column</a>.
+The panel will look at the rows and columns for all of the objects in the panel to determine how many rows and columns the table should have.
+More information can be found in the <a href="../intro/tablePanels.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tables">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Tools</h4>
+<p>
+<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
+There are many kinds of predefined Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
+redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+The ToolManager implements support for all mode-less tools.
+The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
+This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
+at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
+</p>
+<p>
+More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#tools">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

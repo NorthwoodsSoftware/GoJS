@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,33 +132,36 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape({
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          fromLinkableDuplicates: true,
-          toLinkableDuplicates: true,
-          cursor: 'pointer'
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape({
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              fromLinkableDuplicates: true,
+              toLinkableDuplicates: true,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 })
+            .bind('text')
+        );
 
-    myDiagram.linkTemplate = new ParallelRouteLink({
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true //, resegmentable: true
-    })
-      .add(
-        new go.Shape({ strokeWidth: 2 })
-          .bindObject('stroke', 'fromNode', (node) => node.port.fill),
-        new go.Shape({ toArrow: 'OpenTriangle', strokeWidth: 1.5 })
-          .bindObject('stroke', 'fromNode', (node) => node.port.fill)
-      );
+    myDiagram.linkTemplate =
+      new ParallelRouteLink({
+          corner: 10,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true //, resegmentable: true
+        })
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+            .bindObject('stroke', 'fromNode', node => node.port.fill),
+          new go.Shape({ toArrow: 'OpenTriangle', strokeWidth: 1.5 })
+            .bindObject('stroke', 'fromNode', node => node.port.fill)
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -175,6 +180,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

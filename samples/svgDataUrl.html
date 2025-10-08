@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,14 +132,15 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.Picture({ margin: 8, width: 55, height: 55 })
-          .bind('source')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the TextBlock
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.Picture({ margin: 8, width: 55, height: 55 })
+            .bind('source')
+        );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
@@ -176,7 +179,7 @@
     var svg = myDiagram.makeSvg({
       elementFinished: (graphobject, svgelement) => {
         if (!(graphobject instanceof go.Picture)) return;
-        toDataURL(svgelement.href.baseVal, (dataUrl) => {
+        toDataURL(svgelement.href.baseVal, dataUrl => {
           svgelement.setAttribute('href', dataUrl);
         });
       }

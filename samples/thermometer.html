@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -162,7 +164,6 @@
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       layout: new go.GridLayout({ isOngoing: false, wrappingColumn: 4 }),
-      layout: new go.GridLayout({ isOngoing: false, wrappingColumn: 4 }),
       'animationManager.isEnabled': false,
       'undoManager.isEnabled': true
     });
@@ -171,10 +172,10 @@
     myDiagram.toolManager.resizingTool.makeAdornment = function (resizeObj) {
       // method override must be function, not =>
       return new go.Adornment('Spot', {
-        locationSpot: go.Spot.Center,
-        category: this.name,
-        adornedObject: resizeObj
-      })
+          locationSpot: go.Spot.Center,
+          category: this.name,
+          adornedObject: resizeObj
+        })
         .add(
           new go.Placeholder(),
           this.makeHandle(resizeObj, go.Spot.Top)
@@ -204,200 +205,199 @@
            |5|
       */
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      resizable: true,
-      resizeObjectName: 'BarSpace',
-      locationObjectName: 'Bulb',
-      locationSpot: go.Spot.Center,
-      isShadowed: true,
-      shadowOffset: new go.Point(6, 6),
-      margin: 5
-    })
-      .add(
-        new go.Shape('RoundedRectangle', {
-          fill: new go.Brush('Linear', {
-            0: '#fff',
-            1: '#eee',
-            start: go.Spot.TopLeft,
-            end: go.Spot.TopRight
-          })
-        }),
-        new go.Panel('Spot', {
-          padding: 5
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          resizable: true,
+          resizeObjectName: 'BarSpace',
+          locationObjectName: 'Bulb',
+          locationSpot: go.Spot.Center,
+          isShadowed: true,
+          shadowOffset: new go.Point(6, 6),
+          margin: 5
         })
-          .add(
-            new go.Shape({
-              name: 'BarSpace',
-              width: 25,
-              height: ORIGINAL_HEIGHT,
-              strokeWidth: 0,
-              fill: new go.Brush('Linear', {
-                0: '#a2a19f',
-                0.33: '#fff',
-                0.6: '#a2a19f',
-                0.8: go.Brush.lighten('#a2a19f'),
-                1: go.Brush.darken('#a2a19f'),
-                start: go.Spot.Left,
-                end: go.Spot.Right
-              }),
-              isShadowed: true,
-              shadowVisible: true,
-              shadowOffset: new go.Point(2, 2),
-              shadowColor: '#eee'
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: new go.Brush('Linear', {
+              0: '#fff',
+              1: '#eee',
+              start: go.Spot.TopLeft,
+              end: go.Spot.TopRight
             })
-              .bindTwoWay('height'),
-            // Farenheit scale, on the left:
-            new go.Panel('Graduated', {
-              background: 'transparent',
-              graduatedMin: -40,
-              graduatedMax: 80,
-              graduatedTickBase: 0,
-              graduatedTickUnit: 1,
-              alignment: go.Spot.BottomLeft,
-              alignmentFocus: go.Spot.BottomLeft,
-              alignmentFocusName: 'line'
-            })
-              .bind('graduatedMax', '', (data) => {
-                if (data.type === 'scaling') return 80;
-                return data.height * 0.3 - 40;
-              })
-              .add(
-                new go.Shape({
-                  name: 'line',
-                  geometryString: 'M0 0 V-' + ORIGINAL_HEIGHT,
-                  stroke: 'gray'
+          }),
+          new go.Panel('Spot', { padding: 5 })
+            .add(
+              new go.Shape({
+                  name: 'BarSpace',
+                  width: 25,
+                  height: ORIGINAL_HEIGHT,
+                  strokeWidth: 0,
+                  fill: new go.Brush('Linear', {
+                    0: '#a2a19f',
+                    0.33: '#fff',
+                    0.6: '#a2a19f',
+                    0.8: go.Brush.lighten('#a2a19f'),
+                    1: go.Brush.darken('#a2a19f'),
+                    start: go.Spot.Left,
+                    end: go.Spot.Right
+                  }),
+                  isShadowed: true,
+                  shadowVisible: true,
+                  shadowOffset: new go.Point(2, 2),
+                  shadowColor: '#eee'
                 })
-                  .bind('height'),
-                new go.Shape({
-                  alignmentFocus: go.Spot.Bottom,
-                  interval: 2,
-                  strokeWidth: 1,
-                  geometryString: 'M0 0 V15'
-                }),
-                new go.Shape({
-                  alignmentFocus: go.Spot.Bottom,
-                  interval: 10,
-                  strokeWidth: 2,
-                  geometryString: 'M0 0 V20'
-                }),
-                new go.TextBlock({
-                  interval: 20,
-                  font: 'bold 18px sans-serif',
-                  alignmentFocus: new go.Spot(1, 0.5, 25, 0)
-                }),
-                // Mark 32 degrees on the farenheit scale:
-                new go.TextBlock({
-                  interval: 16,
-                  graduatedFunction: (n) => (n === 32 ? '32—' : ''),
-                  font: 'bold 12px sans-serif',
-                  stroke: 'red',
-                  alignmentFocus: new go.Spot(1, 0.5, 22, 0)
+                .bindTwoWay('height'),
+              // Farenheit scale, on the left:
+              new go.Panel('Graduated', {
+                  background: 'transparent',
+                  graduatedMin: -40,
+                  graduatedMax: 80,
+                  graduatedTickBase: 0,
+                  graduatedTickUnit: 1,
+                  alignment: go.Spot.BottomLeft,
+                  alignmentFocus: go.Spot.BottomLeft,
+                  alignmentFocusName: 'line'
                 })
-              ),
-            // Mercury/alcohol bar, which represents the values of farenheit and celsius
-            new go.Shape({
-              width: 25,
-              strokeWidth: 0,
-              fill: getMercuryBrush('#797dbe'),
-              alignment: go.Spot.Bottom,
-              alignmentFocus: go.Spot.Bottom
-            })
-              .bind('fill', 'type', (t) => {
-                let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
-                return getMercuryBrush(baseColor);
-              })
-              // .bind('shadowColor', 'type', (t) => {
-              //   let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
-              //   return go.Brush.lighten(baseColor);
-              // })
-              // To determine the level, look at both data.farenheit and data.celsius, but prefer celsius
-              .bind('height', '', (data) => {
-                var thermometerHeight = ORIGINAL_HEIGHT;
-                if (data.type === 'scaling') thermometerHeight = data.height;
-                if (data.celsius !== undefined) {
-                  // (celsius + minimum value) / (total celsius range) * height
-                  return Math.max(0, ((data.celsius + 40) / 67) * thermometerHeight);
-                } else if (data.farenheit !== undefined) {
-                  // (farenheit + minimum value) / (total farenheit range) * height
-                  return Math.max(0, ((data.farenheit + 40) / 120) * thermometerHeight);
-                } else {
-                  return 0;
-                }
-              })
-              .bind('maxSize', 'height', (h) => new go.Size(NaN, h)),
+                .bind('graduatedMax', '', data => {
+                  if (data.type === 'scaling') return 80;
+                  return data.height * 0.3 - 40;
+                })
+                .add(
+                  new go.Shape({
+                      name: 'line',
+                      geometryString: 'M0 0 V-' + ORIGINAL_HEIGHT,
+                      stroke: 'gray'
+                    })
+                    .bind('height'),
+                  new go.Shape({
+                    alignmentFocus: go.Spot.Bottom,
+                    interval: 2,
+                    strokeWidth: 1,
+                    geometryString: 'M0 0 V15'
+                  }),
+                  new go.Shape({
+                    alignmentFocus: go.Spot.Bottom,
+                    interval: 10,
+                    strokeWidth: 2,
+                    geometryString: 'M0 0 V20'
+                  }),
+                  new go.TextBlock({
+                    interval: 20,
+                    font: 'bold 18px sans-serif',
+                    alignmentFocus: new go.Spot(1, 0.5, 25, 0)
+                  }),
+                  // Mark 32 degrees on the farenheit scale:
+                  new go.TextBlock({
+                    interval: 16,
+                    graduatedFunction: n => n === 32 ? '32—' : '',
+                    font: 'bold 12px sans-serif',
+                    stroke: 'red',
+                    alignmentFocus: new go.Spot(1, 0.5, 22, 0)
+                  })
+                ),
+              // Mercury/alcohol bar, which represents the values of farenheit and celsius
+              new go.Shape({
+                  width: 25,
+                  strokeWidth: 0,
+                  fill: getMercuryBrush('#797dbe'),
+                  alignment: go.Spot.Bottom,
+                  alignmentFocus: go.Spot.Bottom
+                })
+                .bind('fill', 'type', t => {
+                  let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
+                  return getMercuryBrush(baseColor);
+                })
+                // .bind('shadowColor', 'type', t => {
+                //   let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
+                //   return go.Brush.lighten(baseColor);
+                // })
+                // To determine the level, look at both data.farenheit and data.celsius, but prefer celsius
+                .bind('height', '', data => {
+                  var thermometerHeight = ORIGINAL_HEIGHT;
+                  if (data.type === 'scaling') thermometerHeight = data.height;
+                  if (data.celsius !== undefined) {
+                    // (celsius + minimum value) / (total celsius range) * height
+                    return Math.max(0, ((data.celsius + 40) / 67) * thermometerHeight);
+                  } else if (data.farenheit !== undefined) {
+                    // (farenheit + minimum value) / (total farenheit range) * height
+                    return Math.max(0, ((data.farenheit + 40) / 120) * thermometerHeight);
+                  } else {
+                    return 0;
+                  }
+                })
+                .bind('maxSize', 'height', h => new go.Size(NaN, h)),
 
-            // Celsius scale, on the right:
-            new go.Panel('Graduated', {
-              background: 'transparent',
-              // -40 to 27 because we picked -40 to 80 for farenheit, and want them to line up
-              graduatedMin: -40,
-              graduatedMax: 27,
-              graduatedTickBase: 0,
-              graduatedTickUnit: 1,
-              alignment: go.Spot.BottomRight,
-              alignmentFocus: go.Spot.BottomRight,
-              alignmentFocusName: 'line2'
-            })
-              .bind('graduatedMax', '', (data) => {
-                if (data.type === 'scaling') return 27;
-                return data.height * 0.1675 - 40;
-              })
-              .add(
-                new go.Shape({
-                  name: 'line2',
-                  geometryString: 'M0 0 V-' + ORIGINAL_HEIGHT,
-                  stroke: 'gray'
+              // Celsius scale, on the right:
+              new go.Panel('Graduated', {
+                  background: 'transparent',
+                  // -40 to 27 because we picked -40 to 80 for farenheit, and want them to line up
+                  graduatedMin: -40,
+                  graduatedMax: 27,
+                  graduatedTickBase: 0,
+                  graduatedTickUnit: 1,
+                  alignment: go.Spot.BottomRight,
+                  alignmentFocus: go.Spot.BottomRight,
+                  alignmentFocusName: 'line2'
                 })
-                  .bind('height'),
-                new go.Shape({
-                  interval: 2,
-                  strokeWidth: 1,
-                  geometryString: 'M0 0 V15'
-                }),
-                new go.Shape({
-                  interval: 10,
-                  strokeWidth: 2,
-                  geometryString: 'M0 0 V20'
-                }),
-                new go.TextBlock({
-                  interval: 20,
-                  textAlign: 'left',
-                  font: 'bold 18px sans-serif',
-                  alignmentFocus: go.Spot.Left,
-                  segmentOffset: new go.Point(0, 25)
+                .bind('graduatedMax', '', data => {
+                  if (data.type === 'scaling') return 27;
+                  return data.height * 0.1675 - 40;
                 })
-              ),
+                .add(
+                  new go.Shape({
+                      name: 'line2',
+                      geometryString: 'M0 0 V-' + ORIGINAL_HEIGHT,
+                      stroke: 'gray'
+                    })
+                    .bind('height'),
+                  new go.Shape({
+                    interval: 2,
+                    strokeWidth: 1,
+                    geometryString: 'M0 0 V15'
+                  }),
+                  new go.Shape({
+                    interval: 10,
+                    strokeWidth: 2,
+                    geometryString: 'M0 0 V20'
+                  }),
+                  new go.TextBlock({
+                    interval: 20,
+                    textAlign: 'left',
+                    font: 'bold 18px sans-serif',
+                    alignmentFocus: go.Spot.Left,
+                    segmentOffset: new go.Point(0, 25)
+                  })
+                ),
 
-            // Cosmetic: The stem and bulb
-            new go.Shape({
-              width: 25,
-              height: 10,
-              strokeWidth: 0,
-              fill: getStemBrush('#797dbe'),
-              alignment: go.Spot.Bottom
-            })
-              .bind('fill', 'type', (t) => {
-                let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
-                return getStemBrush(baseColor);
-              }),
-            new go.Shape('Circle', {
-              name: 'Bulb',
-              width: 55,
-              height: 55,
-              strokeWidth: 0,
-              fill: getBulbBrush('#797dbe'),
-              alignment: go.Spot.Bottom,
-              alignmentFocus: go.Spot.Top,
-              isShadowed: true,
-              shadowVisible: true,
-              shadowOffset: new go.Point(0, 0)
-            })
-              .bind('fill', 'type', (t) => {
-                let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
-                return getBulbBrush(baseColor);
-              })
-          )
-    ); // end node template
+              // Cosmetic: The stem and bulb
+              new go.Shape({
+                  width: 25,
+                  height: 10,
+                  strokeWidth: 0,
+                  fill: getStemBrush('#797dbe'),
+                  alignment: go.Spot.Bottom
+                })
+                .bind('fill', 'type', t => {
+                  let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
+                  return getStemBrush(baseColor);
+                }),
+              new go.Shape('Circle', {
+                  name: 'Bulb',
+                  width: 55,
+                  height: 55,
+                  strokeWidth: 0,
+                  fill: getBulbBrush('#797dbe'),
+                  alignment: go.Spot.Bottom,
+                  alignmentFocus: go.Spot.Top,
+                  isShadowed: true,
+                  shadowVisible: true,
+                  shadowOffset: new go.Point(0, 0)
+                })
+                .bind('fill', 'type', t => {
+                  let baseColor = (t === 'scaling') ? 'red' : '#797dbe';
+                  return getBulbBrush(baseColor);
+                })
+            )
+      ); // end node template
 
     myDiagram.model = new go.GraphLinksModel([
       { height: 400, celsius: 20 },
@@ -407,6 +407,7 @@
       { type: 'scaling', height: 250, farenheit: 68 /*, celsius: 20*/ }
     ]);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

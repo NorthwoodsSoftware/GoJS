@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -192,17 +194,18 @@
   function init() {
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      grid: new go.Panel('Grid', { gridCellSize: CellSize })
-        .add(
-          new go.Shape('LineH', { stroke: 'lightgray' }),
-          new go.Shape('LineV', { stroke: 'lightgray' })
-        ),
+      grid:
+        new go.Panel('Grid', { gridCellSize: CellSize })
+          .add(
+            new go.Shape('LineH', { stroke: 'lightgray' }),
+            new go.Shape('LineV', { stroke: 'lightgray' })
+          ),
       // support grid snapping when dragging and when resizing
       'draggingTool.isGridSnapEnabled': true,
       'draggingTool.gridSnapCellSpot': go.Spot.Center,
       'resizingTool.isGridSnapEnabled': true,
       // For this sample, automatically show the state of the diagram's model on the page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           document.getElementById('savedModel').textContent = myDiagram.model.toJson();
         }
@@ -213,40 +216,42 @@
 
     // Regular Nodes represent items to be put onto racks.
     // Nodes are currently resizable, but if that is not desired, just set resizable to false.
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      resizable: true,
-      resizeObjectName: 'SHAPE',
-      // because the gridSnapCellSpot is Center, offset the Node's location
-      locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
-      // provide a visual warning about dropping anything onto an "item"
-      mouseDragEnter: (e, node) => {
-        e.handled = true;
-        node.findObject('SHAPE').fill = 'red';
-        e.diagram.currentCursor = 'not-allowed';
-        highlightGroup(node.containingGroup, false);
-      },
-      mouseDragLeave: (e, node) => node.updateTargetBindings(),
-      // disallow dropping anything onto an "item"
-      mouseDrop: (e, node) => node.diagram.currentTool.doCancel()
-    })
-      // always save/load the point that is the top-left corner of the node, not the location
-      .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
-      // this is the primary thing people see
-      .add(
-        new go.Shape('Rectangle', {
-          name: 'SHAPE',
-          fill: 'white',
-          minSize: CellSize,
-          desiredSize: CellSize // initially 1x1 cell
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          // because the gridSnapCellSpot is Center, offset the Node's location
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+          // provide a visual warning about dropping anything onto an "item"
+          mouseDragEnter: (e, node) => {
+            e.handled = true;
+            node.findObject('SHAPE').fill = 'red';
+            e.diagram.currentCursor = 'not-allowed';
+            highlightGroup(node.containingGroup, false);
+          },
+          mouseDragLeave: (e, node) => node.updateTargetBindings(),
+          // disallow dropping anything onto an "item"
+          mouseDrop: (e, node) => node.diagram.currentTool.doCancel()
         })
-          .bind('fill', 'color')
-          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
-        // with the textual key in the middle
-        new go.TextBlock({
-          alignment: go.Spot.Center,
-          font: 'bold 16px sans-serif'
-        }).bind('text', 'key')
-      ); // end Node
+        // always save/load the point that is the top-left corner of the node, not the location
+        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
+        // this is the primary thing people see
+        .add(
+          new go.Shape('Rectangle', {
+              name: 'SHAPE',
+              fill: 'white',
+              minSize: CellSize,
+              desiredSize: CellSize // initially 1x1 cell
+            })
+            .bind('fill', 'color')
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
+          // with the textual key in the middle
+          new go.TextBlock({
+              alignment: go.Spot.Center,
+              font: 'bold 16px sans-serif'
+            })
+            .bind('text', 'key')
+        ); // end Node
 
     // Groups represent racks where items (Nodes) can be placed.
     // Currently they are movable and resizable, but you can change that
@@ -266,36 +271,37 @@
     var dropFill = 'rgba(128,255,255,0.2)';
     var dropStroke = 'red';
 
-    myDiagram.groupTemplate = new go.Group({
-      layerName: 'Background',
-      resizable: true,
-      resizeObjectName: 'SHAPE',
-      // because the gridSnapCellSpot is Center, offset the Group's location
-      locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
-      // what to do when a drag-over or a drag-drop occurs on a Group
-      mouseDragEnter: (e, grp, prev) => {
-        if (!highlightGroup(grp, true)) e.diagram.currentCursor = 'not-allowed';
-        else e.diagram.currentCursor = '';
-      },
-      mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
-      mouseDrop: (e, grp) => {
-        var ok = grp.addMembers(grp.diagram.selection, true);
-        if (!ok) grp.diagram.currentTool.doCancel();
-      }
-    })
-      // always save/load the point that is the top-left corner of the node, not the location
-      .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('Rectangle', { // the rectangular shape around the members
-          name: 'SHAPE',
-          fill: groupFill,
-          stroke: groupStroke,
-          minSize: new go.Size(CellSize.width * 2, CellSize.height * 2)
+    myDiagram.groupTemplate =
+      new go.Group({
+          layerName: 'Background',
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          // because the gridSnapCellSpot is Center, offset the Group's location
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+          // what to do when a drag-over or a drag-drop occurs on a Group
+          mouseDragEnter: (e, grp, prev) => {
+            if (!highlightGroup(grp, true)) e.diagram.currentCursor = 'not-allowed';
+            else e.diagram.currentCursor = '';
+          },
+          mouseDragLeave: (e, grp, next) => highlightGroup(grp, false),
+          mouseDrop: (e, grp) => {
+            var ok = grp.addMembers(grp.diagram.selection, true);
+            if (!ok) grp.diagram.currentTool.doCancel();
+          }
         })
-          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-          .bindObject('fill', 'isHighlighted', (h) => (h ? dropFill : groupFill))
-          .bindObject('stroke', 'isHighlighted', (h) => (h ? dropStroke : groupStroke))
-      );
+        // always save/load the point that is the top-left corner of the node, not the location
+        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Rectangle', { // the rectangular shape around the members
+              name: 'SHAPE',
+              fill: groupFill,
+              stroke: groupStroke,
+              minSize: new go.Size(CellSize.width * 2, CellSize.height * 2)
+            })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindObject('fill', 'isHighlighted', h => h ? dropFill : groupFill)
+            .bindObject('stroke', 'isHighlighted', h => h ? dropStroke : groupStroke)
+        );
 
     // decide what kinds of Parts can be added to a Group
     myDiagram.commandHandler.memberValidation = (grp, node) => {
@@ -305,11 +311,11 @@
     };
 
     // what to do when a drag-drop occurs in the Diagram's background
-    myDiagram.mouseDragOver = (e) => {
+    myDiagram.mouseDragOver = e => {
       if (!AllowTopLevel) {
         // OK to drop a group anywhere or any Node that is a member of a dragged Group
         var tool = e.diagram.toolManager.draggingTool;
-        if (!tool.draggingParts.all((p) => p instanceof go.Group || (!p.isTopLevel && tool.draggingParts.has(p.containingGroup)))) {
+        if (!tool.draggingParts.all(p => p instanceof go.Group || (!p.isTopLevel && tool.draggingParts.has(p.containingGroup)))) {
           e.diagram.currentCursor = 'not-allowed';
         } else {
           e.diagram.currentCursor = '';
@@ -317,7 +323,7 @@
       }
     };
 
-    myDiagram.mouseDrop = (e) => {
+    myDiagram.mouseDrop = e => {
       if (AllowTopLevel) {
         // when the selection is dropped in the diagram's background,
         // make sure the selected Parts no longer belong to any Group
@@ -328,7 +334,7 @@
         // disallow dropping any regular nodes onto the background, but allow dropping "racks",
         // including any selected member nodes
         if (
-          !e.diagram.selection.all((p) => {
+          !e.diagram.selection.all(p => {
             return p instanceof go.Group || (!p.isTopLevel && p.containingGroup.isSelected);
           })
         ) {
@@ -406,6 +412,7 @@
       { key: 'y', color: yellow, size: '100 100' }
     ]);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -559,6 +566,32 @@ More information, including usage on frameworks including Electron, Blazor, and 
 </p>
             <p>
               <a href="../samples/index.html#frameworks">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

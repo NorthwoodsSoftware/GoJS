@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,13 +131,15 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        // two elements: the Shape will go around the TextBlock
-        new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }).bind('text') // some room around the text, bold font // TextBlock.text is bound to Node.data.text
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          // two elements: the Shape will go around the TextBlock
+          new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+            .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+          new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text, bold font
+            .bind('text') // TextBlock.text is bound to Node.data.text
+        );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -156,40 +160,11 @@
       ]
     );
 
-    document.getElementById('svgButton').addEventListener('click', makeSvg);
-  }
-
-  // When the blob is complete, make an anchor tag for it and use the tag to initiate a download
-  // Works in Chrome, Firefox, Safari, Edge, IE11
-  function myCallback(blob) {
-    var url = window.URL.createObjectURL(blob);
-    var filename = 'mySVGFile.svg';
-
-    var a = document.createElement('a');
-    a.style = 'display: none';
-    a.href = url;
-    a.download = filename;
-
-    // IE 11
-    if (window.navigator.msSaveBlob !== undefined) {
-      window.navigator.msSaveBlob(blob, filename);
-      return;
-    }
-
-    document.body.appendChild(a);
-    requestAnimationFrame(() => {
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+    document.getElementById('svgButton').addEventListener('click', () => {
+      myDiagram.commandHandler.downloadSvg({ name: "mySVGfile.svg" });
     });
   }
 
-  function makeSvg() {
-    var svg = myDiagram.makeSvg({ scale: 1, background: 'white' });
-    var svgstr = new XMLSerializer().serializeToString(svg);
-    var blob = new Blob([svgstr], { type: 'image/svg+xml' });
-    myCallback(blob);
-  }
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,15 +132,15 @@
       layout: new go.TreeLayout({ angle: 90, nodeSpacing: 5 })
     });
 
-    var bluegrad = new go.Brush('Linear', { 0: 'rgb(60, 204, 254)', 1: 'rgb(70, 172, 254)' });
-    var pinkgrad = new go.Brush('Linear', { 0: 'rgb(255, 192, 203)', 1: 'rgb(255, 142, 203)' });
+    const bluegrad = new go.Brush('Linear', { 0: 'rgb(60, 204, 254)', 1: 'rgb(70, 172, 254)' });
+    const pinkgrad = new go.Brush('Linear', { 0: 'rgb(255, 192, 203)', 1: 'rgb(255, 142, 203)' });
 
     // Set up a Part as a legend, and place it directly on the diagram
     myDiagram.add(
       new go.Part('Table', {
-        layerName: 'ViewportBackground',
-        alignment: new go.Spot(0, 0, 20, 20)
-      })
+          layerName: 'ViewportBackground',
+          alignment: new go.Spot(0, 0, 20, 20)
+        })
         .add(
           new go.TextBlock('Key', { row: 0, font: 'bold 10pt Helvetica, Arial, sans-serif' }), // end row 0
           new go.Panel('Horizontal', { row: 1, alignment: go.Spot.Left })
@@ -156,7 +158,7 @@
 
     // get tooltip text from the object's data
     function tooltipTextConverter(person) {
-      var str = '';
+      let str = '';
       str += 'Born: ' + person.birthYear;
       if (person.deathYear !== undefined) str += '\nDied: ' + person.deathYear;
       if (person.reign !== undefined) str += '\nReign: ' + person.reign;
@@ -164,16 +166,16 @@
     }
 
     // define tooltips for nodes
-    var tooltiptemplate = go.GraphObject.build('ToolTip', {
-      'Border.fill':'whitesmoke',
-      'Border.stroke': 'black'
-    })
+    const tooltiptemplate = go.GraphObject.build('ToolTip', {
+        'Border.fill':'whitesmoke',
+        'Border.stroke': 'black'
+      })
       .add(
         new go.TextBlock({
-          font: 'bold 8pt Helvetica, bold Arial, sans-serif',
-          wrap: go.Wrap.Fit,
-          margin: 5
-        })
+            font: 'bold 8pt Helvetica, bold Arial, sans-serif',
+            wrap: go.Wrap.Fit,
+            margin: 5
+          })
           .bind('text', '', tooltipTextConverter)
       );
 
@@ -185,42 +187,45 @@
     }
 
     // replace the default Node template in the nodeTemplateMap
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      deletable: false,
-      toolTip: tooltiptemplate
-    })
-      .bind('text', 'name')
-      .add(
-        new go.Shape('Rectangle', {
-          fill: 'orange',
-          stroke: 'black',
-          stretch: go.Stretch.Fill,
-          alignment: go.Spot.Center
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          deletable: false,
+          toolTip: tooltiptemplate
         })
-          .bind('fill', 'gender', genderBrushConverter),
-        new go.Panel('Vertical')
-          .add(
-            new go.TextBlock({
-              font: 'bold 8pt Helvetica, bold Arial, sans-serif',
-              alignment: go.Spot.Center,
-              margin: 6
+        .bind('text', 'name')
+        .add(
+          new go.Shape('Rectangle', {
+              fill: 'orange',
+              stroke: 'black',
+              stretch: go.Stretch.Fill,
+              alignment: go.Spot.Center
             })
-              .bind('text', 'name'),
-            new go.TextBlock().bind('text', 'kanjiName')
-          )
-      );
+            .bind('fill', 'gender', genderBrushConverter),
+          new go.Panel('Vertical')
+            .add(
+              new go.TextBlock({
+                  font: 'bold 8pt Helvetica, bold Arial, sans-serif',
+                  alignment: go.Spot.Center,
+                  margin: 6
+                })
+                .bind('text', 'name'),
+              new go.TextBlock()
+                .bind('text', 'kanjiName')
+            )
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({ // the whole link panel
-      routing: go.Routing.Orthogonal,
-      corner: 5, selectable: false
-    })
-      .add(
-        new go.Shape()
-      ); // the default black link shape
+    myDiagram.linkTemplate =
+      new go.Link({ // the whole link panel
+          routing: go.Routing.Orthogonal,
+          corner: 5, selectable: false
+        })
+        .add(
+          new go.Shape()
+        ); // the default black link shape
 
     // here's the family data
-    var nodeDataArray = [
+    const nodeDataArray = [
       {
         key: 0,
         name: 'Osahito',
@@ -724,6 +729,7 @@
     // create the model for the family tree
     myDiagram.model = new go.TreeModel(nodeDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -783,7 +789,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,6 +125,7 @@
             
 
 <script id="code">
+
   // Override normal pinch zoom to zoom the selected node instead of the Diagram.
   class PinchResizingTool extends go.ToolManager {
     constructor(init) {
@@ -201,15 +204,16 @@
     });
 
     // define a simple Node template
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the TextBlock
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [

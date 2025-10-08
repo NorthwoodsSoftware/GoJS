@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -147,16 +149,16 @@
       'rotatingTool.snapAngleMultiple': 90,
       'rotatingTool.snapAngleEpsilon': 45,
       'undoManager.isEnabled': true,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) updateAnimation();
       }
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -166,21 +168,21 @@
 
     function makeDistillationColumnPlatePanel(alignment, side) {
       return new go.Panel('Graduated', {
-        alignment: new go.Spot(alignment, 0),
-        alignmentFocus: new go.Spot(alignment, 0),
-      })
-        .bind('height', 'height', (value) => (value * 0.85))
+          alignment: new go.Spot(alignment, 0),
+          alignmentFocus: new go.Spot(alignment, 0),
+        })
+        .bind('height', 'height', value => value * 0.85)
         .add(
           new go.Shape({ geometryString: "M0 0 V400", strokeWidth: 0 })
-            .bind('geometryString', 'height', (value) => (`M0 0 V${value}`)),
-            new go.Shape({
+            .bind('geometryString', 'height', value => `M0 0 V${value}`),
+          new go.Shape({
               interval: 1,
               geometryString: "M0 0 V40",
-              graduatedSkip: (n) => (Boolean(n % 20) ^ side),
+              graduatedSkip: n => Boolean(n % 20) ^ side,
               stroke: 'black',
               strokeDashArray: [10, 1]
             })
-            .bind('geometryString', 'width', (value) => (`M0 0 V${value * 0.8}`)),
+            .bind('geometryString', 'width', value => `M0 0 V${value * 0.8}`),
         );
     }
 
@@ -212,23 +214,22 @@
 		var WAVE_HEIGHT = 10;
 		var ORIGINAL_WIDTH = 100 * WAVE_WIDTH;
 
-    myDiagram.nodeTemplateMap.add(
-      'DistillationColumn',
+    myDiagram.nodeTemplateMap.add('DistillationColumn',
       new go.Node('Spot', {
-        selectionObjectName: 'CAPSULE',
-        resizable: true,
-        resizeObjectName: 'CAPSULE',
-        locationSpot: go.Spot.Center
-      })
+          selectionObjectName: 'CAPSULE',
+          resizable: true,
+          resizeObjectName: 'CAPSULE',
+          locationSpot: go.Spot.Center
+        })
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape('Capsule', {
-            fill: makeMetalBrush(),
-            stroke: 'black',
-            strokeWidth: 1,
-          })
-            .bind('height', 'height', (value) => (value + 1))
-            .bind('width', 'width', (value) => (value + 1)),
+              fill: makeMetalBrush(),
+              stroke: 'black',
+              strokeWidth: 1,
+            })
+            .bind('height', 'height', value => value + 1)
+            .bind('width', 'width', value => value + 1),
           new go.Panel('Spot', {isClipping: true})
             .add(
               new go.Shape('Capsule', {
@@ -243,22 +244,22 @@
                 .add(
                   new go.Shape({fill: 'white', strokeWidth: 0}),
                   new go.Panel('Vertical', {
-                    alignmentFocus: go.Spot.BottomCenter,
-                    alignment: go.Spot.BottomCenter,
-                    stretch: go.Stretch.Horizontal
-                  })
+                      alignmentFocus: go.Spot.BottomCenter,
+                      alignment: go.Spot.BottomCenter,
+                      stretch: go.Stretch.Horizontal
+                    })
                     .add(
                       new go.Panel('Graduated', {
-                        background: 'transparent',
-                        graduatedMin: 0,
-                        graduatedMax: 100,
-                        graduatedTickBase: 0,
-                        graduatedTickUnit: 1,
-                        width: ORIGINAL_WIDTH,
-                        margin: 0,
-                        stretch: go.Stretch.Horizontal,
-                        name: 'WAVE_GRADUATED_PANEL'
-                      })
+                          background: 'transparent',
+                          graduatedMin: 0,
+                          graduatedMax: 100,
+                          graduatedTickBase: 0,
+                          graduatedTickUnit: 1,
+                          width: ORIGINAL_WIDTH,
+                          margin: 0,
+                          stretch: go.Stretch.Horizontal,
+                          name: 'WAVE_GRADUATED_PANEL'
+                        })
                         .add(
                           new go.Shape({
                             name: 'line',
@@ -273,32 +274,32 @@
                             fill: makeWaveBrush(),
                             strokeWidth: 0,
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
-                            graduatedSkip: (n) => (n % 2)
+                            graduatedSkip: n => n % 2
                           }),
                           new go.Shape('Wave', {
                             interval: 1,
                             parameter1: 1,
                             name: 'WAVE2',
-                            graduatedSkip: (n) => (!(n % 2)),
+                            graduatedSkip: n => !(n % 2),
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
                             fill: makeWaveBrush(),
                             strokeWidth: 0
                           })
                         ),
                       new go.Shape({
-                        fill: new go.Brush('Linear', {
-                          0: 'rgba(163, 183, 202, 1)',
-                          0.25: 'rgba(117, 147, 175, 1)',
-                          0.5: 'rgba(71, 111, 149, 1)',
-                          0.75: 'rgba(25, 74, 122, 1)',
-                          start: go.Spot.Top,
-                          end: go.Spot.Bottom
-                        }),
-                        margin: new go.Margin(-1, 0, 0, 0),
-                        strokeWidth: 0,
-                        stretch: go.Stretch.Horizontal
-                      })
-                        .bind('height', '', (data) => {
+                          fill: new go.Brush('Linear', {
+                            0: 'rgba(163, 183, 202, 1)',
+                            0.25: 'rgba(117, 147, 175, 1)',
+                            0.5: 'rgba(71, 111, 149, 1)',
+                            0.75: 'rgba(25, 74, 122, 1)',
+                            start: go.Spot.Top,
+                            end: go.Spot.Bottom
+                          }),
+                          margin: new go.Margin(-1, 0, 0, 0),
+                          strokeWidth: 0,
+                          stretch: go.Stretch.Horizontal
+                        })
+                        .bind('height', '', data => {
                           let fill_height = data.fillLevel * data.height;
                           return fill_height - (WAVE_HEIGHT / 2);
                         })
@@ -316,23 +317,22 @@
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Tank',
+    myDiagram.nodeTemplateMap.add('Tank',
       new go.Node('Spot', {
-        selectionObjectName: 'CAPSULE',
-        resizable: true,
-        resizeObjectName: 'CAPSULE',
-        locationSpot: go.Spot.Center
-      })
+          selectionObjectName: 'CAPSULE',
+          resizable: true,
+          resizeObjectName: 'CAPSULE',
+          locationSpot: go.Spot.Center
+        })
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape('Capsule', {
-            fill: makeMetalBrush(),
-            stroke: 'black',
-            strokeWidth: 1,
-          })
-            .bind('height', 'height', (value) => (value + 1))
-            .bind('width', 'width', (value) => (value + 1)),
+              fill: makeMetalBrush(),
+              stroke: 'black',
+              strokeWidth: 1,
+            })
+            .bind('height', 'height', value => value + 1)
+            .bind('width', 'width', value => value + 1),
           new go.Panel('Spot', {isClipping: true})
             .add(
               new go.Shape('Capsule', {
@@ -347,22 +347,22 @@
                 .add(
                   new go.Shape({fill: 'white', strokeWidth: 0}),
                   new go.Panel('Vertical', {
-                    alignmentFocus: go.Spot.BottomCenter,
-                    alignment: go.Spot.BottomCenter,
-                    stretch: go.Stretch.Horizontal
-                  })
+                      alignmentFocus: go.Spot.BottomCenter,
+                      alignment: go.Spot.BottomCenter,
+                      stretch: go.Stretch.Horizontal
+                    })
                     .add(
                       new go.Panel('Graduated', {
-                        background: 'transparent',
-                        graduatedMin: 0,
-                        graduatedMax: 100,
-                        graduatedTickBase: 0,
-                        graduatedTickUnit: 1,
-                        width: ORIGINAL_WIDTH,
-                        margin: 0,
-                        stretch: go.Stretch.Horizontal,
-                        name: 'WAVE_GRADUATED_PANEL'
-                      })
+                          background: 'transparent',
+                          graduatedMin: 0,
+                          graduatedMax: 100,
+                          graduatedTickBase: 0,
+                          graduatedTickUnit: 1,
+                          width: ORIGINAL_WIDTH,
+                          margin: 0,
+                          stretch: go.Stretch.Horizontal,
+                          name: 'WAVE_GRADUATED_PANEL'
+                        })
                         .add(
                           new go.Shape({
                             name: 'line',
@@ -377,32 +377,32 @@
                             fill: makeWaveBrush(),
                             strokeWidth: 0,
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
-                            graduatedSkip: (n) => (n % 2)
+                            graduatedSkip: n => n % 2
                           }),
                           new go.Shape('Wave', {
                             interval: 1,
                             parameter1: 1,
                             name: 'WAVE2',
-                            graduatedSkip: (n) => (!(n % 2)),
+                            graduatedSkip: n => !(n % 2),
                             desiredSize: new go.Size(WAVE_WIDTH + 1, WAVE_HEIGHT),
                             fill: makeWaveBrush(),
                             strokeWidth: 0
                           })
                         ),
                       new go.Shape({
-                        fill: new go.Brush('Linear', {
-                          0: 'rgba(163, 183, 202, 1)',
-                          0.25: 'rgba(117, 147, 175, 1)',
-                          0.5: 'rgba(71, 111, 149, 1)',
-                          0.75: 'rgba(25, 74, 122, 1)',
-                          start: go.Spot.Top,
-                          end: go.Spot.Bottom
-                        }),
-                        margin: new go.Margin(-1, 0, 0, 0),
-                        strokeWidth: 0,
-                        stretch: go.Stretch.Horizontal
-                      })
-                        .bind('height', '', (data) => {
+                          fill: new go.Brush('Linear', {
+                            0: 'rgba(163, 183, 202, 1)',
+                            0.25: 'rgba(117, 147, 175, 1)',
+                            0.5: 'rgba(71, 111, 149, 1)',
+                            0.75: 'rgba(25, 74, 122, 1)',
+                            start: go.Spot.Top,
+                            end: go.Spot.Bottom
+                          }),
+                          margin: new go.Margin(-1, 0, 0, 0),
+                          strokeWidth: 0,
+                          stretch: go.Stretch.Horizontal
+                        })
+                        .bind('height', '', data => {
                           let fill_height = data.fillLevel * data.height;
                           return fill_height - (WAVE_HEIGHT / 2);
                         })
@@ -418,8 +418,7 @@
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Pump',
+    myDiagram.nodeTemplateMap.add('Pump',
       new go.Node('Vertical')
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
@@ -438,18 +437,17 @@
               })
             ),
           new go.TextBlock({
-            alignment: go.Spot.Center,
-            textAlign: 'center',
-            margin: 5,
-            editable: true,
-            font: FONT
-          })
-          .bindTwoWay('text'),
+              alignment: go.Spot.Center,
+              textAlign: 'center',
+              margin: 5,
+              editable: true,
+              font: FONT
+            })
+            .bindTwoWay('text'),
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Condenser',
+    myDiagram.nodeTemplateMap.add('Condenser',
       new go.Node('Vertical')
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
@@ -471,37 +469,36 @@
               })
             ),
           new go.TextBlock({
-            alignment: go.Spot.Center,
-            textAlign: 'center',
-            margin: 5,
-            editable: true,
-            font: FONT
-          })
-          .bindTwoWay('text')
+              alignment: go.Spot.Center,
+              textAlign: 'center',
+              margin: 5,
+              editable: true,
+              font: FONT
+            })
+            .bindTwoWay('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Valve',
+    myDiagram.nodeTemplateMap.add('Valve',
       new go.Node('Vertical', {
-        locationSpot: new go.Spot(0.5, 0.3333),
-        locationObjectName: 'SHAPE',
-        selectionObjectName: 'SHAPE',
-        rotatable: true
-      })
+          locationSpot: new go.Spot(0.5, 0.3333),
+          locationObjectName: 'SHAPE',
+          selectionObjectName: 'SHAPE',
+          rotatable: true
+        })
         .bindTwoWay('angle')
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
           new go.TextBlock({
-            alignment: go.Spot.Center,
-            textAlign: 'center',
-            margin: 5,
-            editable: true,
-            font: FONT
-          })
+              alignment: go.Spot.Center,
+              textAlign: 'center',
+              margin: 5,
+              editable: true,
+              font: FONT
+            })
             .bindTwoWay('text')
             // keep the text upright, even when the whole node has been rotated upside down
-            .bindObject('angle', 'angle', (a) => (a === 180 ? 180 : 0)),
+            .bindObject('angle', 'angle', a => a === 180 ? 180 : 0),
           new go.Shape({
             name: 'SHAPE',
             geometryString: 'F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30',
@@ -514,8 +511,7 @@
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Boiler',
+    myDiagram.nodeTemplateMap.add('Boiler',
       new go.Node('Vertical')
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
@@ -536,18 +532,17 @@
               })
             ),
           new go.TextBlock({
-            alignment: go.Spot.Center,
-            textAlign: 'center',
-            margin: 5,
-            editable: true,
-            font: FONT
-          })
-          .bindTwoWay('text')
+              alignment: go.Spot.Center,
+              textAlign: 'center',
+              margin: 5,
+              editable: true,
+              font: FONT
+            })
+            .bindTwoWay('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Label',
+    myDiagram.nodeTemplateMap.add('Label',
       new go.Node('Auto')
         .bindTwoWay('location', 'pos', go.Point.parse, go.Point.stringify)
         .add(
@@ -557,35 +552,36 @@
         )
     );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      curve: go.Curve.JumpGap,
-      corner: 10,
-      reshapable: true,
-      toShortLength: 7
-    })
-      .bindTwoWay('points')
-      .add(
-        // mark each Shape to get the link geometry with isPanelMain: true
-        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 5 }),
-        new go.Shape({ isPanelMain: true, stroke: '#aaa', strokeWidth: 3 })
-          .bind('stroke'),
-        new go.Shape({
-          isPanelMain: true,
-          stroke: 'white',
-          strokeWidth: 3,
-          name: 'PIPE',
-          strokeDashArray: [10, 10]
-        }),
-        new go.Shape({ toArrow: 'Triangle', fill: 'white', stroke: 'black' }),
-        new go.Panel('Auto', {visible: false})
-          .bind('visible', 'text', (value) => (value && value != ''))
-          .add(
-            new go.Shape({fill: 'rgba(255, 255, 255, 0.9)', stroke: 'black', strokeDashArray: [5, 5]}),
-            new go.TextBlock({stroke: 'black', margin: 3, font: FONT})
-              .bind('text')
-          )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          curve: go.Curve.JumpGap,
+          corner: 10,
+          reshapable: true,
+          toShortLength: 7
+        })
+        .bindTwoWay('points')
+        .add(
+          // mark each Shape to get the link geometry with isPanelMain: true
+          new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 5 }),
+          new go.Shape({ isPanelMain: true, stroke: '#aaa', strokeWidth: 3 })
+            .bind('stroke'),
+          new go.Shape({
+            isPanelMain: true,
+            stroke: 'white',
+            strokeWidth: 3,
+            name: 'PIPE',
+            strokeDashArray: [10, 10]
+          }),
+          new go.Shape({ toArrow: 'Triangle', fill: 'white', stroke: 'black' }),
+          new go.Panel('Auto', { visible: false })
+            .bind('visible', 'text', value => value && value != '')
+            .add(
+              new go.Shape({ fill: 'rgba(255, 255, 255, 0.9)', stroke: 'black', strokeDashArray: [5, 5] }),
+              new go.TextBlock({ stroke: 'black', margin: 3, font: FONT })
+                .bind('text')
+            )
+        );
 
     load();
   }
@@ -613,7 +609,7 @@
     // Animate the flow in the pipes
     myAnimation = new go.Animation();
     myAnimation.easing = go.Animation.EaseLinear;
-    myDiagram.links.each((link) =>
+    myDiagram.links.each(link =>
       myAnimation.add(link.findObject('PIPE'), 'strokeDashOffset', 20, 0)
     );
     // Run indefinitely
@@ -625,7 +621,7 @@
     myWavesAnimation.easing = go.Animation.EaseInOutQuad;
     myWavesAnimation.reversible = true;
     myWavesAnimation.duration = 2000;
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       let wave1 = node.findObject('WAVE1');
       let wave2 = node.findObject('WAVE2');
       if (wave1) myWavesAnimation.add(wave1, 'waves', 0, 1);
@@ -639,7 +635,7 @@
     myWavesOffsetAnimation.easing = go.Animation.EaseInOutQuad;
     myWavesOffsetAnimation.reversible = true;
     myWavesOffsetAnimation.duration = 5000;
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       let waveGraduatedPanel = node.findObject('WAVE_GRADUATED_PANEL');
       if (waveGraduatedPanel) myWavesOffsetAnimation.add(waveGraduatedPanel, 'offset', -30, 0);
     });

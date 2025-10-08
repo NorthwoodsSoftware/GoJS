@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,73 +125,6 @@
             
 
 <script id="code">
-  function init() {
-
-    myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
-      allowCopy: false,
-      allowDelete: false,
-      draggingTool: new CustomDraggingTool(),
-      layout: new CustomLayout(),
-      // enable undo & redo
-      'undoManager.isEnabled': true
-    });
-
-    // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // define the node's outer shape, which will surround the TextBlock
-        new go.Shape('RoundedRectangle', {
-          fill: 'rgb(254, 201, 0)',
-          stroke: 'black',
-          parameter1: 20, // the corner has a large radius
-          portId: '',
-          fromSpot: go.Spot.AllSides,
-          toSpot: go.Spot.AllSides
-        }),
-        new go.TextBlock()
-          .bindTwoWay('text')
-      );
-
-    myDiagram.nodeTemplateMap.add('Super',
-      new go.Node('Auto', { locationObjectName: 'BODY' })
-        .add(
-          new go.Shape('RoundedRectangle', {
-            fill: 'rgba(128, 128, 64, 0.5)',
-            strokeWidth: 1.5,
-            parameter1: 20,
-            spot1: go.Spot.TopLeft,
-            spot2: go.Spot.BottomRight,
-            minSize: new go.Size(30, 30)
-          }),
-          new go.Panel('Vertical', { margin: 10 })
-            .add(
-              new go.TextBlock({
-                font: 'bold 10pt sans-serif',
-                margin: new go.Margin(0, 0, 5, 0)
-              })
-                .bind('text'),
-              new go.Shape({ name: 'BODY', opacity: 0 })
-            )
-        )
-    );
-
-    // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link({ // the whole link panel
-      routing: go.Routing.Orthogonal,
-      corner: 10
-    })
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }), // the link shape
-        new go.Shape({ // the arrowhead
-          toArrow: 'Standard',
-          stroke: null
-        })
-      );
-
-    // read in the JSON-format data from the "mySavedModel" element
-    load();
-  }
 
   // A custom layout that sizes each "Super" node to be big enough to cover all of it member nodes
   class CustomLayout extends go.Layout {
@@ -202,7 +137,7 @@
       coll = this.collectParts(coll);
 
       const supers = new go.Set(/*go.Node*/);
-      coll.each((p) => {
+      coll.each(p => {
         if (p instanceof go.Node && p.category === 'Super') supers.add(p);
       });
 
@@ -266,7 +201,7 @@
 
     computeEffectiveCollection(parts) {
       const coll = new go.Set(/*go.Part*/).addAll(parts);
-      parts.each((p) => this.walkSubTree(p, coll));
+      parts.each(p => this.walkSubTree(p, coll));
       return super.computeEffectiveCollection(coll);
     }
 
@@ -287,6 +222,70 @@
     }
   }
   // end CustomDraggingTool class
+
+  function init() {
+
+    myDiagram = new go.Diagram('myDiagramDiv', { // must name or refer to the DIV HTML element
+      allowCopy: false,
+      allowDelete: false,
+      draggingTool: new CustomDraggingTool(),
+      layout: new CustomLayout(),
+      // enable undo & redo
+      'undoManager.isEnabled': true
+    });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // define the node's outer shape, which will surround the TextBlock
+          new go.Shape('RoundedRectangle', {
+            fill: 'rgb(254, 201, 0)',
+            stroke: 'black',
+            parameter1: 20, // the corner has a large radius
+            portId: '',
+            fromSpot: go.Spot.AllSides,
+            toSpot: go.Spot.AllSides
+          }),
+          new go.TextBlock()
+            .bindTwoWay('text')
+        );
+
+    myDiagram.nodeTemplateMap.add('Super',
+      new go.Node('Auto', { locationObjectName: 'BODY' })
+        .add(
+          new go.Shape('RoundedRectangle', {
+            fill: 'rgba(128, 128, 64, 0.5)',
+            strokeWidth: 1.5,
+            parameter1: 20,
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight,
+            minSize: new go.Size(30, 30)
+          }),
+          new go.Panel('Vertical', { margin: 10 })
+            .add(
+              new go.TextBlock({
+                  font: 'bold 10pt sans-serif',
+                  margin: new go.Margin(0, 0, 5, 0)
+                })
+                .bind('text'),
+              new go.Shape({ name: 'BODY', opacity: 0 })
+            )
+        )
+    );
+
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 10 })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+        );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+  }
 
   // Show the diagram's model in JSON format
   function save() {
@@ -323,6 +322,7 @@
       }
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

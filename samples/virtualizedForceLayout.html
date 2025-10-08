@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,24 +135,30 @@
       layout: new VirtualizedForceDirectedLayout({ maxIterations: 200 }),
 
       // Define the template for Nodes, used by virtualization.
-      nodeTemplate: new go.Node('Auto', {
-        isLayoutPositioned: false,  // optimization
-        width: 70,
-        height: 20,
-        toolTip: go.GraphObject.build("ToolTip")
+      nodeTemplate:
+        new go.Node('Auto', {
+            isLayoutPositioned: false,  // optimization
+            width: 70,
+            height: 20,
+            toolTip:
+              go.GraphObject.build("ToolTip")
+                .add(
+                  new go.TextBlock({ margin: 3 })
+                    .bind('text', '', d => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString())
+                )
+          })
+          .bindTwoWay('position', 'bounds', b => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
           .add(
-            new go.TextBlock({ margin: 3 }).bind('text', '', (d) => 'key: ' + d.key + '\nbounds: ' + d.bounds.toString())
-          )
-      })
-        .bindTwoWay('position', 'bounds', (b) => b.position, (p, d) => new go.Rect(p.x, p.y, d.bounds.width, d.bounds.height))
-        .add(
-          new go.Shape('Rectangle').bind('fill', 'color'),
-          new go.TextBlock({ margin: 2 }).bind('text', 'color')
-        ),
+            new go.Shape('Rectangle')
+              .bind('fill', 'color'),
+            new go.TextBlock({ margin: 2 })
+              .bind('text', 'color')
+          ),
 
       // Define the template for Links
-      linkTemplate: new go.Link({ isLayoutPositioned: false }) // optimization
-        .add(new go.Shape()),
+      linkTemplate:
+        new go.Link({ isLayoutPositioned: false }) // optimization
+          .add(new go.Shape()),
 
       'animationManager.isEnabled': false
     });
@@ -173,14 +181,14 @@
     myDiagram.addDiagramListener('ViewportBoundsChanged', onViewportChanged);
 
     // once the layout has finished we can decide where to position the viewport
-    myDiagram.addDiagramListener('InitialLayoutCompleted', (e) => {
+    myDiagram.addDiagramListener('InitialLayoutCompleted', e => {
       var firstdata = myWholeModel.findNodeDataForKey(0);
       if (firstdata !== null) {
         myDiagram.centerRect(firstdata.bounds);
       }
     });
 
-    myDiagram.delayInitialization((diagram) => spinDuring(diagram, 'mySpinner', load));
+    myDiagram.delayInitialization(diagram => spinDuring(diagram, 'mySpinner', load));
   }
 
   // implement a wait spinner in HTML with CSS animation
@@ -408,7 +416,7 @@
       if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
         // even if the node is out of the viewport, keep it if it is selected or
         // if any link connecting with the node is still in the viewport
-        if (!n.linksConnected.any((l) => l.actualBounds.intersectsRect(viewb))) {
+        if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
           remove.push(d);
           if (model instanceof go.GraphLinksModel) {
             removeLinks.addAll(n.linksConnected);
@@ -422,7 +430,7 @@
       diagram.skipsUndoManager = true;
       model.removeNodeDataCollection(remove);
       if (model instanceof go.GraphLinksModel) {
-        removeLinks.each((l) => {
+        removeLinks.each(l => {
           if (!l.isSelected) model.removeLinkData(l.data);
         });
       }
@@ -461,7 +469,7 @@
       // can't depend on regular bounds computation that depends on all Nodes existing
       this.diagram.fixedBounds = computeDocumentBounds();
       // update the positions of any existing Nodes
-      this.diagram.nodes.each((node) => node.updateTargetBindings());
+      this.diagram.nodes.each(node => node.updateTargetBindings());
     }
   }
   // end VirtualizedForceDirectedLayout class
@@ -616,7 +624,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

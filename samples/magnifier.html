@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -181,62 +183,64 @@
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', { isShadowed: true })
-      .add(
-        // the outer shape for the node, surrounding the Table
-        new go.Shape('Rectangle')
-          .bindObject('fill', 'isHighlighted', (h) => (h ? 'red' : 'azure')),
-        // a table to contain the different parts of the node
-        new go.Panel('Table', {
-          margin: 4,
-          maxSize: new go.Size(150, NaN)
-        })
-          // the two TextBlocks in column 0 both stretch in width
-          // but align on the left side
-          .addColumnDefinition(0, {
-            stretch: go.Stretch.Horizontal,
-            alignment: go.Spot.Left
-          })
-          .add(
-            // the name
-            new go.TextBlock({
-              row: 0,
-              column: 0,
-              maxSize: new go.Size(120, NaN),
-              margin: 2,
-              font: 'bold 8pt sans-serif',
-              alignment: go.Spot.Top
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { isShadowed: true })
+        .add(
+          // the outer shape for the node, surrounding the Table
+          new go.Shape('Rectangle')
+            .bindObject('fill', 'isHighlighted', h => h ? 'red' : 'azure'),
+          // a table to contain the different parts of the node
+          new go.Panel('Table', {
+              margin: 4,
+              maxSize: new go.Size(150, NaN)
             })
-              .bind('text', 'name'),
-            // the country flag
-            new go.Picture({
-              row: 0,
-              column: 1,
-              desiredSize: new go.Size(34, 26),
-              margin: 2,
-              imageStretch: go.ImageStretch.Uniform,
-              alignment: go.Spot.TopRight
+            // the two TextBlocks in column 0 both stretch in width
+            // but align on the left side
+            .addColumnDefinition(0, {
+              stretch: go.Stretch.Horizontal,
+              alignment: go.Spot.Left
             })
-              .bind('source', 'nation', theNationFlagConverter),
-            // the additional textual information
-            new go.TextBlock({
-              row: 1,
-              column: 0,
-              columnSpan: 2,
-              font: '8pt sans-serif'
-            })
-              .bind('text', '', theInfoTextConverter)
-          )
-      );
+            .add(
+              // the name
+              new go.TextBlock({
+                  row: 0,
+                  column: 0,
+                  maxSize: new go.Size(120, NaN),
+                  margin: 2,
+                  font: 'bold 8pt sans-serif',
+                  alignment: go.Spot.Top
+                })
+                .bind('text', 'name'),
+              // the country flag
+              new go.Picture({
+                  row: 0,
+                  column: 1,
+                  desiredSize: new go.Size(34, 26),
+                  margin: 2,
+                  imageStretch: go.ImageStretch.Uniform,
+                  alignment: go.Spot.TopRight
+                })
+                .bind('source', 'nation', theNationFlagConverter),
+              // the additional textual information
+              new go.TextBlock({
+                  row: 1,
+                  column: 0,
+                  columnSpan: 2,
+                  font: '8pt sans-serif'
+                })
+                .bind('text', '', theInfoTextConverter)
+            )
+        );
 
     // define the Link template, a simple orthogonal line
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      selectable: false
-    })
-      .add(
-        new go.Shape({ stroke: '#222' })
-      ); // the default black link shape
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          selectable: false
+        })
+        .add(
+          new go.Shape({ stroke: '#222' })
+        ); // the default black link shape
 
     // set up the nodeDataArray, describing each person/position
     var nodeDataArray = [
@@ -495,6 +499,32 @@ More information can be found in the <a href="../intro/overview.html">GoJS Intro
 </p>
             <p>
               <a href="../samples/index.html#overview">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

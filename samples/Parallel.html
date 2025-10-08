@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -128,25 +130,26 @@
   function init() {
 
     myDiagram = new go.Diagram('myDiagramDiv', { // must be the ID or reference to div
-        allowCopy: false, // would need to merge copied nodes and links to
-        allowDelete: false, //   use the single "Split" and "Merge" nodes
-        layout: new ParallelLayout({
-            layerSpacing: 20,
-            nodeSpacing: 10
-          })
-      });
+      allowCopy: false, // would need to merge copied nodes and links to
+      allowDelete: false, //   use the single "Split" and "Merge" nodes
+      layout: new ParallelLayout({
+          layerSpacing: 20,
+          nodeSpacing: 10
+        })
+    });
 
     // define the Node templates
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape('Rectangle', {
-          fill: 'wheat',
-          stroke: null,
-          strokeWidth: 0
-        }),
-        new go.TextBlock({ margin: 3 })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Rectangle', {
+            fill: 'wheat',
+            stroke: null,
+            strokeWidth: 0
+          }),
+          new go.TextBlock({ margin: 3 })
+            .bind('text')
+        );
 
     myDiagram.nodeTemplateMap.add('Split',
       new go.Node('Auto', { locationSpot: go.Spot.Center })
@@ -177,35 +180,31 @@
     );
 
     // define the Link template to be minimal
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      corner: 5
-    })
-      .add(
-        new go.Shape({
-          stroke: 'gray',
-          strokeWidth: 1.5
-        })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+        .add(
+          new go.Shape({ stroke: 'gray', strokeWidth: 1.5 })
+        );
 
     // define the Group template to be fairly simple
-    myDiagram.groupTemplate = new go.Group('Auto', {
-      layout: new ParallelLayout({
-        layerSpacing: 20,
-        nodeSpacing: 10
-      })
-    })
-      .add(
-        new go.Shape({
-          fill: 'transparent',
-          stroke: 'darkgoldenrod'
-        }),
-        new go.Placeholder({ padding: 10 }),
-        go.GraphObject.build('SubGraphExpanderButton', {
-          alignment: go.Spot.TopLeft,
-          'ButtonBorder.figure': 'Rectangle'
+    myDiagram.groupTemplate =
+      new go.Group('Auto', {
+          layout: new ParallelLayout({
+            layerSpacing: 20,
+            nodeSpacing: 10
+          })
         })
-      );
+        .add(
+          new go.Shape({
+            fill: 'transparent',
+            stroke: 'darkgoldenrod'
+          }),
+          new go.Placeholder({ padding: 10 }),
+          go.GraphObject.build('SubGraphExpanderButton', {
+            alignment: go.Spot.TopLeft,
+            'ButtonBorder.figure': 'Rectangle'
+          })
+        );
 
     var model = new go.GraphLinksModel();
     model.nodeDataArray = [
@@ -272,6 +271,7 @@
     ];
     myDiagram.model = model;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -354,7 +354,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

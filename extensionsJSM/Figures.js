@@ -240,7 +240,7 @@ function breakUpBezier(startx, starty, c1x, c1y, c2x, c2y, endx, endy, fraction,
 const GeneratorEllipseSpot1 = new go.Spot(0.156, 0.156);
 const GeneratorEllipseSpot2 = new go.Spot(0.844, 0.844);
 const KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
-// OPTIONAL figures, not predefined in the v3.0 library:
+// OPTIONAL figures, not predefined in the library:
 // ChamferedRectangle
 // parameter1 controls the length of the side of the triangle that is cut off from a corner.
 //   The corner is always cut at 45 degrees.  If the width or height is not large enough,
@@ -2046,7 +2046,7 @@ go.Shape.defineFigureGenerator('Cylinder1', (shape, w, h) => {
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, 0.5 * w, 2 * param1, 1.0 * w, 2 * param1 - KAPPA * param1, (0.5 + cpxOffset) * w, 2 * param1));
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, 0, param1, (0.5 - cpxOffset) * w, 2 * param1, 0, 2 * param1 - KAPPA * param1));
     geo.spot1 = new go.Spot(0, 0, 0, 2 * param1);
-    geo.spot2 = new go.Spot(1, 1);
+    geo.spot2 = go.Spot.BottomRight;
     return geo;
 });
 go.Shape.defineFigureGenerator('Cylinder2', (shape, w, h) => {
@@ -2070,7 +2070,7 @@ go.Shape.defineFigureGenerator('Cylinder2', (shape, w, h) => {
     // The base (bottom)
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, 0.5 * w, h - 2 * param1, 0, h - param1 - KAPPA * param1, (0.5 - cpxOffset) * w, h - 2 * param1));
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, w, h - param1, (0.5 + cpxOffset) * w, h - 2 * param1, w, h - param1 - KAPPA * param1));
-    geo.spot1 = new go.Spot(0, 0);
+    geo.spot1 = go.Spot.TopLeft;
     geo.spot2 = new go.Spot(1, 1, 0, -2 * param1);
     return geo;
 });
@@ -2096,7 +2096,7 @@ go.Shape.defineFigureGenerator('Cylinder3', (shape, w, h) => {
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, 2 * param1, 0.5 * h, param1 + KAPPA * param1, 0, 2 * param1, (0.5 - cpyOffset) * h));
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, param1, h, 2 * param1, (0.5 + cpyOffset) * h, param1 + KAPPA * param1, h));
     geo.spot1 = new go.Spot(0, 0, 2 * param1, 0);
-    geo.spot2 = new go.Spot(1, 1);
+    geo.spot2 = go.Spot.BottomRight;
     return geo;
 });
 go.Shape.defineFigureGenerator('Cylinder4', (shape, w, h) => {
@@ -2120,7 +2120,7 @@ go.Shape.defineFigureGenerator('Cylinder4', (shape, w, h) => {
     // Cylinder line (right)
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, w - 2 * param1, 0.5 * h, w - param1 - KAPPA * param1, 0, w - 2 * param1, (0.5 - cpyOffset) * h));
     fig2.add(new go.PathSegment(go.SegmentType.Bezier, w - param1, h, w - 2 * param1, (0.5 + cpyOffset) * h, w - param1 - KAPPA * param1, h));
-    geo.spot1 = new go.Spot(0, 0);
+    geo.spot1 = go.Spot.TopLeft;
     geo.spot2 = new go.Spot(1, 1, -2 * param1, 0);
     return geo;
 });
@@ -3754,7 +3754,7 @@ go.Shape.defineFigureGenerator('Package', (shape, w, h) => {
     fig2.add(new go.PathSegment(go.SegmentType.Line, 0.6 * w, 0));
     fig2.add(new go.PathSegment(go.SegmentType.Line, 0.65 * w, 0.15 * h).close());
     geo.spot1 = new go.Spot(0, 0.1);
-    geo.spot2 = new go.Spot(1, 1);
+    geo.spot2 = go.Spot.BottomRight;
     return geo;
 });
 go.Shape.defineFigureGenerator('Class', (shape, w, h) => {

@@ -38,7 +38,7 @@ import * as go from 'gojs';
 export class LinkLabelRouter extends go.Router {
   /** @hidden */ private layout: LabelLayout;
   /** @hidden */ private _layoutProps: Partial<go.ForceDirectedLayout>;
-  /** @hidden */ private _margin: go.MarginLike;
+  /** @hidden */ private _margin: go.Margin;
 
   constructor(init?: Partial<LinkLabelRouter>) {
     super();
@@ -79,15 +79,18 @@ export class LinkLabelRouter extends go.Router {
     return this._margin;
   }
   set margin(value: go.MarginLike) {
-    if (value !== this._margin) {
-      this._margin = value;
+    const old = this._margin;
+    if (typeof value === 'number') value = new go.Margin(value);
+    else if (!(value instanceof go.Margin)) throw new Error('LinkLabelRouter.margin must be a Margin or a number, not ' + value);
+    if (!old.equals(value)) {
+      this._margin.set(value);
       this.invalidateRouter();
     }
   }
 
   /**
    * Determines which GraphObjects in {@link Panel.elements} list of each link should be treated as labels.
-   * By default this consists of all objects that are not the "main path" of the link, and are not fromArrows or toArrows.
+   * By default this consists of all objects that are not a "main path" of the link, and are not fromArrows or toArrows.
    *
    * @param { go.GraphObject } obj
    * @returns
@@ -95,15 +98,12 @@ export class LinkLabelRouter extends go.Router {
   isLabel(obj: go.GraphObject): boolean {
     if (!obj) return false;
     const link = obj.panel;
-    if (obj.panel === null) return false;
-    if (link instanceof go.Link) {
-      if (obj instanceof go.Shape && (obj.isPanelMain || obj.panel.findMainElement() === obj || obj.fromArrow !== 'None' || obj.toArrow !== 'None')) {
-        return false;
-      } else {
-        return true;
-      }
+    if (link === null) return false;
+    if (obj instanceof go.Shape && (obj.isPanelMain || link.findMainElement() === obj || obj.fromArrow !== 'None' || obj.toArrow !== 'None')) {
+      return false;
+    } else {
+      return true;
     }
-    return false;
   }
 
   /**
@@ -221,15 +221,11 @@ class LabelLayout extends go.ForceDirectedLayout {
       part.ensureBounds();
       for (const label of part.elements) {
         if (!this.router!.isLabel(label)) continue;
-        const margin = this.router!.margin;
+        const margin = this.router!.margin as go.Margin;
         const documentBounds = label.getDocumentBounds()
           .offset(label.alignmentFocus.offsetX, label.alignmentFocus.offsetY);
         // add margin to "real" document bounds
-        if (margin instanceof go.Margin) {
-          documentBounds.addMargin(margin);
-        } else {
-          documentBounds.grow(margin, margin, margin, margin);
-        }
+        documentBounds.addMargin(margin);
 
         if (this.activeSet?.has(part)) {
           // add vertex for label node

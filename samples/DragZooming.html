@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,22 +133,21 @@
       initialViewportSpot: go.Spot.Center,
 
       // Define the template for Nodes, just some text inside a colored rectangle
-      nodeTemplate: new go.Node('Spot', {
-        width: 70,
-        height: 20
-      })
-        .add(
-          new go.Shape('Rectangle')
-            .bind('fill', 'c'),
-          new go.TextBlock({ margin: 2 })
-            .bind('text', 'c')
-        ),
+      nodeTemplate:
+        new go.Node('Spot', { width: 70, height: 20 })
+          .add(
+            new go.Shape('Rectangle')
+              .bind('fill', 'c'),
+            new go.TextBlock({ margin: 2 })
+              .bind('text', 'c')
+          ),
 
       // Define the template for Links, just a simple line
-      linkTemplate: new go.Link()
-        .add(
-          new go.Shape({ stroke: 'black' })
-        ),
+      linkTemplate:
+        new go.Link({ corner: 10 })
+          .add(
+            new go.Shape({ stroke: 'black' })
+          ),
 
       layout: new go.TreeLayout({
         angle: 90,
@@ -167,17 +168,11 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(2, new DragZoomingTool());
 
     // This is a status message
-    myLoading = new go.Part({
-      selectable: false,
-      location: new go.Point(0, 0)
-    })
-      .add(
-        new go.TextBlock('loading...', {
-          stroke: 'red',
-          font: '20pt sans-serif'
-        })
-      );
-
+    myLoading =
+      new go.Part({ selectable: false, location: new go.Point(0, 0) })
+        .add(
+          new go.TextBlock('loading...', { stroke: 'red', font: '20pt sans-serif' })
+        );
     // temporarily add the status indicator
     myDiagram.add(myLoading);
 
@@ -206,6 +201,7 @@
     // remove the status indicator
     diagram.remove(myLoading);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

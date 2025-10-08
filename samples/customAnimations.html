@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -157,43 +159,46 @@
       animation.start();
     }
 
-    var addNodeAdornment = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
-            new go.Placeholder()
-          ),
-        // the button to create a "next" node, at the top-right corner
-        go.GraphObject.build('Button', {
-          alignment: go.Spot.TopRight,
-          click: addNode // this function is defined below
-        })
-          .add(
-            new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
-          )
-      );
+    var addNodeAdornment =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: null, stroke: 'dodgerblue', strokeWidth: 3 }),
+              new go.Placeholder()
+            ),
+          // the button to create a "next" node, at the top-right corner
+          go.GraphObject.build('Button', {
+              alignment: go.Spot.TopRight,
+              click: addNode // this function is defined below
+            })
+            .add(
+              new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
+            )
+        );
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      selectionAdornmentTemplate: addNodeAdornment,
-      locationSpot: go.Spot.Center
-    })
-      .bindTwoWay('location', 'loc')
-      .add(
-        new go.Shape('RoundedRectangle', {
-          strokeWidth: 2,
-          portId: '', // this Shape is the Node's port, not the whole Node
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: true,
-          toLinkableDuplicates: true,
-          cursor: 'pointer'
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          selectionAdornmentTemplate: addNodeAdornment,
+          locationSpot: go.Spot.Center
         })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 10, font: '14px sans-serif' }).bind('text')
-      );
+        .bindTwoWay('location', 'loc')
+        .add(
+          new go.Shape('RoundedRectangle', {
+              strokeWidth: 2,
+              portId: '', // this Shape is the Node's port, not the whole Node
+              fromLinkable: true,
+              fromLinkableSelfNode: true,
+              fromLinkableDuplicates: true,
+              toLinkable: true,
+              toLinkableSelfNode: true,
+              toLinkableDuplicates: true,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 10, font: '14px sans-serif' })
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -250,7 +255,7 @@
       obj.corner = easing(currentTime, startValue, endValue - startValue, duration);
     });
 
-    myDiagram.addDiagramListener('LinkDrawn', (e) => {
+    myDiagram.addDiagramListener('LinkDrawn', e => {
       var link = e.subject;
       var animation = new go.Animation();
       var linkChoice = document.getElementById('links').value;
@@ -334,11 +339,11 @@
       return myPoint;
     }
 
-    myDiagram.addDiagramListener('SelectionDeleting', (e) => {
+    myDiagram.addDiagramListener('SelectionDeleting', e => {
       var deletionSelection = document.getElementById('deletion');
       var animation = new go.Animation();
       var diagram = e.diagram;
-      e.subject.each((p) => {
+      e.subject.each(p => {
         // Because we are deleting this part, we cannot animate it, instead we must animate a temporary copy
         // The animation handles this via addTemporaryPart, which must be passed a copy
         var part = p.copy();
@@ -375,18 +380,18 @@
       animation.start();
     });
 
-    myDiagram.addDiagramListener('ClipboardPasted', (e) => {
+    myDiagram.addDiagramListener('ClipboardPasted', e => {
       var creationSelection = document.getElementById('creation');
       // For best performance, be sure to use only one Animation for the entire selection
       // instead of creating one animation for each object in the selection
       var animation = new go.Animation();
-      e.subject.each((part) => {
+      e.subject.each(part => {
         addCreatedPart(part, animation, creationSelection.value);
       });
       animation.start();
     });
 
-    myDiagram.addDiagramListener('PartCreated', (e) => {
+    myDiagram.addDiagramListener('PartCreated', e => {
       // From ClickCreatingTool
       var creationSelection = document.getElementById('creation');
       var animation = new go.Animation();
@@ -416,13 +421,13 @@
       }
     }
 
-    document.getElementById('addNode').addEventListener('click', (e) => addNode());
+    document.getElementById('addNode').addEventListener('click', e => addNode());
 
     function addNode() {
       var diagram = myDiagram;
       var tempNodes = new go.List();
       diagram.startTransaction('Add States');
-      diagram.nodes.each((node) => {
+      diagram.nodes.each(node => {
         if (node.isSelected) {
           tempNodes.push(node);
         }
@@ -431,7 +436,7 @@
       // Set the easing to a custom easing function
       animation.easing = elasticEase;
       // Add a new node to the right of each node
-      tempNodes.each((part) => {
+      tempNodes.each(part => {
         // get the node data for which the user clicked the button
         var fromNode = part;
         var fromData = part.data;
@@ -465,7 +470,7 @@
       diagram.commitTransaction('Add States');
     }
 
-    document.getElementById('reloadModel').addEventListener('click', (e) => {
+    document.getElementById('reloadModel').addEventListener('click', e => {
       myDiagram.model = go.Model.fromJson(myDiagram.model.toJson());
     });
 
@@ -476,6 +481,7 @@
       return startValue + byValue * (56 * tc * ts + -175 * ts * ts + 200 * tc + -100 * ts + 20 * currentTime);
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

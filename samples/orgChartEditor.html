@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -187,7 +189,7 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -269,8 +271,12 @@
 
     // Gets the text for a tooltip based on the adorned object's name
     function toolTipTextConverter(obj) {
+      if (!obj) return '';
       if (obj.name === 'EMAIL') return obj.part.data.email;
       if (obj.name === 'PHONE') return obj.part.data.phone;
+      if (obj.name === 'BUTTON') return 'Add employee';
+      if (obj.name === 'BUTTONX') return obj.part.isTreeExpanded ? 'Collapse tree' : 'Expand tree';
+      return '';
     }
 
     // Align the tooltip based on the adorned object's viewport bounds
@@ -289,39 +295,36 @@
     }
 
     // a tooltip for the Email and Phone buttons
-    const toolTip = new go.Adornment(go.Panel.Spot, {
-      isShadowed: true,
-      shadowOffset: new go.Point(0, 2)
-    })
-      .add(
-        new go.Placeholder(),
-        new go.Panel(go.Panel.Auto)
-          .add(
-            new go.Shape('RoundedRectangle', { strokeWidth: 0, shadowVisible: true }).theme('fill', 'background'),
-            new go.TextBlock({ margin: 2 })
-              .bindObject('text', 'adornedObject', toolTipTextConverter)
-              .theme('stroke', 'text')
-              .theme('font', 'normal')
-          )
-          // sets alignment and alignmentFocus based on adorned object's position in viewport
-          .bindObject('', 'adornedObject', toolTipAlignConverter)
-      )
-      .theme('shadowColor', 'shadow');
+    const toolTip =
+      new go.Adornment(go.Panel.Spot, {
+          isShadowed: true,
+          shadowOffset: new go.Point(0, 2)
+        })
+        .add(
+          new go.Placeholder(),
+          new go.Panel(go.Panel.Auto)
+            .add(
+              new go.Shape('RoundedRectangle', { strokeWidth: 0, shadowVisible: true }).theme('fill', 'background'),
+              new go.TextBlock({ margin: 2 })
+                .bindObject('text', 'adornedObject', toolTipTextConverter)
+                .theme('stroke', 'text')
+                .theme('font', 'normal')
+            )
+            // sets alignment and alignmentFocus based on adorned object's position in viewport
+            .bindObject('', 'adornedObject', toolTipAlignConverter)
+        )
+        .theme('shadowColor', 'shadow');
 
-    // define the Node template
-    myDiagram.nodeTemplate = new go.Node(go.Panel.Spot, {
-      isShadowed: true,
-      shadowOffset: new go.Point(0, 2),
-      selectionObjectName: 'BODY',
+    function nodeEvents(node) {
       // show/hide buttons when mouse enters/leaves
-      mouseEnter: (e, node) =>
-        (node.findObject('BUTTON').opacity = node.findObject('BUTTONX').opacity = 1),
-      mouseLeave: (e, node) => {
+      node.mouseEnter = (e, node) =>
+        (node.findObject('BUTTON').opacity = node.findObject('BUTTONX').opacity = 1);
+      node.mouseLeave = (e, node) => {
         if (node.isSelected) return; // if selected dont hide buttons
         node.findObject('BUTTON').opacity = node.findObject('BUTTONX').opacity = 0;
-      },
+      };
       // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-      mouseDragEnter: (e, node, prev) => {
+      node.mouseDragEnter = (e, node, prev) => {
         const diagram = node.diagram;
         const selnode = diagram.selection.first();
         if (!mayWorkFor(selnode, node)) return;
@@ -330,14 +333,14 @@
           shape._prevFill = shape.fill; // remember the original brush
           shape.fill = diagram.themeManager.findValue('dragOver', 'colors'); // "#e0f2fe";
         }
-      },
-      mouseDragLeave: (e, node, next) => {
+      };
+      node.mouseDragLeave = (e, node, next) => {
         const shape = node.findObject('SHAPE');
         if (shape && shape._prevFill) {
           shape.fill = shape._prevFill; // restore the original brush
         }
-      },
-      mouseDrop: (e, node) => {
+      };
+      node.mouseDrop = (e, node) => {
         const diagram = node.diagram;
         const selnode = diagram.selection.first(); // assume just one Node in selection
         if (mayWorkFor(selnode, node)) {
@@ -351,231 +354,266 @@
             diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
           }
         }
-      }
-    })
-      .add(
-        new go.Panel(go.Panel.Auto, { name: 'BODY' })
-          .add(
-            // define the node's outer shape
-            new go.Shape('RoundedRectangle', {
-              name: 'SHAPE',
-              strokeWidth: 0,
-              portId: '',
-              spot1: go.Spot.TopLeft,
-              spot2: go.Spot.BottomRight
-            }).theme('fill', 'background'),
-            new go.Panel(go.Panel.Table, { margin: 0.5, defaultRowSeparatorStrokeWidth: 0.5 })
-              .theme('defaultRowSeparatorStroke', 'divider')
-              .add(
-                new go.Panel(go.Panel.Table, { padding: new go.Margin(18, 18, 18, 24) })
-                  .addColumnDefinition(0, { width: 240 })
-                  .add(
-                    new go.Panel(go.Panel.Table, {
-                      column: 0,
-                      alignment: go.Spot.Left,
-                      stretch: go.Stretch.Vertical,
-                      defaultAlignment: go.Spot.Left
-                    })
-                      .add(
-                        new go.Panel(go.Panel.Horizontal, { row: 0 })
-                          .add(
-                            new go.TextBlock({ editable: true, minSize: new go.Size(10, 14) })
-                              .bindTwoWay('text', 'name')
-                              .theme('stroke', 'text')
-                              .theme('font', 'name'),
-                            new go.Panel(go.Panel.Auto, { margin: new go.Margin(0, 0, 0, 10) })
-                              .add(
-                                new go.Shape('Capsule', { parameter1: 6, parameter2: 6 })
-                                  .theme('fill', 'badge')
-                                  .theme('stroke', 'badgeBorder'),
-                                new go.TextBlock({
-                                  editable: true,
-                                  minSize: new go.Size(10, 12),
-                                  margin: new go.Margin(2, -1)
-                                })
-                                  .bindTwoWay('text', 'dept')
-                                  .theme('stroke', 'badgeText')
-                                  .theme('font', 'badge')
-                              )
-                          ),
-                        new go.TextBlock({ row: 1, editable: true, minSize: new go.Size(10, 14) })
-                          .bindTwoWay('text', 'title')
-                          .theme('stroke', 'subtext')
-                          .theme('font', 'normal')
-                      ),
-                    new go.Panel(go.Panel.Spot, { isClipping: true, column: 1 })
-                      .add(
-                        new go.Shape('Circle', { desiredSize: new go.Size(50, 50), strokeWidth: 0 }),
-                        new go.Picture({
-                          name: 'PICTURE',
-                          source: '../samples/images/user.svg',
-                          desiredSize: new go.Size(50, 50)
-                        }).bind('source', 'pic', findHeadShot)
-                      )
-                  ),
-                new go.Panel(go.Panel.Table, {
-                  row: 1,
-                  stretch: go.Stretch.Horizontal,
-                  defaultColumnSeparatorStrokeWidth: 0.5
+      };
+    }
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      new go.Node(go.Panel.Spot, {
+          isShadowed: true,
+          shadowOffset: new go.Point(0, 2),
+          selectionObjectName: 'BODY'
+        })
+        .apply(nodeEvents)
+        .add(
+          new go.Panel(go.Panel.Auto, { name: 'BODY' })
+            .add(
+              // define the node's outer shape
+              new go.Shape('RoundedRectangle', {
+                  name: 'SHAPE',
+                  strokeWidth: 0,
+                  portId: '',
+                  spot1: go.Spot.TopLeft,
+                  spot2: go.Spot.BottomRight
                 })
-                  .theme('defaultColumnSeparatorStroke', 'divider')
-                  .add(makeBottomButton('EMAIL'), makeBottomButton('PHONE'))
-              )
-          ), // end Auto Panel
-        new go.Shape('RoundedLeftRectangle', {
-          alignment: go.Spot.Left,
-          alignmentFocus: go.Spot.Left,
-          stretch: go.Stretch.Vertical,
-          width: 6,
-          strokeWidth: 0
-        }).themeObject('fill', '', 'levels', findLevelColor),
-        go.GraphObject.build('Button', {
-          name: 'BUTTON',
-          alignment: go.Spot.Right,
-          opacity: 0, // initially not visible
-          click: (e, button) => addEmployee(button.part)
-        })
-          // button is visible either when node is selected or on mouse-over
-          .bindObject('opacity', 'isSelected', (s) => (s ? 1 : 0))
-          .add(
-            new go.Shape('PlusLine', { width: 8, height: 8, stroke: '#0a0a0a', strokeWidth: 2 })
-          ),
-        go.GraphObject.build('TreeExpanderButton', {
-          _treeExpandedFigure: 'LineUp',
-          _treeCollapsedFigure: 'LineDown',
-          name: 'BUTTONX',
-          alignment: go.Spot.Bottom,
-          opacity: 0 // initially not visible
-        })
-          // button is visible either when node is selected or on mouse-over
-          .bindObject('opacity', 'isSelected', (s) => (s ? 1 : 0))
-      )
-      .theme('shadowColor', 'shadow')
-      // for sorting, have the Node.text be the data.name
-      .bind('text', 'name')
-      // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-      .bindObject('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : ''))
-      .bindTwoWay('isTreeExpanded');
+                .theme('fill', 'background'),
+              new go.Panel(go.Panel.Table, { margin: 0.5, defaultRowSeparatorStrokeWidth: 0.5 })
+                .theme('defaultRowSeparatorStroke', 'divider')
+                .add(
+                  new go.Panel(go.Panel.Table, { padding: new go.Margin(18, 18, 18, 24) })
+                    .addColumnDefinition(0, { width: 240 })
+                    .add(
+                      new go.Panel(go.Panel.Table, {
+                          column: 0,
+                          alignment: go.Spot.Left,
+                          stretch: go.Stretch.Vertical,
+                          defaultAlignment: go.Spot.Left
+                        })
+                        .add(
+                          new go.Panel(go.Panel.Horizontal, { row: 0 })
+                            .add(
+                              new go.TextBlock({ editable: true, minSize: new go.Size(10, 14) })
+                                .bindTwoWay('text', 'name')
+                                .theme('stroke', 'text')
+                                .theme('font', 'name'),
+                              new go.Panel(go.Panel.Auto, { margin: new go.Margin(0, 0, 0, 10) })
+                                .add(
+                                  new go.Shape('Capsule', { parameter1: 6, parameter2: 6 })
+                                    .theme('fill', 'badge')
+                                    .theme('stroke', 'badgeBorder'),
+                                  new go.TextBlock({
+                                      editable: true,
+                                      minSize: new go.Size(10, 12),
+                                      margin: new go.Margin(2, -1)
+                                    })
+                                    .bindTwoWay('text', 'dept')
+                                    .theme('stroke', 'badgeText')
+                                    .theme('font', 'badge')
+                                )
+                            ),
+                          new go.TextBlock({ row: 1, editable: true, minSize: new go.Size(10, 14) })
+                            .bindTwoWay('text', 'title')
+                            .theme('stroke', 'subtext')
+                            .theme('font', 'normal')
+                        ),
+                      new go.Panel(go.Panel.Spot, { isClipping: true, column: 1 })
+                        .add(
+                          new go.Shape('Circle', { desiredSize: new go.Size(50, 50), strokeWidth: 0 }),
+                          new go.Picture({
+                              name: 'PICTURE',
+                              source: '../samples/images/user.svg',
+                              desiredSize: new go.Size(50, 50)
+                            })
+                            .bind('source', 'pic', findHeadShot)
+                        )
+                    ),
+                  new go.Panel(go.Panel.Table, {
+                      row: 1,
+                      stretch: go.Stretch.Horizontal,
+                      defaultColumnSeparatorStrokeWidth: 0.5
+                    })
+                    .theme('defaultColumnSeparatorStroke', 'divider')
+                    .add(makeBottomButton('EMAIL'), makeBottomButton('PHONE'))
+                )
+            ), // end Auto Panel
+          new go.Shape('RoundedLeftRectangle', {
+              alignment: go.Spot.Left,
+              alignmentFocus: go.Spot.Left,
+              stretch: go.Stretch.Vertical,
+              width: 6,
+              strokeWidth: 0
+            })
+            .themeObject('fill', '', 'levels', findLevelColor),
+          go.GraphObject.build('Button', {
+              name: 'BUTTON',
+              alignment: go.Spot.Right,
+              opacity: 0, // initially not visible
+              click: (e, button) => addEmployee(button.part),
+              toolTip: toolTip
+            })
+            // button is visible either when node is selected or on mouse-over
+            .bindObject('opacity', 'isSelected', s => s ? 1 : 0)
+            .add(
+              new go.Shape('PlusLine', { width: 8, height: 8, stroke: '#0a0a0a', strokeWidth: 2 })
+            ),
+          go.GraphObject.build('TreeExpanderButton', {
+              _treeExpandedFigure: 'LineUp',
+              _treeCollapsedFigure: 'LineDown',
+              name: 'BUTTONX',
+              alignment: go.Spot.Bottom,
+              opacity: 0, // initially not visible
+              toolTip: toolTip
+            })
+            // button is visible either when node is selected or on mouse-over
+            .bindObject('opacity', 'isSelected', s => s ? 1 : 0)
+        )
+        .theme('shadowColor', 'shadow')
+        // for sorting, have the Node.text be the data.name
+        .bind('text', 'name')
+        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+        .bindObject('layerName', 'isSelected', sel => sel ? 'Foreground' : '')
+        .bindTwoWay('isTreeExpanded');
 
     function makeBottomButton(name) {
       const phonePath =
         'F M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z';
       const emailPath =
         'F M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3zM19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z';
-      const convertSelectedToThemeProp = (s) => (s ? 'textHighlight' : 'text');
       const isEmail = name === 'EMAIL';
       return new go.Panel(go.Panel.Table, {
-        mouseEnter: (e, obj) => myDiagram.model.set(obj.part.data, name, true),
-        mouseLeave: (e, obj) => myDiagram.model.set(obj.part.data, name, false),
-        name,
-        background: 'transparent',
-        cursor: 'Pointer',
-        column: isEmail ? 0 : 1,
-        width: 140,
-        height: 40,
-        toolTip: toolTip,
-        click: (e, obj) => {
-          dialog.firstElementChild.firstElementChild.innerHTML =
-            // the modal's span
-            `You clicked to ${isEmail ? 'send email to' : 'call'} ${obj.part.data.name} at ${obj.part.data[name.toLowerCase()]}`;
-          dialog.showModal();
-        }
-      })
+          name,
+          background: 'transparent',
+          cursor: 'pointer',
+          column: isEmail ? 0 : 1,
+          width: 140,
+          height: 40,
+          toolTip: toolTip,
+          mouseEnter: (e, pnl) => {
+            const overbrush = e.diagram.themeManager.findValue('textHighlight', 'colors') || 'skyblue';
+            pnl._oldBrush = pnl.elt(0).elt(0).fill;
+            pnl.elt(0).elt(0).fill = overbrush;
+            pnl.elt(0).elt(1).stroke = overbrush;
+          },
+          mouseLeave: (e, pnl) => {
+            pnl.elt(0).elt(0).fill = pnl._oldBrush;
+            pnl.elt(0).elt(1).stroke = pnl._oldBrush;
+          },
+          click: (e, obj) => {
+            dialog.firstElementChild.firstElementChild.innerHTML =
+              // the modal's span
+              `You clicked to ${isEmail ? 'send email to' : 'call'} ${obj.part.data.name} at ${obj.part.data[name.toLowerCase()]}`;
+            dialog.showModal();
+          }
+        })
         .add(
           new go.Panel(go.Panel.Horizontal)
             .add(
               new go.Shape({
-                geometryString: isEmail ? emailPath : phonePath,
-                strokeWidth: 0,
-                desiredSize: isEmail ? new go.Size(20, 16) : new go.Size(20, 20),
-                margin: new go.Margin(0, 12, 0, 0)
-              })
-                .theme('fill', 'text')
-                .themeData('fill', name, null, convertSelectedToThemeProp),
+                  geometryString: isEmail ? emailPath : phonePath,
+                  strokeWidth: 0,
+                  desiredSize: isEmail ? new go.Size(20, 16) : new go.Size(20, 20),
+                  margin: new go.Margin(0, 12, 0, 0)
+                })
+                .theme('fill', 'text'),
               new go.TextBlock(isEmail ? 'Email' : 'Phone')
                 .theme('stroke', 'text')
-                .themeData('stroke', name, null, convertSelectedToThemeProp)
                 .theme('font', 'link')
             )
-      );
+        );
     }
 
     function addEmployee(node) {
       if (!node) return;
       const thisemp = node.data;
       let newnode;
-      myDiagram.model.commit((m) => {
+      myDiagram.model.commit(m => {
         const newemp = {
           name: '(New person)',
           title: '(Title)',
           dept: thisemp.dept,
-          parent: thisemp.key
+          email: '',
+          phone: '',
+          parent: thisemp.key,
         };
         m.addNodeData(newemp);
         newnode = myDiagram.findNodeForData(newemp);
         // set location so new node doesn't animate in from top left
-        if (newnode) newnode.location = node.location;
+        if (newnode) {
+          newnode.location = node.location;
+          myDiagram.select(newnode);
+        }
       }, 'add employee');
       myDiagram.commandHandler.scrollToPart(newnode);
     }
 
     // the context menu allows users to make a position vacant,
     // remove a role and reassign the subtree, or remove a department
-    myDiagram.nodeTemplate.contextMenu = go.GraphObject.build('ContextMenu')
-      .add(
-        go.GraphObject.build('ContextMenuButton', {
-          click: (e, button) => addEmployee(button.part.adornedPart)
-        }).add(new go.TextBlock('Add Employee')),
-        go.GraphObject.build('ContextMenuButton', {
-          click: (e, button) => {
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              const thisemp = node.data;
-              myDiagram.model.commit((m) => {
-                // update the name, picture, email, and phone, but leave the title/department
-                m.set(thisemp, 'name', '(Vacant)');
-                m.set(thisemp, 'pic', '');
-                m.set(thisemp, 'email', 'none');
-                m.set(thisemp, 'phone', 'none');
-              }, 'vacate');
-            }
-          }
-        }).add(new go.TextBlock('Vacate Position')),
-        go.GraphObject.build('ContextMenuButton', {
-          click: (e, button) => {
-            // reparent the subtree to this node's boss, then remove the node
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              myDiagram.model.commit((m) => {
-                const chl = node.findTreeChildrenNodes();
-                // iterate through the children and set their parent key to our selected node's parent key
-                while (chl.next()) {
-                  const emp = chl.value;
-                  m.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
+    myDiagram.nodeTemplate.contextMenu =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => addEmployee(button.part.adornedPart)
+            })
+            .add(new go.TextBlock('Add Employee')),
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => {
+                const node = button.part.adornedPart;
+                if (node !== null) {
+                  const thisemp = node.data;
+                  myDiagram.model.commit(m => {
+                    // update the name, picture, email, and phone, but leave the title/department
+                    m.set(thisemp, 'name', '(Vacant)');
+                    m.set(thisemp, 'pic', '');
+                    m.set(thisemp, 'email', 'none');
+                    m.set(thisemp, 'phone', 'none');
+                  }, 'vacate');
                 }
-                // and now remove the selected node itself
-                m.removeNodeData(node.data);
-              }, 'reparent remove');
-            }
-          }
-        }).add(new go.TextBlock('Remove Role')),
-        go.GraphObject.build('ContextMenuButton', {
-          click: (e, button) => {
-            // remove the whole subtree, including the node itself
-            const node = button.part.adornedPart;
-            if (node !== null) {
-              myDiagram.commit((d) => d.removeParts(node.findTreeParts()), 'remove dept');
-            }
-          }
-        }).add(new go.TextBlock('Remove Department'))
-      );
+              }
+            })
+            .add(new go.TextBlock('Vacate Position')),
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => {
+                // reparent the subtree to this node's boss, then remove the node
+                const node = button.part.adornedPart;
+                if (node !== null) {
+                  myDiagram.model.commit(m => {
+                    const parent = node.findTreeParentNode();
+                    const chl = new go.List(node.findTreeChildrenNodes()).iterator;
+                    // iterate through the children and set their parent key to our selected node's parent key
+                    while (chl.next()) {
+                      const emp = chl.value;
+                      m.setParentKeyForNodeData(emp.data, parent ? parent.key : undefined);
+                    }
+                    // and now remove the selected node itself
+                    m.removeNodeData(node.data);
+                  }, 'reparent remove');
+                }
+              }
+            })
+            .add(new go.TextBlock('Remove Role')),
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => {
+                // remove the whole subtree, including the node itself
+                const node = button.part.adornedPart;
+                if (node !== null) {
+                  myDiagram.commit(d => d.removeParts(node.findTreeParts()), 'remove dept');
+                }
+              }
+            })
+            .add(new go.TextBlock('Remove Department'))
+        );
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      layerName: 'Background',
-      corner: 5
-    }).add(new go.Shape({ strokeWidth: 2 }).theme('stroke', 'link')); // the link shape
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          layerName: 'Background',
+          corner: 5
+        })
+        .add(
+          new go.Shape({ strokeWidth: 2 }) // the link shape
+            .theme('stroke', 'link')
+        );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -583,10 +621,7 @@
     // support editing the properties of the selected person in HTML
     myInspector = new Inspector('myInspector', myDiagram, {
       properties: {
-        key: { readOnly: true },
-        // Don't show these temporary data values
-        EMAIL: { show: false },
-        PHONE: { show: false }
+        key: { readOnly: true }
       }
     });
 
@@ -627,7 +662,7 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     dialog = document.querySelector('dialog');
-    dialog.addEventListener('click', (e) => {
+    dialog.addEventListener('click', e => {
       dialog.close();
     });
     // setTimeout only to ensure font is loaded before loading diagram
@@ -671,7 +706,6 @@
     Drag a node onto another in order to change relationships, if permitted. Right-click or tap-hold
     a Node to bring up a context menu that allows you to:
   </p>
-
   <ul>
     <li>Add Employee - add a new person as a direct report to this person</li>
     <li>Vacate Position - remove the information specific to the current person in that role</li>
@@ -686,6 +720,10 @@
     <a href="../learn/index.html">Getting Started tutorial</a>.
   </p>
   <p>This sample is set to the dark theme by default.</p>
+  <p>
+    For this exact same sample but enhanced for screen readers, please examine the
+    <a href="Accessibility.html">Accessibility</a> sample.
+  </p>
   <p>
     If you want to have some "assistant" nodes on the side, above the regular reports, see the
     <a href="orgChartAssistants.html">Org Chart Assistants</a> sample, which is a more simply styled
@@ -801,7 +839,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

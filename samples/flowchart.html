@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,7 +141,7 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -199,83 +201,95 @@
     }
 
     function textStyle(textblock) {
-      textblock.set({ font: 'bold 11pt Figtree, sans-serif' }).theme('stroke', 'text');
+      textblock
+        .set({ font: 'bold 11pt Figtree, sans-serif' })
+        .theme('stroke', 'text');
     }
 
     // define the Node templates for regular nodes
-    myDiagram.nodeTemplateMap.add(
-      '', // the default category
-      new go.Node('Auto').apply(nodeStyle)
+    myDiagram.nodeTemplateMap.add('', // the default category
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
           new go.Shape('Rectangle', {
-            fromLinkable: true,
-            toLinkable: true,
-            fromSpot: go.Spot.AllSides,
-            toSpot: go.Spot.AllSides
-          })
+              fromLinkable: true,
+              toLinkable: true,
+              fromSpot: go.Spot.AllSides,
+              toSpot: go.Spot.AllSides
+            })
             .apply(shapeStyle)
             .theme('fill', 'step'),
           new go.TextBlock({
-            margin: 12,
-            maxSize: new go.Size(160, NaN),
-            wrap: go.Wrap.Fit,
-            editable: true
-          })
+              margin: 12,
+              maxSize: new go.Size(160, NaN),
+              wrap: go.Wrap.Fit,
+              editable: true
+            })
             .apply(textStyle)
             .bindTwoWay('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Conditional',
-      new go.Node('Auto').apply(nodeStyle)
+    myDiagram.nodeTemplateMap.add('Conditional',
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
-          new go.Shape('Conditional', { fromLinkable: true, toLinkable: true }).apply(shapeStyle).theme('fill', 'conditional'),
+          new go.Shape('Conditional', { fromLinkable: true, toLinkable: true })
+            .apply(shapeStyle)
+            .theme('fill', 'conditional'),
           new go.TextBlock({
-            margin: 8,
-            maxSize: new go.Size(160, NaN),
-            wrap: go.Wrap.Fit,
-            textAlign: 'center',
-            editable: true
-          })
+              margin: 8,
+              maxSize: new go.Size(160, NaN),
+              wrap: go.Wrap.Fit,
+              textAlign: 'center',
+              editable: true
+            })
             .apply(textStyle)
             .bindTwoWay('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Start',
+    myDiagram.nodeTemplateMap.add('Start',
       new go.Node('Auto')
         .apply(nodeStyle)
         .add(
-          new go.Shape('Capsule', { fromLinkable: true }).apply(shapeStyle).theme('fill', 'start'),
-          new go.TextBlock('Start', { margin: new go.Margin(5, 6) }).apply(textStyle).bind('text')
+          new go.Shape('Capsule', { fromLinkable: true })
+            .apply(shapeStyle)
+            .theme('fill', 'start'),
+          new go.TextBlock('Start', { margin: new go.Margin(5, 6) })
+            .apply(textStyle)
+            .bind('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'End',
+    myDiagram.nodeTemplateMap.add('End',
       new go.Node('Auto')
         .apply(nodeStyle)
         .add(
-          new go.Shape('Capsule', { toLinkable: true }).apply(shapeStyle).theme('fill', 'end'),
-          new go.TextBlock('End', { margin: new go.Margin(5, 6) }).apply(textStyle).bind('text')
+          new go.Shape('Capsule', { toLinkable: true })
+            .apply(shapeStyle)
+            .theme('fill', 'end'),
+          new go.TextBlock('End', { margin: new go.Margin(5, 6) })
+            .apply(textStyle)
+            .bind('text')
         )
     );
 
-    myDiagram.nodeTemplateMap.add(
-      'Comment',
-      new go.Node('Auto').apply(nodeStyle)
+    myDiagram.nodeTemplateMap.add('Comment',
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
-          new go.Shape('File', { strokeWidth: 3 }).theme('fill', 'div').theme('stroke', 'comment'),
+          new go.Shape('File', { strokeWidth: 3 })
+            .theme('fill', 'div')
+            .theme('stroke', 'comment'),
           new go.TextBlock({
-            font: '9pt Figtree, sans-serif',
-            margin: 8,
-            maxSize: new go.Size(200, NaN),
-            wrap: go.Wrap.Fit,
-            textAlign: 'center',
-            editable: true
-          })
+              font: '9pt Figtree, sans-serif',
+              margin: 8,
+              maxSize: new go.Size(200, NaN),
+              wrap: go.Wrap.Fit,
+              textAlign: 'center',
+              editable: true
+            })
             .theme('stroke', 'bgText')
             .bindTwoWay('text')
           // no ports, because no links are allowed to connect with a comment
@@ -283,57 +297,58 @@
     );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      curve: go.Curve.JumpOver,
-      corner: 5,
-      toShortLength: 4,
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      resegmentable: true,
-      // mouse-overs subtly highlight links:
-      mouseEnter: (e, link) => (link.findObject('HIGHLIGHT').stroke = link.diagram.themeManager.findValue('linkOver', 'colors')),
-      mouseLeave: (e, link) => (link.findObject('HIGHLIGHT').stroke = 'transparent'),
-      // context-click creates an editable link label
-      contextClick: (e, link) => {
-        e.diagram.model.commit((m) => {
-          m.set(link.data, 'text', 'Label');
-        });
-      }
-    })
-      .bindTwoWay('points')
-      .add(
-        // the highlight shape, normally transparent
-        new go.Shape({
-          isPanelMain: true,
-          strokeWidth: 8,
-          stroke: 'transparent',
-          name: 'HIGHLIGHT'
-        }),
-        // the link path shape
-        new go.Shape({ isPanelMain: true, strokeWidth: 2 })
-          .theme('stroke', 'link'),
-        // the arrowhead
-        new go.Shape({ toArrow: 'standard', strokeWidth: 0, scale: 1.5 })
-          .theme('fill', 'link'),
-        // the link label
-        new go.Panel('Auto', { visible: false })
-          .bind('visible', 'text', (t) => typeof t === 'string' && t.length > 0) // only shown if there is text
-          .add(
-            // a gradient that fades into the background
-            new go.Shape('Ellipse', { strokeWidth: 0 })
-              .theme('fill', 'div', null, null, c => new go.Brush("Radial", { 0: c, 0.5: `${c}00` })),
-            new go.TextBlock({
-                name: 'LABEL',
-                font: '9pt Figtree, sans-serif',
-                margin: 3,
-                editable: true
-              })
-              .theme('stroke', 'bgText')
-              .bindTwoWay('text')
-          )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          curve: go.Curve.JumpOver,
+          corner: 5,
+          toShortLength: 4,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true,
+          // mouse-overs subtly highlight links:
+          mouseEnter: (e, link) => (link.findObject('HIGHLIGHT').stroke = link.diagram.themeManager.findValue('linkOver', 'colors')),
+          mouseLeave: (e, link) => (link.findObject('HIGHLIGHT').stroke = 'transparent'),
+          // context-click creates an editable link label
+          contextClick: (e, link) => {
+            e.diagram.model.commit(m => {
+              m.set(link.data, 'text', 'Label');
+            });
+          }
+        })
+        .bindTwoWay('points')
+        .add(
+          // the highlight shape, normally transparent
+          new go.Shape({
+            isPanelMain: true,
+            strokeWidth: 8,
+            stroke: 'transparent',
+            name: 'HIGHLIGHT'
+          }),
+          // the link path shape
+          new go.Shape({ isPanelMain: true, strokeWidth: 2 })
+            .theme('stroke', 'link'),
+          // the arrowhead
+          new go.Shape({ toArrow: 'standard', strokeWidth: 0, scale: 1.5 })
+            .theme('fill', 'link'),
+          // the link label
+          new go.Panel('Auto', { visible: false })
+            .bind('visible', 'text', t => typeof t === 'string' && t.length > 0) // only shown if there is text
+            .add(
+              // a gradient that fades into the background
+              new go.Shape('Ellipse', { strokeWidth: 0 })
+                .theme('fill', 'div', null, null, c => new go.Brush("Radial", { 0: c, 0.5: `${c}00` })),
+              new go.TextBlock({
+                  name: 'LABEL',
+                  font: '9pt Figtree, sans-serif',
+                  margin: 3,
+                  editable: true
+                })
+                .theme('stroke', 'bgText')
+                .bindTwoWay('text')
+            )
+        );
 
     // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
     myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Routing.Orthogonal;

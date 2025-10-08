@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -124,36 +126,39 @@
 
 <script id="code">
   // This button assumes data binding to the "checked" property.
-  go.GraphObject.defineBuilder('TriStateCheckBoxButton', (args) => {
-    const button = go.GraphObject.build('Button', {
-      width: 14, height: 14,
-      'ButtonBorder.fill': 'white'
-    })
-      .add(
-        new go.Shape({
-          name: 'ButtonIcon',
-          geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
-          strokeWidth: 2,
-          stretch: go.Stretch.Fill, // this Shape expands to fill the Button
-          geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
-          background: null,
-          visible: false // visible set to false: not checked, unless data.checked is true
+  go.GraphObject.defineBuilder('TriStateCheckBoxButton', args => {
+    const button =
+      go.GraphObject.build('Button', {
+          width: 14, height: 14,
+          'ButtonBorder.fill': 'white',
+          'ButtonBorder.spot1': new go.Spot(0, 0, 1, 1),
+          'ButtonBorder.spot2': new go.Spot(1, 1, -1, -1)
         })
-          .bind('visible', 'checked', (p) => p === true || p === null)
-          .bind('stroke', 'checked', (p) => (p === null ? null : 'black'))
-          .bind('background', 'checked', (p) => (p === null ? 'gray' : null))
-      );
+        .add(
+          new go.Shape({
+              name: 'ButtonIcon',
+              geometryString: 'M0 0 M0 8.85 L4.9 13.75 16.2 2.45 M16.2 16.2', // a 'check' mark
+              strokeWidth: 2,
+              stretch: go.Stretch.Fill, // this Shape expands to fill the Button
+              geometryStretch: go.GeometryStretch.Uniform, // the check mark fills the Shape without distortion
+              background: null,
+              visible: false // visible set to false: not checked, unless data.checked is true
+            })
+            .bind('visible', 'checked', p => p === true || p === null)
+            .bind('stroke', 'checked', p => p === null ? null : 'black')
+            .bind('background', 'checked', p => p === null ? 'gray' : null)
+        );
 
     function updateCheckBoxesDown(node, val) {
       node.diagram.model.setDataProperty(node.data, 'checked', val);
-      node.findTreeChildrenNodes().each((child) => updateCheckBoxesDown(child, val));
+      node.findTreeChildrenNodes().each(child => updateCheckBoxesDown(child, val));
     }
 
     function updateCheckBoxesUp(node) {
       var parent = node.findTreeParentNode();
       if (parent !== null) {
-        var anychecked = parent.findTreeChildrenNodes().any((n) => n.data.checked !== false && n.data.checked !== undefined);
-        var allchecked = parent.findTreeChildrenNodes().all((n) => n.data.checked === true);
+        var anychecked = parent.findTreeChildrenNodes().any(n => n.data.checked !== false && n.data.checked !== undefined);
+        var allchecked = parent.findTreeChildrenNodes().all(n => n.data.checked === true);
         node.diagram.model.setDataProperty(parent.data, 'checked', allchecked ? true : anychecked ? null : false);
         updateCheckBoxesUp(parent);
       }
@@ -202,61 +207,62 @@
       })
     });
 
-    myDiagram.nodeTemplate = new go.Node({
-      // no Adornment: instead change panel background color by binding to Node.isSelected
-      selectionAdorned: false,
-      // a custom function to allow expanding/collapsing on double-click
-      // this uses similar logic to a TreeExpanderButton
-      doubleClick: (e, node) => {
-        var cmd = myDiagram.commandHandler;
-        if (node.isTreeExpanded) {
-          if (!cmd.canCollapseTree(node)) return;
-        } else {
-          if (!cmd.canExpandTree(node)) return;
-        }
-        e.handled = true;
-        if (node.isTreeExpanded) {
-          cmd.collapseTree(node);
-        } else {
-          cmd.expandTree(node);
-        }
-      }
-    })
-      .add(
-        go.GraphObject.build("TreeExpanderButton", {
-          width: 14,
-          'ButtonBorder.fill': 'whitesmoke',
-          'ButtonBorder.stroke': 'lightgray',
-          _buttonFillOver: 'rgba(0,128,255,0.25)',
-          _buttonStrokeOver: null,
-          _buttonFillPressed: 'rgba(0,128,255,0.4)'
-        }),
-        new go.Panel('Horizontal', {
-          position: new go.Point(16, 0),
-          margin: new go.Margin(0, 2, 0, 0),
-          defaultAlignment: go.Spot.Center
+    myDiagram.nodeTemplate =
+      new go.Node({
+          // no Adornment: instead change panel background color by binding to Node.isSelected
+          selectionAdorned: false,
+          // a custom function to allow expanding/collapsing on double-click
+          // this uses similar logic to a TreeExpanderButton
+          doubleClick: (e, node) => {
+            var cmd = myDiagram.commandHandler;
+            if (node.isTreeExpanded) {
+              if (!cmd.canCollapseTree(node)) return;
+            } else {
+              if (!cmd.canExpandTree(node)) return;
+            }
+            e.handled = true;
+            if (node.isTreeExpanded) {
+              cmd.collapseTree(node);
+            } else {
+              cmd.expandTree(node);
+            }
+          }
         })
-          .bindObject('background', 'isSelected', (s) => (s ? 'lightblue' : 'white'))
-          .add(
-            go.GraphObject.build("TriStateCheckBoxButton"),
-            new go.TextBlock({ font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) })
-              .bind('text', 'key', (s) => 'item ' + s)
-          ) // end Horizontal Panel
-    ); // end Node
+        .add(
+          go.GraphObject.build("TreeExpanderButton", {
+            width: 14,
+            'ButtonBorder.fill': 'whitesmoke',
+            'ButtonBorder.stroke': 'lightgray',
+            _buttonFillOver: 'rgba(0,128,255,0.25)',
+            _buttonStrokeOver: null
+          }),
+          new go.Panel('Horizontal', {
+              position: new go.Point(16, 0),
+              margin: new go.Margin(0, 2, 0, 0),
+              defaultAlignment: go.Spot.Center
+            })
+            .bindObject('background', 'isSelected', s => s ? 'lightblue' : 'white')
+            .add(
+              go.GraphObject.build("TriStateCheckBoxButton"),
+              new go.TextBlock({ font: '9pt Verdana, sans-serif', margin: new go.Margin(0, 0, 0, 2) })
+                .bind('text', 'key', s => 'item ' + s)
+            ) // end Horizontal Panel
+      ); // end Node
 
 
     // with lines
-    myDiagram.linkTemplate = new go.Link({
-      selectable: false,
-      routing: go.Routing.Orthogonal,
-      fromEndSegmentLength: 4,
-      toEndSegmentLength: 4,
-      fromSpot: new go.Spot(0.001, 1, 7, 0),
-      toSpot: go.Spot.Left
-    })
-      .add(
-        new go.Shape({ stroke: 'gray', strokeDashArray: [1, 2] })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          selectable: false,
+          routing: go.Routing.Orthogonal,
+          fromEndSegmentLength: 4,
+          toEndSegmentLength: 4,
+          fromSpot: new go.Spot(0.001, 1, 7, 0),
+          toSpot: go.Spot.Left
+        })
+        .add(
+          new go.Shape({ stroke: 'gray', strokeDashArray: [1, 2] })
+        );
 
     // create a random tree
     var nodeDataArray = [{ key: 0 }];
@@ -281,6 +287,7 @@
     }
     return count;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -329,7 +336,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -142,7 +144,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -185,9 +187,9 @@
 <h2 id="BuiltinGoJSInteractivity">Built-in GoJS Interactivity</h2>
 
 <p>
-  <b>GoJS</b> implements a number of common editing operations, such as manipulating parts
-  (moving, adding, copying, cutting, and deleting).
-  These editing abilities are accessible via mouse (or touch) and keyboard by default,
+  <b>GoJS</b> implements a number of common editing operations such as manipulating parts --
+  moving, adding, copying, cutting, and deleting Nodes and Links.
+  These editing abilities are accessible via mouse or touch and keyboard by default,
   and can also be invoked programmatically in JavaScript.
 </p>
 
@@ -197,19 +199,18 @@
 
 <pre class="lang-js"><code>
 const myDiagram =
-  new go.Diagram("myDiagramDiv",
-    { "undoManager.isEnabled": true });
+  new go.Diagram("myDiagramDiv", { "undoManager.isEnabled": true });
 
 // define a simple Node template
 myDiagram.nodeTemplate =
   new go.Node("Auto")
     .add(
-      new go.Shape("Rectangle", { stroke: null }) // don't draw any outline
+      new go.Shape("Rectangle", { strokeWidth: 0 })
+        // zero strokeWidth means don't draw any outline
         // the Shape.fill comes from the Node.data.color property
         .bind("fill", "color"),
-      new go.TextBlock(
-          // leave some space around larger-than-normal text
-          { margin: 6, font: "18px sans-serif" })
+      new go.TextBlock({ margin: 6, font: "18px sans-serif" })
+        // leave some space around larger-than-normal text
         // the TextBlock.text comes from the Node.data.text property
         .bind("text")
     );
@@ -227,19 +228,18 @@ myDiagram.model = new go.GraphLinksModel(
 <div id="myDiagramDiv" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
   const myDiagram =
-    new go.Diagram("myDiagramDiv",
-      { "undoManager.isEnabled": true });
+    new go.Diagram("myDiagramDiv", { "undoManager.isEnabled": true });
 
   // define a simple Node template
   myDiagram.nodeTemplate =
     new go.Node("Auto")
       .add(
-        new go.Shape("Rectangle", { stroke: null }) // don't draw any outline
+        new go.Shape("Rectangle", { strokeWidth: 0 })
+          // don't draw any outline
           // the Shape.fill comes from the Node.data.color property
           .bind("fill", "color"),
-        new go.TextBlock(
-            // leave some space around larger-than-normal text
-            { margin: 6, font: "18px sans-serif" })
+        new go.TextBlock({ margin: 6, font: "18px sans-serif" })
+          // leave some space around larger-than-normal text
           // the TextBlock.text comes from the Node.data.text property
           .bind("text")
       );
@@ -266,8 +266,7 @@ myDiagram.model = new go.GraphLinksModel(
     Common keyboard shortcuts such as <code>Ctrl-C</code>, <code>Ctrl-V</code>, <code>Ctrl-X</code>
     will copy, paste, and cut diagram parts, respectively.
     (Use the Command modifier on a Mac.)
-    Note that copies will copy the location of the Node as well, unless a layout or the paste command moves the new
-    node.
+    Note that copies will copy the location of the Node as well, unless a layout or the paste command moves the new node.
   </li>
   <li>
     Press-hold-and-drag in the background of the diagram allows you to create a selection box for selecting multiple nodes.
@@ -275,9 +274,9 @@ myDiagram.model = new go.GraphLinksModel(
     Shift-clicking on nodes makes sure they are selected.
   </li>
   <li>
-    Since the Diagram's undoManager was enabled, <code>Ctrl-Z</code> and <code>Ctrl-Y</code> will undo and redo
-    operations.
-    Panning (scrolling) and selection are not considered undoable operations.
+    Since the Diagram's undoManager was enabled, <code>Ctrl-Z</code> and <code>Ctrl-Y</code> (or <code>Ctrl-Shift-Z</code>)
+    will undo and redo operations.
+    Panning (scrolling), zooming, and selection are not considered undoable operations.
   </li>
 </ul>
 
@@ -287,31 +286,38 @@ myDiagram.model = new go.GraphLinksModel(
 
 <pre class="lang-js"><code>
 const myDiagram =
-  new go.Diagram("myDiagramDiv",
-    {
-      // allow double-click in background to create a new node
-      "clickCreatingTool.archetypeNodeData": { text: "Node", color: "lightgray" },
-      // allow Ctrl-G to group selected nodes
-      "commandHandler.archetypeGroupData": { text: "Group", isGroup: true },
-      // have mouse wheel events zoom in and out instead of scroll up and down
-      "toolManager.mouseWheelBehavior": go.WheelMode.Zoom,
-      "undoManager.isEnabled": true // enable undo &amp; redo
-    });
+  new go.Diagram("myDiagramDiv", {
+    // allow double-click in background to create a new node
+    "clickCreatingTool.archetypeNodeData":
+      { text: "Node", color: "lightgray" },
+
+    // allow Ctrl-G to group selected nodes
+    "commandHandler.archetypeGroupData":
+      { text: "Group", isGroup: true },
+
+    // have mouse wheel events zoom in and out instead of scroll up and down
+    "toolManager.mouseWheelBehavior": go.WheelMode.Zoom,
+
+    // enable undo &amp; redo
+    "undoManager.isEnabled": true
+  });
 
 myDiagram.nodeTemplate =
   new go.Node("Auto")
     .add(
-      new go.Shape("Rectangle", { stroke: null })
+      new go.Shape("Rectangle", { strokeWidth: 0 })
         .bind("fill", "color"),
-      new go.TextBlock(
-          { margin: 6, font: "18px sans-serif", editable: true })
+      new go.TextBlock({
+          margin: 6, font: "18px sans-serif", editable: true
+        })
         .bindTwoWay("text")
     );
 
 myDiagram.groupTemplate =
-  new go.Group("Vertical",
+  new go.Group("Vertical", {
       // allow Ctrl-Shift-G to ungroup a selected Group.
-      { ungroupable: true })
+      ungroupable: true
+    })
     .add(
       new go.TextBlock({ font: "bold 12pt sans-serif", editable: true })
         .bindTwoWay("text"),
@@ -336,8 +342,7 @@ myDiagram.model = new go.GraphLinksModel(
 <div id="myDiagramDiv2" class="diagramStyling" style="width:700px; height:250px"></div>
 <script>
   const myDiagram2 =
-    new go.Diagram("myDiagramDiv2",
-      {
+    new go.Diagram("myDiagramDiv2", {
         // allow double-click in background to create a new node
         "clickCreatingTool.archetypeNodeData": { text: "Node", color: "lightgray" },
         // allow Ctrl-G to group selected nodes
@@ -350,17 +355,17 @@ myDiagram.model = new go.GraphLinksModel(
   myDiagram2.nodeTemplate =
     new go.Node("Auto")
       .add(
-        new go.Shape("Rectangle", { stroke: null })
+        new go.Shape("Rectangle", { strokeWidth: 0 })
           .bind("fill", "color"),
-        new go.TextBlock(
-            { margin: 6, font: "18px sans-serif", editable: true })
+        new go.TextBlock({ margin: 6, font: "18px sans-serif", editable: true })
           .bindTwoWay("text")
       );
 
   myDiagram2.groupTemplate =
-    new go.Group("Vertical",
+    new go.Group("Vertical", {
         // allow Ctrl-Shift-G to ungroup a selected Group.
-        { ungroupable: true })
+        ungroupable: true
+      })
       .add(
         new go.TextBlock({ font: "bold 12pt sans-serif", editable: true })
           .bindTwoWay("text"),
@@ -385,10 +390,11 @@ myDiagram.model = new go.GraphLinksModel(
 <ul>
   <li>
     <code>ClickCreatingTool.archetypeNodeData</code> allows a double-click in the background to create
-    a new node with the specified data.
+    a new node with a copy of the specified data.
   </li>
   <li>
-    <code>CommandHandler.archetypeGroupData</code> allows <code>Ctrl-G</code> to group a selection of nodes.
+    <code>CommandHandler.archetypeGroupData</code> allows <code>Ctrl-G</code> to group a selection of nodes,
+    with the group getting a copy of the specified data in the model.
   </li>
   <li>
     <code>Group.ungroupable</code> allows <code>Ctrl-Shift-G</code> to ungroup a selected group.
@@ -408,13 +414,203 @@ myDiagram.model = new go.GraphLinksModel(
 
 <p>
   These interactions (and more!) are all present in the <a href="../samples/basic.html">basic.html sample</a>.
-  Be sure to also see the <a href="../intro/commands.html">Intro page on GoJS commands</a>.
+  Be sure to also see the <a href="../intro/commands.html">Intro page on <b>GoJS</b> commands</a>.
 </p>
 
 <p>
   You can disable portions of Diagram interactivity with several properties,
   depending on what you want to allow users to do.
-  See the <a href="../intro/permissions.html">Intro page on GoJS permissions</a> for more explanation.
+  See the <a href="../intro/permissions.html">Intro page on <b>GoJS</b> permissions</a> for more explanation.
+</p>
+
+<h2 id="FocusKeyboardControlTools">Focus and Keyboard Control of Tools</h2>
+<p>
+  You have always been able to manipulate diagrams using the mouse without using the keyboard,
+  especially when making use of the default context menu, which has always been needed on touch devices.
+  As of version 3.1 if you have a keyboard you no longer need to use the mouse to manipulate almost any diagram.
+  This keyboard control mode, when enabled, is available as long as the diagram has keyboard focus.
+  You can always <code>Tab</code> out of the diagram.
+</p>
+<p>
+  Because the GraphObjects within a Diagram are not HTML elements, there is a separate GoJS focus object
+  that is a GraphObject.
+  The arrow keys, <code>Enter</code>, and <code>Escape</code> can change which GraphObject has GoJS focus.
+</p>
+<p>
+  Additionally there is a virtual pointer acting as if it were the mouse, visible when the
+  <code>Shift</code> key is held down.
+  Control the virtual pointer using <code>Shift</code>-arrow keys, <code>Shift</code> Numpad0-9 keys,
+  <code>Shift-Enter</code>, and a few other keys modified by <code>Shift</code>.
+</p>
+<p>
+  Version 3.1 also includes built-in support for screen readers.
+  However, we recommend that you customize the behavior to provide the best possible experience for your users.
+</p>
+
+<h3>Summary of Focus Navigation and the Virtual Pointer</h3>
+(On a Mac, use the Command modifier insead of the Control modifier.)
+<ul>
+  <li>
+    Type <code>Ctrl-Alt-Enter</code> to enable "keyboard control mode", if it hasn't already been turned on programmatically.
+    That key chord will toggle the settings on and off.
+  </li>
+  <li>
+    GoJS focus is shown by a double-colored dashed box around the GraphObject.
+  </li>
+  <li>
+    Use the arrow keys to move focus around to other Nodes or other kinds of Parts.
+    Use <code>Ctrl</code> arrow keys to follow a Link connected with a focused Node.
+  </li>
+  <li>
+    Type <code>Space</code> to select a Part (a Node or a Link), <code>Shift-Space</code> to add a Part to the selection,
+    and <code>Ctrl-Space</code> to toggle selection of a Part.
+  </li>
+  <li>
+    Using <code>Enter</code> on a focused Node, if there are any GraphObjects within the Node that can be focused,
+    will change focus to be on one such object, and arrow keys will keep focus within the Node.
+  </li>
+  <li>
+    When focus is inside a Node, <code>Enter</code> will activate the focused object:
+    click a button, start editing a TextBlock, or show a tooltip.
+    <code>Space</code> will only show a tooltip, if one is available.
+  </li>
+  <li>
+    When focus is inside a Node, <code>Escape</code> will change focus to be on the Node again.
+  </li>
+  <li>
+    When focus is on a Group, <code>Enter</code> will first focus on focusable GraphObjects, if any,
+    just as for regular Nodes, and then <code>Escape</code> will focus on the Group's member Nodes, if any,
+    and finally <code>Escape</code> will focus on the Group again.
+  </li>
+  <li>
+    Use the <code>ContextMenu</code> key to show any context menu for the object with GoJS focus.
+  </li>
+  <li>
+    All other keyboard commands work normally, such as <code>Delete</code> of the selection,
+    or <code>Ctrl-Z</code> to undo.
+  </li>
+  <li>
+    Hold down a <code>Shift</code> key to show a magenta cross-hair virtual pointer that acts like the mouse.
+    You can let go of the <code>Shift</code> key at any time without losing any state.
+  </li>
+  <li>
+    <code>Shift</code> arrow keys move the virtual pointer around.
+    With the <code>Ctrl-Shift</code> modifiers they only move a pixel at a time.
+    You can also use <code>Shift-Numpad1</code> through <code>Shift-Numpad9</code> (except <code>Shift-Numpad5</code>)
+    to move the virtual pointer around.
+    Unlike the arrow keys, you will be able to move the virtual pointer on the diagonals.
+  </li>
+  <li>
+    <code>Shift-Enter</code> or <code>Shift-Numpad5</code> toggles the mouse button down or up.
+  </li>
+  <li>
+    <code>Tab</code> works normally to change keyboard focus to the next HTML element after the Diagram.
+    If the diagram is showing scrollbars, <code>Tab</code> will focus on the HTML element holding the scrollbars,
+    allowing for the arrow keys to scroll normally.
+  </li>
+  <li>
+    Note that when using the Windows Narrator screen reader you will need to stop Scan Mode via the
+    <code>CapsLock-Space</code> command.
+  </li>
+</ul>
+<p>
+  See the <a href="../intro/accessibility.html">Intro page on Accessibility</a> for demos and more explanation.
+</p>
+
+<h2 id="ToolTips">Tool Tips</h2>
+
+<p>
+  <b>GoJS</b> provides a mechanism for you to define tooltips for any object or for the Diagram itself.
+  In the example below, two tooltips are defined, one on the Node template and one on the Diagram.
+</p>
+
+<pre class="lang-js"><code>
+const myDiagram =
+  new go.Diagram("myDiagramDiv", {
+    toolTip:  // define a tooltip for the whole Diagram,
+              // shown when the mouse hovers over the background
+      go.GraphObject.build("ToolTip")
+        .add(
+          new go.TextBlock("Diagram info")
+            .bindObject("text", "",
+                ad => `there are ${ad.diagram.nodes.count} nodes`)
+        ),
+    "undoManager.isEnabled": true
+  });
+
+myDiagram.nodeTemplate =
+  new go.Node("Auto", {
+      toolTip:  // define a tooltip for a Node
+        go.GraphObject.build("ToolTip")
+          .add(
+            new go.TextBlock("Node info")
+              .bind("text", "color", c => `This Node is ${c}`)
+          )
+    })
+    .add(
+      new go.Shape("Rectangle", { strokeWidth: 0 })
+        .bind("fill", "color"),
+      new go.TextBlock({ margin: 6, font: "18px sans-serif" })
+        .bind("text")
+    );
+
+myDiagram.model = new go.GraphLinksModel(
+  [ // there will be a Node for each data object in this nodeDataArray
+    { key: 1, text: "Alpha", color: "lightblue" },
+    { key: 2, text: "Beta", color: "orange" },
+    { key: 3, text: "Gamma", color: "lightgreen" },
+    { key: 4, text: "Delta", color: "pink" }
+  ]);
+</code></pre>
+
+<!-- LIVE -->
+<div id="myDiagramDiv3t" class="diagramStyling" style="width:700px; height:150px"></div>
+<script>
+  const myDiagram3t =
+    new go.Diagram("myDiagramDiv3t", {
+      toolTip:  // define a tooltip for the whole Diagram,
+                // shown when the mouse hovers over the background
+        go.GraphObject.build("ToolTip")
+          .add(
+            new go.TextBlock("Diagram info")
+              .bindObject("text", "",
+                  ad => `there are ${ad.diagram.nodes.count} nodes`)
+          ),
+      "undoManager.isEnabled": true
+    });
+
+  myDiagram3t.nodeTemplate =
+    new go.Node("Auto", {
+        toolTip:  // define a tooltip for a Node
+          go.GraphObject.build("ToolTip")
+            .add(
+              new go.TextBlock("Node info")
+                .bind("text", "color", c => `This Node is ${c}`)
+            )
+      })
+      .add(
+        new go.Shape("Rectangle", { strokeWidth: 0 })
+          .bind("fill", "color"),
+        new go.TextBlock({ margin: 6, font: "18px sans-serif" })
+          .bind("text")
+      );
+
+  myDiagram3t.model = new go.GraphLinksModel(
+    [ // there will be a Node for each data object in this nodeDataArray
+      { key: 1, text: "Alpha", color: "lightblue" },
+      { key: 2, text: "Beta", color: "orange" },
+      { key: 3, text: "Gamma", color: "lightgreen" },
+      { key: 4, text: "Delta", color: "pink" }
+    ]);
+</script>
+
+<p>
+  Hover over a node to show the node's tooltip for five seconds.
+  Hover anywhere in the viewport not over a node to see the tooltip for the diagram.
+</p>
+<p>
+  The <a href="../samples/basic.html">basic.html sample</a> contains more complex tooltip examples.
+  See the <a href="../intro/tooltips.html">Intro page on <b>GoJS</b> tooltips</a> for more discussion.
 </p>
 
 <h2 id="ContextMenus">Context Menus</h2>
@@ -427,8 +623,7 @@ myDiagram.model = new go.GraphLinksModel(
 
 <pre class="lang-js"><code>
 const myDiagram =
-  new go.Diagram("myDiagramDiv",
-    { "undoManager.isEnabled": true });
+  new go.Diagram("myDiagramDiv", { "undoManager.isEnabled": true });
 
 // this function is called when the context menu button is clicked
 function nodeClicked(e, obj) {
@@ -447,7 +642,7 @@ const nodeContextMenu =
 myDiagram.nodeTemplate =
   new go.Node("Auto", { contextMenu: nodeContextMenu })
     .add(
-      new go.Shape("Rectangle", { stroke: null })
+      new go.Shape("Rectangle", { strokeWidth: 0 })
         .bind("fill", "color"),
       new go.TextBlock({ margin: 6, font: "18px sans-serif" })
         .bind("text")
@@ -488,8 +683,7 @@ myDiagram.model = new go.GraphLinksModel(
 <div id="myDiagramDiv3" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
   const myDiagram3 =
-    new go.Diagram("myDiagramDiv3",
-      { "undoManager.isEnabled": true });
+    new go.Diagram("myDiagramDiv3", { "undoManager.isEnabled": true });
 
   // this function is called when the context menu button is clicked
   function nodeClicked(e, obj) {
@@ -508,7 +702,7 @@ myDiagram.model = new go.GraphLinksModel(
   myDiagram3.nodeTemplate =
     new go.Node("Auto", { contextMenu: nodeContextMenu })
       .add(
-        new go.Shape("Rectangle", { stroke: null })
+        new go.Shape("Rectangle", { strokeWidth: 0 })
           .bind("fill", "color"),
         new go.TextBlock({ margin: 6, font: "18px sans-serif" })
           .bind("text")
@@ -546,34 +740,34 @@ myDiagram.model = new go.GraphLinksModel(
 </script>
 
 <p>
-  If you right-click (or long-tap on a touch device) on a Node or the Diagram, you will see the <b>GoJS</b> context menu
-  appear with the defined options.
+  If you right-click (or long-tap on a touch device) on a Node or the Diagram,
+  you will see the <b>GoJS</b> context menu appear with the defined options.
 </p>
 
 <p>
   The <a href="../samples/basic.html">basic.html sample</a> contains more complex context menu examples.
-  See the <a href="../intro/contextmenus.html">Intro page on GoJS context menus</a> for more discussion.
+  See the <a href="../intro/contextmenus.html">Intro page on <b>GoJS</b> context menus</a> for more discussion.
 </p>
 
 <h2 id="LinkInteractions">Link interactions</h2>
 
 <p>
-  <b>GoJS</b> lets users draw new links by dragging out from a port.
+  <b>GoJS</b> lets users draw new Links by dragging out from a port on a Node to another port on a Node.
   Users can reconnect existing links by selecting one and dragging one of its handles.
-  To enable these tools, some properties need to be set:
+  To enable these behaviors, some properties need to be set:
 </p>
 
 <pre class="lang-js"><code>
 const myDiagram =
-  new go.Diagram("myDiagramDiv",
-    { "undoManager.isEnabled": true });
+  new go.Diagram("myDiagramDiv", { "undoManager.isEnabled": true });
 
 myDiagram.nodeTemplate =
   new go.Node("Auto")
     .add(
       new go.Shape("Rectangle", {
-            stroke: null,
-            portId: "",  // declare this Shape to be the port element for the Node
+            strokeWidth: 0,
+            // declare this Shape to be the port element for the Node
+            portId: "",
             cursor: "pointer",
             // set various port-related properties here on this port element
             fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
@@ -594,7 +788,7 @@ myDiagram.linkTemplate =
     })
     .add(
       new go.Shape({ strokeWidth: 2 }),
-      new go.Shape({ toArrow: "Standard", stroke: null })
+      new go.Shape({ toArrow: "Standard", strokeWidth: 0 })
     );
 
 myDiagram.model = new go.GraphLinksModel(
@@ -614,15 +808,15 @@ myDiagram.model = new go.GraphLinksModel(
 <div id="myDiagramDiv4" class="diagramStyling" style="width:700px; height:150px"></div>
 <script>
   const myDiagram4 =
-    new go.Diagram("myDiagramDiv4",
-      { "undoManager.isEnabled": true });
+    new go.Diagram("myDiagramDiv4", { "undoManager.isEnabled": true });
 
   myDiagram4.nodeTemplate =
     new go.Node("Auto")
       .add(
         new go.Shape("Rectangle", {
-              stroke: null,
-              portId: "",  // declare this Shape to be the port element for the Node
+              strokeWidth: 0,
+              // declare this Shape to be the port element for the Node
+              portId: "",
               cursor: "pointer",
               // set various port-related properties here on this port element
               fromLinkable: true, fromLinkableSelfNode: true, fromLinkableDuplicates: true,
@@ -643,7 +837,7 @@ myDiagram.model = new go.GraphLinksModel(
       })
       .add(
         new go.Shape({ strokeWidth: 2 }),
-        new go.Shape({ toArrow: "Standard", stroke: null })
+        new go.Shape({ toArrow: "Standard", strokeWidth: 0 })
       );
 
   myDiagram4.model = new go.GraphLinksModel(
@@ -665,13 +859,13 @@ myDiagram.model = new go.GraphLinksModel(
 <ul>
   <li>
     The Node's <code>Shape</code> has its <code>portId</code> set to make it the port instead of the entire Node.
-    Then several <code>...Linkable</code> properties are set, allowing each node to link to itself and to others.
+    Then several <code>...Linkable...</code> properties are set, allowing each node to link to itself and to others.
     Depending on the functionality you want to provide to your users,
     you may not want to set all of those properties on your ports in your node templates.
   </li>
   <li>
-    To create a new link to another node, drag from the port (the edge of the Shape that is not
-    behind the TextBlock) to any node, including itself.
+    To draw a new link to another node, drag from the port (the edge of the Shape that is not behind the TextBlock)
+    to any node, including itself.
   </li>
   <li>
     In the link template, <code>relinkable...</code> properties are set, so that when the link is selected,
@@ -680,7 +874,7 @@ myDiagram.model = new go.GraphLinksModel(
 </ul>
 
 <p>
-  <b>GoJS</b> allows linking and re-linking to abide by custom criteria in which source and destination nodes are valid.
+  <b>GoJS</b> allows linking and re-linking to abide by custom criteria that controls whether a link connection would be valid.
   You can read about this in the <a href="../intro/validation.html">Intro page on Validation</a>.
 </p>
 
@@ -691,8 +885,14 @@ myDiagram.model = new go.GraphLinksModel(
 
 <p>
   You may want to read more tutorials, such as the <a href="index.html">Learn GoJS</a> tutorial
-  and the <a href="graphObject.html">GraphObject Manipulation</a> tutorial
+  and the <a href="graphObject.html">GraphObject Manipulation</a> tutorial.
   You can also watch tutorials on <a href="https://www.youtube.com/channel/UC9We8EoX596-6XFjJDtZIDg">YouTube</a>.
+</p>
+<p>
+  If you are ready for a comprehensive overview of <b>GoJS</b>,
+  have a look at the <a href="../intro/index.html">technical introduction</a>.
+  If you want to explore by example, have a look at <a href="../samples/index.html">the samples</a>
+  to get a feel for what's possible with <b>GoJS</b>.
 </p>
 
         
@@ -743,7 +943,9 @@ myDiagram.model = new go.GraphLinksModel(
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

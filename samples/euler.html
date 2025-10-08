@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,24 +127,28 @@
 <script src="../extensions/HyperlinkText.js"></script>
 <script id="code">
   function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', { isReadOnly: true, allowSelect: false, contentAlignment: go.Spot.Center });
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      isReadOnly: true, allowSelect: false,
+      contentAlignment: go.Spot.Center
+    });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .bind('location', 'loc', go.Point.parse)
-      .add(
-        new go.Shape('Ellipse', { fill: 'transparent' })
-          .bind('stroke', 'color')
-          .bind('strokeWidth', 'width')
-          .bind('strokeDashArray', 'dash'),
-        go.GraphObject.build('HyperlinkText', {
-            margin: 1,
-            maxSize: new go.Size(80, 80),
-            textAlign: 'center'
-          },
-          (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
-          (node) => node.data.text
-        )
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bind('location', 'loc', go.Point.parse)
+        .add(
+          new go.Shape('Ellipse', { fill: 'transparent' })
+            .bind('stroke', 'color')
+            .bind('strokeWidth', 'width')
+            .bind('strokeDashArray', 'dash'),
+          go.GraphObject.build('HyperlinkText', {
+              margin: 1,
+              maxSize: new go.Size(80, 80),
+              textAlign: 'center'
+            },
+            node => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
+            node => node.data.text
+          )
+        );
 
     myDiagram.nodeTemplateMap.add('center',
       new go.Node('Spot', { locationSpot: go.Spot.Center })
@@ -169,16 +175,16 @@
           new go.Panel('Spot')
             .add(
               new go.Shape('Circle', {
-                isPanelMain: true,
-                fill: 'transparent',
-                portId: ''
-              })
+                  isPanelMain: true,
+                  fill: 'transparent',
+                  portId: ''
+                })
                 .bind('stroke', 'hicolor')
                 .bind('strokeWidth', 'hiwidth'),
               new go.Shape('Circle', {
-                isPanelMain: true,
-                fill: 'transparent'
-              })
+                  isPanelMain: true,
+                  fill: 'transparent'
+                })
                 .bind('stroke', 'color')
                 .bind('strokeWidth', 'width')
                 .bind('strokeDashArray', 'dash'),
@@ -187,22 +193,23 @@
                   maxSize: new go.Size(80, 80),
                   textAlign: 'center'
                 },
-                (node) => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
-                (node) => node.data.text
+                node => 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(node.data.text),
+                node => node.data.text
               )
             )
         )
     );
 
-    myDiagram.linkTemplate = new go.Link()
-      .add(
-        new go.Shape()
-          .bind('stroke', 'color')
-          .bind('strokeWidth', 'width')
-          .bind('strokeDashArray', 'dash')
-      );
+    myDiagram.linkTemplate =
+      new go.Link()
+        .add(
+          new go.Shape()
+            .bind('stroke', 'color')
+            .bind('strokeWidth', 'width')
+            .bind('strokeDashArray', 'dash')
+        );
 
-    var nodeDataArray = [
+    const nodeDataArray = [
       { key: 1, text: 'Cognitive Procedural', loc: '300 300', category: 'center' },
       { key: 2, text: 'Cognitive Problem Solving', loc: '600 300', category: 'center', hicolor: 'lightblue', hiwidth: 7 },
       { key: 11, text: 'Logical Reasoning', loc: '450 275' },
@@ -213,7 +220,7 @@
       { key: 23, text: 'Learner Control', loc: '650 150' },
       { key: 31, text: 'Overlearning', loc: '450 475' }
     ];
-    var linkDataArray = [
+    const linkDataArray = [
       { from: 1, to: 11, color: 'gray' },
       { from: 1, to: 12, color: 'gray', dash: [3, 2] },
       { from: 1, to: 13, color: 'olive', width: 2 },
@@ -231,6 +238,7 @@
     ];
     myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

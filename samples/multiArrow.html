@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,66 +125,6 @@
             
 
 <script id="code">
-
-function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      layout: new go.ForceDirectedLayout(),
-      'undoManager.isEnabled': true
-    });
-
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center
-    })
-      .add(
-        new go.Shape({
-          figure: 'RoundedRectangle',
-          parameter1: 10,
-          fill: 'orange', // default fill color
-          portId: '',
-          fromLinkable: true,
-          fromSpot: go.Spot.AllSides,
-          toLinkable: true,
-          toSpot: go.Spot.AllSides,
-          cursor: 'pointer'
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 10, font: 'bold 12pt sans-serif' }).bind('text')
-      );
-
-    myDiagram.linkTemplate = new MultiArrowLink({ // subclass of Link, defined below
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      resegmentable: true
-    })
-      .add(
-        new go.Shape({ isPanelMain: true }).bind('fill', 'color')
-        // no arrowhead is defined here -- they are hard-coded in MultiArrowLink.makeGeometry
-      );
-
-    // create a few nodes and links
-    myDiagram.model = new go.GraphLinksModel(
-      [
-        { key: 1, text: 'one', color: 'lightyellow' },
-        { key: 2, text: 'two', color: 'brown' },
-        { key: 3, text: 'three', color: 'green' },
-        { key: 4, text: 'four', color: 'slateblue' },
-        { key: 5, text: 'five', color: 'aquamarine' },
-        { key: 6, text: 'six', color: 'lightgreen' },
-        { key: 7, text: 'seven' }
-      ],
-      [
-        { from: 5, to: 6, color: 'orange' },
-        { from: 1, to: 2, color: 'red' },
-        { from: 1, to: 3, color: 'blue' },
-        { from: 1, to: 4, color: 'goldenrod' },
-        { from: 2, to: 5, color: 'fuchsia' },
-        { from: 3, to: 5, color: 'green' },
-        { from: 4, to: 5, color: 'black' },
-        { from: 6, to: 7 }
-      ]
-    );
-  }
 
   // Produce a Geometry that includes an arrowhead at the end of each segment.
   // This only works with orthogonal non-Bezier routing.
@@ -236,7 +178,9 @@ function init() {
           cy += arrowLen;
         }
         geo.add(
-          new go.PathFigure(ax, ay, true).add(new go.PathSegment(go.SegmentType.Line, bx, by)).add(new go.PathSegment(go.SegmentType.Line, cx, cy).close())
+          new go.PathFigure(ax, ay, true)
+            .add(new go.PathSegment(go.SegmentType.Line, bx, by))
+            .add(new go.PathSegment(go.SegmentType.Line, cx, cy).close())
         );
         fx = ax;
         fy = ay;
@@ -246,6 +190,68 @@ function init() {
     }
   }
   // end of MultiArrowLink class
+
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      layout: new go.ForceDirectedLayout(),
+      'undoManager.isEnabled': true
+    });
+
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape({
+              figure: 'RoundedRectangle',
+              parameter1: 10,
+              fill: 'orange', // default fill color
+              portId: '',
+              fromLinkable: true,
+              fromSpot: go.Spot.AllSides,
+              toLinkable: true,
+              toSpot: go.Spot.AllSides,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 10, font: 'bold 12pt sans-serif' })
+            .bind('text')
+        );
+
+    myDiagram.linkTemplate =
+      new MultiArrowLink({ // subclass of Link, defined above
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true
+        })
+        .add(
+          new go.Shape({ isPanelMain: true })
+            .bind('fill', 'color')
+          // no arrowhead is defined here -- they are hard-coded in MultiArrowLink.makeGeometry
+        );
+
+    // create a few nodes and links
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'one', color: 'lightyellow' },
+        { key: 2, text: 'two', color: 'brown' },
+        { key: 3, text: 'three', color: 'green' },
+        { key: 4, text: 'four', color: 'slateblue' },
+        { key: 5, text: 'five', color: 'aquamarine' },
+        { key: 6, text: 'six', color: 'lightgreen' },
+        { key: 7, text: 'seven' }
+      ],
+      [
+        { from: 5, to: 6, color: 'orange' },
+        { from: 1, to: 2, color: 'red' },
+        { from: 1, to: 3, color: 'blue' },
+        { from: 1, to: 4, color: 'goldenrod' },
+        { from: 2, to: 5, color: 'fuchsia' },
+        { from: 3, to: 5, color: 'green' },
+        { from: 4, to: 5, color: 'black' },
+        { from: 6, to: 7 }
+      ]
+    );
+  }
 
   window.addEventListener('DOMContentLoaded', init);
 </script>

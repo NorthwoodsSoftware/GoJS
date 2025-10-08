@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -160,152 +162,155 @@
     });
 
     // the template for each attribute in a node's array of item data
-    const itemTempl = new go.Panel('Horizontal', { margin: new go.Margin(2, 0) })
-      .add(
-        new go.Shape({
-          desiredSize: new go.Size(15, 15),
-          strokeWidth: 0,
-          margin: new go.Margin(0, 5, 0, 0)
-        })
-          .bind('figure')
-          .themeData('fill', 'color'),
-        new go.TextBlock({
-          font: '14px sans-serif',
-          stroke: 'black'
-        })
-          .bind('text', 'name')
-          .bind('font', 'iskey', (k) => (k ? 'italic 14px sans-serif' : '14px sans-serif'))
-          .theme('stroke', 'text')
-      );
+    const itemTempl =
+      new go.Panel('Horizontal', { margin: new go.Margin(2, 0) })
+        .add(
+          new go.Shape({
+              desiredSize: new go.Size(15, 15),
+              strokeWidth: 0,
+              margin: new go.Margin(0, 5, 0, 0)
+            })
+            .bind('figure')
+            .themeData('fill', 'color'),
+          new go.TextBlock({
+              font: '14px sans-serif',
+              stroke: 'black'
+            })
+            .bind('text', 'name')
+            .bind('font', 'iskey', k => k ? 'italic 14px sans-serif' : '14px sans-serif')
+            .theme('stroke', 'text')
+        );
 
     // define the Node template, representing an entity
-    myDiagram.nodeTemplate = new go.Node('Auto', { // the whole node panel
-      selectionAdorned: true,
-      resizable: true,
-      layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized,
-      fromSpot: go.Spot.LeftRightSides,
-      toSpot: go.Spot.LeftRightSides
-    })
-      .bindTwoWay('location')
-      // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
-      // clear out any desiredSize set by the ResizingTool.
-      .bindObject('desiredSize', 'visible', (v) => new go.Size(NaN, NaN), undefined, 'LIST')
-      .add(
-        // define the node's outer shape, which will surround the Table
-        new go.Shape('RoundedRectangle', {
-          stroke: '#e8f1ff',
-          strokeWidth: 3
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { // the whole node panel
+          selectionAdorned: true,
+          resizable: true,
+          layoutConditions: go.LayoutConditions.Standard & ~go.LayoutConditions.NodeSized,
+          fromSpot: go.Spot.LeftRightSides,
+          toSpot: go.Spot.LeftRightSides
         })
-          .theme('fill', 'primary'),
-        new go.Panel('Table', {
-          margin: 8,
-          stretch: go.Stretch.Fill
-        })
-          .addRowDefinition(0, { sizing: go.Sizing.None })
-          .add(
-            // the table header
-            new go.TextBlock({
-              row: 0,
-              alignment: go.Spot.Center,
-              margin: new go.Margin(0, 24, 0, 2), // leave room for Button
-              font: 'bold 18px sans-serif'
+        .bindTwoWay('location')
+        // whenever the PanelExpanderButton changes the visible property of the "LIST" panel,
+        // clear out any desiredSize set by the ResizingTool.
+        .bindObject('desiredSize', 'visible', v => new go.Size(NaN, NaN), undefined, 'LIST')
+        .add(
+          // define the node's outer shape, which will surround the Table
+          new go.Shape('RoundedRectangle', {
+              stroke: '#e8f1ff',
+              strokeWidth: 3
             })
-              .bind('text', 'key')
-              .theme('stroke', 'text'),
-            // the collapse/expand button
-            go.GraphObject.build('PanelExpanderButton', {
-              row: 0,
-              alignment: go.Spot.TopRight
-            },'LIST') // the name of the element whose visibility this button toggles
-              .theme('ButtonIcon.stroke', 'text'),
-            new go.Panel('Table', {
-              name: 'LIST',
-              row: 1,
-              alignment: go.Spot.TopLeft
+            .theme('fill', 'primary'),
+          new go.Panel('Table', {
+              margin: 8,
+              stretch: go.Stretch.Fill
             })
-              .add(
-                new go.TextBlock('Attributes', {
+            .addRowDefinition(0, { sizing: go.Sizing.None })
+            .add(
+              // the table header
+              new go.TextBlock({
                   row: 0,
-                  alignment: go.Spot.Left,
-                  margin: new go.Margin(3, 24, 3, 2),
-                  font: 'bold 15px sans-serif'
+                  alignment: go.Spot.Center,
+                  margin: new go.Margin(0, 24, 0, 2), // leave room for Button
+                  font: 'bold 18px sans-serif'
                 })
-                  .theme('stroke', 'text'),
-                go.GraphObject.build('PanelExpanderButton', {
+                .bind('text', 'key')
+                .theme('stroke', 'text'),
+              // the collapse/expand button
+              go.GraphObject.build('PanelExpanderButton', {
                   row: 0,
-                  alignment: go.Spot.Right
-                }, 'NonInherited')
-                  .theme('ButtonIcon.stroke', 'text'),
-                new go.Panel('Vertical', {
+                  alignment: go.Spot.TopRight
+                },'LIST') // the name of the element whose visibility this button toggles
+                .theme('ButtonIcon.stroke', 'text'),
+              new go.Panel('Table', {
+                  name: 'LIST',
                   row: 1,
-                  name: 'NonInherited',
-                  alignment: go.Spot.TopLeft,
-                  defaultAlignment: go.Spot.Left,
-                  itemTemplate: itemTempl
+                  alignment: go.Spot.TopLeft
                 })
-                  .bind('itemArray', 'items'),
-                new go.TextBlock('Inherited Attributes', {
-                  row: 2,
-                  alignment: go.Spot.Left,
-                  margin: new go.Margin(3, 24, 3, 2), // leave room for Button
-                  font: 'bold 15px sans-serif'
-                })
-                  .bind('visible', 'inheritedItems', (arr) => Array.isArray(arr) && arr.length > 0)
-                  .theme('stroke', 'text'),
-                go.GraphObject.build('PanelExpanderButton', {
-                  row: 2,
-                  alignment: go.Spot.Right
-                }, 'Inherited')
-                  .bind('visible', 'inheritedItems', (arr) => Array.isArray(arr) && arr.length > 0)
-                  .theme('ButtonIcon.stroke', 'text'),
-                new go.Panel('Vertical', {
-                  row: 3,
-                  name: 'Inherited',
-                  alignment: go.Spot.TopLeft,
-                  defaultAlignment: go.Spot.Left,
-                  itemTemplate: itemTempl
-                })
-                  .bind('itemArray', 'inheritedItems')
-              )
-          )
-      );
+                .add(
+                  new go.TextBlock('Attributes', {
+                      row: 0,
+                      alignment: go.Spot.Left,
+                      margin: new go.Margin(3, 24, 3, 2),
+                      font: 'bold 15px sans-serif'
+                    })
+                    .theme('stroke', 'text'),
+                  go.GraphObject.build('PanelExpanderButton', {
+                      row: 0,
+                      alignment: go.Spot.Right
+                    }, 'NonInherited')
+                    .theme('ButtonIcon.stroke', 'text'),
+                  new go.Panel('Vertical', {
+                      row: 1,
+                      name: 'NonInherited',
+                      alignment: go.Spot.TopLeft,
+                      defaultAlignment: go.Spot.Left,
+                      itemTemplate: itemTempl
+                    })
+                    .bind('itemArray', 'items'),
+                  new go.TextBlock('Inherited Attributes', {
+                      row: 2,
+                      alignment: go.Spot.Left,
+                      margin: new go.Margin(3, 24, 3, 2), // leave room for Button
+                      font: 'bold 15px sans-serif'
+                    })
+                    .bind('visible', 'inheritedItems', arr => Array.isArray(arr) && arr.length > 0)
+                    .theme('stroke', 'text'),
+                  go.GraphObject.build('PanelExpanderButton', {
+                      row: 2,
+                      alignment: go.Spot.Right
+                    }, 'Inherited')
+                    .bind('visible', 'inheritedItems', arr => Array.isArray(arr) && arr.length > 0)
+                    .theme('ButtonIcon.stroke', 'text'),
+                  new go.Panel('Vertical', {
+                      row: 3,
+                      name: 'Inherited',
+                      alignment: go.Spot.TopLeft,
+                      defaultAlignment: go.Spot.Left,
+                      itemTemplate: itemTempl
+                    })
+                    .bind('itemArray', 'inheritedItems')
+                )
+            )
+        );
 
     // define the Link template, representing a relationship
-    myDiagram.linkTemplate = new go.Link({ // the whole link panel
-      selectionAdorned: true,
-      layerName: 'Background',
-      reshapable: true,
-      routing: go.Routing.AvoidsNodes,
-      corner: 5,
-      curve: go.Curve.JumpOver
-    })
-      .add(
-        new go.Shape({ // the link shape
-          stroke: '#f7f9fc',
-          strokeWidth: 3
+    myDiagram.linkTemplate =
+      new go.Link({ // the whole link panel
+          selectionAdorned: true,
+          layerName: 'Background',
+          reshapable: true,
+          routing: go.Routing.AvoidsNodes,
+          corner: 5,
+          curve: go.Curve.JumpOver
         })
-          .theme('stroke', 'link'),
-        new go.TextBlock({ // the "from" label
-          textAlign: 'center',
-          font: 'bold 14px sans-serif',
-          stroke: 'black',
-          segmentIndex: 0,
-          segmentOffset: new go.Point(NaN, NaN),
-          segmentOrientation: go.Orientation.Upright
-        })
-          .bind('text')
-          .theme('stroke', 'text'),
-        new go.TextBlock({ // the "to" label
-          textAlign: 'center',
-          font: 'bold 14px sans-serif',
-          stroke: 'black',
-          segmentIndex: -1,
-          segmentOffset: new go.Point(NaN, NaN),
-          segmentOrientation: go.Orientation.Upright
-        })
-          .bind('text', 'toText')
-          .theme('stroke', 'text')
-        );
+        .add(
+          new go.Shape({ // the link shape
+              stroke: '#f7f9fc',
+              strokeWidth: 3
+            })
+            .theme('stroke', 'link'),
+          new go.TextBlock({ // the "from" label
+              textAlign: 'center',
+              font: 'bold 14px sans-serif',
+              stroke: 'black',
+              segmentIndex: 0,
+              segmentOffset: new go.Point(NaN, NaN),
+              segmentOrientation: go.Orientation.Upright
+            })
+            .bind('text')
+            .theme('stroke', 'text'),
+          new go.TextBlock({ // the "to" label
+              textAlign: 'center',
+              font: 'bold 14px sans-serif',
+              stroke: 'black',
+              segmentIndex: -1,
+              segmentOffset: new go.Point(NaN, NaN),
+              segmentOrientation: go.Orientation.Upright
+            })
+            .bind('text', 'toText')
+            .theme('stroke', 'text')
+          );
 
     // create the model for the E-R diagram
     const nodeDataArray = [
@@ -462,7 +467,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

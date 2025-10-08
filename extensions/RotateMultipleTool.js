@@ -45,7 +45,7 @@ class RotateMultipleTool extends go.RotatingTool {
         // remember the angle relative to the center point when rotating the whole collection
         this._initialAngle = this._centerPoint.directionPoint(diagram.lastInput.documentPoint);
         // remember initial angle and distance for each Part
-        const infos = new go.Map();
+        const infos = new Map();
         const tool = this;
         diagram.selection.each((part) => {
             tool.walkTree(part, infos);
@@ -95,11 +95,11 @@ class RotateMultipleTool extends go.RotatingTool {
         // when rotating individual parts, remember the original angle difference
         const angleDiff = newangle - node.rotateObject.angle;
         const tool = this;
-        this._initialInfo.each((kvp) => {
-            const part = kvp.key;
+        for (const [key, value] of this._initialInfo) {
+            const part = key;
             if (part instanceof go.Link)
                 return; // only Nodes and simple Parts
-            const partInfo = kvp.value;
+            const partInfo = value;
             // rotate every selected non-Link Part
             // find information about the part set in RotateMultipleTool._initialInformation
             if (e.control || e.meta) {
@@ -120,7 +120,7 @@ class RotateMultipleTool extends go.RotatingTool {
                 // rotate part
                 part.rotateObject.angle = partInfo.rotationAngle + newangle;
             }
-        });
+        }
     }
     /**
      * Calculate the desired angle with different rotation points,

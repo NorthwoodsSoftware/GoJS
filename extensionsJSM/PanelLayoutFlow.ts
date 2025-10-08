@@ -17,24 +17,27 @@ import * as go from 'gojs';
  * A custom {@link go.PanelLayout} that arranges panel elements in rows or columns.
  * A typical use might be:
  * ```js
- * $(go.Node,
- *   ...
- *   $(go.Panel, "Flow",
- *     ... the elements to be laid out in rows with no space between them ...
+ * new go.Node(. . .)
+ *   .add(
+ *     . . .,
+ *     new go.Panel("Flow")
+ *       .add(
+ *         ... the elements to be laid out in rows with no space between them ...
+ *       ),
+ *     . . .
  *   )
- *   ...
- * )
  * ```
  * A customized use might be:
  * ```js
- * $(go.Node,
- *   ...
- *   $(go.Panel,
- *     $(PanelLayoutFlow, { spacing: new go.Size(5, 5), direction: 90 }),
- *     ... the elements to be laid out in columns ...
+ * new go.Node(. . .)
+ *   .add(
+ *     . . .,
+ *     new go.Panel(new PanelLayoutFlow({ spacing: new go.Size(5, 5), direction: 90 }))
+ *       .add(
+ *         ... the elements to be laid out in columns ...
+ *       ),
+ *     . . .
  *   )
- *   ...
- * )
  * ```
  *
  * The {@link direction} property determines whether the elements are arranged in rows (if 0 or 180)

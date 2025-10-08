@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,13 +141,15 @@
 
     // the node template
     // the shape will be resized appropriately when the model is set up
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('Rectangle', { name: 'SHAPE', width: 30, height: 30 })
-          .bind('fill', 'color')
-          .bind('stroke', 'color'),
-        new go.TextBlock({ name: 'TEXTBLOCK', margin: 5 }).bind('text', 'flow', (flow) => getText(flow))
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('Rectangle', { name: 'SHAPE', width: 30, height: 30 })
+            .bind('fill', 'color')
+            .bind('stroke', 'color'),
+          new go.TextBlock({ name: 'TEXTBLOCK', margin: 5 })
+            .bind('text', 'flow', flow => getText(flow))
+        );
 
     // the Links should have no graphical representation
     myDiagram.linkTemplate = new go.Link();
@@ -252,8 +256,9 @@
   // check if the children of this node have all had their sizes changed from the initial one
   // if they have been updated, their widths and heights cannot be equal
   function areChildrenUpdated(node) {
-    return node.findTreeChildrenNodes().all((child) => child.findObject('SHAPE').width !== child.findObject('SHAPE').height);
+    return node.findTreeChildrenNodes().all(child => child.findObject('SHAPE').width !== child.findObject('SHAPE').height);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,7 +134,7 @@
       initialScale: 1.4,
       'undoManager.isEnabled': true,
       'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         // just for demonstration purposes,
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
@@ -142,99 +144,101 @@
       }
     });
 
-    myDiagram.nodeTemplate = new go.Node('Table', {
-      selectionObjectName: 'BODY',
-      linkValidation: (fromnode, fromport, tonode, toport, link) => {
-        if (!fromport || !toport) return false;
-        if (fromnode === tonode) {
-          // inside a node must go from an input port to an output port
-          return fromport.portId[0] === 'i' && toport.portId[0] === 'o';
-        } else {
-          // between nodes the port colors must match
-          if (fromport.fill !== toport.fill) return false;
-          // between nodes must go from an output port to an input port
-          return fromport.portId[0] === 'o' && toport.portId[0] === 'i';
-        }
-        return true;
-      }
-    })
-      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-      .addColumnDefinition(1, { width: 70 })
-      .add(
-        new go.Shape({
-          name: 'BODY',
-          row: 0,
-          rowSpan: 99,
-          column: 0,
-          columnSpan: 3,
-          stretch: go.Stretch.Fill,
-          fill: 'gray',
-          strokeWidth: 0,
-          margin: new go.Margin(0, 8)
-        }),
-        new go.TextBlock(
-          { row: 0, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) }
-        ).bind('text'),
-        new go.TextBlock(
-          { row: 2, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) }
-        ).bind('text', 'text2'),
-
-        new go.Panel('Table', {
-          row: 1,
-          column: 0,
-          defaultSeparatorPadding: new go.Margin(4, 0),
-          // input ports
-          itemTemplate: new go.Panel('TableRow', { background: 'white' })
-            .add(
-              new go.Shape({
-                width: 6,
-                height: 6,
-                strokeWidth: 0,
-                margin: new go.Margin(2, 6, 2, 0),
-                fromSpot: go.Spot.Right,
-                toSpot: go.Spot.Left,
-                fromLinkable: true,
-                toLinkable: true,
-                fromLinkableSelfNode: true,
-                toLinkableSelfNode: true,
-                cursor: 'pointer'
-              })
-                .bindObject('portId', 'row', (r) => 'i' + r)
-                .bind('fill', '', convertToColor)
-            )
-        }).bind('itemArray', 'inPorts'),
-        new go.Shape({
-          row: 1,
-          column: 1,
-          fill: 'white',
-          strokeWidth: 0,
-          stretch: go.Stretch.Fill
-        }),
-        new go.Panel('Table', {
-          row: 1,
-          column: 2,
-          defaultSeparatorPadding: new go.Margin(4, 0),
-          // output ports
-          itemTemplate: new go.Panel('TableRow', { background: 'white' })
-            .add(
-              new go.Shape({
-                width: 6,
-                height: 6,
-                strokeWidth: 0,
-                margin: new go.Margin(2, 0, 2, 6),
-                fromSpot: go.Spot.Right,
-                toSpot: go.Spot.Left,
-                fromLinkable: true,
-                toLinkable: true,
-                fromLinkableSelfNode: true,
-                toLinkableSelfNode: true,
-                cursor: 'pointer'
-              })
-                .bindObject('portId', 'row', (r) => 'o' + r)
-                .bind('fill', '', convertToColor)
-            )
-        }).bind('itemArray', 'outPorts')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Table', {
+          selectionObjectName: 'BODY',
+          linkValidation: (fromnode, fromport, tonode, toport, link) => {
+            if (!fromport || !toport) return false;
+            if (fromnode === tonode) {
+              // inside a node must go from an input port to an output port
+              return fromport.portId[0] === 'i' && toport.portId[0] === 'o';
+            } else {
+              // between nodes the port colors must match
+              if (fromport.fill !== toport.fill) return false;
+              // between nodes must go from an output port to an input port
+              return fromport.portId[0] === 'o' && toport.portId[0] === 'i';
+            }
+            return true;
+          }
+        })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .addColumnDefinition(1, { width: 70 })
+        .add(
+          new go.Shape({
+            name: 'BODY',
+            row: 0,
+            rowSpan: 99,
+            column: 0,
+            columnSpan: 3,
+            stretch: go.Stretch.Fill,
+            fill: 'gray',
+            strokeWidth: 0,
+            margin: new go.Margin(0, 8)
+          }),
+          new go.TextBlock({ row: 0, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) })
+            .bind('text'),
+          new go.TextBlock({ row: 2, columnSpan: 3, margin: new go.Margin(4, 2, 2, 2) })
+            .bind('text', 'text2'),
+          new go.Panel('Table', {
+              row: 1,
+              column: 0,
+              defaultSeparatorPadding: new go.Margin(4, 0),
+              // input ports
+              itemTemplate:
+                new go.Panel('TableRow', { background: 'white' })
+                  .add(
+                    new go.Shape({
+                        width: 6,
+                        height: 6,
+                        strokeWidth: 0,
+                        margin: new go.Margin(2, 6, 2, 0),
+                        fromSpot: go.Spot.Right,
+                        toSpot: go.Spot.Left,
+                        fromLinkable: true,
+                        toLinkable: true,
+                        fromLinkableSelfNode: true,
+                        toLinkableSelfNode: true,
+                        cursor: 'pointer'
+                      })
+                      .bindObject('portId', 'row', r => 'i' + r)
+                      .bind('fill', '', convertToColor)
+                  )
+            })
+            .bind('itemArray', 'inPorts'),
+          new go.Shape({
+            row: 1,
+            column: 1,
+            fill: 'white',
+            strokeWidth: 0,
+            stretch: go.Stretch.Fill
+          }),
+          new go.Panel('Table', {
+              row: 1,
+              column: 2,
+              defaultSeparatorPadding: new go.Margin(4, 0),
+              // output ports
+              itemTemplate:
+                new go.Panel('TableRow', { background: 'white' })
+                  .add(
+                    new go.Shape({
+                        width: 6,
+                        height: 6,
+                        strokeWidth: 0,
+                        margin: new go.Margin(2, 0, 2, 6),
+                        fromSpot: go.Spot.Right,
+                        toSpot: go.Spot.Left,
+                        fromLinkable: true,
+                        toLinkable: true,
+                        fromLinkableSelfNode: true,
+                        toLinkableSelfNode: true,
+                        cursor: 'pointer'
+                      })
+                      .bindObject('portId', 'row', r => 'o' + r)
+                      .bind('fill', '', convertToColor)
+                  )
+            })
+            .bind('itemArray', 'outPorts')
+        );
 
     function convertToColor(n) {
       switch (n) {
@@ -249,10 +253,12 @@
       }
     }
 
-    myDiagram.linkTemplate = new go.Link({ relinkableFrom: true, relinkableTo: true })
-      .add(
-        new go.Shape({ strokeWidth: 2 }).bindObject('stroke', 'fromPort', (p) => p.fill)
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ corner: 10, relinkableFrom: true, relinkableTo: true })
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+            .bindObject('stroke', 'fromPort', p => p.fill)
+        );
 
     myDiagram.model = new go.GraphLinksModel({
       linkFromPortIdProperty: 'fpid',
@@ -303,6 +309,7 @@
       ]
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

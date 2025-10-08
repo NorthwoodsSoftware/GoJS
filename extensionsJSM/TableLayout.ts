@@ -155,6 +155,18 @@ export class TableLayout extends go.Layout {
   }
 
   /**
+   * Set the RowColumnDefinition properties for a row of this TableLayout.
+   * @param row the non-negative zero-based integer row index
+   * @param init the RowColumnDefinition properties to be set
+   * @returns this
+   */
+  addRowDefinition(row: number, init: Partial<go.RowColumnDefinition>): this {
+    const def = this.getRowDefinition(row);
+    Object.assign(def, init);
+    return this;
+  }
+
+  /**
    * Returns the row at a given y-coordinate in document coordinates.
    * This information is only valid when this layout has been performed and {@link go.Layout.isValidLayout} is true.
    *
@@ -201,6 +213,18 @@ export class TableLayout extends go.Layout {
       defs[idx] = d;
     }
     return d;
+  }
+
+  /**
+   * Set the RowColumnDefinition properties for a column of this TableLayout.
+   * @param col the non-negative zero-based integer column index
+   * @param init the RowColumnDefinition properties to be set
+   * @returns this
+   */
+  addColumnDefinition(col: number, init: Partial<go.RowColumnDefinition>): this {
+    const def = this.getColumnDefinition(col);
+    Object.assign(def, init);
+    return this;
   }
 
   /**
@@ -834,6 +858,7 @@ export class TableLayout extends go.Layout {
     }
     let firstRow = 0;
     let firstColumn = 0;
+    
     let ll = this.columnCount;
     for (let i = 0; i < ll; i++) {
       if (this._colDefs[i] === undefined) continue;
@@ -846,7 +871,7 @@ export class TableLayout extends go.Layout {
       firstRow = i;
       break;
     }
-
+    
     const additionalSpan = new go.Size();
     // Find cell space and arrange objects:
     for (let i = 0; i < lrow; i++) {

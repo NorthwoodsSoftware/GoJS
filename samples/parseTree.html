@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -121,8 +123,37 @@
           
             
             
+  
+  <script id="code">
 
-    <script id="code">
+    // Customize the TreeLayout to position all of the leaf nodes at the same vertical Y position.
+    class FlatTreeLayout extends go.TreeLayout {
+      constructor(init) {
+        super();
+        if (init) Object.assign(this, init);
+      }
+
+      // This assumes the TreeLayout.angle is 90 -- growing downward
+      commitLayout() {
+        super.commitLayout();  // call base method first
+        // find maximum Y position of all Nodes
+        var y = -Infinity;
+        this.network.vertexes.each(v => y = Math.max(y, v.node.position.y));
+        // move down all leaf nodes to that Y position, but keeping their X position
+        this.network.vertexes.each(v => {
+          if (v.destinationEdges.count === 0) {
+            // shift the node down to Y
+            v.node.moveTo(v.node.position.x, y);
+            // extend the last segment vertically
+            v.node.toEndSegmentLength = Math.abs(v.centerY - y);
+          } else {  // restore to normal value
+            v.node.toEndSegmentLength = 10;
+          }
+        });
+      }
+    }
+    // end FlatTreeLayout
+
     function init() {
 
       myDiagram = new go.Diagram('myDiagramDiv', {
@@ -138,29 +169,31 @@
         'undoManager.isEnabled': true
       });
 
-      myDiagram.nodeTemplate = new go.Node('Vertical', { selectionObjectName: 'BODY' })
-        .add(
-          new go.Panel('Auto', { name: 'BODY' })
-            .add(
-              new go.Shape('RoundedRectangle')
-                .bind('fill')
-                .bind('stroke'),
-              new go.TextBlock({
-                font: 'bold 12pt Arial, sans-serif',
-                margin: new go.Margin(4, 2, 2, 2)
-              })
-                .bind('text')
-            ),
-          new go.Panel({ height: 17 }) // always this height, even if the TreeExpanderButton is not visible
-            .add(
-              go.GraphObject.build('TreeExpanderButton')
-            )
-        );
+      myDiagram.nodeTemplate =
+        new go.Node('Vertical', { selectionObjectName: 'BODY' })
+          .add(
+            new go.Panel('Auto', { name: 'BODY' })
+              .add(
+                new go.Shape('RoundedRectangle')
+                  .bind('fill')
+                  .bind('stroke'),
+                new go.TextBlock({
+                    font: 'bold 12pt Arial, sans-serif',
+                    margin: new go.Margin(4, 2, 2, 2)
+                  })
+                  .bind('text')
+              ),
+            new go.Panel({ height: 17 }) // always this height, even if the TreeExpanderButton is not visible
+              .add(
+                go.GraphObject.build('TreeExpanderButton')
+              )
+          );
 
-      myDiagram.linkTemplate = new go.Link()
-        .add(
-          new go.Shape({ strokeWidth: 1.5 })
-        );
+      myDiagram.linkTemplate =
+        new go.Link()
+          .add(
+            new go.Shape({ strokeWidth: 1.5 })
+          );
 
       // set up the nodeDataArray, describing each part of the sentence
       var nodeDataArray = [
@@ -204,37 +237,8 @@
 
       // create the Model with data for the tree, and assign to the Diagram
       myDiagram.model =
-        new go.TreeModel(
-          { nodeDataArray: nodeDataArray });
+        new go.TreeModel(nodeDataArray);
     }
-
-  // Customize the TreeLayout to position all of the leaf nodes at the same vertical Y position.
-  class FlatTreeLayout extends go.TreeLayout {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    // This assumes the TreeLayout.angle is 90 -- growing downward
-    commitLayout() {
-      super.commitLayout();  // call base method first
-      // find maximum Y position of all Nodes
-      var y = -Infinity;
-      this.network.vertexes.each(v => y = Math.max(y, v.node.position.y));
-      // move down all leaf nodes to that Y position, but keeping their X position
-      this.network.vertexes.each(v => {
-        if (v.destinationEdges.count === 0) {
-          // shift the node down to Y
-          v.node.moveTo(v.node.position.x, y);
-          // extend the last segment vertically
-          v.node.toEndSegmentLength = Math.abs(v.centerY - y);
-        } else {  // restore to normal value
-          v.node.toEndSegmentLength = 10;
-        }
-      });
-    }
-  }
-  // end FlatTreeLayout
 
     window.addEventListener('DOMContentLoaded', init);
   </script>
@@ -311,7 +315,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

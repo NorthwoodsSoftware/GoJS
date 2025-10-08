@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -179,7 +181,7 @@
   // this sample also uses highlight for selection, so only unhighlight if unselected
   const onMouseEnterPart = (e, part) => part.isHighlighted = true;
   const onMouseLeavePart = (e, part) => { if (!part.isSelected) part.isHighlighted = false; }
-  const onSelectionChange = (part) => { part.isHighlighted = part.isSelected; }
+  const onSelectionChange = part => { part.isHighlighted = part.isSelected; }
 
   const STROKE_WIDTH = 3;
   const ADORNMENT_STROKE_WIDTH = STROKE_WIDTH + 1;
@@ -188,7 +190,7 @@
   const MAIN_SHAPE_NAME = 'mainShape';
   const IMAGE_DIAMETER = 40;
 
-  const getStrokeForStatus = (status) => {
+  const getStrokeForStatus = status => {
     switch (status) {
       case 'king':
       case 'queen':
@@ -203,56 +205,52 @@
   };
 
   function strokeStyle(shape) {
-    return shape
-      .set({
-        fill: theme.colors.personNodeBackground,
-        strokeWidth: STROKE_WIDTH
-      })
-      .bind('stroke', statusProperty, status => getStrokeForStatus(status))
-      .bindObject('stroke', 'isHighlighted', (isHighlighted, obj) =>
-        isHighlighted
-          ? theme.colors.selectionStroke
-          : getStrokeForStatus(obj.part.data.status))
+    shape.fill = theme.colors.personNodeBackground;
+    shape.strokeWidth = STROKE_WIDTH;
+    shape.bind('stroke', statusProperty, status => getStrokeForStatus(status));
+    shape.bindObject('stroke', 'isHighlighted',
+        (isHighlighted, obj) =>
+          isHighlighted
+            ? theme.colors.selectionStroke
+            : getStrokeForStatus(obj.part.data.status));
   }
 
-  const genderToText = (gender) => (gender === 'M' ? 'MALE' : 'FEMALE');
+  const genderToText = gender => gender === 'M' ? 'MALE' : 'FEMALE';
 
-  const genderToTextColor = (gender) =>
-    gender === 'M' ? theme.colors.maleBadgeText : theme.colors.femaleBadgeText;
+  const genderToTextColor =
+    gender => gender === 'M' ? theme.colors.maleBadgeText : theme.colors.femaleBadgeText;
 
-  const genderToFillColor = (gender) =>
-    gender === 'M'
-      ? theme.colors.maleBadgeBackground
-      : theme.colors.femaleBadgeBackground;
+  const genderToFillColor =
+    gender => gender === 'M' ? theme.colors.maleBadgeBackground : theme.colors.femaleBadgeBackground;
 
   const personBadge = () =>
     new go.Panel('Auto', {
-      alignmentFocus: go.Spot.TopRight,
-      alignment: new go.Spot(1, 0, -25, STROKE_WIDTH - 0.5)
-    })
+        alignmentFocus: go.Spot.TopRight,
+        alignment: new go.Spot(1, 0, -25, STROKE_WIDTH - 0.5)
+      })
       .add(
         new go.Shape({
-          figure: 'RoundedRectangle',
-          parameter1: CORNER_ROUNDNESS,
-          parameter2: 4 | 8, // round only the bottom
-          desiredSize: new go.Size(NaN, 22.5),
-          stroke: null
-        })
+            figure: 'RoundedRectangle',
+            parameter1: CORNER_ROUNDNESS,
+            parameter2: 4 | 8, // round only the bottom
+            desiredSize: new go.Size(NaN, 22.5),
+            stroke: null
+          })
           .bind('fill', genderProperty, genderToFillColor),
       new go.TextBlock({
-        font: theme.fonts.badgeFont
-      })
+          font: theme.fonts.badgeFont
+        })
         .bind('stroke', genderProperty, genderToTextColor)
         .bind('text', genderProperty, genderToText)
       )
 
   const personBirthDeathTextBlock = () =>
     new go.TextBlock({
-      stroke: theme.colors.personText,
-      font: theme.fonts.birthDeathFont,
-      alignmentFocus: go.Spot.Top,
-      alignment: new go.Spot(0.5, 1, 0, -35)
-    })
+        stroke: theme.colors.personText,
+        font: theme.fonts.birthDeathFont,
+        alignmentFocus: go.Spot.Top,
+        alignment: new go.Spot(0.5, 1, 0, -35)
+      })
       .bind('text', '', ({ born, death }) => {
         if (!born) return '';
         return `${born} - ${death ?? ''}`;
@@ -261,29 +259,29 @@
   // Panel to display the number of children a node has
   const personCounter = () =>
     new go.Panel('Auto', {
-      visible: false,
-      alignmentFocus: go.Spot.Center,
-      alignment: go.Spot.Bottom
-    })
-      .bindObject('visible', '', (obj) => obj.findLinksOutOf().count > 0)
+        visible: false,
+        alignmentFocus: go.Spot.Center,
+        alignment: go.Spot.Bottom
+      })
+      .bindObject('visible', '', obj => obj.findLinksOutOf().count > 0)
       .add(
         new go.Shape('Circle', {
-        desiredSize: new go.Size(29, 29),
-        strokeWidth: STROKE_WIDTH,
-        stroke: theme.colors.counterBorder,
-        fill: theme.colors.counterBackground
-      }),
+          desiredSize: new go.Size(29, 29),
+          strokeWidth: STROKE_WIDTH,
+          stroke: theme.colors.counterBorder,
+          fill: theme.colors.counterBackground
+        }),
         new go.TextBlock({
-        alignment: new go.Spot(0.5, 0.5, 0, 1),
-        stroke: theme.colors.counterText,
-        font: theme.fonts.counterFont,
-        textAlign: 'center'
-      })
-        .bindObject('text', '', (obj) => obj.findNodesOutOf().count)
+            alignment: new go.Spot(0.5, 0.5, 0, 1),
+            stroke: theme.colors.counterText,
+            font: theme.fonts.counterFont,
+            textAlign: 'center'
+          })
+          .bindObject('text', '', obj => obj.findNodesOutOf().count)
       )
 
   function pictureStyle(pic) {
-    return pic
+    pic
       .bind('source', '', ({ status, gender }) => {
         switch (status) {
           case 'king':
@@ -318,14 +316,14 @@
 
   const personImage = () =>
     new go.Panel('Spot', {
-      alignmentFocus: go.Spot.Top,
-      alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN)
-    })
+        alignmentFocus: go.Spot.Top,
+        alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN)
+      })
       .add(
         new go.Shape({
-          figure: 'Circle',
-          desiredSize: new go.Size(IMAGE_DIAMETER, IMAGE_DIAMETER)
-        })
+            figure: 'Circle',
+            desiredSize: new go.Size(IMAGE_DIAMETER, IMAGE_DIAMETER)
+          })
           .apply(strokeStyle),
         new go.Picture({ scale: 0.9 })
           .apply(pictureStyle)
@@ -333,43 +331,47 @@
 
   const personMainShape = () =>
     new go.Shape({
-      figure: 'RoundedRectangle',
-      desiredSize: new go.Size(215, 110),
-      portId: '',
-      parameter1: CORNER_ROUNDNESS
-    })
+        figure: 'RoundedRectangle',
+        desiredSize: new go.Size(215, 110),
+        portId: '',
+        parameter1: CORNER_ROUNDNESS
+      })
       .apply(strokeStyle);
 
   const personNameTextBlock = () =>
     new go.TextBlock({
-      stroke: theme.colors.personText,
-      font: theme.fonts.nameFont,
-      desiredSize: new go.Size(160, 50),
-      overflow: go.TextOverflow.Ellipsis,
-      textAlign: 'center',
-      verticalAlignment: go.Spot.Center,
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(new go.TextBlock({ margin: 4 }).bind('text', nameProperty)),
-      alignmentFocus: go.Spot.Top,
-      alignment: new go.Spot(0.5, 0, 0, 25)
-    })
+        stroke: theme.colors.personText,
+        font: theme.fonts.nameFont,
+        desiredSize: new go.Size(160, 50),
+        overflow: go.TextOverflow.Ellipsis,
+        textAlign: 'center',
+        verticalAlignment: go.Spot.Center,
+        toolTip:
+          go.GraphObject.build('ToolTip')
+            .add(
+              new go.TextBlock({ margin: 4 })
+                .bind('text', nameProperty)
+            ),
+        alignmentFocus: go.Spot.Top,
+        alignment: new go.Spot(0.5, 0, 0, 25)
+      })
       .bind('text', nameProperty)
 
 
   const createNodeTemplate = () =>
     new go.Node('Spot', {
-      selectionAdorned: false,
-      mouseEnter: onMouseEnterPart,
-      mouseLeave: onMouseLeavePart,
-      selectionChanged: onSelectionChange
-    })
+        selectionAdorned: false,
+        mouseEnter: onMouseEnterPart,
+        mouseLeave: onMouseLeavePart,
+        selectionChanged: onSelectionChange
+      })
       .add(
         new go.Panel('Spot')
-        .add(
-          personMainShape(),
-          personNameTextBlock(),
-          personBirthDeathTextBlock()
-        ),
+          .add(
+            personMainShape(),
+            personNameTextBlock(),
+            personBirthDeathTextBlock()
+          ),
         personImage(),
         personBadge(),
         personCounter()
@@ -377,28 +379,26 @@
 
   const createLinkTemplate = () =>
     new go.Link({
-      selectionAdorned: false,
-      routing: go.Routing.Orthogonal,
-      layerName: 'Background',
-      mouseEnter: onMouseEnterPart,
-      mouseLeave: onMouseLeavePart
-    })
+        selectionAdorned: false,
+        routing: go.Routing.Orthogonal,
+        layerName: 'Background',
+        mouseEnter: onMouseEnterPart,
+        mouseLeave: onMouseLeavePart
+      })
       .add(
         new go.Shape({
-          stroke: theme.colors.link,
-          strokeWidth: 1
-        })
-          .bindObject('stroke', 'isHighlighted', (isHighlighted) =>
-            isHighlighted ? theme.colors.selectionStroke : theme.colors.link
-          )
-          .bindObject('stroke', 'isSelected', (selected) =>
-            selected ? theme.colors.selectionStroke : theme.colors.link
-          )
-          .bindObject('strokeWidth', 'isSelected', (selected) => selected ? 2 : 1)
+            stroke: theme.colors.link,
+            strokeWidth: 1
+          })
+          .bindObject('stroke', 'isHighlighted',
+            isHighlighted => isHighlighted ? theme.colors.selectionStroke : theme.colors.link)
+          .bindObject('stroke', 'isSelected',
+            selected => selected ? theme.colors.selectionStroke : theme.colors.link)
+          .bindObject('strokeWidth', 'isSelected', selected => selected ? 2 : 1)
       );
 
 
-  const initDiagram = (divId) => {
+  const initDiagram = divId => {
     const diagram = new go.Diagram(divId, {
       layout: new go.TreeLayout({
         angle: 90,

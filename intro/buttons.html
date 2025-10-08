@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -248,13 +251,14 @@
 <p>
   For your convenience we have defined several <a>Panel</a>s for common uses.
   These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelExpanderButton", "ContextMenuButton",
-  and "CheckBoxButton".
+  "CheckBoxButton", "ToggleSwitch", and "AutoRepeatButton".
   "ContextMenuButton"s are typically used inside of "ContextMenu" Panels;
   "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
+  "ToggleSwitch"s are used in the implementation of "Toggle" Panels.
 </p>
 <p>
-  These predefined panels can be used as if they were <a>Panel</a>-derived classes in calls to <a>GraphObject.make</a>
-  or <a>GraphObject.build</a>.
+  These predefined panels can be used as if they were <a>Panel</a>-derived classes
+  in calls to <a>GraphObject.build</a>.
   They are implemented as simple visual trees of <a>GraphObject</a>s in <a>Panel</a>s,
   with pre-set properties and event handlers.
 </p>
@@ -340,7 +344,6 @@
                   // set properties on the "Button" itself used by its event handlers
                   "_buttonFillOver": "white",
                   "_buttonStrokeOver": "cyan",
-                  "_buttonFillPressed": "lightgray"
                 })
               .add(
                 new go.TextBlock("Circular\nbutton", { margin: 2, textAlign: "center" })
@@ -372,8 +375,8 @@
 
 <h2 id="TreeExpanderButtons">TreeExpanderButtons</h2>
 <p>
-  It is common to want to expand and collapse subtrees.
-  It is easy to let the user control this by adding an instance of the "TreeExpanderButton" to your node template.
+  It is common to want to expand and collapse subtrees of nodes.
+  It is easy to let the user control this by adding an instance of the "TreeExpanderButton" to your Node template.
   The button calls <a>CommandHandler.collapseTree</a> or <a>CommandHandler.expandTree</a>
   depending on the value of <a>Node.isTreeExpanded</a>.
   The button's icon's <a>Shape.figure</a> changes as the value of
@@ -451,7 +454,7 @@
 <h2 id="SubGraphExpanderButtons">SubGraphExpanderButtons</h2>
 <p>
   It is also common to want to expand and collapse groups containing subgraphs.
-  You can let the user control this by adding an instance of the "SubGraphExpanderButton" to your group template.
+  You can let the user control this by adding an instance of the "SubGraphExpanderButton" to your Group template.
   The button calls <a>CommandHandler.collapseSubGraph</a> or <a>CommandHandler.expandSubGraph</a>
   depending on the value of <a>Group.isSubGraphExpanded</a>.
   The button's icon's <a>Shape.figure</a> changes as the value of
@@ -527,8 +530,10 @@ diagram.groupTemplate =
   It is common to want to expand and collapse a piece of a node,
   thereby showing or hiding details that are sometimes not needed.
   It is easy to let the user control this by adding an instance of the "PanelExpanderButton" to your node template.
-  The second argument to <a>GraphObject.make</a> should be a string that names the element in the node whose
+  The third argument to <a>GraphObject.build</a>
+  should be a string that names the element in the node whose
   <a>GraphObject.visible</a> property you want the button to toggle.
+  The default name is "COLLAPSIBLE".
 </p>
 <pre class="lang-js" id="panelExpanderButton"><code>
   diagram.nodeTemplate =
@@ -639,6 +644,9 @@ diagram.groupTemplate =
   ]);
 </code></pre>
 <script>goCode("panelExpanderButton2", 600, 200)</script>
+<p>
+  You normally will <i>not</i> want to have the "PanelExpanderButton" inside the panel that will be collapsed.
+</p>
 
 
 <h2 id="ContextMenuButtons">ContextMenuButtons and ContextMenus</h2>
@@ -710,8 +718,7 @@ diagram.groupTemplate =
             {
               click: (e, obj) => shiftNode(obj, -20),
               "ButtonBorder.fill": "yellow",
-              "_buttonFillOver": "cyan",
-              "_buttonFillPressed": "lime"
+              "_buttonFillOver": "cyan"
             })
           .add(
             new go.TextBlock("Shift Left")
@@ -720,8 +727,7 @@ diagram.groupTemplate =
             {
               click: (e, obj) => shiftNode(obj, +20),
               "ButtonBorder.fill": "yellow",
-              "_buttonFillOver": "cyan",
-              "_buttonFillPressed": "lime"
+              "_buttonFillOver": "cyan"
             })
           .add(
             new go.TextBlock("Shift Right")
@@ -760,14 +766,14 @@ diagram.groupTemplate =
   but a great deal of customization is possible.
 </p>
 <p>
-  The first argument when defining a "CheckBoxButton" should be a string that names the data property
-  holding the checked state of the "CheckBoxButton".
-  If you do not want clicking on the button to toggle the value of a data property,
-  specify a data property name that is the empty string.
-</p>
-<p>
   A "CheckBoxButton" is used in the definition of the "CheckBox" Panel, which is a convenient way to associate
   any GraphObject as a label for the "CheckBoxButton".
+</p>
+<p>
+  The third argument to <a>GraphObject.build</a> when defining a "CheckBox" or "CheckBoxButton"
+  should be a string that names the data property holding the checked state of the "CheckBoxButton".
+  If you do not want clicking on the button to toggle the value of a data property,
+  specify a data property name that is the empty string.
 </p>
 <p>
   Many examples of "CheckBox"es with various customizations are shown in the <a
@@ -778,24 +784,62 @@ diagram.groupTemplate =
     href="../samples/triStateCheckBoxTree.html">Tri-State CheckBox Tree</a> sample.
 </p>
 
+<h2 id="Toggles">ToggleSwitches and Toggles</h2>
+<p>
+  A "ToggleSwitch" is a "Button" that is configured to toggle the boolean value of a data property.
+  By default the button shows a circular Shape at either end of a "Capsule" Shape
+  depending on the value of the boolean property, but a great deal of customization is possible.
+</p>
+<p>
+  A "ToggleSwitch" is used in the definition of the "Toggle" Panel, which is a convenient way to associate
+  any GraphObject as a label for the "ToggleSwitch".
+</p>
+<p>
+  The third argument to <a>GraphObject.build</a> when defining a "Toggle" or "ToggleSwitch"
+  should be a string that names the data property holding the checked state of the "ToggleSwitch".
+  If you do not want clicking on the button to toggle the value of a data property,
+  specify a data property name that is the empty string.
+</p>
+<p>
+  Many examples of "Toggle"s with various customization are shown in the
+  <a href="../samples/Toggles.html">Toggles</a> sample.
+</p>
+
+<h2 id="AutoRepeatButtons">AutoRepeat Buttons</h2>
+<p>
+  The "AutoRepeatButton" had been defined for many years in the definition of the "ScrollingTable" extension.
+  It has now been moved into the main library to make it easier to use both in your code as well as in various extensions.
+  You can see it in action in the <a href="../samples/ScrollingTable.html">ScrollingTable</a> sample.
+</p>
+
 <h2 id="ButtonDefinitions">Button Definitions</h2>
 <p>
   The implementation of all predefined buttons is provided in <a href="../extensions/Buttons.js">Buttons.js</a>
   in the Extensions directory.
   You may wish to copy and adapt these definitions when creating your own buttons.
-  You may also wish to theme your own buttons, described on the <a href="./theming.html#BuilderObjects">theming intro
-    page</a>.
+  You may also wish to theme your own buttons, described on the
+  <a href="./theming.html#BuilderObjects">theming intro page</a>.
 </p>
 <p>
   Note that the definitions of those buttons makes use of the <a>GraphObject.defineBuilder</a> static function.
-  That extends the behavior of <a>GraphObject.make</a> and <a>GraphObject.build</a>
+  That extends the behavior of <a>GraphObject.build</a>
   to allow the creation of fairly complex visual trees by name with optional arguments.
   You can find the definitions of various kinds of builders in the samples and extensions, such as at:
 <ul>
-  <li><a href="../extensions/Buttons.js">Buttons.js</a></li>
-  <li><a href="../extensions/HyperlinkText.js">HyperlinkText.js</a></li>
-  <li><a href="../extensions/ScrollingTable.js">ScrollingTable.js</a></li>
-  <li><a href="../extensions/ScrollingTable.js">AutoRepeatButton</a></li>
+  <li>
+    <a href="../extensions/Buttons.js">Buttons.js</a>,
+    showing the implementation of all of the built-in buttons.
+  </li>
+  <li>
+    <a href="../extensions/HyperlinkText.js">HyperlinkText.js</a>,
+    implementing underlined text that calls <code>window.open</code>,
+    used in the <a href="../samples/Hyperlink.html">Hyperlink</a> sample.
+  </li>
+  <li>
+    <a href="../extensions/ScrollingTable.js">ScrollingTable.js</a>,
+    implementing a "ScrollingTable" Panel using two "AutoRepeatButtons",
+    used in the <a href="../samples/ScrollingTable.html">ScrollingTable</a> sample.
+  </li>
 </ul>
 </p>
 
@@ -846,7 +890,9 @@ diagram.groupTemplate =
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

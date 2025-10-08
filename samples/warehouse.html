@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -167,11 +169,12 @@
     const CellSize = new go.Size(20, 20);
     const myDiagram = new go.Diagram('myDiagramDiv', {
       contentAlignment: go.Spot.Center,
-      grid: new go.Panel('Grid', { gridCellSize: CellSize })
-        .add(
-          new go.Shape('LineH', { strokeWidth: 0.5, stroke: 'lightgray' }),
-          new go.Shape('LineV', { strokeWidth: 0.5, stroke: 'lightgray' })
-        ),
+      grid:
+        new go.Panel('Grid', { gridCellSize: CellSize })
+          .add(
+            new go.Shape('LineH', { strokeWidth: 0.5, stroke: 'lightgray' }),
+            new go.Shape('LineV', { strokeWidth: 0.5, stroke: 'lightgray' })
+          ),
       'animationManager.isEnabled': false,
       'undoManager.isEnabled': true,
       'draggingTool.dragsLink': true,
@@ -180,7 +183,7 @@
       'draggingTool.isGridSnapEnabled': true,
       'draggingTool.gridSnapCellSpot': go.Spot.Center,
       'resizingTool.isGridSnapEnabled': true,
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         // just for demonstration purposes,
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
@@ -192,70 +195,66 @@
     });
 
     // The default template (empty-string name) represents racks, shelves, or tables
-    myDiagram.nodeTemplateMap.add(
-      '',
+    myDiagram.nodeTemplateMap.add('',
       new go.Node('Spot', {
-        resizable: true,
-        resizeObjectName: 'mainShape',
-        // because the gridSnapCellSpot is Center, offset the Node's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
-      })
+          resizable: true,
+          resizeObjectName: 'mainShape',
+          // because the gridSnapCellSpot is Center, offset the Node's location
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape({
-            stroke: 'gray',
-            name: 'mainShape',
-            opacity: 0.7,
-            minSize: CellSize,
-            desiredSize: CellSize // defaults to 1x1 cell
-          })
+              stroke: 'gray',
+              name: 'mainShape',
+              opacity: 0.7,
+              minSize: CellSize,
+              desiredSize: CellSize // defaults to 1x1 cell
+            })
             .bind('fill', 'color')
             .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
-          new go.TextBlock({
-            font: 'italic 11pt Verdana'
-          }).bind('text', 'label')
+          new go.TextBlock({ font: 'italic 11pt Verdana' })
+            .bind('text', 'label')
         )
     );
 
     // The 'zone' template represents areas without furniture
-    myDiagram.nodeTemplateMap.add(
-      'zone',
+    myDiagram.nodeTemplateMap.add('zone',
       new go.Node('Spot', {
-        resizable: true,
-        resizeObjectName: 'mainShape',
-        // because the gridSnapCellSpot is Center, offset the Node's location
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
-      })
+          resizable: true,
+          resizeObjectName: 'mainShape',
+          // because the gridSnapCellSpot is Center, offset the Node's location
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2)
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
           new go.Shape('RoundedRectangle', {
-            strokeDashArray: [8, 8],
-            stroke: 'rgba(0,0,0,.3)',
-            name: 'mainShape',
-            fill: null,
-            strokeWidth: 1.5,
-            minSize: CellSize,
-            desiredSize: CellSize // defaults to 1x1 cell
-          })
+              strokeDashArray: [8, 8],
+              stroke: 'rgba(0,0,0,.3)',
+              name: 'mainShape',
+              fill: null,
+              strokeWidth: 1.5,
+              minSize: CellSize,
+              desiredSize: CellSize // defaults to 1x1 cell
+            })
             .bind('fill', 'color')
             .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify),
-          new go.TextBlock('label', {
-            font: 'italic 11pt Georgia'
-          }).bind('text', 'label')
+          new go.TextBlock('label', { font: 'italic 11pt Georgia' })
+            .bind('text', 'label')
         )
     );
 
     // The 'building' template represents walls. It is in a background layer
     // and cannot  be selected.
-    myDiagram.nodeTemplateMap.add(
-      'building',
+    myDiagram.nodeTemplateMap.add('building',
       new go.Node('Spot', {
-        layerName: 'Background',
-        locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
-        selectable: false,
-        pickable: false
-      })
+          layerName: 'Background',
+          locationSpot: new go.Spot(0, 0, CellSize.width / 2, CellSize.height / 2),
+          selectable: false,
+          pickable: false
+        })
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
         .add(
           new go.Shape({
             stroke: 'black',
@@ -264,36 +263,35 @@
             strokeWidth: 2,
             minSize: CellSize,
             desiredSize: CellSize // defaults to 1x1 cell
-          }).bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+          })
         )
     );
 
-    myDiagram.linkTemplate = new go.Link({
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      // routing: go.Routing.AvoidsNodes,
-      // curve: go.Curve.JumpOver,
-      corner: 5,
-      toShortLength: 4
-    })
-      .bindTwoWay('points')
-      .add(
-        new go.Shape({ stroke: '#555', strokeDashArray: [12, 8], isPanelMain: true, strokeWidth: 3 }),
-        new go.Shape({ stroke: '#555', fill: '#555', toArrow: 'Triangle', scale: 2 }),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', { fill: '#F8F8F8', stroke: null }),
-          new go.TextBlock({
-            textAlign: 'center',
-            font: '10pt helvetica, arial, sans-serif',
-            stroke: '#919191',
-            margin: 2,
-            minSize: new go.Size(10, NaN),
-            editable: true
-          }).bindTwoWay('text')
-        )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          toShortLength: 4
+        })
+        .bindTwoWay('points')
+        .add(
+          new go.Shape({ stroke: '#555', strokeDashArray: [12, 8], isPanelMain: true, strokeWidth: 3 }),
+          new go.Shape({ stroke: '#555', fill: '#555', toArrow: 'Triangle', scale: 2 }),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', { fill: '#F8F8F8', stroke: null }),
+              new go.TextBlock({
+                  textAlign: 'center',
+                  font: '10pt helvetica, arial, sans-serif',
+                  stroke: '#919191',
+                  margin: 2,
+                  minSize: new go.Size(10, NaN),
+                  editable: true
+                })
+                .bindTwoWay('text')
+            )
+        );
 
     myDiagram.model = go.Model.fromJSON(document.getElementById('modelJson').innerText);
   } // end init

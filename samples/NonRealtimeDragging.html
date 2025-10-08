@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,30 +134,31 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto',{ locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape('Circle', {
-          fill: 'white', // the default fill, if there is no data-binding
-          portId: '',
-          cursor: 'pointer', // the Shape is the port, not the whole Node
-          // allow all kinds of links from and to this port
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: true,
-          toLinkableDuplicates: true
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({
-          font: 'bold 14px sans-serif',
-          stroke: '#333',
-          margin: 6, // make some extra space for the shape around the text
-          isMultiline: false, // don't allow newlines in text
-          editable: true // allow in-place editing by user
-        })
-          .bindTwoWay('text') // the label shows the node data's text
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto',{ locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Circle', {
+              fill: 'white', // the default fill, if there is no data-binding
+              portId: '',
+              cursor: 'pointer', // the Shape is the port, not the whole Node
+              // allow all kinds of links from and to this port
+              fromLinkable: true,
+              fromLinkableSelfNode: true,
+              fromLinkableDuplicates: true,
+              toLinkable: true,
+              toLinkableSelfNode: true,
+              toLinkableDuplicates: true
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({
+              font: 'bold 14px sans-serif',
+              stroke: '#333',
+              margin: 6, // make some extra space for the shape around the text
+              isMultiline: false, // don't allow newlines in text
+              editable: true // allow in-place editing by user
+            })
+            .bindTwoWay('text') // the label shows the node data's text
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -173,6 +176,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

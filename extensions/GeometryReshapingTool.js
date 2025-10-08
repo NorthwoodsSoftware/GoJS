@@ -631,8 +631,7 @@ class GeometryReshapingTool extends go.Tool {
         if (part === null)
             return;
         part.ensureBounds();
-        if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) {
-            // but only if the locationSpot isn't Center
+        if (offset.x !== 0 || offset.y !== 0) {
             // support the whole Node being rotated
             part.move(part.position.copy().subtract(offset.rotate(part.angle)));
         }

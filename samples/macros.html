@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,7 +131,7 @@
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
       // automatically show the state of the diagram's model on the page in a PRE element
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           document.getElementById('mySavedModel').innerHTML = myDiagram.model.toJson();
           if (window.Prism) window.Prism.highlightAll();
@@ -139,8 +141,7 @@
     });
 
     // define the Node template for regular nodes
-    myDiagram.nodeTemplateMap.add(
-      '', // the default category
+    myDiagram.nodeTemplateMap.add('', // the default category
       new go.Node('Auto')
         // The Node.location comes from the "loc" property of the node data,
         // converted by the Point.parse method.
@@ -150,49 +151,52 @@
         .add(
           // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
           new go.Shape({
-          figure: 'Rectangle',
-          fill: 'white',
-          strokeWidth: 2,
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer'
-        })
-          .bind('stroke', 'color'),
+              figure: 'Rectangle',
+              fill: 'white',
+              strokeWidth: 2,
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              cursor: 'pointer'
+            })
+            .bind('stroke', 'color'),
           new go.TextBlock({
-            maxSize: new go.Size(150, NaN),
-            textAlign: 'center',
-            margin: 6,
-            editable: true,
-            name: 'TEXT',
-            font: '16pt Helvetica, Arial, sans-serif'
-          })
+              maxSize: new go.Size(150, NaN),
+              textAlign: 'center',
+              margin: 6,
+              editable: true,
+              name: 'TEXT',
+              font: '16pt Helvetica, Arial, sans-serif'
+            })
             .bindTwoWay('text')
         )
     );
 
-    myDiagram.groupTemplate = new go.Group('Auto', {
-      isSubGraphExpanded: false, // only show the Group itself, not any of its members
-      ungroupable: true
-    }) // allow the ExternalObjectsDropped event handler to ungroup
-      .add(
-        // the members to be top-level parts, via a command
-        new go.Shape('Rectangle', // the rectangular shape around the members
-          { fill: 'rgba(128,128,128,0.2)', stroke: 'gray', strokeWidth: 3 }
-        ),
-        new go.Placeholder({ alignment: go.Spot.TopLeft }),
-        new go.TextBlock({ font: 'bold 16pt Helvetica, Arial, sans-serif', margin: 10 }).bind('text')
-      );
+    myDiagram.groupTemplate =
+      new go.Group('Auto', {
+          isSubGraphExpanded: false, // only show the Group itself, not any of its members
+          ungroupable: true
+        }) // allow the ExternalObjectsDropped event handler to ungroup
+        .add(
+          // the members to be top-level parts, via a command
+          new go.Shape('Rectangle', { // the rectangular shape around the members
+            fill: 'rgba(128,128,128,0.2)', stroke: 'gray', strokeWidth: 3
+          }),
+          new go.Placeholder({ alignment: go.Spot.TopLeft }),
+          new go.TextBlock({ font: 'bold 16pt Helvetica, Arial, sans-serif', margin: 10 })
+            .bind('text')
+        );
 
-    myDiagram.linkTemplate = new go.Link()
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }),
-        new go.Shape({ toArrow: 'Standard', stroke: null })
-      );
+    myDiagram.linkTemplate =
+      new go.Link()
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard', stroke: null })
+        );
 
     // this DiagramEvent is raised when the user has drag-and-dropped something
     // from another Diagram (a Palette in this case) into this Diagram
-    myDiagram.addDiagramListener('ExternalObjectsDropped', (e) => {
+    myDiagram.addDiagramListener('ExternalObjectsDropped', e => {
       // stop any ongoing text editing
       if (myDiagram.currentTool instanceof go.TextEditingTool) {
         myDiagram.currentTool.acceptText(go.TextEditingAccept.LostFocus);
@@ -227,6 +231,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

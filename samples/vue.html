@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -138,40 +140,36 @@
             }),
           'undoManager.isEnabled': true,
           // Model ChangedEvents get passed up to component users
-          ModelChanged: (e) => {
+          ModelChanged: e => {
             self.$emit('model-changed', e);
           },
-          ChangedSelection: (e) => {
+          ChangedSelection: e => {
             self.$emit('changed-selection', e);
           }
         });
 
-        myDiagram.nodeTemplate = new go.Node('Auto')
-          .add(
-            new go.Shape({
-              fill: 'white',
-              strokeWidth: 0,
-              portId: '',
-              fromLinkable: true,
-              toLinkable: true,
-              cursor: 'pointer'
-            })
-              .bind('fill', 'color'),
-            new go.TextBlock({
-              margin: 8,
-              editable: true
-            })
-              .bindTwoWay('text')
-          );
+        myDiagram.nodeTemplate =
+          new go.Node('Auto')
+            .add(
+              new go.Shape({
+                  fill: 'white',
+                  strokeWidth: 0,
+                  portId: '',
+                  fromLinkable: true,
+                  toLinkable: true,
+                  cursor: 'pointer'
+                })
+                .bind('fill', 'color'),
+              new go.TextBlock({ margin: 8, editable: true })
+                .bindTwoWay('text')
+            );
 
-        myDiagram.linkTemplate = new go.Link({
-          relinkableFrom: true,
-          relinkableTo: true
-        })
-          .add(
-            new go.Shape(),
-            new go.Shape({ toArrow: 'OpenTriangle' })
-          );
+        myDiagram.linkTemplate =
+          new go.Link({ relinkableFrom: true, relinkableTo: true })
+            .add(
+              new go.Shape(),
+              new go.Shape({ toArrow: 'OpenTriangle' })
+            );
 
         this.diagram = myDiagram;
 
@@ -318,6 +316,7 @@
       }
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

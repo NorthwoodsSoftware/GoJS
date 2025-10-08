@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,47 +136,51 @@
 
     var NodeInfoSize = new go.Size(50, 25); // controls the size of each half
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      selectionAdorned: false,
-      locationSpot: go.Spot.Center
-    })
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', {
-              stroke: 'transparent',
-              strokeWidth: 3,
-              spot1: go.Spot.TopLeft,
-              spot2: go.Spot.BottomRight
-            })
-              .bindObject('stroke', 'isSelected', (s) => (s ? 'dodgerblue' : 'transparent')), // shown when selected
-            new go.Panel()
-              .add(
-                new go.Panel('Auto', { desiredSize: NodeInfoSize })
-                  .add(
-                    new go.Shape('RoundedTopRectangle', { fill: 'white' }).bind('fill', 'topColor'),
-                    new go.TextBlock().bind('text', 'topText')
-                  ),
-                new go.Panel('Auto', {
-                  desiredSize: NodeInfoSize,
-                  position: new go.Point(0, NodeInfoSize.height - 1)
-                })
-                  .add(
-                    new go.Shape('RoundedBottomRectangle', { fill: 'white' }).bind('fill', 'bottomColor'),
-                    new go.TextBlock().bind('text', 'bottomText')
-                  )
-              )
-          ),
-        // decorations...
-        new go.Shape('Triangle', {
-          desiredSize: new go.Size(12, 12),
-          fill: 'yellow',
-          alignment: new go.Spot(1, 0, -2, 2),
-          opacity: 0.0
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          selectionAdorned: false,
+          locationSpot: go.Spot.Center
         })
-          .bind('opacity', 'star', (v) => (v ? 1.0 : 0.0))
-
-      );
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', {
+                  stroke: 'transparent',
+                  strokeWidth: 3,
+                  spot1: go.Spot.TopLeft,
+                  spot2: go.Spot.BottomRight
+                })
+                .bindObject('stroke', 'isSelected', s => s ? 'dodgerblue' : 'transparent'), // shown when selected
+              new go.Panel()
+                .add(
+                  new go.Panel('Auto', { desiredSize: NodeInfoSize })
+                    .add(
+                      new go.Shape('RoundedTopRectangle', { fill: 'white' })
+                        .bind('fill', 'topColor'),
+                      new go.TextBlock()
+                        .bind('text', 'topText')
+                    ),
+                  new go.Panel('Auto', {
+                      desiredSize: NodeInfoSize,
+                      position: new go.Point(0, NodeInfoSize.height - 1)
+                    })
+                    .add(
+                      new go.Shape('RoundedBottomRectangle', { fill: 'white' })
+                        .bind('fill', 'bottomColor'),
+                      new go.TextBlock()
+                        .bind('text', 'bottomText')
+                    )
+                )
+            ),
+          // decorations...
+          new go.Shape('Triangle', {
+              desiredSize: new go.Size(12, 12),
+              fill: 'yellow',
+              alignment: new go.Spot(1, 0, -2, 2),
+              opacity: 0.0
+            })
+            .bind('opacity', 'star', v => v ? 1.0 : 0.0)
+        );
 
     load();
   }
@@ -182,6 +188,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').innerText);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

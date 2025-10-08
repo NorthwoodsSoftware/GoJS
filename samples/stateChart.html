@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,8 +127,9 @@
 <script id="code">
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
+      padding: 12,
       'animationManager.initialAnimationStyle': go.AnimationStyle.None,
-      InitialAnimationStarting: (e) => {
+      InitialAnimationStarting: e => {
         var animation = e.subject.defaultAnimation;
         animation.easing = go.Animation.EaseOutExpo;
         animation.duration = 800;
@@ -143,10 +146,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -170,59 +173,62 @@
     };
     myDiagram.div.style.backgroundColor = colors.background;
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      isShadowed: true,
-      shadowBlur: 0,
-      shadowOffset: new go.Point(5, 5),
-      shadowColor: 'black'
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('RoundedRectangle', {
-          strokeWidth: 1.5,
-          fill: colors.blue,
-          portId: '',
-          fromLinkable: true, fromLinkableSelfNode: false, fromLinkableDuplicates: true,
-          toLinkable: true, toLinkableSelfNode: false, toLinkableDuplicates: true,
-          cursor: 'pointer'
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          isShadowed: true,
+          shadowBlur: 0,
+          shadowOffset: new go.Point(5, 5),
+          shadowColor: 'black'
         })
-          .bind('fill', 'type', (type) => {
-            if (type === 'Start') return colors.green;
-            if (type === 'End') return colors.pink;
-            return colors.blue;
-          })
-          .bind('figure', 'type', (type) => {
-            if (type === 'Start' || type === 'End') return 'Circle';
-            return 'RoundedRectangle';
-          }),
-        new go.TextBlock({
-          font: 'bold small-caps 11pt helvetica, bold arial, sans-serif',
-          shadowVisible: false,
-          margin: 8,
-          font: 'bold 14px sans-serif',
-          stroke: '#333',
-          editable: true
-        }).bindTwoWay('text')
-      );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', {
+              strokeWidth: 1.5,
+              fill: colors.blue,
+              portId: '',
+              fromLinkable: true, fromLinkableSelfNode: false, fromLinkableDuplicates: true,
+              toLinkable: true, toLinkableSelfNode: false, toLinkableDuplicates: true,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'type', type => {
+              if (type === 'Start') return colors.green;
+              if (type === 'End') return colors.pink;
+              return colors.blue;
+            })
+            .bind('figure', 'type', type => {
+              if (type === 'Start' || type === 'End') return 'Circle';
+              return 'RoundedRectangle';
+            }),
+          new go.TextBlock({
+              font: 'bold small-caps 11pt helvetica, bold arial, sans-serif',
+              shadowVisible: false,
+              margin: 8,
+              font: 'bold 14px sans-serif',
+              stroke: '#333',
+              editable: true
+            })
+            .bindTwoWay('text')
+        );
 
     // unlike the normal selection Adornment, this one includes a Button
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', { fill: null, stroke: colors.pink, strokeWidth: 3 }),
-            new go.Placeholder() // a Placeholder sizes itself to the selected Node
-          ),
+    myDiagram.nodeTemplate.selectionAdornmentTemplate =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', { fill: null, stroke: colors.pink, strokeWidth: 3 }),
+              new go.Placeholder() // a Placeholder sizes itself to the selected Node
+            ),
 
-        // the button to create a "next" node, at the top-right corner
-        go.GraphObject.build('Button', {
-          alignment: go.Spot.TopRight,
-          click: addNodeAndLink // this function is defined below
-        })
-          .add(
-            new go.Shape('PlusLine', { width: 6, height: 6 })
-          ) // end button
-      );
+          // the button to create a "next" node, at the top-right corner
+          go.GraphObject.build('Button', {
+              alignment: go.Spot.TopRight,
+              click: addNodeAndLink // this function is defined below
+            })
+            .add(
+              new go.Shape('PlusLine', { width: 6, height: 6 })
+            ) // end button
+        );
 
     // clicking the button inserts a new node to the right of the selected node,
     // and adds a link to that new node
@@ -257,53 +263,59 @@
       diagram.select(newnode);
       diagram.commitTransaction('Add State');
       // if the new node is off-screen, scroll the diagram to show the new node
-      diagram.scrollToRect(newnode.actualBounds);
+      if (!diagram.viewportBounds.containsRect(newnode.actualBounds)) {
+        diagram.commandHandler.scrollToPart(newnode);
+      }
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link({
-      // shadow options are for the label, not the link itself
-      isShadowed: true,
-      shadowBlur: 0,
-      shadowColor: 'black',
-      shadowOffset: new go.Point(2.5, 2.5),
+    myDiagram.linkTemplate =
+      new go.Link({
+          // shadow options are for the label, not the link itself
+          isShadowed: true,
+          shadowBlur: 0,
+          shadowColor: 'black',
+          shadowOffset: new go.Point(2.5, 2.5),
 
-      curve: go.Curve.Bezier,
-      curviness: 40,
-      adjusting: go.LinkAdjusting.Stretch,
-      reshapable: true,
-      relinkableFrom: true,
-      relinkableTo: true,
-      fromShortLength: 8,
-      toShortLength: 10
-    })
-      .bindTwoWay('points')
-      .bind('curviness')
-      .add(
-        // Main shape geometry
-        new go.Shape({ strokeWidth: 2, shadowVisible: false, stroke: 'black' })
-          .bind('strokeDashArray', 'progress', (progress) => (progress ? [] : [5, 6]))
-          .bind('opacity', 'progress', (progress) => (progress ? 1 : 0.5)),
-        // Arrowheads
-        new go.Shape({ fromArrow: 'circle', strokeWidth: 1.5, fill: 'white' }).bind('opacity', 'progress', (progress) => (progress ? 1 : 0.5)),
-        new go.Shape({ toArrow: 'standard', stroke: null, scale: 1.5, fill: 'black' }).bind('opacity', 'progress', (progress) => (progress ? 1 : 0.5)),
-        // The link label
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', {
-              shadowVisible: true,
-              fill: colors.yellow,
-              strokeWidth: 0.5
-            }),
-            new go.TextBlock({
-              font: '9pt helvetica, arial, sans-serif',
-              margin: 1,
-              editable: true, // enable in-place editing
-              text: 'Action' // default text
-            }).bind('text')
-            // editing the text automatically updates the model data
-          )
-      );
+          curve: go.Curve.Bezier,
+          curviness: 40,
+          adjusting: go.LinkAdjusting.Stretch,
+          reshapable: true,
+          relinkableFrom: true,
+          relinkableTo: true,
+          fromShortLength: 8,
+          toShortLength: 10
+        })
+        .bindTwoWay('points')
+        .bind('curviness')
+        .add(
+          // Main shape geometry
+          new go.Shape({ strokeWidth: 2, shadowVisible: false, stroke: 'black' })
+            .bind('strokeDashArray', 'progress', progress => progress ? [] : [5, 6])
+            .bind('opacity', 'progress', progress => progress ? 1 : 0.5),
+          // Arrowheads
+          new go.Shape({ fromArrow: 'circle', strokeWidth: 1.5, fill: 'white' })
+            .bind('opacity', 'progress', progress => progress ? 1 : 0.5),
+          new go.Shape({ toArrow: 'standard', stroke: null, scale: 1.5, fill: 'black' })
+            .bind('opacity', 'progress', progress => progress ? 1 : 0.5),
+          // The link label
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', {
+                shadowVisible: true,
+                fill: colors.yellow,
+                strokeWidth: 0.5
+              }),
+              new go.TextBlock({
+                  font: '9pt helvetica, arial, sans-serif',
+                  margin: 1,
+                  editable: true, // enable in-place editing
+                  text: 'Action' // default text
+                })
+                .bind('text')
+              // editing the text automatically updates the model data
+            )
+        );
 
     // read in the JSON data from the "mySavedModel" element
     load();
@@ -325,21 +337,24 @@
   <div id="myDiagramDiv" style="border: solid 1px black; width: 100%; height: 470px; background: whitesmoke"></div>
   <p>This sample creates a state chart to story-board an online shopping experience.</p>
   <p>
-    The text is editable for both the <a>Node</a>s and the <a>Link</a>s. The
-    user can draw as many links from one <a>Node</a> to another <a>Node</a> as
-    desired. To create a new <a>Link</a> start dragging from the edge of a
-    <a>Node</a>. The <a>Link</a> s can be reshaped or deleted when selected.
+    The text is editable for both the <a>Node</a>s and the <a>Link</a>s.
+    The user can draw as many links from one <a>Node</a> to another <a>Node</a> as desired.
+    To create a new <a>Link</a> start dragging from the edge of a <a>Node</a>.
+    The <a>Link</a> s can be reshaped or deleted when selected.
     Double-clicking in the background of the <a>Diagram</a> creates a new node.
     The mouse wheel is set to zoom in and out instead of scroll.
   </p>
   <p>
-    This sample customizes the <a>Part.selectionAdornmentTemplate</a> of the node to a template that contains a button The button is positioned to be at the
-    Top-Right corner of the node by being in a Spot Panel with its <a>GraphObject.alignment</a> property set to Spot.TopRight.
+    This sample customizes the <a>Part.selectionAdornmentTemplate</a> of the node to a template that contains a button.
+    The button is positioned to be at the Top-Right corner of the node by being in a Spot Panel with
+    its <a>GraphObject.alignment</a> property set to Spot.TopRight.
   </p>
   <p>
-    The Button's <a>GraphObject.click</a> method creates a new node data, adds it to the model, and creates a link from the original node data to the new node
-    data. All of this is done inside a transaction, so that it can be undone by the user (Ctrl+Z and Ctrl+Y will undo and redo transactions). After the node is
-    created, <a>Diagram.scrollToRect</a> is called in case it is off-screen.
+    The Button's <a>GraphObject.click</a> method creates a new node data, adds it to the model,
+    and creates a link from the original node data to the new node data.
+    All of this is done inside a transaction, so that it can be undone by the user
+    (Ctrl+Z and Ctrl+Y will undo and redo transactions).
+    After the node is created, <a>CommandHandler.scrollToPart</a> is called to try to center it.
   </p>
   <div>
     <div>
@@ -403,7 +418,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

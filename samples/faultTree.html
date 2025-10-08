@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,10 +141,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -166,17 +168,18 @@
       }
     }
 
-    myDiagram.nodeTemplate = new go.Node('Spot', { // the default node template
-        selectionObjectName: 'BODY',
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'BODY'
-      })
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', { // the default node template
+          selectionObjectName: 'BODY',
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'BODY'
+        })
         // the main "BODY" consists of a Rectangle surrounding some text
         .add(
           new go.Panel('Auto', {
-            name: 'BODY',
-            portId: ''
-          })
+              name: 'BODY',
+              portId: ''
+            })
             .add(
               new go.Shape({
                 fill: new go.Brush('Linear', {
@@ -186,11 +189,11 @@
                 stroke: null
               }),
               new go.TextBlock({
-                margin: new go.Margin(2, 10, 1, 10),
-                maxSize: new go.Size(100, NaN),
-                stroke: 'whitesmoke',
-                font: '10pt Segoe UI, sans-serif'
-              })
+                  margin: new go.Margin(2, 10, 1, 10),
+                  maxSize: new go.Size(100, NaN),
+                  stroke: 'whitesmoke',
+                  font: '10pt Segoe UI, sans-serif'
+                })
                 .bind('text')
             ), // end "BODY", an Auto Panel
           go.GraphObject.build('TreeExpanderButton', {
@@ -199,43 +202,44 @@
             'ButtonBorder.figure': 'Rectangle'
           }),
           new go.Shape('LineV', {
-            strokeWidth: 1.5,
-            height: 20,
-            alignment: new go.Spot(0.5, 1, 0, -1),
-            alignmentFocus: go.Spot.Top
-          })
-            .bind('visible', 'figure', (f) => f !== 'None'),
+              strokeWidth: 1.5,
+              height: 20,
+              alignment: new go.Spot(0.5, 1, 0, -1),
+              alignmentFocus: go.Spot.Top
+            })
+            .bind('visible', 'figure', f => f !== 'None'),
           new go.Shape({
-            alignment: new go.Spot(0.5, 1, 0, 5),
-            alignmentFocus: go.Spot.Top,
-            width: 30,
-            height: 30,
-            stroke: null
-          })
-            .bind('visible', 'figure', (f) => f !== 'None')
+              alignment: new go.Spot(0.5, 1, 0, 5),
+              alignmentFocus: go.Spot.Top,
+              width: 30,
+              height: 30,
+              stroke: null
+            })
+            .bind('visible', 'figure', f => f !== 'None')
             .bind('figure')
             .bind('fill', 'figure', nodeFillConverter)
             // ORs and ANDs should point upwards
-            .bind('angle', 'figure', (f) => (f === 'OrGate' || f === 'AndGate' ? -90 : 0)),
+            .bind('angle', 'figure', f => (f === 'OrGate' || f === 'AndGate') ? -90 : 0),
           new go.TextBlock({
-            alignment: new go.Spot(0.5, 1, 20, 20),
-            alignmentFocus: go.Spot.Left,
-            stroke: 'black',
-            font: '10pt Segoe UI, sans-serif'
-          })
+              alignment: new go.Spot(0.5, 1, 20, 20),
+              alignmentFocus: go.Spot.Left,
+              stroke: 'black',
+              font: '10pt Segoe UI, sans-serif'
+            })
             .bind('text', 'choice')
-            .bind('visible', 'figure', (f) => f !== 'None') // if we don't have a figure, don't display any choice text
+            .bind('visible', 'figure', f => f !== 'None') // if we don't have a figure, don't display any choice text
         );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      layerName: 'Background',
-      curviness: 20,
-      corner: 5
-    })
-      .add(
-        new go.Shape({ strokeWidth: 1.5 })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          layerName: 'Background',
+          curviness: 20,
+          corner: 5
+        })
+        .add(
+          new go.Shape({ strokeWidth: 1.5 })
+        );
 
     load();
   }
@@ -247,6 +251,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -326,7 +331,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.0.27
+ * Type definitions for GoJS v3.1.0
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -281,6 +281,8 @@ export interface IContext {
     imageSmoothingEnabled: boolean;
     /** Only true if a Spot panel has isClipping element  */ clipInsteadOfFill: boolean;
     filter: string;
+    letterSpacing: string;
+    wordSpacing: string;
     commitTransform(): void;
     setImageSmoothingEnabled(smooth: boolean): void;
     arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise: boolean, lx?: number, ly?: number): void;
@@ -374,14 +376,9 @@ export class List<T> implements Iterable<T> {
      * `new go.List()`, for JavaScript
      *
      * `new go.List<type>()` for TypeScript, to enforce type checking.
-     *
-     * Typical usage would be something like:
-     * ```js
-     *   const list = new go.List();  // keep a list of GraphObjects
-     * ```
-     * @param coll - an optional collection of items to add.
+     * @param coll - an optional collection of items to add; it can be either a GoJS Iterable or a JavaScript Iterable, including an Array
      */
-    constructor(coll?: Iterable<T> | Array<T>);
+    constructor(coll?: Iterable<T> | globalThis.Iterable<T>);
     /**
      * This class implements the JavaScript `Symbol.iterator`,
      * and can be used with spread syntax or `for ... of` statements.
@@ -409,10 +406,10 @@ export class List<T> implements Iterable<T> {
      * Adds all of the values of a collection to the end of this List.
      *
      * Be careful not to call this method while iterating over the collection.
-     * @param coll - the collection of items to add.
+     * @param coll - the collection of items to add -- it can be either a GoJS Iterable or a JavaScript Iterable, including an Array
      * @returns This modified List.
      */
-    addAll(coll: Iterable<T> | Array<T>): this;
+    addAll(coll: Iterable<T> | globalThis.Iterable<T>): this;
     /**
      * Clears the List.
      * This sets the {@link count} to zero.
@@ -715,17 +712,9 @@ export class Set<T> implements Iterable<T> {
      * In TypeScript, the optional generic argument describes the type of values
      * that this Set may hold.
      *
-     * For example, the expression:
-     * ```js
-     * // TypeScript:
-     * new go.Set<go.Point>()
-     * ```
-     *
-     * Creates a new Set that may only contain {@link Point}s.
-     *
-     * @param coll - an optional collection of items to add.
+     * @param coll - an optional collection of items to add; it can be either a GoJS Iterable or a JavaScript Iterable, including an Array
      */
-    constructor(coll?: Iterable<T> | Array<T>);
+    constructor(coll?: Iterable<T> | globalThis.Iterable<T>);
     /**
      * This class implements the JavaScript `Symbol.iterator`,
      * and can be used with spread syntax or `for ... of` statements.
@@ -754,10 +743,10 @@ export class Set<T> implements Iterable<T> {
      * Adds all of the values of a collection to this Set.
      *
      * Be careful not to call this method while iterating over the collection.
-     * @param coll - the collection of items to add.
+     * @param coll - the collection of items to add -- it can be either a GoJS Iterable or a JavaScript Iterable, including an Array
      * @returns This modified Set.
      */
-    addAll(coll: Iterable<T> | Array<T>): this;
+    addAll(coll: Iterable<T> | globalThis.Iterable<T>): this;
     /**
      * Returns whether the given value is in this Set.
      * @param val - The value to check.
@@ -774,12 +763,12 @@ export class Set<T> implements Iterable<T> {
      * Returns true if all of the values of a given collection are in this Set.
      * @param coll - the collection of items to check for.
      */
-    containsAll(coll: Iterable<T>): boolean;
+    containsAll(coll: Iterable<T> | globalThis.Iterable<T>): boolean;
     /**
      * Returns true if any of the values of a given collection are in this Set.
      * @param coll - the collection of items to check for.
      */
-    containsAny(coll: Iterable<T>): boolean;
+    containsAny(coll: Iterable<T> | globalThis.Iterable<T>): boolean;
     /**
      * Returns the first item in the collection, or null if there is none.
      * @returns This returns null if there are no items in the collection.
@@ -855,7 +844,7 @@ export class Set<T> implements Iterable<T> {
      * @param coll - the collection of items to remove.
      * @returns This modified Set.
      */
-    removeAll(coll: Iterable<T> | Array<T>): this;
+    removeAll(coll: Iterable<T> | globalThis.Iterable<T>): this;
     /**
      * Removes from this Set all items that are not in the given collection.
      *
@@ -863,7 +852,7 @@ export class Set<T> implements Iterable<T> {
      * @param coll - the collection of items that should be kept in this Set.
      * @returns This modified Set.
      */
-    retainAll(coll: Iterable<T>): this;
+    retainAll(coll: Iterable<T> | globalThis.Iterable<T>): this;
     /**
      * Clears the Set.
      * This sets the {@link count} to zero.
@@ -911,9 +900,13 @@ export class Set<T> implements Iterable<T> {
      * ```
      */
     get iterator(): Iterator<T>;
-    /** @hidden */
+    /**
+     * For compatibility with the JavaScript Set class, this returns a JavaScript Set iterator of [value, value]s.
+     */
     entries(): IterableIterator<[T, T]>;
-    /** @hidden */
+    /**
+     * For compatibility with the JavaScript Set class, this returns a JavaScript Set iterator of values.
+     */
     keys(): IterableIterator<T>;
     /**
      * Call a provided function once per each key/value pair in this Set.
@@ -980,16 +973,10 @@ export class Map<K, V> {
      * In TypeScript, the two optional generic arguments describe the types of keys
      * and the types of values that this Map may hold.
      *
-     * For example, the expression:
-     * ```js
-     * // TypeScript:
-     * new go.Map<string, go.Point>()
-     * ```
-     * produces a Map that has keys that must be strings and whose associated values
-     * must be {@link Point}s.
-     * @param coll - an optional collection of {@link IKeyValuePair}s to add, or an Array of {@link IKeyValuePair}s.
+     * @param coll - an optional collection of {@link IKeyValuePair}s to add --
+     * it can be either a GoJS Iterable or a JavaScript Iterable, including an Array
      */
-    constructor(coll?: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V>);
+    constructor(coll?: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V> | globalThis.Iterable<readonly [K, V]>);
     /**
      * This class implements the JavaScript `Symbol.iterator`,
      * and can be used with spread syntax or `for ... of` statements.
@@ -1032,10 +1019,11 @@ export class Map<K, V> {
      * its value is replaced with the corresponding value from the given map.
      *
      * Be careful not to call this method while iterating over the collection.
-     * @param coll - the collection of {@link IKeyValuePair}s to add, or an Array of {@link IKeyValuePair}s.
+     * @param coll - the collection of {@link IKeyValuePair}s to add, or an Array of {@link IKeyValuePair}s,
+     * or a GoJS {@link Map}, or a JavaScript `Map`, or an Array or other JavaScript Iterable whose elements are key-value pairs.
      * @returns This modified Map.
      */
-    addAll(coll: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V>): this;
+    addAll(coll: Iterable<IKeyValuePair<K, V>> | Array<IKeyValuePair<K, V>> | Map<K, V> | globalThis.Iterable<readonly [K, V]>): this;
     /**
      * Returns the first {@link IKeyValuePair} in the collection, or null if there is none.
      * @returns This returns null if there are no items in the collection.
@@ -1964,6 +1952,21 @@ export class Rect {
      */
     setSpot(x: number, y: number, spot: Spot): this;
     /**
+     * Return which side/direction of the Rect is closest to the given x,y point.
+     * @param x a real number in the same coordinate system as this Rect
+     * @param y a real number in the same coordinate system as this Rect
+     * @returns 0 (right), 90 (bottom), 180 (left), or 270 (top), depending on which side of this Rect the point x,y is closest
+     * @since 3.1
+     */
+    nearestSideDirection(x: number, y: number): number;
+    /**
+     * Return which side/direction of the Rect is closest to the given x,y point.
+     * @param p a real Point in the same coordinate system as this Rect
+     * @returns 0 (right), 90 (bottom), 180 (left), or 270 (top), depending on which side of this Rect the point x,y is closest
+     * @since 3.1
+     */
+    nearestSideDirectionPoint(p: Point): number;
+    /**
      * This static function indicates whether a Rect contains the given Point/Rect.
      * @param rx - The X coordinate of a Rect.
      * @param ry - The Y coordinate of a Rect.
@@ -2252,7 +2255,7 @@ export class Margin {
  * a new instance with the same values that you can modify.
  *
  * Many methods modify the object's properties and then return a reference to "this" object.
- * The only instance method to allocate a new object is the {@link copy} method.
+ * The only instance methods to allocate a new Spot are the {@link copy} and {@link opposite} methods.
  * The static {@link Spot.parse} method also allocates a new object.
  *
  * The "Debug" implementation of this class is significantly slower than the "Release" implementation,
@@ -2382,21 +2385,21 @@ export class Spot {
     get offsetY(): number;
     set offsetY(value: number);
     /**
-     * True if this is a specific spot, not a side nor {@link Spot.None}.
+     * True if this is a specific spot point, not a side nor {@link Spot.None}.
      */
     isSpot(): boolean;
     /**
-     * True if this is an unspecific special spot, such as {@link Spot.None}
-     * or one of the sides.
+     * True if this is an unspecific special spot, such as {@link Spot.None} or {@link Spot.Default}
+     * or one of the side spots.
      */
     isNoSpot(): boolean;
     /**
      * True if this is a special spot referring to one (or more) of the sides.
-     * This is false if the spot is {@link Spot.None}.
+     * This is false if the spot is {@link Spot.None} or if it is a spot point.
      */
     isSide(): boolean;
     /**
-     * True if this is a special spot referring to no particular spot or side.
+     * True if this is a special spot referring to no particular spot point or side.
      */
     isNone(): boolean;
     /**
@@ -2662,7 +2665,7 @@ export class Geometry {
      * The geometry type must be a {@link GeometryType}.
      * The default type is {@link GeometryType.Path}.
      */
-    constructor(type?: GeometryType);
+    constructor(type?: GeometryType, init?: Partial<Geometry>);
     /**
      * Create a copy of this Geometry, with the same values and figures.
      * @virtual
@@ -2919,6 +2922,56 @@ export class Geometry {
      * The result will always contain the origin (0, 0).
      */
     get bounds(): Rect;
+    /**
+     * (undocumented)
+     * This finds the straight segment closest to the given PT,
+     * or returns null if no segment was found within DIST of the PT.
+     *
+     * This Geometry must be of type Path, and all of its PathSegments must be of type Line or Move.
+     * @param pt in local coordinates
+     * @param dist minimum distance for how close the PT must be to the segment
+     * @returns an Object with property "figi" for the figure index, "segi" for the segment index in that PathFigure,
+     * "ax" and "ay" for the segment's start point, and "bx" and "by" for the segment's end point.
+     * This returns null if no matching segment was found,
+     * including when this Geometry type is Line, Rectangle, or Ellipse.
+     */
+    polygonClosestSegment(pt: Point, dist?: number): ({
+        figi: number;
+        segi: number;
+        ax: number;
+        ay: number;
+        bx: number;
+        by: number;
+    } | null);
+    /**
+     * (undocumented)
+     * This computes the filled area of this Geometry.
+     * It ignores any curved segments, however it works for Ellipse geometries.
+     * It also assumes that no segments cross each other.
+     * Simple Line geometries and unfilled Path geometries have zero area.
+     */
+    get polygonArea(): number;
+    /**
+     * This computes the total length of the sides of this polygonal Geometry.
+     * It treats any curved segments as straight lines, however it works correctly for Ellipse geometries.
+     */
+    get polygonLength(): number;
+    /**
+     * (undocumented)
+     * Given an Array of Points, return a new Array of Points that specifies a convex polygon surrounding all of the given points.
+     * @param pts an Array of Points; all Point.x and Point.y values must be real numbers, not NaN nor infinity.
+     * @returns a new Array of Points, but some of the Points will be shared with the Points used in the argument Array.
+     */
+    static computeConvexHull(pts: Array<Point>): Array<Point>;
+    /**
+     * (undocumented)
+     * Create a polygon or polyline Geometry from an Array of Points
+     * @param arr an Array of Points; all Point.x and Point.y values must be real numbers, not NaN nor infinity.
+     * @param corner How much of a curve to have at each junction of sides.  Optional, defaults to zero -- no curve at each corner.
+     * @param closed when true, creates a closed polygon; when false creates a polyline. Optional, defaults to true.
+     * @returns a new Geometry
+     */
+    static generatePolygon(arr: Array<Point>, corner?: number, closed?: boolean): Geometry;
 }
 /**
  * A PathFigure represents a section of a {@link Geometry}.
@@ -3032,7 +3085,7 @@ export declare enum SegmentType {
     /**
      * For drawing an SVG arc segment.
      *
-     * See: <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG Arc specification (w3.org)</a>
+     * See: <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands" target="_blank">SVG Arc specification (w3.org)</a>
      */
     SvgArc = 6
 }
@@ -3243,7 +3296,7 @@ export class PathSegment {
      * and false will use one of the two negative-angle arcs. Which arc is chosen (small or large)
      * depends on the value of {@link isLargeArc}.
      * For more information see the visual examples in the
-     * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG Arc specification (w3.org)</a>
+     * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands" target="_blank">SVG Arc specification (w3.org)</a>
      */
     get isClockwiseArc(): boolean;
     set isClockwiseArc(value: boolean);
@@ -3254,7 +3307,7 @@ export class PathSegment {
      * A large-arc-flag set to true will choose the larger of the two arc sweeps.
      * Which way the arc sweeps (positive angle or negative angle) depends on the value of {@link isClockwiseArc}
      * For more information see the visual examples in the
-     * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands">SVG Arc specification (w3.org)</a>
+     * <a href="https://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands" target="_blank">SVG Arc specification (w3.org)</a>
      */
     get isLargeArc(): boolean;
     set isLargeArc(value: boolean);
@@ -3669,6 +3722,8 @@ export class InputEvent {
  *     the {@link DiagramEvent.parameter} is the source {@link Diagram},
  *     and this is called within a transaction.  If you choose, you can cancel the drop by executing:
  *     <code>e.diagram.toolManager.draggingTool.transactionResult = null;</code>
+ *   - **"FocusOrVirtualPointerEnabledChanged"**, the `Ctrl-Alt-Enter` command has modified either or both of the
+ *     {@link CommandHandler.isFocusEnabled} and {@link CommandHandler.isVirtualPointerEnabled} properties.
  *   - **"GainedFocus"**, the diagram has gained keyboard focus, such as after a call to {@link Diagram.focus}.
  *   - **"InitialLayoutCompleted"**, the whole diagram layout has updated for the first time since a major change to the Diagram, such as replacing the Model;<br/>
  *     if you make any changes, you do not need to perform a transaction.
@@ -3805,6 +3860,7 @@ export type DiagramEventHandler = (e: DiagramEvent) => void;
  * 'ClipboardPasted' |
  * 'DocumentBoundsChanged' |
  * 'ExternalObjectsDropped' |
+ * 'FocusOrVirtualPointerEnabledChanged' |
  * 'GainedFocus' |
  * 'InitialLayoutCompleted' |
  * 'LayoutCompleted' |
@@ -3833,7 +3889,7 @@ export type DiagramEventHandler = (e: DiagramEvent) => void;
  * 'TreeExpanded' |
  * 'ViewportBoundsChanged'`
  */
-export type DiagramEventName = 'InitialAnimationStarting' | 'AnimationStarting' | 'AnimationFinished' | 'BackgroundSingleClicked' | 'BackgroundDoubleClicked' | 'BackgroundContextClicked' | 'ChangingSelection' | 'ChangedSelection' | 'ClipboardChanged' | 'ClipboardPasted' | 'DocumentBoundsChanged' | 'ExternalObjectsDropped' | 'GainedFocus' | 'InitialLayoutCompleted' | 'LayoutCompleted' | 'LinkDrawn' | 'LinkRelinked' | 'LinkReshaped' | 'LostFocus' | 'Modified' | 'ObjectSingleClicked' | 'ObjectDoubleClicked' | 'ObjectContextClicked' | 'PartCreated' | 'PartResized' | 'PartRotated' | 'SelectionMoved' | 'SelectionCopied' | 'SelectionDeleted' | 'SelectionDeleting' | 'SelectionGrouped' | 'SelectionUngrouped' | 'SubGraphCollapsed' | 'SubGraphExpanded' | 'TextEdited' | 'ThemeChanged' | 'TreeCollapsed' | 'TreeExpanded' | 'ViewportBoundsChanged' | 'InvalidateDraw';
+export type DiagramEventName = 'InitialAnimationStarting' | 'AnimationStarting' | 'AnimationFinished' | 'BackgroundSingleClicked' | 'BackgroundDoubleClicked' | 'BackgroundContextClicked' | 'ChangingSelection' | 'ChangedSelection' | 'ClipboardChanged' | 'ClipboardPasted' | 'DocumentBoundsChanged' | 'ExternalObjectsDropped' | 'FocusOrVirtualPointerEnabledChanged' | 'GainedFocus' | 'InitialLayoutCompleted' | 'LayoutCompleted' | 'LinkDrawn' | 'LinkRelinked' | 'LinkReshaped' | 'LostFocus' | 'Modified' | 'ObjectSingleClicked' | 'ObjectDoubleClicked' | 'ObjectContextClicked' | 'PartCreated' | 'PartResized' | 'PartRotated' | 'SelectionMoved' | 'SelectionCopied' | 'SelectionDeleted' | 'SelectionDeleting' | 'SelectionGrouped' | 'SelectionUngrouped' | 'SubGraphCollapsed' | 'SubGraphExpanded' | 'TextEdited' | 'ThemeChanged' | 'TreeCollapsed' | 'TreeExpanded' | 'ViewportBoundsChanged' | 'InvalidateDraw';
 /**
  * A TypeScript type for helping to declare GraphObject.make.
  */
@@ -3849,6 +3905,7 @@ export interface DiagramEventsInterface {
     ClipboardPasted?: DiagramEventHandler;
     DocumentBoundsChanged?: DiagramEventHandler;
     ExternalObjectsDropped?: DiagramEventHandler;
+    FocusOrVirtualPointerEnabledChanged?: DiagramEventHandler;
     GainedFocus?: DiagramEventHandler;
     InitialLayoutCompleted?: DiagramEventHandler;
     LayoutCompleted?: DiagramEventHandler;
@@ -3926,8 +3983,8 @@ export declare enum ChangeType {
  * or {@link Diagram.addModelChangedListener}, and on the Diagram using {@link Diagram.addChangedListener}.
  *
  * There are four kinds of changes, represented by enumerated values:
- * {@link ChangeType.Property} (the most common), {@link ChangeType.Insert} and {@link ChangeType.Remove}
- * (to represent inserting or removing objects from collections),
+ * {@link ChangeType.Property} (the most common),
+ * {@link ChangeType.Insert} and {@link ChangeType.Remove} (to represent inserting or removing objects from collections),
  * and {@link ChangeType.Transaction} (to notify about beginning or ending transactions or undo or redo).
  *
  * The most common kind of ChangedEvent is a Property change.
@@ -3945,13 +4002,14 @@ export declare enum ChangeType {
  * Use the {@link oldValue} property to indicate the value that was removed.
  * Use the {@link oldParam} property to indicate where or how, such as an array index or dictionary key.
  *
- * Transaction ChangedEvents are generated by the {@link UndoManager}.
+ * Transaction ChangedEvents are generated by the {@link UndoManager}, typically to update the database or other pieces of the UI.
+ * Listeners should not modify the model or its diagram(s).
  * The {@link propertyName} names the nature of the ChangedEvent.
  * For the very first transaction, the property name is "StartingFirstTransaction".
  * This ChangedEvent precedes a ChangedEvent whose property name is "StartedTransaction",
  * which occurs for every top-level transaction.
  *
- * When ending a transaction, there is first a ChangedEvent whose name is "ComittingTransaction".
+ * When ending a top-level transaction, there is first a ChangedEvent whose name is "ComittingTransaction".
  * This is followed by one with either "CommittedTransaction" or "RolledBackTransaction",
  * depending on how the transaction is ending.
  * The {@link oldValue} provides the transaction name and the {@link object} is the {@link Transaction} being finished.
@@ -3994,13 +4052,13 @@ export declare enum ChangeType {
  *   - **"parentLinkCategory"**, after changing a node data's "parent" link's category({@link TreeModel.setParentLinkCategoryForNodeData})
  *   - other names are for internal implementation use only, only on Transaction ChangedEvents
  *
- * The value of {@link ChangedEvent.propertyName} indicates the actual name of the property that was modified.
+ * The value of {@link ChangedEvent.propertyName} indicates the actual name of the property that was modified,
+ * which may be different than the predefined structural change name listed above.
  * {@link ChangedEvent.modelChange} is a non-empty string only when there is a known structural change to the model,
  * not just the setting of some property on some object.
  *
- * When the ChangedEvent represents a change to a {@link Diagram} or a {@link GraphObject} within a diagram,
- * the value of {@link diagram} is non-null and
- * the values of {@link model} and {@link modelChange} are meaningless.
+ * When the ChangedEvent represents a change to a {@link Diagram} or a {@link Layer} or a {@link GraphObject} within a diagram,
+ * the value of {@link diagram} is non-null and the values of {@link model} and {@link modelChange} are meaningless.
  *
  * Please note that ChangedEvents can be raised for many different causes.
  * You may not be interested in changes to temporary objects -- in that case ignore the ChangedEvent when
@@ -4583,7 +4641,7 @@ export class UndoManager {
      * This is initialized and augmented by {@link handleChanged}
      * before it is added to {@link history} by a top-level call
      * to {@link commitTransaction}.
-     * The value will be null between transactions.
+     * The value will be null between transactions, and may be null during a transaction before any recorded changes occur.
      */
     get currentTransaction(): Transaction | null;
     /**
@@ -5486,6 +5544,14 @@ export class ToolManager extends Tool {
      */
     positionToolTip(tooltip: Adornment, obj: GraphObject | null): void;
     /**
+     * (undocumented)
+     * Keep showing the current tooltip for DURATION milliseconds.
+     *
+     * If {@link currentToolTip} is null, i.e. if no tooltip is showing, this does nothing.
+     * @param duration number of milliseconds to continue showing the tooltip; this defaults to 3000.
+     */
+    extendToolTip(duration?: number): void;
+    /**
      * Hide any tooltip.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
@@ -5876,7 +5942,7 @@ export class DraggingTool extends Tool {
      * Setting this property does not raise any events.
      *
      * The {@link CommandHandler.copiesConnectedLinks} property serves a similar role for the {@link CommandHandler.copySelection} command,
-     * when the user types control-C to copy the currently selected parts.
+     * when the user types `Ctrl-C` to copy the currently selected parts.
      */
     get copiesEffectiveCollection(): boolean;
     set copiesEffectiveCollection(value: boolean);
@@ -5988,7 +6054,7 @@ export class DraggingTool extends Tool {
      * Setting this property does not raise any events.
      *
      * The {@link CommandHandler.copiesTree} property serves a similar role for the {@link CommandHandler.copySelection} command,
-     * when the user types control-C to copy the currently selected parts.
+     * when the user types `Ctrl-C` to copy the currently selected parts.
      *
      * This property is a convenience getter/setter, and sets a value on {@link dragOptions}.
      */
@@ -6049,8 +6115,16 @@ export class DraggingTool extends Tool {
      * @returns Returns the {@link Map.toKeySet} of either {@link copiedParts} or {@link draggedParts}, or else an empty Set.
      */
     get draggingParts(): Set<Part>;
-    set draggedLink(value: Link | null);
-    set isDragOutStarted(value: boolean);
+    /**
+     * (undocumented)
+     * Gets or sets the {@link Link} that may be dragged and reconnected
+     * when {@link DraggingTool.dragsLink} is true.
+     *
+     * This property is set during {@link DraggingTool.doActivate}.
+     * The default value is null.
+     * Setting this property does not raise any events.
+     */
+    get draggedLink(): Link | null;
     /**
      * Gets or sets the mouse point from which parts start to move.
      * The value is a Point in document coordinates.
@@ -6113,10 +6187,10 @@ export class DraggingTool extends Tool {
      */
     doActivate(): void;
     /**
-     * @param link
      * (undocumented)
      * This predicate is passed the single Link that is starting to be dragged when {@link dragsLink} is true.
      * By default this function ignores the link and only checks whether {@link Diagram.allowRelink} is true.
+     * @param link
      */
     mayDragLink(link: Link): boolean;
     /**
@@ -6269,6 +6343,11 @@ export class DraggingTool extends Tool {
      * @virtual
      */
     mayMove(): boolean;
+    /**
+     * Return the DraggingTool of the Diagram that is the source of an external drag-and-drop.
+     * @returns often null
+     */
+    get draggingSource(): DraggingTool | null;
     /**
      * This method computes the new location for a {@link Node} or simple {@link Part},
      * given a new desired location and an optional Map of dragged parts,
@@ -6602,8 +6681,8 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    get linkValidation(): ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
-    set linkValidation(value: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null);
+    get linkValidation(): ((fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean) | null;
+    set linkValidation(value: ((fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean) | null);
     /**
      * Gets or sets a function that is called as the tool targets the nearest valid port.
      * The first two arguments specify the port by providing the {@link Node} that it is in
@@ -7318,7 +7397,8 @@ export class LinkReshapingTool extends Tool {
  * in the selected {@link Part} or {@link Node} by setting its {@link GraphObject.desiredSize} property.
  * You may want to save the size to the model by using a TwoWay {@link Binding} on the "desiredSize" property
  * of the GraphObject that is named by {@link Part.resizeObjectName}.
- * This tool does not operate on {@link Link}s.
+ * This tool does not operate directly on a {@link Link} or its path Shape(s),
+ * but may operate on a label if you set {@link Part.resizeObjectName} to the {@link GraphObject.name} of that label.
  *
  * You can limit the permitted minimum and maximum dimensions by setting
  * {@link minSize} and {@link maxSize}.
@@ -7682,6 +7762,8 @@ export class ResizingTool extends Tool {
  * Normally this works with {@link Part}s or {@link Node}s; it does not make sense for whole {@link Link}s
  * or {@link Link.path}s, so if you want to rotate a label on a Link, make sure to name that label
  * and refer to it as the {@link Part.rotateObjectName}.
+ * This tool does not operate directly on a {@link Link} or its path Shape(s),
+ * but may operate on a label if you set {@link Part.rotateObjectName} to the {@link GraphObject.name} of that label.
  *
  * You can control the point about which the object is rotated by setting {@link Part.rotationSpot}.
  * The rotation spot can be computed dynamically by overriding {@link computeRotationPoint}.
@@ -8444,8 +8526,8 @@ export class HTMLInfo {
      * When used as a context menu, typically shown elements, such as buttons, should call
      * `diagram.currentTool.stopTool();` when their action is completed.
      */
-    get show(): ((a: GraphObject, b: Diagram, c: Tool) => void) | null;
-    set show(value: ((a: GraphObject, b: Diagram, c: Tool) => void) | null);
+    get show(): ((a: GraphObject | null, b: Diagram, c: Tool) => void) | null;
+    set show(value: ((a: GraphObject | null, b: Diagram, c: Tool) => void) | null);
     /**
      * Gets or sets the function to call when an HTMLInfo is to be hidden.
      * The function should "hide" the HTMLInfo, either by removing any traces of it or otherwise
@@ -8556,7 +8638,8 @@ export class ContextMenuTool extends Tool {
      */
     doMouseUp(): void;
     /**
-     * Consider calling {@link Tool.stopTool}.
+     * (undocumented)
+     * Call {@link Tool.stopTool}, and maybe do something extra.
      * @virtual
      * @param currobj
      */
@@ -9000,6 +9083,13 @@ export class TextEditingTool extends Tool {
      */
     get textValidation(): ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null;
     set textValidation(value: ((aTextBlock: TextBlock, oldString: string, newString: string) => boolean) | null);
+    /**
+     * (undocumented)
+     * Gets or sets the minimum scale that the TextEditingTool's default editor will use when constructing itself.
+     * This is useful for stopping the editor from becoming too small when the diagram is zoomed out and editing is activated.
+     * The default is 1.
+     */
+    get minimumEditorScale(): number;
     set minimumEditorScale(value: number);
     /**
      * Gets or sets whether to select (highlight) the editable text when the TextEditingTool is activated.
@@ -9129,7 +9219,7 @@ export class AnimationManager {
     canStart(reason: string): boolean;
     /**
      * @virtual
-     * Undocumented
+     * (undocumented)
      * Returns the current bundled animation
      */
     getBundleAnimation(): Animation;
@@ -10119,7 +10209,11 @@ interface DiagramInitStrings {
     'commandHandler.defaultScale'?: number;
     'commandHandler.zoomFactor'?: number;
     'commandHandler.isZoomToFitRestoreEnabled'?: boolean;
-    'commandHandler.scrollToPartPause'?: number;
+    'commandHandler.focusBox'?: Adornment;
+    'commandHandler.focusChanged'?: ((oldobj: GraphObject, newobj: GraphObject, cmd: CommandHandler) => void) | null;
+    'commandHandler.isFocusEnabled'?: boolean;
+    'commandHandler.isVirtualPointerEnabled'?: boolean;
+    'commandHandler.virtualPointerBox'?: Part;
     'grid.visible'?: boolean;
     'grid.gridCellSize'?: Size;
     'grid.gridOrigin'?: Point;
@@ -10160,7 +10254,7 @@ interface DiagramInitStrings {
     'linkingTool.direction'?: LinkingDirection;
     'linkingTool.isForwards'?: boolean;
     'linkingTool.isUnconnectedLinkvalid'?: boolean;
-    'linkingTool.linkValidation'?: (fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean;
+    'linkingTool.linkValidation'?: (fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean;
     'linkingTool.linkingCursor'?: string;
     'linkingTool.portGravity'?: number;
     'linkingTool.portTargeted'?: (node: Node, port: GraphObject, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void;
@@ -10173,7 +10267,7 @@ interface DiagramInitStrings {
     'relinkingTool.fromHandleArchetype'?: GraphObject;
     'relinkingTool.isForwards'?: boolean;
     'relinkingTool.isUnconnectedLinkvalid'?: boolean;
-    'relinkingTool.linkValidation'?: (fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean;
+    'relinkingTool.linkValidation'?: (fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean;
     'relinkingTool.linkingCursor'?: string;
     'relinkingTool.portGravity'?: number;
     'relinkingTool.portTargeted'?: (node: Node, port: GraphObject, tempNode: Node, tempPort: GraphObject, toEnd: boolean) => void;
@@ -10203,6 +10297,7 @@ interface DiagramInitStrings {
     'themeManager.defaultTheme'?: string;
     'themeManager.currentTheme'?: string;
     'themeManager.changesDivBackground'?: boolean;
+    'themeManager.readsCssVariables'?: boolean;
     'themeManager.themeMap'?: Map<string, Theme>;
 }
 /**
@@ -10495,7 +10590,7 @@ export class Diagram {
      * If you remove a part of the HTML DOM containing a Div with a Diagram, you will need to
      * set {@link div} to null in order for the page to recover the memory.
      *
-     * Unlike GraphObject, the Diagram constructor passes its init options to {@link GraphObject.make}.
+     * Unlike GraphObject, the Diagram constructor passes its init options to {@link Diagram.setProperties}.
      * This allows you to quickly set sub-properties when initializing a Diagram, such as setting properties
      * on the Diagram's {@link undoManager} or {@link commandHandler}. For example:
      *
@@ -10565,6 +10660,7 @@ export class Diagram {
      * For more information, see the intro page on the
      * <a href="../../intro/SVGContext.html">SVG drawing context</a>.
      *
+     * Overviews cannot be rendered in SVG.
      * @since 2.3
      */
     get renderer(): 'default' | 'svg' | 'canvas';
@@ -10690,13 +10786,30 @@ export class Diagram {
     doMouseWheel(): void;
     /**
      * (undocumented)
-     * Call this method on the currentTool.
+     * First check {@link toggleKeyboardControl} to see whether keyboard control has been enabled or disabled.
+     * Otherwise if {@link CommandHandler.isFocusEnabled} or {@link CommandHandler.isVirtualPointerEnabled} is true,
+     * call {@link CommandHandler.doVirtualFocusKeyDown}.
+     * Otherwise call this method on the currentTool.
      * @virtual
      */
     doKeyDown(): void;
     /**
      * (undocumented)
-     * Call this method on the currentTool.
+     * Called on each {@link Diagram.doKeyDown} to decide whether to enable or disable
+     * keyboard control mode -- the two CommandHandler properties
+     * {@link CommandHandler.isFocusEnabled} and {@link CommandHandler.isVirtualPointerEnabled}.
+     *
+     * If this method does modify either of those two properties,
+     * this must raise the "FocusOrVirtualPointerEnabledChanged" DiagramEvent and return true
+     * so that {@link Diagram.doKeyDown} can return.
+     * Otherwise return false and {@link Diagram.doKeyDown} will continue normally.
+     */
+    toggleKeyboardControl(): boolean;
+    /**
+     * (undocumented)
+     * If {@link CommandHandler.isFocusEnabled} or {@link CommandHandler.isVirtualPointerEnabled} is true,
+     * call {@link CommandHandler.doVirtualFocusKeyUp}.
+     * Otherwise call this method on the currentTool.
      * @virtual
      */
     doKeyUp(): void;
@@ -10720,6 +10833,8 @@ export class Diagram {
      * If {@link scrollsPageOnFocus} is false, this tries to keep the page at the same scroll position
      * that it had before calling {@link focus}.
      * This method is not overridable.
+     *
+     * This method is different than the {@link CommandHandler.focus} property.
      */
     focus(): void;
     /**
@@ -10755,13 +10870,15 @@ export class Diagram {
      * The scale will not be increased past the value of {@link defaultScale}, which is normally 1.0,
      * so as to prevent a single node from appearing to fill up the whole viewport.
      *
-     * To Animate zoomToFit, use {@link CommandHandler.zoomToFit}.
+     * To animate a zoomToFit, call {@link CommandHandler.zoomToFit}.
      * @see {@link CommandHandler.zoomToFit}
      */
     zoomToFit(): void;
     /**
      * Modifies the {@link scale} and {@link position} of the Diagram
      * so that the viewport displays a given document-coordinates rectangle.
+     *
+     * To animate a zoomToRect, call {@link CommandHandler.zoomToFit} with the desired viewport bounds.
      * @param r - rectangular bounds in document coordinates.
      * @param scaling - an optional value of either {@link AutoScale.Uniform} (the default) or {@link AutoScale.UniformToFill}.
      */
@@ -11074,10 +11191,11 @@ export class Diagram {
      * @returns this Diagram
      * @see {@link setProperties}
      */
-    set(config: Partial<this>): this;
+    set(config: Partial<this> | null): this;
     /**
      * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
-     * in the same manner as {@link GraphObject.make} does when constructing a Diagram with an argument that is a simple JavaScript Object.
+     * in the same manner as {@link Diagram.setProperties} does when constructing a Diagram with a second argument
+     * that is a simple JavaScript Object.
      *
      * This method does not use TypeScript compile-time type checking like {@link Diagram.set} does,
      * but is considerably more flexible in allowing you to set sub-properties and {@link DiagramEvent}s by quoted string names.
@@ -11113,7 +11231,8 @@ export class Diagram {
     attach(props: ObjectData): this;
     /**
      * This method sets a collection of properties according to the property/value pairs that have been set on the given Object,
-     * in the same manner as {@link GraphObject.make} does when constructing a Diagram with an argument that is a simple JavaScript Object.
+     * in the same manner as {@link Diagram.setProperties} does when constructing a Diagram with a second argument
+     * that is a simple JavaScript Object.
      *
      * This method does not use TypeScript compile-time type checking like {@link Diagram.set} does,
      * but is considerably more flexible in allowing you to set sub-properties and {@link DiagramEvent}s by quoted string names.
@@ -11125,7 +11244,7 @@ export class Diagram {
      *
      * The property name may also be the name of a {@link DiagramEvent}, in which case this calls {@link addDiagramListener} with that DiagramEvent name.
      * ```js
-     * aDiagram.attach({
+     * aDiagram.setProperties({
      *   allowDelete: false,
      *   "animationManager.isEnabled": false,  // turn off automatic animations
      *   // specify a group membership validation predicate
@@ -11229,7 +11348,6 @@ export class Diagram {
      * @since 2.0
      */
     computeMove(n: Part, newloc: Point, dragOptions: DraggingOptions, result?: Point): Point;
-    set draggedLink(value: Link | null);
     /**
      * Adds a new {@link Layer} to the list of layers.
      * If {@link Layer.isTemporary} is false, the layer is added after all existing non-temporary layers.
@@ -11306,7 +11424,7 @@ export class Diagram {
      * and then {@link Model.addChangedListener} again on the new Model.
      *
      * You can establish Model Changed listeners when you create a Diagram.
-     * The Diagram init options are passed to {@link GraphObject.make}, which accepts "ModelChanged" as a shorthand.
+     * The Diagram init options are passed to {@link Diagram.setProperties}, which accepts "ModelChanged" as a shorthand.
      * For example:
      * ```js
      * new go.Diagram("myDiagramDiv",
@@ -11360,6 +11478,16 @@ export class Diagram {
      * @see {@link addChangedListener}
      */
     removeChangedListener(listener: ChangedEventHandler): void;
+    /**
+     * Undocumented
+     */
+    get partAdded(): ((thisDiagram: Diagram, newPart: Part) => void) | null;
+    set partAdded(value: ((thisDiagram: Diagram, newPart: Part) => void) | null);
+    /**
+     * Undocumented
+     */
+    get partRemoved(): ((thisDiagram: Diagram, oldPart: Part) => void) | null;
+    set partRemoved(value: ((thisDiagram: Diagram, oldPart: Part) => void) | null);
     /**
      * This read-only property returns the {@link AnimationManager} for this Diagram.
      */
@@ -11936,7 +12064,6 @@ export class Diagram {
      */
     get lastInput(): InputEvent;
     set lastInput(value: InputEvent);
-    set previousInput(value: InputEvent);
     /**
      * Gets or sets the most recent mouse-down {@link InputEvent} that occurred.
      *
@@ -11955,7 +12082,7 @@ export class Diagram {
      * A fallback (like default here) is necessary for a custom cursor to work.
      *
      * To read more about cursor syntax, go to:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor">CSS cursors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor" target="_blank">CSS cursors (mozilla.org)</a>.
      *
      * If the specified cursor is not accepted by the platform, this property setter will try prepending
      * `-webkit-` and `-moz-` prefixes when assigning the "cursor" CSS style property.
@@ -11978,7 +12105,7 @@ export class Diagram {
      * A fallback (like default here) is necessary for a custom cursor to work.
      *
      * To read more about cursor syntax, go to:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor">CSS cursors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor" target="_blank">CSS cursors (mozilla.org)</a>.
      * The default value is "auto".
      * @see {@link currentCursor}
      * @see {@link GraphObject.cursor}
@@ -12179,7 +12306,7 @@ export class Diagram {
     set handlesDragDropForTopLevelParts(value: boolean);
     /**
      * Gets or sets the function to execute when the mouse (pointer) enters the Diagram.
-     * (When the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/Events/mouseenter">mouseEnter</a> event fires on the Diagram canvas.)
+     * (When the browser's <a href="https://developer.mozilla.org/en-US/docs/Web/Events/mouseenter" target="_blank">mouseEnter</a> event fires on the Diagram canvas.)
      *
      * If this property value is a function, it is called with an {@link InputEvent}.
      * By default this property is null.
@@ -12538,7 +12665,7 @@ export class Diagram {
      *     - `/ism$` matches any string that ends with "ism" exactly
      *     - `/(green|red) apple/` matches any string that includes either "green apple" or "red apple"
      *
-     *     For more details read <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions">Regular Expressions (mozilla.org)</a>.
+     *     For more details read <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" target="_blank">Regular Expressions (mozilla.org)</a>.
      *   - An Array requires the data value to also be an Array of equal or greater length.
      *     Each example array item that is not undefined is matched with the corresponding data array item.
      *   - An Object is recursively matched with the data value, which must also be an Object.
@@ -13157,7 +13284,7 @@ export class Diagram {
      * @see {@link addDiagramListener}
      * @see {@link removeDiagramListener}
      */
-    raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData, param?: any): void;
+    raiseDiagramEvent(name: DiagramEventName, obj?: ObjectData | null, param?: any): void;
     /**
      * Undocumented. Used by Link.addOrthoPoints to get and initialize a PositionArray
      * representing the occupied areas of this Diagram.
@@ -13214,11 +13341,13 @@ export class Diagram {
     stopAutoScroll(): void;
     /**
      * (undocumented)
+     * Compute a new proposed Diagram.position given where the mouse is relative to the viewport.
      * @virtual
-     * @param viewPnt - in viewport coordinates
-     * @returns in document coordinates
+     * @param viewPnt typically the mouse point in viewport coordinates
+     * @param result a temporary Point that should be modified and returned
+     * @returns the result Point in document coordinates
      */
-    computeAutoScrollPosition(viewPnt: Point): Point;
+    computeAutoScrollPosition(viewPnt: Point, result?: Point): Point;
     /**
      * Create an SVGElement that contains a SVG rendering of the current Diagram.
      *
@@ -13335,7 +13464,6 @@ export class DraggingInfo {
      */
     get point(): Point;
     set point(value: Point);
-    set shifted(value: Point);
 }
 /**
  * This class contains options for dragging and moving parts.
@@ -13518,6 +13646,10 @@ export interface SvgRendererOptions extends DiagramRendererOptions {
      * ```
      */
     elementFinished?: ((graphobj: GraphObject, svgelt: SVGElement) => void) | null;
+    /**
+     * A function that takes the result SVGSVGElement and may modify it.
+     */
+    svgFinished?: ((svg: SVGSVGElement) => void) | null;
 }
 /**
  * Used for the options argument to {@link Diagram.makeImage} and {@link Diagram.makeImageData}.
@@ -13592,7 +13724,7 @@ export class Palette extends Diagram {
  * <p class="box">
  * For more discussion, see <a href="../../intro/overview.html">Introduction to Overviews</a>.
  * See samples that make use of Overviews in the <a href="../../samples/index.html#overview">samples index</a>.
- *
+ * </p>
  * All you need to do is set {@link Overview.observed}.
  * For example:
  *
@@ -13608,8 +13740,8 @@ export class Palette extends Diagram {
  * so setting or modifying any diagram templates or template Maps has no effect.
  *
  * Animations are not shown in an Overview.
- *
- * At the current time methods such as {@link Diagram.makeImage},
+ * Overviews cannot be rendered in SVG.
+ * Methods such as {@link Diagram.makeImage},
  * {@link Diagram.makeImageData} and {@link Diagram.makeSvg} do not work on Overviews.
  */
 export class Overview extends Diagram {
@@ -13705,8 +13837,8 @@ export class Overview extends Diagram {
  *   - `PageUp` or `PageDown` calls {@link Diagram.scroll}
  *   - `Home` or `End` calls {@link Diagram.scroll}
  *   - `Space` invokes {@link scrollToPart}
- *   - `Ctrl-- (minus) or Keypad--` invokes {@link decreaseZoom}
- *   - `Ctrl-+ (plus) or Keypad-+` invokes {@link increaseZoom}
+ *   - `Ctrl-- (minus) or Numpad--` invokes {@link decreaseZoom}
+ *   - `Ctrl-+ (plus) or Numpad-+` invokes {@link increaseZoom}
  *   - `Ctrl-0` invokes {@link resetZoom}
  *   - `Shift-Z` invokes {@link zoomToFit}; repeat to return to the original scale and position
  *   - `Ctrl-G` invokes {@link groupSelection}
@@ -13716,9 +13848,86 @@ export class Overview extends Diagram {
  *   - `Esc` invokes {@link stopCommand}
  *
  * On a Mac the Command key is used as the modifier instead of the Control key.
+ * The Command key is called the "Meta" modifier in JavaScript HTML DOM.
  *
  * On touch devices there is a default context menu that shows many commonly-used commands
  * when you hold a finger down on the diagram.
+ *
+ * <h3>Keyboard Controlled Focus Navigation and Virtual Pointer</h3>
+ * The CommandHandler also supports a way to use the keyboard instead of the mouse or finger to focus on a node
+ * or a link or on a button or port within a node or a link, and to act on it or to change focus to a nearby or related
+ * node or link or button or port.  This focus navigation mechanism is independent of the diagram's
+ * selection and highlight mechanisms, although it does make it easy to select or deselect a focused node or link.
+ * Focus is shown using a single {@link Adornment}, the {@link focusBox}, that is added to the {@link GraphObject} that has {@link focus}.
+ *
+ * It also supports a virtual pointer to allow keyboard events to produce mouse events for invoking and controlling tools.
+ * The virtual pointer is shown as a single {@link Part}, the {@link virtualPointerBox},
+ * in the 'Tool' {@link Layer} when the `Shift` key is held down, and `Shift`-arrow keys move it around.
+ *
+ * Enable this functionality in any Diagram by `Ctrl-Alt-Enter`.
+ * That command actually toggles whether or not the focus navigation and virtual pointer system are enabled.
+ * When {@link isFocusEnabled} and {@link isVirtualPointerEnabled} are false (the default) there is no difference in behavior
+ * from earlier version libraries, except for the addition of this `Ctrl-Alt-Enter` command to toggle those two properties on and off.
+ *
+ * <h4>Focus Navigation</h4>
+ * The focus navigation mode handles arrow keys and the `Enter`, `Escape`, `Space`, and `ContextMenu` keys to allow the user to change
+ * which GraphObject has focus and to perform operations on what has focus.  The focus is completely independent of
+ * the {@link Diagram.selection} and {@link Diagram.highlighteds} collections and mechanisms.
+ * All other keyboard commands should operate normally.
+ * For example, the `Delete` key will always operate on the selection, not on the focus.
+ *
+ * When the {@link focus} object changes, the function value of the {@link focusChanged} property, if provided, is called.
+ *
+ * <h4>Virtual Pointer</h4>
+ * When the user holds down the `Shift` key, it goes into virtual pointer mode, where the {@link virtualPointerBox} shows where the virtual pointer is,
+ * and `Shift`-arrow keys move that {@link virtualPointerBox} around.  Moving the {@link virtualPointerBox} results in mouse-move {@link InputEvent}s.
+ * Also holding down the `Ctrl` modifier when typing arrow keys offers finer positioning at one document unit per keystroke.
+ * `Shift-Enter` toggles whether the virtual pointer is 'down' or 'up', also shown in the {@link virtualPointerBox} with a thick dark-cyan circle
+ * indicating 'down', and results in mouse-down or mouse-up {@link InputEvent}s.
+ *
+ * The `Shift-Numpad` keys from 1 to 9, excluding 5, also shift the virtual pointer around.
+ *
+ * Basically, type `Shift-Enter` to do the mouse-down, type `Shift-arrow` keys to move the virtual pointer around,
+ * and finally type `Shift-Enter` again to do the mouse-up.
+ * Note that `Shift` does not need to be held down the whole time during what would be a mouse-down/moves/up sequence.
+ * This allows almost any mouse {@link Tool} to run, except ones that involve timing which can be hard to control.
+ * Changing the current {@link focus} object automatically cancels any {@link Tool} running due to the virtual pointer mechanism,
+ * which helps with the times that the user forgets to do the second `Shift-Enter` for the mouse-up effect.
+ *
+ * `Shift-Space` changes the {@link focus} to be the {@link Part} at the current virtual {@link virtualPointerLocation}.
+ *
+ * Because `Shift` and `Ctrl` are used to control the virtual pointer, there is no natural way to specify modifiers
+ * during virtual mouse events, such as control-drag-and-drop in order to copy the selection.
+ * Nor is there a reasonable way to specify which button to use for mouse-down or mouse-up events,
+ * nor to control whether it's a single click or a double click.  So there are additional commands to control those
+ * aspects of future simulated mouse input events:
+ * <ul>
+ * <li>Type `Shift-A`, `Shift-S`, `Shift-C`, `Shift-M` to toggle each of
+ * {@link InputEvent.alt}, {@link InputEvent.shift}, {@link InputEvent.control}, {@link InputEvent.meta}</li>
+ * <li>Type `Shift-1`, `Shift-2`, `Shift-3` for one of
+ * {@link InputEvent.left}, {@link InputEvent.middle}, {@link InputEvent.right}</li>
+ * <li>Type `Numpad0` to toggle between {@link InputEvent.left} and {@link InputEvent.right}</li>
+ * <li>Type `Shift-D` (or `Shift-Numpad-.`) to toggle between a {@link InputEvent.clickCount} of 1 or 2
+ * for the next `Shift-Enter` event that performs a mouse-up.</li>
+ * </ul>
+ * After a simulated mouse up event the {@link InputEvent.clickCount} is automatically reset to 1.
+ * The current modifiers/button/clickCount state is reflected in the {@link virtualPointerBox}.
+ *
+ * When the virtual pointer is modified by one of the above keyboard commands, the function value of
+ * the {@link virtualPointerChanged} property, if provided, is called.
+ *
+ * <h4>General Policies</h4>
+ * The `Ctrl` and `Meta` modifier keys are interchangeable for all built-in command keyboard shortcuts.
+ * Use whatever works well on your keyboard.  But note that not all Tools are that way.
+ * For example, the `Ctrl` modifier when using the {@link DraggingTool} is replaced by the `Alt` modifier on macOS.
+ *
+ * The `Tab`, `Caps Lock`, `Insert`, and `Scroll Lock` keys are not used for either focus navigation or virtual pointer control.
+ * Tabbing normally changes the HTML element that has keyboard focus, and that behavior is unmodified while the diagram has keyboard focus.
+ *
+ * Note that nearly all of the regular keyboard-shortcut commands are unaffected by focus navigation.
+ * This includes the common commands: delete, cut, copy, paste, selectAll, undo, redo, *Zoom, group, ungroup, editTextBlock.
+ * However the arrow keys do not scroll, and the `ContextMenu` key works on the focus, not on the selection,
+ * unless there is no focus object.
  */
 export class CommandHandler {
     /**
@@ -13731,6 +13940,7 @@ export class CommandHandler {
      */
     get diagram(): Diagram;
     /**
+     * (undocumented)
      * This method is called after this instance of CommandHandler has been associated with a Diagram
      * by being set as its {@link Diagram.commandHandler}.
      *
@@ -13738,9 +13948,11 @@ export class CommandHandler {
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @virtual
      */
     doStart(): void;
     /**
+     * (undocumented)
      * This method is called just before this instance of CommandHandler will be de-associated with a Diagram
      * by being replaced as its {@link Diagram.commandHandler}.
      *
@@ -13748,6 +13960,7 @@ export class CommandHandler {
      *
      * This method may be overridden.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @virtual
      */
     doStop(): void;
     /**
@@ -13775,11 +13988,12 @@ export class CommandHandler {
      */
     doKeyUp(): void;
     /**
-     * This command cancels the operation of the current tool.
-     * This is typically called when the user presses ESCAPE.
+     * This command hides any visible tooltip, clears the selection, and cancels the operation of the current tool.
+     * This is typically called when the user presses `Escape`.
      *
-     * If the current tool is a {@link ToolManager}, this clears the diagram's selection.
-     * This then calls {@link Tool.doCancel} on the current tool.
+     * If the current tool is a {@link ToolManager} and a tooltip is visible, this hides the tooltip and returns.
+     * If the current tool is a {@link ToolManager} and no tooltip is visible, this clears the diagram's selection,
+     * and then calls {@link Tool.doCancel} on the current tool.
      * @virtual
      * @see {@link canStopCommand}
      */
@@ -13960,7 +14174,7 @@ export class CommandHandler {
      * @param pos - Point at which to center the newly pasted parts; if not present the parts are not moved.
      * @see {@link canPasteSelection}
      */
-    pasteSelection(pos?: Point | null): void;
+    pasteSelection(pos?: Point): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link pasteSelection} command.
      *
@@ -14027,7 +14241,7 @@ export class CommandHandler {
     canRedo(): boolean;
     /**
      * This command decreases the {@link Diagram.scale} by a given factor.
-     * This is normally invoked by the `Ctrl--` and `Keypad--` keyboard shortcuts.
+     * This is normally invoked by the `Ctrl--` and `Numpad--` keyboard shortcuts.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
@@ -14051,7 +14265,7 @@ export class CommandHandler {
     canDecreaseZoom(factor?: number): boolean;
     /**
      * This command increases the {@link Diagram.scale} by a given factor.
-     * This is normally invoked by the `Ctrl-+` and `Keypad-+` keyboard shortcuts.
+     * This is normally invoked by the `Ctrl-+` and `Numpad-+` keyboard shortcuts.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
@@ -14099,22 +14313,27 @@ export class CommandHandler {
     canResetZoom(newscale?: number): boolean;
     /**
      * This command changes the {@link Diagram.scale} so that the {@link Diagram.documentBounds} fits within the viewport.
-     * If this command had been called before without any other zooming since then,
+     * If {@link isZoomToFitRestoreEnabled} is true and this command had been called before without any other zooming since then,
      * the original Diagram scale and position are restored.
      * This is normally invoked by the `Shift-Z` keyboard shortcut.
-     * If you want the behavior where this command might restore the original diagram scale and position on a subsequent call,
-     * set {@link isZoomToFitRestoreEnabled} to true.
      *
-     * This animates zooming by default. {@link Diagram.zoomToFit} does not animate.
+     * If you provide a Rect argument, it will change the Diagram scale and position to match, calling {@link Diagram.zoomToRect}.
+     * Otherwise it calls {@link Diagram.zoomToFit} in order to fit the document bounds in the viewport.
+     *
+     * This animates zooming, unless animation has been disabled.
+     * {@link Diagram.zoomToFit} and {@link Diagram.zoomToRect} do not animate.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
+     * @param rect a Rect in document bounds that is the intended new viewport bounds.
+     * If this is provided, the command will call {@link Diagram.zoomToRect}, otherwise it will call {@link Diagram.zoomToFit}.
      * @see {@link canZoomToFit}
      * @see {@link isZoomToFitRestoreEnabled}
      * @see {@link Diagram.zoomToFit}
+     * @see {@link Diagram.zoomToRect}
      */
-    zoomToFit(): void;
+    zoomToFit(rect?: Rect): void;
     /**
      * This predicate controls whether or not the user can invoke the {@link zoomToFit} command.
      *
@@ -14122,10 +14341,11 @@ export class CommandHandler {
      * This method must not have any side-effects.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
+     * @param rect an optional Rect in document bounds that is the intended new viewport bounds.
      * @returns This returns true if {@link Diagram.allowZoom} is true.
      * @see {@link zoomToFit}
      */
-    canZoomToFit(): boolean;
+    canZoomToFit(rect?: Rect): boolean;
     /**
      * This command scrolls the diagram to make a highlighted or selected Part visible in the viewport.
      * Call this command repeatedly to cycle through the {@link Diagram.highlighteds} collection,
@@ -14458,7 +14678,37 @@ export class CommandHandler {
      * @see {@link showContextMenu}
      */
     canShowContextMenu(obj?: GraphObject | Diagram | null): boolean;
-    set copiesClipboardData(value: boolean);
+    /**
+     * This command downloads an SVG file that holds a rendering of this diagram.
+     *
+     * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @virtual
+     * @param options - an optional Object that satisfies the {@link SvgRendererOptions} interface and may also
+     * have an optional "name" property for the name of the downloaded file;
+     * if "name" is not supplied, the downloaded file name will be the {@link Model.name} if it is not an empty string, with an "svg" file type.
+     * @see {@link canDownloadSvg}
+     * @since 3.1
+     */
+    downloadSvg(options?: SvgRendererOptions & {
+        name?: string;
+    }): void;
+    /**
+     * This predicate controls whether or not the user can invoke the {@link downloadSvg} command.
+     *
+     * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
+     * This method must not have any side-effects.
+     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * @virtual
+     * @param options - an optional Object that satisfies the {@link SvgRendererOptions} interface and may also
+     * have an optional "name" property for the name of the downloaded file
+     * @returns true, by default
+     * @see {@link downloadSvg}
+     * @since 3.1
+     */
+    canDownloadSvg(options?: SvgRendererOptions & {
+        name?: string;
+    }): boolean;
     /**
      * Gets or sets whether {@link copySelection} should also copy Links that connect with selected Nodes.
      * The default value is true.
@@ -14516,6 +14766,16 @@ export class CommandHandler {
     get copiesGroupKey(): boolean;
     set copiesGroupKey(value: boolean);
     /**
+     * Gets or sets where the clipboard is stored.
+     * The value must be one of: "memory", "sessionStorage", "localStorage", or "systemClipboard".
+     * If this value is not "memory", the value of <code>window[this.storageLocation]</code>
+     * is expected to implement the <code>Storage</code> interface.
+     *
+     * The default value is "memory".
+     */
+    get storageLocation(): 'memory' | 'sessionStorage' | 'localStorage' | 'systemClipboard';
+    set storageLocation(val: 'memory' | 'sessionStorage' | 'localStorage' | 'systemClipboard');
+    /**
      * Gets or sets a data object that is copied by {@link groupSelection}
      * when creating a new Group.
      *
@@ -14565,7 +14825,6 @@ export class CommandHandler {
      */
     get isZoomToFitRestoreEnabled(): boolean;
     set isZoomToFitRestoreEnabled(value: boolean);
-    set scrollToPartPause(value: number);
     /**
      * Find the actual collection of nodes and links to be moved or copied,
      * given an initial collection.
@@ -14587,6 +14846,336 @@ export class CommandHandler {
      * @since 2.0
      */
     computeEffectiveCollection(parts: Iterable<Part>, options?: DraggingOptions): Map<Part, DraggingInfo>;
+    /**
+     * (undocumented)
+     * Gets the names shown for the modifier keys in the virtualPointerBox.
+     * By default this is ['Ctrl', 'Shft', 'Alt', 'Meta'].
+     */
+    static getModifierNames(): Array<string>;
+    /**
+     * (undocumented)
+     * Sets the names shown for the modifier keys in the virtualPointerBox.
+     * By default this is ['Ctrl', 'Shft', 'Alt', 'Meta'].
+     */
+    static setModifierNames(names: Array<string>): void;
+    /**
+     * Gets or sets whether the arrow/`Enter`/`Escape`/`Space`/`ContextMenu` keys are used for doing focus navigation.
+     *
+     * The default value is false.
+     * This must be set to true in order for the user to be able to use keyboard navigation.
+     * When set to false, the {@link focus} is also set to null.
+     * @since 3.1
+     */
+    get isFocusEnabled(): boolean;
+    set isFocusEnabled(enabled: boolean);
+    /**
+     * Gets or sets the {@link Adornment} used to show the current {@link GraphObject} that has {@link focus}.
+     *
+     * This defaults to two Shapes surrounding the focus object: a lime (or darkcyan if {@link Part.isSelected}) border
+     * and a dotted magenta border.  Here is how the default focusBox is defined:
+     * ```js
+     * // in the "Tool" Layer so that it's in front of all regular Adornments
+     * new Adornment('Auto', { layerName: 'Tool', pickable: false, selectable: false })
+     *  .add(
+     *    new Panel('Spot')
+     *      .add(
+     *        new Shape({
+     *            name: 'SHAPE', fill: null, stroke: 'lime', strokeWidth: 4
+     *          })
+     *          .bindObject('stroke', 'adornedPart', part => part.isSelected ? 'darkcyan' : 'lime'),
+     *        new Shape({
+     *            name: 'SHAPE2', stretch: Stretch.Fill, fill: null,
+     *            stroke: 'magenta', strokeWidth: 4, strokeDashArray: [4, 4]
+     *          })
+     *      ),
+     *    new Placeholder({ padding: 4 })
+     *  );
+     * ```
+     * This definition may change in any version.
+     * @since 3.1
+     */
+    get focusBox(): Adornment;
+    set focusBox(adornment: Adornment);
+    /**
+     * Gets or sets the {@link GraphObject} that has focus for this CommandHandler; the value may be null.
+     * Changing the focus automatically cancels any running {@link Tool} and sets {@link isVirtualPointerDown} to false.
+     * Whichever {@link GraphObject} has focus automatically gets the {@link focusBox} {@link Adornment}.
+     *
+     * The initial value is null.
+     * This can only be set, and thus focus navigation mode can only be started, when {@link isFocusEnabled} is true.
+     * Any new focus GraphObject must be in the same Diagram as this CommandHandler.
+     *
+     * This property is different than the {@link Diagram.focus} method, which requests DOM keyboard event focus.
+     * @since 3.1
+     */
+    get focus(): GraphObject | null;
+    set focus(obj: GraphObject | null);
+    /**
+     * (undocumented)
+     * This is called when focus changes or when wanting to re-notify about the current focus.
+     *
+     * If {@link focusChanged} is a function, it is called.
+     * Otherwise, it updates a live element so that a possible screen reader
+     * reads a description of the newly focused GraphObject.
+     * You will want to replace that property with your own update mechanism.
+     *
+     * Then it scrolls to the new {@link focus} object if it's out of the viewport.
+     *
+     * This should not modify {@link focus}.
+     * @virtual
+     * @param oldobj the previous focus
+     * @param newobj the current focus
+     */
+    onFocusChanged(oldobj: GraphObject | null, newobj: GraphObject | null): void;
+    /**
+     * Gets or sets a function to be called as the {@link focus} changes to a different GraphObject or to null.
+     * The default value for this property is null -- no function is called when the focus has changed.
+     *
+     * When this is null, the CommandHandler uses its own live element to update screen readers.
+     * @since 3.1
+     * @see {@link liveElementId}
+     */
+    get focusChanged(): ((oldobj: GraphObject | null, newobj: GraphObject | null, cmd: CommandHandler) => void) | null;
+    set focusChanged(value: ((oldobj: GraphObject | null, newobj: GraphObject | null, cmd: CommandHandler) => void) | null);
+    /**
+     * Gets or sets the <code>id</code> of the HTML element used to hold the description of the current {@link focus}
+     * and possibly other state information.
+     *
+     * The default value is the empty string.  Note that the element must be in the same DOM as the diagram.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Reflected_attributes#element_id_reference_scope" target="_blank">Element id reference scope</a>
+     *
+     * If you do not provide your own HTML element by <code>id</code> nor your own your own {@link focusChanged} event handler,
+     * this will create and use one automatically.
+     * However we suggest that you implement your own live element so that you can control its appearance and behavior.
+     * @since 3.1
+     * @see {@link focusChanged}
+     */
+    get liveElementId(): string;
+    set liveElementId(val: string);
+    /**
+     * (undocumented)
+     * Whether to use the "aria-labelledby" attribute or the "aria-live" attribute.
+     * When true, the diagram's canvas is labeled by the element with the liveElementId.
+     * When false, that element should use the "aria-live" attribute.
+     * Default is false.
+     * This is toggled by the undocumented `Shift-Y` command.
+     */
+    get isUsingAriaLive(): boolean;
+    set isUsingAriaLive(val: boolean);
+    /**
+     * This produces the default description string for a GraphObject that is the new {@link focus}.
+     *
+     * This will need to be replaced or overridden for internationalization purposes
+     * if you have not specified an event handler for {@link focusChanged}.
+     * Internally this is only called when {@link focusChanged} is null.
+     * @virtual
+     * @param oldobj the previous value for {@link focus}, might be null or the same value oas NEWOBJ
+     * @param newobj the new value for {@link focus}, might be null or the same value as OLDOBJ
+     * @returns a generic string describing the NEWOBJ, to be read by a screen reader
+     * @since 3.1
+     * */
+    describe(oldobj: GraphObject | null, newobj: GraphObject | null): string;
+    /**
+     * (undocumented)
+     * Deal with a focus object that is not visible for some reason.
+     * Either focus on the containing Part or the parent Node or the containing Group or the labeled Link
+     * until it finds a Part that {@link Part.isVisible},
+     * or else set focus to null.
+     * @virtual
+     */
+    updateFocusBox(): void;
+    /**
+     * (undocumented)
+     * When there is no focus, find a Part to set as the new focus.
+     * If there is a selection, it uses that first.
+     * Note: this might not find what you want.  Maybe it cannot find anything.
+     * @virtual
+     */
+    findFirstFocus(): GraphObject | null;
+    /**
+     * Gets or sets whether the `Shift` key shows a virtual pointer ({@link virtualPointerBox})
+     * causing the arrow keys and `Enter` to produce simulated mouse {@link InputEvent}s.
+     *
+     * The default value is false.
+     * This must be set to true in order for the user to be able to use the virtual pointer.
+     * @since 3.1
+     */
+    get isVirtualPointerEnabled(): boolean;
+    set isVirtualPointerEnabled(enabled: boolean);
+    /**
+     * (undocumented)
+     * This property is true when the user is holding down the `Shift` key,
+     * showing the {@link virtualPointerBox} and causing simulated mouse events to happen.
+     * `Shift`-arrow keys move the {@link virtualPointerBox} and raise mouse-move {@link InputEvent}s.
+     * `Shift-Enter` keys toggle the {@link isVirtualPointerDown} property and raise mouse-down or mouse-up {@link InputEvent}s.
+     *
+     * The initial value is false.
+     * This can only be set, and thus virtual pointer mode can only be started, when {@link isVirtualPointerEnabled} is true.
+     */
+    get isVirtualPointerShown(): boolean;
+    set isVirtualPointerShown(value: boolean);
+    /**
+     * (undocumented)
+     * Set {@link isVirtualPointerShown} to false, cancel the current tool, and restore default virtual input state.
+     */
+    cancelVirtualPointer(): void;
+    /**
+     * (undocumented)
+     * Make sure the {@link virtualPointerBox} is up-to-date with its state, if it is in the diagram.
+     * @virtual
+     */
+    updateVirtualPointer(): void;
+    /**
+     * Gets or sets the 'Tool' layer {@link Part} used to indicate the current location of the virtual pointer.
+     * Its {@link Part.location} will be positioned exactly where the {@link InputEvent}s happen.
+     *
+     * The default box has some magenta lines looking like a target.
+     * In addition there is a thick dark-cyan circle that is shown when {@link isVirtualPointerDown} is true.
+     * Also, there is a visual indication of which mouse button is held down for future simulated mouse events,
+     * there is a visual indication of which keyboard modifiers those future simulated mouse events will have,
+     * and a visual indication of whether a future simulated mouse-up event is one-time double-click event.
+     *
+     * Here is how the default virtual pointer box is defined:
+     * ```js
+     * new Part({
+     *    layerName: 'Tool', isInDocumentBounds: false,  // avoid modifying documentBounds
+     *    locationObjectName: 'CIRCLE', locationSpot: Spot.Center,
+     *    pickable: false, selectable: false
+     *  })
+     *  .add(
+     *    new Shape('Circle', {
+     *        isGeometryPositioned: true, width: 30, height: 30,
+     *        fill: null, stroke: 'darkcyan', strokeWidth: 6, visible: false
+     *      })
+     *      .bind('visible', 'down'),
+     *    new Shape({ isGeometryPositioned: true, geometryString: 'M15 0L15 30', stroke: 'magenta' }),
+     *    new Shape({ isGeometryPositioned: true, geometryString: 'M0 15L30 15', stroke: 'magenta' }),
+     *    new Shape('Circle', { name: 'CIRCLE',
+     *        isGeometryPositioned: true, width: 20, height: 20,
+     *        fill: null, stroke: 'magenta', position: new Point(5, 5)
+     *      }),
+     *    new Shape({
+     *        isGeometryPositioned: true, geometry: CommandHandler._LeftButtonGeo,
+     *        fill: null, stroke: 'cyan', strokeWidth: 4
+     *      })
+     *      .bind('geometry', 'button', CommandHandler._showButton),
+     *    new TextBlock({ position: new Point(12, 0), font: 'bold 10pt sans-serif' })
+     *      .bind('text', 'clickCount', c => c > 1 ? c.toString() : ''),
+     *    new TextBlock({ position: new Point(0, 16) })
+     *      .bind('text', 'modifiers', CommandHandler._showModifiers)
+     *  )
+     * ```
+     * This definition may change in any version.
+     * @since 3.1
+     */
+    get virtualPointerBox(): Part;
+    set virtualPointerBox(part: Part);
+    /**
+     * Gets or sets a function that is called when the {@link virtualPointerBox} is replaced or modified.
+     *
+     * Note that some of the state of the virtual pointer is stored in the {@link Panel.data} of the box Part.
+     * @since 3.1
+     */
+    get virtualPointerChanged(): ((box: Part, cmd: CommandHandler) => void) | null;
+    set virtualPointerChanged(value: ((box: Part, cmd: CommandHandler) => void) | null);
+    /**
+     * Gets or sets the location of the virtual pointer, the {@link virtualPointerBox} Part.
+     * Changing this property results in {@link InputEvent}s and calls to <code>doMouseMove</code>.
+     *
+     * The initial value is (NaN, NaN).
+     * @since 3.1
+     */
+    get virtualPointerLocation(): Point;
+    set virtualPointerLocation(pt: Point);
+    /**
+     * Gets or sets whether the virtual pointer has the primary mouse button held down or not.
+     * Note that this state is maintained even when the {@link virtualPointerBox} is not visible because
+     * the user has let go of the `Shift` key.
+     *
+     * The initial value is false -- as if the mouse button is not being held down.
+     * This can only be set when {@link isVirtualPointerEnabled} is true.
+     * @since 3.1
+     */
+    get isVirtualPointerDown(): boolean;
+    set isVirtualPointerDown(value: boolean);
+    /**
+     * (undocumented)
+     * Gets or sets the distance that the virtual pointer moves with Shift-arrow key events, in document coordinates.
+     * The default value is 10.
+     */
+    get virtualPointerShiftMove(): number;
+    set virtualPointerShiftMove(value: number);
+    /**
+     * (undocumented)
+     * Gets or sets the distance that the virtual pointer moves with Control-Shift-arrow key events, in document coordinates.
+     * The default value is 1.
+     */
+    get virtualPointerControlMove(): number;
+    set virtualPointerControlMove(value: number);
+    /**
+     * (undocumented)
+     * This called to simulate an InputEvent.
+     * @param e the InputEvent to be handled
+     * @param act whether to call Diagram.doMouse[Up|Down|Move] based on InputEvent.down or .up
+     * @virtual
+     */
+    doVirtualPointerEvent(e: InputEvent, act: boolean): void;
+    /**
+     * (undocumented)
+     * This is called after each simulated InputEvent resulting from virtual pointer behaviors.
+     * @param e the InputEvent to be handled
+     * @param act whether {@link doVirtualPointerEvent} called Diagram.doMouse[Up|Down|Move]
+     * @virtual
+     */
+    protected onVirtualPointerEvent(e: InputEvent, act: boolean): void;
+    /**
+     * (undocumented)
+     * Called by Diagram.doKeyDown when {@link isFocusEnabled} or {@link isVirtualPointerEnabled} is true,
+     * in order to handle arrow, `Shift`, `Enter`, `Escape`, `Space`, `ContextMenu` keys
+     * as well as `Shift-C`, `Shift-A`, `Shift-S`, `Shift-M`,
+     * `Shift-Digit1`, `Shift-Digit2`, `Shift-Digit3`, `Shift-Numpad0`,
+     * `Shift-Numpad1`, `Shift-Numpad2`, `Shift-Numpad3`,
+     * `Shift-Numpad4`, `Shift-Numpad5`, `Shift-Numpad6`,
+     * `Shift-Numpad7`, `Shift-Numpad8`, `Shift-Numpad9`,
+     * `Shift-D`, `Shift-NumpadDecimal` when in virtual pointer mode.
+     * @virtual
+     */
+    doVirtualFocusKeyDown(): boolean;
+    /**
+     * (undocumented)
+     * Called by Diagram.doKeyUp when {@link isFocusEnabled} or {@link isVirtualPointerEnabled} is true,
+     * @virtual
+     */
+    doVirtualFocusKeyUp(): boolean;
+    /**
+     * (undocumented)
+     * Given the direction of an arrow key, return the GraphObject that
+     * should become the next value of {@link focus}.
+     *
+     * If the current focus is a Part that is a member of a Group, focus should stay within that Group.
+     * If the current focus is a top-level Part, focus should stay on a top-level Part.
+     * If the current focus is a GraphObject with a Part, focus should stay within that Part.
+     *
+     * If there is nothing to switch focus to in the given direction, return the current focus object.
+     * This will not be called when {@link focus} is null.
+     *
+     * The nature of the search depends on {@link nextFocusFormula},
+     * either whichever object is closest within 45 degrees,
+     * or which ever object is closest in the given direction ignoring the other axis.
+     * @virtual
+     */
+    findNextFocus(dir: number): GraphObject;
+    /**
+     * (undocumented)
+     * This affects how {@link findNextFocus} does its search for a nearby GraphObject.
+     * The default is "distance", which looks for the object whose Part.location or GraphObject.actualBound.center
+     * is closest (Euclidean distance) to the current {@link focus}.
+     * An alternative is "linear", which looks for the closest object in the given direction,
+     * ignoring how far it is away from the line in that direction.
+     * This is toggled by the undocumented `Shift-F` command.
+     */
+    get nextFocusFormula(): string;
+    set nextFocusFormula(val: string);
 }
 /**
  * This enumeration specifies possible values for {@link GraphObject.stretch}.
@@ -14877,7 +15466,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *
  * <p class="boxread">
  * For more information, please read <a href="../../intro/contextMenus.html">the Introduction page about Context Menus</a>
- * and <a href="../../intro/toolTips.html">the page about ToolTips</a>.
+ * and <a href="../../intro/tooltips.html">the page about ToolTips</a>.
  * <p class="boxrun">
  * Also see <a href="../../samples/basic.html">the Basic sample</a>
  * for examples of how to show context menus and tooltips.
@@ -15410,7 +15999,7 @@ export abstract class GraphObject {
      * The value may be either a {@link Brush} object or a string that is a CSS color.
      * The default value is null -- no background is drawn.
      * More information about the syntax of CSS color strings is available at:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color" target="_blank">CSS colors (mozilla.org)</a>.
      * @see {@link Shape.fill}
      */
     get background(): BrushLike;
@@ -16014,7 +16603,7 @@ export abstract class GraphObject {
      * current mouse cursor is determined by the Diagram.
      * Other strings should be valid CSS strings that specify a cursor.
      * This provides some more information about cursor syntax:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor">CSS cursors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/cursor" target="_blank">CSS cursors (mozilla.org)</a>.
      *
      * Read more about cursors at {@link Diagram.currentCursor}
      * @see {@link Diagram.defaultCursor}
@@ -16212,8 +16801,8 @@ export abstract class GraphObject {
      * @see {@link mouseHover}
      * @see {@link mouseDragEnter}
      */
-    get mouseEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
-    set mouseEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null);
+    get mouseEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject | null) => void) | null;
+    set mouseEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject | null) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this object without holding down any buttons.
@@ -16255,8 +16844,8 @@ export abstract class GraphObject {
      * @see {@link mouseHover}
      * @see {@link mouseDragLeave}
      */
-    get mouseLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
-    set mouseLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null);
+    get mouseLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject | null) => void) | null;
+    set mouseLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject | null) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * over this object without holding down any buttons.
@@ -16369,8 +16958,8 @@ export abstract class GraphObject {
      * @see {@link mouseEnter}
      * @see {@link Group.handlesDragDropForMembers}
      */
-    get mouseDragEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null;
-    set mouseDragEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject) => void) | null);
+    get mouseDragEnter(): ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject | null) => void) | null;
+    set mouseDragEnter(value: ((e: InputEvent, thisObj: GraphObject, prevObj: GraphObject | null) => void) | null);
     /**
      * Gets or sets the function to execute when the user moves the mouse
      * out of this stationary object during a {@link DraggingTool} drag;
@@ -16401,8 +16990,8 @@ export abstract class GraphObject {
      * @see {@link mouseLeave}
      * @see {@link Group.handlesDragDropForMembers}
      */
-    get mouseDragLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null;
-    set mouseDragLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject) => void) | null);
+    get mouseDragLeave(): ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject | null) => void) | null;
+    set mouseDragLeave(value: ((e: InputEvent, thisObj: GraphObject, nextObj: GraphObject | null) => void) | null);
     /**
      * Gets or sets the function to execute when a user drops the selection on this object
      * at the end of a {@link DraggingTool} drag;
@@ -16542,7 +17131,7 @@ export abstract class GraphObject {
      *
      * Replacing this value will not modify or remove any existing tooltip that is being shown for this object.
      *
-     * Read more about tooltips at <a href="../../intro/toolTips.html">ToolTips</a>.
+     * Read more about tooltips at <a href="../../intro/tooltips.html">ToolTips</a>.
      */
     get toolTip(): Adornment | HTMLInfo | null;
     set toolTip(value: Adornment | HTMLInfo | null);
@@ -16643,13 +17232,17 @@ export abstract class GraphObject {
      * @param conv - An optional side-effect-free function converting the data property value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
      *   This becomes the value of {@link Binding.converter}.
-     * @param backconv - Deprecated: an optional conversion function to convert GraphObject property values back to data values.
-     *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     * @param backconv - Deprecated: call {@link bindTwoWay} instead.
+     *   This is an optional conversion function to convert GraphObject property values back to data values.
+     *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay},
+     *   unless the value is undefined.
+     *   Passing a value of null will cause the binding to be TwoWay, but no back-conversion function will be called.
+     *   Passing a value of undefined, or not supplying an argument, produces a OneWay binding.
      *   This becomes the value of {@link Binding.backConverter}.
      * @returns this GraphObject
      * @since 2.2
      */
-    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null): this;
     /**
      * Add a data-binding of a property on this GraphObject to a property on a binding source object.
      *
@@ -16705,11 +17298,12 @@ export abstract class GraphObject {
      *   This becomes the value of {@link Binding.converter}.
      * @param backconv - An optional conversion function to convert GraphObject property values back to data values.
      *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     *   Pass null or undefined in order for no back-conversion function to be called.
      *   This becomes the value of {@link Binding.backConverter}.
      * @returns this GraphObject
      * @since 3.0
      */
-    bindTwoWay(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    bindTwoWay(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null): this;
     /**
      * Add a data-binding from the shared {@link Model.modelData} object to a property on this GraphObject.
      * We recommend that you not use TwoWay binding for this kind of {@link Binding.isToModel} binding.
@@ -16717,6 +17311,7 @@ export abstract class GraphObject {
      * This is a convenience function for {@link bind} that additionally calls {@link Binding.ofModel} on the created binding.
      * See the documentation for {@link bind} for details.
      *
+     * The use of TwoWay model data bindings is very uncommon.
      * Note that in order to get a TwoWay Binding one must pass a value for the fourth argument to this method.
      * Pass null when you do not want a back-conversion function applied when passing a property value from
      * this target GraphObject to the source data object.
@@ -16735,11 +17330,13 @@ export abstract class GraphObject {
      * @param backconv - An optional conversion function to convert GraphObject property values back to data values.
      *   Note that for TwoWay bindings whenever the target property is modified, the shared data object will be updated.
      *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     *   Passing null produces a TwoWay Binding, but no back-conversion function will be called.
+     *   Pass undefined, or do not provide an argument here, in order to produce the normal OneWay binding.
      *   This becomes the value of {@link Binding.backConverter}.
      * @returns this GraphObject
      * @since 3.0
      */
-    bindModel(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion): this;
+    bindModel(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null): this;
     /**
      * Add a data-binding from a {@link GraphObject} property in this GraphObject's binding Panel to a property on this GraphObject.
      * We recommend that you use this kind of {@link Binding.isToObject} binding sparingly.
@@ -16748,6 +17345,7 @@ export abstract class GraphObject {
      * It passes the param `objectSrcname` to the {@link Binding.ofObject} call.
      * See the documentation for {@link bind} for details.
      *
+     * The use of TwoWay GraphObject bindings is uncommon.
      * Note that in order to get a TwoWay Binding one must pass a value for the fourth argument to this method.
      * Pass null when you do not want a back-conversion function applied when passing a property value from
      * this target GraphObject to the source object.
@@ -16764,7 +17362,9 @@ export abstract class GraphObject {
      *   If the function is null or not supplied, no conversion takes place.
      *   This becomes the value of {@link Binding.converter}.
      * @param backconv - An optional conversion function to convert GraphObject property values back to property values.
-     *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     *   Passing a not-undefined value modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     *   Pass null if you want the binding to be TwoWay but not to invoke any back-conversion function.
+     *   Pass undefined, or do not provide an argument in this position, for the normal OneWay binding.
      *   This becomes the value of {@link Binding.backConverter}.
      * @param objectSrcname - An optional {@link GraphObject.name} used to identify the source GraphObject by calling {@link Panel.findObject}.
      *   If the value is an empty string or is not supplied, the source binding Panel is used -- the Part or the item Panel.
@@ -16772,7 +17372,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @since 3.0
      */
-    bindObject(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion, backconv?: BackConversion, objectSrcname?: string): this;
+    bindObject(targetprop: string | Binding, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null, objectSrcname?: string): this;
     /**
      * Add a {@link ThemeBinding} from a Theme property to a property on this GraphObject.
      *
@@ -16791,7 +17391,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @since 3.0
      */
-    theme(targetprop: string, sourceprop?: string, themeSource?: string, conv?: TargetConversion, themeconv?: TargetConversion): this;
+    theme(targetprop: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion | null, themeconv?: TargetConversion | null): this;
     /**
      * Add a {@link ThemeBinding} from a data property to a property on this GraphObject.
      *
@@ -16812,7 +17412,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @since 3.0
      */
-    themeData(targetprop: string, sourceprop?: string, themeSource?: string, conv?: TargetConversion, themeconv?: TargetConversion): this;
+    themeData(targetprop: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion | null, themeconv?: TargetConversion | null): this;
     /**
      * Add a {@link ThemeBinding} from a GraphObject property to a property on this GraphObject.
      *
@@ -16836,7 +17436,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @since 3.0
      */
-    themeObject(targetprop: string, sourceprop?: string, themeSource?: string, conv?: TargetConversion, themeconv?: TargetConversion, objectSrcname?: string): this;
+    themeObject(targetprop: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion | null, themeconv?: TargetConversion | null, objectSrcname?: string | null): this;
     /**
      * Add a {@link ThemeBinding} from the shared {@link Model.modelData} to a property on this GraphObject.
      *
@@ -16857,7 +17457,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @since 3.0
      */
-    themeModel(targetprop: string, sourceprop?: string, themeSource?: string, conv?: TargetConversion, themeconv?: TargetConversion): this;
+    themeModel(targetprop: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion | null, themeconv?: TargetConversion | null): this;
     /**
      * Set any number of properties on this GraphObject. This is common in initialization.
      * This method can only be used to set existing properties on this object. To attach new properties,
@@ -16887,7 +17487,7 @@ export abstract class GraphObject {
      * @returns this GraphObject
      * @see {@link setProperties}
      */
-    set(config: Partial<this>): this;
+    set(config: Partial<this> | null): this;
     /**
      * This method sets a collection of properties according to the property/value pairs on the given Object, or array of Objects,
      * in the same manner as {@link GraphObject.make} does when constructing a GraphObject.
@@ -16918,7 +17518,7 @@ export abstract class GraphObject {
      * If you are just adding settings, bindings, or GraphObjects to a single GraphObject,
      * you do not need to use this, you can just chain calls to {@link set}, {@link bind},
      * and {@link Panel.add} instead. This method is mostly useful when setting the same values
-     * across multiple GraphObjects.
+     * across multiple GraphObjects or in multiple templates.
      *
      * For example:
      *
@@ -16936,8 +17536,8 @@ export abstract class GraphObject {
      * new go.Node("Auto")
      *   .apply(nodeStyle)
      *   .add(
-     *     new go.Shape( ... ),
-     *     new go.Panel( ... )
+     *     new go.Shape(. . .),
+     *     new go.Panel(. . .)
      *   )
      *   // ...rest of Node template
      *
@@ -16947,12 +17547,35 @@ export abstract class GraphObject {
      *   // ...rest of Node template
      * ```
      *
+     * In version 3.1 we have added the ability to pass arguments to the function.
+     * For example:
+     *
+     * ```
+     * function shapeStyle(shp, fig, fill) {  // FIG and FILL are optional
+     *   shp.width = 32;
+     *   shp.height = 32;
+     *   shp.figure = fig ? fig : 'Diamond';
+     *   shp.fill = fill ? fill : 'gray';
+     *   shp.strokeWidth = 0;
+     * }
+     *
+     * // ... in a template:
+     * new go.Node(. . .) . . .
+     *   .add(
+     *     . . .
+     *     new go.Shape(. . .).apply(shapeStyle),
+     *     new go.Shape(. . .).apply(shapeStyle, 'Triangle'),
+     *     new go.Shape(. . .).apply(shapeStyle, 'Circle', 'red'),
+     *     . . .
+     *   )
+     * ```
+     *
      * @since 2.2
      * @param func - a function that takes this GraphObject
      * @returns this GraphObject
      * @see {@link set} a type-safe method to set a collection of properties
      */
-    apply(func: ((thisObject: this) => void)): this;
+    apply(func: ((thisObject: this, ...args: any[]) => void), ...args: any[]): this;
     /**
      * This method sets a collection of properties according to the property/value pairs on the given Object,
      * in the same manner as {@link GraphObject.make} does when constructing a GraphObject with an argument that is a simple JavaScript Object.
@@ -17273,11 +17896,12 @@ export class Brush {
     /**
      * Construct a Brush class that holds the given color information.
      * @param type - Optional, one of the values {@link BrushType.Solid}, {@link BrushType.Linear}, {@link BrushType.Radial}, {@link BrushType.Pattern},
-     * or a well-formed CSS string describing a solid color brush. No parameter
-     * defaults to a {@link BrushType.Solid} with a color description of 'black'.
+     * or a well-formed CSS string describing a solid color brush.
+     * No argument defaults to a {@link BrushType.Solid} with a color description of 'black'.
      * @param init - Optional initialization properties.
      * In addition to Brush properties, this object can also contain color stops in the format:
      * `{ 0: "#FEC901", 0.2: "#FFFFAA", 1: "#FEA200" }`
+     * Such numeric property names result in calls to {@link Brush.addColorStop}.
      */
     constructor(type?: BrushType | string, init?: Partial<Brush> & Record<number, string>);
     /**
@@ -17648,15 +18272,16 @@ export declare enum ViewboxStretch {
  *   - {@link Panel.Position} is used to arrange elements based on their absolute positions within the Panel's local coordinate system.
  *   - {@link Panel.Vertical} and {@link Panel.Horizontal} are used to create linear "stacks" of elements.
  *   - {@link Panel.Auto} is used to size the main element to fit around other elements in the Panel -- this creates borders.
- *   - {@link Panel.Spot} is used to arrange elements based on the {@link Spot} properties {@link GraphObject.alignment}
+ *   - {@link Panel.Spot} is used to arrange elements relative to the main element based on the {@link Spot} properties {@link GraphObject.alignment}
  *     and {@link GraphObject.alignmentFocus}, relative to a main element of the panel.
  *     Spot panels can align relative to other elements by using {@link Panel.alignmentFocusName}.
  *   - {@link Panel.Table} is used to arrange elements into rows and columns, typically employing the different
  *     elements' {@link GraphObject.row}, {@link GraphObject.rowSpan}, {@link GraphObject.column},
- *     and {@link GraphObject.columnSpan} properties. This Panel type also makes use of {@link RowColumnDefinition}.
- *   - {@link Panel.TableRow} and {@link Panel.TableColumn} can only be used immediately within a {@link Panel.Table} Panel
- *     to organize a collection of elements as a row or as a column in a table.
- *   - {@link Panel.Viewbox} is used to automatically resize a single element to fit inside the panel's available area.
+ *     and {@link GraphObject.columnSpan} properties. This Panel type also makes use of {@link RowColumnDefinition}s.
+ *   - {@link Panel.TableRow} and {@link Panel.TableColumn} can only be used as immediate elements of a {@link Panel.Table} Panel
+ *     to organize a collection of elements as a row or as a column in a table. This is particularly useful as the
+ *     value of {@link Panel.itemTemplate}.
+ *   - {@link Panel.Viewbox} is used to automatically rescale a single element to fit inside the panel's available area.
  *   - {@link Panel.Grid} is not used to house typical elements, but is used only to draw regular patterns of lines.
  *     The elements must be {@link Shape}s used to describe the repeating lines.
  *   - {@link Panel.Link} is only used by {@link Link} parts and Link Adornments.
@@ -17674,7 +18299,7 @@ export declare enum ViewboxStretch {
  *     { width: 60, height: 60 }) // panel properties
  *   // elements in the panel:
  *   .add(
- *     new go.Shape("Rectangle", { stroke: "lime" }),
+ *     new go.Shape("Rectangle", { fill: "white", stroke: "green" }),
  *     new go.TextBlock("Some Text")
  *   );
  * ```
@@ -18571,7 +19196,7 @@ export class Panel extends GraphObject {
      * This static predicate is true if and only if {@link Panel.definePanelLayout} has been called on the given name.
      * @param name
      */
-    static isBuilderDefined(name: string): boolean;
+    static isLayoutDefined(name: string): boolean;
     /**
      * Returns a 'Position' PanelLayout, a possible value for {@link Panel.type}.
      */
@@ -18838,8 +19463,8 @@ export class RowColumnDefinition {
      * @see {@link separatorDashArray}
      * @see {@link background}
      */
-    get separatorPadding(): MarginLike;
-    set separatorPadding(value: MarginLike);
+    get separatorPadding(): MarginLike | null;
+    set separatorPadding(value: MarginLike | null);
     /**
      * Gets or sets the stroke (color) for the separator line that is drawn before a particular row or column,
      * provided that row or column has a nonzero {@link separatorStrokeWidth}.
@@ -19294,7 +19919,7 @@ export class Shape extends GraphObject {
      * A "transparent" fill is useful when wanting to allow a shape to be pickable
      * without obscuring any other objects behind it.
      * More information about the syntax of CSS color strings is available at:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color" target="_blank">CSS colors (mozilla.org)</a>.
      *
      * The geometry is filled before the {@link stroke} is drawn.
      */
@@ -19310,7 +19935,7 @@ export class Shape extends GraphObject {
      * A "transparent" stroke is useful when wanting to allow a shape to be pickable
      * without obscuring any other objects behind it.
      * More information about the syntax of CSS color strings is available at:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color" target="_blank">CSS colors (mozilla.org)</a>.
      *
      * The stroke is drawn after the geometry is filled with the {@link fill} Brush.
      */
@@ -19335,7 +19960,7 @@ export class Shape extends GraphObject {
      * Gets or sets the style for how the ends of the stroke's line are drawn.
      * The value must be one of "butt", "round", or "square". The default is "butt".
      *
-     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap">Stroke Line Cap (w3.org)</a>.
+     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linecap" target="_blank">Stroke Line Cap (w3.org)</a>.
      */
     get strokeCap(): ('butt' | 'round' | 'square');
     set strokeCap(value: ('butt' | 'round' | 'square'));
@@ -19343,7 +19968,7 @@ export class Shape extends GraphObject {
      * Gets or sets the type of corner that will be drawn for a stroke at the intersection of two straight segments of the geometry.
      * The value must be one of "miter", "bevel", or "round". The default is "miter".
      *
-     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin">Stroke Line Join (w3.org)</a>.
+     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linejoin" target="_blank">Stroke Line Join (w3.org)</a>.
      */
     get strokeJoin(): ('miter' | 'bevel' | 'round');
     set strokeJoin(value: ('miter' | 'bevel' | 'round'));
@@ -19352,7 +19977,7 @@ export class Shape extends GraphObject {
      * The value must be a real number greater than or equal to one.
      * The default is 10.0.
      *
-     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-miterlimit">Stroke Miter Limit (w3.org)</a>.
+     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-miterlimit" target="_blank">Stroke Miter Limit (w3.org)</a>.
      */
     get strokeMiterLimit(): number;
     set strokeMiterLimit(value: number);
@@ -19361,7 +19986,7 @@ export class Shape extends GraphObject {
      * The value must be an array of positive numbers and zeroes,
      * or else null to indicate a solid line.
      * For example, the array [5, 10] would create dashes of 5 pixels and spaces of 10 pixels.
-     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-setlinedash">Stroke Line Dash Array (w3.org)</a>.
+     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-setlinedash" target="_blank">Stroke Line Dash Array (w3.org)</a>.
      *
      * The default value is null, resulting in a line without dashes or dots.
      * Setting an array with all zeroes will set the value to null.
@@ -19372,7 +19997,7 @@ export class Shape extends GraphObject {
      * Gets or sets the offset for dashed lines, used to start the drawing of the dash pattern with some space.
      * The value must be a real non-negative number. The default is zero.
      *
-     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linedashoffset">Stroke Line Dash Offset (w3.org)</a>.
+     * For more information, see <a href="https://www.w3.org/TR/2dcontext/#dom-context-2d-linedashoffset" target="_blank">Stroke Line Dash Offset (w3.org)</a>.
      */
     get strokeDashOffset(): number;
     set strokeDashOffset(value: number);
@@ -19543,6 +20168,16 @@ export class Shape extends GraphObject {
     get graduatedSkip(): ((val: number, shape: Shape) => boolean) | null;
     set graduatedSkip(value: ((val: number, shape: Shape) => boolean) | null);
     /**
+     * (undocumented)
+     * See if this polygon Shape completely contains the given Rect B in document coordinates.
+     * This is useful for detecting when a node inside a group might be leaving the group's area.
+     * This assumes that this Shape is a polygon -- it only has straight sides.
+     * (Although it works for Shapes with Geometry of type Ellipse because it is convex.)
+     * @param b a Rect in document coordinates
+     * @returns boolean true if this Shape is in the diagram and has a polygonal Geometry.
+     */
+    polygonContainsRect(b: Rect): boolean;
+    /**
      * This static function returns a read-only Map of named geometry generators.
      * The keys are figure names.
      * The values are either string synonyms for other figure names, or functions
@@ -19579,7 +20214,7 @@ export class Shape extends GraphObject {
      * @param func - A function that takes (Shape,width,height) and returns a Geometry,
      *    or an existing figure generator name for which the new name will be a synonym.
      */
-    static defineFigureGenerator(name: string, func: string | ((shape: Shape, width: number, height: number) => Geometry)): void;
+    static defineFigureGenerator(name: string, func: string | ((shape: Shape | null, width: number, height: number) => Geometry)): void;
     /**
      * This static predicate is true if and only if {@link Shape.defineFigureGenerator} has been called on the given name.
      * @param name
@@ -19840,7 +20475,7 @@ export class TextBlock extends GraphObject {
      *
      * For example, `"Italic small-caps bold 32px Georgia, Serif"` is a valid font string
      * using every CSS font property. Not every browser can render every font option.
-     * For more information about CSS font syntax, see <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font">CSS fonts (mozilla.org)</a>.
+     * For more information about CSS font syntax, see <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font" target="_blank">CSS fonts (mozilla.org)</a>.
      *
      * If your Node sizes depend on TextBlocks, it is best to ensure any custom fonts you are using are finished loading before you load your Diagram.
      * This will ensure nodes are sized appropriately for the initial Diagram layout.
@@ -19976,7 +20611,7 @@ export class TextBlock extends GraphObject {
      * Any valid CSS string can specify a solid color, and the {@link Brush}
      * class can be used to specify a gradient or pattern.
      * More information about the syntax of CSS color strings is available at:
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color">CSS colors (mozilla.org)</a>.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color" target="_blank">CSS colors (mozilla.org)</a>.
      */
     get stroke(): BrushLike;
     set stroke(value: BrushLike);
@@ -20120,6 +20755,35 @@ export class TextBlock extends GraphObject {
      */
     get spacingBelow(): number;
     set spacingBelow(value: number);
+    /**
+     * Gets or sets additional spacing between letters.
+     * The default is `'0px'`. The value may be negative.
+     *
+     * **Warning:** This feature is unsupported in Safari as of 2025.
+     * This may cause some user to experience different spacing and
+     * different TextBlock measurement, depending on their browser.
+     *
+     * Just like in CSS letter-spacing, this spacing creates trailing space on the last character.
+     * If this is undesired, consider adding a negative right margin to the TextBlock.
+     *
+     * @see {@link wordSpacing}
+     * @since 3.1
+     */
+    get letterSpacing(): string;
+    set letterSpacing(value: string);
+    /**
+   * Gets or sets additional spacing between words.
+   * The default is `'0px'`. The value may be negative.
+   *
+   * **Warning:** This feature is unsupported in Safari as of 2025.
+   * This may cause some user to experience different spacing and
+   * different TextBlock measurement, depending on their browser.
+   *
+   * @see {@link letterSpacing}
+   * @since 3.1
+   */
+    get wordSpacing(): string;
+    set wordSpacing(value: string);
     /**
      * Gets or sets the policy for trimming whitespace on each line of text.
      *
@@ -20818,6 +21482,31 @@ export class Part extends Panel {
      *
      * Changing the value of this property while it is already in a layer
      * causes it to change layers if needed.
+     *
+     * It is moderately commonplace to bind the property depending on the {@link isSelected} property
+     * in order to make sure selected Parts are in front of non-selected Parts,
+     * assuming that the "Foreground" Layer isn't used for other purposes.
+     * ```js
+     * new go.Node(. . ., {
+     *   })
+     *   .bindObject("layerName", "isSelected", sel => sel ? "Foreground" : "")
+     *   . . .
+     * ```
+     *
+     * But note that changing the layer of a Group will not change the layer of any of its {@link Group.memberParts}.
+     * In order to automatically bring a Group and all of its members forward when selected and then back to the
+     * default layer when non selected, in addition to the "isSelected" binding above, one would need to implement a
+     * {@link Part.layerChanged} event handler to do something like:
+     * ```js
+     * new go.Group(. . ., {
+     *     layerChanged: (grp, oldlay, newlay) => {
+     *        grp.memberParts.each(part => part.layerName = newlay.name);
+     *     },
+     *     . . .
+     *   })
+     *   .bindObject("layerName", "isSelected", sel => sel ? "Foreground" : "")
+     *   . . .
+     * ```
      * @see {@link layerChanged}
      */
     get layerName(): string;
@@ -21064,7 +21753,6 @@ export class Part extends Panel {
      */
     get category(): string;
     set category(value: string);
-    set self(clone: Part);
     /**
      * This predicate returns true if {@link copyable} is true,
      * if the layer's {@link Layer.allowCopy} is true, and
@@ -21796,7 +22484,7 @@ export class Part extends Panel {
  * according to the Part that they adorn.
  *
  * For more discussion and examples, see <a href="../../intro/selection.html">Selection</a>,
- * <a href="../../intro/toolTips.html">ToolTips</a>,
+ * <a href="../../intro/tooltips.html">ToolTips</a>,
  * <a href="../../intro/contextMenus.html">Context Menus</a>, and
  * <a href="../../intro/tools.html">Tools</a>.
  */
@@ -21810,7 +22498,6 @@ export class Adornment extends Part {
      *
      *```js
      * // Constructs an Adornment, sets properties on it,
-     * // adds a data binding to it,
      * // and adds two GraphObjects to the Adornment:
      * const a = new go.Adornment("Auto", {
      *     margin: 5,
@@ -22118,15 +22805,16 @@ export class Node extends Part {
     /**
      * (undocumented)
      * This invalidates the routes of all links connected to this node.
-     * Basically this calls {@link Link.invalidateRoute} on all connected links
+     * Basically this calls {@link Link._invalidateRoute} on all connected links
      * and invalidates any cached side-connection information.
      * @param ignore - An optional set of {@link Link}s to ignore.
+     * @param port - if supplied, only consider links connecting with this port
      */
-    invalidateConnectedLinks(ignore?: Set<Part>): void;
+    invalidateConnectedLinks(ignore?: Set<Part> | null, port?: GraphObject | null): void;
     /**
      * Gets or sets how link points are computed when the port spot is a "side" spot.
-     * The value must be one of {@link PortSpreading.None|SpreadingNone},
-     * {@link PortSpreading.Evenly|SpreadingEvenly}, {@link PortSpreading.Packed|SpreadingPacked}.
+     * The value must be one of {@link PortSpreading.None},
+     * {@link PortSpreading.Evenly}, {@link PortSpreading.Packed}.
      * The default value is {@link PortSpreading.Evenly}.
      */
     get portSpreading(): PortSpreading;
@@ -22189,19 +22877,19 @@ export class Node extends Part {
      * Returns an iterator over all of the {@link Link}s that connect with this node in either direction,
      * perhaps limited to the given port id on this node.
      * @virtual
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findLinksConnected(pid?: string | null): Iterator<Link>;
     /**
      * Returns an iterator over all of the {@link Link}s that come out of this node,
      * perhaps limited to the given port id on this node.
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findLinksOutOf(pid?: string | null): Iterator<Link>;
     /**
      * Returns an iterator over all of the {@link Link}s that go into this node,
      * perhaps limited to the given port id on this node.
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findLinksInto(pid?: string | null): Iterator<Link>;
     /**
@@ -22209,19 +22897,19 @@ export class Node extends Part {
      * in either direction, perhaps limited to the given port id on this node.
      *
      * The results may include this node itself if there is a reflexive link connecting this node with itself.
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findNodesConnected(pid?: string | null): Iterator<Node>;
     /**
      * Returns an iterator over the {@link Node}s that are connected with this node
      * by links coming out of this node, perhaps limited to the given port id on this node.
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findNodesOutOf(pid?: string | null): Iterator<Node>;
     /**
      * Returns an iterator over the {@link Node}s that are connected with this node
      * by links going into this node, perhaps limited to the given port id on this node.
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findNodesInto(pid?: string | null): Iterator<Node>;
     /**
@@ -22230,8 +22918,8 @@ export class Node extends Part {
      *
      * If you want all of the links between two nodes in just one direction, use {@link findLinksTo}.
      * @param othernode
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
-     * @param otherpid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
+     * @param otherpid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findLinksBetween(othernode: Node, pid?: string | null, otherpid?: string | null): Iterator<Link>;
     /**
@@ -22240,10 +22928,48 @@ export class Node extends Part {
      *
      * If you want all of the links between two nodes in both directions, use {@link findLinksBetween}.
      * @param othernode
-     * @param pid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
-     * @param otherpid - A port identifier string; if null the link's portId is ignored and all links are included in the search.
+     * @param pid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
+     * @param otherpid - A port identifier string; if undefined or null the link's portId is ignored and all links are included in the search.
      */
     findLinksTo(othernode: Node, pid?: string | null, otherpid?: string | null): Iterator<Link>;
+    /**
+     * Walk the graph starting at this Node and collect all of the Nodes and Links
+     * accessible by following the {@link Node.findLinksOutOf}, excluding this node itself.
+     * Basically this returns a {@link Set} of all Nodes and Links that are "downstream" from
+     * this Node or are "descendants" of this Node.
+     *
+     * The graph walk ignores whether {@link Part.isVisible} is true.
+     * It also ignores {@link Link.isTreeLink} and any other tree-specific properties.
+     *
+     * If the graph is tree-structured, you may want to call {@link findTreeParts} or
+     * {@link findTreeParentChain} instead.
+     *
+     * If a visited Node is a Group, the results will not include the member Parts of the Group.
+     * If a visited Link has label Nodes, the results will not include them.
+     *
+     * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
+     *                if not provided, a new Set is allocated and returned
+     */
+    findSuccessorParts(results?: Set<Part>): Set<Part>;
+    /**
+     * Walk the graph starting at this Node and collect all of the Nodes and Links
+     * accessible by following the {@link Node.findLinksInto}, excluding this node itself.
+     * Basically this returns a {@link Set} of all Nodes and Links that are "upstream" from
+     * this Node or are "ancestors" of this Node.
+     *
+     * The graph walk ignores whether {@link Part.isVisible} is true.
+     * It also ignores {@link Link.isTreeLink} and any other tree-specific properties.
+     *
+     * If the graph is tree-structured, you may want to call {@link findTreeParentChain} or
+     * {@link findTreeParts} instead.
+     *
+     * If a visited Node is a Group, the results will not include the member Parts of the Group.
+     * If a visited Link has label Nodes, the results will not include them.
+     *
+     * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
+     *                if not provided, a new Set is allocated and returned
+     */
+    findPredecessorParts(results?: Set<Part>): Set<Part>;
     /**
      * Gets or sets the function that is called after a {@link Link} has been connected with this Node.
      * It is typically used to modify the appearance of the node.
@@ -22292,8 +23018,8 @@ export class Node extends Part {
      *
      * The function, if supplied, must not have any side-effects.
      */
-    get linkValidation(): ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null;
-    set linkValidation(value: ((fromNode: Node, fromPort: GraphObject, toNode: Node, toPort: GraphObject, link: Link) => boolean) | null);
+    get linkValidation(): ((fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean) | null;
+    set linkValidation(value: ((fromNode: Node | null, fromPort: GraphObject | null, toNode: Node | null, toPort: GraphObject | null, link: Link | null) => boolean) | null);
     /**
      * This read-only property is true when this Node is a label node for a Link.
      *
@@ -22407,14 +23133,20 @@ export class Node extends Part {
      *
      * This may result in undefined behavior if there are cycles of Links that are {@link Link.isTreeLink}.
      *
+     * If the graph is not tree-structured, you may want to call {@link findPredecessorParts} instead.
+     *
      * The result will include this node and the "root" node and all nodes and links in between.
      * The root node is also accessible directly via {@link findTreeRoot}.
      * If any of the nodes are {@link Group}s, their member parts are not included.
+     *
+     * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
+     *                if not provided, a new Set is allocated and returned
      * @returns A Set of Nodes and Links.
      * @see {@link findTreeRoot}
      * @see {@link findTreeParts}
+     * @see {@link findPredecessorParts}
      */
-    findTreeParentChain(): Set<Part>;
+    findTreeParentChain(results?: Set<Part>): Set<Part>;
     /**
      * Return how deep this node is in a tree structure.
      * For tree root nodes, this returns zero.
@@ -22464,15 +23196,21 @@ export class Node extends Part {
      * The result will include this, the "root" node.
      * If any of the nodes are {@link Group}s, their member parts are not included.
      *
+     * If the graph is not tree-structured, you may want to call {@link findSuccessorParts} or
+     * {@link findPredecessorParts} instead.
+     *
      * If you want to find the collection of Parts that are contained by a {@link Group}, use {@link Group.findSubGraphParts}.
      * @param level - How many levels of the tree, starting at this node, to include;
      *    the default is Infinity, including all tree children of this node.  Values less than 1 are treated as 1.
+     * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
+     *                if not provided, a new Set is allocated and returned
      * @returns A Set of Nodes and Links.
      * @see {@link findTreeChildrenNodes}
      * @see {@link findTreeChildrenLinks}
      * @see {@link findTreeParentChain}
+     * @see {@link findSuccessorParts}
      */
-    findTreeParts(level?: number): Set<Part>;
+    findTreeParts(level?: number, results?: Set<Part>): Set<Part>;
     /**
      * Hide each child node and the connecting link,
      * and recursively collapse each child node.
@@ -22799,7 +23537,6 @@ export class Link extends Part {
      *
      *```js
      * // Constructs a Link, sets properties on it,
-     * // adds a data binding to it,
      * // and adds two Shapes to the Link:
      * const l = new go.Link({
      *     routing: go.Routing.Orthogonal
@@ -22885,6 +23622,10 @@ export class Link extends Part {
      * @deprecated See {@link Orientation.Upright45}.
      */
     static readonly OrientUpright45 = Orientation.Upright45;
+    /**
+     * (undocumented)
+     */
+    static setRoutingParameter(idx: number, value: number): void;
     /**
      * Gets or sets the {@link Node} that this link comes from.
      * The {@link fromPortId} specifies which port the link comes from.
@@ -23192,6 +23933,14 @@ export class Link extends Part {
     get points(): List<Point>;
     set points(value: List<Point>);
     /**
+     * (undocumented)
+     * When the {@link points} setter is given an Array, call this method to generate a List of Points.
+     * The Array should have an even number of real numbers, or else Objects with "x" and "y" properties each with real number values.
+     * @param arr
+     * @returns a List of Points, or null if the argument Array doesn't have the right values in it
+     */
+    protected convertPointsArrayToList(arr: Array<any>): List<Point> | null;
+    /**
      * This read-only property returns the number of points in the route.
      */
     get pointsCount(): number;
@@ -23295,20 +24044,30 @@ export class Link extends Part {
      * to perform the actual determination of the route.
      */
     invalidateRoute(): void;
-    /** @hidden Undocumented */
+    /**
+     * (undocumented)
+     */
     get suspendsRouting(): boolean;
-    /** @hidden Undocumented */
+    /**
+     * (undocumented)
+     */
     set suspendsRouting(value: boolean);
     /**
      * (undocumented)
      */
-    get defaultFromPoint(): Point | null;
-    set defaultFromPoint(value: Point | null);
+    get defaultFromPoint(): Point;
     /**
      * (undocumented)
      */
-    get defaultToPoint(): Point | null;
-    set defaultToPoint(value: Point | null);
+    set defaultFromPoint(value: Point);
+    /**
+     * (undocumented)
+     */
+    get defaultToPoint(): Point;
+    /**
+     * (undocumented)
+     */
+    set defaultToPoint(value: Point);
     /**
      * This method recomputes the route if the route is invalid,
      * to make sure the {@link points} are up-to-date.
@@ -23418,7 +24177,11 @@ export class Link extends Part {
     computeSpot(from: boolean, port?: GraphObject | null): Spot;
     /**
      * Find the approximate point of the other end of the link in document coordinates.
-     * This is useful when computing the connection point when there is no specific spot, to have an idea of which general direction the link should be going.
+     * This is called when this port (not OTHERPORT) has a spot that is {@link Spot.isSide}.
+     * This is useful when computing the connection point when there is no specific spot,
+     * to have an idea of which general direction the link should be going.
+     * If this node (not OTHERNODE) is a member of OTHERNODE, or vice-versa,
+     * this returns a point on the appropriate side of the OTHERPORT.
      * By default this will return the center of the other port.
      *
      * This method may be overridden.
@@ -23577,6 +24340,11 @@ export class Link extends Part {
      */
     findClosestSegment(p: Point): number;
     /**
+     * (undocumented)
+     * Recompute the Geometry of the path without necessarily recomputing the route of the link.
+     */
+    invalidateGeometry(): void;
+    /**
      * This read-only property returns the {@link Geometry} that is used by the {@link path}, the link {@link Shape} based on the route points.
      *
      * This geometry is automatically generated using the route points and other properties
@@ -23628,8 +24396,7 @@ export class Link extends Part {
     computeAdjusting(): LinkAdjusting;
     /**
      * Gets or sets how rounded the corners are for adjacent line segments when the {@link curve}
-     * is {@link Curve.None|None}, {@link Curve.JumpGap|JumpGap}, or {@link Curve.JumpOver|JumpOver} and
-     * the two line segments are orthogonal to each other.
+     * is not {@link Curve.Bezier|Bezier}.
      *
      * The default value is zero -- there is no curve at a corner.
      */
@@ -23641,8 +24408,7 @@ export class Link extends Part {
      *
      * Setting this property to {@link Curve.JumpOver|JumpOver} or {@link Curve.JumpGap|JumpGap} requires the Diagram to do
      * considerable computation when calculating Link routes. Consider not using
-     * a Jump... value with Diagrams that contain large numbers of Links
-     * if you are targeting slow devices.
+     * a Jump... value with Diagrams that contain large numbers of Links if you are targeting slow devices.
      *
      * The default value is {@link Curve.None|None} -- each link segment is a straight line.
      * @see {@link computeCurve}
@@ -23863,6 +24629,7 @@ export class Group extends Node {
      *     margin: 5,
      *     background: "red"
      *   })
+     *   .bind("location", "loc", go.Point.parse)
      *   .add(
      *     new go.Shape("RoundedRectangle"),
      *     new go.TextBlock("Some Text")
@@ -23926,9 +24693,13 @@ export class Group extends Node {
      */
     get handlesDragDropForMembers(): boolean;
     set handlesDragDropForMembers(value: boolean);
-    /** @hidden */
+    /**
+     * (undocumented)
+     */
     get avoidableMembers(): boolean;
-    /** @hidden */
+    /**
+     * (undocumented)
+     */
     set avoidableMembers(value: boolean);
     /**
      * This read-only property returns an iterator over the member {@link Part}s of this Group.
@@ -24397,7 +25168,7 @@ export class Layout {
      * set the {@link isValidLayout} property to false, and ask to perform another layout in the near future.
      * If {@link isInitial} is true, this layout is invalidated only when the {@link Diagram.model} is replaced,
      * not under the normal circumstances such as when parts are added or removed or
-     * due to other calls to {@link Layout.invalidateLayout}.
+     * due to other calls to {@link Layout._invalidateLayout}.
      *
      * If you set both {@link isInitial} and {@link isOngoing} to false,
      * there will be no automatic layout invalidation, because this method
@@ -25297,7 +26068,7 @@ export type TargetConversion = ((val: any, targetObj: any) => any) | null;
  * If you want a two-way binding without a back-conversion function, specify `null` for a `BackConversion`.
  * If you do not want a two-way binding, omit any `BackConversion`.
  */
-export type BackConversion = ((val: any, sourceData: any, model: Model) => any) | null;
+export type BackConversion = ((val: any, sourceData: any, model: Model | null) => any) | null;
 /**
  * This enumeration specifies in which direction bindings will be evaluated.
  * Used for {@link Binding.mode}.
@@ -25854,7 +26625,7 @@ export class ThemeBinding extends Binding {
      * @param themeConverter - An optional side-effect-free function converting the theme value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
      */
-    constructor(targetprop?: string, sourceprop?: string, themeSource?: string, conv?: TargetConversion, themeConverter?: TargetConversion);
+    constructor(targetprop?: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion, themeConverter?: TargetConversion);
     /**
      * Gets or sets the source object on a Theme for a lookup.
      *
@@ -25877,8 +26648,8 @@ export class ThemeBinding extends Binding {
      * ```
      * @defaultValue `''` -- the theme will be be searched without any additional object constraint
      */
-    get themeSource(): string | null;
-    set themeSource(value: string | null);
+    get themeSource(): string;
+    set themeSource(value: string);
     /**
      * Gets or sets a converter function to apply to the theme property value
      * in order to produce the value to set to the target property.
@@ -26143,7 +26914,7 @@ export class Model {
      * @see {@link toIncrementalJson}
      * @since 2.1
      */
-    toIncrementalData(e: ChangedEvent): IncrementalData;
+    toIncrementalData(e: ChangedEvent): IncrementalData | null;
     /**
      * Deeply copy an object or array and return the new object.
      * This is typically called on a {@link nodeDataArray} or {@link GraphLinksModel.linkDataArray} or data objects within them.
@@ -26295,13 +27066,22 @@ export class Model {
      * @param model - an optional model to be modified; if not supplied, it constructs and returns a new model whose name is specified by the "class" property.
      * @returns the supplied or created model loaded with data from the given string.
      */
-    static fromJson(s: string | ObjectData, model?: Model): Model;
+    static fromJson(s: string | ObjectData, model?: Model | null): Model;
+    /**
+     * (undocumented)
+     * Convert the Array value of 'points' to a List of Points.
+     */
+    protected replaceJsonPropertyValue(x: ObjectData, p: string, replaced: any): void;
+    /**
+     * (undocumented)
+     */
+    protected writeJsonPropertyValue(p: string, v: any): string;
     /**
      * Gets or sets the number of digits after the decimal point for 'points' values written out
-     * in an Array for the {@link Link#points} property.
+     * in an Array for the {@link Link.points} property.
      *
      * A new value must be a non-negative integer less than or equal to 100;
-     * typically the value will be zero, 1, 2, or 3.
+     * typically the value will be 1, 2, or 3.  A value of zero is not recommended.
      *
      * The default value is 100.  Values larger than 16 will cause each number to be written out with
      * however many decimal digits are needed without trailing zeros.
@@ -26568,8 +27348,15 @@ export class Model {
      * Setting this property after setting {@link nodeDataArray} has no real effect until there is a call
      * to {@link addNodeData}.
      *
+     * A simple example:
+     * ```js
+     * const model = go.Model.fromJson(str);
+     * model.makeUniqueKeyFunction = (model, data) => crypto.randomUUID();
+     * myDiagram.model = model;
+     * ```
+     *
      * If you want to ensure that this function is called when copying data that already has a key,
-     * set {@link copiesKey} to false, which is its default value.
+     * make sure {@link copiesKey} is false, which is its default value in version 3.
      * This is typically useful when copying a node from a Palette, where the key it has in the Palette's Model
      * happens to be unique within the target Diagram's Model.
      * If you set {@link copiesKey} to true on the target Diagram's model,
@@ -26809,7 +27596,7 @@ export class Model {
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      * @see {@link addNodeData}
      */
-    copyNodeData(nodedata: ObjectData): ObjectData | null;
+    copyNodeData(nodedata: ObjectData): ObjectData;
     /**
      * (undocumented)
      * This function (if not null) is called towards the end of {@link Diagram.copyParts}
@@ -26845,7 +27632,7 @@ export class Model {
      *                      or item in a {@link Panel.itemArray}; or this model's {@link modelData}.
      * @param propname - a string that is not null or the empty string.
      * @param val - the new value for the property.
-     * @see {@link set}
+     * @see {@link set} a synonym of this method
      */
     setDataProperty(data: ObjectData, propname: string, val: any): void;
     /**
@@ -27605,7 +28392,7 @@ export class GraphLinksModel extends Model {
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      * @see {@link Model.copyNodeData}
      */
-    copyNodeData(nodedata: ObjectData): ObjectData | null;
+    copyNodeData(nodedata: ObjectData): ObjectData;
     /**
      * This override changes the value of some property of a node data, a link data, or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -27768,7 +28555,6 @@ export class TreeModel extends Model {
      */
     get parentLinkCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
     set parentLinkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
-    set linkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
     /**
      * Find the category for the parent link of a given child node data, a string naming the link template
      * that the {@link Diagram} should use to represent the link.
@@ -27797,9 +28583,8 @@ export class TreeModel extends Model {
      * This override also makes sure any copied node data does not have a reference to a parent node.
      * @virtual
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
-     * @see {@link Model.copyNodeData}
      */
-    copyNodeData(nodedata: ObjectData): ObjectData | null;
+    copyNodeData(nodedata: ObjectData): ObjectData;
     /**
      * This override changes the value of some property of a node data or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -27945,7 +28730,7 @@ export class CircularLayout extends Layout {
      *
      * You should not call this method -- it is a "protected virtual" method.
      */
-    protected commitLayout(): void;
+    commitLayout(): void;
     /**
      * Commit the position of all vertex nodes.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
@@ -28231,7 +29016,7 @@ export class CircularEdge extends LayoutEdge {
  * Nodes will normally not overlap each other, but when there is a dense interconnectivity overlaps might not be avoidable.
  * <p class="boxrun">
  * If you want to experiment interactively with most of the properties, try the <a href="../../samples/fdLayout.html">Force Directed Layout</a> sample.
- * See samples that make use of ForceDirectedLayout in the <a href="../../samples/index.html#forcedirectedlayout">samples index</a>.
+ * See samples that make use of ForceDirectedLayout in the <a href="../../samples/index.html#force-directed">samples index</a>.
  * </p>
  *
  * This layout makes use of a {@link LayoutNetwork} of
@@ -28340,7 +29125,7 @@ export class ForceDirectedLayout extends Layout {
      * You should not call this method -- it is a "protected virtual" method.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      */
-    protected commitLayout(): void;
+    commitLayout(): void;
     /**
      * Commit the position of all nodes.
      *
@@ -28861,7 +29646,7 @@ export declare enum LayeredDigraphAlign {
  * There are many samples that use LayeredDigraphLayout.
  * <p class="boxrun">
  * If you want to experiment interactively with most of the properties, try the <a href="../../samples/ldLayout.html">Layered Digraph Layout</a> sample.
- * See samples that make use of LayeredDigraphLayout in the <a href="../../samples/index.html#layereddigraphlayout">samples index</a>.
+ * See samples that make use of LayeredDigraphLayout in the <a href="../../samples/index.html#layered-digraph">samples index</a>.
  *
  * The {@link layerSpacing} property controls the distance between layers.
  * The {@link columnSpacing} property controls the breadth of each "column" --
@@ -29066,7 +29851,7 @@ export class LayeredDigraphLayout extends Layout {
      * You should not call this method -- it is a "protected virtual" method.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      */
-    protected commitLayout(): void;
+    commitLayout(): void;
     /**
      * Commit the position of all nodes.
      *
@@ -29200,6 +29985,17 @@ export class LayeredDigraphLayout extends Layout {
      */
     get alignOption(): LayeredDigraphAlign;
     set alignOption(value: LayeredDigraphAlign);
+    /**
+     * Gets or sets how the nodes in each layer are positioned within each layer.
+     * Each node is aligned in the center of its layer according to its {@link LayoutVertex.focus} (the default positioning)
+     * or at the top or the left side of the layer if {@link LayeredDigraphVertex.centered} is false.
+     *
+     * The default value is true.
+     * This property provides the default value for {@link LayeredDigraphVertex.centered}.
+     * @since 3.1
+     */
+    get centered(): boolean;
+    set centered(value: boolean);
     /**
      * Gets or sets whether the FromSpot and ToSpot of each link should be set
      * to values appropriate for the given value of {@link LayeredDigraphLayout.direction}.
@@ -29398,6 +30194,15 @@ export class LayeredDigraphVertex extends LayoutVertex {
      */
     get near(): LayeredDigraphVertex;
     set near(value: LayeredDigraphVertex);
+    /**
+     * Gets or sets whether the Node (if any) is positioned aligned to the center of its layer
+     * or to the left side (if direction == 0) or top side (if direction == 90) of its layer.
+     *
+     * The default value is true but gets the value of {@link LayeredDigraphLayout.centered}.
+     * @since 3.1
+     */
+    get centered(): boolean;
+    set centered(value: boolean);
 }
 /**
  * This holds {@link LayeredDigraphLayout}-specific information about {@link Link}s.
@@ -29961,7 +30766,7 @@ export class TreeLayout extends Layout {
      * You should not call this method -- it is a "protected virtual" method.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      */
-    protected commitLayout(): void;
+    commitLayout(): void;
     /**
      * Commit the position of all nodes.
      *
@@ -30758,8 +31563,8 @@ export class TreeVertex extends LayoutVertex {
      * This structural property is computed in {@link TreeLayout.doLayout} when building the tree structures.
      * You should probably not be setting this property.
      */
-    get parent(): TreeVertex;
-    set parent(value: TreeVertex);
+    get parent(): TreeVertex | null;
+    set parent(value: TreeVertex | null);
     /**
      * Gets or sets the logical children for this node.
      *
@@ -30820,8 +31625,8 @@ export class TreeVertex extends LayoutVertex {
      * Typically these will be {@link Node}s whose Category is "Comment".
      * This array should be allocated and initialized in {@link TreeLayout.addComments}.
      */
-    get comments(): Array<Node>;
-    set comments(value: Array<Node>);
+    get comments(): Array<Node> | null;
+    set comments(value: Array<Node> | null);
     /**
      * Gets or sets whether and in what order the children should be sorted.
      *
@@ -31189,9 +31994,9 @@ export class Themes {
 }
 /**
  * This class is responsible for managing a Diagram's theming (or multiple Diagrams, if shared).
- *
- * Read more about theming at <a href="../../intro/theming.html">Theming</a>.
- *
+ * <p class="box">
+ * For more discussion, see <a href="../../intro/theming.html">Introduction to Theming</a>.
+ * </p>
  * Your templates can make use of the values held by the current {@link Theme} by calling
  * {@link GraphObject.theme} or {@link GraphObject.themeData} or {@link GraphObject.themeModel} methods,
  * or by adding a {@link ThemeBinding} to a GraphObject when using {@link GraphObject.make}.
@@ -31265,6 +32070,109 @@ export class ThemeManager {
     get changesDivBackground(): boolean;
     set changesDivBackground(value: boolean);
     /**
+     * Gets or sets whether this ThemeManager reads var(...) values via `getComputedStyle` and `getPropertyValue`.
+     *
+     * The values will be read from the :root CSS element.
+     * This may be especially useful if you need to reference CSS variables from another library,
+     * or if you've defined CSS variables that are used to theme the rest of your application.
+     *
+     * The CSS variable's value will be read before any {@link ThemeBinding.themeConverter} functions have run.
+     *
+     * <p class="box">
+     * NOTE: The syntax to reference a CSS variable in a theme is <code>'var(&lt;varname&gt;)'</code>.
+     * Only a single variable may be referenced, and any fallbacks should be defined either on the template or
+     * in the referenced CSS variable.
+     * </p>
+     *
+     * CSS:
+     * ```css
+     * :root {
+     *   --color-bg: var(--color-slate-50);
+     *   --color-primary: var(--color-emerald-300);
+     * }
+     *
+     * .dark {
+     *   --color-bg: var(--color-slate-950);
+     *   --color-primary: var(--color-emerald-700);
+     * }
+     * ```
+     *
+     * ThemeManager:
+     * ```js
+     * // using a single theme
+     * diagram.themeManager = new go.ThemeManager({
+     *   changesDivBackground: true,  // may not be needed in cases where the diagram background is transparent
+     *   defaultTheme: 'default',
+     *   currentTheme: 'default',
+     *   themeMap: new go.Map([
+     *     {
+     *       key: 'default',
+     *       value: {
+     *         ...go.Themes.Dark,
+     *         colors: {
+     *           ...go.Themes.Dark.colors,  // take some default colors from the built-in dark theme
+     *           div: 'var(--color-bg)',
+     *           primary: 'var(--color-primary)'
+     *         }
+     *       }
+     *     }
+     *   ])
+     * });
+     *
+     * // using multiple themes
+     * diagram.themeManager = new go.ThemeManager({
+     *   changesDivBackground: true,
+     *   themeMap: new go.Map([
+     *     {
+     *       key: 'light',
+     *       value: {
+     *         ...go.Themes.Light,
+     *         colors: {
+     *           ...go.Themes.Light.colors,
+     *           div: 'var(--color-slate-50)',
+     *           primary: 'var(--color-emerald-300)'
+     *         }
+     *       }
+     *     },
+     *     {
+     *       key: 'dark',
+     *       value: {
+     *         ...go.Themes.Dark,
+     *         colors: {
+     *           ...go.Themes.Dark.colors,
+     *           div: 'var(--color-slate-900)',
+     *           primary: 'var(--color-emerald-700)'
+     *         }
+     *       }
+     *     }
+     *   ])
+     * });
+     * ```
+     *
+     * Switching themes:
+     * ```
+     * // on theme change, set :root class and update diagrams
+     * // not strictly needed if using two themes
+     * document.documentElement.classList.toggle('dark', ...);
+     *
+     * // using a single theme
+     * themeManager.updateDiagrams();
+     *
+     * // using multiple themes
+     * themeManager.currentTheme = mode;
+  
+     * ```
+     *
+     * See [getComputedStyle](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle) and
+     * [getPropertyValue](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration/getPropertyValue)
+     * for more information on reading CSS from JS.
+     *
+     * @defaultValue `true`
+     * @since 3.1
+     */
+    get readsCssVariables(): boolean;
+    set readsCssVariables(value: boolean);
+    /**
      * This read-only property returns the user's preferred color scheme,
      * useful when {@link currentTheme} is set to `system`.
      *
@@ -31328,13 +32236,22 @@ export class ThemeManager {
      *   which can determine the property on the Theme object to search via {@link Theme.targetPropertyMap}
      * @returns the value in the given Theme, or undefined if not found
      */
-    getValue(theme: Theme, prop: string | Array<string> | number, source?: string | Array<string>, tprop?: string): any;
+    getValue(theme: Theme | null, prop: string | Array<string> | number, source?: string | Array<string>, tprop?: string): any;
     /**
      * Finds the {@link Theme} with the specified name, or if the name is `system`, the preferred `light` or `dark` theme.
      * @param themeName - the theme name to get from {@link themeMap}
      * @returns a Theme, or undefined if the Theme was not found
      */
-    findTheme(themeName: string): Theme | undefined;
+    findTheme(themeName: string): Theme | null;
+    /**
+     * Updates all theme bindings and backgrounds for diagrams associated with this ThemeManager.
+     *
+     * You should only need to call this if referencing CSS variables that may change.
+     *
+     * @see {@link readsCssVariables}
+     * @since 3.1
+     */
+    updateDiagrams(): void;
 }
 /**
  * An interface describing a theme.
@@ -31575,6 +32492,16 @@ export abstract class Router {
      */
     canRoute(container: Diagram | Group): boolean;
     /**
+     * Decide whether a given Link should be routed or ignored.
+     *
+     * By default this just returns true.
+     * @param link
+     * @param container the containing Diagram or Group
+     * @returns whether or not this Router should operate on the given Link
+     * @since 3.1
+     */
+    isRoutable(link: Link, container: Diagram | Group): boolean;
+    /**
      * Route the links for a given collection (Group or Diagram). By default this is called
      * in a depth-first manner on every Group in the Diagram, and then the Diagram itself.
      * If a layout occurred for a Group or a Diagram, this is called immediately afterwards
@@ -31637,6 +32564,14 @@ export class AvoidsNodesRouter extends Router {
      * If no avoiding links are present in the collection, the router will not run.
      */
     canRoute(container: Diagram | Group): boolean;
+    /**
+     * This returns false for links that are not AvoidsNodes routing, that do not connect two Nodes,
+     * or that have not yet gotten a preliminary routing (i.e. 4 or more points in the route).
+     * @param link
+     * @param container
+     * @returns
+     */
+    isRoutable(link: Link, container: Diagram | Group): boolean;
     /**
      * Route the links.
      * By default this is called in a depth-first manner on every Group in the Diagram, and then the Diagram itself.

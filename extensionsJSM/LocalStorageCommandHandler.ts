@@ -16,115 +16,115 @@ import * as go from 'gojs';
 /**
  * This CommandHandler class uses localStorage as the repository for the clipboard,
  * rather than an in-memory global variable.
- * It requires that the {@link go.Diagram.model} be serializable and deserializable using {@link go.Model.toJson} and {@link go.Model.fromJson}.
+ * It requires that the {@link Diagram.model} be serializable and deserializable using {@link Model.toJson} and {@link Model.fromJson}.
  *
- * The {@link copyToClipboard} and {@link pasteFromClipboard} functions fall back to using the standard definitions
- * if there are any errors calling `Storage.getItem` or `Storage.setItem`.
- *
- * Typical usage:
- * ```js
- *   new go.Diagram("myDiagramDiv",
- *     {
- *       commandHandler: new LocalStorageCommandHandler(),
- *       ...
- *     }
- *   )
- * ```
- * or:
- * ```js
- *   myDiagram.commandHandler = new LocalStorageCommandHandler();
- * ```
- *
- * If you want to experiment with this extension, try the <a href="../../samples/LocalStorageCommandHandler.html">Local Storage Commands</a> sample.
+ * As of version 3.1, the functionality is built into the {@link CommandHandler} class.
+ * Enable it by setting {@link CommandHandler.storageLocation} to "localStorage".
+ * However, the functionality is duplicated here for compatibility with versions earlier than 3.1.
  * @category Extension
+ * @deprecated See {@link CommandHandler.storageLocation}
  */
 export class LocalStorageCommandHandler extends go.CommandHandler {
-  private StorageKey: string = 'go._clipboard';
-  private FormatKey: string = 'go._clipboardFormat';
+  private _StorageKey: string = 'go._clipboard';
+  private _FormatKey: string = 'go._clipboardFormat';
 
   constructor(init?: Partial<LocalStorageCommandHandler>) {
     super();
     if (init) Object.assign(this, init);
   }
 
+  // Storing the clipboard in localStorage
+  // This functionality has been subsumed by go.CommandHandler.storageLocation in version 3.1.
+  // It remains here for compatibility with versions before 3.1.
+
   /**
+   * This functionality has been subsumed by {@link go.CommandHandler.storageLocation} in version 3.1.
    * Makes a copy of the given collection of {@link go.Part}s
    * and stores it as JSON in LocalStorage.
    * @param coll - a collection of {@link go.Part}s.
    */
   override copyToClipboard(coll: go.Iterable<go.Part>): void {
-    try {
-      if (coll === null) {
-        window.localStorage.setItem(this.StorageKey, '');
-        window.localStorage.setItem(this.FormatKey, '');
-      } else {
-        const clipdiag = new go.Diagram(); // create a temporary Diagram
-        // copy from this diagram to the temporary diagram some properties that affects copying:
-        clipdiag.isTreePathToChildren = this.diagram.isTreePathToChildren;
-        clipdiag.toolManager.draggingTool.dragsLink =
-          this.diagram.toolManager.draggingTool.dragsLink;
-        // create a model like this one but with no data
-        clipdiag.model = this.diagram.model.copy();
-        // copy the given Parts into this temporary Diagram
-        this.diagram.copyParts(coll, clipdiag, false);
-
-        window.localStorage.setItem(this.StorageKey, clipdiag.model.toJson());
-        window.localStorage.setItem(this.FormatKey, clipdiag.model.dataFormat);
+    if (!this['storageLocation']) {
+      try {
+        if (coll === null) {
+          window.localStorage.setItem(this._StorageKey, '');
+          window.localStorage.setItem(this._FormatKey, '');
+        } else {
+          const clipdiag = new go.Diagram(); // create a temporary Diagram
+          // copy from this diagram to the temporary diagram some properties that affects copying:
+          clipdiag.isTreePathToChildren = this.diagram.isTreePathToChildren;
+          clipdiag.toolManager.draggingTool.dragsLink =
+            this.diagram.toolManager.draggingTool.dragsLink;
+          // create a model like this one but with no data
+          clipdiag.model = this.diagram.model.copy();
+          // copy the given Parts into this temporary Diagram
+          this.diagram.copyParts(coll, clipdiag, false);
+          window.localStorage.setItem(this._StorageKey, clipdiag.model.toJson());
+          window.localStorage.setItem(this._FormatKey, clipdiag.model.dataFormat);
+        }
+        this.diagram.raiseDiagramEvent('ClipboardChanged', coll);
+      } catch (ex) {
+        return;
       }
-      this.diagram.raiseDiagramEvent('ClipboardChanged', coll);
-    } catch (ex) {
-      // fallback implementation
+    } else {
       super.copyToClipboard(coll);
     }
   }
 
   /**
+   * This functionality has been subsumed by {@link go.CommandHandler.storageLocation} in version 3.1.
    * If LocalStorage holds JSON for a collection of {@link go.Part}s,
    * and if the {@link go.Model.dataFormat} matches that stored in the clipboard,
    * this makes a copy of the clipboard's parts and adds the copies to this {@link go.Diagram}.
    * @returns a collection of newly pasted {@link go.Part}s
    */
   override pasteFromClipboard(): go.Set<go.Part> {
-    const coll = new go.Set<go.Part>();
-    try {
-      const clipstr = window.localStorage.getItem(this.StorageKey);
-      const clipfrmt = window.localStorage.getItem(this.FormatKey);
-      if (clipstr === null || clipstr === '' || clipfrmt !== this.diagram.model.dataFormat) {
+    if (!this['storageLocation']) {
+      const coll = new go.Set<go.Part>();
+      try {
+        const clipstr = window.localStorage.getItem(this._StorageKey);
+        const clipfrmt = window.localStorage.getItem(this._FormatKey);
+        if (clipstr === null || clipstr === '' || clipfrmt !== this.diagram.model.dataFormat) {
+          return coll;
+        } else {
+          const clipdiag = new go.Diagram(); // create a temporary Diagram
+          // recover the model from the clipboard rendering
+          clipdiag.model = go.Model.fromJson(clipstr);
+          // copy all the CLIPDIAG Parts into this Diagram
+          const allparts = new go.Set<go.Part>();
+          allparts.addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
+          const copymap = this.diagram.copyParts(allparts, this.diagram, false);
+          // return a Set of the copied Parts
+          return new go.Set<go.Part>().addAll(copymap.iteratorValues);
+        }
+      } catch (ex) {
         return coll;
-      } else {
-        const clipdiag = new go.Diagram(); // create a temporary Diagram
-        // recover the model from the clipboard rendering
-        clipdiag.model = go.Model.fromJson(clipstr);
-        // copy all the CLIPDIAG Parts into this Diagram
-        const allparts = new go.Set<go.Part>();
-        allparts.addAll(clipdiag.parts).addAll(clipdiag.nodes).addAll(clipdiag.links);
-        const copymap = this.diagram.copyParts(allparts, this.diagram, false);
-        // return a Set of the copied Parts
-        return new go.Set<go.Part>().addAll(copymap.iteratorValues);
       }
-    } catch (ex) {
-      // fallback implementation
+    } else {
       return super.pasteFromClipboard();
     }
   }
 
   /**
+   * This functionality has been subsumed by {@link go.CommandHandler.storageLocation} in version 3.1.
    * This predicate controls whether or not the user can invoke the {@link pasteSelection} command.
-   *
    * This works just like {@link go.CommandHandler.canPasteSelection}, but looks at LocalStorage instead of a static variable.
    */
   override canPasteSelection(pos?: go.Point): boolean {
-    const diagram = this.diagram;
-    if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
-    if (!diagram.allowInsert || !diagram.allowClipboard) return false;
-    try {
-      const clipstr = window.localStorage.getItem(this.StorageKey);
-      const clipfrmt = window.localStorage.getItem(this.FormatKey);
-      if (clipstr === null || clipstr === '') return false;
-      if (clipfrmt !== diagram.model.dataFormat) return false;
-      return true;
-    } catch (ex) {
-      // fallback implementation
+    if (!this['storageLocation']) {
+      const diagram = this.diagram;
+      if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
+      if (!diagram.allowInsert || !diagram.allowClipboard) return false;
+      try {
+        const clipstr = window.localStorage.getItem(this._StorageKey);
+        const clipfrmt = window.localStorage.getItem(this._FormatKey);
+        if (clipstr === null || clipstr === '') return false;
+        if (clipfrmt !== diagram.model.dataFormat) return false;
+        return true;
+      } catch (ex) {
+        return false;
+      }
+    } else {
       return super.canPasteSelection(pos);
     }
   }

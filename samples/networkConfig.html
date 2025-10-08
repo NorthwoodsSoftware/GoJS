@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -196,50 +198,54 @@
       'undoManager.isEnabled': true
     }); // enable undo & redo
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationSpot: go.Spot.Center,
-      locationObjectName: 'BODY',
-      selectionObjectName: 'BODY'
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Picture({
-          name: 'BODY',
-          width: 50,
-          height: 50,
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer'
-        }).bind('source', 'type', (t) => `images/network/${t.toLowerCase()}.svg`),
-        new go.Shape({
-          width: 25,
-          height: 25,
-          fill: 'transparent',
-          strokeWidth: 0
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'BODY',
+          selectionObjectName: 'BODY'
         })
-      );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Picture({
+              name: 'BODY',
+              width: 50,
+              height: 50,
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              cursor: 'pointer'
+            })
+            .bind('source', 'type', t => `images/network/${t.toLowerCase()}.svg`),
+          new go.Shape({
+            width: 25,
+            height: 25,
+            fill: 'transparent',
+            strokeWidth: 0
+          })
+        );
 
-    myDiagram.groupTemplate = new go.Group('Vertical', {
-      locationSpot: go.Spot.Center,
-      padding: 5 // to push the port out
-    })
-      .add(
-        new go.TextBlock({
-          alignment: go.Spot.Left,
-          font: '12px georgia',
-          editable: true
-        }).bindTwoWay('text'),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', {
-              strokeDashArray: [2, 6],
-              stroke: '#333',
-              fill: 'rgba(0,0,0,0)'
-            }),
-            new go.Placeholder({ padding: 5 })
-          )
-      );
+    myDiagram.groupTemplate =
+      new go.Group('Vertical', {
+          locationSpot: go.Spot.Center,
+          padding: 5 // to push the port out
+        })
+        .add(
+          new go.TextBlock({
+              alignment: go.Spot.Left,
+              font: '12px georgia',
+              editable: true
+            })
+            .bindTwoWay('text'),
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', {
+                strokeDashArray: [2, 6],
+                stroke: '#333',
+                fill: 'rgba(0,0,0,0)'
+              }),
+              new go.Placeholder({ padding: 5 })
+            )
+        );
 
     myPalette = new go.Palette('myPaletteDiv', {
       nodeTemplateMap: myDiagram.nodeTemplateMap,
@@ -251,16 +257,17 @@
 
     myPalette.model.nodeDataArray = [{ type: 'Cloud' }, { type: 'Firewall' }, { type: 'Switch' }, { type: 'Server' }, { type: 'Router' }, { type: 'PC' }];
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      fromSpot: go.Spot.AllSides,
-      toSpot: go.Spot.AllSides,
-      relinkableFrom: true,
-      relinkableTo: true
-    })
-      .add(new go.Shape({ strokeWidth: 1.5, stroke: 'red' }))
-      .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, fromArrow: 'circle' }))
-      .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, toArrow: 'circle' }));
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
+        .add(new go.Shape({ strokeWidth: 1.5, stroke: 'red' }))
+        .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, fromArrow: 'circle' }))
+        .add(new go.Shape({ strokeWidth: 0, fill: 'red', scale: 0.7, toArrow: 'circle' }));
 
     load();
   }

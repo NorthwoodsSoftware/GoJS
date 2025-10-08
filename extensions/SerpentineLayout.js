@@ -212,15 +212,15 @@ class SerpentineLayout extends go.Layout {
                     rowh = 0;
                     increasing = false;
                     if (nextlink !== null) {
-                        nextlink.fromSpot = go.Spot.Right;
-                        nextlink.toSpot = go.Spot.Right;
+                        nextlink.fromSpot = this.rightSpot;
+                        nextlink.toSpot = this.rightSpot;
                     }
                 }
                 else {
                     x += spacing.width;
                     if (nextlink !== null) {
-                        nextlink.fromSpot = go.Spot.Right;
-                        nextlink.toSpot = go.Spot.Left;
+                        nextlink.fromSpot = this.rightSpot;
+                        nextlink.toSpot = this.leftSpot;
                     }
                 }
             }
@@ -234,15 +234,15 @@ class SerpentineLayout extends go.Layout {
                     rowh = 0;
                     increasing = true;
                     if (nextlink !== null) {
-                        nextlink.fromSpot = go.Spot.Left;
-                        nextlink.toSpot = go.Spot.Left;
+                        nextlink.fromSpot = this.leftSpot;
+                        nextlink.toSpot = this.leftSpot;
                     }
                 }
                 else {
                     x -= spacing.width;
                     if (nextlink !== null) {
-                        nextlink.fromSpot = go.Spot.Left;
-                        nextlink.toSpot = go.Spot.Right;
+                        nextlink.fromSpot = this.leftSpot;
+                        nextlink.toSpot = this.rightSpot;
                     }
                 }
             }

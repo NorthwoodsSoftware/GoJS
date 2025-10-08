@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,9 +129,9 @@
   function init() {
 
     myDiagram = new go.Diagram('myDiagramDiv', {
-      LayoutCompleted: (e) => {
+      LayoutCompleted: e => {
         // update all of the scrollbars
-        e.diagram.nodes.each((n) => {
+        e.diagram.nodes.each(n => {
           var table = n.findObject('TABLE');
           if (table !== null && table.panel._updateScrollBar) table.panel._updateScrollBar(table);
         });
@@ -253,6 +255,7 @@ myDiagram.nodeTemplate =
       ]
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -316,7 +319,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

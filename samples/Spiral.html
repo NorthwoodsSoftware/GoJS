@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,17 +135,21 @@
       layout: new SpiralLayout() // defined in SpiralLayout.js
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape({ figure: 'Circle', fill: 'white' }).bind('fill', 'color'),
-        new go.TextBlock({ margin: 4 }).bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape({ figure: 'Circle', fill: 'white' })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 4 })
+            .bind('text', 'key')
+        );
 
-    myDiagram.linkTemplate = new go.Link({ curve: go.Curve.Bezier, curviness: 10 })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ curve: go.Curve.Bezier, curviness: 10 })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     var model = new go.TreeModel();
     model.nodeParentKeyProperty = 'next';
@@ -199,6 +205,7 @@
     ];
     myDiagram.model = model;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

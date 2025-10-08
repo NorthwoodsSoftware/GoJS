@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -218,13 +220,13 @@
     myDiagram = new go.Diagram('myDiagramDiv', {
       allowMove: false,
       allowCopy: false,
-      SelectionDeleting: (e) => {
+      SelectionDeleting: e => {
         // before a delete happens
         // handle deletions by excising the node and reconnecting the link where the node had been
-        new go.List(e.diagram.selection).each((part) => deletingNode(part));
+        new go.List(e.diagram.selection).each(part => deletingNode(part));
       },
       layout: new ParallelLayout({ angle: 90, layerSpacing: 21, nodeSpacing: 30 }),
-      ExternalObjectsDropped: (e) => {
+      ExternalObjectsDropped: e => {
         // handle drops from the Palette
         var newnode = e.diagram.selection.first();
         if (!newnode) return;
@@ -242,108 +244,153 @@
     myDiagram.findLayer('Tool').opacity = 0.5;
 
     // some common styles for most of the node templates
-    function nodeStyle(obj={}) {
-      return Object.assign({
-        deletable: false,
-        locationSpot: go.Spot.Center,
-        mouseDragEnter: (e, node) => {
-          var sh = node.findObject('SHAPE');
-          if (sh) sh.fill = 'lime';
-        },
-        mouseDragLeave: (e, node) => {
-          var sh = node.findObject('SHAPE');
-          if (sh) sh.fill = 'white';
-        },
-        mouseDrop: dropOntoNode
-      }, obj);
+    function nodeStyle(node) {
+      node.deletable = false;
+      node.locationSpot = go.Spot.Center;
+      node.mouseDragEnter = (e, node) => {
+        var sh = node.findObject('SHAPE');
+        if (sh) sh.fill = 'lime';
+      };
+      node.mouseDragLeave = (e, node) => {
+        var sh = node.findObject('SHAPE');
+        if (sh) sh.fill = 'white';
+      };
+      node.mouseDrop = dropOntoNode;
     }
 
-    function shapeStyle(obj={}) {
-      return Object.assign({ name: 'SHAPE', fill: 'white' }, obj);
+    function shapeStyle(shp) {
+      shp.name = 'SHAPE';
+      shp.fill = 'white';
     }
 
-    function textStyle() {
-      return { name: 'TEXTBLOCK', textAlign: 'center', editable: true };
+    function textStyle(tb) {
+      tb.name = 'TEXTBLOCK';
+      tb.textAlign = 'center';
+      tb.editable = true;
+      tb.bindTwoWay('text');
     }
 
     // define the Node templates
     myDiagram.nodeTemplate = // regular action steps
-      new go.Node('Auto',
-        nodeStyle({ deletable: true, minSize: new go.Size(10, 20) }))
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ deletable: true, minSize: new go.Size(10, 20) })
         .add(
-          new go.Shape(shapeStyle()),
-          new go.TextBlock(textStyle(), { margin: 4 }).bindTwoWay('text')
+          new go.Shape()
+            .apply(shapeStyle),
+          new go.TextBlock()
+            .apply(textStyle)
+            .set({ margin: 4 })
         );
 
-    myDiagram.nodeTemplateMap.add('Start', new go.Node('Auto',
-      nodeStyle({ desiredSize: new go.Size(32, 32)})
-    )
-      .add(
-        new go.Shape('Circle', shapeStyle()),
-        new go.TextBlock(textStyle(), 'Start').bindTwoWay('text')
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add('End', new go.Node('Auto',
-        nodeStyle({ desiredSize: new go.Size(32, 32) })
-      )
-      .add(
-        new go.Shape('Circle', shapeStyle()),
-        new go.TextBlock(textStyle(), 'End').bindTwoWay('text')
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add('For', new go.Node('Auto',
-        nodeStyle({ minSize: new go.Size(64, 32) })
-      )
-      .add(
-        new go.Shape('ForEach', shapeStyle()),
-        new go.TextBlock(textStyle(), 'For Each', { margin: 4 }).bindTwoWay('text')
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add('EndFor', new go.Node(
-        nodeStyle({ avoidable: false }))
-        .add(new go.Shape('EndForEach', shapeStyle({ desiredSize: new go.Size(4, 4) }))
-      )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'While',
-      new go.Node(
-        'Auto',
-        nodeStyle({ minSize: new go.Size(32, 32) })
-      )
+    myDiagram.nodeTemplateMap.add('Start',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ desiredSize: new go.Size(32, 32)})
         .add(
-          new go.Shape('ForEach', shapeStyle(), { angle: -90, spot2: new go.Spot(1, 1, -6, 0) }),
-          new go.TextBlock(textStyle(), 'While', { margin: 4 }).bindTwoWay('text')
-        )
-    );
+          new go.Shape('Circle')
+            .apply(shapeStyle),
+          new go.TextBlock('Start')
+            .apply(textStyle)
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'EndWhile',
-      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('Circle', shapeStyle({ desiredSize: new go.Size(4, 4) })))
-    );
+    myDiagram.nodeTemplateMap.add('End',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ desiredSize: new go.Size(32, 32) })
+        .add(
+          new go.Shape('Circle')
+            .apply(shapeStyle),
+          new go.TextBlock('End')
+            .apply(textStyle)
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'If',
-      new go.Node('Auto', nodeStyle({ minSize: new go.Size(64, 32) })).add(new go.Shape('Diamond', shapeStyle()), new go.TextBlock('If', textStyle()).bindTwoWay('text'))
-    );
+    myDiagram.nodeTemplateMap.add('For',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ minSize: new go.Size(64, 32) })
+        .add(
+          new go.Shape('ForEach')
+            .apply(shapeStyle),
+          new go.TextBlock('For Each')
+            .apply(textStyle)
+            .set({ margin: 4 })
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'EndIf',
-      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('Diamond', shapeStyle({ desiredSize: new go.Size(4, 4) })))
-    );
+    myDiagram.nodeTemplateMap.add('EndFor',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({ avoidable: false })
+        .add(
+          new go.Shape('EndForEach')
+            .apply(shapeStyle)
+            .set({ desiredSize: new go.Size(4, 4) })
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Switch',
-      new go.Node('Auto', nodeStyle({ minSize: new go.Size(64, 32) })).add(new go.Shape('TriangleUp', shapeStyle()), new go.TextBlock('Switch', textStyle()))
-    );
+    myDiagram.nodeTemplateMap.add('While',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ minSize: new go.Size(32, 32) })
+        .add(
+          new go.Shape('ForEach')
+            .apply(shapeStyle)
+            .set({ angle: -90, spot2: new go.Spot(1, 1, -6, 0) }),
+          new go.TextBlock('While')
+            .apply(textStyle)
+            .set({ margin: 4 })
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Merge',
-      new go.Node(nodeStyle({ avoidable: false })).add(new go.Shape('TriangleDown', shapeStyle({ desiredSize: new go.Size(4, 4) })))
-    );
+    myDiagram.nodeTemplateMap.add('EndWhile',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({ avoidable: false })
+        .add(
+          new go.Shape('Circle')
+            .apply(shapeStyle)
+            .set({ desiredSize: new go.Size(4, 4) })
+        ));
+
+    myDiagram.nodeTemplateMap.add('If',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ minSize: new go.Size(64, 32) })
+        .add(
+          new go.Shape('Diamond')
+            .apply(shapeStyle),
+          new go.TextBlock('If')
+            .apply(textStyle)
+        ));
+
+    myDiagram.nodeTemplateMap.add('EndIf',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({ avoidable: false })
+        .add(
+          new go.Shape('Diamond')
+            .apply(shapeStyle)
+            .set({ desiredSize: new go.Size(4, 4) })
+        ));
+
+    myDiagram.nodeTemplateMap.add('Switch',
+      new go.Node('Auto')
+        .apply(nodeStyle)
+        .set({ minSize: new go.Size(64, 32) })
+        .add(
+          new go.Shape('TriangleUp')
+            .apply(shapeStyle),
+          new go.TextBlock('Switch')
+            .apply(textStyle)
+        ));
+
+    myDiagram.nodeTemplateMap.add('Merge',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({ avoidable: false })
+        .add(
+          new go.Shape('TriangleDown')
+            .apply(shapeStyle)
+            .set({ desiredSize: new go.Size(4, 4) })
+        ));
 
     function groupColor(cat) {
       switch (cat) {
@@ -359,81 +406,84 @@
     }
 
     // define the Group template, required but unseen
-    myDiagram.groupTemplate = new go.Group('Spot', {
-      locationSpot: go.Spot.Center,
-      layout: new ParallelLayout({ angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
-      mouseDragEnter: (e, group) => {
-        var sh = group.findObject('SHAPE');
-        if (sh) sh.stroke = 'lime';
-      },
-      mouseDragLeave: (e, group) => {
-        var sh = group.findObject('SHAPE');
-        if (sh) sh.stroke = null;
-      },
-      mouseDrop: dropOntoNode
-    })
-      .bindTwoWay('isSubGraphExpanded')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape('RoundedRectangle', {
-              fill: 'rgba(0,0,0,0.05)',
-              strokeWidth: 0,
-              spot1: go.Spot.TopLeft,
-              spot2: go.Spot.BottomRight
-            })
-              .bind('fill', 'cat', groupColor),
-            new go.Panel('Vertical')
-              .add(
-                new go.Panel('Horizontal', { alignment: go.Spot.Left })
-                  .add(
-                    go.GraphObject.build('SubGraphExpanderButton'),
-                    new go.TextBlock({ editable: true }).bindTwoWay('text')
-                  ),
-                new go.Placeholder({ padding: new go.Margin(0, 10) })
-              )
-          ),
-        new go.Shape('LineH', {
-          name: 'SHAPE',
-          alignment: go.Spot.Bottom,
-          height: 0,
-          stretch: go.Stretch.Horizontal,
-          stroke: null,
-          strokeWidth: 8
+    myDiagram.groupTemplate =
+      new go.Group('Spot', {
+          locationSpot: go.Spot.Center,
+          layout: new ParallelLayout({ angle: 90, layerSpacing: 24, nodeSpacing: 30 }),
+          mouseDragEnter: (e, group) => {
+            var sh = group.findObject('SHAPE');
+            if (sh) sh.stroke = 'lime';
+          },
+          mouseDragLeave: (e, group) => {
+            var sh = group.findObject('SHAPE');
+            if (sh) sh.stroke = null;
+          },
+          mouseDrop: dropOntoNode
         })
-      );
+        .bindTwoWay('isSubGraphExpanded')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape('RoundedRectangle', {
+                  fill: 'rgba(0,0,0,0.05)',
+                  strokeWidth: 0,
+                  spot1: go.Spot.TopLeft,
+                  spot2: go.Spot.BottomRight
+                })
+                .bind('fill', 'cat', groupColor),
+              new go.Panel('Vertical')
+                .add(
+                  new go.Panel('Horizontal', { alignment: go.Spot.Left })
+                    .add(
+                      go.GraphObject.build('SubGraphExpanderButton', { margin: 2 }),
+                      new go.TextBlock({ editable: true })
+                        .bindTwoWay('text')
+                    ),
+                  new go.Placeholder({ padding: new go.Margin(0, 10) })
+                )
+            ),
+          new go.Shape('LineH', {
+            name: 'SHAPE',
+            alignment: go.Spot.Bottom,
+            height: 0,
+            stretch: go.Stretch.Horizontal,
+            stroke: null,
+            strokeWidth: 8
+          })
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      selectable: false,
-      deletable: false,
-      routing: go.Routing.AvoidsNodes,
-      corner: 5,
-      toShortLength: 2,
-      // links cannot be deleted
-      // If a node from the Palette is dragged over this node, its outline will turn green
-      mouseDragEnter: (e, link) => {
-        if (!isLoopBack(link)) link.isHighlighted = true;
-      },
-      mouseDragLeave: (e, link) => {
-        link.isHighlighted = false;
-      },
-      // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
-      mouseDrop: dropOntoLink
-    })
-      .add(
-        new go.Shape({ isPanelMain: true, stroke: 'transparent', strokeWidth: 8 })
-          .bindObject('stroke', 'isHighlighted', (h) => (h ? 'lime' : 'transparent')),
-        new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 1.5 }),
-        new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }),
-        new go.TextBlock({
-          segmentFraction: 0.5,
-          segmentOffset: new go.Point(-10, 0),
-          editable: true
+    myDiagram.linkTemplate =
+      new go.Link({
+          selectable: false,
+          deletable: false,
+          routing: go.Routing.AvoidsNodes,
+          corner: 5,
+          toShortLength: 2,
+          // links cannot be deleted
+          // If a node from the Palette is dragged over this node, its outline will turn green
+          mouseDragEnter: (e, link) => {
+            if (!isLoopBack(link)) link.isHighlighted = true;
+          },
+          mouseDragLeave: (e, link) => {
+            link.isHighlighted = false;
+          },
+          // if a node from the Palette is dropped on a link, the link is replaced by links to and from the new node
+          mouseDrop: dropOntoLink
         })
-          .bindTwoWay('text')
-          .bind('background', 'text', (t) => (t ? 'white' : null))
-          .bindObject('segmentIndex', 'fromNode', (n) => (n.category === 'If' ? 1 : n.category === 'Switch' ? -2 : -Infinity))
-      );
+        .add(
+          new go.Shape({ isPanelMain: true, stroke: 'transparent', strokeWidth: 8 })
+            .bindObject('stroke', 'isHighlighted', h => h ? 'lime' : 'transparent'),
+          new go.Shape({ isPanelMain: true, stroke: 'black', strokeWidth: 1.5 }),
+          new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }),
+          new go.TextBlock({
+              segmentFraction: 0.5,
+              segmentOffset: new go.Point(-10, 0),
+              editable: true
+            })
+            .bindTwoWay('text')
+            .bind('background', 'text', t => t ? 'white' : null)
+            .bindObject('segmentIndex', 'fromNode', n => n.category === 'If' ? 1 : (n.category === 'Switch' ? -2 : -Infinity))
+        );
 
     function isLoopBack(link) {
       if (!link || !link.fromNode || !link.toNode) return false;
@@ -605,18 +655,18 @@
       if (node instanceof go.Group) {
         var externals = node.findExternalLinksConnected();
         var next = null;
-        externals.each((link) => {
+        externals.each(link => {
           if (link.fromNode.isMemberOf(node)) next = link.toNode;
         });
         if (next) {
-          externals.each((link) => {
+          externals.each(link => {
             if (link.toNode.isMemberOf(node)) link.toNode = next;
           });
         }
       } else if (node.category === '') {
         var next = node.findNodesOutOf().first();
         if (next) {
-          new go.List(node.findLinksInto()).each((link) => (link.toNode = next));
+          new go.List(node.findLinksInto()).each(link => { link.toNode = next });
         }
       }
     }

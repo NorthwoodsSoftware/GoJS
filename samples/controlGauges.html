@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,51 +134,49 @@
     // This assumes that the scale (a "Graduated" Panel) is named "SCALE".
     // The alwaysVisible parameter determines whether the object's visibility
     // is controlled by the "SCALE"'s Panel.isEnabled property.
-    function sliderActions(alwaysVisible) {
-      return {
-        isActionable: true,
-        actionDown: (e, obj) => {
-          obj._dragging = true;
-          obj._original = obj.part.data.value;
-        },
-        actionMove: (e, obj) => {
-          if (!obj._dragging) return;
-          var scale = obj.part.findObject('SCALE');
-          var pt = e.diagram.lastInput.documentPoint;
-          var loc = scale.getLocalPoint(pt);
-          var val = Math.round(scale.graduatedValueForPoint(loc));
-          // just set the data.value temporarily, not recorded in UndoManager
-          e.diagram.model.commit((m) => {
-            m.set(obj.part.data, 'value', val);
-          }, null); // null means skipsUndoManager
-        },
-        actionUp: (e, obj) => {
-          if (!obj._dragging) return;
-          obj._dragging = false;
-          var scale = obj.part.findObject('SCALE');
-          var pt = e.diagram.lastInput.documentPoint;
-          var loc = scale.getLocalPoint(pt);
-          var val = Math.round(scale.graduatedValueForPoint(loc));
-          e.diagram.model.commit((m) => {
-            m.set(obj.part.data, 'value', obj._original);
-          }, null); // null means skipsUndoManager
-          // now set the data.value for real
-          e.diagram.model.commit((m) => {
-            m.set(obj.part.data, 'value', val);
-          }, 'dragged slider');
-        },
-        actionCancel: (e, obj) => {
-          obj._dragging = false;
-          e.diagram.model.commit((m) => {
-            m.set(obj.part.data, 'value', obj._original);
-          }, null); // null means skipsUndoManager
-        }
+    function sliderActions(obj, alwaysVisible) {
+      obj.isActionable = true;
+      obj.actionDown = (e, obj) => {
+        obj._dragging = true;
+        obj._original = obj.part.data.value;
+      };
+      obj.actionMove = (e, obj) => {
+        if (!obj._dragging) return;
+        var scale = obj.part.findObject('SCALE');
+        var pt = e.diagram.lastInput.documentPoint;
+        var loc = scale.getLocalPoint(pt);
+        var val = Math.round(scale.graduatedValueForPoint(loc));
+        // just set the data.value temporarily, not recorded in UndoManager
+        e.diagram.model.commit(m => {
+          m.set(obj.part.data, 'value', val);
+        }, null); // null means skipsUndoManager
+      };
+      obj.actionUp = (e, obj) => {
+        if (!obj._dragging) return;
+        obj._dragging = false;
+        var scale = obj.part.findObject('SCALE');
+        var pt = e.diagram.lastInput.documentPoint;
+        var loc = scale.getLocalPoint(pt);
+        var val = Math.round(scale.graduatedValueForPoint(loc));
+        e.diagram.model.commit(m => {
+          m.set(obj.part.data, 'value', obj._original);
+        }, null); // null means skipsUndoManager
+        // now set the data.value for real
+        e.diagram.model.commit(m => {
+          m.set(obj.part.data, 'value', val);
+        }, 'dragged slider');
+      };
+      obj.actionCancel = (e, obj) => {
+        obj._dragging = false;
+        e.diagram.model.commit(m => {
+          m.set(obj.part.data, 'value', obj._original);
+        }, null); // null means skipsUndoManager
       };
     }
 
     function applySliderBindings(object, alwaysVisible) {
       if (alwaysVisible) object.bindObject('visible', 'isEnabled', null, null, 'SCALE');
-      object.bindObject('cursor', 'isEnabled', (e) => (e ? 'pointer' : ''), null, null, 'SCALE');
+      object.bindObject('cursor', 'isEnabled', e => e ? 'pointer' : '', null, null, 'SCALE');
       return object;
     }
 
@@ -186,7 +186,6 @@
         .bind('graduatedMax', 'max')
         .bind('graduatedTickUnit', 'unit')
         .bind('isEnabled', 'editable');
-      return object;
     }
 
     function commonSlider(vert) {
@@ -194,41 +193,37 @@
         name: 'SLIDER',
         fill: 'white',
         desiredSize: vert ? new go.Size(20, 6) : new go.Size(6, 20),
-        alignment: vert ? go.Spot.Top : go.Spot.Right,
-        ...sliderActions(false)
-      });
+        alignment: vert ? go.Spot.Top : go.Spot.Right
+      })
+      .apply(sliderActions, false);
     }
 
-    function commonNodeStyle() {
-      return {
-        locationSpot: go.Spot.Center,
-        fromSpot: go.Spot.BottomRightSides,
-        toSpot: go.Spot.TopLeftSides
-      };
-    }
-
-    function applyCommonNodeStyleBindings(object) {
-      object.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
-      return object;
+    function nodeStyle(node) {
+      node.locationSpot = go.Spot.Center;
+      node.fromSpot = go.Spot.BottomRightSides;
+      node.toSpot = go.Spot.TopLeftSides;
+      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
     }
 
     myDiagram.nodeTemplateMap.add('Horizontal',
-      new go.Node('Auto', commonNodeStyle())
-        .apply(applyCommonNodeStyleBindings)
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
           new go.Shape({ fill: 'lightgray', stroke: 'gray' }),
           new go.Panel('Table', { margin: 1, stretch: go.Stretch.Fill })
             .add(
               // header information
-              new go.TextBlock({ row: 0, font: 'bold 10pt sans-serif' }).bind('text'),
-              new go.Panel('Spot', { row: 1 }).add(
-                applyCommonScaleBindings(
+              new go.TextBlock({ row: 0, font: 'bold 10pt sans-serif' })
+                .bind('text'),
+              new go.Panel('Spot', { row: 1 })
+                .add(
                   new go.Panel('Graduated', {
-                    name: 'SCALE',
-                    margin: new go.Margin(0, 6),
-                    graduatedTickUnit: 10,
-                    isEnabled: false
-                  })
+                      name: 'SCALE',
+                      margin: new go.Margin(0, 6),
+                      graduatedTickUnit: 10,
+                      isEnabled: false
+                    })
+                    .apply(applyCommonScaleBindings)
                     .add(
                       new go.Shape({ geometryString: 'M0 0 H200', height: 0, name: 'PATH' }),
                       new go.Shape({
@@ -242,31 +237,32 @@
                         interval: 5,
                         strokeWidth: 1.5
                       })
+                    ),
+                  new go.Panel('Spot', {
+                      alignment: go.Spot.Left,
+                      alignmentFocus: go.Spot.Left,
+                      alignmentFocusName: 'BAR'
+                    })
+                    // the indicator (a bar)
+                    .add(
+                      new go.Shape({ name: 'BAR', fill: 'red', strokeWidth: 0, height: 8 })
+                        .bind('fill', 'color')
+                        .bind('desiredSize', 'value', (v, shp) => {
+                          var scale = shp.part.findObject('SCALE');
+                          var path = scale.findMainElement();
+                          var len =
+                            ((v - scale.graduatedMin) / (scale.graduatedMax - scale.graduatedMin)) *
+                            path.geometry.bounds.width;
+                          return new go.Size(len, 10);
+                        }),
+                      commonSlider(false)
                     )
                 ),
-                new go.Panel('Spot', {
-                  alignment: go.Spot.Left,
-                  alignmentFocus: go.Spot.Left,
-                  alignmentFocusName: 'BAR'
-                })
-                  // the indicator (a bar)
-                  .add(
-                    new go.Shape({ name: 'BAR', fill: 'red', strokeWidth: 0, height: 8 })
-                      .bind('fill', 'color')
-                      .bind('desiredSize', 'value', (v, shp) => {
-                        var scale = shp.part.findObject('SCALE');
-                        var path = scale.findMainElement();
-                        var len =
-                          ((v - scale.graduatedMin) / (scale.graduatedMax - scale.graduatedMin)) *
-                          path.geometry.bounds.width;
-                        return new go.Size(len, 10);
-                      })
-                  )
-                  .add(commonSlider(false))
-              ),
               // state information
-              new go.TextBlock('0', { row: 2, alignment: go.Spot.Left }).bind('text', 'min'),
-              new go.TextBlock('100', { row: 2, alignment: go.Spot.Right }).bind('text', 'max'),
+              new go.TextBlock('0', { row: 2, alignment: go.Spot.Left })
+                .bind('text', 'min'),
+              new go.TextBlock('100', { row: 2, alignment: go.Spot.Right })
+                .bind('text', 'max'),
               new go.TextBlock({
                   row: 2,
                   background: 'white',
@@ -274,42 +270,30 @@
                   isMultiline: false,
                   editable: true
                 })
-                .bindTwoWay(
-                  'text',
-                  'value',
-                  (v) => v.toString(),
-                  (s) => parseFloat(s)
-                )
+                .bindTwoWay('text', 'value', v => v.toString(), s => parseFloat(s))
             )
         )
     );
 
     myDiagram.nodeTemplateMap.add('Vertical',
-      new go.Node('Auto', commonNodeStyle())
-        .apply(applyCommonNodeStyleBindings)
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
           new go.Shape({ fill: 'lightgray', stroke: 'gray' }),
-          new go.Panel('Table', {
-            margin: 1,
-            stretch: go.Stretch.Fill
-          })
+          new go.Panel('Table', { margin: 1, stretch: go.Stretch.Fill })
             // header information
             .add(
-              new go.TextBlock({
-                  row: 0,
-                  font: 'bold 10pt sans-serif'
-                })
+              new go.TextBlock({ row: 0, font: 'bold 10pt sans-serif' })
                 .bind('text'),
               new go.Panel('Spot', { row: 1 })
                 .add(
-                  applyCommonScaleBindings(
                     new go.Panel('Graduated', {
                       name: 'SCALE',
                       margin: new go.Margin(6, 0),
                       graduatedTickUnit: 10,
                       isEnabled: false
                     })
-                  )
+                    .apply(applyCommonScaleBindings)
                     .add(
                       // NOTE: path goes upward!
                       new go.Shape({ geometryString: 'M0 0 V-200', width: 0, name: 'PATH' }),
@@ -326,10 +310,10 @@
                       })
                     ),
                   new go.Panel('Spot', {
-                    alignment: go.Spot.Bottom,
-                    alignmentFocus: go.Spot.Bottom,
-                    alignmentFocusName: 'BAR'
-                  })
+                      alignment: go.Spot.Bottom,
+                      alignmentFocus: go.Spot.Bottom,
+                      alignmentFocusName: 'BAR'
+                    })
                     // the indicator (a bar)
                     .add(
                       new go.Shape({ name: 'BAR', fill: 'red', strokeWidth: 0, height: 8 })
@@ -352,25 +336,31 @@
               new go.TextBlock('100', { row: 2, alignment: go.Spot.Right })
                 .bind('text', 'max'),
               new go.TextBlock({
-                row: 2,
-                background: 'white',
-                font: 'bold 10pt sans-serif',
-                isMultiline: false,
-                editable: true
-              })
-                .bindTwoWay(
-                  'text',
-                  'value',
-                  (v) => v.toString(),
-                  (s) => parseFloat(s)
-                )
+                  row: 2,
+                  background: 'white',
+                  font: 'bold 10pt sans-serif',
+                  isMultiline: false,
+                  editable: true
+                })
+                .bindTwoWay('text', 'value', v => v.toString(), s => parseFloat(s))
             )
         )
     );
 
+    function needleMeterGeometry(v, shp) {
+      var scale = shp.part.findObject('SCALE');
+      var pt = scale.graduatedPointForValue(v);
+      var geo = new go.Geometry(go.GeometryType.Line);
+      geo.startX = 100 + scale.margin.left;
+      geo.startY = 90 + scale.margin.top;
+      geo.endX = pt.x + scale.margin.left;
+      geo.endY = pt.y + scale.margin.top;
+      return geo;
+    }
+
     myDiagram.nodeTemplateMap.add('NeedleMeter',
-      new go.Node('Auto', commonNodeStyle())
-        .apply(applyCommonNodeStyleBindings)
+      new go.Node('Auto')
+        .apply(nodeStyle)
         .add(
           new go.Shape({ fill: 'darkslategray' }),
           new go.Panel('Spot')
@@ -393,66 +383,56 @@
                       })
                     ),
                   new go.Shape({
-                    stroke: 'red',
-                    strokeWidth: 4,
-                    isGeometryPositioned: true,
-                    ...sliderActions(true)
-                  })
-                    .bind('geometry', 'value', (v, shp) => {
-                      var scale = shp.part.findObject('SCALE');
-                      var pt = scale.graduatedPointForValue(v);
-                      var geo = new go.Geometry(go.GeometryType.Line);
-                      geo.startX = 100 + scale.margin.left;
-                      geo.startY = 90 + scale.margin.top;
-                      geo.endX = pt.x + scale.margin.left;
-                      geo.endY = pt.y + scale.margin.top;
-                      return geo;
+                      stroke: 'red',
+                      strokeWidth: 2,
+                      isGeometryPositioned: true
                     })
+                    .apply(sliderActions, true)
+                    .bind('geometry', 'value', needleMeterGeometry)
                 ),
               new go.TextBlock({
-                alignment: new go.Spot(0.5, 0.5, 0, 20),
-                stroke: 'white',
-                font: 'bold 10pt sans-serif'
-              })
+                  alignment: new go.Spot(0.5, 0.5, 0, 20),
+                  stroke: 'white',
+                  font: 'bold 10pt sans-serif'
+                })
                 .bind('text')
                 .bind('stroke', 'color'),
               new go.TextBlock({
-                alignment: go.Spot.Top,
-                margin: new go.Margin(4, 0, 0, 0),
-                stroke: 'white',
-                font: 'bold italic 13pt sans-serif',
-                isMultiline: false,
-                editable: true
-              })
-                .bindTwoWay('text', 'value', (v) => v.toString(), (s) => parseFloat(s))
+                  alignment: go.Spot.Top,
+                  margin: new go.Margin(4, 0, 0, 0),
+                  stroke: 'white',
+                  font: 'bold italic 13pt sans-serif',
+                  isMultiline: false,
+                  editable: true
+                })
+                .bindTwoWay('text', 'value', v => v.toString(), s => parseFloat(s))
                 .bind('stroke', 'color')
             )
         )
     );
 
     myDiagram.nodeTemplateMap.add('CircularMeter',
-      new go.Node('Table', commonNodeStyle())
-        .apply(applyCommonNodeStyleBindings)
+      new go.Node('Table')
+        .apply(nodeStyle)
         .add(
           new go.Panel('Auto', { row: 0 })
             .add(
               new go.Shape('Circle', {
-                stroke: 'orange',
-                strokeWidth: 5,
-                spot1: go.Spot.TopLeft,
-                spot2: go.Spot.BottomRight
-              })
+                  stroke: 'orange',
+                  strokeWidth: 5,
+                  spot1: go.Spot.TopLeft,
+                  spot2: go.Spot.BottomRight
+                })
                 .bind('stroke', 'color'),
               new go.Panel('Spot')
                 .add(
-                  applyCommonScaleBindings(
-                    new go.Panel('Graduated', {
+                  new go.Panel('Graduated', {
                       name: 'SCALE',
                       margin: 14,
                       graduatedTickUnit: 2.5, // tick marks at each multiple of 2.5
                       stretch: go.Stretch.None // needed to avoid unnecessary re-measuring!!!
                     })
-                  )
+                    .apply(applyCommonScaleBindings)
                     .add(
                       // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
                       new go.Shape({
@@ -485,24 +465,19 @@
                       })
                     ),
                   new go.TextBlock({
-                    alignment: new go.Spot(0.5, 0.9),
-                    stroke: 'white',
-                    font: 'bold italic 14pt sans-serif',
-                    editable: true
-                  })
-                    .bindTwoWay(
-                      'text',
-                      'value',
-                      (v) => v.toString(),
-                      (s) => parseFloat(s)
-                    )
+                      alignment: new go.Spot(0.5, 0.9),
+                      stroke: 'white',
+                      font: 'bold italic 14pt sans-serif',
+                      editable: true
+                    })
+                    .bindTwoWay('text', 'value', v => v.toString(), s => parseFloat(s))
                     .bind('stroke', 'color'),
                   new go.Shape({
-                    fill: 'red',
-                    strokeWidth: 0,
-                    geometryString: 'F1 M-6 0 L0 -6 100 0 0 6z x M-100 0',
-                    ...sliderActions(true)
-                  })
+                      fill: 'red',
+                      strokeWidth: 0,
+                      geometryString: 'F1 M-6 0 L0 -6 100 0 0 6z x M-100 0'
+                    })
+                    .apply(sliderActions, true)
                     .bind('angle', 'value', (v, shp) => {
                       // this determines the angle of the needle, based on the data.value argument
                       var scale = shp.part.findObject('SCALE');
@@ -514,148 +489,138 @@
                   new go.Shape('Circle', { width: 2, height: 2, fill: '#444' })
                 )
             ),
-          new go.TextBlock({
-              row: 1,
-              font: 'bold 11pt sans-serif'
-            })
+          new go.TextBlock({ row: 1, font: 'bold 11pt sans-serif' })
             .bind('text')
         )
     );
 
+    function barMeterGeometry(v, shp) {
+      var scale = shp.part.findObject('SCALE');
+      var p0 = scale.graduatedPointForValue(scale.graduatedMin);
+      var pv = scale.graduatedPointForValue(v);
+      var path = shp.part.findObject('PATH');
+      var radius = path.actualBounds.width / 2;
+      var c = path.actualBounds.center;
+      var a0 = c.directionPoint(p0);
+      var av = c.directionPoint(pv);
+      var sweep = av - a0;
+      if (sweep < 0) sweep += 360;
+      var layerThickness = 8;
+      return new go.Geometry()
+        .add(new go.PathFigure(-radius, -radius)) // always make sure the Geometry includes the top left corner
+        .add(new go.PathFigure(radius, radius)) // and the bottom right corner of the whole circular area
+        .add(
+          new go.PathFigure(p0.x - radius, p0.y - radius)
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                a0,
+                sweep,
+                0,
+                0,
+                radius,
+                radius
+              )
+            )
+            .add(
+              new go.PathSegment(go.SegmentType.Line, pv.x - radius, pv.y - radius)
+            )
+            .add(
+              new go.PathSegment(
+                go.SegmentType.Arc,
+                av,
+                -sweep,
+                0,
+                0,
+                radius - layerThickness,
+                radius - layerThickness
+              ).close()
+            )
+        );
+    }
+
     myDiagram.nodeTemplateMap.add('BarMeter',
-      new go.Node('Table', {
-        ...commonNodeStyle(),
-        scale: 0.8
-      })
-        .apply(applyCommonNodeStyleBindings)
+      new go.Node('Table', { scale: 0.8 })
+        .apply(nodeStyle)
         .add(
           new go.Panel('Auto', { row: 0 })
             .add(
               new go.Shape('Circle', {
-                stroke: 'orange',
-                strokeWidth: 5,
-                spot1: go.Spot.TopLeft,
-                spot2: go.Spot.BottomRight
-              })
+                  stroke: 'orange',
+                  strokeWidth: 5,
+                  spot1: go.Spot.TopLeft,
+                  spot2: go.Spot.BottomRight
+                })
                 .bind('stroke', 'color'),
               new go.Panel('Spot')
                 .add(
                   new go.Panel('Graduated', {
-                    name: 'SCALE',
-                    margin: 14,
-                    graduatedTickUnit: 2.5, // tick marks at each multiple of 2.5
-                    stretch: go.Stretch.None // needed to avoid unnecessary re-measuring!!!
-                  })
-                  .apply(applyCommonScaleBindings)
-                  .add(
-                    // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
-                    new go.Shape({
-                      name: 'PATH',
-                      geometryString: 'M-70.7107 70.7107 B135 270 0 0 100 100 M0 100',
-                      stroke: 'white',
-                      strokeWidth: 4
-                    }),
-                    // three differently sized tick marks
-                    new go.Shape({ geometryString: 'M0 0 V10', stroke: 'white', strokeWidth: 1 }),
-                    new go.Shape({
-                      geometryString: 'M0 0 V12',
-                      stroke: 'white',
-                      strokeWidth: 2,
-                      interval: 2
-                    }),
-                    new go.Shape({
-                      geometryString: 'M0 0 V15',
-                      stroke: 'white',
-                      strokeWidth: 3,
-                      interval: 4
-                    }),
-                    new go.TextBlock({
-                      // each tick label
-                      interval: 4,
-                      alignmentFocus: go.Spot.Center,
-                      font: 'bold italic 14pt sans-serif',
-                      stroke: 'white',
-                      segmentOffset: new go.Point(0, 30)
+                      name: 'SCALE',
+                      margin: 14,
+                      graduatedTickUnit: 2.5, // tick marks at each multiple of 2.5
+                      stretch: go.Stretch.None // needed to avoid unnecessary re-measuring!!!
                     })
-                  ),
+                    .apply(applyCommonScaleBindings)
+                    .add(
+                      // the main path of the graduated panel, an arc starting at 135 degrees and sweeping for 270 degrees
+                      new go.Shape({
+                        name: 'PATH',
+                        geometryString: 'M-70.7107 70.7107 B135 270 0 0 100 100 M0 100',
+                        stroke: 'white',
+                        strokeWidth: 4
+                      }),
+                      // three differently sized tick marks
+                      new go.Shape({ geometryString: 'M0 0 V10', stroke: 'white', strokeWidth: 1 }),
+                      new go.Shape({
+                        geometryString: 'M0 0 V12',
+                        stroke: 'white',
+                        strokeWidth: 2,
+                        interval: 2
+                      }),
+                      new go.Shape({
+                        geometryString: 'M0 0 V15',
+                        stroke: 'white',
+                        strokeWidth: 3,
+                        interval: 4
+                      }),
+                      new go.TextBlock({
+                        // each tick label
+                        interval: 4,
+                        alignmentFocus: go.Spot.Center,
+                        font: 'bold italic 14pt sans-serif',
+                        stroke: 'white',
+                        segmentOffset: new go.Point(0, 30)
+                      })
+                    ),
                   new go.TextBlock({
-                    alignment: go.Spot.Center,
-                    stroke: 'white',
-                    font: 'bold italic 14pt sans-serif',
-                    editable: true
-                  })
-                    .bindTwoWay(
-                      'text',
-                      'value',
-                      (v) => v.toString(),
-                      (s) => parseFloat(s)
-                    )
+                      alignment: go.Spot.Center,
+                      stroke: 'white',
+                      font: 'bold italic 14pt sans-serif',
+                      editable: true
+                    })
+                    .bindTwoWay('text', 'value', v => v.toString(), s => parseFloat(s))
                     .bind('stroke', 'color'),
-                  new go.Shape({
-                    fill: 'red',
-                    strokeWidth: 0,
-                    ...sliderActions(true)
-                  })
-                    .bind('geometry', 'value', (v, shp) => {
-                      var scale = shp.part.findObject('SCALE');
-                      var p0 = scale.graduatedPointForValue(scale.graduatedMin);
-                      var pv = scale.graduatedPointForValue(v);
-                      var path = shp.part.findObject('PATH');
-                      var radius = path.actualBounds.width / 2;
-                      var c = path.actualBounds.center;
-                      var a0 = c.directionPoint(p0);
-                      var av = c.directionPoint(pv);
-                      var sweep = av - a0;
-                      if (sweep < 0) sweep += 360;
-                      var layerThickness = 8;
-                      return new go.Geometry()
-                        .add(new go.PathFigure(-radius, -radius)) // always make sure the Geometry includes the top left corner
-                        .add(new go.PathFigure(radius, radius)) // and the bottom right corner of the whole circular area
-                        .add(
-                          new go.PathFigure(p0.x - radius, p0.y - radius)
-                            .add(
-                              new go.PathSegment(
-                                go.SegmentType.Arc,
-                                a0,
-                                sweep,
-                                0,
-                                0,
-                                radius,
-                                radius
-                              )
-                            )
-                            .add(
-                              new go.PathSegment(go.SegmentType.Line, pv.x - radius, pv.y - radius)
-                            )
-                            .add(
-                              new go.PathSegment(
-                                go.SegmentType.Arc,
-                                av,
-                                -sweep,
-                                0,
-                                0,
-                                radius - layerThickness,
-                                radius - layerThickness
-                              ).close()
-                            )
-                        );
-                    }),
+                  new go.Shape({ fill: 'red', strokeWidth: 0 })
+                    .apply(sliderActions, true)
+                    .bind('geometry', 'value', barMeterGeometry),
                   new go.Shape('Circle', { width: 2, height: 2, fill: '#444' })
                 )
             ),
-          new go.TextBlock({ row: 1, font: 'bold 11pt sans-serif' }).bind('text')
+          new go.TextBlock({ row: 1, font: 'bold 11pt sans-serif' })
+            .bind('text')
         )
     );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 12
-    })
-      .add(
-        new go.Shape({ isPanelMain: true, stroke: 'gray', strokeWidth: 9 }),
-        new go.Shape({ isPanelMain: true, stroke: 'lightgray', strokeWidth: 5 }),
-        new go.Shape({ isPanelMain: true, stroke: 'whitesmoke' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          corner: 12
+        })
+        .add(
+          new go.Shape({ isPanelMain: true, stroke: 'gray', strokeWidth: 9 }),
+          new go.Shape({ isPanelMain: true, stroke: 'lightgray', strokeWidth: 5 }),
+          new go.Shape({ isPanelMain: true, stroke: 'whitesmoke' })
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -722,8 +687,8 @@
 
   function loop() {
     setTimeout(() => {
-      myDiagram.commit((diag) => {
-        diag.links.each((l) => {
+      myDiagram.commit(diag => {
+        diag.links.each(l => {
           if (Math.random() < 0.2) return;
           var prev = l.fromNode.data.value;
           var now = l.toNode.data.value;
@@ -736,6 +701,7 @@
       loop();
     }, 500);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

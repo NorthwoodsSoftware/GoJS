@@ -99,7 +99,7 @@ class Robot {
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
         diagram.firstInput = n.copy();
-        diagram.currentTool.doMouseDown();
+        diagram.doMouseDown();
     }
     /**
      * Simulate a mouse move event.
@@ -125,7 +125,7 @@ class Robot {
         n.timestamp = time;
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
-        diagram.currentTool.doMouseMove();
+        diagram.doMouseMove();
     }
     /**
      * Simulate a mouse up event.
@@ -154,8 +154,7 @@ class Robot {
             n.clickCount = 1; // at least??
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
-        // if (diagram.simulatedMouseUp(null, (n as any).sourceDiagram, n.documentPoint, n.targetDiagram)) return;
-        diagram.currentTool.doMouseUp();
+        diagram.doMouseUp();
     }
     /**
      * Simulate a mouse wheel event.
@@ -171,13 +170,15 @@ class Robot {
         const diagram = this._diagram;
         if (!diagram.isEnabled)
             return;
-        const n = diagram.lastInput.copy();
+        const n = new go.InputEvent();
         n.diagram = diagram;
+        n.documentPoint = diagram.lastInput.documentPoint;
+        n.viewPoint = diagram.lastInput.viewPoint;
         n.delta = delta;
         n.timestamp = time;
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
-        diagram.currentTool.doMouseWheel();
+        diagram.doMouseWheel();
     }
     /**
      * Simulate a key down event.
@@ -193,8 +194,10 @@ class Robot {
         const diagram = this._diagram;
         if (!diagram.isEnabled)
             return;
-        const n = diagram.lastInput.copy();
+        const n = new go.InputEvent();
         n.diagram = diagram;
+        n.documentPoint = diagram.lastInput.documentPoint;
+        n.viewPoint = diagram.lastInput.viewPoint;
         if (typeof keyCodeOrKey === 'string') {
             n.key = keyCodeOrKey;
         }
@@ -205,7 +208,7 @@ class Robot {
         n.down = true;
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
-        diagram.currentTool.doKeyDown();
+        diagram.doKeyDown();
     }
     /**
      * Simulate a key up event.
@@ -221,8 +224,10 @@ class Robot {
         const diagram = this._diagram;
         if (!diagram.isEnabled)
             return;
-        const n = diagram.lastInput.copy();
+        const n = new go.InputEvent();
         n.diagram = diagram;
+        n.documentPoint = diagram.lastInput.documentPoint;
+        n.viewPoint = diagram.lastInput.viewPoint;
         if (typeof keyCodeOrKey === 'string') {
             n.key = keyCodeOrKey;
         }
@@ -233,6 +238,6 @@ class Robot {
         n.up = true;
         this.initializeEvent(n, eventprops);
         diagram.lastInput = n;
-        diagram.currentTool.doKeyUp();
+        diagram.doKeyUp();
     }
 }

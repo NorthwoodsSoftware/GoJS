@@ -37,7 +37,7 @@ class PolygonDrawingTool extends go.Tool {
         this._isGridSnapEnabled = false;
         this._archetypePartData = {}; // the data to copy for a new polygon Part
         // this is the Shape that is shown during a drawing operation
-        this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 });
+        this._temporaryShape = new go.Shape({ name: 'SHAPE', fill: 'lightgray', strokeWidth: 1 });
         // the Shape has to be inside a temporary Part that is used during the drawing operation
         new go.Part({ layerName: 'Tool' }).add(this._temporaryShape);
         if (init)
@@ -105,14 +105,11 @@ class PolygonDrawingTool extends go.Tool {
     }
     set temporaryShape(val) {
         if (this._temporaryShape !== val && val instanceof go.Shape) {
+            this._temporaryShape = val;
             val.name = 'SHAPE';
-            const panel = this._temporaryShape.panel;
-            if (panel !== null) {
-                if (panel !== null)
-                    panel.remove(this._temporaryShape);
-                this._temporaryShape = val;
-                if (panel !== null)
-                    panel.add(this._temporaryShape);
+            if (val.panel === null) {
+                // the Shape has to be inside a temporary Part that is used during the drawing operation
+                new go.Part({ layerName: 'Tool' }).add(val);
             }
         }
     }
@@ -161,8 +158,9 @@ class PolygonDrawingTool extends go.Tool {
         if (!diagram)
             return;
         // the first point
-        if (!diagram.lastInput.isTouchEvent)
-            this.addPoint(diagram.lastInput.documentPoint);
+        if (!diagram.lastInput.isTouchEvent) {
+            this.addPoint(this.modifyPointForGrid(diagram.lastInput.documentPoint));
+        }
     }
     /**
      * Stop the transaction and clean up.
@@ -227,8 +225,6 @@ class PolygonDrawingTool extends go.Tool {
     addPoint(p) {
         const diagram = this.diagram;
         const shape = this.temporaryShape;
-        if (shape === null)
-            return;
         // for the temporary Shape, normalize the geometry to be in the viewport
         const viewpt = diagram.viewportBounds.position;
         const q = this.modifyPointForGrid(new go.Point(p.x - viewpt.x, p.y - viewpt.y));
@@ -240,7 +236,7 @@ class PolygonDrawingTool extends go.Tool {
             geo = new go.Geometry().add(fig); // the Shape.geometry consists of a single PathFigure
             this.temporaryShape.geometry = geo;
             // position the Shape's Part, accounting for the stroke width
-            part.position = viewpt.copy().offset(-shape.strokeWidth / 2, -shape.strokeWidth / 2);
+            part.location = viewpt.copy().offset(-shape.strokeWidth / 2, -shape.strokeWidth / 2);
             diagram.add(part);
         }
         else if (shape.geometry !== null) {
@@ -331,7 +327,7 @@ class PolygonDrawingTool extends go.Tool {
     finishShape() {
         const diagram = this.diagram;
         const shape = this.temporaryShape;
-        if (shape !== null && this.archetypePartData !== null) {
+        if (this.archetypePartData !== null) {
             // remove the temporary point, which is last, except on touch devices
             if (!diagram.lastInput.isTouchEvent)
                 this.removeLastPoint();
@@ -340,8 +336,6 @@ class PolygonDrawingTool extends go.Tool {
             if (tempgeo !== null) {
                 const tempfig = tempgeo.figures.first();
                 if (tempfig !== null && tempfig.segments.count >= (this.isPolygon ? 2 : 1)) {
-                    // normalize geometry and node position
-                    const viewpt = diagram.viewportBounds.position;
                     const copygeo = tempgeo.copy();
                     const copyfig = copygeo.figures.first();
                     if (this.isPolygon && copyfig !== null) {
@@ -350,29 +344,47 @@ class PolygonDrawingTool extends go.Tool {
                         const seg = segs.elt(segs.count - 1);
                         seg.isClosed = true;
                     }
-                    // create the node data for the model
-                    const d = diagram.model.copyNodeData(this.archetypePartData);
-                    if (d !== null) {
-                        // adding data to model creates the actual Part
-                        diagram.model.addNodeData(d);
-                        const part = diagram.findPartForData(d);
-                        if (part !== null) {
-                            // assign the position for the whole Part
-                            const pos = copygeo.normalize();
-                            pos.x = viewpt.x - pos.x - shape.strokeWidth / 2;
-                            pos.y = viewpt.y - pos.y - shape.strokeWidth / 2;
-                            part.position = pos;
-                            // assign the Shape.geometry
-                            const pShape = part.findObject('SHAPE');
-                            if (pShape !== null)
-                                pShape.geometry = copygeo;
-                            this.transactionResult = this.name;
-                        }
-                    }
+                    const part = this.makeShape(copygeo);
+                    if (part)
+                        this.transactionResult = this.name;
                 }
             }
         }
         this.stopTool();
+    }
+    /**
+     * Add a new Part to the model (copying the archetypePartData),
+     * normalize the given drawn Geometry,
+     * assign it to the "SHAPE" Shape's Shape.geometry property,
+     * and locate the new Part.
+     * @param geo
+     */
+    makeShape(geo) {
+        const diagram = this.diagram;
+        // normalize geometry and node position
+        const viewpt = diagram.viewportBounds.position;
+        // create the node data for the model
+        const d = diagram.model.copyNodeData(this.archetypePartData);
+        if (d !== null) {
+            // adding data to model creates the actual Part
+            diagram.model.addNodeData(d);
+            const part = diagram.findPartForData(d);
+            if (part !== null) {
+                const tshape = this.temporaryShape;
+                // assign the position for the whole Part
+                const pos = geo.normalize();
+                pos.x = viewpt.x - pos.x - tshape.strokeWidth / 2;
+                pos.y = viewpt.y - pos.y - tshape.strokeWidth / 2;
+                part.location = pos;
+                // assign the Shape.geometry
+                const pShape = part.findObject('SHAPE');
+                if (pShape instanceof go.Shape) {
+                    pShape.geometry = geo;
+                    return part;
+                }
+            }
+        }
+        return null;
     }
     /**
      * Add another point to the geometry of the {@link temporaryShape}.

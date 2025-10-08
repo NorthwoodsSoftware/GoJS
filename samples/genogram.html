@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,10 +128,17 @@
             
 <script src="../extensions/DataInspector.js"></script>
 <script id="code">
+
 // A custom layout that shows the two families related to a person's parents
+// This depends on the "Mate" category Link relating a mother and a father.
+// Each such "Mate" Link must also have a label Node (of category "MateLabel")
+// that is the source for Links of the default category connected to their children.
 class GenogramLayout extends go.LayeredDigraphLayout {
   constructor(init) {
     super();
+    this.MateCategory = "Mate";  // a Link category, for a link connecting the mother and father of children
+    this.MateLabelCategory = "MateLabel";  // a Node category, for a node on a "Mate" link, connecting to children
+    this.ChildCategory = "";  // the default Link category, for a link connecting a MateLabel node with a child node
     this.initializeOption = go.LayeredDigraphInit.DepthFirstIn;
     this.spouseSpacing = 30;  // minimum space between spouses
     this.isRouting = false;
@@ -166,7 +175,7 @@ class GenogramLayout extends go.LayeredDigraphLayout {
       if (node.isLinkLabel) {
         // get "Mate" Link
         const link = node.labeledLink;
-        if (link.category === "Mate") {
+        if (link.category === this.MateCategory) {
           const spouseA = link.fromNode;
           const spouseB = link.toNode;
           // create vertex representing both husband and wife
@@ -186,10 +195,7 @@ class GenogramLayout extends go.LayeredDigraphLayout {
         // don't add a vertex for any married person!
         // instead, code above adds label node for "Mate" link
         // assume a "Mate" Link has a label Node
-        let mates = 0;
-        node.linksConnected.each(l => {
-          if (l.category === "Mate") mates++;
-        });
+        let mates = this.countMates(node);
         if (mates === 0) {
           net.addNode(node);
         } else if (mates > 1) {
@@ -205,14 +211,14 @@ class GenogramLayout extends go.LayeredDigraphLayout {
       if (!link.isLayoutPositioned || !link.isVisible()) continue;
       if (nonmemberonly && link.containingGroup !== null) continue;
       // if it's a parent-child link, add a LayoutEdge for it
-      if (link.category === "" && link.data) {
+      if (link.category === this.ChildCategory && link.data) {
         const parent = net.findVertex(link.fromNode);  // should be a label node
         const child = net.findVertex(link.toNode);
         if (child !== null) {  // an unmarried child
           net.linkVertexes(parent, child, link);
         } else {  // a married child
           link.toNode.linksConnected.each(l => {
-            if (l.category !== "Mate" || !l.data) return;  // if it has no label node, it's a parent-child link
+            if (l.category !== this.MateCategory || !l.data) return;  // if it has no label node, it's a parent-child link
             // found the Mate Link, now get its label Node
             const mlab = l.labelNodes.first();
             // parent-child link should connect with the label node,
@@ -231,23 +237,46 @@ class GenogramLayout extends go.LayeredDigraphLayout {
       const node = multiSpousePeople.first();
       const cohort = new go.Set();
       this.extendCohort(cohort, node);
+      const sorted = cohort.toArray();
+      sorted.sort((a, b) => this.countMates(b) - this.countMates(a));
+      const start = sorted[0];
+      const map = new go.Map();
+      this.walkMates(start, false, 1000000000, 500000000, map);
+      sorted.sort((a, b) => map.get(a) - map.get(b));
+      const verts = [];
+      const seen = new go.Set();
+      for (let i = 0; i < sorted.length-1; i++) {
+        const n = sorted[i];
+        n.linksConnected.each(l => {
+          if (l.category === this.MateCategory) {
+            const lab = l.labelNodes.first();
+            if (lab) {
+              const v = net.findVertex(lab);
+              if (v && !seen.has(v)) {
+                verts.push(v);
+                seen.add(v);
+              }
+            }
+          }
+        })
+      }
       // then encourage them all to be the same generation by connecting them all with a common vertex
       const dummyvert = net.createVertex();
       net.addVertex(dummyvert);
-      const mates = new go.Set();
-      cohort.each(n => {
-        n.linksConnected.each(l => {
-          mates.add(l);
-        })
-      });
-      mates.each(link => {
-        // find the vertex for the "Mate" link (i.e. for the label node)
-        const mlab = link.labelNodes.first()
-        const v = net.findVertex(mlab);
-        if (v !== null) {
-          net.linkVertexes(dummyvert, v, null);
+      for (let i = 0; i < verts.length; i++) {
+        const v = verts[i];
+        net.linkVertexes(dummyvert, v, null);
+        // add pairings to try to keep the desired order
+        if (i > 0) {
+          const w = verts[i-1];
+          const dummy = net.createVertex();
+          net.addVertex(dummy);
+          net.linkVertexes(dummy, w, null);
+          net.linkVertexes(dummy, v, null);
+          net.linkVertexes(dummy, w, null);
+          net.linkVertexes(dummy, v, null);
         }
-      });
+      }
       // done with these people, now see if there are any other multiple-married people
       multiSpousePeople.removeAll(cohort);
     }
@@ -258,9 +287,35 @@ class GenogramLayout extends go.LayeredDigraphLayout {
     if (coll.has(node)) return;
     coll.add(node);
     node.linksConnected.each(l => {
-      if (l.category === "Mate") {  // if it's a "Mate" link, continue with both spouses
+      if (l.category === this.MateCategory) {  // if it's a "Mate" link, continue with both spouses
         this.extendCohort(coll, l.fromNode);
         this.extendCohort(coll, l.toNode);
+      }
+    });
+  }
+
+  // how many Mate relationships does this person have?
+  countMates(node) {
+    let count = 0;
+    node.linksConnected.each(l => {
+      if (l.category === this.MateCategory) count++;
+    });
+    return count;
+  }
+
+  walkMates(node, side, val, level, map) {
+    if (map.has(node)) return;
+    map.set(node, val);
+    const count = this.countMates(node);
+    level /= 2;
+    let idx = 0;
+    node.linksConnected.each(l => {
+      if (l.category === this.MateCategory) {
+        const other = l.getOtherNode(node);
+        if (map.has(other)) return;
+        idx++;
+        const newside = (idx <= count/2) ? side : !side;
+        this.walkMates(other, newside, val + (newside ? level : -level), level, map);
       }
     });
   }
@@ -273,7 +328,7 @@ class GenogramLayout extends go.LayeredDigraphLayout {
     this.network.vertexes.each(v => {
       const lay = v.layer;
       let max = maxsizes[lay];
-      if (max === undefined) max = 0;
+      if (max === undefined) maxsizes[lay] = max = 0;
       const sz = (horiz ? v.width : v.height);
       if (sz > max) maxsizes[lay] = sz;
     });
@@ -304,49 +359,50 @@ class GenogramLayout extends go.LayeredDigraphLayout {
       if (e.toVertex.node && e.toVertex.node.isLinkLabel) {
         e.portToPos = vertical ? e.toVertex.focusX : e.toVertex.focusY;
       }
-      });
+    });
 
-      // Order the children so that twins/triplets are more likely to be together.
-      // get all vertexes for each layer
-      var layers = [];  // Array of Arrays of LayeredDigraphVertexes
-      this.network.vertexes.each(v => {
-        var lay = v.layer;
-        if (layers[lay] === undefined) {
-          layers[lay] = [v];
-        } else {
-          layers[lay].push(v);
-        }
-      });
-      // now sort them in each layer how you like
-      layers.forEach(a => {
-        a.sort((v, w) => {
-          const vbirth = this.findMultipleBirth(v);
-          const wbirth = this.findMultipleBirth(w);
-          if (vbirth < wbirth) return -1;
-          if (vbirth > wbirth) return 1;
-          return 0;
-        });
-        a.forEach((v, i) => v.index = i);
-      });
-    }
-
-    // get the birth order for a person; assume zero if there is no data.multiple property value
-    findMultipleBirth(v) {
-      const node = v.node;
-      if (node && node.data) {
-        if (node.category === "MateLabel") {
-          const link = node.labeledLink;
-          if (link) {
-            const fn = link.fromNode;
-            if (fn && fn.data && fn.data.multiple !== undefined) return fn.data.multiple;
-            const tn = link.toNode;
-            if (tn && tn.data && tn.data.multiple !== undefined) return tn.data.multiple;
-          }
-        } else {
-          if (node.data.multiple !== undefined) return node.data.multiple;
-        }
+    // get all vertexes for each layer
+    var layers = [];  // Array of Arrays of LayeredDigraphVertexes
+    this.network.vertexes.each(v => {
+      var lay = v.layer;
+      if (layers[lay] === undefined) {
+        layers[lay] = [v];
+      } else {
+        layers[lay].push(v);
       }
-      return 0;
+    });
+
+    // Order the children so that twins/triplets are more likely to be together.
+    // now sort them in each layer how you like
+    layers.forEach(a => {
+      a.sort((v, w) => {
+        const vbirth = this.findMultipleBirth(v);
+        const wbirth = this.findMultipleBirth(w);
+        if (vbirth < wbirth) return -1;
+        if (vbirth > wbirth) return 1;
+        return 0;
+      });
+      a.forEach((v, i) => v.index = i);
+    });
+  }
+
+  // get the birth order for a person; assume zero if there is no data.multiple property value
+  findMultipleBirth(v) {
+    const node = v.node;
+    if (node && node.data) {
+      if (node.category === this.MateLabelCategory) {
+        const link = node.labeledLink;
+        if (link) {
+          const fn = link.fromNode;
+          if (fn && fn.data && fn.data.multiple !== undefined) return fn.data.multiple;
+          const tn = link.toNode;
+          if (tn && tn.data && tn.data.multiple !== undefined) return tn.data.multiple;
+        }
+      } else {
+        if (node.data.multiple !== undefined) return node.data.multiple;
+      }
+    }
+    return 0;
   }
 
   commitNodes() {
@@ -357,7 +413,6 @@ class GenogramLayout extends go.LayeredDigraphLayout {
         v.node.position = new go.Point(v.x, v.y);
       }
     });
-
     const horiz = this.direction == 0.0 || this.direction == 180.0;
     // position the spouses of each "Mate" vertex
     this.network.vertexes.each(v => {
@@ -372,23 +427,19 @@ class GenogramLayout extends go.LayeredDigraphLayout {
       let spouseA = lablink.fromNode;
       let spouseB = lablink.toNode;
       if (spouseA.opacity > 0 && spouseB.opacity > 0) {
-        // prefer fathers on the left, mothers on the right
-        if (spouseA.data.sex === "F") {  // sex is female
-          const temp = spouseA;
-          spouseA = spouseB;
-          spouseB = temp;
-        }
-        // see if the parents are on the desired sides, to avoid a link crossing
-        const aParentsNode = this.findParentsMateLinkLabelNode(spouseA);
-        const bParentsNode = this.findParentsMateLinkLabelNode(spouseB);
-        if (aParentsNode !== null && bParentsNode !== null &&
-          (horiz
-            ? aParentsNode.position.x > bParentsNode.position.x
-            : aParentsNode.position.y > bParentsNode.position.y)) {
-          // swap the spouses
-          const temp = spouseA;
-          spouseA = spouseB;
-          spouseB = temp;
+        // maybe swap if multiple mates are on the other side
+        const labA = this.findOtherMateLinkLabelNode(spouseA, lablink);
+        const labB = this.findOtherMateLinkLabelNode(spouseB, lablink);
+        if (labA) {
+          const vA = this.network.findVertex(labA);
+          if (vA && vA.x > v.x) {
+            const temp = spouseA; spouseA = spouseB; spouseB = temp;
+          }
+        } else if (labB) {
+          const vB = this.network.findVertex(labB);
+          if (vB && vB.x < v.x) {
+            const temp = spouseA; spouseA = spouseB; spouseB = temp;
+          }
         }
         spouseA.moveTo(v.x, v.y);
         if (horiz) {
@@ -414,11 +465,11 @@ class GenogramLayout extends go.LayeredDigraphLayout {
     });
   }
 
-  findParentsMateLinkLabelNode(node) {
-    const it = node.findNodesInto();
+  findOtherMateLinkLabelNode(node, link) {
+    const it = node.linksConnected;
     while (it.next()) {
-      const n = it.value;
-      if (n.isLinkLabel) return n;
+      const l = it.value;
+      if (l.category === this.MateCategory && l !== link) return l.labelNodes.first();
     }
     return null;
   }
@@ -461,7 +512,7 @@ function findParents(node) {  // returns an Array of zero or two Nodes
   const parents = [];
   if (!(node instanceof go.Node)) return parents;
   const parent = node.findTreeParentNode();
-  if (parent && parent.category === "MateLabel") {
+  if (parent && parent.category === parent.diagram.layout.MateLabelCategory) {
     const link = parent.labeledLink;
     if (link) {
       const from = link.fromNode;
@@ -477,7 +528,7 @@ function findMates(node) {  // returns an Array of Nodes
   const mates = [];
   if (!(node instanceof go.Node)) return mates;
   node.findLinksConnected().each(link => {
-    if (link.category === "Mate") {
+    if (link.category === link.diagram.layout.MateCategory) {
       mates.push(link.getOtherNode(node));
     }
   });
@@ -488,10 +539,10 @@ function findMates(node) {  // returns an Array of Nodes
 function findChildren(node, mate) {  // only children with mate; returns an Array of Nodes
   const children = [];
   node.findLinksConnected().each(link => {
-    if (link.category === "Mate" &&
+    if (link.category === link.diagram.layout.MateCategory &&
         (!mate || link.getOtherNode(node) === mate)) {
       link.labelNodes.each(label => {
-        if (label.category === "MateLabel") {
+        if (label.category === label.diagram.layout.MateLabelCategory) {
           label.findNodesOutOf().each(child => {
             children.push(child);
           });
@@ -577,16 +628,21 @@ function init() {
         new go.Panel("Spot", {
             isClipping: true,
             width: 49, height: 49,  // account for strokeWidth of main Shape
-            itemTemplate: new go.Panel()
-              .bindObject("alignment", "itemIndex", computeAlignment)
-              .add(  // a square shape that fills a quadrant
-                new go.Shape({
-                    width: 25, height: 25, strokeWidth: 0,
-                    toolTip: go.GraphObject.build("ToolTip")
-                      .add(new go.TextBlock().bind("text", ""))
-                  })
-                  .bind("fill", "", computeFill)
-              )
+            itemTemplate:
+              new go.Panel()
+                .bindObject("alignment", "itemIndex", computeAlignment)
+                .add(  // a square shape that fills a quadrant
+                  new go.Shape({
+                      width: 25, height: 25, strokeWidth: 0,
+                      toolTip:
+                        go.GraphObject.build("ToolTip")
+                          .add(
+                            new go.TextBlock()
+                              .bind("text", "")
+                          )
+                    })
+                    .bind("fill", "", computeFill)
+                )
           })
           .bind("itemArray", "a")  // an Array of strings, such as ["X23", "ABC3", "qxz23m"]
           .add(
@@ -596,11 +652,11 @@ function init() {
           ),
         // proband marker
         new go.Shape({
-                alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.TopRight,
-                fill: "darkorange", stroke: "darkorange", strokeWidth: 3, scale: 2,
-                geometryString: "F1 M20 0 L14.5 5.5 12 1z M18 1 L0 10"
-              })
-            .bindModel("visible", "proband", (key, shp) => shp.part.key === key),
+            alignment: go.Spot.BottomLeft, alignmentFocus: go.Spot.TopRight,
+            fill: "darkorange", stroke: "darkorange", strokeWidth: 3, scale: 2,
+            geometryString: "F1 M20 0 L14.5 5.5 12 1z M18 1 L0 10"
+          })
+          .bindModel("visible", "proband", (key, shp) => shp.part.key === key),
         // highlight
         new go.Shape({ fill: null, stroke: null, strokeWidth: 4, width: 55, height: 55 })
           .bindObject("stroke", "isHighlighted", h => h ? "lightcoral" : null),
@@ -723,26 +779,26 @@ function init() {
   // set up Data Inspector -- YOU SHOULD REPLACE THIS CODE WITH YOUR OWN DETAIL EDITORS
   myInspector =
     new Inspector("myInspectorDiv", myDiagram, {
-        properties: {
-          // key would be automatically added for nodes, but we want to declare it read-only also:
-          key: { readOnly: true, show: Inspector.showIfPresent },
-          name: { show: Inspector.showIfPresent },
-          sex: { show: Inspector.showIfPresent },
-          mother: { readOnly: true, show: Inspector.showIfPresent },
-          father: { readOnly: true, show: Inspector.showIfPresent },
-          birth: { show: Inspector.showIfPresent },
-          death: { show: Inspector.showIfPresent },
-          note: { show: Inspector.showIfPresent },
-          multiple: { show: Inspector.showIfPresent },
-          identical: { show: Inspector.showIfPresent },
-          loc: { show: false },
-          points: { readOnly: true, show: false },
-          from: { readOnly: true, show: Inspector.showIfPresent },
-          to: { readOnly: true, show: Inspector.showIfPresent },
-          labelKeys: { show: false },
-          category: { show: false },
-        }
-      });
+      properties: {
+        // key would be automatically added for nodes, but we want to declare it read-only also:
+        key: { readOnly: true, show: Inspector.showIfPresent },
+        name: { show: Inspector.showIfPresent },
+        sex: { show: Inspector.showIfPresent },
+        mother: { readOnly: true, show: Inspector.showIfPresent },
+        father: { readOnly: true, show: Inspector.showIfPresent },
+        birth: { show: Inspector.showIfPresent },
+        death: { show: Inspector.showIfPresent },
+        note: { show: Inspector.showIfPresent },
+        multiple: { show: Inspector.showIfPresent },
+        identical: { show: Inspector.showIfPresent },
+        loc: { show: false },
+        points: { readOnly: true, show: false },
+        from: { readOnly: true, show: Inspector.showIfPresent },
+        to: { readOnly: true, show: Inspector.showIfPresent },
+        labelKeys: { show: false },
+        category: { show: false },
+      }
+    });
 
   // Initialize and implement the various HTML buttons
 
@@ -833,26 +889,9 @@ function init() {
   }
   document.getElementById("myPrintButton").addEventListener("click", print);
 
-  function downloadSvg() {
-    var svg = myDiagram.makeSvg({ scale: 1, background: "white" });
-    var svgstr = new XMLSerializer().serializeToString(svg);
-    var blob = new Blob([svgstr], { type: "image/svg+xml" });
-    var url = window.URL.createObjectURL(blob);
-    var filename = "Genogram.svg";
-
-    var a = document.createElement("a");
-    a.style = "display: none";
-    a.href = url;
-    a.download = filename;
-
-    document.body.appendChild(a);
-    requestAnimationFrame(() => {
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    });
-  }
-  document.getElementById("myDownloadButton").addEventListener("click", downloadSvg);
+  document.getElementById("myDownloadButton").addEventListener("click", () => {
+    myDiagram.commandHandler.downloadSvg({ name: "genogram.svg" });
+  });
 
   function scrollToProband() {
     if (typeof myDiagram.model.modelData.proband === "number") {
@@ -1119,6 +1158,32 @@ More information can be found in the <a href="../intro/geometry.html">GoJS Intro
 </p>
             <p>
               <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

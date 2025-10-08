@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -123,84 +125,6 @@
             
 
 <script id="code">
-  function init() {
-
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      // create a Diagram for the DIV HTML element
-        commandHandler: new SpacingCommandHandler(),
-        // update the SpacingCommandHandler.space from the model at the end of each transaction
-        ModelChanged: (e) => {
-          if (e.isTransactionFinished) {
-            myDiagram.commandHandler.space = myDiagram.model.modelData.space;
-          }
-        },
-        'undoManager.isEnabled': true // enable undo & redo
-      }
-    );
-
-    // Define a simple Node template that cannot be shared with other Diagrams,
-    // because of the use of the Node.location Binding conversion functions.
-    // The SpacingCommandHandler also assumes the Node.location is bound to the data property named "loc".
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the TextBlock
-      .bindTwoWay('location', 'loc', spacedLocationParse, spacedLocationStringify)
-      .add(
-        new go.Shape('RoundedRectangle', { strokeWidth: 0 })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
-
-    // but use the default Link template, by not setting Diagram.linkTemplate
-
-    // create the model data that will be represented by Nodes and Links
-    myDiagram.model = new go.GraphLinksModel(
-      [
-        { key: 1, text: 'Alpha', color: 'lightblue', loc: '0 0' },
-        { key: 2, text: 'Beta', color: 'orange', loc: '100 0' },
-        { key: 3, text: 'Gamma', color: 'lightgreen', loc: '0 100' },
-        { key: 4, text: 'Delta', color: 'pink', loc: '100 100' }
-      ],
-      [
-        { from: 1, to: 2 },
-        { from: 1, to: 3 },
-        { from: 2, to: 2 },
-        { from: 3, to: 4 },
-        { from: 4, to: 1 }
-      ]
-    );
-
-    // the "space" property is kept on the Model.modelData too
-    myDiagram.model.modelData.space = 1.0;
-  }
-
-  // Conversion functions -- these only work with myDiagram, assuming it uses a SpacingCommandHandler
-
-  function spacedLocationParse(str) {
-    const cmd = myDiagram.commandHandler;
-    if (!(cmd instanceof SpacingCommandHandler)) throw new Error('not using SpacingCommandHandler');
-    const pt = go.Point.parse(str);
-    pt.x = (pt.x - cmd.spaceCenter.x) * cmd.space + cmd.spaceCenter.x;
-    if (cmd.isYSpaced) {
-      pt.y = (pt.y - cmd.spaceCenter.y) * cmd.space + cmd.spaceCenter.y;
-    }
-    return pt;
-  }
-
-  function spacedLocationStringify(pt, data) {
-    const cmd = myDiagram.commandHandler;
-    if (!cmd._isUpdating) {
-      pt = pt.copy();
-      pt.x = (pt.x - cmd.spaceCenter.x) / cmd.space + cmd.spaceCenter.x;
-      if (cmd.isYSpaced) {
-        pt.y = (pt.y - cmd.spaceCenter.y) / cmd.space + cmd.spaceCenter.y;
-      }
-      return go.Point.stringify(pt);
-    } else {
-      return data.loc;
-    }
-  }
 
   // The custom CommandHandler that avoids changing the Diagram.scale
   class SpacingCommandHandler extends go.CommandHandler {
@@ -298,8 +222,8 @@
       this._isUpdating = true;
       diagram.skipsUndoManager = true;
       diagram.startTransaction('respace nodes');
-      diagram.parts.each((p) => p.updateTargetBindings('loc'));
-      diagram.nodes.each((n) => n.updateTargetBindings('loc'));
+      diagram.parts.each(p => p.updateTargetBindings('loc'));
+      diagram.nodes.each(n => n.updateTargetBindings('loc'));
       diagram.commitTransaction('respace nodes');
       diagram.skipsUndoManager = false;
       this._isUpdating = false;
@@ -307,9 +231,89 @@
   }
   // end SpacingCommandHandler class
 
+  function init() {
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      // create a Diagram for the DIV HTML element
+      commandHandler: new SpacingCommandHandler(),
+      // update the SpacingCommandHandler.space from the model at the end of each transaction
+      ModelChanged: e => {
+        if (e.isTransactionFinished) {
+          myDiagram.commandHandler.space = myDiagram.model.modelData.space;
+        }
+      },
+      'undoManager.isEnabled': true // enable undo & redo
+    });
+
+    // Define a simple Node template that cannot be shared with other Diagrams,
+    // because of the use of the Node.location Binding conversion functions.
+    // The SpacingCommandHandler also assumes the Node.location is bound to the data property named "loc".
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the TextBlock
+        .bindTwoWay('location', 'loc', spacedLocationParse, spacedLocationStringify)
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
+
+    // but use the default Link template, by not setting Diagram.linkTemplate
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel(
+      [
+        { key: 1, text: 'Alpha', color: 'lightblue', loc: '0 0' },
+        { key: 2, text: 'Beta', color: 'orange', loc: '100 0' },
+        { key: 3, text: 'Gamma', color: 'lightgreen', loc: '0 100' },
+        { key: 4, text: 'Delta', color: 'pink', loc: '100 100' }
+      ],
+      [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 2 },
+        { from: 3, to: 4 },
+        { from: 4, to: 1 }
+      ]
+    );
+
+    // the "space" property is kept on the Model.modelData too
+    myDiagram.model.modelData.space = 1.0;
+  }
+
+  // Conversion functions -- these only work with myDiagram, assuming it uses a SpacingCommandHandler
+
+  function spacedLocationParse(str) {
+    const cmd = myDiagram.commandHandler;
+    if (!(cmd instanceof SpacingCommandHandler)) throw new Error('not using SpacingCommandHandler');
+    const pt = go.Point.parse(str);
+    pt.x = (pt.x - cmd.spaceCenter.x) * cmd.space + cmd.spaceCenter.x;
+    if (cmd.isYSpaced) {
+      pt.y = (pt.y - cmd.spaceCenter.y) * cmd.space + cmd.spaceCenter.y;
+    }
+    return pt;
+  }
+
+  function spacedLocationStringify(pt, data) {
+    const cmd = myDiagram.commandHandler;
+    if (!cmd._isUpdating) {
+      pt = pt.copy();
+      pt.x = (pt.x - cmd.spaceCenter.x) / cmd.space + cmd.spaceCenter.x;
+      if (cmd.isYSpaced) {
+        pt.y = (pt.y - cmd.spaceCenter.y) / cmd.space + cmd.spaceCenter.y;
+      }
+      return go.Point.stringify(pt);
+    } else {
+      return data.loc;
+    }
+  }
+
   function onIsYSpacedToggled() {
     myDiagram.commandHandler.isYSpaced = !myDiagram.commandHandler.isYSpaced;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -357,6 +361,32 @@
       <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
         <hr/>
         <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
+            </p>
+            <hr>
+          
         </div>
     </div>
   </body>

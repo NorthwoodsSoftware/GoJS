@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -124,186 +126,6 @@
 
 <script src="../extensions/Figures.js"></script>
 <script id="code">
-  function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
-      'undoManager.isEnabled': true
-    });
-
-    // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('saveModel');
-      if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
-      if (myDiagram.isModified) {
-        if (idx < 0) document.title += '*';
-      } else {
-        if (idx >= 0) document.title = document.title.slice(0, idx);
-      }
-    });
-
-    myDiagram.nodeTemplateMap.add(
-      'Generator',
-      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
-        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-        .add(
-          new go.Shape('ACVoltageSource', {
-            name: 'BODY',
-            stroke: 'white',
-            strokeWidth: 3,
-            fill: 'transparent',
-            background: 'darkblue',
-            width: 40,
-            height: 40,
-            margin: 5,
-            portId: '',
-            fromLinkable: true,
-            cursor: 'pointer',
-            fromSpot: go.Spot.TopBottomSides,
-            toSpot: go.Spot.TopBottomSides
-          }),
-          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
-        )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Connector',
-      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
-        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-        .add(
-          new go.Shape('Circle', {
-            name: 'BODY',
-            stroke: null,
-            fill: new go.Brush('Linear', { 0: 'lightgray', 1: 'gray' }),
-            background: 'gray',
-            width: 20,
-            height: 20,
-            margin: 2,
-            portId: '',
-            fromLinkable: true,
-            cursor: 'pointer',
-            fromSpot: go.Spot.TopBottomSides,
-            toSpot: go.Spot.TopBottomSides
-          }),
-          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
-        )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'Consumer',
-      new go.Node('Spot', {
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'BODY',
-        selectionObjectName: 'BODY'
-      })
-        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-        .add(
-          new go.Picture('images/pc.jpg', {
-            name: 'BODY',
-            width: 50,
-            height: 40,
-            margin: 2,
-            portId: '',
-            fromLinkable: true,
-            cursor: 'pointer',
-            fromSpot: go.Spot.TopBottomSides,
-            toSpot: go.Spot.TopBottomSides
-          }),
-          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
-        )
-    );
-
-    myDiagram.nodeTemplateMap.add(
-      'HBar',
-      new go.Node('Spot', {
-        layerName: 'Background',
-        // special resizing: just at the ends
-        resizable: true,
-        resizeObjectName: 'SHAPE',
-        resizeAdornmentTemplate: new go.Adornment('Spot')
-          .add(
-            new go.Placeholder(),
-            new go.Shape({ // left resize handle
-              alignment: go.Spot.Left,
-              cursor: 'col-resize',
-              desiredSize: new go.Size(6, 6),
-              fill: 'lightblue',
-              stroke: 'dodgerblue'
-            }),
-            new go.Shape({ // right resize handle
-              alignment: go.Spot.Right,
-              cursor: 'col-resize',
-              desiredSize: new go.Size(6, 6),
-              fill: 'lightblue',
-              stroke: 'dodgerblue'
-            })
-          )
-      })
-        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-        .add(
-          new go.Shape('Rectangle', {
-            name: 'SHAPE',
-            fill: 'black',
-            stroke: null,
-            strokeWidth: 0,
-            width: 1000,
-            height: 4,
-            minSize: new go.Size(100, 4),
-            maxSize: new go.Size(Infinity, 4),
-            portId: '',
-            toLinkable: true
-          })
-            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-            .bind('fill'),
-          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true }).bindTwoWay('text')
-        )
-    );
-
-    myDiagram.linkTemplate = new BarLink({ // subclass defined below
-      routing: go.Routing.Orthogonal,
-      relinkableFrom: true,
-      relinkableTo: true,
-      toPortChanged: (link, oldport, newport) => {
-        if (newport instanceof go.Shape) link.path.stroke = newport.fill;
-      }
-    })
-      .add(new go.Shape({ strokeWidth: 2 })
-    );
-
-    // start off with a simple diagram
-    load();
-
-    // initialize Palette
-    myPalette = new go.Palette('myPaletteDiv', {
-      nodeTemplateMap: myDiagram.nodeTemplateMap,
-      layout: new go.GridLayout({
-        cellSize: new go.Size(2, 2),
-        isViewportSized: true
-      })
-    });
-
-    myPalette.model.nodeDataArray = [
-      { text: 'Generator', category: 'Generator' },
-      { text: 'Consumer', category: 'Consumer' },
-      { text: 'Connector', category: 'Connector' },
-      { text: 'Bar', category: 'HBar', size: '100 4' }
-    ];
-
-    // remove cursors on all ports in the Palette
-    // make TextBlocks invisible, to reduce size of Nodes
-    myPalette.nodes.each((node) => {
-      node.ports.each((port) => (port.cursor = ''));
-      node.elements.each((tb) => {
-        if (tb instanceof go.TextBlock) tb.visible = false;
-      });
-    });
-
-    // initialize Overview
-    myOverview = new go.Overview('myOverviewDiv', {
-      observed: myDiagram,
-      contentAlignment: go.Spot.Center
-    });
-  }
 
   // A custom Link class that routes directly to the closest horizontal point of an "HBar" node.
   // If the regular node is too far to the left or right of the "HBar" node, the link connects
@@ -346,6 +168,186 @@
   }
   // end BarLink class
 
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      'linkingTool.direction': go.LinkingDirection.ForwardsOnly,
+      'undoManager.isEnabled': true
+    });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('saveModel');
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    myDiagram.nodeTemplateMap.add('Generator',
+      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('ACVoltageSource', {
+            name: 'BODY',
+            stroke: 'white',
+            strokeWidth: 3,
+            fill: 'transparent',
+            background: 'darkblue',
+            width: 40,
+            height: 40,
+            margin: 5,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true })
+            .bindTwoWay('text')
+        ));
+
+    myDiagram.nodeTemplateMap.add('Connector',
+      new go.Node('Spot', { locationSpot: go.Spot.Center, selectionObjectName: 'BODY' })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Circle', {
+            name: 'BODY',
+            stroke: null,
+            fill: new go.Brush('Linear', { 0: 'lightgray', 1: 'gray' }),
+            background: 'gray',
+            width: 20,
+            height: 20,
+            margin: 2,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true })
+            .bindTwoWay('text')
+        ));
+
+    myDiagram.nodeTemplateMap.add('Consumer',
+      new go.Node('Spot', {
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'BODY',
+          selectionObjectName: 'BODY'
+        })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Picture('images/pc.jpg', {
+            name: 'BODY',
+            width: 50,
+            height: 40,
+            margin: 2,
+            portId: '',
+            fromLinkable: true,
+            cursor: 'pointer',
+            fromSpot: go.Spot.TopBottomSides,
+            toSpot: go.Spot.TopBottomSides
+          }),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true })
+            .bindTwoWay('text')
+        ));
+
+    myDiagram.nodeTemplateMap.add('HBar',
+      new go.Node('Spot', {
+          layerName: 'Background',
+          // special resizing: just at the ends
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          resizeAdornmentTemplate:
+            new go.Adornment('Spot')
+              .add(
+                new go.Placeholder(),
+                new go.Shape({ // left resize handle
+                  alignment: go.Spot.Left,
+                  cursor: 'col-resize',
+                  desiredSize: new go.Size(6, 6),
+                  fill: 'lightblue',
+                  stroke: 'dodgerblue'
+                }),
+                new go.Shape({ // right resize handle
+                  alignment: go.Spot.Right,
+                  cursor: 'col-resize',
+                  desiredSize: new go.Size(6, 6),
+                  fill: 'lightblue',
+                  stroke: 'dodgerblue'
+                })
+              )
+        })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Rectangle', {
+              name: 'SHAPE',
+              fill: 'black',
+              stroke: null,
+              strokeWidth: 0,
+              width: 1000,
+              height: 4,
+              minSize: new go.Size(100, 4),
+              maxSize: new go.Size(Infinity, 4),
+              portId: '',
+              toLinkable: true
+            })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bind('fill'),
+          new go.TextBlock({ alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, editable: true })
+            .bindTwoWay('text')
+        ));
+
+    myDiagram.linkTemplate =
+      new BarLink({ // subclass defined above
+          routing: go.Routing.Orthogonal,
+          relinkableFrom: true,
+          relinkableTo: true,
+          toPortChanged: (link, oldport, newport) => {
+            if (newport instanceof go.Shape) link.path.stroke = newport.fill;
+          }
+        })
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+        );
+
+    // start off with a simple diagram
+    load();
+
+    // initialize Palette
+    myPalette = new go.Palette('myPaletteDiv', {
+      nodeTemplateMap: myDiagram.nodeTemplateMap,
+      layout: new go.GridLayout({
+        cellSize: new go.Size(2, 2),
+        isViewportSized: true
+      })
+    });
+
+    myPalette.model.nodeDataArray = [
+      { text: 'Generator', category: 'Generator' },
+      { text: 'Consumer', category: 'Consumer' },
+      { text: 'Connector', category: 'Connector' },
+      { text: 'Bar', category: 'HBar', size: '100 4' }
+    ];
+
+    // remove cursors on all ports in the Palette
+    // make TextBlocks invisible, to reduce size of Nodes
+    myPalette.nodes.each(node => {
+      node.ports.each(port => (port.cursor = ''));
+      node.elements.each(tb => {
+        if (tb instanceof go.TextBlock) tb.visible = false;
+      });
+    });
+
+    // initialize Overview
+    myOverview = new go.Overview('myOverviewDiv', {
+      observed: myDiagram,
+      contentAlignment: go.Spot.Center
+    });
+  }
+
   // save a model to and load a model from JSON text, displayed below the Diagram
   function save() {
     document.getElementById('mySavedModel').value = myDiagram.model.toJson();
@@ -354,6 +356,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

@@ -27,7 +27,7 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * Holds references to all selected non-Link Parts and their offset & angles
    */
-  private _initialInfo: go.Map<go.Part, PartInfo> | null;
+  private _initialInfo: Map<go.Part, PartInfo> | null;
   /**
    * Initial angle when rotating as a whole
    */
@@ -63,7 +63,7 @@ export class RotateMultipleTool extends go.RotatingTool {
     this._initialAngle = this._centerPoint.directionPoint(diagram.lastInput.documentPoint);
 
     // remember initial angle and distance for each Part
-    const infos = new go.Map<go.Part, PartInfo>();
+    const infos = new Map<go.Part, PartInfo>();
     const tool = this;
     diagram.selection.each((part) => {
       tool.walkTree(part, infos);
@@ -77,7 +77,7 @@ export class RotateMultipleTool extends go.RotatingTool {
   /**
    * @hidden @internal
    */
-  private walkTree(part: go.Part, infos: go.Map<go.Part, PartInfo>): void {
+  private walkTree(part: go.Part, infos: Map<go.Part, PartInfo>): void {
     if (part === null || part instanceof go.Link) return;
     // distance from _centerPoint to locationSpot of part
     const dist = Math.sqrt(this._centerPoint.distanceSquaredPoint(part.location));
@@ -113,10 +113,10 @@ export class RotateMultipleTool extends go.RotatingTool {
     // when rotating individual parts, remember the original angle difference
     const angleDiff = newangle - node.rotateObject.angle;
     const tool = this;
-    this._initialInfo.each((kvp) => {
-      const part = kvp.key;
+    for (const [key, value] of this._initialInfo) {
+      const part = key;
       if (part instanceof go.Link) return; // only Nodes and simple Parts
-      const partInfo = kvp.value;
+      const partInfo = value;
       // rotate every selected non-Link Part
       // find information about the part set in RotateMultipleTool._initialInformation
       if (e.control || e.meta) {
@@ -135,7 +135,7 @@ export class RotateMultipleTool extends go.RotatingTool {
         // rotate part
         part.rotateObject.angle = partInfo.rotationAngle + newangle;
       }
-    });
+    }
   }
 
   /**

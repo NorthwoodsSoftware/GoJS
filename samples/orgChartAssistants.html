@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -448,6 +450,198 @@
   }
   // end of SideTreeLayout
 
+  // Assume that the SideTreeLayout determines whether a node is an "assistant" if a particular data property is true.
+  // You can adapt this code to decide according to your app's needs.
+  function isAssistant(n) {
+    if (n === null) return false;
+    return n.data.isAssistant;
+  }
+
+  function init() {
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      allowCopy: false,
+      allowDelete: false,
+      initialAutoScale: go.AutoScale.Uniform,
+      maxSelectionCount: 1, // users can select only one part at a time
+      validCycle: go.CycleMode.DestinationTree, // make sure users can only create trees
+      layout: new SideTreeLayout({
+        treeStyle: go.TreeStyle.LastParents,
+        arrangement: go.TreeArrangement.Horizontal,
+        // properties for most of the tree:
+        angle: 90,
+        layerSpacing: 35,
+        // properties for the "last parents":
+        alternateAngle: 90,
+        alternateLayerSpacing: 35,
+        alternateAlignment: go.TreeAlignment.Bus,
+        alternateNodeSpacing: 20
+      }),
+      'undoManager.isEnabled': true // enable undo & redo
+    });
+
+    // when the document is modified, add a "*" to the title and enable the "Save" button
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
+      if (button) button.disabled = !myDiagram.isModified;
+      const idx = document.title.indexOf('*');
+      if (myDiagram.isModified) {
+        if (idx < 0) document.title += '*';
+      } else {
+        if (idx >= 0) document.title = document.title.slice(0, idx);
+      }
+    });
+
+    // This function provides a common style for most of the TextBlocks.
+    // Some of these values may be overridden in a particular TextBlock.
+    function textStyle(tb) {
+      tb.font = '9pt Segoe UI,sans-serif';
+    }
+
+    // This converter is used by the Picture.
+    function findHeadShot(pic) {
+      if (!pic) return 'images/user.svg'; // There are only 16 images on the server
+      return 'images/hs' + pic;
+    }
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        // for sorting, have the Node.text be the data.name
+        .bind('text', 'name')
+        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+        .bindObject('layerName', 'isSelected', sel => sel ? 'Foreground' : '')
+        .add(
+          // define the node's outer shape
+          new go.Shape('Rectangle', { name: 'SHAPE', fill: 'white', stroke: null }),
+          new go.Panel('Horizontal')
+            .add(
+              new go.Picture({
+                  name: 'Picture',
+                  desiredSize: new go.Size(39, 50),
+                  margin: new go.Margin(6, 8, 6, 10),
+                  source: 'images/user.svg' // the default image
+                })
+                .bind('source', 'pic', findHeadShot),
+              // define the panel where the text will appear
+              new go.Panel('Table', {
+                  maxSize: new go.Size(150, 999),
+                  margin: new go.Margin(6, 10, 0, 3),
+                  defaultAlignment: go.Spot.Left
+                })
+                .addColumnDefinition(2, { width: 4 })
+                .add(
+                  new go.TextBlock()
+                  .apply(textStyle)
+                  .set({
+                      name: 'NAMETB',
+                      row: 0,
+                      column: 0,
+                      columnSpan: 5,
+                      font: '12pt Segoe UI, sans-serif',
+                      editable: true,
+                      isMultiline: false,
+                      minSize: new go.Size(10, 16)
+                    })
+                    .bindTwoWay('text', 'name'),
+                  new go.TextBlock('Title: ')
+                    .apply(textStyle)
+                    .set({ row: 1, column: 0 }),
+                  new go.TextBlock()
+                    .apply(textStyle)
+                    .set({ // the name
+                      row: 1,
+                      column: 1,
+                      columnSpan: 4,
+                      editable: true,
+                      isMultiline: false,
+                      minSize: new go.Size(10, 14),
+                      margin: new go.Margin(0, 0, 0, 3)
+                    })
+                    .bindTwoWay('text', 'title'),
+                  new go.TextBlock()
+                    .apply(textStyle)
+                    .set({ row: 2, column: 0 })
+                    .bind('text', 'key', v => 'ID: ' + v),
+                  new go.TextBlock()
+                    .apply(textStyle)
+                    .set({
+                      name: 'boss', row: 2, column: 3 // we include a name so we can access this TextBlock when deleting Nodes/Links
+                    })
+                    .bind('text', 'parent', v => 'Boss: ' + v),
+                  new go.TextBlock()
+                    .apply(textStyle)
+                    .set({ // the comments
+                      row: 3,
+                      column: 0,
+                      columnSpan: 5,
+                      font: 'italic 9pt sans-serif',
+                      wrap: go.Wrap.Fit,
+                      editable: true, // by default newlines are allowed
+                      minSize: new go.Size(10, 14)
+                    })
+                    .bindTwoWay('text', 'comments')
+                ) // end Table Panel
+            ) // end Horizontal Panel
+        ); // end Node
+
+    // the context menu allows users to make a position vacant,
+    // remove a role and reassign the subtree, or remove a department
+    myDiagram.nodeTemplate.contextMenu =
+      go.GraphObject.build('ContextMenu')
+        .add(
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => {
+                const node = button.part.adornedPart;
+                if (node !== null) {
+                  const thisemp = node.data;
+                  myDiagram.startTransaction('add employee');
+                  const newemp = { name: '(new person)', title: '', comments: '', parent: thisemp.key };
+                  myDiagram.model.addNodeData(newemp);
+                  const newnode = myDiagram.findNodeForData(newemp);
+                  if (newnode) newnode.location = node.location;
+                  myDiagram.commitTransaction('add employee');
+                }
+              }
+            })
+            .add(new go.TextBlock('Add Employee')),
+          go.GraphObject.build('ContextMenuButton', {
+              click: (e, button) => {
+                // remove the whole subtree, including the node itself
+                const node = button.part.adornedPart;
+                if (node !== null) {
+                  myDiagram.startTransaction('toggle assistant');
+                  myDiagram.model.setDataProperty(node.data, 'isAssistant', !node.data.isAssistant);
+                  myDiagram.layout.invalidateLayout();
+                  myDiagram.commitTransaction('toggle assistant');
+                }
+              }
+            })
+            .add(new go.TextBlock('Toggle Assistant'))
+        );
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+        .add(
+          new go.Shape({ strokeWidth: 4, stroke: '#00a4a4' })
+        );
+
+    // read in the JSON-format data from the "mySavedModel" element
+    load();
+
+    // support editing the properties of the selected person in HTML
+    myInspector = new Inspector('myInspector', myDiagram, {
+      properties: {
+        key: { readOnly: true },
+        comments: {},
+        isAssistant: { type: 'boolean', defaultValue: false }
+      },
+      propertyModified: (name, val) => {
+        if (name === 'isAssistant') myDiagram.layout.invalidateLayout();
+      }
+    });
+  } // end init
+
   // Show the diagram's model in JSON format
   function save() {
     document.getElementById('mySavedModel').value = myDiagram.model.toJson();
@@ -567,7 +761,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -584,7 +778,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

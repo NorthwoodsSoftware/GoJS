@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -176,39 +178,41 @@
 
     myDiagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool({ isResegmenting: true }));
 
-    myDiagram.nodeTemplate = new go.Node({
-      selectionObjectName: 'SHAPE',
-      // custom selection adornment: a blue rectangle
-      selectionAdornmentTemplate: new go.Adornment('Auto')
+    myDiagram.nodeTemplate =
+      new go.Node({
+          selectionObjectName: 'SHAPE',
+          // custom selection adornment: a blue rectangle
+          selectionAdornmentTemplate:
+            new go.Adornment('Auto')
+              .add(
+                new go.Shape({ stroke: 'dodgerblue', fill: null }),
+                new go.Placeholder({ margin: -1 })
+              ),
+          resizable: true,
+          resizeObjectName: 'SHAPE',
+          rotatable: true,
+          rotationSpot: go.Spot.Center,
+          reshapable: true // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+        })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .bindTwoWay('angle')
         .add(
-          new go.Shape({ stroke: 'dodgerblue', fill: null }),
-          new go.Placeholder({ margin: -1 })
-        ),
-      resizable: true,
-      resizeObjectName: 'SHAPE',
-      rotatable: true,
-      rotationSpot: go.Spot.Center,
-      reshapable: true
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .bindTwoWay('angle')
-      .add(
-        new go.Shape({ name: 'SHAPE', fill: 'lightgray', strokeWidth: 1.5 })
-          .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-          .bindTwoWay('geometryString', 'geo')
-          .bind('fill')
-          .bind('stroke')
-          .bind('strokeWidth')
-      );
+          new go.Shape({ name: 'SHAPE', fill: 'lightgray', strokeWidth: 1 })
+            .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+            .bindTwoWay('geometryString', 'geo')
+            .bind('fill')
+            .bind('stroke')
+            .bind('strokeWidth')
+        );
 
     // create polygon drawing tool for myDiagram, defined in PolygonDrawingTool.js
-    var tool = new PolygonDrawingTool();
-    // provide the default JavaScript object for a new polygon in the model
-    tool.archetypePartData = { fill: 'yellow', stroke: 'blue', strokeWidth: 3 };
-    tool.isPolygon = true; // for a polyline drawing tool set this property to false
-    tool.isEnabled = false;
     // install as first mouse-down-tool
-    myDiagram.toolManager.mouseDownTools.insertAt(0, tool);
+    myDiagram.toolManager.mouseDownTools.insertAt(0, new PolygonDrawingTool({
+      // provide the default JavaScript object for a new polygon in the model
+      archetypePartData: { fill: 'yellow', stroke: 'blue', strokeWidth: 3 },
+      isPolygon: true,
+      isEnabled: false
+    }));
 
     document.getElementById('select').onclick = () => mode(false);
     document.getElementById('drawPolygon').onclick = () => mode(true, true);
@@ -217,18 +221,18 @@
     document.getElementById('cancelDrawing').onclick = () => finish(false);
     document.getElementById('undo').onclick = undo;
     document.getElementById('allowResizing').onclick = () => {
-      myDiagram.commit((d) => (d.allowResize = !d.allowResize));
+      myDiagram.commit(d => d.allowResize = !d.allowResize);
       updateAllAdornments();
     };
     document.getElementById('allowReshaping').onclick = () => {
-      myDiagram.commit((d) => (d.allowReshape = !d.allowReshape));
+      myDiagram.commit(d => d.allowReshape = !d.allowReshape);
       updateAllAdornments();
     };
     document.getElementById('allowResegmenting').onclick = () => {
       toggleResegmenting();
     };
     document.getElementById('allowRotating').onclick = () => {
-      myDiagram.commit((d) => (d.allowRotate = !d.allowRotate));
+      myDiagram.commit(d => d.allowRotate = !d.allowRotate);
       updateAllAdornments();
     };
     document.getElementById('save').onclick = save;
@@ -271,7 +275,7 @@
 
   function updateAllAdornments() {
     // called after checkboxes change Diagram.allow...
-    myDiagram.selection.each((p) => p.updateAdornments());
+    myDiagram.selection.each(p => p.updateAdornments());
   }
 
   function toggleResegmenting() {
@@ -296,6 +300,7 @@
       alert(ex);
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

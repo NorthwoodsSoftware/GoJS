@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -135,34 +137,41 @@
       ChangedSelection: showLocalOnFullClick
     });
 
-    myLocalDiagram = // this is very similar to the full Diagram
-      new go.Diagram('localDiagram', {
-        initialAutoScale: go.AutoScale.UniformToFill,
-        contentAlignment: go.Spot.Center,
-        isReadOnly: true,
-        'animationManager.isInitial': false,
-        layout: new go.TreeLayout({ angle: 90, sorting: go.TreeSorting.Ascending }),
-        LayoutCompleted: (e) => {
-          var sel = e.diagram.selection.first();
-          if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
-        },
-        maxSelectionCount: 1,
-        // when the selection changes, update the contents of the myLocalDiagram
-        ChangedSelection: showLocalOnLocalClick
-      });
+    // this is very similar to the full Diagram
+    myLocalDiagram = new go.Diagram('localDiagram', {
+      initialAutoScale: go.AutoScale.UniformToFill,
+      contentAlignment: go.Spot.Center,
+      isReadOnly: true,
+      'animationManager.isInitial': false,
+      layout: new go.TreeLayout({ angle: 90, sorting: go.TreeSorting.Ascending }),
+      LayoutCompleted: e => {
+        var sel = e.diagram.selection.first();
+        if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
+      },
+      maxSelectionCount: 1,
+      // when the selection changes, update the contents of the myLocalDiagram
+      ChangedSelection: showLocalOnLocalClick
+    });
 
     // Define a node template that is shared by both diagrams
-    var myNodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .bind('text', 'key', go.Binding.toString) // for sorting
-      .add(
-        new go.Shape('Rectangle', { stroke: null }).bind('fill', 'color'),
-        new go.TextBlock({ margin: 5 }).bind('text', 'key', (k) => 'node' + k)
-      );
+    var myNodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bind('text', 'key', go.Binding.toString) // for sorting
+        .add(
+          new go.Shape('Rectangle', { stroke: null })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 5 })
+            .bind('text', 'key', k => 'node' + k)
+        );
     myFullDiagram.nodeTemplate = myNodeTemplate;
     myLocalDiagram.nodeTemplate = myNodeTemplate;
 
     // Define a basic link template, not selectable, shared by both diagrams
-    var myLinkTemplate = new go.Link({ routing: go.Routing.Normal, selectable: false }).add(new go.Shape({ strokeWidth: 1 }));
+    var myLinkTemplate =
+      new go.Link({ corner: 10, selectable: false })
+        .add(
+          new go.Shape({ strokeWidth: 1 })
+        );
     myFullDiagram.linkTemplate = myLinkTemplate;
     myLocalDiagram.linkTemplate = myLinkTemplate;
 
@@ -170,19 +179,20 @@
     setupDiagram();
 
     // Create a part in the background of the full diagram to highlight the selected node
-    highlighter = new go.Part('Auto', { layerName: 'Grid', locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape('Ellipse', {
-          fill: new go.Brush('Radial', { 0.0: 'gold', 0.5: 'gold', 1.0: 'white' }),
-          stroke: null,
-          desiredSize: new go.Size(300, 300)
-        })
-      );
+    highlighter =
+      new go.Part('Auto', { layerName: 'Grid', locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape('Ellipse', {
+            fill: new go.Brush('Radial', { 0.0: 'gold', 0.5: 'gold', 1.0: 'white' }),
+            stroke: null,
+            desiredSize: new go.Size(300, 300)
+          })
+        );
     myFullDiagram.add(highlighter);
 
     // Start by focusing the diagrams on the node at the top of the tree.
     // Wait until the tree has been laid out before selecting the root node.
-    myFullDiagram.addDiagramListener('InitialLayoutCompleted', (e) => {
+    myFullDiagram.addDiagramListener('InitialLayoutCompleted', e => {
       var node0 = myFullDiagram.findPartForKey(0);
       if (node0 !== null) node0.isSelected = true;
       showLocalOnFullClick();
@@ -220,7 +230,7 @@
         }
       }
       // create the model using the same node data as in myFullDiagram's model
-      nearby.each((n) => {
+      nearby.each(n => {
         if (n instanceof go.Node) model.addNodeData(n.data);
       });
       myLocalDiagram.model = model;
@@ -248,6 +258,7 @@
     }
     myFullDiagram.model = new go.TreeModel(nodeDataArray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

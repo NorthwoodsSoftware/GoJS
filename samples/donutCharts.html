@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,45 +131,45 @@
     const Inner = 40; // inner radius
     const Thickness = 30; // Inner + Thickness is outer radius
 
-    myDiagram.nodeTemplate = new go.Node('Spot')
-      .add(
-        new go.Panel({
-          itemTemplate: new go.Panel('Spot', {
-            toolTip: go.GraphObject.build('ToolTip')
-              .add(
-                new go.TextBlock().bind('text', '', (d) => {
-                  return `${d.text}\n#: ${d.value}\n${(d.sweep / 3.6).toFixed(1)}%`;
-                })
-              )
-          })
-            .add(
-              new go.Shape({ fill: '#00000020', stroke: 'white' }) // this always occupies the full circle
-                .bind('geometry', '', makeAnnularWedge)
-                .bind('fill', 'color'),
-              new go.TextBlock({
-                width: Thickness,
-                textAlign: 'center',
-                font: '8pt sans-serif'
-              })
-                .bind('alignment', '', computeTextAlignment)
-                //.bind("angle", "", ensureUpright),  // does the text need to be rotated?
-                .bind(
-                  'text',
-                  '',
-                  (d) => d.value + '\n' + Math.round(d.sweep / 3.6) + '%'
-                )
-            )
-        }).bind('itemArray', 'values', normalizeData),
-        new go.TextBlock({
-          maxSize: new go.Size(2 * Inner, 2 * Inner),
-          font: 'bold 10pt sans-serif'
-        }).bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Spot')
+        .add(
+          new go.Panel({
+              itemTemplate:
+                new go.Panel('Spot', {
+                    toolTip:
+                      go.GraphObject.build('ToolTip')
+                        .add(
+                          new go.TextBlock()
+                            .bind('text', '', d => `${d.text}\n#: ${d.value}\n${(d.sweep / 3.6).toFixed(1)}%`)
+                        )
+                  })
+                  .add(
+                    new go.Shape({ fill: '#00000020', stroke: 'white' }) // this always occupies the full circle
+                      .bind('geometry', '', makeAnnularWedge)
+                      .bind('fill', 'color'),
+                    new go.TextBlock({
+                        width: Thickness,
+                        textAlign: 'center',
+                        font: '8pt sans-serif'
+                      })
+                      .bind('alignment', '', computeTextAlignment)
+                      //.bind("angle", "", ensureUpright),  // does the text need to be rotated?
+                      .bind('text', '', d => d.value + '\n' + Math.round(d.sweep / 3.6) + '%')
+                  )
+            })
+            .bind('itemArray', 'values', normalizeData),
+          new go.TextBlock({
+              maxSize: new go.Size(2 * Inner, 2 * Inner),
+              font: 'bold 10pt sans-serif'
+            })
+            .bind('text')
+        );
 
     function normalizeData(arr) {
       const details = [];
       let total = 0;
-      arr.forEach((item) => {
+      arr.forEach(item => {
         if (typeof item === 'object') {
           details.push(Object.assign({}, item));
           total += Math.max(item.value, 0.001);
@@ -177,7 +179,7 @@
         }
       });
       let angle = 0;
-      details.forEach((item) => {
+      details.forEach(item => {
         item.angle = angle;
         const sw = (item.value / total) * 360;
         item.sweep = sw;
@@ -205,29 +207,9 @@
         .add(new go.PathFigure(rad, rad)) // and the bottom right corner of the whole circular area
         .add(
           new go.PathFigure(p.x, p.y) // start at outer corner, go clockwise
-            .add(
-              new go.PathSegment(
-                go.SegmentType.Arc,
-                angle,
-                sweep,
-                0,
-                0,
-                outer,
-                outer
-              )
-            )
+            .add(new go.PathSegment(go.SegmentType.Arc, angle, sweep, 0, 0, outer, outer))
             .add(new go.PathSegment(go.SegmentType.Line, q.x, q.y)) // to opposite inner corner, then anticlockwise
-            .add(
-              new go.PathSegment(
-                go.SegmentType.Arc,
-                angle + sweep,
-                -sweep,
-                0,
-                0,
-                inner,
-                inner
-              ).close()
-            )
+            .add(new go.PathSegment(go.SegmentType.Arc, angle + sweep, -sweep, 0, 0, inner, inner).close())
         );
       return geo;
     }
@@ -281,6 +263,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

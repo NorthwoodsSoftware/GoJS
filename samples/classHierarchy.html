@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,28 +135,25 @@
 
     // Define a node template showing class names.
     // Clicking on the node opens up the documentation for that class.
-    diagram.nodeTemplate = new go.Node("Auto")
-      .add(
-        new go.Shape({ fill: '#1F4963', stroke: null }),
-        go.GraphObject.build('HyperlinkText', {
-            font: 'bold 13px Helvetica, bold Arial, sans-serif',
-            stroke: 'white',
-            margin: 3
-          },
-          // compute the URL to open for the documentation
-          (node) => '../api/symbols/' + node.data.key + '.html', (node) => node.data.key
+    diagram.nodeTemplate =
+      new go.Node("Auto")
+        .add(
           // define the visuals for the hyperlink, basically the whole node:
-        )
-      );
+          new go.Shape({ fill: '#1F4963', stroke: null }),
+          go.GraphObject.build('HyperlinkText', {
+              font: 'bold 13px Helvetica, bold Arial, sans-serif',
+              stroke: 'white',
+              margin: 3
+            },
+            // compute the URL to open for the documentation
+            node => '../api/symbols/' + node.data.key + '.html', node => node.data.key
+          )
+        );
 
     // Define a trivial link template with no arrowhead
-    diagram.linkTemplate = new go.Link(
-      {
-        curve: go.Curve.Bezier,
-        toEndSegmentLength: 30,
-        fromEndSegmentLength: 30
-      })
-      .add(new go.Shape({ strokeWidth: 1.5 })); // the link shape, with the default black stroke
+    diagram.linkTemplate =
+      new go.Link({ corner: 10 })
+        .add(new go.Shape({ strokeWidth: 1.5 })); // the link shape, with the default black stroke
 
     // Collect all of the data for the model of the class hierarchy
     var nodeDataArray = [];
@@ -180,7 +179,7 @@
 
     // Now collect all node data that are singletons
     var singlesArray = []; // for classes that don't inherit from another class
-    diagram.nodes.each((node) => {
+    diagram.nodes.each(node => {
       if (node.linksConnected.count === 0) {
         singlesArray.push(node.data);
       }
@@ -199,6 +198,7 @@
       model: new go.Model(singlesArray) // use a separate model
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

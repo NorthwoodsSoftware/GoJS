@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="Venn diagram showing common characters of two or three alphabets, using either CircularLayout or PackedLayout." />
+<meta itemprop="description" content="Venn diagram showing common characters of two or three alphabets, using either CircularLayout or PackedLayout." />
+<meta property="og:description" content="Venn diagram showing common characters of two or three alphabets, using either CircularLayout or PackedLayout." />
+<meta name="twitter:description" content="Venn diagram showing common characters of two or three alphabets, using either CircularLayout or PackedLayout." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Venn Diagram" />
+<meta property="og:title" content="Venn Diagram" />
+<meta name="twitter:title" content="Venn Diagram" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/venn.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/venn.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/venn.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/venn.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/venn.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Venn Diagram | GoJS Diagramming Library
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/Quadtree.js"></script>
+<script src="../extensions/PackedLayout.js"></script>
+
+<script id="code">
+
+/**
+ * 
+ * This Venn-style layout handles two or three sets of nodes, where each node.data object
+ * has a "sets" property that is an Array listing which "Set"s the node belongs in.
+ * The model should also hold a category: "Set" node data object for each collection
+ * that is represented by a circular Shape.
+ *
+ * The name of the data property is given by the setsProperty property and defaults to "sets".
+ * The value must be an Array of keys of the "Set"s.
+ *
+ * To arrange the collection of nodes in each "Set" intersection, you can either use
+ * the default CircularLayout or you can use a different one such as PackedLayout.
+ * Set the intersectionLayout property to determine the Layout to use.
+ *
+ * The spacing property, default zero, can provide extra space between each intersection collection.
+ *
+ * The circleName and labelName properties declare which GraphObject in the "Set" is a "Circle" Shape
+ * and which GraphObject is the label to be aligned relative to the "Circle" Shape.
+ * The names default to "SHAPE" and "LABEL" respectively.
+ */
+class VennLayout extends go.Layout {
+  _sets = null;
+  _bins = null;
+  _setsProperty = "sets";
+  _circleName = "SHAPE";
+  _labelName = "LABEL";
+  _intersectionLayout = new go.CircularLayout({ arrangement: go.CircularArrangement.Packed, spacing: 0 });
+  _spacing = 0;
+
+  constructor(init) {
+    super();
+    if (init) Object.assign(this, init);
+  }
+
+  // Gets or sets the name of the node data property holding an Array of keys to the "Set"s of which the node is a member.
+  // This defaults to "sets".
+  get setsProperty() { return this._setsProperty; }
+  set setsProperty(name) {
+    if (name !== this.setsProperty) {
+      this._setsProperty = name;
+      this.invalidateLayout();
+    }
+  }
+
+  // Gets or sets the GraphObject.name of the "Circle" Shape in Nodes of "Set" category.
+  // This defaults to "SHAPE".
+  get circleName() { return this._circleName; }
+  set circleName(name) {
+    if (name !== this.circleName) {
+      this._circleName = name;
+      this.invalidateLayout();
+    }
+  }
+
+  // Gets or sets the GraphObject.name of the "Circle" Shape in Nodes of "Set" category.
+  // This defaults to "LABEL".
+  get labelName() { return this._labelName; }
+  set labelName(name) {
+    if (name !== this.labelName) {
+      this._labelName = name;
+      this.invalidateLayout();
+    }
+  }
+
+  // Gets or sets the Layout to use for each collection of nodes.
+  // This defaults to CircularLayout.
+  get intersectionLayout() { return this._intersectionLayout; }
+  set intersectionLayout(lay) {
+    if (lay !== this.intersectionLayout) {
+      this._intersectionLayout = lay;
+      this.invalidateLayout();
+    }
+  }
+
+  // Gets or sets the minimum distance between intersection collections.
+  // This may want to be larger than zero when the intersections are laid out in a rectangular fashion,
+  // since the circles of the "Set"s will tend to intersect with the corners of rectangles.
+  // This defaults to 0.
+  get spacing() { return this._spacing; }
+  set spacing(sp) {
+    if (sp !== this.spacing) {
+      this._spacing = sp;
+      this.invalidateLayout();
+    }
+  }
+
+  doLayout(coll) {
+    if (coll === this.diagram) {
+      coll = this.diagram.nodes.filter(n => n.isVisible());
+    } else if (coll instanceof go.Group) {
+      coll = coll.memberParts.filter(p => p.isVisible() && !(p instanceof go.Link));
+    } else {
+      coll = coll.filter(p => p.isVisible() && !(p instanceof go.Link));
+    }
+    this._sets = new go.Map();
+    // first generate an array of the keys that name the "Sets"
+    const setarr = [];
+    coll.each(n => {
+      if (n.category === "Set") {
+        const key = n.key;
+        this._sets.add(key, { members: [], key: key, node: n });
+        setarr.push(key);
+      }
+    });
+    // build tree structure with all combinations
+    this._bins = this._buildBin(setarr, 0, []);
+    // for each node that is not a "Set", add to bin corresponding to node.data.sets array of keys
+    coll.each(n => {
+      if (n.category === "Set") return;
+      const a = n.data[this.setsProperty];
+      if (!Array.isArray(a)) return;
+      a.forEach(k => {
+        const setinfo = this._sets.get(k);
+        if (setinfo) {
+          setinfo.members.push(n);
+        } else {
+          // be tolerant of superfluous Set membership information -- ignore it
+          // throw new Error("unknown set: " + k + " for node " + n.key);
+        }
+      });
+      this._walkBin(this._bins,
+        intinfo => {
+          const a = n.data[this.setsProperty];
+          return Array.isArray(a) && a.indexOf(intinfo.key) >= 0
+        },
+        intinfo => {
+          const a = n.data[this.setsProperty];
+          return Array.isArray(a) && a.indexOf(intinfo.key) < 0
+        },
+        intinfo => intinfo.members.push(n));
+    });
+    // compute how big each laid-out collection of nodes in each intersection is
+    let maxdia = 0.0;
+    this._walkBin(this._bins, null, null, intinfo => {
+      this._layoutIntersection(intinfo);
+      const bounds = this.diagram.computePartsBounds(intinfo.members);
+      intinfo.center = bounds.center;
+      maxdia = Math.max(maxdia, Math.max(bounds.width + this.spacing/2, bounds.height + this.spacing/2));
+    });
+    // position the "Set"s
+    // their diameters should depend on the maximum size of the intersection collections after their layout
+    let i = 1;
+    const dia = maxdia * this._sets.count;
+    this._sets.iteratorValues.each(setinfo => {
+      const shp = setinfo.node.findObject(this.circleName);
+      if (shp) shp.desiredSize = new go.Size(dia, dia);
+      const lab = setinfo.node.findObject(this.labelName);
+      if (i === 1) {
+        if (lab) { lab.alignment = new go.Spot(0.14, 0.14); lab.alignmentFocus = go.Spot.BottomRight; }
+        setinfo.node.location = new go.Point(0, 0); i++;
+      } else if (i === 2) {
+        if (lab) { lab.alignment = new go.Spot(0.86, 0.14); lab.alignmentFocus = go.Spot.BottomLeft; }
+        setinfo.node.location = new go.Point(dia / 2, 0); i++;
+      } else if (i === 3) {
+        if (lab) { lab.alignment = go.Spot.Bottom; lab.alignmentFocus = go.Spot.Top; }
+        setinfo.node.location = new go.Point(dia / 4, 0.86 * dia / 2); i++;
+      } else if (i > 3) {
+        throw new Error("too many sets: " + i);
+      }
+    });
+    // position the intersection collections
+    const center = this._average(setarr);
+    this._walkBin(this._bins, null, null, intinfo => {
+      const avg = this._average(intinfo.path);
+      const c = intinfo.center;
+      intinfo.members.forEach(n => {
+        const dst = new go.Point(center.x + 2 * (avg.x - center.x), center.y + 2 * (avg.y - center.y));
+        n.moveTo(dst.x + n.location.x - c.x, dst.y + n.location.y - c.y, true);
+      });
+    });
+  };
+
+  _buildBin(arr, idx, path) {
+    if (idx < arr.length) {
+      const k = arr[idx];
+      const t = { key: k };
+      t[false] = this._buildBin(arr, idx + 1, path);
+      path.push(k);
+      t[true] = this._buildBin(arr, idx + 1, path);
+      path.pop();
+      return t;
+    } else {
+      return {
+        members: [],
+        path: path.slice(),
+        size: new go.Size()
+      };
+    }
+  };
+
+  _walkBin(bins, present, absent, leaf) {
+    if (Array.isArray(bins.members)) {
+      if (leaf) leaf(bins);
+    } else {
+      const k = bins.key;
+      if (!present || present(bins)) {
+        this._walkBin(bins[true], present, absent, leaf);
+      }
+      if (!absent || absent(bins)) {
+        this._walkBin(bins[false], present, absent, leaf);
+      }
+    }
+  };
+
+  _layoutIntersection(intinfo) {
+    const arr = intinfo.members;
+    const coll = new go.List().addAll(arr);
+    this._intersectionLayout.doLayout(coll);
+  };
+
+  _average(keys) {
+    const len = keys.length;
+    let x = 0.0;
+    let y = 0.0;
+    for (let i = 0; i < len; i++) {
+      const key = keys[i];
+      const node = this._sets.get(key).node;
+      if (i === 0) {
+        x = node.location.x;
+        y = node.location.y;
+      } else {
+        x += node.location.x;
+        y += node.location.y;
+      }
+    }
+    if (len > 0) {
+      x = x / len;
+      y = y / len;
+    }
+    return new go.Point(x, y);
+  }
+}
+// end VennLayout
+
+
+function init() {
+  myDiagram = new go.Diagram("myDiagramDiv", {
+    "animationManager.isEnabled": false,
+    layout: new VennLayout()
+  });
+
+  // this should have a "Circle" Shape named "SHAPE" and may have a label named "LABEL"
+  myDiagram.nodeTemplateMap.add("Set",
+    new go.Node("Spot", {
+        locationSpot: go.Spot.Center, locationObjectName: "SHAPE",
+        layerName: "Background",
+        selectable: false
+      })
+      .add(
+        new go.Shape("Circle", { name: "SHAPE", fill: "transparent" }),
+        new go.TextBlock({ name: "LABEL", font: "bold 12pt sans-serif" })
+          .bind("text")
+      ));
+
+  myDiagram.nodeTemplate =
+    new go.Node({ locationSpot: go.Spot.Center })
+      .add(
+        new go.TextBlock()
+          .bind("text")
+      );
+
+  // The model should have category "Set" data for each overall collection,
+  // and each element node data should have a "sets" property that is an Array
+  // holding the keys of those "Set"s.
+  myDiagram.model = new go.GraphLinksModel([
+    { key: "G", text: "Greek", category: "Set" },
+    { key: "L", text: "Latin", category: "Set" },
+    { key: "R", text: "Russian", category: "Set" },
+    { text: "A", sets: ["G", "L", "R"] },
+    { text: "B", sets: ["G", "L", "R"] },
+    { text: "C", sets: ["L", "R"] },
+    { text: "D", sets: ["L"] },
+    { text: "E", sets: ["G", "L", "R"] },
+    { text: "F", sets: ["L"] },
+    { text: "G", sets: ["L"] },
+    { text: "H", sets: ["G", "L", "R"] },
+    { text: "I", sets: ["G", "L"] },
+    { text: "J", sets: ["L"] },
+    { text: "K", sets: ["G", "L", "R"] },
+    { text: "L", sets: ["L"] },
+    { text: "M", sets: ["G", "L", "R"] },
+    { text: "N", sets: ["G", "L"] },
+    { text: "O", sets: ["G", "L", "R"] },
+    { text: "P", sets: ["G", "L", "R"] },
+    { text: "Q", sets: ["L"] },
+    { text: "R", sets: ["L"] },
+    { text: "S", sets: ["L"] },
+    { text: "T", sets: ["G", "L", "R"] },
+    { text: "U", sets: ["L"] },
+    { text: "V", sets: ["L"] },
+    { text: "W", sets: ["L"] },
+    { text: "X", sets: ["G", "L", "R"] },
+    { text: "Y", sets: ["G", "L", "R"] },
+    { text: "Z", sets: ["G", "L"] },
+    { text: "Γ", sets: ["G", "R"] },
+    { text: "Δ", sets: ["G"] },
+    { text: "Θ", sets: ["G"] },
+    { text: "Λ", sets: ["G"] },
+    { text: "Ξ", sets: ["G"] },
+    { text: "Π", sets: ["G", "R"] },
+    { text: "Σ", sets: ["G"] },
+    { text: "Φ", sets: ["G", "R"] },
+    { text: "Ψ", sets: ["G"] },
+    { text: "Ω", sets: ["G"] },
+    { text: "Б", sets: ["R"] },
+    { text: "Д", sets: ["R"] },
+    { text: "Ж", sets: ["R"] },
+    { text: "З", sets: ["R"] },
+    { text: "И", sets: ["R"] },
+    { text: "Л", sets: ["R"] },
+    { text: "Ц", sets: ["R"] },
+    { text: "Ч", sets: ["R"] },
+    { text: "Ш", sets: ["R"] },
+    { text: "Щ", sets: ["R"] },
+    { text: "Ъ", sets: ["R"] },
+    { text: "Ы", sets: ["R"] },
+    { text: "Ь", sets: ["R"] },
+    { text: "Э", sets: ["R"] },
+    { text: "Ю", sets: ["R"] },
+    { text: "Я", sets: ["R"] }
+  ]);
+}
+
+
+function lgr() {  // make all Nodes visible
+  myDiagram.commit(d => {
+    d.nodes.each(n => n.visible = true);
+  });
+}
+
+function setVisibleIf(a, b) {
+  myDiagram.commit(d => {
+    d.nodes.each(n => {
+      if (n.category === "Set") {
+        n.visible = n.key === a || n.key === b;
+      } else {
+        n.visible = n.data.sets.indexOf(a) >= 0 || n.data.sets.indexOf(b) >= 0;
+      }
+    });
+  });
+}
+
+function lg() { setVisibleIf("L", "G"); }
+function gr() { setVisibleIf("G", "R"); }
+function lr() { setVisibleIf("L", "R"); }
+
+function circular() {
+  myDiagram.commit(d => {
+    d.layout.intersectionLayout = new go.CircularLayout({ arrangement: go.CircularArrangement.Packed, spacing: 0 })
+    d.layout.spacing = 0;
+  });
+}
+
+function packed() {
+  myDiagram.commit(d => {
+    d.layout.intersectionLayout = new PackedLayout({ spacing: 0 });
+    d.layout.spacing = 20;
+  });
+}
+
+window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:600px"></div>
+  <p>
+    Venn Diagram of Greek, Latin, and Russian Glyphs
+  </p>
+  <p>
+    <button onclick="lgr()">Greek, Latin, and Russian</button>
+    <button onclick="lg()">Greek and Latin</button>
+    <button onclick="gr()">Greek and Russian</button>
+    <button onclick="lr()">Latin and Russian</button>
+  </p>
+  <p>
+    <button onclick="circular()">Circular Layout</button>
+    <button onclick="packed()">Packed Layout</button>
+  </p>
+</div>
+
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Custom Layouts</h4>
+<p>
+  GoJS allows for the creation of custom layouts to meet specific needs. 
+</p>
+<p>
+There are also many layouts that are extensions -- not predefined in the <code>go.js</code> or <code>go-debug.js</code> library,
+but available as source code in one of the three extension directories, with some documentation and corresponding samples.
+More information can be found in the <a href="../intro/layouts.html#CustomLayouts">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#customlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Circular Layout</h4>
+<p>
+This predefined layout is used for placing Nodes in a cirular or elliptical arrangement.
+More information can be found in the <a href="../intro/layouts.html#CircularLayout">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#circularlayout">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

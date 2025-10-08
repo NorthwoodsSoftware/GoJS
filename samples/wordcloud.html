@@ -110,6 +110,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -209,14 +211,15 @@ You can explore the newest features and samples in the GoJS Beta for the next ve
   });
 
   // Nodes just show text with bindings for scale and font
-  myDiagram.nodeTemplate = new go.Node()
-    .bind('scale')
-    .add(
-      new go.TextBlock()
-        .bind('text')
-        .bind('font')
-        .bind('stroke')
-    );
+  myDiagram.nodeTemplate =
+    new go.Node()
+      .bind('scale')
+      .add(
+        new go.TextBlock()
+          .bind('text')
+          .bind('font')
+          .bind('stroke')
+      );
 
   // create a layout with the default values
   rebuildGraph();

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -170,11 +172,13 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node(go.Panel.Auto)
-      .add(
-        new go.Shape('Rectangle', { fill: 'white' }),
-        new go.TextBlock({ margin: 5 }).bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node(go.Panel.Auto)
+        .add(
+          new go.Shape('Rectangle', { fill: 'white' }),
+          new go.TextBlock({ margin: 5 })
+            .bind('text', 'key')
+        );
 
     // There should be at most a single object of this category.
     // This Part will be modified by SimpleBandedTreeLayout.commitLayers to display visual "bands"
@@ -183,48 +187,51 @@
     // You also have the option of showing rectangles for the layer bands or
     // of showing separator lines between the layers, but not both at the same time,
     // by commenting in/out the indicated code.
-    myDiagram.nodeTemplateMap.add(
-      'Bands',
+    myDiagram.nodeTemplateMap.add('Bands',
       new go.Part('Position', {
-        isLayoutPositioned: false, // but still in document bounds
-        locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0), // account for header height
-        layerName: 'Background',
-        pickable: false,
-        selectable: false,
-        itemTemplate: new go.Panel(HORIZONTAL ? 'Vertical' : 'Horizontal')
-          .bind('position', 'bounds', (b) => b.position)
-          .add(
-            new go.TextBlock({
-              angle: HORIZONTAL ? 0 : 270,
-              textAlign: 'center',
-              wrap: go.Wrap.None,
-              font: 'bold 11pt sans-serif',
-              background: new go.Brush('Linear', { 0: 'aqua', 1: go.Brush.darken('aqua') })
-            })
-              .bind('text')
-              // always bind "width" because the angle does the rotation
-              .bind('width', 'bounds', (r) => (HORIZONTAL ? r.width : r.height)),
-            // option 1: rectangular bands:
-            new go.Shape({ stroke: null, strokeWidth: 0 })
-              .bind('desiredSize', 'bounds', (r) => r.size)
-              .bindObject('fill', 'itemIndex', (i) =>
-                i % 2 == 0 ? 'whitesmoke' : go.Brush.darken('whitesmoke')
+          isLayoutPositioned: false, // but still in document bounds
+          locationSpot: new go.Spot(0, 0, HORIZONTAL ? 0 : 16, HORIZONTAL ? 16 : 0), // account for header height
+          layerName: 'Background',
+          pickable: false,
+          selectable: false,
+          itemTemplate:
+            new go.Panel(HORIZONTAL ? 'Vertical' : 'Horizontal')
+              .bind('position', 'bounds', b => b.position)
+              .add(
+                new go.TextBlock({
+                    angle: HORIZONTAL ? 0 : 270,
+                    textAlign: 'center',
+                    wrap: go.Wrap.None,
+                    font: 'bold 11pt sans-serif',
+                    background: new go.Brush('Linear', { 0: 'aqua', 1: go.Brush.darken('aqua') })
+                  })
+                  .bind('text')
+                  // always bind "width" because the angle does the rotation
+                  .bind('width', 'bounds', r => HORIZONTAL ? r.width : r.height),
+                // option 1: rectangular bands:
+                new go.Shape({ stroke: null, strokeWidth: 0 })
+                  .bind('desiredSize', 'bounds', r => r.size)
+                  .bindObject('fill', 'itemIndex', i =>
+                    i % 2 == 0 ? 'whitesmoke' : go.Brush.darken('whitesmoke')
+                  )
+                // option 2: separator lines:
+                // (HORIZONTAL
+                //  ? new go.Shape("LineV",
+                //      { stroke: "gray", alignment: go.Spot.TopLeft, width: 1 })
+                //      .bind("height", "bounds", r => r.height)
+                //      .bindObject("visible", "itemIndex", i => i > 0)
+                //  : new go.Shape("LineH",
+                //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 })
+                //      .bind("width", "bounds", r => r.width)
+                //      .bindObject("visible", "itemIndex", i => i > 0))
               )
-            // option 2: separator lines:
-            // (HORIZONTAL
-            //  ? new go.Shape("LineV",
-            //      { stroke: "gray", alignment: go.Spot.TopLeft, width: 1 })
-            //      .bind("height", "bounds", r => r.height)
-            //      .bindObject("visible", "itemIndex", i => i > 0)
-            //  : new go.Shape("LineH",
-            //      { stroke: "gray", alignment: go.Spot.TopLeft, height: 1 })
-            //      .bind("width", "bounds", r => r.width)
-            //      .bindObject("visible", "itemIndex", i => i > 0))
-          )
-      }).bind('itemArray')
+        })
+        .bind('itemArray')
     );
 
-    myDiagram.linkTemplate = new go.Link().add(new go.Shape()); // simple black line, no arrowhead needed
+    myDiagram.linkTemplate =
+      new go.Link()
+        .add(new go.Shape()); // simple black line, no arrowhead needed
 
     // define the tree node data
     var nodearray = [
@@ -256,6 +263,7 @@
 
     myDiagram.model = new go.TreeModel(nodearray);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

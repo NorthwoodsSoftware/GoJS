@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,46 +135,48 @@
     // Define the Node template.
     // This uses a Spot Panel to position a button relative
     // to the ellipse surrounding the text.
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      selectionObjectName: 'PANEL',
-      isTreeExpanded: false,
-      isTreeLeaf: false
-    })
-      .add(
-        // the node's outer shape, which will surround the text
-        new go.Panel('Auto', { name: 'PANEL' })
-          .add(
-            new go.Shape('Circle', { fill: '#03A9F4', stroke: 'black' }),
-            new go.TextBlock({ font: '12pt sans-serif', margin: 5 }).bind('text', 'key')
-          ),
-        // the expand/collapse button, at the top-right corner
-        go.GraphObject.build('TreeExpanderButton', {
-          name: 'TREEBUTTON',
-          width: 20,
-          height: 20,
-          alignment: go.Spot.TopRight,
-          alignmentFocus: go.Spot.Center,
-          // customize the expander behavior to
-          // create children if the node has never been expanded
-          click: (e, obj) => {
-            // OBJ is the Button
-            var node = obj.part; // get the Node containing this Button
-            if (node === null) return;
-            e.handled = true;
-            expandNode(node);
-          }
-        }) // end TreeExpanderButton
-      ); // end Node
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          selectionObjectName: 'PANEL',
+          isTreeExpanded: false,
+          isTreeLeaf: false
+        })
+        .add(
+          // the node's outer shape, which will surround the text
+          new go.Panel('Auto', { name: 'PANEL' })
+            .add(
+              new go.Shape('Circle', { fill: '#03A9F4', stroke: 'black' }),
+              new go.TextBlock({ font: '12pt sans-serif', margin: 5 })
+                .bind('text', 'key')
+            ),
+          // the expand/collapse button, at the top-right corner
+          go.GraphObject.build('TreeExpanderButton', {
+            name: 'TREEBUTTON',
+            width: 20,
+            height: 20,
+            alignment: go.Spot.TopRight,
+            alignmentFocus: go.Spot.Center,
+            // customize the expander behavior to
+            // create children if the node has never been expanded
+            click: (e, obj) => {
+              // OBJ is the Button
+              var node = obj.part; // get the Node containing this Button
+              if (node === null) return;
+              e.handled = true;
+              expandNode(node);
+            }
+          }) // end TreeExpanderButton
+        ); // end Node
 
     // create the model with a root node data
     myDiagram.model = new go.TreeModel([{ key: 0, everExpanded: false }]);
 
     // Overview
     myOverview = new go.Overview('myOverviewDiv', {
+      resizingTool: new OverviewResizingTool(),
       observed: myDiagram,
       contentAlignment: go.Spot.Center,
-      'box.resizable': true,
-      resizingTool: new OverviewResizingTool()
+      'box.resizable': true
     });
 
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.zoomToFit());
@@ -240,12 +244,13 @@
 
   function expandAtRandom() {
     var eligibleNodes = [];
-    myDiagram.nodes.each((n) => {
+    myDiagram.nodes.each(n => {
       if (!n.isTreeExpanded) eligibleNodes.push(n);
     });
     var node = eligibleNodes[Math.floor(Math.random() * eligibleNodes.length)];
     expandNode(node);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

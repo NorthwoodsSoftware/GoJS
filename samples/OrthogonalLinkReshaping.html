@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,24 +133,29 @@
       linkReshapingTool: new OrthogonalLinkReshapingTool()
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      width: 80,
-      height: 50,
-      locationSpot: go.Spot.Center
-    })
-      .add(
-        new go.Shape({ fill: 'lightgray' }),
-        new go.TextBlock({ margin: 10 }).bind('text')
-      )
-      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify);
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          width: 80,
+          height: 50,
+          locationSpot: go.Spot.Center
+        })
+        .add(
+          new go.Shape({ fill: 'lightgray' }),
+          new go.TextBlock({ margin: 10 })
+            .bind('text')
+        )
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify);
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      reshapable: true,
-      resegmentable: true
-    })
-      .add(new go.Shape({ strokeWidth: 2 }))
-      .bindTwoWay('points');
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          reshapable: true,
+          resegmentable: true
+        })
+        .bindTwoWay('points')
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+        );
 
     myDiagram.model = new go.GraphLinksModel({
       pointsDigits: 0,
@@ -161,7 +168,7 @@
       linkDataArray: [{ from: 1, to: 2 }]
     });
 
-    myDiagram.addDiagramListener('InitialLayoutCompleted', (e) => {
+    myDiagram.addDiagramListener('InitialLayoutCompleted', e => {
       // select the Link in order to show its two additional Adornments, for shifting the ends
       myDiagram.links.first().isSelected = true;
     });
@@ -172,7 +179,7 @@
     var newRouting = routing === 'orthogonal' ? go.Routing.Orthogonal : go.Routing.AvoidsNodes;
     myDiagram.startTransaction('update routing');
     myDiagram.linkTemplate.routing = newRouting;
-    myDiagram.links.each((l) => {
+    myDiagram.links.each(l => {
       l.routing = newRouting;
     });
     myDiagram.commitTransaction('update routing');

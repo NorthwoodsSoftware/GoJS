@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -189,10 +191,10 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -201,7 +203,7 @@
     });
 
     // generate unique label for valve on newly-created flow link
-    myDiagram.addDiagramListener('LinkDrawn', (e) => {
+    myDiagram.addDiagramListener('LinkDrawn', e => {
       var link = e.subject;
       if (link.category === 'flow') {
         myDiagram.startTransaction('updateNode');
@@ -221,121 +223,89 @@
 
   function buildTemplates() {
     // helper functions for the templates
-    function nodeStyle(obj) {
-      const partial = {
-        type: go.Panel.Spot,
-        layerName: 'Background',
-        locationObjectName: 'SHAPE',
-        selectionObjectName: 'SHAPE',
-        locationSpot: go.Spot.Center
-      };
-
-      if (!obj) return partial;
-      Object.entries(partial).forEach(([prop, val]) => {
-        obj[prop] ??= val;
-      });
-
-      return obj;
+    function nodeStyle(node) {
+      node.type = go.Panel.Spot;
+      node.layerName = 'Background';
+      node.locationObjectName = 'SHAPE';
+      node.selectionObjectName = 'SHAPE';
+      node.locationSpot = go.Spot.Center;
+      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
     }
 
-    function shapeStyle(obj) {
-      const partial = {
-        name: 'SHAPE',
-        stroke: 'black',
-        fill: '#f0f0f0',
-        portId: '', // So a link can be dragged from the Node: see /GraphObject.html#portId
-        fromLinkable: true,
-        toLinkable: true
-      };
-      if (!obj) return partial;
-      Object.entries(partial).forEach(([prop, val]) => {
-        if (obj[prop] !== undefined) return; // some properties may intentionally be set to null
-        obj[prop] = val;
-      });
-
-      return obj;
+    function shapeStyle(shp) {
+      shp.name = 'SHAPE';
+      shp.stroke = 'black';
+      shp.fill = '#f0f0f0';
+      shp.portId = ''; // So a link can be dragged from the Node = see /GraphObject.html#portId
+      shp.fromLinkable = true;
+      shp.toLinkable = true
     }
 
-    function textStyle(obj) {
-      Object.assign(obj, {
-        font: 'bold 11pt helvetica, bold arial, sans-serif',
-        margin: 2,
-        editable: true
-      });
-      obj.bindTwoWay('text', 'label');
+    function textStyle(tb) {
+      tb.font = 'bold 11pt helvetica, bold arial, sans-serif';
+      tb.margin = 2;
+      tb.editable = true;
+      tb.bindTwoWay('text', 'label');
+    }
 
-      return obj;
+    function labelStyle(obj) {
+      obj.attach({ _isNodeLabel: true }) // declare draggable by NodeLabelDraggingTool
+      obj.alignment = new go.Spot(0.5, 0.5, 0, 30); // initial value
+      obj.bindTwoWay('alignment', 'label_offset', go.Spot.parse, go.Spot.stringify);
     }
 
     // Node templates
-    myDiagram.nodeTemplateMap.add(
-      'stock',
-      new go.Node(nodeStyle())
+    myDiagram.nodeTemplateMap.add('stock',
+      new go.Node()
+        .apply(nodeStyle)
         .add(
-          new go.Shape({ desiredSize: new go.Size(50, 30) }).set(shapeStyle()),
-          textStyle(
-            new go.TextBlock({
-              _isNodeLabel: true, // declare draggable by NodeLabelDraggingTool
-              alignment: new go.Spot(0.5, 0.5, 0, 30) // initial value
-            }).bindTwoWay('alignment', 'label_offset', go.Spot.parse, go.Spot.stringify)
-          )
-        )
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-    );
+          new go.Shape({ desiredSize: new go.Size(50, 30) })
+            .apply(shapeStyle),
+          new go.TextBlock()
+            .apply(textStyle)
+            .apply(labelStyle)
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'cloud',
-      new go.Node(nodeStyle())
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+    myDiagram.nodeTemplateMap.add('cloud',
+      new go.Node()
+        .apply(nodeStyle)
         .add(
-          new go.Shape(shapeStyle(), {
-            figure: 'Cloud',
-            desiredSize: new go.Size(35, 35)
-          })
-        )
-    );
+          new go.Shape('Cloud', { desiredSize: new go.Size(35, 35) })
+            .apply(shapeStyle)
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'valve',
-      new go.Node(
-        nodeStyle({
+    myDiagram.nodeTemplateMap.add('valve',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({
           movable: false,
           layerName: 'Foreground',
           alignmentFocus: go.Spot.None
         })
-      )
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .add(
-          new go.Shape({
-            figure: 'Ellipse',
-            desiredSize: new go.Size(20, 20)
-          }).set(shapeStyle()),
-          textStyle(
-            new go.TextBlock({
-              _isNodeLabel: true, // declare draggable by NodeLabelDraggingTool
-              alignment: new go.Spot(0.5, 0.5, 0, 20) // initial value
-            }).bindTwoWay('alignment', 'label_offset', go.Spot.parse, go.Spot.stringify)
-          )
-        )
-    );
+          new go.Shape('Ellipse', { desiredSize: new go.Size(20, 20) })
+            .apply(shapeStyle),
+          new go.TextBlock()
+            .apply(textStyle)
+            .apply(labelStyle)
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'variable',
-      new go.Node(nodeStyle({ type: go.Panel.Auto }))
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+    myDiagram.nodeTemplateMap.add('variable',
+      new go.Node()
+        .apply(nodeStyle)
+        .set({ type: go.Panel.Auto })
         .add(
-          textStyle(new go.TextBlock({ isMultiline: false })),
-          new go.Shape(
+          new go.TextBlock({ isMultiline: false })
+            .apply(textStyle),
+          new go.Shape()
+            .apply(shapeStyle)
             // the port is in front and transparent, even though it goes around the text;
             // in "link" mode will support drawing a new link
-            shapeStyle({ isPanelMain: true, stroke: null, fill: 'transparent' })
-          )
-        )
-    );
+            .set({ isPanelMain: true, stroke: null, fill: 'transparent' })
+        ));
 
     // Link templates
-    myDiagram.linkTemplateMap.add(
-      'flow',
+    myDiagram.linkTemplateMap.add('flow',
       new go.Link({ toShortLength: 8 })
         .add(
           new go.Shape({ stroke: 'blue', strokeWidth: 5 }),
@@ -348,8 +318,7 @@
         )
     );
 
-    myDiagram.linkTemplateMap.add(
-      'influence',
+    myDiagram.linkTemplateMap.add('influence',
       new go.Link({ curve: go.Curve.Bezier, toShortLength: 8 })
         .add(
           new go.Shape({ stroke: 'green', strokeWidth: 1.5 }),
@@ -371,13 +340,13 @@
     SD.itemType = itemType;
     if (mode === 'pointer') {
       myDiagram.allowLink = false;
-      myDiagram.nodes.each((n) => (n.port.cursor = ''));
+      myDiagram.nodes.each(n => (n.port.cursor = ''));
     } else if (mode === 'node') {
       myDiagram.allowLink = false;
-      myDiagram.nodes.each((n) => (n.port.cursor = ''));
+      myDiagram.nodes.each(n => (n.port.cursor = ''));
     } else if (mode === 'link') {
       myDiagram.allowLink = true;
-      myDiagram.nodes.each((n) => (n.port.cursor = 'pointer'));
+      myDiagram.nodes.each(n => (n.port.cursor = 'pointer'));
     }
     myDiagram.commitTransaction('mode changed');
   }
@@ -390,6 +359,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

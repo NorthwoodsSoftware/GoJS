@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -133,18 +135,19 @@
     });
 
     // the templates don't really matter for this sample
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape('RoundedRectangle', {
-          strokeWidth: 0,
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 })
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('RoundedRectangle', {
+              strokeWidth: 0,
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 })
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -164,11 +167,11 @@
     // Keep references to the scales and indicators to easily update them
     const gradScaleHoriz =
       new go.Part('Graduated', {
-        graduatedTickUnit: 10,
-        layerName: 'ViewportBackground',
-        alignment: go.Spot.TopLeft,
-        isAnimated: false
-      })
+          graduatedTickUnit: 10,
+          layerName: 'ViewportBackground',
+          alignment: go.Spot.TopLeft,
+          isAnimated: false
+        })
         .add(
           new go.Shape({ geometryString: 'M0 0 H400' }),
           new go.Shape({ geometryString: 'M0 0 V4', interval: 1 }),
@@ -184,11 +187,11 @@
 
     const gradScaleVert =
       new go.Part('Graduated', {
-        graduatedTickUnit: 10,
-        layerName: 'ViewportBackground',
-        alignment: go.Spot.TopLeft,
-        isAnimated: false
-      })
+          graduatedTickUnit: 10,
+          layerName: 'ViewportBackground',
+          alignment: go.Spot.TopLeft,
+          isAnimated: false
+        })
         .add(
           new go.Shape({ geometryString: 'M0 0 V400' }),
           new go.Shape({ geometryString: 'M0 0 V4', interval: 1, alignmentFocus: go.Spot.Bottom }),
@@ -205,24 +208,24 @@
 
     const gradIndicatorHoriz =
       new go.Part({
-        pickable: false,
-        layerName: 'Grid',
-        visible: false,
-        isAnimated: false,
-        locationSpot: go.Spot.Top
-      })
+          pickable: false,
+          layerName: 'Grid',
+          visible: false,
+          isAnimated: false,
+          locationSpot: go.Spot.Top
+        })
         .add(
           new go.Shape({ geometryString: 'M0 0 V20', strokeWidth: 2, stroke: 'red' })
         );
 
     const gradIndicatorVert =
       new go.Part({
-        pickable: false,
-        layerName: 'Grid',
-        visible: false,
-        isAnimated: false,
-        locationSpot: go.Spot.Left
-      })
+          pickable: false,
+          layerName: 'Grid',
+          visible: false,
+          isAnimated: false,
+          locationSpot: go.Spot.Left
+        })
         .add(
           new go.Shape({ geometryString: 'M0 0 H20', strokeWidth: 2, stroke: 'red' })
         );

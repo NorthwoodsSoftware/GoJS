@@ -29,12 +29,16 @@ import * as go from 'gojs';
 // ```
 // or:
 // ```js
-//   $(go.Node, . . .,
-//     . . .
-//       $(go.TextBlock, { textEditor: window.TextEditorSelectBox, . . . })
-//     . . .
-//   )
+//   new go.Node(. . .)
+//     .add(
+//       . . .
+//       new go.TextBlock({ textEditor: window.TextEditorSelectBox, . . . })
+//       . . .
+//     )
 // ```
+//
+// You will probably need to style this code to match the requirements of your app.
+//
 // see /samples/customTextEditingTool.html
 // see also textEditorRadioButton.js for another custom editor
 // see also textEditor.html for a re-implementation of the default text editor
@@ -45,7 +49,8 @@ import * as go from 'gojs';
 
   customEditor.show = (textBlock, diagram, tool) => {
     if (!(textBlock instanceof go.TextBlock)) return;
-
+    // Change this code to handle light/dark themes
+    customSelectBox.style.background = 'white';
     // Populate the select box:
     customSelectBox.innerHTML = '';
 

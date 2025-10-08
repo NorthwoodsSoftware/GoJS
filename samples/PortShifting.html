@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,10 +141,10 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new PortShiftingTool());
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('saveModel');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('saveModel');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -153,157 +155,156 @@
     var palette = new go.Palette('palette'); // create a new Palette in the HTML DIV element "palette"
 
     // creates relinkable Links that will avoid crossing Nodes when possible and will jump over other Links in their paths
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      curve: go.Curve.JumpOver,
-      corner: 3,
-      relinkableFrom: true,
-      relinkableTo: true,
-      selectionAdorned: false, // Links are not adorned when selected so that their color remains visible.
-      shadowOffset: new go.Point(0, 0),
-      shadowBlur: 5,
-      shadowColor: 'blue'
-    })
-      .bindObject('isShadowed', 'isSelected')
-      .add(
-        new go.Shape({ name: 'SHAPE', strokeWidth: 2, stroke: red })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          curve: go.Curve.JumpOver,
+          corner: 3,
+          relinkableFrom: true,
+          relinkableTo: true,
+          selectionAdorned: false, // Links are not adorned when selected so that their color remains visible.
+          shadowOffset: new go.Point(0, 0),
+          shadowBlur: 5,
+          shadowColor: 'blue'
+        })
+        .bindObject('isShadowed', 'isSelected')
+        .add(
+          new go.Shape({ name: 'SHAPE', strokeWidth: 2, stroke: red })
+        );
 
     // node template helpers
-    var sharedToolTip = go.GraphObject.build('ToolTip', { 'Border.figure': 'RoundedRectangle' })
-      .add(new go.TextBlock({ margin: 2 }).bind('text', '', (d) => d.category));
+    var sharedToolTip =
+      go.GraphObject.build('ToolTip', { 'Border.figure': 'RoundedRectangle' })
+        .add(
+          new go.TextBlock({ margin: 2 })
+            .bind('text', '', d => d.category)
+        );
 
     // define some common property settings
-    function nodeStyle(graphObj) {
-      Object.assign(graphObj, {
-        selectionAdorned: false,
-        shadowOffset: new go.Point(0, 0),
-        shadowBlur: 15,
-        shadowColor: 'blue',
-        locationSpot: go.Spot.Center,
-        locationObjectName: 'NODESHAPE',
-        resizable: true,
-        resizeObjectName: 'NODESHAPE',
-        toolTip: sharedToolTip
-      });
-      graphObj.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
-      graphObj.bindObject('isShadowed', 'isSelected');
+    function nodeStyle(node) {
+      node.selectionAdorned = false;
+      node.shadowOffset = new go.Point(0, 0);
+      node.shadowBlur = 15;
+      node.shadowColor = 'blue';
+      node.locationSpot = go.Spot.Center;
+      node.locationObjectName = 'NODESHAPE';
+      node.resizable = true;
+      node.resizeObjectName = 'NODESHAPE';
+      node.toolTip = sharedToolTip;
+      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
+      node.bindObject('isShadowed', 'isSelected');
     }
 
-    function shapeStyle(graphObj) {
-      Object.assign(graphObj, {
-        name: 'NODESHAPE',
-        fill: 'lightgray',
-        stroke: 'darkslategray',
-        desiredSize: new go.Size(40, 40),
-        strokeWidth: 2
-      })
+    function shapeStyle(shape) {
+      shape.name = 'NODESHAPE';
+      shape.fill = 'lightgray';
+      shape.stroke = 'darkslategray';
+      shape.desiredSize = new go.Size(40, 40);
+      shape.strokeWidth = 2;
     }
 
-    function portStyle(id, input, align) {
-      return (graphObj) => {
-        graphObj.bindTwoWay('alignment', id + 'Spot', go.Spot.parse, go.Spot.stringify)
-
-        Object.assign(graphObj, {
-          portId: id,
-          desiredSize: new go.Size(6, 6),
-          alignment: align,
-          fill: 'black',
-          fromSpot: go.Spot.Right,
-          fromLinkable: !input,
-          toSpot: go.Spot.Left,
-          toLinkable: input,
-          toMaxLinks: 1,
-          cursor: 'pointer'
-        });
-      };
+    function portStyle(port, id, input, align) {
+      port.bindTwoWay('alignment', id + 'Spot', go.Spot.parse, go.Spot.stringify);
+      port.portId = id;
+      port.desiredSize = new go.Size(6, 6);
+      port.alignment = align;
+      port.fill = 'black';
+      port.fromSpot = go.Spot.Right;
+      port.fromLinkable = !input;
+      port.toSpot = go.Spot.Left;
+      port.toLinkable = input;
+      port.toMaxLinks = 1;
+      port.cursor = 'pointer';
     }
 
     // define templates for each type of node
-    const inputTemplate = new go.Node('Spot', {
-      doubleClick: (e, obj) => {
-        if (!(obj instanceof go.Node)) return;
-        e.diagram.startTransaction('Toggle Input');
-        const shp = obj.findObject('NODESHAPE');
-        shp.fill = shp.fill === green ? red : green;
-        updateStates();
-        e.diagram.commitTransaction('Toggle Input');
-      }
-    })
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('Circle', { fill: red }).apply(shapeStyle), // override the default fill (from shapeStyle()) to be red
-        new go.Shape('Rectangle').apply(portStyle('', false, new go.Spot(1, 0.5))) // the only port
-      );
+    const inputTemplate =
+      new go.Node('Spot', {
+          doubleClick: (e, obj) => {
+            if (!(obj instanceof go.Node)) return;
+            e.diagram.startTransaction('Toggle Input');
+            const shp = obj.findObject('NODESHAPE');
+            shp.fill = shp.fill === green ? red : green;
+            updateStates();
+            e.diagram.commitTransaction('Toggle Input');
+          }
+        })
+        .apply(nodeStyle)
+        .add(
+          new go.Shape('Circle').apply(shapeStyle)
+            .set({ fill: red }), // override the default fill
+          new go.Shape('Rectangle').apply(portStyle, '', false, new go.Spot(1, 0.5)) // the only port
+        );
 
-    const outputTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('Rectangle', { fill: green }).apply(shapeStyle), // override the default fill (from shapeStyle()) to be green
-        new go.Shape('Rectangle').apply(portStyle('', true, new go.Spot(0, 0.5)))
-      ); // the only port
+    const outputTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('Rectangle').apply(shapeStyle)
+            .set({ fill: green }), // override the default fill
+          new go.Shape('Rectangle').apply(portStyle, '', true, new go.Spot(0, 0.5))
+        ); // the only port
 
-    const andTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('AndGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const andTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('AndGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const orTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('OrGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.16, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.16, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const orTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('OrGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0.16, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0.16, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const xorTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('XorGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.26, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.26, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const xorTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('XorGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0.26, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0.26, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const norTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('NorGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.16, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.16, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const norTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('NorGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0.16, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0.16, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const xnorTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('XnorGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0.26, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0.26, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const xnorTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('XnorGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0.26, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0.26, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const nandTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('NandGate').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in1', true, new go.Spot(0, 0.3))),
-        new go.Shape('Rectangle').apply(portStyle('in2', true, new go.Spot(0, 0.7))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const nandTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('NandGate').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in1', true, new go.Spot(0, 0.3)),
+          new go.Shape('Rectangle').apply(portStyle, 'in2', true, new go.Spot(0, 0.7)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
-    const notTemplate = new go.Node('Spot')
-      .apply(nodeStyle)
-      .add(
-        new go.Shape('Inverter').apply(shapeStyle),
-        new go.Shape('Rectangle').apply(portStyle('in', true, new go.Spot(0, 0.5))),
-        new go.Shape('Rectangle').apply(portStyle('out', false, new go.Spot(1, 0.5)))
-      );
+    const notTemplate =
+      new go.Node('Spot').apply(nodeStyle)
+        .add(
+          new go.Shape('Inverter').apply(shapeStyle),
+          new go.Shape('Rectangle').apply(portStyle, 'in', true, new go.Spot(0, 0.5)),
+          new go.Shape('Rectangle').apply(portStyle, 'out', false, new go.Spot(1, 0.5))
+        );
 
     // add the templates created above to myDiagram and palette
     myDiagram.nodeTemplateMap.add('input', inputTemplate);
@@ -351,13 +352,13 @@
     var oldskip = myDiagram.skipsUndoManager;
     myDiagram.skipsUndoManager = true;
     // do all "input" nodes first
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       if (node.category === 'input') {
         doInput(node);
       }
     });
     // now we can do all other kinds of nodes
-    myDiagram.nodes.each((node) => {
+    myDiagram.nodes.each(node => {
       switch (node.category) {
         case 'and':
           doAnd(node);
@@ -398,7 +399,7 @@
 
   // helper function for propagating results
   function setOutputLinks(node, color) {
-    node.findLinksOutOf().each((link) => (link.findObject('SHAPE').stroke = color));
+    node.findLinksOutOf().each(link => (link.findObject('SHAPE').stroke = color));
   }
 
   // update nodes by the specific function for its type
@@ -436,7 +437,7 @@
 
   function doXor(node) {
     var truecount = 0;
-    node.findLinksInto().each((link) => {
+    node.findLinksInto().each(link => {
       if (linkIsTrue(link)) truecount++;
     });
     var color = truecount % 2 !== 0 ? green : red;
@@ -445,7 +446,7 @@
 
   function doXnor(node) {
     var truecount = 0;
-    node.findLinksInto().each((link) => {
+    node.findLinksInto().each(link => {
       if (linkIsTrue(link)) truecount++;
     });
     var color = truecount % 2 === 0 ? green : red;
@@ -455,7 +456,7 @@
   function doOutput(node) {
     // assume there is just one input link
     // we just need to update the node's Shape.fill
-    node.linksConnected.each((link) => {
+    node.linksConnected.each(link => {
       node.findObject('NODESHAPE').fill = link.findObject('SHAPE').stroke;
     });
   }
@@ -468,6 +469,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -562,7 +564,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

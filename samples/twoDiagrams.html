@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -135,7 +137,7 @@
       allowDragOut: true,
       'commandHandler.archetypeGroupData': { isGroup: true },
       // handle undo or redo maybe changing Diagram properties controlled by check boxes
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) allChecks(true);
       },
       // A Diagram listener must be placed on both Diagrams.
@@ -143,28 +145,29 @@
       // to copy the data and create new Parts in the destination diagram.
       // To simulate a "move", the source Node must be deleted.
       // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
-      ExternalObjectsDropped: (e) => {
+      ExternalObjectsDropped: e => {
         if (myDiagram2.commandHandler.canDeleteSelection() && !(myDiagram2.lastInput.control || myDiagram2.lastInput.meta)) {
           myDiagram2.commandHandler.deleteSelection();
         }
       }
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add( // the Shape will go around the TextBlock
-        new go.Shape('RoundedRectangle', {
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer',
-          strokeWidth: 0
-        })
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 8 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add( // the Shape will go around the TextBlock
+          new go.Shape('RoundedRectangle', {
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              cursor: 'pointer',
+              strokeWidth: 0
+            })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8 }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
 
     myDiagram.model = new go.GraphLinksModel(
       [
@@ -188,7 +191,7 @@
       allowDragOut: true,
       'commandHandler.archetypeGroupData': { isGroup: true },
       // handle undo or redo maybe changing Diagram properties controlled by check boxes
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) allChecks(true);
       },
       // A Diagram listener must be placed on both Diagrams.
@@ -196,7 +199,7 @@
       // to copy the data and create new Parts in the destination diagram.
       // To simulate a "move", the source Node must be deleted.
       // To allow a forced "copy", don't delete if the control key was held down in the source diagram.
-      ExternalObjectsDropped: (e) => {
+      ExternalObjectsDropped: e => {
         if (myDiagram.commandHandler.canDeleteSelection() && !(myDiagram.lastInput.control || myDiagram.lastInput.meta)) {
           myDiagram.commandHandler.deleteSelection();
         }
@@ -310,6 +313,7 @@
       console.log('Beta not found in myDiagram2');
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

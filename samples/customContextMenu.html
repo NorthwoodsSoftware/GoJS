@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -193,15 +195,16 @@
     });
 
     // define a simple Node template (but use the default Link template)
-    myDiagram.nodeTemplate = new go.Node('Auto', { contextMenu: myContextMenu })
-      .add(
-        new go.Shape('RoundedRectangle')
-          // Shape.fill is bound to Node.data.color
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 3 }) // some room around the text
-          // TextBlock.text is bound to Node.data.text
-          .bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { contextMenu: myContextMenu })
+        .add(
+          new go.Shape('RoundedRectangle')
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 3 }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bind('text')
+        );
 
     // create the model data that will be represented by Nodes and Links
     myDiagram.model = new go.GraphLinksModel(
@@ -223,9 +226,8 @@
     myDiagram.contextMenu = myContextMenu;
 
     // We don't want the div acting as a context menu to have a (browser) context menu!
-    cxElement.addEventListener(
-      'contextmenu',
-      (e) => {
+    cxElement.addEventListener('contextmenu',
+      e => {
         e.preventDefault();
         return false;
       },
@@ -308,7 +310,7 @@
   function changeColor(diagram, color) {
     // Always make changes in a transaction, except when initializing the diagram.
     diagram.startTransaction('change color');
-    diagram.selection.each((node) => {
+    diagram.selection.each(node => {
       if (node instanceof go.Node) {
         // ignore any selected Links and simple Parts
         // Examine and modify the data, not the Node directly.
@@ -320,6 +322,7 @@
     });
     diagram.commitTransaction('change color');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

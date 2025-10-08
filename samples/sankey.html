@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,6 +128,7 @@
             
 
 <script id="code">
+
   class SankeyLayout extends go.LayeredDigraphLayout {
     constructor(init) {
       super();
@@ -137,7 +140,7 @@
     // actually modify the height of each node's SHAPE
     makeNetwork(coll) {
       const net = super.makeNetwork(coll);
-      this.diagram.nodes.each((node) => {
+      this.diagram.nodes.each(node => {
         // figure out how tall the node's bar should be
         const height = this.getAutoHeightForNode(node);
         const shape = node.findObject('SHAPE');
@@ -250,30 +253,38 @@
     });
 
     // this function provides a common style for the TextBlocks
-    function textStyle() {
-      return { font: 'bold 12pt Segoe UI, sans-serif', stroke: 'black', margin: 5 };
+    function textStyle(tb) {
+      tb.font = 'bold 12pt Segoe UI, sans-serif';
+      tb.stroke = 'black';
+      tb.margin = 5;
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node(go.Panel.Horizontal, {
-      locationObjectName: 'SHAPE',
-      locationSpot: go.Spot.Left,
-      portSpreading: go.PortSpreading.Packed // rather than the default go.PortSpreading.Evenly
-    })
-      .add(
-        new go.TextBlock(textStyle(), { name: 'LTEXT' }).bind('text', 'ltext'),
-        new go.Shape({
-          name: 'SHAPE',
-          fill: '#2E8DEF', // default fill color
-          strokeWidth: 0,
-          portId: '',
-          fromSpot: go.Spot.RightSide,
-          toSpot: go.Spot.LeftSide,
-          height: 10,
-          width: 20
-        }).bind('fill', 'color'),
-        new go.TextBlock(textStyle(), { name: 'TEXT' }).bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node(go.Panel.Horizontal, {
+          locationObjectName: 'SHAPE',
+          locationSpot: go.Spot.Left,
+          portSpreading: go.PortSpreading.Packed // rather than the default go.PortSpreading.Evenly
+        })
+        .add(
+          new go.TextBlock({ name: 'LTEXT' })
+            .apply(textStyle)
+            .bind('text', 'ltext'),
+          new go.Shape({
+              name: 'SHAPE',
+              fill: '#2E8DEF', // default fill color
+              strokeWidth: 0,
+              portId: '',
+              fromSpot: go.Spot.RightSide,
+              toSpot: go.Spot.LeftSide,
+              height: 10,
+              width: 20
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ name: 'TEXT' })
+            .apply(textStyle)
+            .bind('text')
+        );
 
     function getAutoLinkColor(data) {
       const nodedata = myDiagram.model.findNodeDataForKey(data.from);
@@ -282,29 +293,31 @@
     }
 
     // define the Link template
-    const linkSelectionAdornmentTemplate = new go.Adornment('Link')
-      .add(
-        new go.Shape({
-          isPanelMain: true,
-          fill: null,
-          stroke: 'rgba(0, 0, 255, 0.3)',
-          strokeWidth: 0
-        }) // use selection object's strokeWidth
-      );
+    const linkSelectionAdornmentTemplate =
+      new go.Adornment('Link')
+        .add(
+          new go.Shape({
+            isPanelMain: true,
+            fill: null,
+            stroke: 'rgba(0, 0, 255, 0.3)',
+            strokeWidth: 0
+          }) // use selection object's strokeWidth
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      curve: go.Curve.Bezier,
-      selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
-      layerName: 'Background',
-      fromEndSegmentLength: 150,
-      toEndSegmentLength: 150,
-      adjusting: go.LinkAdjusting.End
-    })
-      .add(
-        new go.Shape({ strokeWidth: 4, stroke: 'rgba(173, 173, 173, 0.25)', opacity: 0.65 })
-          .bind('stroke', '', getAutoLinkColor)
-          .bind('strokeWidth', 'width')
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          curve: go.Curve.Bezier,
+          selectionAdornmentTemplate: linkSelectionAdornmentTemplate,
+          layerName: 'Background',
+          fromEndSegmentLength: 150,
+          toEndSegmentLength: 150,
+          adjusting: go.LinkAdjusting.End
+        })
+        .add(
+          new go.Shape({ strokeWidth: 4, stroke: 'rgba(173, 173, 173, 0.25)', opacity: 0.65 })
+            .bind('stroke', '', getAutoLinkColor)
+            .bind('strokeWidth', 'width')
+        );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -313,6 +326,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').textContent);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

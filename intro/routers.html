@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -250,7 +253,7 @@
   <a href="connectionPoints.html">Link Connection Points</a>.
 </p>
 <p>
-  GoJS 3.0 provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  GoJS rovides a way to customize link routing by allowing consideration of other Nodes and Links, with the
   <a>Router</a> class. Routers can be created and added to the Diagram's <a>Diagram.routers</a> list, and these will operate on links during updates.
 </p>
 
@@ -287,9 +290,10 @@ The sample below shows a simple use case of a <a>Router</a>, which will cause th
 distance from the next node in the tree. This custom router is designed to only operate on the whole <a>Diagram</a>, not individual <a>Group</a>s.
 <pre class="lang-js" id="routing2"><code>
   class CustomTreeRouter extends go.Router {
-    constructor() {
+    constructor(init) {
       super();
       this.name = "CustomTree";
+      if (init) Object.assign(this, init);
     }
 
     canRoute(container) {
@@ -447,7 +451,9 @@ distance from the next node in the tree. This custom router is designed to only 
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

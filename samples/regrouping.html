@@ -103,6 +103,8 @@ memberships." />
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -207,64 +209,72 @@ memberships." />
       slider.value = parseInt(slider.value) +  newMax - oldMax;
     }
 
-    myDiagram.groupTemplate = new go.Group('Auto', {
-      ungroupable: true,
-      // highlight when dragging into the Group
-      mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
-      mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
-      computesBoundsAfterDrag: true,
-      computesBoundsIncludingLocation: true,
-      // when the selection is dropped into a Group, add the selected Parts into that Group;
-      // if it fails, cancel the tool, rolling back any changes
-      mouseDrop: finishDrop,
-      handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
-      // Groups containing Groups lay out their members horizontally
-      layout: makeLayout(false),
-      background: defaultColor(false) // default value if not specified in data
-    })
-      .bind('background', 'horiz', defaultColor)
-      .bind('layout', 'horiz', makeLayout)
-      .add(
-        new go.Shape('Rectangle', { stroke: colors.gray, strokeWidth: 1 })
-          .bindObject('fill', 'isHighlighted', h => h ? 'rgba(0,255,0,.3)' : 'transparent'),
-        new go.Panel('Vertical')  // title above Placeholder
-          .add(
-            new go.Panel('Horizontal', { stretch: go.Stretch.Horizontal }) // button next to TextBlock
-              .add(
-                go.GraphObject.build('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
-                new go.TextBlock({
-                  alignment: go.Spot.Left,
-                  editable: true,
-                  margin: new go.Margin(6, 10, 6, 1),
-                  font: 'bold 16px Lora, serif',
-                  opacity: 0.95,  // allow some color to show through
-                  stroke: colors.black
-                })
-                  .bind('font', 'horiz', (horiz) => horiz ? 'bold 20px Lora, serif' : 'bold 16px Lora, serif')
-                  .bindTwoWay('text')
-              ),  // end Horizontal Panel
-            new go.Placeholder({ padding: 8, margin: 4, alignment: go.Spot.TopLeft })
-          )  // end Vertical Panel
-      )  // end Auto Panel
-
-
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
-      mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
-      isShadowed: true,
-      shadowBlur: 0,
-      shadowColor: colors.gray,
-      shadowOffset: new go.Point(4.5, 3.5)
-    })
-      .add(
-        new go.Shape('RoundedRectangle', { fill: colors.yellow, stroke: null, strokeWidth: 0 }),
-        new go.TextBlock({
-          margin: 8,
-          editable: true,
-          font: '13px Lora, serif'
+    myDiagram.groupTemplate =
+      new go.Group('Auto', {
+          ungroupable: true,  // allow the user to remove the Group while keeping its members
+          // when selected, move the whole Group into the "Foreground" Layer
+          selectionChanged: g => {
+            const newlay = g.isSelected ? "Foreground" : "";
+            g.layerName = newlay;
+            g.findSubGraphParts().each(m => m.layerName = newlay);
+          },
+          // highlight when dragging into the Group
+          mouseDragEnter: (e, grp, prev) => highlightGroup(e, grp, true),
+          mouseDragLeave: (e, grp, next) => highlightGroup(e, grp, false),
+          computesBoundsAfterDrag: true,  // don't stretch the Placeholder while dragging
+          computesBoundsIncludingLocation: true,
+          // when the selection is dropped into a Group, add the selected Parts into that Group;
+          // if it fails, cancel the tool, rolling back any changes
+          mouseDrop: finishDrop,
+          handlesDragDropForMembers: true,  // don't need to define handlers on member Nodes and Links
+          // Groups containing Groups lay out their members horizontally
+          layout: makeLayout(false),
+          background: defaultColor(false) // default value if not specified in data
         })
-          .bindTwoWay('text')
-      );
+        .bind('background', 'horiz', defaultColor)
+        .bind('layout', 'horiz', makeLayout)
+        .add(
+          new go.Shape('Rectangle', { stroke: colors.gray, strokeWidth: 1 })
+            .bindObject('fill', 'isHighlighted', h => h ? 'rgba(0,255,0,.3)' : 'transparent'),
+          new go.Panel('Vertical')  // title above Placeholder
+            .add(
+              new go.Panel('Horizontal', { stretch: go.Stretch.Horizontal }) // button next to TextBlock
+                .add(
+                  go.GraphObject.build('SubGraphExpanderButton', { alignment: go.Spot.Right, margin: 5 }),
+                  new go.TextBlock({
+                      alignment: go.Spot.Left,
+                      editable: true,
+                      margin: new go.Margin(6, 10, 6, 1),
+                      font: 'bold 16px Lora, serif',
+                      opacity: 0.95,  // allow some color to show through
+                      stroke: colors.black
+                    })
+                    .bind('font', 'horiz', horiz => horiz ? 'bold 20px Lora, serif' : 'bold 16px Lora, serif')
+                    .bindTwoWay('text')
+                ),  // end Horizontal Panel
+              new go.Placeholder({ padding: 8, margin: 4, alignment: go.Spot.TopLeft })
+            )  // end Vertical Panel
+        )  // end Auto Panel
+
+
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          // dropping on a Node is the same as dropping on its containing Group, even if it's top-level
+          mouseDrop: (e, node) => finishDrop(e, node.containingGroup),
+          isShadowed: true,
+          shadowBlur: 0,
+          shadowColor: colors.gray,
+          shadowOffset: new go.Point(4.5, 3.5)
+        })
+        .add(
+          new go.Shape('RoundedRectangle', { fill: colors.yellow, stroke: null, strokeWidth: 0 }),
+          new go.TextBlock({
+              margin: 8,
+              editable: true,
+              font: '13px Lora, serif'
+            })
+            .bindTwoWay('text')
+        );
 
     // initialize the Palette and its contents
     myPalette = new go.Palette('myPaletteDiv', {
@@ -316,6 +326,7 @@ memberships." />
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -446,7 +457,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

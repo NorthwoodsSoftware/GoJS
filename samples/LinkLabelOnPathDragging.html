@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -134,46 +136,50 @@
     // install the LinkLabelDraggingTool as a "mouse move" tool
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool());
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .add(
-        new go.Shape({
-          fill: 'orange', // default fill color
-          portId: '',
-          fromLinkable: true,
-          fromSpot: go.Spot.AllSides,
-          toLinkable: true,
-          toSpot: go.Spot.AllSides,
-          cursor: 'pointer'
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 10, font: 'bold 12pt sans-serif' }).bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          new go.Shape({
+              fill: 'orange', // default fill color
+              portId: '',
+              fromLinkable: true,
+              fromSpot: go.Spot.AllSides,
+              toLinkable: true,
+              toSpot: go.Spot.AllSides,
+              cursor: 'pointer'
+            })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 10, font: 'bold 12pt sans-serif' })
+            .bind('text')
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 5,
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      resegmentable: true
-    })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'OpenTriangle' }),
-        new go.Panel('Auto',
-          // mark this Panel as being a draggable label, and set default segment props
-          { segmentIndex: NaN, segmentFraction: 0.5 }
-        )
-          .attach({ // GraphObject.attach() is used in method chaining to set properties that dont exist
-            _isLinkLabel: true
-          })
-          // remember any modified segment properties in the link data object
-          .bindTwoWay('segmentFraction')
-          .add(
-            new go.Shape({ fill: 'white' }),
-            new go.TextBlock('?', { margin: 3 }).bind('text', 'color')
-          )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          corner: 5,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true
+        })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'OpenTriangle' }),
+          new go.Panel('Auto', {
+              // mark this Panel as being a draggable label, and set default segment props
+              segmentIndex: NaN, segmentFraction: 0.5
+            })
+            .attach({ // GraphObject.attach() is used to set non-predefined properties
+              _isLinkLabel: true
+            })
+            // remember any modified segment properties in the link data object
+            .bindTwoWay('segmentFraction')
+            .add(
+              new go.Shape({ fill: 'white' }),
+              new go.TextBlock('?', { margin: 3 })
+                .bind('text', 'color')
+            )
+        );
 
     // create a few nodes and links
     myDiagram.model = new go.GraphLinksModel(
@@ -198,6 +204,7 @@
       ]
     );
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

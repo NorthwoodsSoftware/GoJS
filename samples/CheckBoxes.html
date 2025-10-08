@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -128,7 +130,7 @@
 <script id="code">
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (!e.isTransactionFinished) return
         document.getElementById('mySavedModel').innerHTML = myDiagram.model.toJson();
         if (window.Prism) window.Prism.highlightAll();
@@ -137,75 +139,84 @@
     });
 
     // this template includes a lot of CheckBoxes, each configured in different manners
-    myDiagram.nodeTemplate = new go.Node('Auto') // the Shape will go around the whole table
-      .add(
-        new go.Shape({ strokeWidth: 0 }) // no border
-          .bind('fill', 'color'),
-        new go.Panel('Table', { padding: 3 })
-          .add(
-            new go.TextBlock({ row: 0,
-              column: 0,
-              columnSpan: 2,
-              margin: 3,
-              font: 'bold 10pt sans-serif'
-            }) // some room around the bold text
-              .bind('text'),
-            // the first column has an assortment of CheckBoxes
-            new go.Panel('Vertical', {
-              row: 1,
-              column: 0,
-              defaultAlignment: go.Spot.Left
-            })
-              .add(
-                go.GraphObject.build('CheckBox', null, 'choice1').add(new go.TextBlock('default')),
-                go.GraphObject.build('CheckBox', { 'ButtonIcon.stroke': 'green' }, 'choice2').add(new go.TextBlock('green')),
-                go.GraphObject.build('CheckBox', { 'ButtonIcon.stroke': 'red', 'ButtonIcon.figure': 'XLine' }, 'choice3').add(new go.TextBlock('red X')),
-                go.GraphObject.build('CheckBox', { _buttonFillOver: 'pink', _buttonStrokeOver: 'red' }, 'choice4').add(new go.TextBlock('pink over')),
-                go.GraphObject.build('CheckBox', { 'Button.width': 32, 'Button.height': 32 }, 'choice5').add(new go.TextBlock('BIG', {font: 'bold 12pt sans-serif'})),
-                go.GraphObject.build('CheckBox', {
-                  'Button.width': 20,
-                  'Button.height': 20,
-                  'ButtonBorder.figure': 'Circle',
-                  'ButtonBorder.stroke': 'blue',
-                  'ButtonIcon.figure': 'Circle',
-                  'ButtonIcon.fill': 'blue',
-                  'ButtonIcon.strokeWidth': 0,
-                  'ButtonIcon.desiredSize': new go.Size(10, 10)
-                }, 'choice6')
-                  .add(new go.TextBlock('blue circle')),
-                go.GraphObject.build('CheckBox', {type: go.Panel.Vertical}, 'choice7').add(new go.TextBlock('vertical'))
-              ),
-            // the second column is a list of CheckBoxes
-            new go.Panel('Table', {
-              row: 1,
-              column: 1,
-              alignment: go.Spot.Top,
-              minSize: new go.Size(50, NaN),
-              itemTemplate: new go.Panel("TableRow")
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the whole table
+        .add(
+          new go.Shape({ strokeWidth: 0 }) // no border
+            .bind('fill', 'color'),
+          new go.Panel('Table', { padding: 3 })
+            .add(
+              new go.TextBlock({ row: 0,
+                  column: 0,
+                  columnSpan: 2,
+                  margin: 3,
+                  font: 'bold 10pt sans-serif'
+                }) // some room around the bold text
+                .bind('text'),
+              // the first column has an assortment of CheckBoxes
+              new go.Panel('Vertical', {
+                  row: 1,
+                  column: 0,
+                  defaultAlignment: go.Spot.Left
+                })
                 .add(
-                  go.GraphObject.build('CheckBox', {column: 1, alignment: go.Spot.Right}, '')
-                    .apply(n => { // apply is needed because insertAt doesn't return anything
-                      n.insertAt(0, // add the textblock before the check button so that it is on the left
-                        new go.TextBlock({column: 0})
-                          .bind('text', 'name')
+                  go.GraphObject.build('CheckBox', null, 'choice1')
+                    .add(new go.TextBlock('default')),
+                  go.GraphObject.build('CheckBox', { 'ButtonIcon.stroke': 'green' }, 'choice2')
+                    .add(new go.TextBlock('green')),
+                  go.GraphObject.build('CheckBox', { 'ButtonIcon.stroke': 'red', 'ButtonIcon.figure': 'XLine' }, 'choice3')
+                    .add(new go.TextBlock('red X')),
+                  go.GraphObject.build('CheckBox', { _buttonFillOver: 'pink', _buttonStrokeOver: 'red' }, 'choice4')
+                    .add(new go.TextBlock('pink over')),
+                  go.GraphObject.build('CheckBox', { 'Button.width': 32, 'Button.height': 32 }, 'choice5')
+                    .add(new go.TextBlock('BIG', {font: 'bold 12pt sans-serif'})),
+                  go.GraphObject.build('CheckBox', {
+                      'Button.width': 20,
+                      'Button.height': 20,
+                      'ButtonBorder.figure': 'Circle',
+                      'ButtonBorder.stroke': 'blue',
+                      'ButtonIcon.figure': 'Circle',
+                      'ButtonIcon.fill': 'blue',
+                      'ButtonIcon.strokeWidth': 0,
+                      'ButtonIcon.desiredSize': new go.Size(10, 10)
+                    }, 'choice6')
+                    .add(new go.TextBlock('blue circle')),
+                  go.GraphObject.build('CheckBox', {type: go.Panel.Vertical}, 'choice7')
+                    .add(new go.TextBlock('vertical'))
+                ),
+              // the second column is a list of CheckBoxes
+              new go.Panel('Table', {
+                  row: 1,
+                  column: 1,
+                  alignment: go.Spot.Top,
+                  minSize: new go.Size(50, NaN),
+                  itemTemplate:
+                    new go.Panel("TableRow")
+                      .add(
+                        go.GraphObject.build('CheckBox', {column: 1, alignment: go.Spot.Right}, '')
+                          .apply(n => { // apply is needed because insertAt doesn't return anything
+                            n.insertAt(0, // add the textblock before the check button so that it is on the left
+                              new go.TextBlock({column: 0})
+                                .bind('text', 'name')
+                            )
+                          })
                       )
-                    })
-                )
-            }).bind('itemArray', 'items'),
-            go.GraphObject.build('CheckBox', { // now a checkbox at the bottom of the whole table, not data bound
-              row: 3,
-              columnSpan: 2,
-              alignment: go.Spot.Left,
-              // _doClick is executed within a transaction by the CheckBoxButton click function
-              _doClick: (e, obj) => {
-                obj.part.movable = !obj.part.movable; // toggle the Part.movable flag
-              }
-            }, '')
-              // this checkbox is not bound to model data, but it does toggle the Part.movable
-              // property of the Node that this is in
-              .add(new go.TextBlock('Node is not movable'))
-          )
-      );
+                })
+                .bind('itemArray', 'items'),
+              go.GraphObject.build('CheckBox', { // now a checkbox at the bottom of the whole table, not data bound
+                  row: 3,
+                  columnSpan: 2,
+                  alignment: go.Spot.Left,
+                  // _doClick is executed within a transaction by the CheckBoxButton click function
+                  _doClick: (e, obj) => {
+                    obj.part.movable = !obj.part.movable; // toggle the Part.movable flag
+                  }
+                }, '')
+                // this checkbox is not bound to model data, but it does toggle the Part.movable
+                // property of the Node that this is in
+                .add(new go.TextBlock('Node is not movable'))
+            )
+        );
 
     // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -259,6 +270,7 @@
       ]
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -338,7 +350,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

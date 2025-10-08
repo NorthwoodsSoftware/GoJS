@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,6 +131,7 @@
       white: '#FFFFFF',
       black: '#101920'
     };
+
     var myDiagram = new go.Diagram('myDiagramDiv', {
       hoverDelay: 50,
       isReadOnly: true, // don't allow move or delete
@@ -139,7 +142,7 @@
         startAngle: 270 // first node will be at top
       }),
       // define a DiagramEvent listener
-      LayoutCompleted: (e) => {
+      LayoutCompleted: e => {
         // now that the CircularLayout has finished, we know where its center is
         var cntr = myDiagram.findNodeForKey('Center');
         cntr.location = myDiagram.layout.actualCenter;
@@ -147,32 +150,34 @@
     });
 
     // these are the nodes that are in a circle
-    myDiagram.nodeTemplate = new go.Node({
-      locationSpot: go.Spot.Center,
-      click: showArrowInfo, // defined below
-      // define a tooltip for each link that displays its information
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(
-          new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)
-        )
-    })
-      .add(
-        new go.Shape('Circle', {
-          desiredSize: new go.Size(25, 25),
-          fill: 'transparent',
-          strokeWidth: 1.5,
-          stroke: colors.gold
+    myDiagram.nodeTemplate =
+      new go.Node({
+          locationSpot: go.Spot.Center,
+          click: showArrowInfo, // defined below
+          // define a tooltip for each link that displays its information
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 })
+                  .bindObject('text', '', infoString)
+              )
         })
-      );
+        .add(
+          new go.Shape('Circle', {
+            desiredSize: new go.Size(25, 25),
+            fill: 'transparent',
+            strokeWidth: 1.5,
+            stroke: colors.gold
+          })
+        );
 
     // use a special template for the center node
-    myDiagram.nodeTemplateMap.add(
-      'Center',
+    myDiagram.nodeTemplateMap.add('Center',
       new go.Node('Spot', {
-        selectable: false,
-        isLayoutPositioned: false, // the Diagram.layout will not position this node
-        locationSpot: go.Spot.Center
-      })
+          selectable: false,
+          isLayoutPositioned: false, // the Diagram.layout will not position this node
+          locationSpot: go.Spot.Center
+        })
         .add(
           new go.Shape('Circle', {
             fill: 'transparent',
@@ -191,24 +196,30 @@
 
     // all Links have both "toArrow" and "fromArrow" Shapes,
     // where both arrow properties are data bound
-    myDiagram.linkTemplate = new go.Link({
-      // the whole link panel
-      routing: go.Routing.Normal,
-      click: showArrowInfo,
-      // define a tooltip for each link that displays its information
-      toolTip: go.GraphObject.build('ToolTip').add(
-        new go.TextBlock({ margin: 4 }).bindObject('text', '', infoString)
-      )
-    })
-      .add(
-        // the link shape
-        // the first element in a Link is assumed to be main element
-        new go.Shape({ stroke: colors.white, strokeWidth: 1.5, strokeDashArray: [2, 5] }),
-        // the "from" arrowhead
-        new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('fromArrow'),
-        // the "to" arrowhead
-        new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black }).bind('toArrow')
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          // the whole link panel
+          routing: go.Routing.Normal,
+          click: showArrowInfo,
+          // define a tooltip for each link that displays its information
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock({ margin: 4 })
+                  .bindObject('text', '', infoString)
+              )
+        })
+        .add(
+          // the link shape
+          // the first element in a Link is assumed to be main element
+          new go.Shape({ stroke: colors.white, strokeWidth: 1.5, strokeDashArray: [2, 5] }),
+          // the "from" arrowhead
+          new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black })
+            .bind('fromArrow'),
+          // the "to" arrowhead
+          new go.Shape({ scale: 2, stroke: colors.white, fill: colors.black })
+            .bind('toArrow')
+        );
 
     // collect all of the predefined arrowhead names
     var arrowheads = go.Shape.getArrowheadGeometries().toKeySet().toArray();
@@ -261,6 +272,7 @@
       if (status) status.textContent = msg;
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -337,7 +349,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

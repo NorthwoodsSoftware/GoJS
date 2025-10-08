@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -168,19 +170,30 @@
     };
 
     // Nodes and Groups are the absolute minimum template: no elements at all!
-    myDiagram.nodeTemplate = new go.Node({
-      background: 'rgba(99,99,99,0.2)',
-      toolTip: go.GraphObject.build('ToolTip').add(new go.TextBlock().bindObject('text', '', tooltipString))
-    })
-      .bind('background', 'fill');
+    myDiagram.nodeTemplate =
+      new go.Node({
+          background: 'rgba(99,99,99,0.2)',
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock()
+                  .bindObject('text', '', tooltipString)
+              )
+        })
+        .bind('background', 'fill');
 
-    myDiagram.groupTemplate = new go.Group('Auto', {
-      layout: null,
-      background: 'rgba(99,99,99,0.2)',
-      toolTip: go.GraphObject.build('ToolTip')
-        .add(new go.TextBlock().bindObject('text', '', tooltipString))
-    })
-      .bind('background', 'fill');
+    myDiagram.groupTemplate =
+      new go.Group('Auto', {
+          layout: null,
+          background: 'rgba(99,99,99,0.2)',
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.TextBlock()
+                  .bindObject('text', '', tooltipString)
+              )
+        })
+        .bind('background', 'fill');
 
     function tooltipString(part) {
       if (part instanceof go.Adornment) part = part.adornedPart;
@@ -284,6 +297,7 @@
     }
     return nodeArray;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -385,7 +399,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

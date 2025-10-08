@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -140,170 +142,176 @@
     const portSize = new go.Size(8, 8);
 
     // the node template
-    // includes a panel on each side with an itemArray of panels containing ports
-    myDiagram.nodeTemplate = new go.Node('Table', {
-      locationObjectName: 'BODY',
-      locationSpot: go.Spot.Center,
-      selectionObjectName: 'BODY'
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // the body
-        new go.Panel('Auto', {
-          row: 1,
-          column: 1,
-          name: 'BODY',
-          stretch: go.Stretch.Fill
+    // includes a panel on each side with an itemArray of panels that are ports
+    myDiagram.nodeTemplate =
+      new go.Node('Table', {
+          locationObjectName: 'BODY',
+          locationSpot: go.Spot.Center,
+          selectionObjectName: 'BODY'
         })
-          .add(
-            new go.Shape('Rectangle', {
-              fill: 'lightgray',
-              stroke: 'gray',
-              strokeWidth: 0.5,
-              minSize: new go.Size(60, 60)
-            }),
-            new go.TextBlock({
-              margin: 10,
-              textAlign: 'center',
-              font: 'bold 14px Segoe UI,sans-serif',
-              stroke: '#484848',
-              editable: true
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // the body
+          new go.Panel('Auto', {
+              row: 1,
+              column: 1,
+              name: 'BODY',
+              stretch: go.Stretch.Fill
             })
-              .bindTwoWay('text', 'name')
-          ), // end Auto Panel body
-
-        // the Panel holding the left port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.leftArray
-        new go.Panel('Vertical', {
-          row: 1,
-          column: 0,
-          itemTemplate: new go.Panel({
-            _side: 'left', // internal property to make it easier to tell which side it's on
-            fromSpot: go.Spot.Left,
-            toSpot: go.Spot.Left,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer'
-          })
-            .bind('portId')
             .add(
               new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(1, 0)
-              })
-                .themeData('fill', 'portColor', 'ports')
-            ) // end itemTemplate
-        }) // end Vertical Panel
-          .bind('itemArray', 'leftArray'),
+                fill: 'lightgray',
+                stroke: 'gray',
+                strokeWidth: 0.5,
+                minSize: new go.Size(60, 60)
+              }),
+              new go.TextBlock({
+                  margin: 10,
+                  textAlign: 'center',
+                  font: 'bold 14px Segoe UI,sans-serif',
+                  stroke: '#484848',
+                  editable: true
+                })
+                .bindTwoWay('text', 'name')
+            ), // end Auto Panel body
 
-        // the Panel holding the top port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.topArray
-        new go.Panel('Horizontal', {
-          row: 0,
-          column: 1,
-          itemTemplate: new go.Panel({
-            _side: 'top', // internal property to make it easier to tell which side it's on
-            fromSpot: go.Spot.Top,
-            toSpot: go.Spot.Top,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer'
-          })
-            .bind('portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(0, 1)
-              })
-                .themeData('fill', 'portColor', 'ports')
-            ) // end itemTemplate
-        }) // end Horizontal Panel
-          .bind('itemArray', 'topArray'),
+          // the Panel holding the left port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.leftArray
+          new go.Panel('Vertical', {
+              row: 1,
+              column: 0,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Left,
+                    toSpot: go.Spot.Left,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer'
+                  })
+                  .attach({ _side: 'left' })  // internal property to make it easier to tell which side it's on
+                  .bind('portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(1, 0)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  ) // end itemTemplate
+            }) // end Vertical Panel
+            .bind('itemArray', 'leftArray'),
 
-        // the Panel holding the right port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.rightArray
-        new go.Panel('Vertical', {
-          row: 1,
-          column: 2,
-          itemTemplate: new go.Panel({
-            _side: 'right', // internal property to make it easier to tell which side it's on
-            fromSpot: go.Spot.Right,
-            toSpot: go.Spot.Right,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer'
-          })
-            .bind('portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(1, 0)
-              })
-                .themeData('fill', 'portColor', 'ports')
-            ) // end itemTemplate
-        }) // end Vertical Panel
-          .bind('itemArray', 'rightArray'),
+          // the Panel holding the top port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.topArray
+          new go.Panel('Horizontal', {
+              row: 0,
+              column: 1,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Top,
+                    toSpot: go.Spot.Top,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer'
+                  })
+                  .attach({ _side: 'top' })  // internal property to make it easier to tell which side it's on
+                  .bind('portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(0, 1)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  ) // end itemTemplate
+            }) // end Horizontal Panel
+            .bind('itemArray', 'topArray'),
 
-        // the Panel holding the bottom port elements, which are themselves Panels,
-        // created for each item in the itemArray, bound to data.bottomArray
-        new go.Panel('Horizontal', {
-          row: 2,
-          column: 1,
-          itemTemplate: new go.Panel({
-            _side: 'bottom', // internal property to make it easier to tell which side it's on
-            fromSpot: go.Spot.Bottom,
-            toSpot: go.Spot.Bottom,
-            fromLinkable: true,
-            toLinkable: true,
-            cursor: 'pointer'
-          })
-            .bind('portId')
-            .add(
-              new go.Shape('Rectangle', {
-                stroke: null,
-                strokeWidth: 0,
-                desiredSize: portSize,
-                margin: new go.Margin(0, 1)
-              })
-                .themeData('fill', 'portColor', 'ports')
-            ) // end itemTemplate
-        }) // end Horizontal Panel
-        .bind('itemArray', 'bottomArray')
-      );
+          // the Panel holding the right port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.rightArray
+          new go.Panel('Vertical', {
+              row: 1,
+              column: 2,
+              itemTemplate:
+                new go.Panel({
+                    fromSpot: go.Spot.Right,
+                    toSpot: go.Spot.Right,
+                    fromLinkable: true,
+                    toLinkable: true,
+                    cursor: 'pointer'
+                  })
+                  .attach({ _side: 'right' })  // internal property to make it easier to tell which side it's on
+                  .bind('portId')
+                  .add(
+                    new go.Shape('Rectangle', {
+                        stroke: null,
+                        strokeWidth: 0,
+                        desiredSize: portSize,
+                        margin: new go.Margin(1, 0)
+                      })
+                      .themeData('fill', 'portColor', 'ports')
+                  ) // end itemTemplate
+            }) // end Vertical Panel
+            .bind('itemArray', 'rightArray'),
+
+          // the Panel holding the bottom port elements, which are themselves Panels,
+          // created for each item in the itemArray, bound to data.bottomArray
+          new go.Panel('Horizontal', {
+              row: 2,
+              column: 1,
+              itemTemplate:
+                new go.Panel({
+                  fromSpot: go.Spot.Bottom,
+                  toSpot: go.Spot.Bottom,
+                  fromLinkable: true,
+                  toLinkable: true,
+                  cursor: 'pointer'
+                })
+                .attach({ _side: 'bottom' })  // internal property to make it easier to tell which side it's on
+                .bind('portId')
+                .add(
+                  new go.Shape('Rectangle', {
+                      stroke: null,
+                      strokeWidth: 0,
+                      desiredSize: portSize,
+                      margin: new go.Margin(0, 1)
+                    })
+                    .themeData('fill', 'portColor', 'ports')
+                ) // end itemTemplate
+          }) // end Horizontal Panel
+          .bind('itemArray', 'bottomArray')
+        );
 
     // an orthogonal link template, reshapable and relinkable
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.AvoidsNodes,
-      corner: 4,
-      curve: go.Curve.JumpGap,
-      reshapable: true,
-      resegmentable: true,
-      relinkableFrom: true,
-      relinkableTo: true
-    })
-      .bindTwoWay('points')
-      .add(
-        new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 }),
-        new go.Panel("Auto")
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.AvoidsNodes,
+          corner: 4,
+          curve: go.Curve.JumpGap,
+          reshapable: true,
+          resegmentable: true,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
+        .bindTwoWay('points')
         .add(
-          new go.Shape("RoundedRectangle", { fill: "white" })
-            .bind("fill", "labelColor")
-            .bind("width", "labelWidth")
-            .bind("height", "labelHeight"),
-          new go.TextBlock({
-            font: "bold 10px Segoe UI,sans-serif",
-            stroke: '#484848',
-            margin: 2
-          })
-            .bind("text", "labelText")
-        )
-      );
+          new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 }),
+          new go.Panel("Auto")
+            .add(
+              new go.Shape("RoundedRectangle", { fill: "white" })
+                .bind("fill", "labelColor")
+                .bind("width", "labelWidth")
+                .bind("height", "labelHeight"),
+              new go.TextBlock({
+                  font: "bold 10px Segoe UI,sans-serif",
+                  stroke: '#484848',
+                  margin: 2
+                })
+                .bind("text", "labelText")
+            )
+        );
 
     myDiagram.toolManager.linkingTool.archetypeLinkData = {
       labelColor: "lightblue",
@@ -327,6 +335,7 @@
     // so the GraphLinksModel needs to set these property names:
     // linkFromPortIdProperty and linkToPortIdProperty.
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -403,7 +412,7 @@
 <p>
   Each Link performs a very fast default computation of its desired path, its "route",
   based only on the properties of the Link and the properties of the port objects that it is connected with.
-  GoJS 3.0 provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  GoJS provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
   <a>Router</a> class.
 </p>
 <p>

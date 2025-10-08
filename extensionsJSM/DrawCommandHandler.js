@@ -30,6 +30,17 @@ import * as go from 'gojs';
  * ```
  *
  * If you want to experiment with this extension, try the <a href="../../samples/DrawCommandHandler.html">Drawing Commands</a> sample.
+ *
+ * New in version 3.1 this adds a command to save the model as a text file in the user's local file system,
+ * typically in their Downloads folder, {@link saveLocalFile}.
+ * And it adds a method for loading a File: {@link loadLocalFile}.
+ *
+ * There are two optional properties that can be used for calling {@link loadLocalFile}:
+ * {@link localFileInput} and {@link localFileDropElement}.
+ * The former may be a file type HTMLInputElement that you have on your page;
+ * the latter may be an HTMLElement, or even the whole document.body, where the user may drag-and-drop a saved file.
+ *
+ * The default file type for files is controlled by {@link localFileType}.
  * @category Extension
  */
 export class DrawCommandHandler extends go.CommandHandler {
@@ -38,13 +49,46 @@ export class DrawCommandHandler extends go.CommandHandler {
         this._arrowKeyBehavior = 'move';
         this._pasteOffset = new go.Point(10, 10);
         this._lastPasteOffset = new go.Point(0, 0);
+        this._localFileType = 'gojs';
+        this._localFileDropElement = null;
+        this._preventPropagation = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+        };
+        this._handleDrop = (e) => {
+            var _a;
+            this._preventPropagation(e);
+            const files = (_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.files;
+            if (files && files.length > 0) {
+                this.diagram.focus();
+                this.loadLocalFile(files[0], this.loader);
+            }
+        };
+        this._localFileInput = null;
+        this._handleFileInputChange = (e) => {
+            var _a;
+            const files = (_a = this._localFileInput) === null || _a === void 0 ? void 0 : _a.files;
+            if (files && files.length > 0) {
+                this.diagram.focus();
+                this.loadLocalFile(files[0], this.loader);
+            }
+        };
+        this._loader = null;
         if (init)
             Object.assign(this, init);
     }
     /**
-     * Gets or sets the arrow key behavior. Possible values are "move", "select", "scroll", "tree", and "none".
+     * Gets or sets the arrow key behavior. Possible values are "move", "select", "scroll", "tree", "none", and "default".
      *
      * The default value is "move".
+     * Set this property to "default" in order to make use of the additional commands in this class
+     * without affecting the arrow key behaviors.
+     *
+     * Note that this functionality is different from the focus navigation behavior of the {@link CommandHandler}
+     * that was added in version 3.1 and enabled by the {@link CommandHandler.isFocusEnabled} property.
+     * In this DrawCommandHandler the arrow keys for the "move", "select" or "tree" behaviors
+     * depend on and modify the {@link Diagram.selection}.  The built-in focus navigation is completely independent
+     * of the selection mechanism.
      */
     get arrowKeyBehavior() {
         return this._arrowKeyBehavior;
@@ -350,13 +394,13 @@ export class DrawCommandHandler extends go.CommandHandler {
         const diagram = this.diagram;
         diagram.startTransaction('pullToFront');
         // find the affected Layers
-        const layers = new go.Map();
+        const layers = new Map();
         diagram.selection.each((part) => {
             if (part.layer !== null)
                 layers.set(part.layer, 0);
         });
         // find the maximum zOrder in each Layer
-        layers.iteratorKeys.each((layer) => {
+        for (const layer of layers.keys()) {
             let max = 0;
             layer.parts.each((part) => {
                 if (part.isSelected)
@@ -370,7 +414,7 @@ export class DrawCommandHandler extends go.CommandHandler {
                 }
             });
             layers.set(layer, max);
-        });
+        }
         // assign each selected Part.zOrder to the computed value for each Layer
         diagram.selection.each((part) => {
             const z = layers.get(part.layer) || 0;
@@ -387,13 +431,13 @@ export class DrawCommandHandler extends go.CommandHandler {
         const diagram = this.diagram;
         diagram.startTransaction('pushToBack');
         // find the affected Layers
-        const layers = new go.Map();
+        const layers = new Map();
         diagram.selection.each((part) => {
             if (part.layer !== null)
                 layers.set(part.layer, 0);
         });
         // find the minimum zOrder in each Layer
-        layers.iteratorKeys.each((layer) => {
+        for (const layer of layers.keys()) {
             let min = 0;
             layer.parts.each((part) => {
                 if (part.isSelected)
@@ -407,7 +451,7 @@ export class DrawCommandHandler extends go.CommandHandler {
                 }
             });
             layers.set(layer, min);
-        });
+        }
         // assign each selected Part.zOrder to the computed value for each Layer
         diagram.selection.each((part) => {
             const z = layers.get(part.layer) || 0;
@@ -444,6 +488,14 @@ export class DrawCommandHandler extends go.CommandHandler {
      * This implements custom behaviors for arrow key keyboard events.
      * Set {@link arrowKeyBehavior} to "select", "move" (the default), "scroll" (the standard behavior), or "none"
      * to affect the behavior when the user types an arrow key.
+     * Set that property to "default" in order to make use of the additional commands in this class
+     * without affecting the arrow key behaviors.
+     *
+     * Note that this functionality is different from the focus navigation behavior of the {@link CommandHandler}
+     * that was added in version 3.1 and enabled by the {@link CommandHandler.isFocusEnabled} property.
+     * In this DrawCommandHandler the arrow keys for the "move", "select" or "tree" behaviors
+     * depend on and modify the {@link Diagram.selection}.  The built-in focus navigation is completely independent
+     * of the selection mechanism.
      */
     doKeyDown() {
         const diagram = this.diagram;
@@ -724,4 +776,203 @@ export class DrawCommandHandler extends go.CommandHandler {
         this._lastPasteOffset.add(this.pasteOffset);
         return coll;
     }
+    // Saving and loading Models as files on local file system
+    /** @hidden @internal */
+    saveFile(name, mimetype, contents) {
+        let url = null;
+        let a = null;
+        try {
+            const blob = new Blob([contents], { type: mimetype });
+            url = window.URL.createObjectURL(blob);
+            a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
+            requestAnimationFrame(() => {
+                try {
+                    if (a !== null)
+                        a.click();
+                }
+                finally {
+                    if (url !== null)
+                        window.URL.revokeObjectURL(url);
+                    if (a !== null)
+                        document.body.removeChild(a);
+                }
+            });
+        }
+        catch (ex) {
+            if (url !== null)
+                window.URL.revokeObjectURL(url);
+            if (a !== null)
+                document.body.removeChild(a);
+        }
+    }
+    /**
+     * This command downloads a text file that holds this diagram's model as JSON-formatted text.
+     *
+     * This calls {@link Model.toJson}.
+     * @param options an optional file name (defaults to {@link Model.name}.{@link localFileType}) and
+     * an optional MIME type (defaults to "application/text")
+     * @since 3.1
+     */
+    saveLocalFile(options) {
+        const diagram = this.diagram;
+        let name = options === null || options === void 0 ? void 0 : options.name;
+        if (!name)
+            name = this.defaultFilename();
+        let type = options === null || options === void 0 ? void 0 : options.mimetype;
+        if (!type)
+            type = 'application/text';
+        const text = diagram.model.toJson();
+        diagram.isModified = false;
+        this.saveFile(name, type, text);
+    }
+    /**
+     * This predicate controls whether or not the user can invoke the {@link saveLocalFile} command.
+     *
+     * @returns true, by default
+     * @since 3.1
+     */
+    canSaveLocalFile() {
+        const diagram = this.diagram;
+        return diagram !== null;
+    }
+    /** @hidden @internal */
+    defaultFilename() {
+        const filetypeending = '.' + this.localFileType;
+        let name = this.diagram.model.name;
+        if (!name) {
+            name = 'diagram';
+        }
+        else if (name.endsWith(filetypeending)) {
+            name = name.substring(0, name.length - filetypeending.length);
+        }
+        name += filetypeending;
+        return name;
+    }
+    /**
+     * Gets or sets the default file type for locally saved files.
+     * The default value is "gojs".
+     * Setting this property does not raise any events.
+     * @since 3.1
+     */
+    get localFileType() { return this._localFileType; }
+    set localFileType(t) { this._localFileType = t || ''; }
+    /**
+     * This method loads a text file that the user chooses or drops that holds this diagram's model as JSON-formatted text,
+     * normally saved via {@link saveLocalFile}.
+     *
+     * This calls {@link Model.fromJson}.
+     * This is called by the "change" event of the {@link localFileInput} element (if present) or
+     * the "drop" event of the {@link localFileDropElement} (if present).
+     *
+     * The file type of the File.name must match the {@link localFileType}, or it must not have a file type.
+     * @param file a File instance from which to read the JSON-formatted text
+     * @param loader an optional function that sets {@link Diagram.model}, perhaps modifying the model first,
+     * and perhaps doing other updates after assigning the given Model to the given Diagram.
+     * @since 3.1
+     */
+    loadLocalFile(file, loader) {
+        const diagram = this.diagram;
+        let type = '';
+        let name = file.name;
+        const lastdot = name.lastIndexOf('.');
+        if (lastdot > 0) {
+            type = name.substring(lastdot + 1).toLowerCase();
+            name = name.substring(0, lastdot);
+        }
+        if (type === '' || type === this.localFileType) {
+            diagram.currentCursor = 'progress';
+            requestAnimationFrame(() => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    var _a;
+                    if (typeof ((_a = e.target) === null || _a === void 0 ? void 0 : _a.result) === 'string') {
+                        const newmodel = go.Model.fromJson(e.target.result);
+                        if (loader) {
+                            loader(diagram, newmodel, name);
+                        }
+                        else {
+                            if (!newmodel.name)
+                                newmodel.name = name;
+                            diagram.model = newmodel;
+                        }
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+    }
+    /**
+     * Gets or sets an HTMLElement so that the user can load a file saved by {@link saveLocalFile}
+     * by drag-and-dropping it on this element.
+     *
+     * By default the value is null -- there is no such element.
+     * Setting this property does not raise any events or modify the DOM, but does add or remove listeners,
+     * including a "drop" listener that actually calls {@link loadLocalFile} and {@link Diagram.focus}.
+     *
+     * If you want to support drag-and-drop loading of files,
+     * you will need to add the element to your page and set this property.
+     * @see {@link localFileInput}
+     * @since 3.1
+     */
+    get localFileDropElement() { return this._localFileDropElement; }
+    set localFileDropElement(val) {
+        const old = this._localFileDropElement;
+        if (old != val) {
+            if (old) {
+                old.removeEventListener('dragenter', this._preventPropagation);
+                old.removeEventListener('dragover', this._preventPropagation);
+                old.removeEventListener('drop', this._handleDrop);
+            }
+            this._localFileDropElement = val;
+            if (val) {
+                val.addEventListener('dragenter', this._preventPropagation);
+                val.addEventListener('dragover', this._preventPropagation);
+                val.addEventListener('drop', this._handleDrop);
+            }
+        }
+    }
+    /**
+     * Gets or sets an HTMLInputElement so that the user can load a file saved by {@link saveLocalFile}
+     * by using the browser's file picker user interface.
+     *
+     * By default the value is null -- there is no such input element.
+     * Setting this property does not raise any events or modify the DOM, but does add or remove a "change" listener
+     * that actually calls {@link loadLocalFile} and {@link Diagram.focus}.
+     *
+     * If you want to support the user's picking of a file to load,
+     * you will need to add an &lt;input type="file"&gt; element to your page and set this property.
+     * It is moderately common to have this input element be hidden and invoke the input file picker by programmatically
+     * calling <code>click()</code> on the element.
+     * @see {@link localFileDropElement}
+     * @since 3.1
+     */
+    get localFileInput() { return this._localFileInput; }
+    set localFileInput(val) {
+        const old = this._localFileInput;
+        if (old !== val) {
+            if (old) {
+                old.removeEventListener('change', this._handleFileInputChange);
+            }
+            this._localFileInput = val;
+            if (val) {
+                //val.value = '';
+                val.addEventListener('change', this._handleFileInputChange, false);
+            }
+        }
+    }
+    /**
+     * Gets or sets a function that is used to set {@link Diagram.model}.
+     * It can do more things before and/or after the actual setting of {@link Diagram.model}.
+     *
+     * The default value is null.
+     * Setting this property does not raise any events.
+     *
+     * If non-null, the function is called by {@link loadLocalFile}.
+     */
+    get loader() { return this._loader; }
+    set loader(func) { this._loader = func; }
 }

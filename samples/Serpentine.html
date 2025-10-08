@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -132,25 +134,21 @@
       layout: new SerpentineLayout() // defined in SerpentineLayout.js
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({
-          figure: 'RoundedRectangle',
-          fill: 'white'
-        })
-          .bind('fill', 'color'),
-        new go.TextBlock({ margin: 4 })
-          .bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape('RoundedRectangle', { fill: 'white' })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 4 })
+            .bind('text', 'key')
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      corner: 10
-    })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 10 })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     var model = new go.TreeModel();
     model.nodeParentKeyProperty = 'next';

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -163,6 +165,49 @@
 </style>
 
 <script id="code">
+
+  // Automatically drag people Nodes along with the table Node at which they are seated.
+  class SpecialDraggingTool extends go.DraggingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
+    computeEffectiveCollection(parts) {
+      const map = super.computeEffectiveCollection(parts);
+      // for each Node representing a table, also drag all of the people seated at that table
+      parts.each(table => {
+        if (isPerson(table)) return; // ignore persons
+        // this is a table Node, find all people Nodes using the same table key
+        for (const nit = table.diagram.nodes; nit.next(); ) {
+          const n = nit.value;
+          if (isPerson(n) && n.data.table === table.data.key) {
+            if (!map.has(n)) map.add(n, new go.DraggingInfo(n.location.copy()));
+          }
+        }
+      });
+      return map;
+    }
+  }
+  // end SpecialDraggingTool
+
+  // Automatically move seated people as a table is rotated, to keep them in their seats.
+  // Note that because people are separate Nodes, rotating a table Node means the people Nodes
+  // are not rotated, so their names (TextBlocks) remain horizontal.
+  class HorizontalTextRotatingTool extends go.RotatingTool {
+    constructor(init) {
+      super();
+      if (init) Object.assign(this, init);
+    }
+
+    rotate(newangle) {
+      super.rotate(newangle);
+      const node = this.adornedObject.part;
+      positionPeopleAtSeats(node);
+    }
+  }
+  // end HorizontalTextRotatingTool
+
   function init() {
     // Initialize the main Diagram
     myDiagram = new go.Diagram('myDiagramDiv', {
@@ -171,7 +216,7 @@
       draggingTool: new SpecialDraggingTool(),
       rotatingTool: new HorizontalTextRotatingTool(),
       // For this sample, automatically show the state of the diagram's model on the page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) {
           document.getElementById('savedModel').innerHTML = myDiagram.model.toJson();
           if (window.Prism) window.Prism.highlightAll();
@@ -180,26 +225,25 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplateMap.add(
-      '', // default template, for people
+    myDiagram.nodeTemplateMap.add('', // default template, for people
       new go.Node('Auto', {
-        background: 'transparent',
-        locationSpot: go.Spot.Center,
-        // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-        mouseDragEnter: (e, node, prev) => {
-          const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
-          highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-        },
-        mouseDragLeave: (e, node, next) => {
-          const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-          highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-        },
-        mouseDrop: (e, node) => {
-          assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
-        }
-      }) // in front of all Tables
+          background: 'transparent',
+          locationSpot: go.Spot.Center,
+          // what to do when a drag-over or a drag-drop occurs on a Node representing a table
+          mouseDragEnter: (e, node, prev) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
+          },
+          mouseDragLeave: (e, node, next) => {
+            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+          },
+          mouseDrop: (e, node) => {
+            assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
+          }
+        }) // in front of all Tables
         // when selected is in foreground layer
-        .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
+        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
         .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
         .bind('text', 'key')
         .add(new go.Shape('Rectangle', { fill: 'blanchedalmond', stroke: null }))
@@ -207,16 +251,17 @@
           new go.Panel('Viewbox', { desiredSize: new go.Size(50, 38) })
             .add(
               new go.TextBlock({
-                margin: 2,
-                desiredSize: new go.Size(55, NaN),
-                font: '8pt Verdana, sans-serif',
-                textAlign: 'center',
-                stroke: 'darkblue'
-              }).bind('text', '', (data) => {
-                let s = data.key;
-                if (data.plus) s += ' +' + data.plus.toString();
-                return s;
-              })
+                  margin: 2,
+                  desiredSize: new go.Size(55, NaN),
+                  font: '8pt Verdana, sans-serif',
+                  textAlign: 'center',
+                  stroke: 'darkblue'
+                })
+                .bind('text', '', data => {
+                  let s = data.key;
+                  if (data.plus) s += ' +' + data.plus.toString();
+                  return s;
+                })
             )
         )
     );
@@ -228,172 +273,147 @@
       if (typeof focus === 'string') focus = go.Spot.parse(focus);
       if (!focus || !focus.isSpot()) focus = align.opposite();
       return new go.Panel('Spot', {
-        name: number.toString(),
-        alignment: align,
-        alignmentFocus: focus
-      })
+          name: number.toString(),
+          alignment: align,
+          alignmentFocus: focus
+        })
         .add(
           new go.Shape('Circle', {
-            name: 'SEATSHAPE',
-            desiredSize: new go.Size(40, 40),
-            fill: 'burlywood',
-            stroke: 'white',
-            strokeWidth: 2
-          }).bind('fill')
+              name: 'SEATSHAPE',
+              desiredSize: new go.Size(40, 40),
+              fill: 'burlywood',
+              stroke: 'white',
+              strokeWidth: 2
+            })
+            .bind('fill')
         )
         .add(
-          new go.TextBlock(number.toString(), { font: '10pt Verdana, sans-serif' }).bind(
-            'angle',
-            'angle',
-            (n) => -n
-          )
+          new go.TextBlock(number.toString(), { font: '10pt Verdana, sans-serif' })
+            .bind('angle', 'angle', n => -n)
         );
     }
 
-    function tableStyle() {
-      return {
-        background: 'transparent',
-        layerName: 'Background', // behind all Persons
-        locationSpot: go.Spot.Center,
-        HorizontalTextRotatingTool: 'TABLESHAPE',
-        rotatable: true,
-        // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-        mouseDragEnter: (e, node, prev) => {
-          const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
-          highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-        },
-        mouseDragLeave: (e, node, next) => {
-          const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-          highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-        },
-        mouseDrop: (e, node) => assignPeopleToSeats(node, node.diagram.selection, e.documentPoint)
+    function tableStyle(part) {
+      part.background = 'transparent';
+      part.layerName = 'Background'; // behind all Persons
+      part.locationSpot = go.Spot.Center;
+      //HorizontalTextRotatingTool = 'TABLESHAPE',
+      part.rotatable = true;
+      // what to do when a drag-over or a drag-drop occurs on a Node representing a table
+      part.mouseDragEnter = (e, node, prev) => {
+        const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
+        highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
       };
-    }
-
-    function applyTableNodeBindings(node) {
-      node.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-          .bindTwoWay('angle');
-      return node;
+      part.mouseDragLeave = (e, node, next) => {
+        const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
+        highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
+      };
+      part.mouseDrop = (e, node) => assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
+      part.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
+      part.bindTwoWay('angle');
     }
 
     // various kinds of tables:
 
-    myDiagram.nodeTemplateMap.add(
-      'TableR8', // rectangular with 8 seats
-      applyTableNodeBindings(
-        new go.Node('Spot', tableStyle())
-          .add(
-            new go.Panel('Spot')
-              .add(
-                new go.Shape('Rectangle', {
+    myDiagram.nodeTemplateMap.add('TableR8', // rectangular with 8 seats
+      new go.Node('Spot')
+        .apply(tableStyle)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Rectangle', {
                   name: 'TABLESHAPE',
                   desiredSize: new go.Size(160, 80),
                   fill: 'burlywood',
                   stroke: null
                 })
-                  .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                  .bind('fill')
-              )
-              .add(
-                new go.TextBlock({
+                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+                .bind('fill'),
+              new go.TextBlock({
                   editable: true,
                   font: 'bold 11pt Verdana, sans-serif'
                 })
-                  .bindTwoWay('text', 'name')
-                  .bind('angle', 'angle', (n) => -n)
-              )
-          )
-          .add(
-            Seat(1, '0.2 0', '0.5 1'),
-            Seat(2, '0.5 0', '0.5 1'),
-            Seat(3, '0.8 0', '0.5 1'),
-            Seat(4, '1 0.5', '0 0.5'),
-            Seat(5, '0.8 1', '0.5 0'),
-            Seat(6, '0.5 1', '0.5 0'),
-            Seat(7, '0.2 1', '0.5 0'),
-            Seat(8, '0 0.5', '1 0.5')
-          )
-      )
-    );
+                .bindTwoWay('text', 'name')
+                .bind('angle', 'angle', n => -n)
+            ),
+          Seat(1, '0.2 0', '0.5 1'),
+          Seat(2, '0.5 0', '0.5 1'),
+          Seat(3, '0.8 0', '0.5 1'),
+          Seat(4, '1 0.5', '0 0.5'),
+          Seat(5, '0.8 1', '0.5 0'),
+          Seat(6, '0.5 1', '0.5 0'),
+          Seat(7, '0.2 1', '0.5 0'),
+          Seat(8, '0 0.5', '1 0.5')
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'TableR3', // rectangular with 3 seats in a line
-      applyTableNodeBindings(
-        new go.Node('Spot', tableStyle())
-          .add(
-            new go.Panel('Spot')
-              .add(
-                new go.Shape('Rectangle', {
+    myDiagram.nodeTemplateMap.add('TableR3', // rectangular with 3 seats in a line
+      new go.Node('Spot')
+        .apply(tableStyle)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Rectangle', {
                   name: 'TABLESHAPE',
                   desiredSize: new go.Size(160, 60),
                   fill: 'burlywood',
                   stroke: null
                 })
-                  .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                  .bind('fill')
-              )
-              .add(
-                new go.TextBlock({
+                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+                .bind('fill'),
+              new go.TextBlock({
                   editable: true,
                   font: 'bold 11pt Verdana, sans-serif'
                 })
-                  .bindTwoWay('text', 'name')
-                  .bind('angle', 'angle', (n) => -n)
-              )
-          )
-          .add(Seat(1, '0.2 0', '0.5 1'), Seat(2, '0.5 0', '0.5 1'), Seat(3, '0.8 0', '0.5 1'))
-      )
-    );
+                .bindTwoWay('text', 'name')
+                .bind('angle', 'angle', n => -n)
+            ),
+          Seat(1, '0.2 0', '0.5 1'),
+          Seat(2, '0.5 0', '0.5 1'),
+          Seat(3, '0.8 0', '0.5 1')
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'TableC8', // circular with 8 seats
-      applyTableNodeBindings(
-        new go.Node('Spot', tableStyle())
-          .add(
-            new go.Panel('Spot')
-              .add(
-                new go.Shape('Circle', {
+    myDiagram.nodeTemplateMap.add('TableC8', // circular with 8 seats
+      new go.Node('Spot')
+        .apply(tableStyle)
+        .add(
+          new go.Panel('Spot')
+            .add(
+              new go.Shape('Circle', {
                   name: 'TABLESHAPE',
                   desiredSize: new go.Size(120, 120),
                   fill: 'burlywood',
                   stroke: null
                 })
-                  .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                  .bind('fill')
-              )
-              .add(
-                new go.TextBlock({
+                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+                .bind('fill'),
+              new go.TextBlock({
                   editable: true,
                   font: 'bold 11pt Verdana, sans-serif'
                 })
-                  .bindTwoWay('text', 'name')
-                  .bind('angle', 'angle', (n) => -n)
-              )
-          )
-          .add(
-            Seat(1, '0.50 0', '0.5 1'),
-            Seat(2, '0.85 0.15', '0.15 0.85'),
-            Seat(3, '1 0.5', '0 0.5'),
-            Seat(4, '0.85 0.85', '0.15 0.15'),
-            Seat(5, '0.50 1', '0.5 0'),
-            Seat(6, '0.15 0.85', '0.85 0.15'),
-            Seat(7, '0 0.5', '1 0.5'),
-            Seat(8, '0.15 0.15', '0.85 0.85')
-          )
-      )
-    );
+                .bindTwoWay('text', 'name')
+                .bind('angle', 'angle', n => -n)
+            ),
+          Seat(1, '0.50 0', '0.5 1'),
+          Seat(2, '0.85 0.15', '0.15 0.85'),
+          Seat(3, '1 0.5', '0 0.5'),
+          Seat(4, '0.85 0.85', '0.15 0.15'),
+          Seat(5, '0.50 1', '0.5 0'),
+          Seat(6, '0.15 0.85', '0.85 0.15'),
+          Seat(7, '0 0.5', '1 0.5'),
+          Seat(8, '0.15 0.15', '0.85 0.85')
+        ));
 
     // what to do when a drag-drop occurs in the Diagram's background
-    myDiagram.mouseDrop = (e) => {
+    myDiagram.mouseDrop = e => {
       // when the selection is dropped in the diagram's background,
       // make sure the selected people no longer belong to any table
-      e.diagram.selection.each((n) => {
+      e.diagram.selection.each(n => {
         if (isPerson(n)) unassignSeat(n.data);
       });
     };
 
     // to simulate a "move" from the Palette, the source Node must be deleted.
-    myDiagram.addDiagramListener('ExternalObjectsDropped', (e) => {
+    myDiagram.addDiagramListener('ExternalObjectsDropped', e => {
       // if any Tables were dropped, don't delete from myGuests
       if (!e.subject.any(isTable)) {
         myGuests.commandHandler.deleteSelection();
@@ -401,11 +421,11 @@
     });
 
     // put deleted people back in the myGuests diagram
-    myDiagram.addDiagramListener('SelectionDeleted', (e) => {
+    myDiagram.addDiagramListener('SelectionDeleted', e => {
       // no-op if deleted by myGuests' ExternalObjectsDropped listener
       if (myDiagram.disableSelectionDeleted) return;
       // e.subject is the myDiagram.selection collection
-      e.subject.each((n) => {
+      e.subject.each(n => {
         if (isPerson(n)) {
           myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
         }
@@ -454,7 +474,7 @@
     myGuests.model.undoManager = myDiagram.model.undoManager; // shared UndoManager!
 
     // To simulate a "move" from the Diagram back to the Palette, the source Node must be deleted.
-    myGuests.addDiagramListener('ExternalObjectsDropped', (e) => {
+    myGuests.addDiagramListener('ExternalObjectsDropped', e => {
       // e.subject is the myGuests.selection collection
       // if the user dragged a Table to the myGuests diagram, cancel the drag
       if (e.subject.any(isTable)) {
@@ -462,13 +482,13 @@
         myGuests.currentTool.doCancel();
         return;
       }
-      myDiagram.selection.each((n) => {
+      myDiagram.selection.each(n => {
         if (isPerson(n)) unassignSeat(n.data);
       });
       myDiagram.disableSelectionDeleted = true;
       myDiagram.commandHandler.deleteSelection();
       myDiagram.disableSelectionDeleted = false;
-      myGuests.selection.each((n) => {
+      myGuests.selection.each(n => {
         if (isPerson(n)) unassignSeat(n.data);
       });
     });
@@ -540,7 +560,7 @@
       return;
     }
     // OK -- all Nodes are people, call assignSeat on each person data
-    coll.each((n) => assignSeat(node, n.data, pt));
+    coll.each(n => assignSeat(node, n.data, pt));
     positionPeopleAtSeats(node);
   }
 
@@ -553,8 +573,9 @@
       node = node.diagram.findNodeForKey(node.data.table);
       if (node === null) return;
     }
-    if (guest instanceof go.GraphObject)
+    if (guest instanceof go.GraphObject) {
       throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    }
     if (!(pt instanceof go.Point)) pt = node.location;
 
     // in case the guest used to be assigned to a different seat, perhaps at a different table
@@ -590,8 +611,9 @@
   // Declare that the guest represented by the data is no longer assigned to a seat at a table.
   // If the guest had been at a table, the guest is removed from the table's list of guests.
   function unassignSeat(guest) {
-    if (guest instanceof go.GraphObject)
+    if (guest instanceof go.GraphObject) {
       throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    }
     const model = myDiagram.model;
     // remove from any table that the guest is assigned to
     if (guest.table) {
@@ -653,8 +675,9 @@
 
   // Position a single guest Node to be at the location of the seat to which they are assigned.
   function positionPersonAtSeat(guest) {
-    if (guest instanceof go.GraphObject)
+    if (guest instanceof go.GraphObject) {
       throw Error('A guest object must not be a GraphObject: ' + guest.toString());
+    }
     if (!guest || !guest.table || !guest.seat) return;
     const diagram = myDiagram;
     const table = diagram.findPartForKey(guest.table);
@@ -668,48 +691,6 @@
       animation.start();
     }
   }
-
-  // Automatically drag people Nodes along with the table Node at which they are seated.
-  class SpecialDraggingTool extends go.DraggingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    computeEffectiveCollection(parts) {
-      const map = super.computeEffectiveCollection(parts);
-      // for each Node representing a table, also drag all of the people seated at that table
-      parts.each((table) => {
-        if (isPerson(table)) return; // ignore persons
-        // this is a table Node, find all people Nodes using the same table key
-        for (const nit = table.diagram.nodes; nit.next(); ) {
-          const n = nit.value;
-          if (isPerson(n) && n.data.table === table.data.key) {
-            if (!map.has(n)) map.add(n, new go.DraggingInfo(n.location.copy()));
-          }
-        }
-      });
-      return map;
-    }
-  }
-  // end SpecialDraggingTool
-
-  // Automatically move seated people as a table is rotated, to keep them in their seats.
-  // Note that because people are separate Nodes, rotating a table Node means the people Nodes
-  // are not rotated, so their names (TextBlocks) remain horizontal.
-  class HorizontalTextRotatingTool extends go.RotatingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    rotate(newangle) {
-      super.rotate(newangle);
-      const node = this.adornedObject.part;
-      positionPeopleAtSeats(node);
-    }
-  }
-  // end HorizontalTextRotatingTool
 
   window.addEventListener('DOMContentLoaded', init);
 </script>

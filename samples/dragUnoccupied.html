@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -127,12 +129,12 @@
     // R is a Rect in document coordinates
     // NODE is the Node being moved -- ignore when looking for Parts intersecting the Rect
     function isUnoccupied(r, node) {
-      var diagram = node.diagram;
+      const diagram = node.diagram;
 
       // nested function used by Layer.findObjectsIn, below
       // only consider Parts, and ignore the given Node, any Links, and Group members
       function navig(obj) {
-        var part = obj.part;
+        const part = obj.part;
         if (part === node) return null;
         if (part instanceof go.Link) return null;
         if (part.isMemberOf(node)) return null;
@@ -141,9 +143,9 @@
       }
 
       // only consider non-temporary Layers
-      var lit = diagram.layers;
+      const lit = diagram.layers;
       while (lit.next()) {
-        var lay = lit.value;
+        const lay = lit.value;
         if (lay.isTemporary) continue;
         if (lay.findObjectsIn(r, navig, null, true).count > 0) return false;
       }
@@ -155,11 +157,11 @@
     function avoidNodeOverlap(node, pt, gridpt) {
       if (node.diagram instanceof go.Palette) return gridpt;
       // this assumes each node is fully rectangular
-      var bnds = node.actualBounds;
-      var loc = node.location;
+      const bnds = node.actualBounds;
+      const loc = node.location;
       // use PT instead of GRIDPT if you want to ignore any grid snapping behavior
       // see if the area at the proposed location is unoccupied
-      var r = new go.Rect(gridpt.x - (loc.x - bnds.x), gridpt.y - (loc.y - bnds.y), bnds.width, bnds.height);
+      const r = new go.Rect(gridpt.x - (loc.x - bnds.x), gridpt.y - (loc.y - bnds.y), bnds.width, bnds.height);
       // maybe inflate R if you want some space between the node and any other nodes
       r.inflate(-0.5, -0.5); // by default, deflate to avoid edge overlaps with "exact" fits
       // when dragging a node from another Diagram, choose an unoccupied area
@@ -184,21 +186,22 @@
     });
 
     // Define the template for Nodes, just some text inside a colored rectangle
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      dragComputation: avoidNodeOverlap,
-      minSize: new go.Size(50, 20),
-      resizable: true
-    })
-      .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-      .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
-      // temporarily put selected nodes in Foreground layer
-      .bindObject('layerName', 'isSelected', (s) => (s ? 'Foreground' : ''))
-      .add(
-        new go.Shape('Rectangle')
-          .bind('fill', 'color'),
-        new go.TextBlock()
-          .bind('text', 'color')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          dragComputation: avoidNodeOverlap,
+          minSize: new go.Size(50, 20),
+          resizable: true
+        })
+        .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
+        .bindTwoWay('position', 'pos', go.Point.parse, go.Point.stringify)
+        // temporarily put selected nodes in Foreground layer
+        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
+        .add(
+          new go.Shape('Rectangle')
+            .bind('fill', 'color'),
+          new go.TextBlock()
+            .bind('text', 'color')
+        );
 
     myDiagram.model = new go.GraphLinksModel([
       { pos: '-30 0', size: '50 300', color: go.Brush.randomColor() },
@@ -221,6 +224,7 @@
       ])
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

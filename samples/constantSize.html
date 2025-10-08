@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -136,36 +138,42 @@
     // the background image, a floor plan
     myDiagram.add(
       new go.Part({ // this Part is not bound to any model data
-        width: 840,
-        height: 570,
-        layerName: 'Background',
-        position: new go.Point(0, 0),
-        selectable: false,
-        pickable: false
-      })
+          width: 840,
+          height: 570,
+          layerName: 'Background',
+          position: new go.Point(0, 0),
+          selectable: false,
+          pickable: false
+        })
         .add(
           new go.Picture('https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_Floorplan.jpg')
         )
     );
 
     // the template for each kitten, for now just a colored circle
-    myDiagram.nodeTemplate = new go.Node({
-      locationSpot: go.Spot.Center,
+    myDiagram.nodeTemplate =
+      new go.Node({
+          locationSpot: go.Spot.Center,
 
-      // this tooltip shows the name and picture of the kitten
-      toolTip: go.GraphObject.build('ToolTip')
+          // this tooltip shows the name and picture of the kitten
+          toolTip:
+            go.GraphObject.build('ToolTip')
+              .add(
+                new go.Panel('Vertical')
+                  .add(
+                    new go.Picture()
+                      .bind('source', 'src', s => 'images/' + s + '.png'),
+                    new go.TextBlock({ margin: 3 })
+                      .bind('text', 'key')
+                  )
+              ) // end Adornment
+        }) // at center of node
+        .bind('location', 'loc') // specified by data
+        .trigger('location', { duration: TIME_STEP, easing: go.Animation.EaseLinear })
         .add(
-          new go.Panel('Vertical').add(
-            new go.Picture().bind('source', 'src', (s) => 'images/' + s + '.png'),
-            new go.TextBlock({ margin: 3 }).bind('text', 'key')
-          )
-        ) // end Adornment
-    }) // at center of node
-      .bind('location', 'loc') // specified by data
-      .trigger('location', { duration: TIME_STEP, easing: go.Animation.EaseLinear })
-      .add(
-        new go.Shape('Circle', { width: 12, height: 12, stroke: null }).bind('fill', 'color') // also specified by data
-      );
+          new go.Shape('Circle', { width: 12, height: 12, stroke: null })
+            .bind('fill', 'color') // also specified by data
+        );
 
     // pretend there are four kittens
     myDiagram.model.nodeDataArray = [
@@ -180,14 +188,14 @@
     // This code ignores simple Parts;
     // Links will automatically be rerouted as Nodes change size.
     var origscale = NaN;
-    myDiagram.addDiagramListener('InitialLayoutCompleted', (e) => (origscale = myDiagram.scale));
-    myDiagram.addDiagramListener('ViewportBoundsChanged', (e) => {
+    myDiagram.addDiagramListener('InitialLayoutCompleted', e => origscale = myDiagram.scale);
+    myDiagram.addDiagramListener('ViewportBoundsChanged', e => {
       if (isNaN(origscale)) return;
       var newscale = myDiagram.scale;
       if (e.subject.scale === newscale) return; // optimization: don't scale Nodes when just scrolling/panning
       myDiagram.skipsUndoManager = true;
       myDiagram.startTransaction('scale Nodes');
-      myDiagram.nodes.each((node) => {
+      myDiagram.nodes.each(node => {
         node.scale = origscale / newscale;
       });
       myDiagram.commitTransaction('scale Nodes');
@@ -221,6 +229,7 @@
     }
     loop(); // start the simulation
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -232,7 +241,7 @@
     of the kittens is updated. The location has a linear <a>AnimationTrigger</a>
     so that the motion appears smooth.
   </p>
-  <p>The <a href="../intro/toolTips.html">Tooltip</a> for each kitten shows its name and photo.</p>
+  <p>The <a href="../intro/tooltips.html">Tooltip</a> for each kitten shows its name and photo.</p>
   <p>
     When you zoom in or out the effective size of each Node is kept constant by changing its
     <a>GraphObject.scale</a>.
@@ -264,7 +273,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

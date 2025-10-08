@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -139,10 +141,10 @@
     myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -151,63 +153,64 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      locationObjectName: 'ICON',
-      locationSpot: go.Spot.Center,
-      selectionObjectName: 'ICON'
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        // define the node primary shape
-        new go.Shape('RoundedRectangle', {
-          name: 'ICON',
-          parameter1: 10, // the corner has a medium radius
-          desiredSize: new go.Size(40, 40),
-          fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
-          stroke: 'black',
-          portId: '',
-          fromLinkable: true,
-          fromLinkableSelfNode: true,
-          fromLinkableDuplicates: true,
-          toLinkable: true,
-          toLinkableSelfNode: true,
-          toLinkableDuplicates: true,
-          cursor: 'pointer'
-        }),
-        new go.Shape( // provide interior area where the user can grab the node
-          { fill: 'transparent', stroke: null, desiredSize: new go.Size(30, 30) }
-        ),
-        new go.TextBlock({
-          font: 'bold 11pt helvetica, bold arial, sans-serif',
-          editable: true, // editing the text automatically updates the model data
-          cursor: 'move' // visual hint that the user can do something with this node label
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          locationObjectName: 'ICON',
+          locationSpot: go.Spot.Center,
+          selectionObjectName: 'ICON'
         })
-          .attach({ // GraphObject.attach() is used in method chaining to set properties that dont exist
-            _isNodeLabel: true
-          })
-          .bindTwoWay('text')
-          // The GraphObject.alignment property is what the NodeLabelDraggingTool modifies.
-          // This TwoWay binding saves any changes to the same named property on the node data.
-          .bindTwoWay('alignment', 'alignment', go.Spot.parse, go.Spot.stringify)
-      );
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          // define the node primary shape
+          new go.Shape('RoundedRectangle', {
+            name: 'ICON',
+            parameter1: 10, // the corner has a medium radius
+            desiredSize: new go.Size(40, 40),
+            fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }),
+            stroke: 'black',
+            portId: '',
+            fromLinkable: true,
+            fromLinkableSelfNode: true,
+            fromLinkableDuplicates: true,
+            toLinkable: true,
+            toLinkableSelfNode: true,
+            toLinkableDuplicates: true,
+            cursor: 'pointer'
+          }),
+          // provide interior area where the user can grab the node
+          new go.Shape({ fill: 'transparent', stroke: null, desiredSize: new go.Size(30, 30) }),
+          new go.TextBlock({
+              font: 'bold 11pt helvetica, bold arial, sans-serif',
+              editable: true, // editing the text automatically updates the model data
+              cursor: 'move' // visual hint that the user can do something with this node label
+            })
+            .attach({ // GraphObject.attach() is used in method chaining to set properties that dont exist
+              _isNodeLabel: true
+            })
+            .bindTwoWay('text')
+            // The GraphObject.alignment property is what the NodeLabelDraggingTool modifies.
+            // This TwoWay binding saves any changes to the same named property on the node data.
+            .bindTwoWay('alignment', 'alignment', go.Spot.parse, go.Spot.stringify)
+        );
 
     // unlike the normal selection Adornment, this one includes a Button
-    myDiagram.nodeTemplate.selectionAdornmentTemplate = new go.Adornment('Spot')
-      .add(
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ fill: null, stroke: 'blue', strokeWidth: 2 }),
-            new go.Placeholder() // this represents the selected Node
-          ),
-        // the button to create a "next" node, at the top-right corner
-        go.GraphObject.build('Button', {
-          alignment: go.Spot.TopRight,
-          click: addNodeAndLink // this function is defined below
-        })
-          .add(
-            new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
-          ) // end button
-      ); // end Adornment
+    myDiagram.nodeTemplate.selectionAdornmentTemplate =
+      new go.Adornment('Spot')
+        .add(
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ fill: null, stroke: 'blue', strokeWidth: 2 }),
+              new go.Placeholder() // this represents the selected Node
+            ),
+          // the button to create a "next" node, at the top-right corner
+          go.GraphObject.build('Button', {
+              alignment: go.Spot.TopRight,
+              click: addNodeAndLink // this function is defined below
+            })
+            .add(
+              new go.Shape('PlusLine', { desiredSize: new go.Size(6, 6) })
+            ) // end button
+        ); // end Adornment
 
     // clicking the button inserts a new node to the right of the selected node,
     // and adds a link to that new node
@@ -245,38 +248,37 @@
       diagram.commitTransaction('Add State');
 
       // if the new node is off-screen, scroll the diagram to show the new node
-      diagram.scrollToRect(newnode.actualBounds);
+      if (!diagram.viewportBounds.containsRect(newnode.actualBounds)) {
+        diagram.commandHandler.scrollToPart(newnode);
+      }
     }
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link( // the whole link panel
-      { curve: go.Curve.Bezier, adjusting: go.LinkAdjusting.Stretch, reshapable: true }
-    )
-      .bindTwoWay('points')
-      .bind('curviness')
-      .add(
-        new go.Shape( // the link shape
-          { strokeWidth: 1.5 }
-        ),
-        new go.Shape( // the arrowhead
-          { toArrow: 'standard', stroke: null }
-        ),
-        new go.Panel('Auto')
-          .add(
-            new go.Shape({ // the label background, which becomes transparent around the edges
-              fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-              stroke: null
-            }),
-            new go.TextBlock('transition', { // the label text
-              textAlign: 'center',
-              font: '10pt helvetica, arial, sans-serif',
-              stroke: 'black',
-              margin: 4,
-              editable: true // editing the text automatically updates the model data
-            })
-              .bindTwoWay('text')
-          )
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ // the whole link panel
+          curve: go.Curve.Bezier, adjusting: go.LinkAdjusting.Stretch, reshapable: true
+        })
+        .bindTwoWay('points')
+        .bind('curviness')
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }), // the link shape
+          new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
+          new go.Panel('Auto')
+            .add(
+              new go.Shape({ // the label background, which becomes transparent around the edges
+                fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
+                stroke: null
+              }),
+              new go.TextBlock('transition', { // the label text
+                  textAlign: 'center',
+                  font: '10pt helvetica, arial, sans-serif',
+                  stroke: 'black',
+                  margin: 4,
+                  editable: true // editing the text automatically updates the model data
+                })
+                .bindTwoWay('text')
+            )
+        );
 
     // read in the JSON-format data from the "mySavedModel" element
     load();
@@ -290,6 +292,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

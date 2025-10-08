@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -160,24 +162,27 @@
       })
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Center,
-      resizable: true,
-      rotatable: true,
-      opacity: 0
-    })
-      .bindTwoWay('location')
-      .bind('desiredSize')
-      .add(
-        new go.Shape('RoundedRectangle', { fill: 'lightBlue' }),
-        new go.TextBlock().bind('text', 'key')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Center,
+          resizable: true,
+          rotatable: true,
+          opacity: 0
+        })
+        .bindTwoWay('location')
+        .bind('desiredSize')
+        .add(
+          new go.Shape('RoundedRectangle', { fill: 'lightBlue' }),
+          new go.TextBlock()
+            .bind('text', 'key')
+        );
 
-    myDiagram.linkTemplate = new go.Link({ opacity: 0 })
-      .add(
-        new go.Shape(),
-        new go.Shape({ toArrow: 'Standard' })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ opacity: 0 })
+        .add(
+          new go.Shape(),
+          new go.Shape({ toArrow: 'Standard' })
+        );
 
     // Generate a tree
     var treeArr = [{ key: 0 }];
@@ -200,7 +205,7 @@
 
     var queue = [myDiagram.nodes.first()];
     // Start with the root node visible
-    myDiagram.commit((diag) => {
+    myDiagram.commit(diag => {
       diag.nodes.first().opacity = 1;
     }, null);
 
@@ -220,7 +225,7 @@
       while (q.length > 0) {
         var tempNode = q.shift();
         // Add animation for all links that stem from the given node
-        tempNode.linksConnected.each((link) => {
+        tempNode.linksConnected.each(link => {
           if (link.fromNode === tempNode) {
             myDiagram.startTransaction('animate link');
             originalValues.push({
@@ -270,7 +275,7 @@
       // Chain animatons for each layer
       animation.finished = () => {
         myDiagram.startTransaction('change link');
-        originalValues.each((newVal) => {
+        originalValues.each(newVal => {
           var link = newVal.link;
           if (link.elements.count > 1) {
             // Set original values of each part of the link back to what they were
@@ -296,15 +301,16 @@
 
     function orthog() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = new go.Link({
-        opacity: 0, // links start out invisible
-        routing: go.Routing.Orthogonal,
-        corner: Number(cornerSlider.value)
-      })
-        .add(
-          new go.Shape(),
-          new go.Shape({ toArrow: 'Standard' })
-        );
+      myDiagram.linkTemplate =
+        new go.Link({
+            opacity: 0, // links start out invisible
+            routing: go.Routing.Orthogonal,
+            corner: Number(cornerSlider.value)
+          })
+          .add(
+            new go.Shape(),
+            new go.Shape({ toArrow: 'Standard' })
+          );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -317,15 +323,16 @@
 
     function bezierLinks() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = new go.Link({
-        opacity: 0, // links start out invisible
-        curve: go.Curve.Bezier,
-        curviness: Number(curvatureSlider.value)
-      })
-        .add(
-          new go.Shape(),
-          new go.Shape({ toArrow: 'Standard' })
-        );
+      myDiagram.linkTemplate =
+        new go.Link({
+            opacity: 0, // links start out invisible
+            curve: go.Curve.Bezier,
+            curviness: Number(curvatureSlider.value)
+          })
+          .add(
+            new go.Shape(),
+            new go.Shape({ toArrow: 'Standard' })
+          );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -338,13 +345,14 @@
 
     function linearLinks() {
       myDiagram.startTransaction('change links');
-      myDiagram.linkTemplate = new go.Link({
-        opacity: 0 // links start out invisible
-      })
-        .add(
-          new go.Shape(),
-          new go.Shape({ toArrow: 'Standard' })
-        );
+      myDiagram.linkTemplate =
+        new go.Link({
+            opacity: 0 // links start out invisible
+          })
+          .add(
+            new go.Shape(),
+            new go.Shape({ toArrow: 'Standard' })
+          );
       myDiagram.layout.doLayout(myDiagram);
       // Root node should start visible
       myDiagram.nodes.first().opacity = 1;
@@ -420,7 +428,7 @@
       var prevValueY = animationState.startValue.y;
       var bezSegments = 0;
       // find the total length of all the linear segments
-      geometry.figures.first().segments.each((sgmt) => {
+      geometry.figures.first().segments.each(sgmt => {
         if (sgmt.type === go.SegmentType.QuadraticBezier) {
           bezSegments++;
         } else {
@@ -461,7 +469,7 @@
     tempPoints.push(animationState.boundPoint2);
 
     // Add points from the original bezier which will be used to hold the position of the objects
-    animationState.origPoints.each((point) => {
+    animationState.origPoints.each(point => {
       tempPoints.push(point);
     });
     // Changing the points will cause GoJS to call the modified makeGeometry which will remake the geometry

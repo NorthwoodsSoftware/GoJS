@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,6 +132,15 @@
       allowCopy: false,
       'draggingTool.dragsTree': true,
       'commandHandler.deletesTree': true,
+      'commandHandler.liveElementId': 'screenreader',
+      'commandHandler.focusChanged': (oldfocus, newfocus, cmd) => updateFocus(newfocus, oldfocus),
+      'TreeCollapsed': e => updateFocus(e.subject.first().findObject('TreeExpander')),
+      'TreeExpanded': e => updateFocus(e.subject.first().findObject('TreeExpander')),
+      'Changed': e => { // there's no DiagramEvent for 'PanelExpanderButton' actions
+        if (e.change === go.ChangeType.Property && e.object.name === 'COLLAPSIBLE' && e.propertyName === 'visible') {
+          updateFocus(e.object.part.findObject('PanelExpander'));
+        }
+      },
       layout: new go.TreeLayout({ angle: 90, arrangement: go.TreeArrangement.FixedRoots }),
       'undoManager.isEnabled': true,
       // use "Modern" themes from extensions/Themes
@@ -141,6 +152,33 @@
       'themeManager.currentTheme': document.getElementById('theme').value
     });
 
+    function updateFocus(newfocus, oldfocus) {
+      const cmd = myDiagram.commandHandler;
+      if (!newfocus) newfocus = cmd.focus;
+      if (!oldfocus) oldfocus = null;
+      let msg = '';
+      if (newfocus instanceof go.Link) {
+        msg = cmd.describe(oldfocus, newfocus);
+      } else {
+        const node = (newfocus && !(newfocus instanceof go.Node) && newfocus.part instanceof go.Node) ? newfocus.part : null;
+        if (newfocus instanceof go.Node) {
+          msg = newfocus.data.question || newfocus.data.text;
+          if (Array.isArray(newfocus.data.actions) && newfocus.data.actions.length > 0) {
+            msg += '. Choices: ' + newfocus.data.actions.map(act => act.text).join(', ');
+          }
+        } else if (newfocus && newfocus.name === 'PanelExpander') {
+          msg = 'Button: ' + (newfocus.part.findObject('COLLAPSIBLE').visible ? 'Collapse' : 'Expand') + ' list of choices';
+          if (node) msg += '. Type Escape to focus on ' + (node.data.question || node.data.text);
+        } else if (newfocus && newfocus.name === 'TreeExpander') {
+          msg = 'Button: ' + (newfocus.part.isTreeExpanded ? 'Collapse' : 'Expand') + ' subtree of choices or people';
+          if (node) msg += '. Type Escape to focus on ' + (node.data.question || node.data.text);
+        }
+      }
+      // normal use of the <span> holding content that is read aloud:
+      const screenreader = document.getElementById('screenreader');
+      if (screenreader) screenreader.textContent = msg;
+    }
+
     myDiagram.themeManager.set('', {
       colors: {
         primary: '#155e75',
@@ -149,10 +187,10 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
-      var button = document.getElementById('SaveButton');
+    myDiagram.addDiagramListener('Modified', e => {
+      const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
-      var idx = document.title.indexOf('*');
+      const idx = document.title.indexOf('*');
       if (myDiagram.isModified) {
         if (idx < 0) document.title += '*';
       } else {
@@ -160,19 +198,19 @@
       }
     });
 
-    go.Shape.defineFigureGenerator('Van', function (shape, w, h) {
+    go.Shape.defineFigureGenerator('Van', (shape, w, h) => {
       var geo = go.Geometry.parse(
         'M37.409,18.905l-4.946-7.924c-0.548-0.878-1.51-1.411-2.545-1.411H3c-1.657,0-3,1.343-3,3v16.86c0,1.657,1.343,3,3,3h0.787 c0.758,1.618,2.391,2.75,4.293,2.75s3.534-1.132,4.292-2.75h20.007c0.758,1.618,2.391,2.75,4.293,2.75 c1.9,0,3.534-1.132,4.291-2.75h0.787c1.656,0,3-1.343,3-3v-2.496C44.75,22.737,41.516,19.272,37.409,18.905z M8.087,32.395 c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964s1.963,0.88,1.963,1.964S9.171,32.395,8.087,32.395z M26.042,21.001 V15.57v-2.999h3.876l5.264,8.43H26.042z M36.671,32.395c-1.084,0-1.963-0.879-1.963-1.963s0.879-1.964,1.963-1.964 s1.963,0.88,1.963,1.964S37.755,32.395,36.671,32.395z'
       );
       return geo.scale(w / geo.bounds.width, h / geo.bounds.height);
     });
-    go.Shape.defineFigureGenerator('SUV', function (shape, w, h) {
+    go.Shape.defineFigureGenerator('SUV', (shape, w, h) => {
       var geo = go.Geometry.parse(
         'M246,90.011V59.995c0-5.523-4.48-9.995-10-9.995h-50L156.97,6.416C155.11,3.634,152.34,2,149,2H28 c-5.52,0-10,4.446-10,9.969V30h-8c-4.42,0-8,3.56-8,7.983v40.022C2,82.427,5.58,86,10,86h8v20h16.458 c2.8-15.959,16.702-28.066,33.462-28.066c16.75,0,30.708,12.107,33.518,28.066h72.958c2.8-15.959,16.764-28.066,33.524-28.066 c16.75,0,30.624,12.107,33.434,28.066H250c4.42,0,8-3.563,8-7.985v-8.004H246z M86,50H30V13.97h56V50z M98,50V13.97h48L170,50H98z M68,138c-14.336,0-26.083-11.706-26.083-26.051s11.664-26.014,26-26.014s26,11.669,26,26.014S82.336,138,68,138z M67.917,99.943 c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006C79.917,105.329,74.534,99.943,67.917,99.943z M208,138c-14.337,0-26.083-11.706-26.083-26.051s11.663-26.014,26-26.014s26,11.669,26,26.014S222.337,138,208,138z M207.917,99.943c-6.617,0-12,5.386-12,12.006c0,6.621,5.383,12.006,12,12.006s12-5.386,12-12.006 C219.917,105.329,214.534,99.943,207.917,99.943z'
       );
       return geo.scale(w / geo.bounds.width, h / geo.bounds.height);
     });
-    go.Shape.defineFigureGenerator('Hammer', function (shape, w, h) {
+    go.Shape.defineFigureGenerator('Hammer', (shape, w, h) => {
       var geo = go.Geometry.parse(
         'M19 5.5a4.5 4.5 0 01-4.791 4.49c-.873-.055-1.808.128-2.368.8l-6.024 7.23a2.724 2.724 0 11-3.837-3.837L9.21 8.16c.672-.56.855-1.495.8-2.368a4.5 4.5 0 015.873-4.575c.324.105.39.51.15.752L13.34 4.66a.455.455 0 00-.11.494 3.01 3.01 0 001.617 1.617c.17.07.363.02.493-.111l2.692-2.692c.241-.241.647-.174.752.15.14.435.216.9.216 1.382zM4 17a1 1 0 100-2 1 1 0 000 2z'
       );
@@ -180,97 +218,110 @@
     });
 
     // each action is represented by a shape and some text
-    var actionTemplate = new go.Panel('TableRow')
-      .add(
-        new go.Shape({ column: 0, width: 20, height: 20, fill: null }).bind('figure').theme('stroke', 'text'),
-        new go.TextBlock({ column: 1 }, { font: '11pt Verdana, sans-serif' }).bind('text').theme('stroke', 'text'),
-        new go.TextBlock({ column: 2, font: '11pt Verdana, sans-serif' })
-          .bindObject('text', 'itemIndex', (i) => `[${i}]`)
-          .theme('stroke', 'text')
-      );
+    var actionTemplate =
+      new go.Panel('TableRow')
+        .add(
+          new go.Shape({ column: 0, width: 20, height: 20, fill: null })
+            .bind('figure')
+            .theme('stroke', 'text'),
+          new go.TextBlock({ column: 1, font: '11pt Verdana, sans-serif' })
+            .bind('text')
+            .theme('stroke', 'text'),
+          new go.TextBlock({ column: 2, font: '11pt Verdana, sans-serif' })
+            .bindObject('text', 'itemIndex', i => `[${i}]`)
+            .theme('stroke', 'text')
+        );
 
     // each regular Node has body consisting of a title followed by a collapsible list of actions,
     // controlled by a PanelExpanderButton, with a TreeExpanderButton underneath the body
     myDiagram.nodeTemplate = // the default node template
-      new go.Node('Vertical', { selectionObjectName: 'BODY' })
-      // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
-      .bindTwoWay('isTreeExpanded') // remember the expansion state for
-      .bindTwoWay('wasTreeExpanded') //   when the model is re-loaded
-      .add(
-        new go.Panel('Auto', { name: 'BODY' })
-          .add(
-            new go.Shape('RoundedRectangle', { strokeWidth: 0 }).theme('fill', 'primary'),
-            new go.Panel('Vertical', { margin: 3 })
-              .add(
-                // the title
-                new go.TextBlock({
-                  stretch: go.Stretch.Horizontal,
-                  font: 'bold 12pt Verdana, sans-serif',
-                  stroke: 'white'
-                })
-                  .bind('text', 'question'),
-                // the optional list of actions
-                new go.Panel('Vertical', {
-                  stretch: go.Stretch.Horizontal,
-                  visible: false
-                }) // not visible unless there is at least one action
-                  .bind('visible', 'actions', (acts) => Array.isArray(acts) && acts.length > 0)
-                  .add(
-                    // headered by a label and a PanelExpanderButton inside a Table
-                    new go.Panel('Table', { stretch: go.Stretch.Horizontal })
-                      .add(
-                        new go.TextBlock('Choices', {
-                          alignment: go.Spot.Left,
-                          font: '10pt Verdana, sans-serif',
-                          stroke: 'white'
-                        }),
-                        go.GraphObject.build('PanelExpanderButton',
-                          {
-                            column: 1,
-                            alignment: go.Spot.Right,
-                            'ButtonIcon.stroke': 'white'
-                          },
-                          'COLLAPSIBLE' // name of the object to make visible or invisible
-                        )
-                      ), // end Table panel
-                    // with the list data bound in the Table Panel
-                    new go.Panel('Table', {
-                      name: 'COLLAPSIBLE', // identify to the PanelExpanderButton
-                      padding: 2,
-                      stretch: go.Stretch.Horizontal, // take up whole available width
-                      defaultAlignment: go.Spot.Left, // thus no need to specify alignment on each element
-                      defaultSeparatorPadding: 3,
-                      itemTemplate: actionTemplate // the Panel created for each item in Panel.itemArray
+      new go.Node('Vertical', {
+          selectionObjectName: 'BODY',
+          locationSpot: go.Spot.Top  // centered vertically, aligned at top horizontally
+        })
+        // the main "BODY" consists of a RoundedRectangle surrounding nested Panels
+        .bindTwoWay('isTreeExpanded') // remember the expansion state for
+        .bindTwoWay('wasTreeExpanded') //   when the model is re-loaded
+        .add(
+          new go.Panel('Auto', { name: 'BODY' })
+            .add(
+              new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+                .theme('fill', 'primary'),
+              new go.Panel('Vertical', { margin: 3 })
+                .add(
+                  // the title
+                  new go.TextBlock({
+                      stretch: go.Stretch.Horizontal,
+                      font: 'bold 12pt Verdana, sans-serif',
+                      stroke: 'white'
                     })
-                      .theme('background', 'div')
-                      .bind('itemArray', 'actions')
-                      // bind Panel.itemArray to nodedata.actions
-                  ) // end optional Vertical Panel
-              ) // end outer Vertical Panel
-          ), // end "BODY"  Auto Panel
-        new go.Panel( // this is underneath the "BODY"
-          { height: 17 }) // always this height, even if the TreeExpanderButton is not visible
-          .add(go.GraphObject.build('TreeExpanderButton'))
-      );
+                    .bind('text', 'question'),
+                  // the optional list of actions
+                  new go.Panel('Vertical', {
+                      stretch: go.Stretch.Horizontal,
+                      visible: false
+                    }) // not visible unless there is at least one action
+                    .bind('visible', 'actions', acts => Array.isArray(acts) && acts.length > 0)
+                    .add(
+                      // headered by a label and a PanelExpanderButton inside a Table
+                      new go.Panel('Table', { stretch: go.Stretch.Horizontal })
+                        .add(
+                          new go.TextBlock('Choices', {
+                            alignment: go.Spot.Left,
+                            font: '10pt Verdana, sans-serif',
+                            stroke: 'white'
+                          }),
+                          go.GraphObject.build('PanelExpanderButton', {
+                              name: 'PanelExpander',
+                              column: 1,
+                              alignment: go.Spot.Right,
+                              'ButtonIcon.stroke': 'white'
+                            },
+                            'COLLAPSIBLE') // name of the object to make visible or invisible
+                        ), // end Table panel
+                      // with the list data bound in the Table Panel
+                      new go.Panel('Table', {
+                          name: 'COLLAPSIBLE', // identify to the PanelExpanderButton
+                          padding: 2,
+                          stretch: go.Stretch.Horizontal, // take up whole available width
+                          defaultAlignment: go.Spot.Left, // thus no need to specify alignment on each element
+                          defaultSeparatorPadding: 3,
+                          itemTemplate: actionTemplate // the Panel created for each item in Panel.itemArray
+                        })
+                        .theme('background', 'div')
+                        .bind('itemArray', 'actions')
+                        // bind Panel.itemArray to nodedata.actions
+                    ) // end optional Vertical Panel
+                ) // end outer Vertical Panel
+            ), // end "BODY"  Auto Panel
+          new go.Panel({ // this is underneath the "BODY"
+              height: 17 // always this height, even if the TreeExpanderButton is not visible
+            })
+            .add(go.GraphObject.build('TreeExpanderButton', { name: 'TreeExpander' }))
+        );
 
     // define a second kind of Node:
-    myDiagram.nodeTemplateMap.add(
-      'Terminal',
-      new go.Node('Spot')
+    myDiagram.nodeTemplateMap.add('Terminal',
+      new go.Node('Spot', { locationSpot: go.Spot.Top })
         .add(
-          new go.Shape('Circle', { width: 55, height: 55, strokeWidth: 0 }).theme('fill', 'terminal'),
-          new go.TextBlock({ font: '10pt Verdana, sans-serif', stroke: 'white' }).bind('text')
+          new go.Shape('Circle', { width: 55, height: 55, strokeWidth: 0 })
+            .theme('fill', 'terminal'),
+          new go.TextBlock({ font: '10pt Verdana, sans-serif', stroke: 'white' })
+            .bind('text')
         )
     );
 
-    myDiagram.linkTemplate = new go.Link(
-      { routing: go.Routing.Orthogonal, deletable: false, corner: 10, toShortLength: 4 }
-    )
-      .add(
-        new go.Shape({ strokeWidth: 2 }).theme('stroke', 'link'),
-        new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }) // the arrowhead
-          .theme('fill', 'link')
-      );
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal, corner: 10,
+          deletable: false, toShortLength: 4
+        })
+        .add(
+          new go.Shape({ strokeWidth: 2 })
+            .theme('stroke', 'link'),
+          new go.Shape({ toArrow: 'Standard', strokeWidth: 0 }) // the arrowhead
+            .theme('fill', 'link')
+        );
 
     var nodeDataArray = [
       {
@@ -368,6 +419,14 @@
   };
 
   window.addEventListener('DOMContentLoaded', init);
+
+  function enableKeyboard() {
+    window.removeEventListener('keydown', enableKeyboard);
+    myDiagram.commandHandler.isFocusEnabled = true;
+    myDiagram.commandHandler.isVirtualPointerEnabled = true;
+  }
+
+  window.addEventListener('keydown', enableKeyboard);
 </script>
 
 <div id="sample">
@@ -378,6 +437,7 @@
     <option value="light">Light</option>
     <option value="dark">Dark</option>
   </select>
+  Screen Reader: <span id="screenreader"></span>
   <p>
     An <em>IVR tree</em>, or Interactive Voice Response Tree, is typically used by automated answering systems to direct calls to the correct party. This
     particular example is for a car dealership to route calls.
@@ -386,7 +446,24 @@
     This Interactive Voice Response Tree (IVR tree) has nodes that contain a collapsible list of actions, controlled by a <b>PanelExpanderButton</b>, with a
     <b>TreeExpanderButton</b> underneath the body. See the <a href="../intro/buttons.html">Intro page on Buttons</a> for more GoJS button information.
   </p>
-  <p>The dark and light themes are controlled using the <a>ThemeManager</a>.</p>
+  <p>
+    Once <a>CommandHandler.isFocusEnabled</a> has been set to true, the root node becomes the GoJS <a>CommandHandler.focus</a>,
+    as shown by a double-colored dashed box around the node.
+    This allows the user to use the arrow keys to change focus, <code>Space</code> to select the focused Part,
+    and <code>Enter</code> to go into Nodes and click buttons such as the "PanelExpanderButton" or "TreeExpanderButton".
+    Read more about <a href="../learn/interactivity.html#FocusKeyboardControlTools">Keyboard Control</a>.
+  </p>
+  <p>
+    Once <a>CommandHandler.isVirtualPointerEnabled</a> has also been set to true, then when the user holds down the <code>Shift</code> key,
+    it shows a virtual pointer that allows the user to use <code>Shift-Enter</code> and <code>Shift-arrow</code> keys to drag nodes.
+    The user can always toggle "keyboard control mode" using the <code>Ctrl-Alt-Enter</code> keyboard command.
+  </p>
+  <p>
+    For another sample demonstrating screen-reader assistance, see <a href="./Accessibility.html">Accessibility</a> sample.
+  </p>
+  <p>
+    The dark and light themes are controlled using the <a>ThemeManager</a>.
+  </p>
 </div>
 
           
@@ -450,7 +527,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,39 +133,41 @@
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto', { locationSpot: go.Spot.Center })
-      .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Shape('Circle', {
-          fill: 'white',
-          stroke: 'gray',
-          strokeWidth: 2,
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          fromLinkableDuplicates: true,
-          toLinkableDuplicates: true,
-          fromLinkableSelfNode: true,
-          toLinkableSelfNode: true
-        })
-          .bind('stroke', 'color')
-          .bind('figure'),
-        new go.TextBlock({
-          margin: new go.Margin(5, 5, 3, 5),
-          font: '10pt sans-serif',
-          minSize: new go.Size(16, 16),
-          maxSize: new go.Size(120, NaN),
-          textAlign: 'center',
-          editable: true
-        }).bindTwoWay('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .bindTwoWay('location', 'location', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('Circle', {
+              fill: 'white',
+              stroke: 'gray',
+              strokeWidth: 2,
+              portId: '',
+              fromLinkable: true,
+              toLinkable: true,
+              fromLinkableDuplicates: true,
+              toLinkableDuplicates: true,
+              fromLinkableSelfNode: true,
+              toLinkableSelfNode: true
+            })
+            .bind('stroke', 'color')
+            .bind('figure'),
+          new go.TextBlock({
+              margin: new go.Margin(5, 5, 3, 5),
+              font: '10pt sans-serif',
+              minSize: new go.Size(16, 16),
+              maxSize: new go.Size(120, NaN),
+              textAlign: 'center',
+              editable: true
+            })
+            .bindTwoWay('text')
+        );
 
     // initialize Palette
     myPalette = new go.Palette('myPaletteDiv', {
       nodeTemplate: myDiagram.nodeTemplate,
       contentAlignment: go.Spot.Center,
       layout: new go.GridLayout({ wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         // just for demonstration purposes,
         if (e.isTransactionFinished) {
           // show the model data in the page's TextArea
@@ -214,7 +218,7 @@
   }
 
   function addToPalette() {
-    var node = myDiagram.selection.filter((p) => p instanceof go.Node).first();
+    var node = myDiagram.selection.filter(p => p instanceof go.Node).first();
     if (node !== null) {
       myPalette.startTransaction();
       var item = myPalette.model.copyNodeData(node.data);
@@ -223,11 +227,12 @@
     }
   }
 
-  // The user cannot delete selected nodes in the Palette with the Delete key or Control-X,
+  // The user cannot delete selected nodes in the Palette with the Delete key or Ctrl-X,
   // but they can if they do so programmatically.
   function removeFromPalette() {
     myPalette.commandHandler.deleteSelection();
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

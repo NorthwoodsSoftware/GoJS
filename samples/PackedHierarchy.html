@@ -110,6 +110,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -196,61 +198,65 @@
   });
 
   // common definitions for both Nodes and Groups
-  const toolTipTemplate = new go.Adornment('Auto')
-    .add(
-      new go.Shape({ fill: 'white' }),
-      new go.TextBlock({ margin: 4 })
-        .bind('text', 'tooltip')
-    );
+  const toolTipTemplate =
+    new go.Adornment('Auto')
+      .add(
+        new go.Shape({ fill: 'white' }),
+        new go.TextBlock({ margin: 4 })
+          .bind('text', 'tooltip')
+      );
 
-  const selectionAdornmentTemplate = new go.Adornment('Auto')
-    .add(
-      new go.Shape('Circle', {
-        fill: null,
-        stroke: 'dodgerblue',
-        strokeWidth: 3,
-        spot1: go.Spot.TopLeft,
-        spot2: go.Spot.BottomRight
-      }),
-      new go.Placeholder()
-    );
+  const selectionAdornmentTemplate =
+    new go.Adornment('Auto')
+      .add(
+        new go.Shape('Circle', {
+          fill: null,
+          stroke: 'dodgerblue',
+          strokeWidth: 3,
+          spot1: go.Spot.TopLeft,
+          spot2: go.Spot.BottomRight
+        }),
+        new go.Placeholder()
+      );
 
-  function commonStyle(obj) {
-    return Object.assign({
-      toolTip: toolTipTemplate,
-      selectionAdornmentTemplate: selectionAdornmentTemplate,
-      doubleClick: (e, node) => {
-        const url = '../../api/symbols/' + node.data.key + '.html';
-        window.open(url, '_blank');
-      }
-    }, obj || {});
+  function nodeStyle(node) {
+    node.toolTip = toolTipTemplate;
+    node.selectionAdornmentTemplate = selectionAdornmentTemplate;
+    node.doubleClick = (e, node) => {
+      const url = '../../api/symbols/' + node.data.key + '.html';
+      window.open(url, '_blank');
+    };
   }
 
-  myDiagram.nodeTemplate = new go.Node('Auto', commonStyle())
-    .bind('width', 'diameter')
-    .bind('height', 'diameter')
-    .add(
-      new go.Shape({
-        figure: 'Circle',
-        fill: '#1F4963',
-        strokeWidth: 0,
-        spot1: go.Spot.TopLeft,
-        spot2: go.Spot.BottomRight
-      })
-        .bind('fill'),
-      new go.TextBlock({ font: '10px Helvetica, Arial, sans-serif', stroke: 'white', maxLines: 1 })
-        .bind('text')
-        .bind('font')
-        .bind('stroke', 'fill', (f) => (go.Brush.isDark(f) ? 'white' : 'black'))
-    );
+  myDiagram.nodeTemplate =
+    new go.Node('Auto')
+      .apply(nodeStyle)
+      .bind('width', 'diameter')
+      .bind('height', 'diameter')
+      .add(
+        new go.Shape({
+            figure: 'Circle',
+            fill: '#1F4963',
+            strokeWidth: 0,
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight
+          })
+          .bind('fill'),
+        new go.TextBlock({ font: '10px Helvetica, Arial, sans-serif', stroke: 'white', maxLines: 1 })
+          .bind('text')
+          .bind('font')
+          .bind('stroke', 'fill', f => go.Brush.isDark(f) ? 'white' : 'black')
+      );
 
-  myDiagram.groupTemplate = new go.Group(commonStyle({ layout: new HierarchyLayout() }))
-    .add(
-      new go.Shape('Circle', { fill: 'rgba(128,128,128,0.33)' })
-        .bind('desiredSize', 'size')
-        .bind('position'),
-      new go.Placeholder() // represents area for all member parts
-    );
+  myDiagram.groupTemplate =
+    new go.Group({ layout: new HierarchyLayout() })
+      .apply(nodeStyle)
+      .add(
+        new go.Shape('Circle', { fill: 'rgba(128,128,128,0.33)' })
+          .bind('desiredSize', 'size')
+          .bind('position'),
+        new go.Placeholder() // represents area for all member parts
+      );
 
   // Collect all of the data for the model of the class hierarchy
   const nodeDataArray = [

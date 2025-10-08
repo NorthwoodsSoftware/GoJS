@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -140,28 +142,29 @@
     });
 
     // replace the default Node template in the nodeTemplateMap
-    myDiagram.nodeTemplate = new go.Node('Vertical') // the whole node panel
-      .add(
-        new go.TextBlock().bind('text', 'key'),
-        new go.Picture( // the icon showing the logo
-          // You should set the desiredSize (or width and height)
-          // whenever you know what size the Picture should be.
-          { desiredSize: new go.Size(75, 50) }
-        ).bind('source', 'key', convertKeyImage)
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Vertical') // the whole node panel
+        .add(
+          new go.TextBlock()
+            .bind('text', 'key'),
+          new go.Picture( {  // the icon showing the logo
+              // You should set the desiredSize (or width and height)
+              // whenever you know what size the Picture should be.
+              desiredSize: new go.Size(75, 50)
+            })
+            .bind('source', 'key', convertKeyImage)
+        );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link({ curve: go.Curve.Bezier, toShortLength: 2 }) // the whole link panel
-      .add(
-        new go.Shape({ strokeWidth: 1.5 }), // the link shape
-        new go.Shape({ // the arrowhead
-          toArrow: 'Standard',
-          stroke: null
-        })
-      );
+    myDiagram.linkTemplate =
+      new go.Link({ curve: go.Curve.Bezier, toShortLength: 2 }) // the whole link panel
+        .add(
+          new go.Shape({ strokeWidth: 1.5 }), // the link shape
+          new go.Shape({ toArrow: 'Standard', stroke: null }) // the arrowhead
+        );
 
     // the array of link data objects: the relationships between the nodes
-    var linkDataArray = [
+    const linkDataArray = [
       { from: 'CAR', to: 'ARI' },
       { from: 'ARI', to: 'CIN' },
       { from: 'ARI', to: 'GB' },
@@ -223,6 +226,7 @@
     if (!key) key = 'NE';
     return 'https://nwoods.com/go/beatpaths/' + key + '_logo-75x50.png';
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

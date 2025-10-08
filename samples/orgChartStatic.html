@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -182,15 +184,11 @@
     });
 
     // This function provides a common style for most of the TextBlocks.
-    function textStyle(field) {
-      return function (node) {
-        node.set({
-          font: '12px Roboto, sans-serif',
-          stroke: 'rgba(0, 0, 0, .60)',
-          visible: false // only show textblocks when there is corresponding data for them
-        });
-        node.bind('visible', field, (val) => val !== undefined);
-      }
+    function textStyle(node, field) {
+      node.font = '12px Roboto, sans-serif';
+      node.stroke = 'rgba(0, 0, 0, .60)';
+      node.visible = false; // only show textblocks when there is corresponding data for them
+      node.bind('visible', field, val => val !== undefined);
     }
 
     // define Converters to be used for Bindings
@@ -199,92 +197,97 @@
     }
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      locationSpot: go.Spot.Top,
-      isShadowed: true,
-      shadowBlur: 1,
-      shadowOffset: new go.Point(0, 1),
-      shadowColor: 'rgba(0, 0, 0, .14)',
-      // selection adornment to match shape of nodes
-      selectionAdornmentTemplate: new go.Adornment('Auto')
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          locationSpot: go.Spot.Top,
+          isShadowed: true,
+          shadowBlur: 1,
+          shadowOffset: new go.Point(0, 1),
+          shadowColor: 'rgba(0, 0, 0, .14)',
+          // selection adornment to match shape of nodes
+          selectionAdornmentTemplate:
+            new go.Adornment('Auto')
+              .add(
+                new go.Shape('RoundedRectangle', { fill: null, stroke: '#7986cb', strokeWidth: 3 })
+                  .set(roundedRectangleParams),
+                new go.Placeholder()
+              ) // end Adornment
+        })
         .add(
-          new go.Shape('RoundedRectangle', { fill: null, stroke: '#7986cb', strokeWidth: 3 }).set(roundedRectangleParams),
-          new go.Placeholder()
-        ) // end Adornment
-    })
-      .add(
-        new go.Shape('RoundedRectangle', { name: 'SHAPE', fill: '#ffffff', strokeWidth: 0 })
-          .set(roundedRectangleParams)
-          // gold if highlighted, white otherwise
-          .bindObject('fill', 'isHighlighted', (h) => (h ? 'gold' : '#ffffff')),
-        new go.Panel('Vertical')
-          .add(
-            new go.Panel('Horizontal', { margin: 8 })
-              .add(
-                new go.Picture({ // flag image, only visible if a nation is specified
-                  margin: mr8,
-                  visible: false,
-                  desiredSize: new go.Size(50, 50)
+          new go.Shape('RoundedRectangle', { name: 'SHAPE', fill: '#ffffff', strokeWidth: 0 })
+            .set(roundedRectangleParams)
+            // gold if highlighted, white otherwise
+            .bindObject('fill', 'isHighlighted', h => h ? 'gold' : '#ffffff'),
+          new go.Panel('Vertical')
+            .add(
+              new go.Panel('Horizontal', { margin: 8 })
+                .add(
+                  new go.Picture({ // flag image, only visible if a nation is specified
+                      margin: mr8,
+                      visible: false,
+                      desiredSize: new go.Size(50, 50)
+                    })
+                    .bind('source', 'nation', theNationFlagConverter)
+                    .bind('visible', 'nation', nat => nat !== undefined),
+                  new go.Panel('Table')
+                    .add(
+                      new go.TextBlock({
+                          row: 0,
+                          alignment: go.Spot.Left,
+                          font: '16px Roboto, sans-serif',
+                          stroke: 'rgba(0, 0, 0, .87)',
+                          maxSize: new go.Size(160, NaN)
+                        })
+                        .bind('text', 'name'),
+                      new go.TextBlock({
+                          row: 1,
+                          alignment: go.Spot.Left,
+                          maxSize: new go.Size(160, NaN)
+                        })
+                        .apply(textStyle, 'title')
+                        .bind('text', 'title'),
+                      go.GraphObject.build('PanelExpanderButton', { row: 0, column: 1, rowSpan: 2, margin: ml8 }, 'INFO')
+                    )
+                ),
+              new go.Shape('LineH', {
+                  stroke: 'rgba(0, 0, 0, .60)',
+                  strokeWidth: 1,
+                  height: 1,
+                  stretch: go.Stretch.Horizontal
                 })
-                  .bind('source', 'nation', theNationFlagConverter)
-                  .bind('visible', 'nation', (nat) => nat !== undefined),
-                new go.Panel('Table')
-                  .add(
-                    new go.TextBlock({
-                      row: 0,
-                      alignment: go.Spot.Left,
-                      font: '16px Roboto, sans-serif',
-                      stroke: 'rgba(0, 0, 0, .87)',
-                      maxSize: new go.Size(160, NaN)
+                .bindObject('visible', undefined, null, null, 'INFO'), // only visible when info is expanded
+              new go.Panel('Vertical', {
+                  name: 'INFO', // identify to the PanelExpanderButton
+                  stretch: go.Stretch.Horizontal, // take up whole available width
+                  margin: 8,
+                  defaultAlignment: go.Spot.Left // thus no need to specify alignment on each element
+                })
+                .add(
+                  new go.TextBlock()
+                    .apply(textStyle, 'headOf')
+                    .bind('text', 'headOf', head => 'Head of: ' + head),
+                  new go.TextBlock()
+                    .apply(textStyle, 'boss')
+                    .bind('margin', 'headOf', head => mt8) // some space above if there is also a headOf value
+                    .bind('text', 'boss', boss => {
+                      var boss = myDiagram.model.findNodeDataForKey(boss);
+                      if (boss !== null) return 'Reporting to: ' + boss.name;
+                      return '';
                     })
-                      .bind('text', 'name'),
-                    new go.TextBlock({
-                      row: 1,
-                      alignment: go.Spot.Left,
-                      maxSize: new go.Size(160, NaN)
-                    })
-                      .apply(textStyle('title'))
-                      .bind('text', 'title'),
-                    go.GraphObject.build('PanelExpanderButton', { row: 0, column: 1, rowSpan: 2, margin: ml8 }, 'INFO')
-                  )
-              ),
-            new go.Shape('LineH', {
-              stroke: 'rgba(0, 0, 0, .60)',
-              strokeWidth: 1,
-              height: 1,
-              stretch: go.Stretch.Horizontal
-            })
-              .bindObject('visible', undefined, null, null, 'INFO'), // only visible when info is expanded
-            new go.Panel('Vertical', {
-              name: 'INFO', // identify to the PanelExpanderButton
-              stretch: go.Stretch.Horizontal, // take up whole available width
-              margin: 8,
-              defaultAlignment: go.Spot.Left // thus no need to specify alignment on each element
-            })
-              .add(
-                new go.TextBlock()
-                  .apply(textStyle('headOf'))
-                  .bind('text', 'headOf', (head) => 'Head of: ' + head),
-                new go.TextBlock()
-                  .apply(textStyle('boss'))
-                  .bind('margin', 'headOf', (head) => mt8) // some space above if there is also a headOf value
-                  .bind('text', 'boss', (boss) => {
-                    var boss = myDiagram.model.findNodeDataForKey(boss);
-                    if (boss !== null) {
-                      return 'Reporting to: ' + boss.name;
-                    }
-                    return '';
-                  })
-              )
-          )
-      );
+                )
+            )
+        );
 
     // define the Link template, a simple orthogonal line
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      corner: 5,
-      selectable: false
-    }).add(new go.Shape({ strokeWidth: 3, stroke: '#424242' })); // dark gray, rounded corner links
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          corner: 5,
+          selectable: false
+        })
+        .add(
+          new go.Shape({ strokeWidth: 3, stroke: '#424242' }) // dark gray, rounded corner links
+        );
 
     // set up the nodeDataArray, describing each person/position
     var nodeDataArray = [
@@ -568,7 +571,7 @@
       );
       myDiagram.highlightCollection(results);
       // try to center the diagram at the first node that was found
-      if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+      if (results.count > 0) myDiagram.commandHandler.scrollToPart(results.first());
     } else {
       // empty string only clears highlighteds collection
       myDiagram.clearHighlighteds();
@@ -576,6 +579,7 @@
 
     myDiagram.commitTransaction('highlight search');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

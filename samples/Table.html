@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,6 +127,7 @@
 <script src="../extensions/TableLayout.js"></script>
 
 <script id="code">
+
   // define a custom ResizingTool to limit how far one can shrink a row or column
   class LaneResizingTool extends go.ResizingTool {
     constructor(init) {
@@ -140,7 +143,7 @@
       const horiz = lane.category === 'Column Header'; // or "Row Header"
       const margin = diagram.nodeTemplate.margin;
       let bounds = new go.Rect();
-      diagram.findTopLevelGroups().each((g) => {
+      diagram.findTopLevelGroups().each(g => {
         if (lane === null) return;
         if (horiz ? g.column === lane.column : g.row === lane.row) {
           const b = diagram.computePartsBounds(g.memberParts);
@@ -188,196 +191,196 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       layout: tableLayout,
-      SelectionMoved: (e) => e.diagram.layoutDiagram(true),
+      SelectionMoved: e => e.diagram.layoutDiagram(true),
       resizingTool: new LaneResizingTool(),
       // feedback that dropping in the background is not allowed
-      mouseDragOver: (e) => (e.diagram.currentCursor = 'not-allowed'),
+      mouseDragOver: e => (e.diagram.currentCursor = 'not-allowed'),
       // when dropped in the background, not on a Node or a Group, cancel the drop
-      mouseDrop: (e) => e.diagram.currentTool.doCancel(),
+      mouseDrop: e => e.diagram.currentTool.doCancel(),
       'animationManager.isInitial': false,
       'undoManager.isEnabled': true
     });
 
-    myDiagram.nodeTemplateMap.add(
-      'Header', // an overall table header, at the top
+    myDiagram.nodeTemplateMap.add('Header', // an overall table header, at the top
       new go.Part('Auto', {
-        row: 0,
-        column: 1,
-        columnSpan: 9999,
-        stretch: go.Stretch.Horizontal,
-        selectable: false,
-        pickable: false
-      })
+          row: 0,
+          column: 1,
+          columnSpan: 9999,
+          stretch: go.Stretch.Horizontal,
+          selectable: false,
+          pickable: false
+        })
         .add(
           new go.Shape({ fill: 'transparent', strokeWidth: 0 }),
-          new go.TextBlock({ alignment: go.Spot.Center, font: 'bold 12pt sans-serif' }).bind('text')
-        )
-    );
+          new go.TextBlock({ alignment: go.Spot.Center, font: 'bold 12pt sans-serif' })
+            .bind('text')
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Sider', // an overall table header, on the left side
+    myDiagram.nodeTemplateMap.add('Sider', // an overall table header, on the left side
       new go.Part('Auto', {
-        row: 1,
-        rowSpan: 9999,
-        column: 0,
-        stretch: go.Stretch.Vertical,
-        selectable: false,
-        pickable: false
-      })
+          row: 1,
+          rowSpan: 9999,
+          column: 0,
+          stretch: go.Stretch.Vertical,
+          selectable: false,
+          pickable: false
+        })
         .add(
           new go.Shape({ fill: 'transparent', strokeWidth: 0 }),
-          new go.TextBlock({ alignment: go.Spot.Center, font: 'bold 12pt sans-serif', angle: 270 }).bind('text')
-        )
-    );
+          new go.TextBlock({ alignment: go.Spot.Center, font: 'bold 12pt sans-serif', angle: 270 })
+            .bind('text')
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Column Header', // for each column header
+    myDiagram.nodeTemplateMap.add('Column Header', // for each column header
       new go.Part('Spot', {
-        row: 1,
-        rowSpan: 9999,
-        column: 2,
-        minSize: new go.Size(100, NaN),
-        stretch: go.Stretch.Fill,
-        movable: false,
-        resizable: true,
-        resizeAdornmentTemplate: new go.Adornment('Spot')
-          .add(
-            new go.Placeholder(),
-            new go.Shape({ // for changing the length of a lane
-              alignment: go.Spot.Right,
-              desiredSize: new go.Size(7, 50),
-              fill: 'lightblue',
-              stroke: 'dodgerblue',
-              cursor: 'col-resize'
-            })
-          )
-      })
+          row: 1,
+          rowSpan: 9999,
+          column: 2,
+          minSize: new go.Size(100, NaN),
+          stretch: go.Stretch.Fill,
+          movable: false,
+          resizable: true,
+          resizeAdornmentTemplate:
+            new go.Adornment('Spot')
+              .add(
+                new go.Placeholder(),
+                new go.Shape({ // for changing the length of a lane
+                  alignment: go.Spot.Right,
+                  desiredSize: new go.Size(7, 50),
+                  fill: 'lightblue',
+                  stroke: 'dodgerblue',
+                  cursor: 'col-resize'
+                })
+              )
+        })
         .bind('column', 'col')
         .add(
-          new go.Shape({ fill: null }).bind('fill', 'color'),
+          new go.Shape({ fill: null })
+            .bind('fill', 'color'),
           new go.Panel('Auto', {
-            // this is positioned above the Shape, in row 1
-            alignment: go.Spot.Top,
-            alignmentFocus: go.Spot.Bottom,
-            stretch: go.Stretch.Horizontal,
-            height: myDiagram.layout.getRowDefinition(1).height
-          })
+              // this is positioned above the Shape, in row 1
+              alignment: go.Spot.Top,
+              alignmentFocus: go.Spot.Bottom,
+              stretch: go.Stretch.Horizontal,
+              height: myDiagram.layout.getRowDefinition(1).height
+            })
             .add(
               new go.Shape({ fill: 'transparent', strokeWidth: 0 }),
               new go.TextBlock({
-                font: 'bold 10pt sans-serif',
-                isMultiline: false,
-                wrap: go.Wrap.None,
-                overflow: go.TextOverflow.Ellipsis
-              })
+                  font: 'bold 10pt sans-serif',
+                  isMultiline: false,
+                  wrap: go.Wrap.None,
+                  overflow: go.TextOverflow.Ellipsis
+                })
                 .bind('text')
             )
-        )
-    );
+        ));
 
-    myDiagram.nodeTemplateMap.add(
-      'Row Sider', // for each row header
+    myDiagram.nodeTemplateMap.add('Row Sider', // for each row header
       new go.Part('Spot', {
-        row: 2,
-        column: 1,
-        columnSpan: 9999,
-        minSize: new go.Size(NaN, 100),
-        stretch: go.Stretch.Fill,
-        movable: false,
-        resizable: true,
-        resizeAdornmentTemplate: new go.Adornment('Spot')
-          .add(
-            new go.Placeholder(),
-            new go.Shape({ // for changing the breadth of a lane
-              alignment: go.Spot.Bottom,
-              desiredSize: new go.Size(50, 7),
-              fill: 'lightblue',
-              stroke: 'dodgerblue',
-              cursor: 'row-resize'
-            })
-          )
-      })
+          row: 2,
+          column: 1,
+          columnSpan: 9999,
+          minSize: new go.Size(NaN, 100),
+          stretch: go.Stretch.Fill,
+          movable: false,
+          resizable: true,
+          resizeAdornmentTemplate:
+            new go.Adornment('Spot')
+              .add(
+                new go.Placeholder(),
+                new go.Shape({ // for changing the breadth of a lane
+                  alignment: go.Spot.Bottom,
+                  desiredSize: new go.Size(50, 7),
+                  fill: 'lightblue',
+                  stroke: 'dodgerblue',
+                  cursor: 'row-resize'
+                })
+              )
+        })
         .bind('row')
         .add(
-          new go.Shape({ fill: null }).bind('fill', 'color'),
+          new go.Shape({ fill: null })
+            .bind('fill', 'color'),
           new go.Panel('Auto', {
-            // this is positioned to the left of the Shape, in column 1
-            alignment: go.Spot.Left,
-            alignmentFocus: go.Spot.Right,
-            stretch: go.Stretch.Vertical,
-            angle: 270,
-            height: myDiagram.layout.getColumnDefinition(1).width
-          })
+              // this is positioned to the left of the Shape, in column 1
+              alignment: go.Spot.Left,
+              alignmentFocus: go.Spot.Right,
+              stretch: go.Stretch.Vertical,
+              angle: 270,
+              height: myDiagram.layout.getColumnDefinition(1).width
+            })
             .add(
               new go.Shape({ fill: 'transparent', strokeWidth: 0 }),
               new go.TextBlock({
-                font: 'bold 10pt sans-serif',
-                isMultiline: false,
-                wrap: go.Wrap.None,
-                overflow: go.TextOverflow.Ellipsis
-              })
+                  font: 'bold 10pt sans-serif',
+                  isMultiline: false,
+                  wrap: go.Wrap.None,
+                  overflow: go.TextOverflow.Ellipsis
+                })
                 .bind('text')
             )
-        )
-    );
+        ));
 
     myDiagram.nodeTemplate = // for regular nodes within cells (groups); you'll want to extend this
       new go.Node('Auto', { width: 100, height: 50, margin: 4 }) // assume uniform Margin, all around
         .bind('row')
         .bind('column', 'col')
         .add(
-          new go.Shape({ fill: 'white' }).bind('fill', 'color'),
-          new go.TextBlock().bind('text', 'key')
+          new go.Shape({ fill: 'white' })
+            .bind('fill', 'color'),
+          new go.TextBlock()
+            .bind('text', 'key')
         );
 
     myDiagram.groupTemplate = // for cells
       new go.Group('Auto', {
-        layerName: 'Background',
-        stretch: go.Stretch.Fill,
-        selectable: false,
-        computesBoundsAfterDrag: true,
-        computesBoundsIncludingLocation: true,
-        handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
-        mouseDragEnter: (e, group, prev) => {
-          group.isHighlighted = true;
-        },
-        mouseDragLeave: (e, group, next) => {
-          group.isHighlighted = false;
-        },
-        mouseDrop: (e, group) => {
-          // if any dropped part wasn't already a member of this group, we'll want to let the group's row
-          // column allow themselves to be resized automatically, in case the row height or column width
-          // had been set manually by the LaneResizingTool
-          var anynew = e.diagram.selection.any((p) => p.containingGroup !== group);
-          // Don't allow headers/siders to be dropped
-          var anyHeadersSiders = e.diagram.selection.any((p) => p.category === 'Column Header' || p.category === 'Row Sider');
-          if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
-            if (anynew) {
-              e.diagram.layout.getRowDefinition(group.row).height = NaN;
-              e.diagram.layout.getColumnDefinition(group.column).width = NaN;
+          layerName: 'Background',
+          stretch: go.Stretch.Fill,
+          selectable: false,
+          computesBoundsAfterDrag: true,
+          computesBoundsIncludingLocation: true,
+          handlesDragDropForMembers: true, // don't need to define handlers on member Nodes and Links
+          mouseDragEnter: (e, group, prev) => {
+            group.isHighlighted = true;
+          },
+          mouseDragLeave: (e, group, next) => {
+            group.isHighlighted = false;
+          },
+          mouseDrop: (e, group) => {
+            // if any dropped part wasn't already a member of this group, we'll want to let the group's row
+            // column allow themselves to be resized automatically, in case the row height or column width
+            // had been set manually by the LaneResizingTool
+            var anynew = e.diagram.selection.any(p => p.containingGroup !== group);
+            // Don't allow headers/siders to be dropped
+            var anyHeadersSiders = e.diagram.selection.any(p => p.category === 'Column Header' || p.category === 'Row Sider');
+            if (!anyHeadersSiders && group.addMembers(e.diagram.selection, true)) {
+              if (anynew) {
+                e.diagram.layout.getRowDefinition(group.row).height = NaN;
+                e.diagram.layout.getColumnDefinition(group.column).width = NaN;
+              }
+            } else {
+              // failure upon trying to add parts to this group
+              e.diagram.currentTool.doCancel();
             }
-          } else {
-            // failure upon trying to add parts to this group
-            e.diagram.currentTool.doCancel();
           }
-        }
-      })
+        })
         .bind('row')
         .bind('column', 'col')
         .add(
           // the group is normally unseen -- it is completely transparent except when given a color or when highlighted
           new go.Shape({
-            fill: 'transparent',
-            stroke: 'transparent',
-            strokeWidth: myDiagram.nodeTemplate.margin.left,
-            stretch: go.Stretch.Fill
-          })
+              fill: 'transparent',
+              stroke: 'transparent',
+              strokeWidth: myDiagram.nodeTemplate.margin.left,
+              stretch: go.Stretch.Fill
+            })
             .bind('fill', 'color')
-            .bindObject('stroke', 'isHighlighted', (h) => (h ? 'red' : 'transparent')),
+            .bindObject('stroke', 'isHighlighted', h => h ? 'red' : 'transparent'),
           new go.Placeholder({
             // leave a margin around the member nodes of the group which is the same as the member node margin
-            alignment: ((m) => new go.Spot(0, 0, m.top, m.left))(myDiagram.nodeTemplate.margin),
-            padding: ((m) => new go.Margin(0, m.right, m.bottom, 0))(myDiagram.nodeTemplate.margin)
+            alignment: (m => new go.Spot(0, 0, m.top, m.left))(myDiagram.nodeTemplate.margin),
+            padding: (m => new go.Margin(0, m.right, m.bottom, 0))(myDiagram.nodeTemplate.margin)
           })
         );
 
@@ -415,6 +418,7 @@
       ]
     });
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

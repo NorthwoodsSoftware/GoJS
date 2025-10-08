@@ -62,6 +62,7 @@ export class FishboneLayout extends go.TreeLayout {
     verts.each((v: go.TreeVertex) => {
       // ignore leaves of tree
       if (v.destinationEdges.count === 0) return;
+      this.prepareParent(v, net as go.TreeNetwork);
       if (v.destinationEdges.count % 2 === 1) {
         // if there's an odd number of real children, add two dummies
         const dummy = net.createVertex();
@@ -80,6 +81,9 @@ export class FishboneLayout extends go.TreeLayout {
     });
     return net;
   }
+
+  /** @hidden */
+  prepareParent(v: go.TreeVertex, net: go.TreeNetwork) {}
 
   /**
    * Add a direction property to each vertex and modify {@link go.TreeVertex.layerSpacing}.
@@ -129,8 +133,24 @@ export class FishboneLayout extends go.TreeLayout {
       }
     });
 
-    // move the parent node to the location of the last dummy
-    let vit = this.network.vertexes.iterator;
+    this.moveParentNodesToDummies();
+
+    this.network.vertexes.each(v => {
+      const w = v as go.TreeVertex;
+      if (w.parent === null) {
+        this.shift(w);
+      }
+    });
+
+    // now actually change the Node.location of all nodes
+    super.commitNodes();
+  }
+
+  /**
+   * Move each parent node to the location of the last dummy.
+   */
+  moveParentNodesToDummies() {
+    const vit = this.network!.vertexes.iterator;
     while (vit.next()) {
       const v = vit.value as go.TreeVertex;
       const len = v.children.length;
@@ -140,18 +160,6 @@ export class FishboneLayout extends go.TreeLayout {
       v.centerX = dummy2.centerX;
       v.centerY = dummy2.centerY;
     }
-
-    const layout = this;
-    vit = this.network.vertexes.iterator;
-    while (vit.next()) {
-      const v = vit.value as go.TreeVertex;
-      if (v.parent === null) {
-        layout.shift(v);
-      }
-    }
-
-    // now actually change the Node.location of all nodes
-    super.commitNodes();
   }
 
   /**

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -135,46 +137,46 @@
     });
 
     // define each Node's appearance
-    myDiagram.nodeTemplate = new go.Node('Auto', { // the whole node panel
-      locationSpot: go.Spot.Center
-    })
-      .add(
-        // define the node's outer shape, which will surround the TextBlock
-        new go.Shape('Rectangle', { fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }), stroke: 'black' }),
-        new go.TextBlock({ font: 'bold 10pt helvetica, bold arial, sans-serif', margin: new go.Margin(4, 4, 3, 20) }).bind('text', 'text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { locationSpot: go.Spot.Center })
+        .add(
+          // define the node's outer shape, which will surround the TextBlock
+          new go.Shape('Rectangle', { fill: new go.Brush('Linear', { 0: 'rgb(254, 201, 0)', 1: 'rgb(254, 162, 0)' }) }),
+          new go.TextBlock({ font: 'bold 10pt helvetica, bold arial, sans-serif', margin: new go.Margin(4, 4, 3, 20) })
+            .bind('text')
+        );
 
     // replace the default Link template in the linkTemplateMap
-    myDiagram.linkTemplate = new go.Link( // the whole link panel
-      {
-        // path animation works with these kinds of links too:
-        // routing: go.Routing.AvoidsNodes,
-        // curve: go.Curve.Bezier,
-      })
+    myDiagram.linkTemplate =
+      new go.Link({ // the whole link panel
+          // path animation works with these kinds of links too:
+          // routing: go.Routing.AvoidsNodes,
+          // curve: go.Curve.Bezier,
+        })
         .add(
-          new go.Shape({ stroke: 'black' }), // the link shape
+          new go.Shape(), // the link shape
           new go.Shape({ toArrow: 'standard', stroke: null }), // the arrowhead
           new go.Panel('Auto')
             .add(
               new go.Shape({ // the label background, which becomes transparent around the edges
                 fill: new go.Brush('Radial', { 0: 'rgb(240, 240, 240)', 0.3: 'rgb(240, 240, 240)', 1: 'rgba(240, 240, 240, 0)' }),
-                stroke: null
+                strokeWidth: 0
               }),
               new go.TextBlock({ // the label text
-                textAlign: 'center',
-                font: '10pt helvetica, arial, sans-serif',
-                stroke: '#555555',
-                margin: 4
-              })
+                  textAlign: 'center',
+                  font: '10pt helvetica, arial, sans-serif',
+                  stroke: '#555555',
+                  margin: 4
+                })
                 .bind('text')
             )
         );
 
-    myDiagram.nodeTemplateMap.add(
-      'token',
+    myDiagram.nodeTemplateMap.add('token',
       new go.Part({ locationSpot: go.Spot.Center, layerName: 'Foreground' })
         .add(
-          new go.Shape('Circle', { width: 12, height: 12, fill: 'green', strokeWidth: 0 }).bind('fill', 'color')
+          new go.Shape('Circle', { width: 12, height: 12, fill: 'green', strokeWidth: 0 })
+            .bind('fill', 'color')
         )
     );
 
@@ -256,7 +258,7 @@
     var oldskips = myDiagram.skipsUndoManager;
     myDiagram.skipsUndoManager = true; // don't record these changes in the UndoManager!
     var temp = new go.Point();
-    myDiagram.parts.each((token) => {
+    myDiagram.parts.each(token => {
       var data = token.data;
       if (!data) return;
       var at = data.at;
@@ -313,6 +315,7 @@
     while (((data = arr[Math.floor(Math.random() * arr.length)]), data.category === 'token' || data === node.data)) {}
     return data.key;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

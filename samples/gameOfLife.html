@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,17 +127,15 @@
 <script id="code">
   // two dimensional array which will represent the board state
   // this will be filled with Nodes once they are created
-  var goLGrid = [];
+  const goLGrid = [];
 
   // the size of the board
-  var rows = 40;
-  var cols = 40;
+  const rows = 40;
+  const cols = 40;
 
-  var interval = 15; // the interval between steps in ms when the simulation is enabled
-  var initializing = true;
-  var enabled = false; // flag to turn the simulation on or off
-
-  var myDiagram;
+  const interval = 15; // the interval between steps in ms when the simulation is enabled
+  let initializing = true;
+  let enabled = false; // flag to turn the simulation on or off
 
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
@@ -150,95 +150,96 @@
       initialAutoScale: go.AutoScale.Uniform
     });
 
-    var nodeSize = 25;
-    var nodeDataArray = []; // array to hold Node data for the model
+    const nodeSize = 25;
+    const nodeDataArray = []; // array to hold Node data for the model
     // populate data array by initializing Nodes in a grid and setting their "isAlive" state to false
-    for (var i = 0; i < rows; i++) {
-      var row = new Array(cols);
-      for (var j = 0; j < cols; j++) {
+    for (let i = 0; i < rows; i++) {
+      const row = new Array(cols);
+      for (let j = 0; j < cols; j++) {
         nodeDataArray.push({ location: new go.Point(j * nodeSize, i * nodeSize), row: i, col: j, isAlive: false });
       }
       goLGrid.push(row);
     }
 
     // stroke color and width of the grid lines
-    var gridStroke = '#A2A2A2';
-    var gridStrokeWidth = 1;
+    const gridStroke = '#A2A2A2';
+    const gridStrokeWidth = 1;
 
     // define the node template, which also includes interactive functionality, such as clicking to toggle a node's state
-    myDiagram.nodeTemplate = new go.Part({
-      isLayoutPositioned: false,
-      mouseEnter: (e, part, prev) => {
-        // set mouseover border
-        if (!initializing && !enabled) {
-          var shape = part.elt(0);
-          if (shape) {
-            shape.stroke = 'steelblue';
-            shape.strokeWidth = 3;
-          }
-          part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
+    myDiagram.nodeTemplate =
+      new go.Part({
+          isLayoutPositioned: false,
+          mouseEnter: (e, part, prev) => {
+            // set mouseover border
+            if (!initializing && !enabled) {
+              const shape = part.elt(0);
+              if (shape) {
+                shape.stroke = 'steelblue';
+                shape.strokeWidth = 3;
+              }
+              part.zOrder = 2; // ensure that the selection border is in front of all other Nodes by increasing its zOrder
 
-          // drag with a button down to add or erase cells
-          if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
-            select(part);
-          }
-        }
-      },
-      mouseLeave: (e, part, next) => {
-        // restore to original borders
-        var shape = part.elt(0);
-        if (shape) {
-          shape.stroke = gridStroke;
-          shape.strokeWidth = gridStrokeWidth;
-        }
-        part.zOrder = 1;
-      },
-      click: (e, part) => {
-        // left click to toggle cell
-        initializing = false;
-        if (!enabled) {
-          select(part);
-        }
-      },
-      contextClick: (e, part) => {
-        // right click to clear cell
-        initializing = false;
-        if (!enabled && part.data.isAlive) {
-          select(part);
-        }
-      },
-      zOrder: 1
-    })
-      .bind('location')
-      .add(
-        new go.Shape({
-          figure: 'Rectangle',
-          fill: 'white',
-          stroke: gridStroke,
-          strokeWidth: gridStrokeWidth,
-          width: nodeSize,
-          height: nodeSize
+              // drag with a button down to add or erase cells
+              if ((e.buttons === 1 && !part.data.isAlive) || (e.buttons === 2 && part.data.isAlive)) {
+                select(part);
+              }
+            }
+          },
+          mouseLeave: (e, part, next) => {
+            // restore to original borders
+            const shape = part.elt(0);
+            if (shape) {
+              shape.stroke = gridStroke;
+              shape.strokeWidth = gridStrokeWidth;
+            }
+            part.zOrder = 1;
+          },
+          click: (e, part) => {
+            // left click to toggle cell
+            initializing = false;
+            if (!enabled) {
+              select(part);
+            }
+          },
+          contextClick: (e, part) => {
+            // right click to clear cell
+            initializing = false;
+            if (!enabled && part.data.isAlive) {
+              select(part);
+            }
+          },
+          zOrder: 1
         })
-      );
+        .bind('location')
+        .add(
+          new go.Shape({
+            figure: 'Rectangle',
+            fill: 'white',
+            stroke: gridStroke,
+            strokeWidth: gridStrokeWidth,
+            width: nodeSize,
+            height: nodeSize
+          })
+        );
 
     // use a simple model for our node data
     myDiagram.model = new go.Model(nodeDataArray);
 
     // myDiagram.parts is populated after a model is assigned;
     // populate the internal gamestate array with the newly created nodes
-    for (var it = myDiagram.parts.iterator; it.next(); ) {
-      var part = it.value;
+    for (const it = myDiagram.parts.iterator; it.next(); ) {
+      const part = it.value;
       goLGrid[part.data.row][part.data.col] = part;
     }
 
     // load the default sample
-    var e = document.getElementById('samplePatterns');
+    const e = document.getElementById('samplePatterns');
     loadSample(e.options[e.selectedIndex].value);
   }
 
   // toggles a given node's state, both visually and in the internal gamestate
   function select(part) {
-    var shape = part.elt(0);
+    const shape = part.elt(0);
     if (shape) {
       if (shape.fill === 'white') {
         shape.fill = 'steelblue';
@@ -252,7 +253,7 @@
   // toggles the state of the simulation, changing the button text from "Start" to "Pause" or back again
   function toggleSimulation() {
     initializing = false;
-    var button = document.getElementById('start');
+    const button = document.getElementById('start');
     if (!enabled) {
       button.value = 'Pause';
       enabled = true;
@@ -266,7 +267,7 @@
   // the callback for the step button, only steps forward if the simulation is currently stopped
   function stepOnclick() {
     initializing = false;
-    if (enabled) {toggleSimulation();return;}
+    if (enabled) { toggleSimulation(); return; }
     goLStep(true);
   }
 
@@ -276,22 +277,22 @@
       return; // don't do anything if things aren't initialized yet
     }
 
-    var isAlive = false;
-    var toSelect = [];
-    var liveCellCount = 0; // count the number of live cells to determine if there are no more left
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < cols; j++) {
+    let isAlive = false;
+    const toSelect = [];
+    let liveCellCount = 0; // count the number of live cells to determine if there are no more left
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
         if (isAlive) {
           liveCellCount++;
         }
 
         // count the number of cells in the 8 squares adjacent to this one
-        var total = 0;
+        let total = 0;
 
-        var above = goLGrid[i > 0 ? i - 1 : rows - 1];
-        var below = goLGrid[i + 1 < rows ? i + 1 : 0];
-        var left = j > 0 ? j - 1 : cols - 1;
-        var right = j + 1 < cols ? j + 1 : 0;
+        const above = goLGrid[i > 0 ? i - 1 : rows - 1];
+        const below = goLGrid[i + 1 < rows ? i + 1 : 0];
+        const left = j > 0 ? j - 1 : cols - 1;
+        const right = j + 1 < cols ? j + 1 : 0;
 
         total += above[left].data.isAlive;
         total += above[j].data.isAlive;
@@ -303,7 +304,7 @@
         total += below[right].data.isAlive;
 
         // toggle the cell if necessary according to the three rules
-        var part = goLGrid[i][j];
+        const part = goLGrid[i][j];
         isAlive = part.data.isAlive;
         if ((total <= 1 && isAlive) || (total > 3 && isAlive) || (total === 3 && !isAlive)) {
           if (!isAlive) {
@@ -318,7 +319,7 @@
 
     // change the board state according the earlier loop
     if (enabled || isManualStep) {
-      for (var i = 0; i < toSelect.length; i++) {
+      for (let i = 0; i < toSelect.length; i++) {
         select(toSelect[i]);
       }
     }
@@ -337,9 +338,9 @@
     if (enabled) {
       toggleSimulation();
     }
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < cols; j++) {
-        var part = goLGrid[i][j];
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const part = goLGrid[i][j];
         if (part.data.isAlive) {
           select(part);
         }
@@ -351,7 +352,7 @@
   function loadSample(value) {
     goLClear(); // clear the board first, stopping the simulation if it's enabled
     // select the correct sample data based on the option value passed to the function
-    var sampleData = [];
+    let sampleData = [];
     switch (value) {
       case 'symm4':
         sampleData = [
@@ -461,16 +462,17 @@
     }
 
     // draw the sample pattern in the middle of the board
-    var startRow = Math.floor(rows / 2 - sampleData.length / 2);
-    var startCol = Math.floor(cols / 2 - sampleData[0].length / 2);
-    for (var i = startRow; i < startRow + sampleData.length; i++) {
-      for (var j = startCol; j < startCol + sampleData[0].length; j++) {
+    const startRow = Math.floor(rows / 2 - sampleData.length / 2);
+    const startCol = Math.floor(cols / 2 - sampleData[0].length / 2);
+    for (let i = startRow; i < startRow + sampleData.length; i++) {
+      for (let j = startCol; j < startCol + sampleData[0].length; j++) {
         if (sampleData[i - startRow][j - startCol] === 1) {
           select(goLGrid[i][j]);
         }
       }
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

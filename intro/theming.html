@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -244,6 +247,24 @@
       
       <div class="px-4 pb-16 w-full overflow-hidden prose">
         
+<style>
+  :root {
+    --color-bg: var(--color-gray-100);
+    --color-primary: var(--color-amber-300);
+    --color-border: var(--color-amber-500);
+    --color-text: black;
+    --color-link: var(--color-gray-700);
+    --color-selection: var(--color-teal-500);
+  }
+
+  .dark {
+    --color-bg: var(--color-gray-900);
+    --color-primary: var(--color-amber-700);
+    --color-text: white;
+    --color-link: var(--color-gray-200);
+  }
+</style>
+
 <h1>Theming</h1>
 <p>
   Many applications aim to provide multiple themes, especially light and dark modes to support user preferences.
@@ -420,6 +441,172 @@ changeTheme2 = () => {
   </select>
   Use the select box to change the current theme.
 </div>
+
+<h2 id="ThemeCSS">Using CSS variables for theming</h2>
+<p>
+  If you're using CSS variables to style other parts of your application, you can use <a>ThemeManager.readsCssVariables</a>
+  to reuse those variables in your GoJS themes.
+</p>
+
+<p class="box bg-info">
+  NOTE: The syntax to reference a CSS variable in a theme is <code>'var(&lt;varname&gt;)'</code>.
+  Only a single variable may be referenced, and any fallbacks should be defined either on the template or
+  in the referenced CSS variable.
+
+  The CSS variable's value will be read before any <a>Binding.themeConverter</a> functions have run.
+</p>
+
+<pre class="lang-js" id="themeCss"><code>
+diagram.themeManager.currentTheme = document.getElementById('themeSelectCss').value
+diagram.themeManager.readsCssVariables = true;  // (defaults to true, just for demonstration)
+diagram.themeManager.changesDivBackground = true;
+
+diagram.themeManager.set('light', {
+  colors: {
+    primary: 'var(--color-teal-300)',
+    border: 'var(--color-teal-500)'
+  }
+});
+diagram.themeManager.set('dark', {
+  colors: {
+    primary: 'var(--color-teal-700)'
+  }
+});
+
+diagram.nodeTemplate =
+  new go.Node('Auto')
+    .add(
+      new go.Shape('RoundedRectangle', { strokeWidth: 2 })
+        .theme('fill', 'primary')
+        .theme('stroke', 'border'),
+      new go.TextBlock({ margin: 8 })
+        .bind('text')
+        .theme('stroke', 'text')
+    );
+
+diagram.model = new go.GraphLinksModel(
+  [
+    { key: 1, text: 'Alpha' },
+    { key: 2, text: 'Beta' }
+  ],
+  [
+    { from: 1, to: 2 }
+  ]);
+
+changeThemeCss = () => {
+  diagram.themeManager.currentTheme = document.getElementById('themeSelectCss').value;
+};
+</code></pre>
+<script>
+  goCode('themeCss', 400, 150);
+</script>
+<div>
+  <select id="themeSelectCss" class="mt-1 p-1" onchange="changeThemeCss()">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+  Use the select box to change the current theme.
+</div>
+
+<p class="mt-3">
+  In some cases, your CSS variables may already handle light and dark mode.
+  If that's the case, you have the option to use a single theme which references those variables.
+  Rather than changing the theme, you'll update your page as normal and call <a>ThemeManager.updateDiagrams</a>,
+  reflecting any changes in CSS variables in the <a>ThemeManager</a>'s associated diagrams.
+</p>
+<p>
+  When using a single theme, you'll need to make sure you define any properties used
+  by default templates such as <code>colors.selection</code> or <code>colors.link</code>
+  if you haven't overridden those templates.
+</p>
+
+<pre class="lang-js" id="themeCss2"><code>
+    // Here, our CSS is defined as:
+  // :root {
+  //   --color-bg: var(--color-gray-100);
+  //   --color-primary: var(--color-amber-300);
+  //   --color-border: var(--color-amber-500);
+  //   --color-text: black;
+  //   --color-link: var(--color-gray-700);
+  //   --color-selection: var(--color-teal-500);
+  // }
+  // .dark {
+  //   --color-bg: var(--color-gray-900);
+  //   --color-primary: var(--color-amber-700);
+  //   --color-text: white;
+  //   --color-link: var(--color-gray-200);
+  // }
+
+  diagram.themeManager = new go.ThemeManager({
+    readsCssVariables: true,  // (defaults to true, just for demonstration)
+    changesDivBackground: true,  // may not be needed in cases where the diagram background is transparent
+    defaultTheme: 'default',
+    currentTheme: 'default',
+    themeMap: new go.Map([
+      {
+        key: 'default',
+        value: {
+          ...go.Themes.Dark,
+          colors: {
+            ...go.Themes.Dark.colors,  // take some default colors from the built-in dark theme
+            div: 'var(--color-bg)',
+            primary: 'var(--color-primary)',
+            border: 'var(--color-border)',
+            text: 'var(--color-text)',
+            link: 'var(--color-link)',
+            selection: 'var(--color-selection)'
+          }
+        }
+      }
+    ])
+  });
+
+  diagram.nodeTemplate =
+    new go.Node('Auto')
+      .add(
+        new go.Shape('RoundedRectangle', { strokeWidth: 2 })
+          .theme('fill', 'primary')
+          .theme('stroke', 'border'),
+        new go.TextBlock({ margin: 8 })
+          .bind('text')
+          .theme('stroke', 'text')
+      );
+
+  diagram.model = new go.GraphLinksModel(
+    [
+      { key: 1, text: 'Gamma' },
+      { key: 2, text: 'Delta' }
+    ],
+    [
+      { from: 1, to: 2 }
+    ]);
+
+  changeMode = () => {
+    const mode = document.getElementById('themeSelectCss2').value;
+    // instead of changing the theme, just update your page in the normal manner
+    // and notify the ThemeManager of the change
+    document.documentElement.classList.toggle(
+      'dark',
+      mode === 'dark' ||
+        (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+    diagram.themeManager.updateDiagrams();
+  };
+
+  changeMode();  // set initial root style appropriately
+  </code></pre>
+  <script>
+    goCode('themeCss2', 400, 150);
+  </script>
+  <div>
+    <select id="themeSelectCss2" class="mt-1 p-1" onchange="changeMode()">
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+    Use the select box to update the root's mode.
+  </div>
 
 <h2 id="ThemeSources">Theme binding sources</h2>
 <p>
@@ -648,20 +835,21 @@ diagram.themeManager.set('dark', {
 
 // theme the predefined "Button", modifying the initial fill and _button properties via theming
 go.GraphObject.defineBuilder('ThemedButton', args =>
-  go.GraphObject.make('Button', { 'ButtonBorder.strokeWidth': 0 })
+  go.GraphObject.build('Button', { 'ButtonBorder.strokeWidth': 0 })
     .theme('ButtonBorder.fill', 'button')
     .theme('_buttonFillOver', 'buttonHover')
 );
 
 // theme the predefined "ToolTip", modifying the fill via theming
 go.GraphObject.defineBuilder('ThemedToolTip', args =>
-  go.GraphObject.make('ToolTip').theme('Border.fill', 'toolTip')
+  go.GraphObject.build('ToolTip')
+    .theme('Border.fill', 'toolTip')
 );
 
 diagram.nodeTemplate =
   new go.Node('Auto', {
       toolTip:
-        go.GraphObject.make('ThemedToolTip')
+        go.GraphObject.build('ThemedToolTip')
           .add(
             new go.TextBlock('tooltip', { margin: 5 })
               .bind('text', 'text', k => `${k}'s tooltip`)
@@ -677,7 +865,7 @@ diagram.nodeTemplate =
             .bind('text', 'key')
             .theme('stroke', 'text')
             .theme('font', 'bold'),
-          go.GraphObject.make('ThemedButton')
+          go.GraphObject.build('ThemedButton')
             .add(
               new go.TextBlock('Button', { margin: 5 }).theme('stroke', 'text')
             )
@@ -756,7 +944,9 @@ changeTheme6 = () => {
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

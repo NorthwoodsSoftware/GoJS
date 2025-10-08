@@ -148,6 +148,25 @@ class AvoidsLinksRouter extends go.Router {
         return super.canRoute(container);
     }
     /**
+     * This returns false for Links that are not {@link Link.isOrthogonal}.
+     * Also, if {@link ignoreContainingGroups} is false, this checks whether the Link either belongs to the given Group
+     * or else is a top-level Link.
+     * @param link
+     * @param container
+     * @returns
+     */
+    isRoutable(link, container) {
+        if (!link.isOrthogonal)
+            return false;
+        if (link.pointsCount < 3)
+            return false;
+        if (!this._ignoreContainingGroups) {
+            if (link.containingGroup !== (container instanceof go.Group ? container : null))
+                return false;
+        }
+        return true;
+    }
+    /**
      * Adjust segments of all links in the Diagram to prevent overlap.
      *
      * @param {go.Set<go.Link>} links
@@ -204,6 +223,8 @@ class AvoidsLinksRouter extends go.Router {
     }
     /** @internal */
     nextOrthoBend(link, index) {
+        if (link.pointsCount < 3)
+            return 0;
         let p = link.getPoint(index);
         let q = link.getPoint(index + 1);
         let i = index;
@@ -221,7 +242,6 @@ class AvoidsLinksRouter extends go.Router {
     collectSegments(links, coll) {
         this._allsegs.clear();
         this._gridlines.clear();
-        const isDiagram = coll instanceof go.Diagram;
         let p;
         let q;
         let found;
@@ -233,9 +253,7 @@ class AvoidsLinksRouter extends go.Router {
         const skipBounds = (coll instanceof go.Diagram && links.count === coll.links.count);
         // add segments of links in the "invalid" links Set
         for (const l of links) {
-            if (!this._ignoreContainingGroups && !((isDiagram && l.containingGroup === null) || l.containingGroup === coll))
-                continue;
-            if (!l.isOrthogonal)
+            if (!this.isRoutable(l, coll))
                 continue;
             if (!skipBounds) {
                 if (enclosingRect === null) {

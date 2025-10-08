@@ -110,6 +110,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -239,7 +241,7 @@
     'animationManager.isEnabled': false, // don't have any unnecessary initial scrolling
     initialScale: 0.25,
     layout: new VirtualizedPackedGroupsLayout(),
-    InitialLayoutCompleted: (e) => {
+    InitialLayoutCompleted: e => {
       // initial scroll so that we see some nodes
       var first = null;
       var arr = myWholeModel.nodeDataArray;
@@ -268,40 +270,44 @@
   var myColors = ['0,0,0', '0,255,0', '255,0,0', '0,0,255'];
   var myLayoutFactors = [16, 8, 4, 2];
 
-  myDiagram.nodeTemplate = new go.Node('Auto', {
-    isLayoutPositioned: false,
-    width: 50, height: 50
-  })
-    .bind('position', 'bounds', (b) => b.position)
-    .add(
-      new go.Shape('Circle', {
-        spot1: go.Spot.TopLeft,
-        spot2: go.Spot.BottomRight,
-        portId: '',
-        fill: 'white',
-        stroke: 'gray'
+  myDiagram.nodeTemplate =
+    new go.Node('Auto', {
+        isLayoutPositioned: false,
+        width: 50, height: 50
       })
-        .bind('fill', 'depth', fillBinding)
-        .bind('stroke', 'depth', strokeBinding),
-      new go.TextBlock().bind('text', 'key')
-  );
+      .bind('position', 'bounds', b => b.position)
+      .add(
+        new go.Shape('Circle', {
+            spot1: go.Spot.TopLeft,
+            spot2: go.Spot.BottomRight,
+            portId: '',
+            fill: 'white',
+            stroke: 'gray'
+          })
+          .bind('fill', 'depth', fillBinding)
+          .bind('stroke', 'depth', strokeBinding),
+        new go.TextBlock()
+          .bind('text', 'key')
+    );
 
-  myDiagram.groupTemplate = new go.Group('Auto', { isLayoutPositioned: false }) // optimization
-    // note no Placeholder and no .layout, since VirtualizedPackedGroupsLayout will compute everything
-    .bind('position', 'bounds', (b) => new go.Point(b.x - b.width * 0.05, b.y - b.height * 0.05))
-    .bind('desiredSize', 'bounds', (b) => new go.Size(b.size.width * 1.1, b.size.height * 1.1))
-    .add(
-      new go.Shape('Ellipse', {
-        spot1: new go.Spot(0.05, 0.05),
-        spot2: new go.Spot(0.95, 0.95),
-        portId: '',
-        fill: 'white',
-        stroke: 'gray'
-      })
-        .bind('fill', 'depth', fillBinding)
-        .bind('stroke', 'depth', strokeBinding),
-      new go.TextBlock().bind('text', 'key')
-  );
+  myDiagram.groupTemplate =
+    new go.Group('Auto', { isLayoutPositioned: false }) // optimization
+      // note no Placeholder and no .layout, since VirtualizedPackedGroupsLayout will compute everything
+      .bind('position', 'bounds', b => new go.Point(b.x - b.width * 0.05, b.y - b.height * 0.05))
+      .bind('desiredSize', 'bounds', b => new go.Size(b.size.width * 1.1, b.size.height * 1.1))
+      .add(
+        new go.Shape('Ellipse', {
+            spot1: new go.Spot(0.05, 0.05),
+            spot2: new go.Spot(0.95, 0.95),
+            portId: '',
+            fill: 'white',
+            stroke: 'gray'
+          })
+          .bind('fill', 'depth', fillBinding)
+          .bind('stroke', 'depth', strokeBinding),
+        new go.TextBlock()
+          .bind('text', 'key')
+    );
 
   // This model includes all of the data
   const myWholeModel = new go.GraphLinksModel(); // must match the model used by the Diagram, below
@@ -321,13 +327,14 @@
   myDiagram.addDiagramListener('ViewportBoundsChanged', onViewportChanged);
 
   // This is a status message
-  const myLoading = new go.Part({
-    location: new go.Point(0, 0), // this has to set the location or position explicitly
-    scale: 4
-  })
-    .add(
-      new go.TextBlock('loading...', { stroke: 'red', font: '20pt sans-serif' })
-    );
+  const myLoading =
+    new go.Part({
+        location: new go.Point(0, 0), // this has to set the location or position explicitly
+        scale: 4
+      })
+      .add(
+        new go.TextBlock('loading...', { stroke: 'red', font: '20pt sans-serif' })
+      );
 
   // temporarily add the status indicator
   myDiagram.add(myLoading);
@@ -496,7 +503,7 @@
       if (!n.actualBounds.intersectsRect(viewb) && !n.isSelected) {
         // even if the node is out of the viewport, keep it if it is selected or
         // if any link connecting with the node is still in the viewport
-        if (!n.linksConnected.any((l) => l.actualBounds.intersectsRect(viewb))) {
+        if (!n.linksConnected.any(l => l.actualBounds.intersectsRect(viewb))) {
           remove.push(d);
           if (model instanceof go.GraphLinksModel) {
             removeLinks.addAll(n.linksConnected);
@@ -510,7 +517,7 @@
       diagram.skipsUndoManager = true;
       model.removeNodeDataCollection(remove);
       if (model instanceof go.GraphLinksModel) {
-        removeLinks.each((l) => {
+        removeLinks.each(l => {
           if (!l.isSelected) model.removeLinkData(l.data);
         });
       }

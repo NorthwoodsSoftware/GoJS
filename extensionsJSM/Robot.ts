@@ -101,7 +101,7 @@ export class Robot {
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
     diagram.firstInput = n.copy();
-    diagram.currentTool.doMouseDown();
+    diagram.doMouseDown();
   }
 
   /**
@@ -126,7 +126,7 @@ export class Robot {
     n.timestamp = time;
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
-    diagram.currentTool.doMouseMove();
+    diagram.doMouseMove();
   }
 
   /**
@@ -153,8 +153,7 @@ export class Robot {
     if (diagram.firstInput.documentPoint.equals(n.documentPoint)) n.clickCount = 1; // at least??
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
-    // if (diagram.simulatedMouseUp(null, (n as any).sourceDiagram, n.documentPoint, n.targetDiagram)) return;
-    diagram.currentTool.doMouseUp();
+    diagram.doMouseUp();
   }
 
   /**
@@ -170,13 +169,15 @@ export class Robot {
     const diagram = this._diagram;
     if (!diagram.isEnabled) return;
 
-    const n = diagram.lastInput.copy();
+    const n = new go.InputEvent();
     n.diagram = diagram;
+    n.documentPoint = diagram.lastInput.documentPoint;
+    n.viewPoint = diagram.lastInput.viewPoint;
     n.delta = delta;
     n.timestamp = time;
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
-    diagram.currentTool.doMouseWheel();
+    diagram.doMouseWheel();
   }
 
   /**
@@ -192,8 +193,10 @@ export class Robot {
     const diagram = this._diagram;
     if (!diagram.isEnabled) return;
 
-    const n = diagram.lastInput.copy();
+    const n = new go.InputEvent();
     n.diagram = diagram;
+    n.documentPoint = diagram.lastInput.documentPoint;
+    n.viewPoint = diagram.lastInput.viewPoint;
     if (typeof keyCodeOrKey === 'string') {
       n.key = keyCodeOrKey;
     } else if (typeof keyCodeOrKey === 'number') {
@@ -203,7 +206,7 @@ export class Robot {
     n.down = true;
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
-    diagram.currentTool.doKeyDown();
+    diagram.doKeyDown();
   }
 
   /**
@@ -219,8 +222,10 @@ export class Robot {
     const diagram = this._diagram;
     if (!diagram.isEnabled) return;
 
-    const n = diagram.lastInput.copy();
+    const n = new go.InputEvent();
     n.diagram = diagram;
+    n.documentPoint = diagram.lastInput.documentPoint;
+    n.viewPoint = diagram.lastInput.viewPoint;
     if (typeof keyCodeOrKey === 'string') {
       n.key = keyCodeOrKey;
     } else if (typeof keyCodeOrKey === 'number') {
@@ -230,6 +235,6 @@ export class Robot {
     n.up = true;
     this.initializeEvent(n, eventprops);
     diagram.lastInput = n;
-    diagram.currentTool.doKeyUp();
+    diagram.doKeyUp();
   }
 }

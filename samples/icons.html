@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -339,6 +341,7 @@
       'panningTool.isEnabled': false,
       'dragSelectingTool.isEnabled': false,
       allowZoom: false,
+      'toolManager.mouseWheelBehavior': 'none',
       'toolManager.hoverDelay': 350, // changes delay for tooltips
 
       // pack the Nodes together, (0,0) sometimes causes clipping issues
@@ -388,56 +391,47 @@
     });
     myDiagram.themeManager.changesDivBackground = true;
 
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      selectionAdorned: false,
-      mouseEnter: (e, obj) => {
-        // lighten the Node on hover
-        if (obj.part.isSelected) return;
-        let color = getColor('div');
-        let br = new go.Brush(color);
-        br.lightenBy(0.1);
-        obj.part.elt(0).fill = br.color;
-      },
-      mouseLeave: (e, obj) => {
-        if (obj.part.isSelected) return;
-        let color = getColor('div');
-        obj.part.elt(0).fill = color;
-      },
-      toolTip: new go.Adornment('Spot', {
-        background: null
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', {
+          selectionAdorned: false,
+          mouseEnter: (e, obj) => {
+            // lighten the Node on hover
+            if (obj.part.isSelected) return;
+            let color = getColor('div');
+            let br = new go.Brush(color);
+            br.lightenBy(0.1);
+            obj.part.elt(0).fill = br.color;
+          },
+          mouseLeave: (e, obj) => {
+            if (obj.part.isSelected) return;
+            let color = getColor('div');
+            obj.part.elt(0).fill = color;
+          },
+          toolTip:
+            new go.Adornment('Spot', { background: null })
+              .add(
+                new go.Placeholder({ padding: 5 }),
+                new go.Panel('Auto', {
+                    alignment: go.Spot.Bottom,
+                    alignmentFocus: go.Spot.Top
+                  })
+                  .add(
+                    new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+                      .theme('fill', 'gray'),
+                    new go.TextBlock({ margin: 8, font: '16px InterVariable' })
+                      .bind('text', 'geo')
+                      .theme('stroke', 'white')
+                  )
+              )
       })
-        .add(
-          new go.Placeholder({ padding: 5 }),
-          new go.Panel('Auto', {
-            alignment: go.Spot.Bottom,
-            alignmentFocus: go.Spot.Top
-          })
-            .add(
-              new go.Shape('RoundedRectangle', {
-                strokeWidth: 0
-              }).theme('fill', 'gray')
-            )
-            .add(
-              new go.TextBlock({
-                margin: 8,
-                font: '16px InterVariable'
-              })
-                .bind('text', 'geo')
-                .theme('stroke', 'white')
-            )
-        )
-    })
       .add(
         new go.Shape('RoundedRectangle', {
-          strokeWidth: 0,
-          width: 55,
-          height: 55
-        })
+            strokeWidth: 0,
+            width: 55,
+            height: 55
+          })
           .trigger(
-            new go.AnimationTrigger(
-              'fill', // animate the color change
-              { duration: 200 }
-            )
+            new go.AnimationTrigger('fill', { duration: 200 })  // animate the color change
           )
           .bindObject('fill', 'isSelected', (isSelected, obj) => {
             let color = getColor('div');
@@ -445,10 +439,10 @@
             return !isSelected ? color : br.lightenBy(0.17).color;
           }),
         new go.Shape({
-          margin: 3,
-          strokeWidth: 1.5,
-          fill: null
-        })
+            margin: 3,
+            strokeWidth: 1.5,
+            fill: null
+          })
           .bind('geometry', 'geo', geoFunc)
           .theme('stroke', 'white')
       );
@@ -479,7 +473,8 @@
     let geo = icons[data.geo];
     let color = getColor(data.color);
 
-    TEMPLATE = `myDiagram.nodeTemplate = new go.Node('Auto')
+    TEMPLATE = `myDiagram.nodeTemplate =
+new go.Node('Auto')
   .add(
     new go.Shape('RoundedRectangle', {
       fill: '{COLOR}',
@@ -599,7 +594,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>

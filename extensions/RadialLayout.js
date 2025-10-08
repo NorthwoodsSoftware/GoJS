@@ -225,34 +225,32 @@ class RadialLayout extends go.Layout {
         source.distance = 0;
         // keep track of nodes for we have set a non-Infinity distance,
         // but which we have not yet finished examining
-        const seen = new go.Set();
+        const seen = new Set();
         seen.add(source);
         // local function for finding a vertex with the smallest distance in a given collection
         function leastVertex(coll) {
             let bestdist = Infinity;
             let bestvert = null;
-            const it = coll.iterator;
-            while (it.next()) {
-                const v = it.value;
-                const dist = v.distance;
+            for (const vert of coll) {
+                const dist = vert.distance;
                 if (dist < bestdist) {
                     bestdist = dist;
-                    bestvert = v;
+                    bestvert = vert;
                 }
             }
             return bestvert;
         }
         // keep track of vertexes we have finished examining;
         // this avoids unnecessary traversals and helps keep the SEEN collection small
-        const finished = new go.Set();
-        while (seen.count > 0) {
+        const finished = new Set();
+        while (seen.size > 0) {
             // look at the unfinished vertex with the shortest distance so far
             const least = leastVertex(seen);
             if (least === null)
                 break;
             const leastdist = least.distance;
             // by the end of this loop we will have finished examining this LEAST vertex
-            seen.remove(least);
+            seen.delete(least);
             finished.add(least);
             // look at all edges connected with this vertex
             least.edges.each((e) => {

@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -125,188 +127,211 @@
 <script id="code">
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
-      nodeSelectionAdornmentTemplate: new go.Adornment('Auto')
-        .add(
-          new go.Shape({ fill: null, stroke: 'orange', strokeWidth: 4 }),
-          new go.Placeholder({ margin: 2 })
-        )
+      nodeSelectionAdornmentTemplate:
+        new go.Adornment('Auto')
+          .add(
+            new go.Shape({ fill: null, stroke: 'orange', strokeWidth: 4 }),
+            new go.Placeholder({ margin: 2 })
+          )
     });
 
-    function textStyle(big) {
-      return {
-        stroke: 'white',
-        font: big ? '16pt sans-serif' : '10pt sans-serif',
-        alignment: go.Spot.Left
-      };
+    function textStyle(tb, big) {
+      tb.stroke = 'white';
+      tb.font = big ? '16pt sans-serif' : '10pt sans-serif';
+      tb.alignment = go.Spot.Left;
     }
 
-    function borderStyle() {
-      return {
-        fill: 'cornflowerblue',
-        stroke: 'blue',
-        strokeWidth: 2
-      };
+    function borderStyle(shp) {
+      shp.fill = 'cornflowerblue';
+      shp.stroke = 'blue';
+      shp.strokeWidth = 2;
     }
 
-    var aggregatedValue = new go.Panel('Auto', { margin: 5 })
-      .add(
-        new go.Shape({...borderStyle()}),
-        new go.TextBlock({...textStyle(), margin: 10, width: 50 }).bind('text', '')
-      ); // assume just a number or a string
+    var aggregatedValue =
+      new go.Panel('Auto', { margin: 5 })
+        .add(
+          new go.Shape().apply(borderStyle),
+          new go.TextBlock({ margin: 10, width: 50 })
+            .apply(textStyle)
+            .bind('text', '')
+        ); // assume just a number or a string
 
-    var aggregatedListH = new go.Panel('Auto', {
-      margin: 4,
-      stretch: go.Stretch.Fill
-    })
-      .add(
-        new go.Shape(borderStyle()),
-        new go.Panel('Table', {
-          padding: 5,
-          alignment: go.Spot.Left,
-          stretch: go.Stretch.Fill,
-          defaultAlignment: go.Spot.Left,
-          defaultStretch: go.Stretch.Horizontal
+    var aggregatedListH =
+      new go.Panel('Auto', {
+          margin: 4,
+          stretch: go.Stretch.Fill
         })
-          .add(
-            new go.TextBlock({row: 0, ...textStyle()})
-              .bind('text', 'header'),
-            new go.Panel('Horizontal', { row: 1, itemTemplate: aggregatedValue }).bind('itemArray', 'values')
-          )
-      );
-
-    var aggregatedListV = new go.Panel('Auto', {
-      margin: 4,
-      stretch: go.Stretch.Fill
-    })
-      .add(
-        new go.Shape(borderStyle()),
-        new go.Panel('Vertical', {
-          padding: 5,
-          alignment: go.Spot.Top,
-          defaultAlignment: go.Spot.Left
-        })
-          .add(
-            new go.TextBlock({
-              ...textStyle(),
-              maxSize: new go.Size(70, NaN)
+        .add(
+          new go.Shape().apply(borderStyle),
+          new go.Panel('Table', {
+              padding: 5,
+              alignment: go.Spot.Left,
+              stretch: go.Stretch.Fill,
+              defaultAlignment: go.Spot.Left,
+              defaultStretch: go.Stretch.Horizontal
             })
-              .bind('text', 'header'),
-            new go.Panel('Vertical', {itemTemplate: aggregatedValue})
-              .bind('itemArray', 'values')
-          )
-      );
+            .add(
+              new go.TextBlock({ row: 0 })
+                .apply(textStyle)
+                .bind('text', 'header'),
+              new go.Panel('Horizontal', { row: 1, itemTemplate: aggregatedValue })
+                .bind('itemArray', 'values')
+            )
+        );
 
-    var checkBoxTemplate = go.GraphObject.build('CheckBox', { 'Button.width': 14, 'Button.height': 14 }, 'checked') // checked refers to the model data property name
-      .add(new go.TextBlock({...textStyle()}).bind('text', 'label'));
-
-    myDiagram.nodeTemplate = new go.Part("Table")
-      .addRowDefinition(1, { height: 8 })
-      .addColumnDefinition(1, { width: 8 })
-      .add(
-        new go.Panel('Auto', {
-          row: 0,
-          column: 0,
-          columnSpan: 3,
+    var aggregatedListV =
+      new go.Panel('Auto', {
+          margin: 4,
           stretch: go.Stretch.Fill
         })
-          .add(
-            new go.Shape({...borderStyle()}),
-            new go.TextBlock({...textStyle(true), margin: 10, alignment: go.Spot.Center }).bind('text', 'title')
-          ),
-      // // insert an empty row and an empty column
-      // the aggregated values
-        new go.Panel('Auto', {
-          row: 2,
-          column: 0,
-          stretch: go.Stretch.Fill
-        })
-          .add(
-            new go.Shape(borderStyle()),
-            new go.Panel('Table', { padding: 4 })
-              .add(
-                new go.TextBlock(textStyle(true))
-                  .bind('text', 'aggTitle'),
-                // The B Aggregated Values
-                new go.Panel('Auto', {
-                  column: 0,
-                  row: 1,
-                  stretch: go.Stretch.Fill,
-                  margin: new go.Margin(10, 0)
-                })
-                  .add(
-                    new go.Shape(borderStyle()),
-                    new go.Panel('Table', {
-                      padding: 4,
-                      stretch: go.Stretch.Fill,
-                      defaultStretch: go.Stretch.Fill
-                    })
-                      .add(
-                        new go.TextBlock({
-                          ...textStyle(true),
-                          row: 0
-                        }).bind('text', 'aggHeaderB'),
-                        new go.Panel('Horizontal', {
-                          row: 1,
-                          itemTemplate: aggregatedValue
-                        }).bind('itemArray', 'aggValuesB')
-                      )
-                  ),
-                  // Now the C Aggregated Values
+        .add(
+          new go.Shape().apply(borderStyle),
+          new go.Panel('Vertical', {
+              padding: 5,
+              alignment: go.Spot.Top,
+              defaultAlignment: go.Spot.Left
+            })
+            .add(
+              new go.TextBlock({ maxSize: new go.Size(70, NaN) })
+                .apply(textStyle)
+                .bind('text', 'header'),
+              new go.Panel('Vertical', {itemTemplate: aggregatedValue})
+                .bind('itemArray', 'values')
+            )
+        );
+
+    var checkBoxTemplate =
+      go.GraphObject.build('CheckBox', {
+          'Button.width': 14,
+          'Button.height': 14
+        }, 'checked') // checked refers to the model data property name
+        .add(
+          new go.TextBlock()
+            .apply(textStyle)
+            .bind('text', 'label')
+        );
+
+    myDiagram.nodeTemplate =
+      new go.Part("Table")
+        // insert an empty row and an empty column
+        .addRowDefinition(1, { height: 8 })
+        .addColumnDefinition(1, { width: 8 })
+        .add(
+          new go.Panel('Auto', {
+              row: 0,
+              column: 0,
+              columnSpan: 3,
+              stretch: go.Stretch.Fill
+            })
+            .add(
+              new go.Shape()
+                .apply(borderStyle),
+              new go.TextBlock({ margin: 10, alignment: go.Spot.Center })
+                .apply(textStyle, true)
+                .bind('text', 'title')
+            ),
+          // the aggregated values
+          new go.Panel('Auto', {
+              row: 2,
+              column: 0,
+              stretch: go.Stretch.Fill
+            })
+            .add(
+              new go.Shape()
+                .apply(borderStyle),
+              new go.Panel('Table', { padding: 4 })
+                .add(
+                  new go.TextBlock()
+                    .apply(textStyle, true)
+                    .bind('text', 'aggTitle'),
+                  // The B Aggregated Values
                   new go.Panel('Auto', {
-                    column: 0,
-                    row: 2,
-                    alignment: go.Spot.TopLeft
-                  })
+                      column: 0,
+                      row: 1,
+                      stretch: go.Stretch.Fill,
+                      margin: new go.Margin(10, 0)
+                    })
                     .add(
-                      new go.Shape(borderStyle()),
+                      new go.Shape().apply(borderStyle),
                       new go.Panel('Table', {
-                        padding: 4,
-                        stretch: go.Stretch.Fill,
-                        defaultStretch: go.Stretch.Fill
-                      })
+                          padding: 4,
+                          stretch: go.Stretch.Fill,
+                          defaultStretch: go.Stretch.Fill
+                        })
                         .add(
-                          new go.TextBlock({
-                            ...textStyle(true),
-                            row: 0,
-                            column: 0,
-                            columnSpan: 2
-                          }).bind('text', 'aggSubtitle'),
-                          new go.Panel('Vertical', {
-                            row: 1,
-                            column: 0,
-                            alignment: go.Spot.Left,
-                            itemTemplate: aggregatedListH
-                          }).bind('itemArray', 'aggValuesH'),
+                          new go.TextBlock({ row: 0 })
+                            .apply(textStyle, true)
+                            .bind('text', 'aggHeaderB'),
                           new go.Panel('Horizontal', {
-                            row: 1,
-                            column: 1,
-                            alignment: go.Spot.Left,
-                            itemTemplate: aggregatedListV
-                          }).bind('itemArray', 'aggValuesV')
+                              row: 1,
+                              itemTemplate: aggregatedValue
+                            })
+                            .bind('itemArray', 'aggValuesB')
                         )
-                    )
-              )
-          ),
-    // the checkboxes
-    new go.Panel('Auto', {
-      row: 2,
-      column: 2,
-      stretch: go.Stretch.Fill
-    })
-      .add(
-        new go.Shape({...borderStyle()}),
-        new go.Panel('Vertical', {
-          padding: 4,
-          alignment: go.Spot.Top,
-          stretch: go.Stretch.Vertical,
-          defaultAlignment: go.Spot.Left
+                    ),
+                    // Now the C Aggregated Values
+                    new go.Panel('Auto', {
+                        column: 0,
+                        row: 2,
+                        alignment: go.Spot.TopLeft
+                      })
+                      .add(
+                        new go.Shape().apply(borderStyle),
+                        new go.Panel('Table', {
+                            padding: 4,
+                            stretch: go.Stretch.Fill,
+                            defaultStretch: go.Stretch.Fill
+                          })
+                          .add(
+                            new go.TextBlock({
+                                row: 0,
+                                column: 0,
+                                columnSpan: 2
+                              })
+                              .apply(textStyle, true)
+                              .bind('text', 'aggSubtitle'),
+                            new go.Panel('Vertical', {
+                                row: 1,
+                                column: 0,
+                                alignment: go.Spot.Left,
+                                itemTemplate: aggregatedListH
+                              })
+                              .bind('itemArray', 'aggValuesH'),
+                            new go.Panel('Horizontal', {
+                                row: 1,
+                                column: 1,
+                                alignment: go.Spot.Left,
+                                itemTemplate: aggregatedListV
+                              })
+                              .bind('itemArray', 'aggValuesV')
+                          )
+                      )
+                )
+            ),
+      // the checkboxes
+      new go.Panel('Auto', {
+          row: 2,
+          column: 2,
+          stretch: go.Stretch.Fill
         })
-          .add(
-            new go.TextBlock({...textStyle(true)}).bind('text', 'choices'),
-            new go.Panel('Vertical', { itemTemplate: checkBoxTemplate }).bind('itemArray', 'checkBoxes')
-          )
-      )
-  );
+        .add(
+          new go.Shape()
+            .apply(borderStyle),
+          new go.Panel('Vertical', {
+              padding: 4,
+              alignment: go.Spot.Top,
+              stretch: go.Stretch.Vertical,
+              defaultAlignment: go.Spot.Left
+            })
+            .add(
+              new go.TextBlock()
+                .apply(textStyle, true)
+                .bind('text', 'choices'),
+              new go.Panel('Vertical', { itemTemplate: checkBoxTemplate })
+                .bind('itemArray', 'checkBoxes')
+            )
+        )
+    );
 
     myDiagram.model.nodeDataArray = [
       {
@@ -352,6 +377,7 @@
     myDiagram.model.copiesArrays = true;
     myDiagram.model.copiesArrayObjects = true;
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -413,7 +439,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

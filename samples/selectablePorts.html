@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -130,7 +132,7 @@
 
     myDiagram = new go.Diagram('myDiagramDiv', {
       // For this sample, automatically show the state of the diagram's model on the page
-      ModelChanged: (e) => {
+      ModelChanged: e => {
         if (e.isTransactionFinished) showModel();
       },
       'undoManager.isEnabled': true
@@ -167,7 +169,7 @@
         } else {
           if (!isPortSelected(shape)) {
             // deselect all sibling items
-            shape.part.ports.each((it) => {
+            shape.part.ports.each(it => {
               if (it !== shape) setPortSelected(it, false);
             });
             setPortSelected(shape, true);
@@ -182,84 +184,83 @@
       return new go.Panel('Auto', { margin: new go.Margin(1, 0) }) // some space between ports
         .add(
           new go.Shape({
-            name: 'SHAPE',
-            fill: UnselectedBrush,
-            stroke: 'gray',
-            geometryString: 'F1 m 0,0 l 5,0 1,4 -1,4 -5,0 1,-4 -1,-4 z',
-            spot1: new go.Spot(0, 0, 5, 1), // keep the text inside the shape
-            spot2: new go.Spot(1, 1, -5, 0),
-            // some port-related properties
-            toSpot: go.Spot.Left,
-            toLinkable: leftside,
-            fromSpot: go.Spot.Right,
-            fromLinkable: !leftside,
-            cursor: 'pointer'
-          })
+              name: 'SHAPE',
+              fill: UnselectedBrush,
+              stroke: 'gray',
+              geometryString: 'F1 m 0,0 l 5,0 1,4 -1,4 -5,0 1,-4 -1,-4 z',
+              spot1: new go.Spot(0, 0, 5, 1), // keep the text inside the shape
+              spot2: new go.Spot(1, 1, -5, 0),
+              // some port-related properties
+              toSpot: go.Spot.Left,
+              toLinkable: leftside,
+              fromSpot: go.Spot.Right,
+              fromLinkable: !leftside,
+              cursor: 'pointer'
+            })
             .bind('portId', 'name'),
           new go.TextBlock({
-            // allow the user to select items -- the background color indicates whether "selected"
-            isActionable: true,
-            click: onPortClick
-          })
+              // allow the user to select items -- the background color indicates whether "selected"
+              isActionable: true,
+              click: onPortClick
+            })
             .bind('text', 'name')
         );
     }
 
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      selectionAdorned: false,
-      locationSpot: go.Spot.Center,
-      locationObjectName: 'BODY'
-    })
-      .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-      .add(
-        new go.Panel('Auto', { name: 'BODY' })
-          .add(
-            new go.Shape('RoundedRectangle', {
-              stroke: 'gray',
-              strokeWidth: 2,
-              fill: 'transparent'
-            })
-              .bindObject('stroke', 'isSelected', (b) => (b ? SelectedBrush : UnselectedBrush)),
-            new go.Panel('Vertical', { margin: 6 })
-              .add(
-                new go.TextBlock({ alignment: go.Spot.Left })
-                  .bind('text', 'name'),
-                new go.Picture('images/60x90.png', {
-                  width: 30,
-                  height: 45,
-                  margin: new go.Margin(10, 10)
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          selectionAdorned: false,
+          locationSpot: go.Spot.Center,
+          locationObjectName: 'BODY'
+        })
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Panel('Auto', { name: 'BODY' })
+            .add(
+              new go.Shape('RoundedRectangle', {
+                  stroke: 'gray',
+                  strokeWidth: 2,
+                  fill: 'transparent'
                 })
-              )
-          ),
-        new go.Panel('Vertical', {
-          name: 'LEFTPORTS',
-          alignment: new go.Spot(0, 0.5, 0, 7),
-          itemTemplate: makeItemTemplate(true)
-        })
-          .bind('itemArray', 'inservices'),
-        new go.Panel('Vertical', {
-          name: 'RIGHTPORTS',
-          alignment: new go.Spot(1, 0.5, 0, 7),
-          itemTemplate: makeItemTemplate(false)
-        })
-          .bind('itemArray', 'outservices')
-      );
+                .bindObject('stroke', 'isSelected', b => b ? SelectedBrush : UnselectedBrush),
+              new go.Panel('Vertical', { margin: 6 })
+                .add(
+                  new go.TextBlock({ alignment: go.Spot.Left })
+                    .bind('text', 'name'),
+                  new go.Picture('images/60x90.png', {
+                    width: 30,
+                    height: 45,
+                    margin: new go.Margin(10, 10)
+                  })
+                )
+            ),
+          new go.Panel('Vertical', {
+              name: 'LEFTPORTS',
+              alignment: new go.Spot(0, 0.5, 0, 7),
+              itemTemplate: makeItemTemplate(true)
+            })
+            .bind('itemArray', 'inservices'),
+          new go.Panel('Vertical', {
+              name: 'RIGHTPORTS',
+              alignment: new go.Spot(1, 0.5, 0, 7),
+              itemTemplate: makeItemTemplate(false)
+            })
+            .bind('itemArray', 'outservices')
+        );
 
-    myDiagram.linkTemplate = new go.Link({
-      routing: go.Routing.Orthogonal,
-      corner: 10,
-      toShortLength: -3,
-      relinkableFrom: true,
-      relinkableTo: true,
-      reshapable: true,
-      resegmentable: true
-    })
-      .add(
-        new go.Shape({
-          stroke: 'gray',
-          strokeWidth: 2.5
+    myDiagram.linkTemplate =
+      new go.Link({
+          routing: go.Routing.Orthogonal,
+          corner: 10,
+          toShortLength: -3,
+          relinkableFrom: true,
+          relinkableTo: true,
+          reshapable: true,
+          resegmentable: true
         })
-      );
+        .add(
+          new go.Shape({ stroke: 'gray', strokeWidth: 2.5 })
+        );
 
     function findAllSelectedItems() {
       var items = [];
@@ -267,7 +268,7 @@
         var node = nit.value;
         //?? Maybe this should only return selected items that are within selected Nodes
         //if (!node.isSelected) continue;
-        node.ports.each((port) => {
+        node.ports.each(port => {
           if (isPortSelected(port)) items.push(port.findBindingPanel());
         });
       }
@@ -332,6 +333,7 @@
       if (window.Prism) window.Prism.highlightAll();
     }
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -406,6 +408,32 @@ More information can be found in the <a href="../intro/geometry.html">GoJS Intro
 </p>
             <p>
               <a href="../samples/index.html#geometries">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
             </p>
             <hr>
           

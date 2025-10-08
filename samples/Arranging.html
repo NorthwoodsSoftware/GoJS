@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -150,7 +152,7 @@
         preparePrimaryLayout: function (lay, coll) {
           // method override requires function, not =>
           var root = null; // find the root node in this subgraph
-          coll.each((node) => {
+          coll.each(node => {
             if (node instanceof go.Node && node.findLinksInto().count === 0) root = node;
           });
           var color = 'white'; // determine the color for the nodes in this subgraph
@@ -164,7 +166,7 @@
               color = this._colors[this._colorIndex++ % this._colors.length];
             }
           }
-          coll.each((node) => {
+          coll.each(node => {
             // assign the fill color for all of the nodes in the subgraph
             if (node instanceof go.Node) {
               var shape = node.findObject('SHAPE');
@@ -182,30 +184,30 @@
       })
     });
 
-    myDiagram.nodeTemplate = new go.Node('Auto')
-      .add(
-        new go.Shape({ name: 'SHAPE', figure: 'RoundedRectangle', fill: 'lightgray' }).bind(
-          'fill',
-          'color'
-        )
-      )
-      .add(
-        new go.TextBlock({ margin: 2, textAlign: 'center' }).bind('text', 'key', (s) => {
-          // insert newlines between lowercase followed by uppercase characters
-          var arr = s.split('');
-          for (var i = 1; i < arr.length - 1; i++) {
-            var a = arr[i - 1];
-            var b = arr[i];
-            if (a === a.toLowerCase() && b === b.toUpperCase()) {
-              arr.splice(i, 0, '\n');
-              i += 2;
-            }
-          }
-          return arr.join('');
-        })
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .add(
+          new go.Shape({ name: 'SHAPE', figure: 'RoundedRectangle', fill: 'lightgray' })
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 2, textAlign: 'center' })
+            .bind('text', 'key', s => {
+              // insert newlines between lowercase followed by uppercase characters
+              var arr = s.split('');
+              for (var i = 1; i < arr.length - 1; i++) {
+                var a = arr[i - 1];
+                var b = arr[i];
+                if (a === a.toLowerCase() && b === b.toUpperCase()) {
+                  arr.splice(i, 0, '\n');
+                  i += 2;
+                }
+              }
+              return arr.join('');
+            })
+        );
 
-    myDiagram.linkTemplate = new go.Link({ layerName: 'Background' }).add(new go.Shape());
+    myDiagram.linkTemplate =
+      new go.Link({ layerName: 'Background' })
+        .add(new go.Shape());
 
     // Collect all of the data for the model of the class hierarchy
     var nodeDataArray = [];

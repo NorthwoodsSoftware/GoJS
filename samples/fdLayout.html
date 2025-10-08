@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -126,6 +128,7 @@
             
 
 <script id="code">
+
   // define a custom ForceDirectedLayout for this sample
   class DemoForceDirectedLayout extends go.ForceDirectedLayout {
     constructor(init) {
@@ -138,7 +141,7 @@
     makeNetwork(coll) {
       // call base method for standard behavior
       const net = super.makeNetwork(coll);
-      net.vertexes.each((vertex) => {
+      net.vertexes.each(vertex => {
         const node = vertex.node;
         if (node !== null) vertex.isFixed = node.isSelected;
       });
@@ -155,28 +158,34 @@
     });
 
     // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Spot', {
-      // make sure the Node.location is different from the Node.position
-      locationSpot: go.Spot.Center
-    })
-      .bind('text', 'text') // for sorting
-      .add(
-        new go.Shape('Ellipse', {
-          fill: 'lightgray',
-          stroke: null,
-          desiredSize: new go.Size(30, 30)
+    myDiagram.nodeTemplate =
+      new go.Node('Spot', {
+          // make sure the Node.location is different from the Node.position
+          locationSpot: go.Spot.Center
         })
-          .bind('fill', 'layer', c => randomLayerColors[c % 25]),
-        new go.TextBlock().bind('text', 'text')
-      )
+        .bind('text', 'text') // for sorting
+        .add(
+          new go.Shape('Ellipse', {
+              fill: 'lightgray',
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            })
+            .bind('fill', 'layer', c => randomLayerColors[c % 25]),
+          new go.TextBlock()
+            .bind('text', 'text')
+        )
 
-    // define the Link template
-    myDiagram.linkTemplate = new go.Link({ selectable: false }).add(new go.Shape({ strokeWidth: 3, stroke: '#333' }));
+      // define the Link template
+      myDiagram.linkTemplate =
+        new go.Link({ selectable: false })
+          .add(
+            new go.Shape({ strokeWidth: 3, stroke: '#333' })
+          );
 
-    // generate a tree using the default values
-    buildSettingsMenu();
-    rebuildGraph();
-  }
+      // generate a tree using the default values
+      buildSettingsMenu();
+      rebuildGraph();
+    }
 
   function rebuildGraph() {
     let minNodes = document.getElementById('minNodes').value;
@@ -264,7 +273,7 @@
     myDiagram.model.linkDataArray = linkArray;
   }
 
-  function buildSettingsMenu(){
+  function buildSettingsMenu() { 
     // Builds the setting menu through calls to respective builder
     buildButtonRow('maxIterations', 10, 300, 'Max Iterations','table1', 0);
     buildButtonRow('epsilonDistance', 0.05, 1, 'Epsilon','table1', 0.05, null, 2);
@@ -280,27 +289,27 @@
     buildButtonRow('prelayoutSpread', 1, 10, 'Prelayout Spread','table2', 0);
 
 
-    document.querySelectorAll('.info').forEach(function(element){
-      element.addEventListener('mouseover', function(){iframe(element)})
-      element.addEventListener('mouseout', function(){ document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = '' })
+    document.querySelectorAll('.info').forEach(element => { 
+      element.addEventListener('mouseover', () => { iframe(element); })
+      element.addEventListener('mouseout', () => { document.getElementById('frame').style.display = 'none'; document.getElementById('description').innerHTML = ''; })
     })
   }
 
-  function layerNodes(nodes = myDiagram.findTreeRoots(), layer = 0){
+  function layerNodes(nodes = myDiagram.findTreeRoots(), layer = 0) { 
     if (nodes.count == 0) return;
-    nodes.each(function(node) { //recursively goes through all children of the graph sending a layer down to be set on each
+    nodes.each(node => { //recursively goes through all children of the graph sending a layer down to be set on each
       myDiagram.model.setDataProperty(node.data, 'layer', layer);
       layerNodes(node.findTreeChildrenNodes(), layer + 1);
     });
   }
 
-  function shuffleColors(){
+  function shuffleColors() { 
     var tempList = [];
-    while(randomLayerColors.length > 0){ // Goes through the color palette randomly pulling out colors to reorder them
+    while (randomLayerColors.length > 0) {  // Goes through the color palette randomly pulling out colors to reorder them
       let item = randomLayerColors.splice(Math.round(Math.random() * randomLayerColors.length - 1), 1);
       tempList.push(item[0]);
     }
-    randomLayerColors = [...tempList];
+    randomLayerColors = tempList;
   }
 
   var randomLayerColors = [ // Color Palette used to color the layers of the graph
@@ -391,20 +400,19 @@
     lay.prelayoutSpread = prelayoutSpread;
     if (prelayoutSpread != d.getElementById('prelayoutSpread').name) code += `\n  prelayoutSpread: ${prelayoutSpread},`;
 
-    if(code === 'new DemoForceDirectedLayout({') code = 'new DemoForceDirectedLayout()'; // If no changes made to layout
+    if (code === 'new DemoForceDirectedLayout({') code = 'new DemoForceDirectedLayout()'; // If no changes made to layout
     else code = code.slice(0, -1) + '\n})'; // Removes last comma and adds closing bracket
     d.getElementById('layoutBuilder').textContent = code;
     if (window.Prism) window.Prism.highlightAll();
     myDiagram.commitTransaction('changed Layout');
-    myDiagram.zoomToFit
+    myDiagram.zoomToFit();
   }
 
-  function changeNodes(max, value){ // Allows for Node property to be changed and to make sure max and min never cross each other
+  function changeNodes(max, value) {  // Allows for Node property to be changed and to make sure max and min never cross each other
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxNodes').value = Math.max(e.getElementById('maxNodes').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minNodes').value = Math.max(e.getElementById('minNodes').value - -value, 0);
     }
     if (parseInt(e.getElementById('minNodes').value) > parseInt(e.getElementById('maxNodes').value)) {
@@ -412,12 +420,11 @@
     }
   }
 
-  function changeChildren(max, value){ // Makes sure children number properties max and min don't cross
+  function changeChildren(max, value) {  // Makes sure children number properties max and min don't cross
     e = document;
-    if (max){
+    if (max) { 
       e.getElementById('maxChil').value = Math.max(e.getElementById('maxChil').value - -value, 0);
-    }
-    else{
+    } else {
       e.getElementById('minChil').value = Math.max(e.getElementById('minChil').value - -value, 0);
     }
     if (parseInt(e.getElementById('minChil').value) > parseInt(e.getElementById('maxChil').value)) {
@@ -441,28 +448,28 @@
     document.getElementById(table).appendChild(clone);
   }
 
-  function resetButton(element){ // Sets property back to original and changes related divs accordingly
+  function resetButton(element) {  // Sets property back to original and changes related divs accordingly
     e = element.parentNode.querySelector('.input');
     e.value = e.name;
     element.style = "background-color: lightgray;";
     layout();
   }
 
-  function changeInput(element, change = true){ // Changes value and checks for default equality for the reset button
+  function changeInput(element, change = true) {  // Changes value and checks for default equality for the reset button
     e = element.parentNode.querySelector('.inputBox');
     change? number = element.name: number = 0;
     const max = element.parentNode.querySelector('.maximum').name;
     const min = element.parentNode.querySelector('.minimum').name;
     const decimal = element.parentNode.querySelector('.decimal').name;
-    var value = (e.value - -number) // Changes by recorded interval
-    if(max !== null) value = Math.min(value, max) // Checks for max and min values
-    if(min !== null) value = Math.max(value, min)
-    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal) // Rounds to assigned place
+    var value = (e.value - -number); // Changes by recorded interval
+    if (max !== null) value = Math.min(value, max); // Checks for max and min values
+    if (min !== null) value = Math.max(value, min);
+    e.value = (value).toFixed(((value - value.toFixed(0)) == 0)? 0 : decimal); // Rounds to assigned place
     element.parentNode.querySelector('.button1').style = (e.value != e.name)? "background-color: lightcoral;" : "background-color: lightgray;";
     layout();
   }
 
-  function copyCode(){
+  function copyCode() { 
     navigator.clipboard.writeText(document.getElementById('layoutBuilder').textContent);
     document.getElementById('default').style.display = 'none'
     document.getElementById('clicked').style.display = 'inline-flex'
@@ -474,7 +481,7 @@
     }, 1500);
   }
 
-  function iframe(element){
+  function iframe(element) { 
     var iframe = document.getElementById('apiFrame');
     var frame = document.getElementById('frame');
     frame.style.display = 'block';
@@ -531,7 +538,7 @@
 
 <template id="buttonRow">
   <div class="row tooltip" >
-    <svg onclick="" class="cell info flex-shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <svg onclick="" class="cell info shrink-0 inline w-4 h-4 align-middle" style="margin-right: 2px; margin-bottom: 6px;" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
       <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
     </svg>
     <div class="title cell whitespace-nowrap p-1 select-none" style="font-size: large;"></div>

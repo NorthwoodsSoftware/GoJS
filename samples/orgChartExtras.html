@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -157,7 +159,7 @@
     });
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', (e) => {
+    myDiagram.addDiagramListener('Modified', e => {
       const button = document.getElementById('SaveButton');
       if (button) button.disabled = !myDiagram.isModified;
       const idx = document.title.indexOf('*');
@@ -194,26 +196,26 @@
 
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
-    function textStyle(obj) {
-      return Object.assign({ font: '9pt sans-serif', stroke: 'white' }, obj || {});
+    function textStyle(tb) {
+      tb.font = '9pt sans-serif';
+      tb.stroke = 'white';
     }
 
-    // define the Node template
-    myDiagram.nodeTemplate = new go.Node('Auto', {
-      doubleClick: nodeDoubleClick,
+    function nodeEvents(node) {
+      node.doubleClick = nodeDoubleClick;
       // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-      mouseDragEnter: (e, node, prev) => {
+      node.mouseDragEnter = (e, node, prev) => {
         const diagram = node.diagram;
         const selnode = diagram.selection.first();
         if (!mayWorkFor(selnode, node)) return;
         const shape = node.findObject('SHAPE');
         if (shape) shape.fill = 'darkred';
-      },
-      mouseDragLeave: (e, node, next) => {
+      };
+      node.mouseDragLeave = (e, node, next) => {
         const shape = node.findObject('SHAPE');
         if (shape) shape.fill = graygrad;
-      },
-      mouseDrop: (e, node) => {
+      };
+      node.mouseDrop = (e, node) => {
         const diagram = node.diagram;
         const selnode = diagram.selection.first(); // assume just one Node in selection
         if (mayWorkFor(selnode, node)) {
@@ -227,47 +229,54 @@
             diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
           }
         }
-      }
-    })
-      // for sorting, have the Node.text be the data.name
-      .bind('text', 'name')
-      // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-      .bindObject('layerName', 'isSelected', (sel) => (sel ? 'Foreground' : ''))
-      .add(
-        // define the node's outer shape
-        new go.Shape('RoundedRectangle', {
-          name: 'SHAPE',
-          fill: graygrad,
-          stroke: 'black',
-          portId: '',
-          fromLinkable: true,
-          toLinkable: true,
-          cursor: 'pointer'
-        }),
-        // define the panel where the text will appear
-        new go.Panel('Table', {
-          maxSize: new go.Size(150, 999),
-          margin: new go.Margin(3, 3, 0, 3),
-          defaultAlignment: go.Spot.Left
-        })
-          .addColumnDefinition(2, { width: 4 })
-          .add(
-            new go.TextBlock({ // the name
-              row: 0,
-              column: 0,
-              columnSpan: 5,
-              font: 'bold 9pt sans-serif',
-              editable: true,
-              isMultiline: false,
-              stroke: 'white',
-              minSize: new go.Size(10, 14),
-              name: 'name'
+      };
+    }
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      new go.Node('Auto')
+        .apply(nodeEvents)
+        // for sorting, have the Node.text be the data.name
+        .bind('text', 'name')
+        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+        .bindObject('layerName', 'isSelected', sel => sel ? 'Foreground' : '')
+        .add(
+          // define the node's outer shape
+          new go.Shape('RoundedRectangle', {
+            name: 'SHAPE',
+            fill: graygrad,
+            stroke: 'black',
+            portId: '',
+            fromLinkable: true,
+            toLinkable: true,
+            cursor: 'pointer'
+          }),
+          // define the panel where the text will appear
+          new go.Panel('Table', {
+              maxSize: new go.Size(150, 999),
+              margin: new go.Margin(3, 3, 0, 3),
+              defaultAlignment: go.Spot.Left
             })
-              .bindTwoWay('text', 'name'),
-            new go.TextBlock('Title: ', textStyle({ row: 1, column: 0 })),
-            new go.TextBlock(
-              textStyle(
-                {
+            .addColumnDefinition(2, { width: 4 })
+            .add(
+              new go.TextBlock({ // the name
+                  row: 0,
+                  column: 0,
+                  columnSpan: 5,
+                  font: 'bold 9pt sans-serif',
+                  editable: true,
+                  isMultiline: false,
+                  stroke: 'white',
+                  minSize: new go.Size(10, 14),
+                  name: 'name'
+                })
+                .bindTwoWay('text', 'name'),
+              new go.TextBlock('Title: ')
+                .apply(textStyle)
+                .set({ row: 1, column: 0 }),
+              new go.TextBlock()
+                .apply(textStyle)
+                .set({
                   row: 1,
                   column: 1,
                   columnSpan: 4,
@@ -276,73 +285,84 @@
                   minSize: new go.Size(10, 14),
                   margin: new go.Margin(0, 0, 0, 3),
                   name: 'title'
-                }
-              ))
-              .bindTwoWay('text', 'title'),
-            new go.TextBlock('ID: ', textStyle({ row: 2, column: 0 })), // the ID and the boss
-            new go.TextBlock(textStyle({ row: 2, column: 1 })).bind('text', 'key'),
-            new go.TextBlock('Boss: ', textStyle({ row: 2, column: 3 })),
-            new go.TextBlock(textStyle({ row: 2, column: 4 })).bind('text', 'parent'),
-            new go.TextBlock({ // the comments
-              row: 3,
-              column: 0,
-              columnSpan: 5,
-              font: 'italic 9pt sans-serif',
-              wrap: go.Wrap.Fit,
-              editable: true, // by default newlines are allowed
-              stroke: 'white',
-              minSize: new go.Size(10, 14),
-              name: 'comments'
-            })
-              .bind('text', 'comments'),
-            go.GraphObject.build('TreeExpanderButton', { row: 4, columnSpan: 99, alignment: go.Spot.Center })
-          ) // end Table Panel
-      ); // end Node
+                })
+                .bindTwoWay('text', 'title'),
+              new go.TextBlock('ID: ')
+                .apply(textStyle)
+                .set({ row: 2, column: 0 }), // the ID and the boss
+              new go.TextBlock()
+                .apply(textStyle)
+                .set({ row: 2, column: 1 })
+                .bind('text', 'key'),
+              new go.TextBlock('Boss: ')
+                .apply(textStyle)
+                .set({ row: 2, column: 3 }),
+              new go.TextBlock()
+                .apply(textStyle)
+                .set({ row: 2, column: 4 })
+                .bind('text', 'parent'),
+              new go.TextBlock({ // the comments
+                  row: 3,
+                  column: 0,
+                  columnSpan: 5,
+                  font: 'italic 9pt sans-serif',
+                  wrap: go.Wrap.Fit,
+                  editable: true, // by default newlines are allowed
+                  stroke: 'white',
+                  minSize: new go.Size(10, 14),
+                  name: 'comments'
+                })
+                .bind('text', 'comments'),
+              go.GraphObject.build('TreeExpanderButton', { row: 4, columnSpan: 99, alignment: go.Spot.Center })
+            ) // end Table Panel
+        ); // end Node
 
     // define the Link template
-    myDiagram.linkTemplate = new go.Link({ routing: go.Routing.Orthogonal, corner: 5 }).add(new go.Shape({ strokeWidth: 2 })); // the link shape
+    myDiagram.linkTemplate =
+      new go.Link({ routing: go.Routing.Orthogonal, corner: 5 })
+        .add(new go.Shape({ strokeWidth: 2 })); // the link shape
 
-    myDiagram.linkTemplateMap.add(
-      'Support',
+    myDiagram.linkTemplateMap.add('Support',
       new go.Link({
-        curve: go.Curve.Bezier,
-        isLayoutPositioned: false,
-        isTreeLink: false,
-        curviness: -50,
-        relinkableFrom: true,
-        relinkableTo: true
-      })
+          curve: go.Curve.Bezier,
+          isLayoutPositioned: false,
+          isTreeLink: false,
+          curviness: -50,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
         .add(
           new go.Shape({ stroke: 'green', strokeWidth: 2 }),
           new go.Shape({ toArrow: 'OpenTriangle', stroke: 'green', strokeWidth: 2 }),
           new go.TextBlock({
-            stroke: 'green',
-            background: 'rgba(255,255,255,0.75)',
-            maxSize: new go.Size(80, NaN),
-            editable: true
-          }).bindTwoWay('text')
+              stroke: 'green',
+              background: 'rgba(255,255,255,0.75)',
+              maxSize: new go.Size(80, NaN),
+              editable: true
+            })
+            .bindTwoWay('text')
       )
     );
 
-    myDiagram.linkTemplateMap.add(
-      'Motion',
+    myDiagram.linkTemplateMap.add('Motion',
       new go.Link({
-        curve: go.Curve.Bezier,
-        isLayoutPositioned: false,
-        isTreeLink: false,
-        curviness: -50,
-        relinkableFrom: true,
-        relinkableTo: true
-      })
+          curve: go.Curve.Bezier,
+          isLayoutPositioned: false,
+          isTreeLink: false,
+          curviness: -50,
+          relinkableFrom: true,
+          relinkableTo: true
+        })
         .add(
           new go.Shape({ stroke: 'orange', strokeWidth: 2 }),
           new go.Shape({ toArrow: 'OpenTriangle', stroke: 'orange', strokeWidth: 2 }),
           new go.TextBlock({
-            stroke: 'orange',
-          background: 'rgba(255,255,255,0.75)',
-          maxSize: new go.Size(80, NaN),
-          editable: true
-        }).bindTwoWay('text')
+              stroke: 'orange',
+              background: 'rgba(255,255,255,0.75)',
+              maxSize: new go.Size(80, NaN),
+              editable: true
+            })
+            .bindTwoWay('text')
       )
     );
 
@@ -413,6 +433,7 @@
   function load() {
     myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 
@@ -521,7 +542,7 @@ Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" t
 However you can implement the tooltip as any arbitrarily complicated Adornment.
 </p>
 <p>
-More information can be found in the <a href="../intro/toolTips.html">GoJS Intro</a>.
+More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
 </p>
             <p>
               <a href="../samples/index.html#tooltips">Related samples</a>
@@ -538,7 +559,7 @@ These include "Button", "TreeExpanderButton", "SubGraphExpanderButton", "PanelEx
 "CheckBoxButton"s are used in the implementation of "CheckBox" Panels.
 </p>
 <p>
-These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#make" target="api">GraphObject.make</a>.
+These predefined panels can be used as if they were <a href="../api/symbols/Panel.html" target="api">Panel</a>-derived classes in calls to <a href="../api/symbols/GraphObject.html#build" target="api">GraphObject.build</a>.
 They are implemented as simple visual trees of <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>s in <a href="../api/symbols/Panel.html" target="api">Panel</a>s,
 with pre-set properties and event handlers.
 </p>

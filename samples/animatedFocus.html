@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -129,7 +131,7 @@
       scrollMargin: 200,
       // the layout does not really matter for this sample
       layout: new go.GridLayout({ wrappingWidth: 4000 }),
-      InitialLayoutCompleted: (e) => {
+      InitialLayoutCompleted: e => {
         // wait until initial layout and initial animation are finished,
         // then select the node and scroll to it with its own animation
         var node = null; // you might choose a particular node in your app
@@ -138,11 +140,14 @@
     });
 
     // the templates do not really matter for this sample
-    myDiagram.nodeTemplate = new go.Node('Auto', { width: 120, height: 60 })
-      .add(
-        new go.Shape().bind('fill'),
-        new go.TextBlock().bind('text')
-      );
+    myDiagram.nodeTemplate =
+      new go.Node('Auto', { width: 120, height: 60 })
+        .add(
+          new go.Shape()
+            .bind('fill'),
+          new go.TextBlock()
+            .bind('text')
+        );
 
     // create enough nodes so that only part of the document will fit in the viewport
     var arr = [];
@@ -188,6 +193,7 @@
     // Meanwhile, make sure that the node is in the viewport, so the user can see it
     myDiagram.commandHandler.scrollToPart(node);
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 

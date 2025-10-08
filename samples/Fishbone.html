@@ -99,6 +99,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -131,12 +133,13 @@
     });
 
     // define the normal node template, just some text
-    myDiagram.nodeTemplate = new go.Node()
-      .add(
-        new go.TextBlock()
-          .bind('text')
-          .bind('font', '', convertFont)
-      )
+    myDiagram.nodeTemplate =
+      new go.Node()
+        .add(
+          new go.TextBlock()
+            .bind('text')
+            .bind('font', '', convertFont)
+        )
 
     function convertFont(data) {
       var size = data.size;
@@ -153,21 +156,19 @@
     // define the non-fishbone link template
     myDiagram.linkTemplateMap.add('normal',
       new go.Link({
-        routing: go.Routing.Orthogonal,
-        corner: 4
-      })
+          routing: go.Routing.Orthogonal,
+          corner: 4
+        })
         .add(
           new go.Shape()
-        )
-    );
+        ));
 
     // use this link template for fishbone layouts
     myDiagram.linkTemplateMap.add('fishbone',
       new FishboneLink() // defined above
         .add(
           new go.Shape()
-        )
-    );
+        ));
 
     // here is the structured data used to build the model
     var json = {
@@ -331,6 +332,7 @@
     });
     myDiagram.commitTransaction('normal layout');
   }
+
   window.addEventListener('DOMContentLoaded', init);
 </script>
 <div id="sample">

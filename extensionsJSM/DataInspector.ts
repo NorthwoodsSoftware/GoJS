@@ -207,7 +207,7 @@ export class Inspector {
 
   /**
    * Gets or sets the properties that the Inspector will inspect, maybe setting options for those properties.
-   * The object should contain string: Object pairs represnting propertyName: propertyOptions.
+   * The object should contain string: Object pairs representing propertyName: propertyOptions.
    * Can be used to include or exclude additional properties.
    *
    * The default value is an empty Object.
@@ -369,9 +369,9 @@ export class Inspector {
     if (inspectedObjects) {
       const mainDiv = this._div;
       mainDiv.innerHTML = '';
-      const shared: go.Map<string, any> = new go.Map<string, any>(); // for properties that the nodes have in common
-      const properties: go.Map<string, any> = new go.Map<string, any>(); // for adding properties
-      const all: go.Map<string, any> = new go.Map<string, any>(); // used later to prevent changing properties when unneeded
+      const shared: Map<string, any> = new Map<string, any>(); // for properties that the nodes have in common
+      const properties: Map<string, any> = new Map<string, any>(); // for adding properties
+      const all: Map<string, any> = new Map<string, any>(); // used later to prevent changing properties when unneeded
       const it = inspectedObjects.iterator;
       let nodecount = 2;
       // Build table:
@@ -449,26 +449,26 @@ export class Inspector {
         if (!this._showUnionProperties) {
           // Cleans up shared map with properties that aren't shared between the selected objects
           // Also adds properties to the add and shared maps if applicable
-          const addIt = shared.iterator;
+          // const addIt = shared.iterator;
           const toRemove: Array<string> = [];
-          while (addIt.next()) {
-            if (properties.has(addIt.key)) {
-              let newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
-              all.set(addIt.key, newVal);
+          for (const key of shared.keys()) {
+            if (properties.has(key)) {
+              let newVal = all.get(key) + '|' + properties.get(key);
+              all.set(key, newVal);
               if (
-                (declaredProperties[addIt.key] &&
-                  declaredProperties[addIt.key].type !== 'color' &&
-                  declaredProperties[addIt.key].type !== 'checkbox' &&
-                  declaredProperties[addIt.key].type !== 'select') ||
-                !declaredProperties[addIt.key]
+                (declaredProperties[key] &&
+                  declaredProperties[key].type !== 'color' &&
+                  declaredProperties[key].type !== 'checkbox' &&
+                  declaredProperties[key].type !== 'select') ||
+                !declaredProperties[key]
               ) {
                 // for non-string properties i.e color
-                newVal = shared.get(addIt.key) + '|' + properties.get(addIt.key);
-                shared.set(addIt.key, newVal);
+                newVal = shared.get(key) + '|' + properties.get(key);
+                shared.set(key, newVal);
               }
             } else {
               // toRemove array since addIt is still iterating
-              toRemove.push(addIt.key);
+              toRemove.push(key);
             }
           }
           for (let i = 0; i < toRemove.length; i++) {
@@ -478,41 +478,39 @@ export class Inspector {
           }
         } else {
           // Adds missing properties to all with the correct amount of seperators
-          let addIt = properties.iterator;
-          while (addIt.next()) {
-            if (all.has(addIt.key)) {
+          for (const key of properties.keys()) {
+            if (all.has(key)) {
               if (
-                (declaredProperties[addIt.key] &&
-                  declaredProperties[addIt.key].type !== 'color' &&
-                  declaredProperties[addIt.key].type !== 'checkbox' &&
-                  declaredProperties[addIt.key].type !== 'select') ||
-                !declaredProperties[addIt.key]
+                (declaredProperties[key] &&
+                  declaredProperties[key].type !== 'color' &&
+                  declaredProperties[key].type !== 'checkbox' &&
+                  declaredProperties[key].type !== 'select') ||
+                !declaredProperties[key]
               ) {
                 // for non-string properties i.e color
-                const newVal = all.get(addIt.key) + '|' + properties.get(addIt.key);
-                all.set(addIt.key, newVal);
+                const newVal = all.get(key) + '|' + properties.get(key);
+                all.set(key, newVal);
               }
             } else {
               let newVal = '';
               for (let i = 0; i < nodecount - 1; i++) newVal += '|';
-              newVal += properties.get(addIt.key);
-              all.set(addIt.key, newVal);
+              newVal += properties.get(key);
+              all.set(key, newVal);
             }
           }
           // Adds bars in case properties is not in all
-          addIt = all.iterator;
-          while (addIt.next()) {
-            if (!properties.has(addIt.key)) {
+          for (const key of all.keys()) {
+            if (!properties.has(key)) {
               if (
-                (declaredProperties[addIt.key] &&
-                  declaredProperties[addIt.key].type !== 'color' &&
-                  declaredProperties[addIt.key].type !== 'checkbox' &&
-                  declaredProperties[addIt.key].type !== 'select') ||
-                !declaredProperties[addIt.key]
+                (declaredProperties[key] &&
+                  declaredProperties[key].type !== 'color' &&
+                  declaredProperties[key].type !== 'checkbox' &&
+                  declaredProperties[key].type !== 'select') ||
+                !declaredProperties[key]
               ) {
                 // for non-string properties i.e color
-                const newVal = all.get(addIt.key) + '|';
-                all.set(addIt.key, newVal);
+                const newVal = all.get(key) + '|';
+                all.set(key, newVal);
               }
             }
           }
@@ -521,16 +519,15 @@ export class Inspector {
       }
       // builds the table property rows and sets multipleProperties to help with updateall
       let mapIt;
-      if (!this._showUnionProperties) mapIt = shared.iterator;
-      else mapIt = all.iterator;
-      while (mapIt.next()) {
-        tbody.appendChild(this.buildPropertyRow(mapIt.key, mapIt.value)); // shows the properties that are allowed
+      if (!this._showUnionProperties) mapIt = shared;
+      else mapIt = all;
+      for (const [key, value] of mapIt) {
+        tbody.appendChild(this.buildPropertyRow(key, value)); // shows the properties that are allowed
       }
       table.appendChild(tbody);
       mainDiv.appendChild(table);
-      const allIt = all.iterator;
-      while (allIt.next()) {
-        this.multipleProperties[allIt.key] = allIt.value; // used for updateall to know which properties to change
+      for (const [key, value] of all) {
+        this.multipleProperties[key] = value; // used for updateall to know which properties to change
       }
     }
   }

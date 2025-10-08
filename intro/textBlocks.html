@@ -100,6 +100,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -143,7 +145,7 @@
     <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
       
       <aside id="sidenav"
-  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto flex-shrink-0
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
          md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
   <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
     
@@ -175,6 +177,7 @@
   <a href="typings.html">Typings</a>
   <a href="debugging.html">Debugging</a>
   <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
   <a href="trees.html">Trees</a>
   <a href="subtrees.html">SubTrees</a>
   <a href="groups.html">Groups</a>
@@ -183,21 +186,21 @@
   <a href="selection.html">Selection</a>
   <a href="highlighting.html">Highlighting</a>
   <a href="theming.html">Theming</a>
-  <a href="routers.html">Routers</a>
-  <a href="animation.html">Animation</a>
   <a href="tooltips.html">ToolTips</a>
   <a href="contextMenus.html">Context Menus</a>
   <a href="events.html">Diagram Events</a>
   <a href="tools.html">Tools</a>
   <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
   <a href="permissions.html">Permissions</a>
   <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
   <a href="HTMLInteraction.html">HTML Interaction</a>
   <a href="layers.html">Layers &amp; Z-ordering</a>
   <a href="palette.html">Palette</a>
   <a href="overview.html">Overview</a>
   <a href="replacingDeleting.html">Replacing and Deleting</a>
-  <a href="buttons.html">Buttons</a>
   <a href="templateMaps.html">Template Maps</a>
   <a href="legends.html">Legends and Titles</a>
   <a href="extensions.html">Extensions</a>
@@ -249,6 +252,7 @@
 <p>
   Setting the <a>TextBlock.text</a> property is the only way to show a text string. Because TextBlock inherits from <a>GraphObject</a>, some GraphObject
   properties will affect text. But there are additional text-only options regarding how that text is formatted and drawn.
+  You can also pass the text string as the first argument to the constructor.
 </p>
 <p>
   In these simplistic demonstrations, the code programmatically creates a Part and adds it to the Diagram.
@@ -289,11 +293,11 @@
 
 <pre class="lang-js" id="awesomeFont"><code>
 // Explicitly load a font.  Only do this once, not each time you load a model.
-const awesome = new FontFace("awesome",
-    "url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf)");
+const awesome = new FontFace("FontAwesome",
+    "url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2)");
 document.fonts.add(awesome);
 // Wait for the Font Awesome font to load before actually loading the diagram.
-awesome.load().then(() => load());
+awesome.load().then(load);
 
 function load() {
   diagram.add(
@@ -302,10 +306,8 @@ function load() {
         new go.Shape({ fill: "lightgreen" }),
         new go.Panel("Horizontal", { margin: 8 })
           .add(
-            new go.TextBlock(
-              { text: "\uf030", font: "14pt awesome" }),
-            new go.TextBlock("an example using FontAwesome",
-              { margin: new go.Margin(0, 0, 0, 2) })
+            new go.TextBlock("\uf030", { font: "14pt FontAwesome" }),
+            new go.TextBlock("an example using FontAwesome", { margin: new go.Margin(0, 0, 0, 2) })
           )
       ));
 }
@@ -335,19 +337,21 @@ function load() {
   size of the TextBlocks below, we have given them lightgreen backgrounds.
 </p>
 <pre class="lang-js" id="sizingTextBlocks"><code>
-  diagram.add(
-    new go.Part("Vertical")
-      .add(
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2 }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                           width: 100, height: 33 }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                           width: 60, height: 33 }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                           width: 50, height: 22 }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                           width: 40, height: 9 })
-      ));
+const settings = { background: "lightgreen", margin: 2 };
+diagram.add(
+  new go.Part("Vertical")
+    .add(
+      new go.TextBlock("a Text Block", settings) 
+        .set({ /* natural width and height */ }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 100, height: 33 }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 60, height: 33 }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 50, height: 22 }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 40, height: 9 })
+    ));
 </code></pre>
 <script>
   goCode('sizingTextBlocks', 600, 160);
@@ -364,35 +368,29 @@ function load() {
   <code>OverflowClip</code>, followed by one using the <a>TextBlock.overflow</a> value of <code>OverflowEllipsis</code>.
 </p>
 <pre class="lang-js" id="sizingTextBlocks2"><code>
-  diagram.contentAlignment = go.Spot.Center,
-  diagram.add(
-    new go.Part("Vertical")
-      .add(
-        // Allow any number of lines, no clipping needed:
-        new go.TextBlock({ text: "a Text Block that takes 4 lines",
-                          font: '14pt sans-serif',
-                          background: "lightblue",
-                          overflow: go.TextOverflow.Clip /* the default value */,
-                          // no maximum number of lines of text (the default)
-                          margin: 2,
-                          width: 90 }),
-        // Allow only 2 lines, OverflowClip:
-        new go.TextBlock({ text: "a Text Block that takes 4 lines",
-                          font: '14pt sans-serif',
-                          background: "lightblue",
-                          overflow: go.TextOverflow.Clip /* the default value */,
-                          maxLines: 2,
-                          margin: 2,
-                          width: 90 }),
-        // Allow only 2 lines, OverflowEllipsis:
-        new go.TextBlock({ text: "a Text Block that takes 4 lines",
-                          font: '14pt sans-serif',
-                          background: "lightblue",
-                          overflow: go.TextOverflow.Ellipsis,
-                          maxLines: 2,
-                          margin: 2,
-                          width: 90 })
-      ));
+const settings = { font: '14pt sans-serif', background: "lightblue", margin: 2, width: 90 };
+diagram.add(
+  new go.Part("Vertical")
+    .add(
+      // Allow any number of lines, no clipping needed:
+      new go.TextBlock("a Text Block that takes 4 lines", settings)
+        .set({
+          overflow: go.TextOverflow.Clip /* the default value */,
+          // no maximum number of lines of text (the default)
+        }),
+      // Allow only 2 lines, OverflowClip:
+      new go.TextBlock("a Text Block that takes 4 lines", settings)
+        .set({
+          overflow: go.TextOverflow.Clip /* the default value */,
+          maxLines: 2
+        }),
+      // Allow only 2 lines, OverflowEllipsis:
+      new go.TextBlock("a Text Block that takes 4 lines", settings)
+        .set({
+          overflow: go.TextOverflow.Ellipsis,
+          maxLines: 2
+        })
+    ));
 </code></pre>
 <script>
   goCode('sizingTextBlocks2', 600, 200);
@@ -408,17 +406,19 @@ function load() {
   limited to the same width but are allowed to wrap.
 </p>
 <pre class="lang-js" id="wrappingTextBlocks"><code>
-  diagram.add(
-    new go.Part("Vertical")
-      .add(
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2 }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                          width: 50, wrap: go.Wrap.None }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                          width: 50, wrap: go.Wrap.DesiredSize }),
-        new go.TextBlock({ text: "a Text Block", background: "lightgreen", margin: 2,
-                          width: 50, wrap: go.Wrap.Fit })
-      ));
+const settings = { background: "lightgreen", margin: 2 };
+diagram.add(
+  new go.Part("Vertical")
+    .add(
+      new go.TextBlock("a Text Block", settings)
+        .set({ /* natural width and wrap */ }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 50, wrap: go.Wrap.None }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 50, wrap: go.Wrap.DesiredSize }),
+      new go.TextBlock("a Text Block", settings)
+        .set({ width: 50, wrap: go.Wrap.Fit })
+    ));
 </code></pre>
 <script>
   goCode('wrappingTextBlocks', 600, 120);
@@ -434,30 +434,29 @@ function load() {
   <a>Panel</a>.
 </p>
 <pre class="lang-js" id="textAlignTextBlocks"><code>
-  diagram.add(
-    new go.Part("Horizontal")
-      .add(
-        new go.Panel("Vertical",
-            { width: 150, defaultStretch: go.Stretch.Horizontal })
-          .add(
-            new go.TextBlock({ text: "textAlign: 'left'", background: "lightgreen", margin: 2,
-                              textAlign: "left" }),
-            new go.TextBlock({ text: "textAlign: 'center'", background: "lightgreen", margin: 2,
-                              textAlign: "center" }),
-            new go.TextBlock({ text: "textAlign: 'right'", background: "lightgreen", margin: 2,
-                              textAlign: "right" })
-          ),
-        new go.Panel("Vertical",
-            { width: 150, defaultStretch: go.Stretch.None })
-          .add(
-            new go.TextBlock({ text: "alignment: Left", background: "lightgreen", margin: 2,
-                              alignment: go.Spot.Left }),
-            new go.TextBlock({ text: "alignment: Center", background: "lightgreen", margin: 2,
-                              alignment: go.Spot.Center }),
-            new go.TextBlock({ text: "alignment: Right", background: "lightgreen", margin: 2,
-                              alignment: go.Spot.Right })
-          )
-      ));
+const settings = { background: "lightgreen", margin: 2 };
+diagram.add(
+  new go.Part("Horizontal")
+    .add(
+      new go.Panel("Vertical", { width: 150, defaultStretch: go.Stretch.Horizontal })
+        .add(
+          new go.TextBlock("textAlign: 'left'", settings)
+            .set({ textAlign: "left" }),
+          new go.TextBlock("textAlign: 'center'", settings)
+            .set({ textAlign: "center" }),
+          new go.TextBlock("textAlign: 'right'", settings)
+            .set({ textAlign: "right" })
+        ),
+      new go.Panel("Vertical", { width: 150, defaultStretch: go.Stretch.None })
+        .add(
+          new go.TextBlock("alignment: Left", settings)
+            .set({ alignment: go.Spot.Left }),
+          new go.TextBlock("alignment: Center", settings)
+            .set({ alignment: go.Spot.Center }),
+          new go.TextBlock("alignment: Right", settings)
+            .set({ alignment: go.Spot.Right })
+        )
+    ));
 </code></pre>
 <script>
   goCode('textAlignTextBlocks', 600, 100);
@@ -467,16 +466,17 @@ function load() {
   <a>TextBlock.verticalAlignment</a> affect the sizing of the TextBlock.
 </p>
 <pre class="lang-js" id="verticalAlignment"><code>
-  diagram.add(
-    new go.Part("Horizontal")
-      .add(
-        new go.TextBlock({ text: "verticalAlignment: Top", verticalAlignment: go.Spot.Top,
-                          width: 170, height: 60, background: "lightgreen", margin: 10 }),
-        new go.TextBlock({ text: "verticalAlignment: Center", verticalAlignment: go.Spot.Center,
-                          width: 170, height: 60, background: "lightgreen", margin: 10 }),
-        new go.TextBlock({ text: "verticalAlignment: Bottom", verticalAlignment: go.Spot.Bottom,
-                          width: 170, height: 60, background: "lightgreen", margin: 10 })
-      ));
+const settings = { width: 170, height: 60, background: "lightgreen", margin: 10 };
+diagram.add(
+  new go.Part("Horizontal")
+    .add(
+      new go.TextBlock("verticalAlignment: Top", settings)
+        .set({ verticalAlignment: go.Spot.Top }),
+      new go.TextBlock("verticalAlignment: Center", settings)
+        .set({ verticalAlignment: go.Spot.Center }),
+      new go.TextBlock("verticalAlignment: Bottom", settings)
+        .set({ verticalAlignment: go.Spot.Bottom })
+    ));
 </code></pre>
 <script>
   goCode('verticalAlignment', 600, 100);
@@ -489,23 +489,20 @@ function load() {
   <a>TextBlock.isMultiline</a>. By default both multiline and wrapping are enabled.
 </p>
 <pre class="lang-js" id="multilineTextBlocks"><code>
-  diagram.add(
-    new go.Part("Vertical")
-      .add(
-        new go.TextBlock({ text: "a Text Block\nwith three logical lines\nof text",
-                          background: "lightgreen", margin: 2,
-                          isMultiline: false }),
-        new go.TextBlock({ text: "a Text Block\nwith three logical lines\nof text",
-                          background: "lightgreen", margin: 2,
-                          isMultiline: true }),
-        new go.TextBlock({ text: "a Text Block\nwith three logical lines\nof centered text",
-                          background: "lightgreen", margin: 2,
-                          isMultiline: true, textAlign: "center" }),
-        new go.TextBlock({ text: "a single line of centered text that should" +
-                                " wrap because we will limit the width",
-                          background: "lightgreen", margin: 2, width: 80,
-                          wrap: go.Wrap.Fit, textAlign: "center" })
-      ));
+const settings = { background: "lightgreen", margin: 2 };
+diagram.add(
+  new go.Part("Vertical")
+    .add(
+      new go.TextBlock("a Text Block\nwith three logical lines\nof text", settings)
+        .set({ isMultiline: false }),
+      new go.TextBlock("a Text Block\nwith three logical lines\nof text", settings)
+        .set({ isMultiline: true }),
+      new go.TextBlock("a Text Block\nwith three logical lines\nof centered text", settings)
+        .set({ isMultiline: true, textAlign: "center" }),
+      new go.TextBlock("a single line of centered text that should" +
+                       " wrap because we will limit the width", settings)
+        .set({ width: 80, wrap: go.Wrap.Fit, textAlign: "center" })
+    ));
 </code></pre>
 <script>
   goCode('multilineTextBlocks', 600, 300);
@@ -518,14 +515,16 @@ function load() {
   <a href="https://en.wikipedia.org/wiki/Zero-width_space" target="_blank">Wikipedia: Zero-width space</a>
 </p>
 <pre class="lang-js" id="indent"><code>
-  diagram.add(
-    new go.Part("Vertical")
-      .add(
-        new go.TextBlock({ text: "left aligned\n\u200B  indent two\n\u200B    indent four",
-                          background: "lightgreen", margin: 2, width: 150 }),
-        new go.TextBlock({ text: "\u200B  This is an indented paragraph consisting of lots of text that wraps naturally.",
-                          background: "lightgreen", margin: 2, width: 150 })
-      ));
+diagram.add(
+  new go.Part("Vertical")
+    .add(
+      new go.TextBlock("left aligned\n\u200B  indent two\n\u200B    indent four", { 
+        background: "lightgreen", margin: 2, width: 150
+      }),
+      new go.TextBlock("\u200B  This is an indented paragraph consisting of lots of text that wraps naturally.", {
+        background: "lightgreen", margin: 2, width: 150
+      })
+    ));
 </code></pre>
 <script>
   goCode('indent', 600, 200);
@@ -536,30 +535,34 @@ function load() {
 <p>You can flip text horizontally and vertically with the <a>TextBlock.flip</a> property:</p>
 
 <pre class="lang-js" id="flipPictures"><code>
-  diagram.add(
-    new go.Part("Table", {
-        defaultColumnSeparatorStrokeWidth: 3,
-        defaultColumnSeparatorStroke: "gray",
-        defaultSeparatorPadding: 5
-      })
-      .add(
-        new go.TextBlock({ text: "Hello", column: 0, margin: 2, font: '26px serif',
-                        flip: go.Flip.None
-                      }),
-        new go.TextBlock("None (default)", { row: 1, column: 0 }),
-        new go.TextBlock({ text: "Hello", column: 1, margin: 2, font: '26px serif',
-                        flip: go.Flip.Horizontal
-                      }),
-        new go.TextBlock("FlipHorizontal", { row: 1, column: 1 }),
-        new go.TextBlock({ text: "Hello", column: 2, margin: 2, font: '26px serif',
-                        flip: go.Flip.Vertical
-                      }),
-        new go.TextBlock("FlipVertical", { row: 1, column: 2 }),
-        new go.TextBlock({ text: "Hello", column: 3, margin: 2, font: '26px serif',
-                        flip: go.Flip.Both
-                      }),
-        new go.TextBlock("FlipBoth", { row: 1, column: 3 })
-      ));
+diagram.add(
+  new go.Part("Table", {
+      defaultColumnSeparatorStrokeWidth: 1,
+      defaultColumnSeparatorStroke: "gray",
+      defaultSeparatorPadding: 5
+    })
+    .add(
+      new go.TextBlock("Hello", {
+        column: 0, margin: 2, font: '26px serif',
+        flip: go.Flip.None /* the default value */
+      }),
+      new go.TextBlock("None (default)", { row: 1, column: 0 }),
+      new go.TextBlock("Hello", {
+        column: 1, margin: 2, font: '26px serif',
+        flip: go.Flip.Horizontal
+      }),
+      new go.TextBlock("FlipHorizontal", { row: 1, column: 1 }),
+      new go.TextBlock("Hello", {
+        column: 2, margin: 2, font: '26px serif',
+        flip: go.Flip.Vertical
+      }),
+      new go.TextBlock("FlipVertical", { row: 1, column: 2 }),
+      new go.TextBlock("Hello", {
+        column: 3, margin: 2, font: '26px serif',
+        flip: go.Flip.Both
+      }),
+      new go.TextBlock("FlipBoth", { row: 1, column: 3 })
+    ));
 </code></pre>
 <script>
   goCode('flipPictures', 600, 160);
@@ -576,18 +579,16 @@ function load() {
   diagram.add(
     new go.Part()
       .add(
-        new go.TextBlock(
-          { text: "select and then click to edit",
-            background: "lightblue",
-            editable: true, isMultiline: false })
+        new go.TextBlock("select and then click to edit", {
+          background: "lightblue", editable: true, isMultiline: false
+        })
       ));
   diagram.add(
     new go.Part()
       .add(
-        new go.TextBlock(
-          { text: "this one allows embedded newlines",
-            background: "lightblue",
-            editable: true })
+        new go.TextBlock("this one allows embedded newlines", {
+          background: "lightblue", editable: true
+        })
       ));
 </code></pre>
 <p>
@@ -645,7 +646,9 @@ function load() {
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

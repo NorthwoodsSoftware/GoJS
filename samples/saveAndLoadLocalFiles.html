@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+<meta name="description" content="The DrawCommandHandler extension adds a command to save the Model as a JSON formatted text file, and a method and options for loading such files." />
+<meta itemprop="description" content="The DrawCommandHandler extension adds a command to save the Model as a JSON formatted text file, and a method and options for loading such files." />
+<meta property="og:description" content="The DrawCommandHandler extension adds a command to save the Model as a JSON formatted text file, and a method and options for loading such files." />
+<meta name="twitter:description" content="The DrawCommandHandler extension adds a command to save the Model as a JSON formatted text file, and a method and options for loading such files." />
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2025 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Saving and Loading Models in local files" />
+<meta property="og:title" content="Saving and Loading Models in local files" />
+<meta name="twitter:title" content="Saving and Loading Models in local files" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/minimal.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/minimal.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/minimal.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/samples/saveAndLoadLocalFiles.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/samples/saveAndLoadLocalFiles.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Saving and Loading Models in local files | GoJS Diagramming Library
+    </title>
+  </head>
+
+  <body>
+    <!-- This top nav is not part of the sample code -->
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="flex flex-col prose">
+      <div class="w-full max-w-screen-xl mx-auto">
+        <!-- * * * * * * * * * * * * * -->
+        <!-- Start of GoJS sample code -->
+        <script src="../release/go.js"></script>
+
+        
+
+        <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script src="../extensions/DrawCommandHandler.js"></script>
+<script id="code">
+  function init() {
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      commandHandler: new DrawCommandHandler({
+        // options for saving:
+        // The default saved file name comes from the Model.name; if there is no name it uses 'gojs'
+        // localFileType: 'gojs'  // the default saved file type
+
+        // support for loading:
+        localFileInput: document.getElementById('myFileInput'),
+        localFileDropElement: document.getElementById('myDiagramDiv')
+      }),
+      'undoManager.isEnabled': true
+    });
+
+    // a second diagram, for demonstrating copy-and-paste
+    myDiagram2 = new go.Diagram('myDiagramDiv2', {
+      commandHandler: new DrawCommandHandler({
+        // support for loading:
+        localFileInput: document.getElementById('myFileInput2'),
+        localFileDropElement: document.getElementById('myDiagramDiv2')
+      }),
+      'undoManager.isEnabled': true
+    });
+
+    // define a simple Node template
+    myDiagram.nodeTemplate =
+      new go.Node('Auto') // the Shape will go around the TextBlock
+        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
+        .add(
+          new go.Shape('RoundedRectangle', { strokeWidth: 0 })
+            // Shape.fill is bound to Node.data.color
+            .bind('fill', 'color'),
+          new go.TextBlock({ margin: 8, editable: true }) // some room around the text
+            // TextBlock.text is bound to Node.data.text
+            .bindTwoWay('text')
+        );
+
+    // share the templates
+    myDiagram2.nodeTemplate = myDiagram.nodeTemplate;
+
+    // create the model data that will be represented by Nodes and Links
+    myDiagram.model = new go.GraphLinksModel({
+        name: 'example',
+        nodeDataArray: [
+          { key: 1, text: 'Alpha', color: 'lightblue' },
+          { key: 2, text: 'Beta', color: 'orange' },
+          { key: 3, text: 'Gamma', color: 'lightgreen' },
+          { key: 4, text: 'Delta', color: 'pink' }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 },
+          { from: 2, to: 2 },
+          { from: 3, to: 4 },
+          { from: 4, to: 1 }
+        ]
+      });
+
+    myDiagram2.model = new go.GraphLinksModel({
+        name: 'simple',
+        nodeDataArray: [
+          { key: 1, text: 'Alpha', color: 'lightblue' },
+          { key: 2, text: 'Beta', color: 'orange' }
+        ],
+        linkDataArray: [
+          { from: 1, to: 2 },
+        ]
+      });
+
+    // support for saving and loading files to and from the local machine
+    document.getElementById('myFileSaveButton').addEventListener('click', () => myDiagram.commandHandler.saveLocalFile());
+    document.getElementById('myFileOpenButton').addEventListener('click', () => document.getElementById('myFileInput').click());
+    document.getElementById('myFileOpenButton2').addEventListener('click', () => document.getElementById('myFileInput2').click());
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+<div id="sample">
+  <span style="display: inline-block; vertical-align: top">
+    <div id="myDiagramDiv" style="border: solid 1px black; width: 300px; height: 300px"></div>
+  </span>
+  <span style="display: inline-block; vertical-align: top">
+    <div id="myDiagramDiv2" style="border: solid 1px black; width: 300px; height: 300px"></div>
+  </span>
+  <p>
+    This example uses the <a>DrawCommandHandler</a> extension to save and load Diagram <a>Model</a>s on your local machine.
+    Make some changes to either or both diagrams, click the "Save..." button, maybe make more changes,
+    and then click either of the "Load..." buttons or just drag-and-drop the saved <code>.gojs</code> file
+    directly into the Diagram.
+  </p>
+  <p>
+    <button id="myFileSaveButton" title="Save a file to the Downloads folder">Save left Diagram model file to Downloads folder as .gojs file</button>
+  </p>
+  <p>
+    <div>
+      <input type="file" id="myFileInput" multiple style="display:none"></input> <!-- this stays hidden -->
+      <button id="myFileOpenButton" style="margin: 4px;" title="Load a saved file for first diagram">Load a saved file to left Diagram</button>
+      <input type="file" id="myFileInput2" multiple style="display:none"></input> <!-- this stays hidden -->
+      <button id="myFileOpenButton2" style="margin: 4px;" title="Load a saved file for second diagram">Load a saved file to right Diagram</button>
+      <br>
+      Or drag-and-drop from your Downloads folder directly into the desired Diagram.
+    </div>
+  </p>
+</div>
+          
+        </div>
+        <!-- * * * * * * * * * * * * * -->
+        <!--  End of GoJS sample code  -->
+      </div>
+
+      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
+        <hr/>
+        <h3 class="text-xl">GoJS Features in this sample</h3>
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways.
+  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
+  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
+  Methods that you can override are documented in the API reference.
+  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
+  You should not modify the prototypes of any of the <b>GoJS</b> classes.
+</p>
+<p>
+  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
+  showcasing the creation of custom tools and layouts.
+  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
+  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
+  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging procedures.
+</p>
+<p>
+More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#extensions">Related samples</a>
+            </p>
+            <hr>
+          
+        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
+          
+            <h4>Commands</h4>
+<p>
+A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
+There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+</p>
+<p>
+You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
+<p>
+Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
+Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
+Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
+or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
+see <a href="../intro/permissions.html">GoJS Permissions</a>.
+</p>
+<p>
+There are several CommandHandler extensions that provide additional functionality.
+<p>
+More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+</p>
+            <p>
+              <a href="../samples/index.html#commands">Related samples</a>
+            </p>
+            <hr>
+          
+        </div>
+    </div>
+  </body>
+  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
+  <script src="../assets/js/goSamples.js"></script>
+</html>

@@ -104,6 +104,8 @@
         var lowerhref = aTags[i]
           .href
           .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
         if (url.startsWith(lowerhref)) {
           aTags[i]
             .classList
@@ -171,7 +173,10 @@
         Latest: <code>"https://cdn.jsdelivr.net/npm/gojs/release/go.js"</code>
       </li>
       <li>
-        Most recent 3.0: <code>"https://cdn.jsdelivr.net/npm/gojs@3.0/release/go.js"</code>
+        Most recent 3.1: <code>"https://cdn.jsdelivr.net/npm/gojs@3.1/release/go.js"</code>
+      </li>
+      <li>
+        An extension: <code>"https://cdn.jsdelivr.net/npm/create-gojs-kit/dist/extensions/AvoidsLinksRouter.js"</code>
       </li>
     </ul>
   </li>
@@ -180,16 +185,16 @@
   The <b>GoJS</b> library comes in both "debug" and "release" variations in the <code>release</code> directory:
 </p>
 <ul>
-  <li><a href="release/go.js">go.js</a></li>
+  <li><a href="release/go.js">go.js</a>, the release library, used for &lt;script&gt; tags or require.</li>
   <li><a href="release/go-debug.js">go-debug.js</a>,
-    the same functionality as `go.js`, but with more error checking, for use during development.</li>
-  <li><a href="release/go-module.js">go-module.js</a> and <a href="release/go-debug-module.js">go-debug-module.js</a>,
-    the same functionality but as ECMAScript modules.</li>
+    the same functionality as <code>go.js</code>, but with more error checking, for use during development.</li>
   <li><a href="release/go.mjs">go.mjs</a> and <a href="release/go-debug.mjs">go-debug.mjs</a>
-    are copies of the <code>*-module.js</code> ECMAScript modules for Node.js use on a server.</li>
+    are the same functionality but as ECMAScript modules, for bundling or for Node.js.</li>
+  <li><a href="release/go-module.js">go-module.js</a> and <a href="release/go-debug-module.js">go-debug-module.js</a>,
+    copies of the <code>*.mjs</code> files.</li>
 </ul>
 <p>
-  We recommend that you use <code>go-debug.js</code> while doing your initial development --
+  We recommend that you use <code>go-debug.js</code> (or <code>go-debug.mjs</code>) while doing your initial development --
   it is more likely to signal errors or provide meaningful error messages than when using <code>go.js</code>.
   Always remember to look at the console log to see if there are any error or warning messages.
 </p>
@@ -285,7 +290,9 @@
             <a href="https://nwoods.com/sales/index.html"
               target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
           </li>
-          
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
         </ul>
       </div>
       <div>

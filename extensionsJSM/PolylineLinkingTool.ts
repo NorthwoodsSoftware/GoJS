@@ -53,7 +53,11 @@ export class PolylineLinkingTool extends go.LinkingTool {
     if (this._firstMouseDown) return;
     const pts = this.temporaryLink.points.copy();
     this._horizontal = !this._horizontal;
-    pts.add(p.copy());
+    if (this.isForwards) {
+      pts.add(p.copy());
+    } else {
+      pts.insertAt(0, p.copy());
+    }
     this.temporaryLink.points = pts;
   }
 
@@ -67,15 +71,15 @@ export class PolylineLinkingTool extends go.LinkingTool {
     if (this._firstMouseDown) return;
     const pts = this.temporaryLink.points.copy();
     if (this.temporaryLink.isOrthogonal) {
-      const q = pts.elt(pts.length - 3).copy();
+      const q = pts.elt(this.isForwards ? pts.length - 3 : 2).copy();
       if (this._horizontal) {
         q.y = p.y;
       } else {
         q.x = p.x;
       }
-      pts.setElt(pts.length - 2, q);
+      pts.setElt(this.isForwards ? pts.length - 2 : 1, q);
     }
-    pts.setElt(pts.length - 1, p.copy());
+    pts.setElt(this.isForwards ? pts.length - 1 : 0, p.copy());
     this.temporaryLink.points = pts;
   }
 
@@ -90,7 +94,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
     if (this._firstMouseDown) return;
     const pts = this.temporaryLink.points.copy();
     if (pts.length === 0) return;
-    pts.removeAt(pts.length - 1);
+    pts.removeAt(this.isForwards ? pts.length - 1 : 0);
     this.temporaryLink.points = pts;
     this._horizontal = !this._horizontal;
   }
@@ -123,8 +127,8 @@ export class PolylineLinkingTool extends go.LinkingTool {
           this.temporaryLink.fromNode = null;
         }
         const pts = this.temporaryLink.points;
-        const ult = pts.elt(pts.length - 1);
-        const penult = pts.elt(pts.length - 2);
+        const ult = pts.elt(this.isForwards ? pts.length - 1 : 0);
+        const penult = pts.elt(this.isForwards ? pts.length - 2 : 1);
         this._horizontal = ult.x === penult.x;
       }
       // a new temporary end point, the previous one is now "accepted"
@@ -167,17 +171,20 @@ export class PolylineLinkingTool extends go.LinkingTool {
             target.part as go.Node,
             target,
             target.getDocumentPoint(go.Spot.Center),
-            this.temporaryLink.points.elt(this.temporaryLink.points.length - 2),
+            this.temporaryLink.points.elt(this.isForwards ? this.temporaryLink.points.length - 2 : 1),
             !this.isForwards
           );
           this.moveLastPoint(pt);
           pts = this.temporaryLink.points.copy();
-          if (this.temporaryLink.isOrthogonal) {
-            pts.insertAt(pts.length - 2, pts.elt(pts.length - 2));
-          }
         } else {
           // copy the route of saved points, because we're about to recompute it
           pts = this.temporaryLink.points.copy();
+          // keeps track of how the user is approaching the node/port, used for orthogonal routing
+          if (pts.elt(this.isForwards ? pts.length - 1 : 0).x === pts.elt(this.isForwards ? pts.length - 2 : 1).x) {
+              var linkingVertically = true;
+          } else {
+              var linkingVertically = false;
+          }
           // terminate the link in the expected manner by letting the
           // temporary link connect with the temporary node/port and letting the
           // normal route computation take place
@@ -190,6 +197,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
               true
             );
             this.temporaryLink.toNode = target.part as go.Node;
+            this.temporaryLink.toPortId = target.portId;
           } else {
             this.copyPortProperties(
               target.part as go.Node,
@@ -199,6 +207,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
               false
             );
             this.temporaryLink.fromNode = target.part as go.Node;
+            this.temporaryLink.fromPortId = target.portId;
           }
           this.temporaryLink.updateRoute();
           // now copy the final one or two points of the temporary link's route
@@ -207,18 +216,31 @@ export class PolylineLinkingTool extends go.LinkingTool {
           const numnatpts = natpts.length;
           if (numnatpts >= 2) {
             if (numnatpts >= 3) {
-              const penult = natpts.elt(numnatpts - 2);
-              pts.insertAt(pts.length - 1, penult);
+              const penult = natpts.elt(this.isForwards ? numnatpts - 2 : 1);
+              pts.insertAt(this.isForwards ? pts.length - 1 : 1, penult.copy());
               if (this.temporaryLink.isOrthogonal) {
-                pts.insertAt(pts.length - 1, penult);
+                // adjusts third-to-last point to be in line with penultimate point
+                if (linkingVertically) {
+                  const antepenult = pts.elt(this.isForwards ? pts.length - 3 : 2);
+                  pts.setElt(this.isForwards ? pts.length - 3 : 2, new go.Point(penult.x, antepenult.y));
+                } else {
+                  const antepenult = pts.elt(this.isForwards ? pts.length - 3 : 2);
+                  pts.setElt(this.isForwards ? pts.length - 3 : 2, new go.Point(antepenult.x, penult.y));
+                }
               }
             }
-            const ult = natpts.elt(numnatpts - 1);
-            pts.setElt(pts.length - 1, ult);
+            const ult = natpts.elt(this.isForwards ? numnatpts - 1 : 0);
+            pts.setElt(this.isForwards ? pts.length - 1 : 0, ult);
           }
         }
         // save desired route in temporary link;
         // insertLink will copy the route into the new real Link
+        // Reset portIds to empty string and sets ports to null so the temporary link 
+        // won't be counted towards max to or from links
+        this.temporaryLink.toPortId = '';
+        this.temporaryLink.fromPortId = '';
+        this.temporaryLink.toNode = null;
+        this.temporaryLink.fromNode = null;
         this.temporaryLink.points = pts;
         super.doMouseUp();
       }
