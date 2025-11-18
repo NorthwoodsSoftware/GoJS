@@ -20,7 +20,7 @@ There are samples for
 [flowchart](https://gojs.net/latest/samples/flowchart.html),
 [org chart](https://gojs.net/latest/samples/orgChartEditor.html),
 [business process BPMN](https://gojs.net/latest/samples/bpmn/BPMN.html),
-[swimlanes](https://gojs.net/latest/samples/swimlanes.html),
+[swimlanes](https://gojs.net/latest/samples/swimLanes.html),
 [timelines](https://gojs.net/latest/samples/timeline.html),
 [state charts](https://gojs.net/latest/samples/statechart.html),
 [kanban](https://gojs.net/latest/samples/kanban.html),
@@ -74,21 +74,20 @@ Graphs are constructed by creating one or more templates, with desired propertie
 <script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
 
 <script>
-  const myDiagram =
-    new go.Diagram('myDiagramDiv', { // create a Diagram for the HTML Div element
-      'undoManager.isEnabled': true  // enable undo & redo
-    });
+  const myDiagram = new go.Diagram('myDiagramDiv', {
+    // create a Diagram for the HTML Div element
+    'undoManager.isEnabled': true // enable undo & redo
+  });
 
   // define a simple Node template
   // the Shape will automatically surround the TextBlock
-  myDiagram.nodeTemplate =
-    new go.Node('Auto')
-      .add(  // add a Shape and a TextBlock to this "Auto" Panel
-        new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-          .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-        new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text
-          .bind('text', 'key') // TextBlock.text is bound to Node.data.key
-      );
+  myDiagram.nodeTemplate = new go.Node('Auto').add(
+    // add a Shape and a TextBlock to this "Auto" Panel
+    new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+      .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+    new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text
+      .bind('text', 'key') // TextBlock.text is bound to Node.data.key
+  );
 
   // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -98,14 +97,14 @@ Graphs are constructed by creating one or more templates, with desired propertie
       { key: 'Alpha', color: 'lightblue' },
       { key: 'Beta', color: 'orange' },
       { key: 'Gamma', color: 'lightgreen' },
-      { key: 'Delta', color: 'pink' },
+      { key: 'Delta', color: 'pink' }
     ],
     [
       { from: 'Alpha', to: 'Beta' },
       { from: 'Alpha', to: 'Gamma' },
       { from: 'Beta', to: 'Beta' },
       { from: 'Gamma', to: 'Delta' },
-      { from: 'Delta', to: 'Alpha' },
+      { from: 'Delta', to: 'Alpha' }
     ]
   );
 </script>

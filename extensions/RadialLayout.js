@@ -14,7 +14,7 @@
  * Given a root {@link go.Node}, this arranges connected nodes in concentric rings,
  * layered by the minimum link distance from the root.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Radial.html">Radial Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="../../samples/radial.html">Radial Layout</a> sample.
  * @category Layout Extension
  */
 class RadialLayout extends go.Layout {
