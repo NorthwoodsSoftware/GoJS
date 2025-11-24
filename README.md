@@ -46,10 +46,10 @@ GoJS Diagrams are backed by Models, with saving and loading typically via JSON-f
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
-This repository and the website contain not only the library, but also
-the sources for all samples, extensions, and documentation.
+The [GitHub repository](https://github.com/NorthwoodsSoftware/GoJS) and the [GoJS website](https://gojs.net) contain not only the library,
+but also the sources for all samples, extensions, and documentation.
 
-However the npm package contains only the library.
+However the [npm package](https://www.npmjs.com/package/gojs) contains only the library.
 You can install the GoJS library using npm:
 
 ```html
@@ -59,19 +59,19 @@ $ npm install gojs
 The samples, extensions, and documentation can be installed by running:
 
 ```html
-$ npm create gojs-kit@latest
+$ npm create gojs-kit
 ```
 
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 
 <h2>Minimal Sample</h2>
 
-Graphs are constructed by creating one or more templates, with desired properties data-bound, and adding model data.
+Diagrams are built by creating one or more templates, with desired properties data-bound, and adding model data.
 
 ```html
-<div id="myDiagramDiv" style="width:400px; height:150px;"></div>
+<div id="myDiagramDiv" style="width:400px; height:200px;"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gojs"></script>
 
 <script>
   const myDiagram = new go.Diagram('myDiagramDiv', {
@@ -115,7 +115,7 @@ The user can now click on nodes or links to select them, copy-and-paste them, dr
 
 [<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](https://gojs.net/latest/samples/minimal.html)
 
-_Click the image to see the interactive GoJS Diagram_
+_Click the above image to see the interactive GoJS Diagram_
 
 <h2>Support</h2>
 
