@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.1.2
+ * Type definitions for GoJS v3.1.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -5413,8 +5413,9 @@ export class ToolManager extends Tool {
      * to those newly created tools.
      * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
+     * @return this
      */
-    initializeStandardTools(): void;
+    initializeStandardTools(): this;
     /**
      * Iterate over the {@link mouseDownTools} list and start the first tool
      * for which its {@link Tool.canStart} predicate returns true.
@@ -23904,7 +23905,7 @@ export class Link extends Part {
      */
     get path(): Shape | null;
     /**
-     * This read-only property returns the bounds of the link geometry in document coordinates.
+     * This read-only property returns the bounds of the link points in document coordinates.
      * @since 2.2
      */
     get routeBounds(): Rect;

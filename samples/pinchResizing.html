@@ -130,6 +130,7 @@
   class PinchResizingTool extends go.ToolManager {
     constructor(init) {
       super();
+      this.initializeStandardTools();
       this._originalScale = 1;
       this._startDistance = 0; // how far apart the touches are at the start
       this._isPinching = false;
@@ -199,7 +200,8 @@
 
   function init() {
     myDiagram = new go.Diagram('myDiagramDiv', {
-      toolManager: new PinchResizingTool(),
+      // replace the standard ToolManager with a PinchResizingTool
+      defaultTool: new PinchResizingTool(),
       'undoManager.isEnabled': true // enable undo & redo
     });
 
