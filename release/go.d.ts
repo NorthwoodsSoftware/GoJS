@@ -1,9 +1,9 @@
 /*
- * Type definitions for GoJS v3.1.3
+ * Type definitions for GoJS v3.1.4
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
- * Copyright 1998-2025 by Northwoods Software Corporation.
+ * Copyright 1998-2026 by Northwoods Software Corporation.
  * This requires TypeScript v2.8 or later.
  */
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 1998-2025 by Northwoods Software Corporation. All Rights Reserved.
+ *  Copyright 1998-2026 by Northwoods Software Corporation. All Rights Reserved.
  */
 
 import * as go from 'gojs';
