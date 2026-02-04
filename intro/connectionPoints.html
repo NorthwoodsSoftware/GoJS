@@ -1,4 +1,252 @@
 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
+
+
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="../assets/css/style.css">
+<!-- Copyright 1998-2026 by Northwoods Software Corporation. -->
+
+
+<meta itemprop="name" content="Link Connection Points on Nodes" />
+<meta property="og:title" content="Link Connection Points on Nodes" />
+<meta name="twitter:title" content="Link Connection Points on Nodes" />
+
+
+<meta property="og:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta itemprop="image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+<meta name="twitter:image" content="https://gojs.net/latest/assets/images/fp/defaultCard.png" />
+
+<meta property="og:url" content="https://gojs.net/latest/intro/connectionPoints.html" />
+<meta property="twitter:url" content="https://gojs.net/latest/intro/connectionPoints.html" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:type" content="website" />
+<meta property="twitter:domain" content="gojs.net" />
+
+    <title>
+      Link Connection Points on Nodes | GoJS
+    </title>
+    <link rel="stylesheet" href="../assets/css/prism.css"/>
+  </head>
+  <script>
+    window.diagrams = [];
+    window.goCode = function (pre, w, h, parentid, animation) {
+      window
+        .diagrams
+        .push([pre, w, h, parentid, animation]);
+    }
+  </script>
+  <body>
+    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
+    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
+       href="../">
+      GoJS
+    </a>
+    <div class="relative">
+      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topnavList" class="hidden md:block">
+        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
+                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
+          <a href="../learn/">Learn</a>
+          <a href="../samples/">Samples</a>
+          <a href="../intro/">Intro</a>
+          <a href="../api/">API</a>
+          <a href="../download.html">Download</a>
+          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
+          <a id="tc" href="https://nwoods.com/contact.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          <a id="tb" href="https://nwoods.com/sales/index.html"
+            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // topnav
+    var topButton = document.getElementById("topnavButton");
+    var topnavList = document.getElementById("topnavList");
+    if (topButton && topnavList) {
+      topButton.addEventListener("click", function (e) {
+        topnavList
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
+          topButton.click();
+        }
+      });
+
+      // set active <a> element
+      var url = window
+        .location
+        .href
+        .toLowerCase();
+      var aTags = topnavList.getElementsByTagName('a');
+      for (var i = 0; i < aTags.length; i++) {
+        var lowerhref = aTags[i]
+          .href
+          .toLowerCase();
+        if (lowerhref.endsWith('.html')) 
+          lowerhref = lowerhref.slice(0, -5);
+        if (url.startsWith(lowerhref)) {
+          aTags[i]
+            .classList
+            .add('active');
+          break;
+        }
+      }
+    }
+  });
+</script>
+    <div class="sticky top-0 left-0 z-10 px-2 w-full bg-white border-b border-b-gray-200 md:hidden">
+  <button id="sidenavButton" class="flex p-2 text-gray-900 bg-inherit shadow-none items-center text-sm font-semibold hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
+    <svg class="h-7 w-7 block mr-2" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+</div>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    // sidenav
+    var sideButton = document.getElementById("sidenavButton");
+    var sidenav = document.getElementById("sidenav");
+    if (sideButton && sidenav) {
+      sideButton.addEventListener("click", function (e) {
+        sidenav
+          .classList
+          .toggle("hidden");
+        e.stopPropagation();
+      });
+      document.addEventListener("click", function (e) {
+        // if the clicked element isn't the list, close the list
+        if (!sidenav.classList.contains("hidden") && !e.target.closest("#sidenavList")) {
+          sideButton.click();
+        }
+      });
+    }
+  });
+</script>
+    
+    <div class="flex flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+      
+      <aside id="sidenav"
+  class="hidden fixed top-0 left-0 z-10 w-full bg-black/10 min-h-screen max-h-screen overflow-x-hidden overflow-y-auto shrink-0
+         md:block md:sticky md:w-52 md:min-h-0 md:bg-inherit md:border-r md:border-r-gray-200 md:overscroll-auto">
+  <nav id="sidenavList" class="flex flex-col bg-white w-52 min-h-screen pl-2 pt-4 pb-24 md:w-full md:min-h-0">
+    
+  <a href="index.html">Basics</a>
+  <a href="buildingObjects.html">Building Parts</a>
+  <a href="usingModels.html">Using Models</a>
+  <a href="dataBinding.html">Data Binding</a>
+  <a href="react.html">GoJS with React</a>
+  <a href="svelte.html">GoJS with Svelte</a>
+  <a href="angular.html">GoJS with Angular</a>
+  <a href="textBlocks.html">TextBlocks</a>
+  <a href="shapes.html">Shapes</a>
+  <a href="pictures.html">Pictures</a>
+  <a href="panels.html">Panels</a>
+  <a href="tablePanels.html">Table Panels</a>
+  <a href="brush.html">Brushes</a>
+  <a href="sizing.html">Sizing Objects</a>
+  <a href="itemArrays.html">Item Arrays</a>
+  <a href="changedEvents.html">Changed Events</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="viewport.html">Coordinates</a>
+  <a href="initialView.html">Initial View</a>
+  <a href="collections.html">Collections</a>
+  <a href="links.html">Links</a>
+  <a href="linkLabels.html">Link Labels</a>
+  <a href="connectionPoints.html">Link Points</a>
+  <a href="ports.html">Ports</a>
+  <a href="nodes.html">Nodes</a>
+  <a href="typings.html">Typings</a>
+  <a href="debugging.html">Debugging</a>
+  <a href="layouts.html">Layouts</a>
+  <a href="routers.html">Routers</a>
+  <a href="trees.html">Trees</a>
+  <a href="subtrees.html">SubTrees</a>
+  <a href="groups.html">Groups</a>
+  <a href="subgraphs.html">SubGraphs</a>
+  <a href="sizedGroups.html">Sized Groups</a>
+  <a href="selection.html">Selection</a>
+  <a href="highlighting.html">Highlighting</a>
+  <a href="theming.html">Theming</a>
+  <a href="tooltips.html">ToolTips</a>
+  <a href="contextMenus.html">Context Menus</a>
+  <a href="events.html">Diagram Events</a>
+  <a href="tools.html">Tools</a>
+  <a href="commands.html">Commands</a>
+  <a href="accessibility.html">Accessibility</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="permissions.html">Permissions</a>
+  <a href="validation.html">Validation</a>
+  <a href="animation.html">Animation</a>
+  <a href="HTMLInteraction.html">HTML Interaction</a>
+  <a href="layers.html">Layers &amp; Z-ordering</a>
+  <a href="palette.html">Palette</a>
+  <a href="overview.html">Overview</a>
+  <a href="replacingDeleting.html">Replacing and Deleting</a>
+  <a href="templateMaps.html">Template Maps</a>
+  <a href="legends.html">Legends and Titles</a>
+  <a href="extensions.html">Extensions</a>
+  <a href="geometry.html">Geometry Strings</a>
+  <a href="grids.html">Grid Patterns</a>
+  <a href="graduatedPanels.html">Graduated Panels</a>
+  <a href="SVGContext.html">Rendering to SVG</a>
+  <a href="makingSVG.html">Snapshot to SVG</a>
+  <a href="makingImages.html">Diagram Images</a>
+  <a href="printing.html">Printing</a>
+  <a href="serverSideImages.html">Server-side Images</a>
+  <a href="nodeScript.html">GoJS in Node.js</a>
+  <a href="testing.html">Testing</a>
+  <a href="performance.html">Performance</a>
+  <a href="platforms.html">Platforms</a>
+  <a href="deployment.html">Deployment</a>
+
+  </nav>
+</aside>
+<script>
+  var navList = document.getElementById('sidenavList');
+  if (navList !== null) {
+    var url = window.location.href;
+    var lindex = url.lastIndexOf('/');
+    url = url
+      .slice(lindex + 1)
+      .toLowerCase();
+    var aTags = navList.getElementsByTagName('a');
+    var currentindex = -1;
+    for (var i = 0; i < aTags.length; i++) {
+      var lowerhref = aTags[i]
+        .href
+        .toLowerCase();
+      if (lowerhref.indexOf('/' + url) !== -1) {
+        currentindex = i;
+        aTags[i]
+          .classList
+          .add('active');
+        break;
+      }
+    }
+  }
+</script>
+      
+      <div class="px-4 pb-16 w-full overflow-hidden prose">
+        
 <h1>Link Connection Points on Nodes</h1>
 <p>
   There is flexibility in controlling exactly how and where a link connects with a node.
@@ -405,3 +653,139 @@ function makeGraph(diagram) {
   LayeredDigraphLayout, set <a>LayeredDigraphLayout.setsPortSpots</a> to false. For ForceDirectedLayout, set <a>ForceDirectedLayout.setsPortSpots</a> to false,
   although this is rarely needed.
 </p>
+
+      </div>
+    </div>
+    <footer class="bg-white text-gray-900 border-t border-t-gray-200">
+  <div class="w-full max-w-screen-lg mx-auto px-4 py-6">
+    
+    <p id="version" class="text-xs text-gray-900 m-0"></p>
+    <div class="text-sm px-0 mb-4 grid grid-cols-2 sm:grid-cols-3 gap-y-10">
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">GoJS</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="../samples/index.html">Samples</a>
+          </li>
+          <li>
+            <a href="../learn/index.html">Learn</a>
+          </li>
+          <li>
+            <a href="../intro/index.html">Intro</a>
+          </li>
+          <li>
+            <a href="../api/index.html">API</a>
+          </li>
+          <li>
+            <a href="../changelog.html">Changelog</a>
+          </li>
+          <li>
+            <a href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener">GitHub</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Support</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a href="https://nwoods.com/contact.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
+          </li>
+          <li>
+            <a href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/sales/index.html"
+              target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
+          </li>
+          <li>
+            <a href="https://nwoods.com/register.html" target="_blank" rel="noopener">Register</a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-nwoods-primary">Company</h2>
+        <ul class="list-none space-y-4 md:space-y-1 px-0">
+          <li>
+            <a target="_blank" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/about.html" target="_blank" rel="noopener">About Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/contact.html" target="_blank" rel="noopener">Contact Us</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://nwoods.com/consulting.html" target="_blank" rel="noopener">Consulting</a>
+          </li>
+          <li>
+            <a target="_blank" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener">Twitter</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-sm text-gray-900 md:mb-6">
+      Copyright 1998-2026 <a href="https://nwoods.com">Northwoods Software</a>
+    </p>
+  </div>
+</footer>
+  </body>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-S5QK8VSK84');
+  var getOutboundLink = function (url, label) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': label,
+      'transport_type': 'beacon'
+    });
+  }
+  const params = new URL(document.location).searchParams
+  let a = params.get('a');
+  if (a) localStorage.setItem('a', a);
+  a = localStorage.getItem('a');
+  if (a) {
+    const links = [...document.body.getElementsByTagName("a")].filter((l) => l.href.includes('nwoods.com'));
+    for (const l of links) {
+      const url = new URL(l.href);
+      url.searchParams.set('a', a);
+      l.href = url;
+    }
+  }
+
+</script>
+  <script src="../assets/js/prism.js"></script>
+  <script src="../release/go.js"></script>
+  
+    <script src="../extensions/Figures.js"></script>
+  
+  <script src="../assets/js/goDoc.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.go)
+        document
+          .getElementById('version')
+          .textContent = "GoJS version " + go.version;
+      if (window.goDoc)
+        window.goDoc();
+      var d = window.diagrams;
+      for (var i = 0; i < d.length; i++) {
+        var dargs = d[i];
+        goCodeExecute(dargs[0], dargs[1], dargs[2], dargs[3], dargs[4]);
+      }
+      if (window.extra)
+        window.extra();
+      }
+    );
+  </script>
+</html>
