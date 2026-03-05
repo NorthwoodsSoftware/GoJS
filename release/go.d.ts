@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.1.6
+ * Type definitions for GoJS v3.1.7
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -17462,7 +17462,7 @@ export abstract class GraphObject {
     /**
      * Set any number of properties on this GraphObject. This is common in initialization.
      * This method can only be used to set existing properties on this object. To attach new properties,
-     * or to set properties of elements, use {@link GraphObject.setProperties}.
+     * or to set properties of elements, use {@link GraphObject.attach}.
      *
      * This method uses TypeScript compile-time type checking, but does no runtime type checking.
      * If you need to set properties without type checking, or attach new properties, use {@link GraphObject.attach}.
@@ -17495,6 +17495,8 @@ export abstract class GraphObject {
      *
      * This method is used in initialization, but typically you should use {@link set} instead,
      * unless you need to attach new properties that do not exist on the GraphObject, or to set sub-properties.
+     * New property names must start with an underscore "_" character.
+     *
      * Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.
      *
      * ```js
@@ -17583,6 +17585,8 @@ export abstract class GraphObject {
      *
      * This method is common in initialization, but typically you should use {@link set} instead,
      * unless you need to attach new properties, or set sub-properties.
+     * New property names must start with an underscore "_" character.
+     *
      * Calling this method is much less efficient than setting properties directly, and does not do compile-time type checking.
      *
      * If this is a {@link Panel}, you can set properties on named elements within the panel by using a *name.property* syntax for the property name.
