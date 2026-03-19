@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.1.7
+ * Type definitions for GoJS v3.1.8
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -14354,6 +14354,8 @@ export class CommandHandler {
      * scrolling to each one in turn by calling {@link Diagram.centerRect}.
      *
      * This method animates to the scrolled part, and {@link Diagram.scrollToRect} does not.
+     * If the part is hidden because it is a member of a collapsed subgraph/group,
+     * or because it is a child of a collapsed subtree node, those groups or nodes will be expanded first.
      *
      * This is normally invoked by the `Space` keyboard shortcut.
      * If there is no argument and there is no highlighted or selected Part, this command does nothing.
