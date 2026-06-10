@@ -42,7 +42,7 @@ GoJS is renders either to an HTML Canvas element (with export to SVG or image fo
 GoJS can run in a web browser, or server side in [Node](https://nodejs.org/en/) or [Puppeteer](https://github.com/GoogleChrome/puppeteer).
 GoJS Diagrams are backed by Models, with saving and loading typically via JSON-formatted text.
 
-[<img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/github-970x354.png">](https://gojs.net/latest/samples/index.html)
+[<img src="https://raw.githubusercontent.com/NorthwoodsSoftware/GoJS/master/.github/GithubHeader.png">](https://gojs.net/latest/samples/index.html)
 
 Read more about GoJS at [gojs.net](https://gojs.net)
 
