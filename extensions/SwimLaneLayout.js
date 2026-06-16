@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -25,7 +25,7 @@
  * You can add extra space between the lanes by increasing {@link laneSpacing} from its default of zero.
  * That number's unit is columns, {@link go.LayeredDigraphLayout.columnSpacing}, not in document coordinates.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/SwimLaneLayout.html">SwimLaneLayout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/SwimLaneLayout">SwimLaneLayout</a> sample.
  * @category Layout Extension
  */
 class SwimLaneLayout extends go.LayeredDigraphLayout {
@@ -445,7 +445,8 @@ class SwimLaneLayout extends go.LayeredDigraphLayout {
                     let k = j + 1;
                     while (k < arr.length && this.findLane(arr[k]) === l) {
                         const vz = arr[k];
-                        z += this.nodeMinColumnSpace(vz, true) + 1 + this.nodeMinColumnSpace(vz, false);
+                        z +=
+                            this.nodeMinColumnSpace(vz, true) + 1 + this.nodeMinColumnSpace(vz, false);
                         k++;
                     }
                     // if there is extra space, shift the vertexes to the middle of the lane

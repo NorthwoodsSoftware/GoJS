@@ -8,12 +8,14 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
+ * Deprecated in 4.0. Consider using {@link Diagram.emitMouseDown} and related emit... methods instead.
+ *
  * A class for simulating mouse and keyboard input.
  *
  * As a special feature, this supports limited simulation of drag-and-drop between Diagrams,
@@ -38,8 +40,10 @@ import * as go from 'gojs';
  *    myRobot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Robot.html">Simulating Input</a> sample.
+ * As of version 3.2, the functionality is built into the {@link Diagram} class using methods whose names start with "emit...".
+ * However, the functionality is duplicated here for compatibility with versions earlier than 3.2.
  * @category Extension
+ * @deprecated See {@link Diagram.emitMouseDown} and related emit... methods
  */
 export class Robot {
   private _diagram: go.Diagram;
@@ -62,7 +66,8 @@ export class Robot {
     return this._diagram;
   }
   set diagram(val: go.Diagram) {
-    if (!(val instanceof go.Diagram)) throw new Error('Robot.diagram must be a Diagram, not: ' + val);
+    if (!(val instanceof go.Diagram))
+      throw new Error('Robot.diagram must be a Diagram, not: ' + val);
     this._diagram = val;
   }
 
@@ -70,7 +75,10 @@ export class Robot {
    * @hidden @internal
    * Transfer property settings from a JavaScript Object to an {@link go.InputEvent}.
    */
-  initializeEvent(e: go.InputEvent, props?: go.ObjectData): void {
+  private initializeEvent(
+    e: go.InputEvent,
+    props?: Partial<go.InputEvent & { sourceDiagram: go.Diagram }>
+  ): void {
     if (!props) return;
     for (const p in props) {
       if (p !== 'sourceDiagram') (e as any)[p] = (props as any)[p];
@@ -84,12 +92,19 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  mouseDown(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseDown first two args must be X,Y numbers');
+  mouseDown(
+    x: number,
+    y: number,
+    time?: number,
+    eventprops?: Partial<go.InputEvent & { sourceDiagram: go.Diagram }>
+  ): void {
+    if (typeof x !== 'number' || typeof y !== 'number')
+      throw new Error('Robot.mouseDown first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
     let diagram = this._diagram;
-    if (eventprops && (eventprops as any).sourceDiagram) diagram = (eventprops as any).sourceDiagram;
+    if (eventprops && (eventprops as any).sourceDiagram)
+      diagram = (eventprops as any).sourceDiagram;
     if (!diagram.isEnabled) return;
 
     const n = new go.InputEvent();
@@ -111,12 +126,19 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  mouseMove(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseMove first two args must be X,Y numbers');
+  mouseMove(
+    x: number,
+    y: number,
+    time?: number,
+    eventprops?: Partial<go.InputEvent & { sourceDiagram: go.Diagram }>
+  ): void {
+    if (typeof x !== 'number' || typeof y !== 'number')
+      throw new Error('Robot.mouseMove first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
     let diagram = this._diagram;
-    if (eventprops && (eventprops as any).sourceDiagram) diagram = (eventprops as any).sourceDiagram;
+    if (eventprops && (eventprops as any).sourceDiagram)
+      diagram = (eventprops as any).sourceDiagram;
     if (!diagram.isEnabled) return;
 
     const n = new go.InputEvent();
@@ -136,12 +158,19 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  mouseUp(x: number, y: number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof x !== 'number' || typeof y !== 'number') throw new Error('Robot.mouseUp first two args must be X,Y numbers');
+  mouseUp(
+    x: number,
+    y: number,
+    time?: number,
+    eventprops?: Partial<go.InputEvent & { sourceDiagram: go.Diagram }>
+  ): void {
+    if (typeof x !== 'number' || typeof y !== 'number')
+      throw new Error('Robot.mouseUp first two args must be X,Y numbers');
     if (time === undefined) time = 0;
 
     let diagram = this._diagram;
-    if (eventprops && (eventprops as any).sourceDiagram) diagram = (eventprops as any).sourceDiagram;
+    if (eventprops && (eventprops as any).sourceDiagram)
+      diagram = (eventprops as any).sourceDiagram;
     if (!diagram.isEnabled) return;
 
     const n: go.InputEvent = new go.InputEvent();
@@ -162,8 +191,9 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  mouseWheel(delta: number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof delta !== 'number') throw new Error('Robot.mouseWheel first arg must be DELTA number');
+  mouseWheel(delta: number, time?: number, eventprops?: Partial<go.InputEvent>): void {
+    if (typeof delta !== 'number')
+      throw new Error('Robot.mouseWheel first arg must be DELTA number');
     if (time === undefined) time = 0;
 
     const diagram = this._diagram;
@@ -186,8 +216,13 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  keyDown(keyCodeOrKey: string | number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number') throw new Error('Robot.keyDown first arg must be a string or a number');
+  keyDown(
+    keyCodeOrKey: string | number,
+    time?: number,
+    eventprops?: Partial<go.InputEvent>
+  ): void {
+    if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number')
+      throw new Error('Robot.keyDown first arg must be a string or a number');
     if (time === undefined) time = 0;
 
     const diagram = this._diagram;
@@ -215,8 +250,13 @@ export class Robot {
    * @param time - the timestamp of the simulated event, in milliseconds; default zero
    * @param eventprops - an optional argument providing properties for the InputEvent.
    */
-  keyUp(keyCodeOrKey: string | number, time?: number, eventprops?: go.ObjectData): void {
-    if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number') throw new Error('Robot.keyUp first arg must be a string or a number');
+  keyUp(
+    keyCodeOrKey: string | number,
+    time?: number,
+    eventprops?: Partial<go.InputEvent>
+  ): void {
+    if (typeof keyCodeOrKey !== 'string' && typeof keyCodeOrKey !== 'number')
+      throw new Error('Robot.keyUp first arg must be a string or a number');
     if (time === undefined) time = 0;
 
     const diagram = this._diagram;

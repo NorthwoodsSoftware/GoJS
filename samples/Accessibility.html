@@ -1,736 +1,71 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scheme-light dark:scheme-dark">
   <head>
-    
-    <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-
-<meta name="description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility." />
-<meta itemprop="description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility." />
-<meta property="og:description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility." />
-<meta name="twitter:description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility." />
-
-
-<link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="../assets/css/style.css">
-<!-- Copyright 1998-2026 by Northwoods Software Corporation. -->
-
-
-<meta itemprop="name" content="Accessible Diagram Example" />
-<meta property="og:title" content="Accessible Diagram Example" />
-<meta name="twitter:title" content="Accessible Diagram Example" />
-
-
-<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/orgcharteditor.png" />
-<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/orgcharteditor.png" />
-<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/orgcharteditor.png" />
-
-<meta property="og:url" content="https://gojs.net/latest/samples/Accessibility.html" />
-<meta property="twitter:url" content="https://gojs.net/latest/samples/Accessibility.html" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="og:type" content="website" />
-<meta property="twitter:domain" content="gojs.net" />
-
-    <title>
-      Accessible Diagram Example | GoJS Diagramming Library
-    </title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f4963" />
+    <!-- Self-hosted variable font. Declared here (not in CSS) so ..
+         resolves the /fonts/ asset under the base path, and preloaded with a matching
+         crossorigin so the @font-face fetch reuses it. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="../fonts/InterVariable.woff2"
+      crossorigin />
+    <style>
+      @font-face {
+        font-family: InterVariable;
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('../fonts/InterVariable.woff2') format('woff2');
+      }
+    </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-S5QK8VSK84');
+    </script>
+    <link href="../_app/immutable/entry/start.DUcLjgjT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DTR9fq_7.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BY_RssUb.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.uWGY7NCW.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/kNaey6uv.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.DBSBeCFO.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DDjqDG21.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/c0gyX4Uy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CxMCXhHm.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CVMOr__I.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.JgNq0TJX.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/82.CDvP_Mbe.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DzUjTTvJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BVhwz5iQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/lxyaXZko.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BjDsAonG.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="canonical" href="https://gojs.net/latest/samples/Accessibility"/> <meta property="og:type" content="website"/> <meta property="og:site_name" content="GoJS"/> <meta property="og:url" content="https://gojs.net/latest/samples/Accessibility"/> <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/orgcharteditor.png"/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:site" content="@northwoodsgo"/> <meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/orgcharteditor.png"/> <!----><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://gojs.net/#organization","name":"Northwoods Software","url":"https://nwoods.com","logo":"https://gojs.net/latest/assets/images/fp/og.png","sameAs":["https://github.com/NorthwoodsSoftware/GoJS","https://twitter.com/northwoodsgo","https://www.npmjs.com/package/gojs"]},{"@type":"SoftwareApplication","@id":"https://gojs.net/latest/#gojs","name":"GoJS","applicationCategory":"DeveloperApplication","operatingSystem":"Web","programmingLanguage":["JavaScript","TypeScript"],"description":"GoJS is a JavaScript and TypeScript library for building interactive diagramming apps - org charts, flowcharts, BPMN, SCADA, UML, and custom visual editors.","url":"https://gojs.net/latest/","publisher":{"@id":"https://gojs.net/#organization"},"offers":{"@type":"Offer","url":"https://nwoods.com/sales","category":"Commercial software license"}}]}</script><!----><!----><!--1cmi4dh--><script>
+    document.documentElement.classList.toggle(
+      'dark',
+      localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  </script><!----><!----><!--jcrpfn--><meta property="og:title" content="Accessible Diagram Example | GoJS Diagramming Library"/> <!--[0--><meta name="description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility."/> <meta property="og:description" content="Demonstrates a customized CommandHandler to update a live HTML element for accessibility."/><!--]--><!----><title>Accessible Diagram Example | GoJS Diagramming Library</title>
+		<link href="../_app/immutable/assets/0.vgO-Uy72.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CodeSnippet.DOo96Xpn.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/TagList.CFKTKwNT.css" rel="stylesheet">
   </head>
-
-  <body>
-    <!-- This top nav is not part of the sample code -->
-    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
-  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
-    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
-       href="../">
-      GoJS
-    </a>
-    <div class="relative">
-      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
-        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div id="topnavList" class="hidden md:block">
-        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
-                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
-          <a href="../learn/">Learn</a>
-          <a href="../samples/">Samples</a>
-          <a href="../intro/">Intro</a>
-          <a href="../api/">API</a>
-          <a href="../download.html">Download</a>
-          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
-          <a id="tc" href="https://nwoods.com/contact.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
-          <a id="tb" href="https://nwoods.com/sales/index.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    // topnav
-    var topButton = document.getElementById("topnavButton");
-    var topnavList = document.getElementById("topnavList");
-    if (topButton && topnavList) {
-      topButton.addEventListener("click", function (e) {
-        topnavList
-          .classList
-          .toggle("hidden");
-        e.stopPropagation();
-      });
-      document.addEventListener("click", function (e) {
-        // if the clicked element isn't the list, close the list
-        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
-          topButton.click();
-        }
-      });
-
-      // set active <a> element
-      var url = window
-        .location
-        .href
-        .toLowerCase();
-      var aTags = topnavList.getElementsByTagName('a');
-      for (var i = 0; i < aTags.length; i++) {
-        var lowerhref = aTags[i]
-          .href
-          .toLowerCase();
-        if (lowerhref.endsWith('.html')) 
-          lowerhref = lowerhref.slice(0, -5);
-        if (url.startsWith(lowerhref)) {
-          aTags[i]
-            .classList
-            .add('active');
-          break;
-        }
-      }
-    }
-  });
-</script>
-    <div class="flex flex-col prose">
-      <div class="w-full max-w-screen-xl mx-auto">
-        <!-- * * * * * * * * * * * * * -->
-        <!-- Start of GoJS sample code -->
-        <script src="../release/go.js"></script>
-
-        
-
-        <div id="allSampleContent" class="p-4 w-full">
-          
-            
-            
-
-
-<link
-  href="https://fonts.googleapis.com/css?family=Inter:400,500,600&subset=latin,latin-ext"
-  rel="stylesheet"
-  type="text/css" />
-<style>
-  :modal {
-    padding: 2rem;
-    border-radius: 0.25rem;
-    border-width: 0;
-    box-shadow:
-      0 0 #0000,
-      0 0 #0000,
-      0 1px 3px 0 rgb(0 0 0 / 0.1);
-  }
-
-  #hidden {
-    font: 500 18px Inter;
-    opacity: 0;
-  }
-</style>
-<script src="../extensions/DataInspector.js"></script>
-
-<script id="code">
-  function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      allowCopy: false,
-      allowDelete: false,
-      initialAutoScale: go.AutoScale.UniformToFill,
-      maxSelectionCount: 1, // users can select only one part at a time
-      validCycle: go.CycleMode.DestinationTree, // make sure users can only create trees
-      'clickCreatingTool.archetypeNodeData': {
-        // allow double-click in background to create a new node
-        name: '(New person)',
-        title: '(Title)',
-        dept: '(Dept)'
-      },
-      'clickCreatingTool.insertPart': function (loc) {
-        // method override must be function, not =>
-        const node = go.ClickCreatingTool.prototype.insertPart.call(this, loc);
-        if (node !== null) {
-          this.diagram.select(node);
-          this.diagram.commandHandler.scrollToPart(node);
-          this.diagram.commandHandler.editTextBlock(node.findObject('NAMETB'));
-        }
-        return node;
-      },
-      layout: new go.TreeLayout({
-        treeStyle: go.TreeStyle.LastParents,
-        arrangement: go.TreeArrangement.Horizontal,
-        // properties for most of the tree:
-        angle: 90,
-        layerSpacing: 35,
-        // properties for the "last parents":
-        alternateAngle: 90,
-        alternateLayerSpacing: 35,
-        alternateAlignment: go.TreeAlignment.Bus,
-        alternateNodeSpacing: 20
-      }),
-      'undoManager.isEnabled': true, // enable undo & redo
-      'themeManager.changesDivBackground': true,
-      'themeManager.currentTheme': document.getElementById('theme').value,
-
-      'commandHandler.liveElementId': 'myLiveRegion',
-      // customize what is read by a screen reader
-      'commandHandler.focusChanged': (oldobj, newobj, cmd) => {
-        const region = document.getElementById(cmd.liveElementId);
-        if (region) region.textContent = describe(oldobj, newobj, cmd);
-      }
-    });
-
-    function describe(oldobj, newobj, cmd) {
-      let str = '';
-      if (!newobj) {
-        str = 'Organization Chart for the Example Company';  // when no focus GraphObject -- describe the whole Diagram
-      } else if (newobj instanceof go.Link) {
-        str = cmd.describe(oldobj, newobj, cmd);
-      } else if (newobj instanceof go.Node) {
-        const d = newobj.data;  // custom string including most important data
-        str = `Employee ${d.name} ${d.title} ${d.dept}`;
-        if (newobj.findNodesOutOf().count > 0) {
-          let emps = '';
-          newobj.findNodesOutOf().each(to => {
-            if (emps) emps += ', ';
-            emps += to.data.name;
-          });
-          if (emps) str += '; Employees: ' + emps;
-        }
-      } else {
-        str = cmd.describe(oldobj, newobj, cmd)
-        const tt = toolTipTextConverter(newobj);
-        if (tt) str += ' ' + tt;
-      }
-      return str;
-    }
-
-    // when the document is modified, add a "*" to the title and enable the "Save" button
-    myDiagram.addDiagramListener('Modified', e => {
-      const button = document.getElementById('SaveButton');
-      if (button) button.disabled = !myDiagram.isModified;
-      const idx = document.title.indexOf('*');
-      if (myDiagram.isModified) {
-        if (idx < 0) document.title += '*';
-      } else {
-        if (idx >= 0) document.title = document.title.slice(0, idx);
-      }
-    });
-
-    // set up some colors/fonts for the default ('light') and dark Themes
-    myDiagram.themeManager.set('light', {
-      colors: {
-        background: '#fff',
-        text: '#111827',
-        textHighlight: '#11a8cd',
-        subtext: '#6b7280',
-        badge: '#f0fdf4',
-        badgeBorder: '#16a34a33',
-        badgeText: '#15803d',
-        divider: '#6b7280',
-        shadow: '#9ca3af',
-        tooltip: '#1f2937',
-        levels: [
-          '#AC193D',
-          '#2672EC',
-          '#8C0095',
-          '#5133AB',
-          '#008299',
-          '#D24726',
-          '#008A00',
-          '#094AB2'
-        ],
-        dragOver: '#f0f9ff',
-        link: '#9ca3af',
-        div: '#f3f4f6'
-      },
-      fonts: {
-        name: '500 0.875rem InterVariable, sans-serif',
-        normal: '0.875rem InterVariable, sans-serif',
-        badge: '500 0.75rem InterVariable, sans-serif',
-        link: '600 0.875rem InterVariable, sans-serif'
-      }
-    });
-
-    myDiagram.themeManager.set('dark', {
-      colors: {
-        background: '#111827',
-        text: '#fff',
-        subtext: '#d1d5db',
-        badge: '#22c55e19',
-        badgeBorder: '#22c55e21',
-        badgeText: '#4ade80',
-        shadow: '#111827',
-        dragOver: '#082f49',
-        link: '#6b7280',
-        div: '#1f2937'
-      }
-    });
-
-    // this is used to determine feedback during drags
-    function mayWorkFor(node1, node2) {
-      if (!(node1 instanceof go.Node)) return false; // must be a Node
-      if (node1 === node2) return false; // cannot work for yourself
-      if (node2.isInTreeOf(node1)) return false; // cannot work for someone who works for you
-      return true;
-    }
-
-    // This converter is used by the Picture.
-    function findHeadShot(pic) {
-      if (!pic) return '../samples/images/user.svg'; // There are only 16 images on the server
-      return '../samples/images/hs' + pic;
-    }
-
-    // Used to convert the node's tree level into a theme color
-    function findLevelColor(node) {
-      return node.findTreeLevel();
-    }
-
-    // Gets the text for a tooltip based on the adorned object's name
-    function toolTipTextConverter(obj) {
-      if (!obj) return '';
-      if (obj.name === 'EMAIL') return obj.part.data.email;
-      if (obj.name === 'PHONE') return obj.part.data.phone;
-      if (obj.name === 'BUTTON') return 'Add employee';
-      if (obj.name === 'BUTTONX') return obj.part.isTreeExpanded ? 'Collapse tree' : 'Expand tree';
-      return '';
-    }
-
-    // Align the tooltip based on the adorned object's viewport bounds
-    function toolTipAlignConverter(obj, tt) {
-      const d = obj.diagram;
-      const bot = obj.getDocumentPoint(go.Spot.Bottom);
-      const viewPt = d.transformDocToView(bot).offset(0, 35);
-      // if tooltip would be below viewport, show above instead
-      const align =
-        d.viewportBounds.height >= viewPt.y / d.scale
-          ? new go.Spot(0.5, 1, 0, 6)
-          : new go.Spot(0.5, 0, 0, -6);
-
-      tt.alignment = align;
-      tt.alignmentFocus = align.y === 1 ? go.Spot.Top : go.Spot.Bottom;
-    }
-
-    // a tooltip for the Email and Phone buttons
-    const toolTip =
-      new go.Adornment(go.Panel.Spot, {
-          isShadowed: true,
-          shadowOffset: new go.Point(0, 2)
-        })
-        .add(
-          new go.Placeholder(),
-          new go.Panel(go.Panel.Auto)
-            .add(
-              new go.Shape('RoundedRectangle', { strokeWidth: 0, shadowVisible: true }).theme('fill', 'background'),
-              new go.TextBlock({ margin: 2 })
-                .bindObject('text', 'adornedObject', toolTipTextConverter)
-                .theme('stroke', 'text')
-                .theme('font', 'normal')
-            )
-            // sets alignment and alignmentFocus based on adorned object's position in viewport
-            .bindObject('', 'adornedObject', toolTipAlignConverter)
-        )
-        .theme('shadowColor', 'shadow');
-
-    function nodeEvents(node) {
-      // show/hide buttons when mouse enters/leaves
-      node.mouseEnter = (e, node) =>
-        (node.findObject('BUTTON').opacity = node.findObject('BUTTONX').opacity = 1);
-      node.mouseLeave = (e, node) => {
-        if (node.isSelected) return; // if selected dont hide buttons
-        node.findObject('BUTTON').opacity = node.findObject('BUTTONX').opacity = 0;
-      };
-      // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-      node.mouseDragEnter = (e, node, prev) => {
-        const diagram = node.diagram;
-        const selnode = diagram.selection.first();
-        if (!mayWorkFor(selnode, node)) return;
-        const shape = node.findObject('SHAPE');
-        if (shape) {
-          shape._prevFill = shape.fill; // remember the original brush
-          shape.fill = diagram.themeManager.findValue('dragOver', 'colors'); // "#e0f2fe";
-        }
-      };
-      node.mouseDragLeave = (e, node, next) => {
-        const shape = node.findObject('SHAPE');
-        if (shape && shape._prevFill) {
-          shape.fill = shape._prevFill; // restore the original brush
-        }
-      };
-      node.mouseDrop = (e, node) => {
-        const diagram = node.diagram;
-        const selnode = diagram.selection.first(); // assume just one Node in selection
-        if (mayWorkFor(selnode, node)) {
-          // find any existing link into the selected node
-          const link = selnode.findTreeParentLink();
-          if (link !== null) {
-            // reconnect any existing link
-            link.fromNode = node;
-          } else {
-            // else create a new link
-            diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
-          }
-        }
-      };
-    }
-
-    // define the Node template
-    myDiagram.nodeTemplate =
-      new go.Node(go.Panel.Spot, {
-          isShadowed: true,
-          shadowOffset: new go.Point(0, 2),
-          selectionObjectName: 'BODY'
-        })
-        .apply(nodeEvents)
-        .add(
-          new go.Panel(go.Panel.Auto, { name: 'BODY' })
-            .add(
-              // define the node's outer shape
-              new go.Shape('RoundedRectangle', {
-                  name: 'SHAPE',
-                  strokeWidth: 0,
-                  portId: '',
-                  spot1: go.Spot.TopLeft,
-                  spot2: go.Spot.BottomRight
-                })
-                .theme('fill', 'background'),
-              new go.Panel(go.Panel.Table, { margin: 0.5, defaultRowSeparatorStrokeWidth: 0.5 })
-                .theme('defaultRowSeparatorStroke', 'divider')
-                .add(
-                  new go.Panel(go.Panel.Table, { padding: new go.Margin(18, 18, 18, 24) })
-                    .addColumnDefinition(0, { width: 240 })
-                    .add(
-                      new go.Panel(go.Panel.Table, {
-                          column: 0,
-                          alignment: go.Spot.Left,
-                          stretch: go.Stretch.Vertical,
-                          defaultAlignment: go.Spot.Left
-                        })
-                        .add(
-                          new go.Panel(go.Panel.Horizontal, { row: 0 })
-                            .add(
-                              new go.TextBlock({ editable: true, minSize: new go.Size(10, 14) })
-                                .bindTwoWay('text', 'name')
-                                .theme('stroke', 'text')
-                                .theme('font', 'name'),
-                              new go.Panel(go.Panel.Auto, { margin: new go.Margin(0, 0, 0, 10) })
-                                .add(
-                                  new go.Shape('Capsule', { parameter1: 6, parameter2: 6 })
-                                    .theme('fill', 'badge')
-                                    .theme('stroke', 'badgeBorder'),
-                                  new go.TextBlock({
-                                      editable: true,
-                                      minSize: new go.Size(10, 12),
-                                      margin: new go.Margin(2, -1)
-                                    })
-                                    .bindTwoWay('text', 'dept')
-                                    .theme('stroke', 'badgeText')
-                                    .theme('font', 'badge')
-                                )
-                            ),
-                          new go.TextBlock({ row: 1, editable: true, minSize: new go.Size(10, 14) })
-                            .bindTwoWay('text', 'title')
-                            .theme('stroke', 'subtext')
-                            .theme('font', 'normal')
-                        ),
-                      new go.Panel(go.Panel.Spot, { isClipping: true, column: 1 })
-                        .add(
-                          new go.Shape('Circle', { desiredSize: new go.Size(50, 50), strokeWidth: 0 }),
-                          new go.Picture({
-                              name: 'PICTURE',
-                              source: '../samples/images/user.svg',
-                              desiredSize: new go.Size(50, 50)
-                            })
-                            .bind('source', 'pic', findHeadShot)
-                        )
-                    ),
-                  new go.Panel(go.Panel.Table, {
-                      row: 1,
-                      stretch: go.Stretch.Horizontal,
-                      defaultColumnSeparatorStrokeWidth: 0.5
-                    })
-                    .theme('defaultColumnSeparatorStroke', 'divider')
-                    .add(makeBottomButton('EMAIL'), makeBottomButton('PHONE'))
-                )
-            ), // end Auto Panel
-          new go.Shape('RoundedLeftRectangle', {
-              alignment: go.Spot.Left,
-              alignmentFocus: go.Spot.Left,
-              stretch: go.Stretch.Vertical,
-              width: 6,
-              strokeWidth: 0
-            })
-            .themeObject('fill', '', 'levels', findLevelColor),
-          go.GraphObject.build('Button', {
-              name: 'BUTTON',
-              alignment: go.Spot.Right,
-              opacity: 0, // initially not visible
-              click: (e, button) => addEmployee(button.part),
-              toolTip: toolTip
-            })
-            // button is visible either when node is selected or on mouse-over
-            .bindObject('opacity', 'isSelected', s => s ? 1 : 0)
-            .add(
-              new go.Shape('PlusLine', { width: 8, height: 8, stroke: '#0a0a0a', strokeWidth: 2 })
-            ),
-          go.GraphObject.build('TreeExpanderButton', {
-              _treeExpandedFigure: 'LineUp',
-              _treeCollapsedFigure: 'LineDown',
-              name: 'BUTTONX',
-              alignment: go.Spot.Bottom,
-              opacity: 0, // initially not visible
-              toolTip: toolTip
-            })
-            // button is visible either when node is selected or on mouse-over
-            .bindObject('opacity', 'isSelected', s => s ? 1 : 0)
-        )
-        .theme('shadowColor', 'shadow')
-        // for sorting, have the Node.text be the data.name
-        .bind('text', 'name')
-        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-        .bindObject('layerName', 'isSelected', sel => sel ? 'Foreground' : '')
-        .bindTwoWay('isTreeExpanded');
-
-    function makeBottomButton(name) {
-      const phonePath =
-        'F M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z';
-      const emailPath =
-        'F M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3zM19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z';
-      const isEmail = name === 'EMAIL';
-      return new go.Panel(go.Panel.Table, {
-          name,
-          background: 'transparent',
-          cursor: 'pointer',
-          column: isEmail ? 0 : 1,
-          width: 140,
-          height: 40,
-          toolTip: toolTip,
-          mouseEnter: (e, pnl) => {
-            const overbrush = e.diagram.themeManager.findValue('textHighlight', 'colors') || 'skyblue';
-            pnl._oldBrush = pnl.elt(0).elt(0).fill;
-            pnl.elt(0).elt(0).fill = overbrush;
-            pnl.elt(0).elt(1).stroke = overbrush;
-          },
-          mouseLeave: (e, pnl) => {
-            pnl.elt(0).elt(0).fill = pnl._oldBrush;
-            pnl.elt(0).elt(1).stroke = pnl._oldBrush;
-          },
-          click: (e, obj) => {
-            dialog.firstElementChild.firstElementChild.innerHTML =
-              // the modal's span
-              `You clicked to ${isEmail ? 'send email to' : 'call'} ${obj.part.data.name} at ${obj.part.data[name.toLowerCase()]}`;
-            dialog.showModal();
-          }
-        })
-        .add(
-          new go.Panel(go.Panel.Horizontal)
-            .add(
-              new go.Shape({
-                  geometryString: isEmail ? emailPath : phonePath,
-                  strokeWidth: 0,
-                  desiredSize: isEmail ? new go.Size(20, 16) : new go.Size(20, 20),
-                  margin: new go.Margin(0, 12, 0, 0)
-                })
-                .theme('fill', 'text'),
-              new go.TextBlock(isEmail ? 'Email' : 'Phone')
-                .theme('stroke', 'text')
-                .theme('font', 'link')
-            )
-        );
-    }
-
-    function addEmployee(node) {
-      if (!node) return;
-      const thisemp = node.data;
-      let newnode;
-      myDiagram.model.commit(m => {
-        const newemp = {
-          name: '(New person)',
-          title: '(Title)',
-          dept: thisemp.dept,
-          email: '',
-          phone: '',
-          parent: thisemp.key,
-        };
-        m.addNodeData(newemp);
-        newnode = myDiagram.findNodeForData(newemp);
-        // set location so new node doesn't animate in from top left
-        if (newnode) {
-          newnode.location = node.location;
-          myDiagram.select(newnode);
-        }
-      }, 'add employee');
-      myDiagram.commandHandler.scrollToPart(newnode);
-      myDiagram.commandHandler.focus = newnode;
-    }
-
-    // the context menu allows users to make a position vacant,
-    // remove a role and reassign the subtree, or remove a department
-    myDiagram.nodeTemplate.contextMenu =
-      go.GraphObject.build('ContextMenu')
-        .add(
-          go.GraphObject.build('ContextMenuButton', {
-              click: (e, button) => addEmployee(button.part.adornedPart)
-            })
-            .add(new go.TextBlock('Add Employee')),
-          go.GraphObject.build('ContextMenuButton', {
-              click: (e, button) => {
-                const node = button.part.adornedPart;
-                if (node !== null) {
-                  const thisemp = node.data;
-                  myDiagram.model.commit(m => {
-                    // update the name, picture, email, and phone, but leave the title/department
-                    m.set(thisemp, 'name', '(Vacant)');
-                    m.set(thisemp, 'pic', '');
-                    m.set(thisemp, 'email', 'none');
-                    m.set(thisemp, 'phone', 'none');
-                  }, 'vacate');
-                }
-              }
-            })
-            .add(new go.TextBlock('Vacate Position')),
-          go.GraphObject.build('ContextMenuButton', {
-              click: (e, button) => {
-                // reparent the subtree to this node's boss, then remove the node
-                const node = button.part.adornedPart;
-                if (node !== null) {
-                  myDiagram.model.commit(m => {
-                    const parent = node.findTreeParentNode();
-                    const chl = new go.List(node.findTreeChildrenNodes()).iterator;
-                    // iterate through the children and set their parent key to our selected node's parent key
-                    while (chl.next()) {
-                      const emp = chl.value;
-                      m.setParentKeyForNodeData(emp.data, parent ? parent.key : undefined);
-                    }
-                    // and now remove the selected node itself
-                    m.removeNodeData(node.data);
-                  }, 'reparent remove');
-                }
-              }
-            })
-            .add(new go.TextBlock('Remove Role')),
-          go.GraphObject.build('ContextMenuButton', {
-              click: (e, button) => {
-                // remove the whole subtree, including the node itself
-                const node = button.part.adornedPart;
-                if (node !== null) {
-                  myDiagram.commit(d => d.removeParts(node.findTreeParts()), 'remove dept');
-                }
-              }
-            })
-            .add(new go.TextBlock('Remove Department'))
-        );
-
-    // define the Link template
-    myDiagram.linkTemplate =
-      new go.Link({
-          routing: go.Routing.Orthogonal,
-          layerName: 'Background',
-          corner: 5
-        })
-        .add(
-          new go.Shape({ strokeWidth: 2 }) // the link shape
-            .theme('stroke', 'link')
-        );
-
-    // read in the JSON-format data from the "mySavedModel" element
-    load();
-
-    // support editing the properties of the selected person in HTML
-    myInspector = new Inspector('myInspector', myDiagram, {
-      properties: {
-        key: { readOnly: true }
-      }
-    });
-
-    // Setup zoom to fit button
-    document
-      .getElementById('zoomToFit')
-      .addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
-
-    document.getElementById('centerRoot').addEventListener('click', () => {
-      myDiagram.scale = 1;
-      myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
-    });
-  } // end init
-  
-  // Show the diagram's model in JSON format
-  function save() {
-    document.getElementById('mySavedModel').value = myDiagram.model.toJson();
-    myDiagram.isModified = false;
-  }
-  function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
-    // make sure new data keys are unique positive integers
-    let lastkey = 1;
-    myDiagram.model.makeUniqueKeyFunction = (model, data) => {
-      let k = data.key || lastkey;
-      while (model.findNodeDataForKey(k)) k++;
-      data.key = lastkey = k;
-      return k;
-    };
-  }
-
-  function changeTheme() {
-    const myDiagram = go.Diagram.fromDiv('myDiagramDiv');
-    if (myDiagram) {
-      myDiagram.themeManager.currentTheme = document.getElementById('theme').value;
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    dialog = document.querySelector('dialog');
-    dialog.addEventListener('click', e => {
-      dialog.close();
-    });
-    // setTimeout only to ensure font is loaded before loading diagram
-    // you may want to use an asset loading library for this
-    // to keep this sample simple, it does not
-    setTimeout(() => {
-      init();
-    }, 300);
-  });
-
-  function enableKeyboard() {
-    window.removeEventListener('keydown', enableKeyboard);
-    myDiagram.commandHandler.isFocusEnabled = true;
-    myDiagram.commandHandler.isVirtualPointerEnabled = true;
-  }
-
-  window.addEventListener('keydown', enableKeyboard);
-</script>
-
-<div id="sample">
-  <div id="myDiagramDiv" style="border: solid 1px black; height: 625px"></div>
-  Theme:
-  <select id="theme" onchange="changeTheme()">
-    <option value="system">System</option>
-    <option value="light">Light</option>
-    <option value="dark" selected>Dark</option>
-  </select>
-  <output id="myLiveRegion"></output>
-  <div>
-    Edit details:<br />
-    <div id="myInspector"></div>
-  </div>
-  <p><button id="zoomToFit">Zoom to Fit</button> <button id="centerRoot">Center on root</button></p>
-  <p>
-    This sample is a copy of the <a href="./orgChartEditor.html">Org Chart Editor</a> sample,
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-foreground focus:outline-2 focus:outline-nwoods-primary">Skip to main content</a> <nav id="navTop" class="sticky top-0 w-full z-30 bg-background border-b"><div class="flex flex-wrap items-center justify-between"><a class="text-white bg-nwoods-primary leading-[calc(var(--topnav-h)-1px)] font-bold my-0 px-3 text-5xl logo " href="../">GoJS</a> <div class="flex items-center mr-2"><div class="relative"><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9 sm:hidden" type="button" aria-label="Navigation" title="Navigation"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></g></svg><!----></button><!--]--><!----> <div id="topnavList" class="hidden sm:block"><div class="absolute right-0 z-30 flex flex-col gap-1 items-end rounded-lg border mr-4 p-4 pl-12 shadow bg-background text-foreground font-semibold sm:relative sm:flex-row sm:gap-2 md:gap-3 lg:gap-4 sm:items-start sm:border-0 sm:p-0 sm:shadow-none sm:bg-inherit"><!--[--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../learn"><!---->Learn<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../samples"><!---->Samples<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../api/index.html"><!---->API<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener"><!---->Forum<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/contact.html" target="_blank" rel="noopener"><!---->Contact<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/sales/index.html" target="_blank" rel="noopener"><!---->Buy<!----></a><!--]--><!--]--> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9" type="button" aria-label="Toggle theme" title="Toggle theme"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dark:hidden"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path></svg> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden dark:block"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"></path></svg> <span class="sr-only">Toggle theme</span><!----></button><!--]--><!----></div></div></div></div></div></nav><!----> <main id="main"><!--[0--><!--[--><div class="w-full"><!--[--><div class="flex flex-col"><div class="flex flex-col"><header class="text-xs py-3 bg-background border-b"><h1 class="text-4xl px-4 max-w-7xl mx-auto m-0 truncate">Accessible Diagram Example</h1></header><!----> <!--[0--><div class="prose p-4 w-full max-w-7xl mx-auto"><!--[--><!--[0--><!----><p>
+    This sample is a copy of the <a href="./orgChartEditor">Org Chart Editor</a> sample,
     but has better support for accessibility.  Diff the two files to see the enhancements.
   </p>
   <p>
@@ -739,7 +74,7 @@
     so that the user does not have to type <code>Ctrl-Alt-Enter</code>, which they will probably not know about.
   </p>
   <p>
-    Second, this sample provides a custom <a>CommandHandler.focusChanged</a> event handler that updates a Div named "myLiveRegion".
+    Second, this sample provides a custom <a>CommandHandler.focusChanged</a> event handler that updates a div named "myLiveRegion".
     As navigation focus changes within the diagram, the text of the live region is set to a description of the current
     <a>CommandHandler.focus</a> GraphObject.
     Furthermore, when a new employee node is added, it becomes the new focus.
@@ -747,117 +82,93 @@
   <p>
     Each diagram should be customized thoroughly for your particular application, where you know what your users want or need to know.
     Note how in this sample it talks about employees instead of the more generic "Node"s and "Link"s in the
-    <a href="./orgChartEditor.html">Org Chart Editor</a> sample.
+    <a href="./orgChartEditor">Org Chart Editor</a> sample.
     Also, this sample makes sure there is a textual description of the "TreeExpanderButton" and the button to call AddEmployee.
     In this case it just uses the same text that is used in a "ToolTip" for each button.
   </p>
   <p>
-    For another sample demonstrating screen-reader assistance, see <a href="./IVRtree.html">IVR Tree</a> sample.
+    For another sample demonstrating screen-reader assistance, see <a href="./IVRtree">IVR Tree</a> sample.
     A more sophisticated accessibility customization could provide information for where the user could change focus to, and how to do so.
-  </p>
-  <div>
-    <div>
-      <button id="SaveButton" onclick="save()">Save</button>
-      <button onclick="load()">Load</button>
-      Diagram Model saved in JSON format:
-    </div>
-    <textarea id="mySavedModel" style="width: 100%; height: 270px">
-{ "class": "go.TreeModel",
-  "nodeDataArray": [
-{"key":1, "name":"Stella Payne Diaz", "title":"CEO", "dept": "Management", "pic":"1.jpg", "email": "sdiaz@example.com", "phone": "(234) 555-6789" },
-{"key":2, "name":"Luke Warm", "title":"VP Marketing/Sales", "dept": "Management", "pic":"2.jpg", "email": "lwarm@example.com", "phone": "(234) 555-6789", "parent":1},
-{"key":3, "name":"Meg Meehan Hoffa", "title":"Sales", "dept": "Sales", "pic":"3.jpg", "email": "mhoffa@example.com", "phone": "(234) 555-6789", "parent":2},
-{"key":4, "name":"Peggy Flaming", "title":"VP Engineering", "dept": "Management", "pic":"4.jpg", "email": "pflaming@example.com", "phone": "(234) 555-6789", "parent":1},
-{"key":5, "name":"Saul Wellingood", "title":"Manufacturing", "dept": "Production", "pic":"5.jpg", "email": "swellingood@example.com", "phone": "(234) 555-6789", "parent":4},
-{"key":6, "name":"Al Ligori", "title":"Marketing", "dept": "Marketing", "pic":"6.jpg", "email": "aligori@example.com", "phone": "(234) 555-6789", "parent":2},
-{"key":7, "name":"Dot Stubadd", "title":"Sales Rep", "dept": "Sales", "pic":"7.jpg", "email": "dstubadd@example.com", "phone": "(234) 555-6789", "parent":3},
-{"key":8, "name":"Les Ismore", "title":"Project Mgr", "dept": "Production", "pic":"8.jpg", "email": "lismore@example.com", "phone": "(234) 555-6789", "parent":5},
-{"key":9, "name":"April Lynn Parris", "title":"Events Mgr", "dept": "Marketing", "pic":"9.jpg", "email": "aparris@example.com", "phone": "(234) 555-6789", "parent":6},
-{"key":10, "name":"Xavier Breath", "title":"Engineering", "dept": "Engineering", "pic":"10.jpg", "email": "xbreath@example.com", "phone": "(234) 555-6789", "parent":4},
-{"key":11, "name":"Anita Hammer", "title":"Process", "dept": "Production", "pic":"11.jpg", "email": "ahammer@example.com", "phone": "(234) 555-6789", "parent":5},
-{"key":12, "name":"Billy Aiken", "title":"Software", "dept": "Engineering", "pic":"12.jpg", "email": "baiken@example.com", "phone": "(234) 555-6789", "parent":10},
-{"key":13, "name":"Stan Wellback", "title":"Testing", "dept": "Engineering", "pic":"13.jpg", "email": "swellback@example.com", "phone": "(234) 555-6789", "parent":10},
-{"key":14, "name":"Marge Innovera", "title":"Hardware", "dept": "Engineering", "pic":"14.jpg", "email": "minnovera@example.com", "phone": "(234) 555-6789", "parent":10},
-{"key":15, "name":"Evan Elpus", "title":"Quality", "dept": "Production", "pic":"15.jpg", "email": "eelpus@example.com", "phone": "(234) 555-6789", "parent":5},
-{"key":16, "name":"Lotta B. Essen", "title":"Sales Rep", "dept": "Sales", "pic":"16.jpg", "email": "lessen@example.com", "phone": "(234) 555-6789", "parent":3}
- ]
-}
-    </textarea>
-  </div>
-  <dialog>
-    <div style="display: flex; flex-direction: column">
-      <p></p>
-      <p>Click anywhere to close</p>
-    </div>
-  </dialog>
-  <p id="hidden">this forces the font to load in Chromium browsers</p>
-</div>
+  </p><!----><!--]--><!--]--></div><!--]--> <div class="mx-4 p-2 rounded-lg border dark:border-transparent bg-card text-card-foreground flex flex-col gap-1"><div class="flex items-center gap-2 px-2"><span class="font-mono mr-auto">Sample: Accessible Diagram Example</span> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reload sample"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg> <span>Reload</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reset to original code"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> <span>Reset</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Download as HTML file"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> <span>Download</span><!----></button><!--]--><!----></div> <div class="flex flex-col bg-card md:flex-row max-md:gap-1" style="height: 70vh"><div class="flex flex-col min-h-0 min-w-0 md:h-full max-md:w-full! max-md:h-auto max-md:flex-none " style="width: auto; flex: none;"><div class="flex flex-row h-full bg-card"><div class="flex flex-col bg-card"><div class="flex flex-col bg-card"><!--[--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->JS<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->HTML<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->CSS<!----></button><!--]--><!--]--></div><!----></div> <!--[-1--><!--]--></div><!----></div> <!--[-1--><!--]--> <div class="flex-1 flex flex-col min-h-75 md:min-h-0 md:h-full min-w-0 max-md:min-h-50"><div class="flex flex-col h-full"><iframe srcdoc="" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox" title="Preview" class="flex-1 w-full border-none" onload="this.__e=event"></iframe></div><!----></div></div></div></div></div><!----> <!--[0--><div id="allTagDescriptions" class="prose p-4 max-w-7xl mx-auto"><h3 class="text-xl">GoJS Features in this sample</h3> <!--[--><!--[0--><!--[0--><!----><h4>Commands</h4>
+<p>
+  A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles
+  all default keyboard input events in a Diagram. There are many predefined methods on
+  <a>CommandHandler</a> that implement common commands to operate on the Diagram or the
+  current <a>Diagram.selection></a>.
+</p>
+<p>
+  You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts
+  or to change which commands are invoked via the keyboard.
+</p>
 
-          
-        </div>
-        <!-- * * * * * * * * * * * * * -->
-        <!--  End of GoJS sample code  -->
-      </div>
+<p>
+  Your code can invoke a command by calling the appropriate method on the
+  <a>Diagram.commandHandler</a>. Each command method has a corresponding
+  <b>can...</b> predicate that your code can use to enable or disable any buttons that
+  invoke the command. Your code can customize the behavior of a command by overriding the
+  method on <a>CommandHandler</a>, or by setting properties on the
+  <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s -- see
+  <a href="../learn/permissions">GoJS Permissions</a>.
+</p>
+<p>There are several CommandHandler extensions that provide additional functionality.</p>
 
-      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
-        <hr/>
-        <h3 class="text-xl">GoJS Features in this sample</h3>
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Commands</h4>
 <p>
-A <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a> handles all default keyboard input events in a Diagram.
-There are many predefined methods on <a>CommandHandler</a> that implement common commands to operate on the Diagram or the current <a>Diagram.selection></a>.
+  More information can be found in the <a href="../learn/commands">GoJS learn pages</a>.
+</p>
+<!----><!--]--><!----> <p><a href="../samples#commands">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>GoJS Extensions</h4>
+<p>
+  <b>GoJS</b> can be extended in a variety of ways. The most common way to change the
+  standard behavior is to set properties on the
+  <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>,
+  <a href="../api/symbols/Diagram.html" target="api">Diagram</a>,
+  <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>,
+  <a href="../api/symbols/Tool.html" target="api">Tool</a>, or
+  <a href="../api/symbols/Layout.html" target="api">Layout</a>. But when the desired
+  property does not exist, you might need to override methods of CommandHandler, Tool,
+  Layout, Link, or Node. Methods that you can override are documented in the API
+  reference. Various features of GoJS can be overriden, either by replacing a method on an
+  instance (a feature of JavaScript) or by defining a subclass. You should not modify the
+  prototypes of any of the <b>GoJS</b> classes.
 </p>
 <p>
-You can override <a>CommandHandler.doKeyDown</a> to handle additional keyboard shortcuts or to change which commands are invoked via the keyboard.
-<p>
-Your code can invoke a command by calling the appropriate method on the <a>Diagram.commandHandler</a>.
-Each command method has a corresponding <b>can...</b> predicate that your code can use to enable or disable any buttons that invoke the command.
-Your code can customize the behavior of a command by overriding the method on <a>CommandHandler</a>,
-or by setting properties on the <a>CommandHandler</a> or <a>Diagram</a> or <a>Part</a>s --
-see <a href="../intro/permissions.html">GoJS Permissions</a>.
+  In addition to our samples, <b>GoJS</b> provides an
+  <strong><a href="../samples/#extensions">extensions gallery</a></strong
+  >, showcasing the creation of custom tools and layouts. Those classes and samples are
+  written in TypeScript, available at <code>../extensionsJSM/</code>, as
+  ECMAScript/JavaScript modules -- these use the
+  <code>../release/go-module.js</code> library. We recommend that you copy the files that
+  you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging
+  procedures.
 </p>
 <p>
-There are several CommandHandler extensions that provide additional functionality.
-<p>
-More information can be found in the <a href="../intro/commands.html">GoJS Intro</a>.
+  More information can be found in the <a href="../learn/extensions">GoJS learn pages</a>.
 </p>
-            <p>
-              <a href="../samples/index.html#commands">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>GoJS Extensions</h4>
-<p>
-  <b>GoJS</b> can be extended in a variety of ways.
-  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
-  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
-  Methods that you can override are documented in the API reference.
-  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
-  You should not modify the prototypes of any of the <b>GoJS</b> classes.
-</p>
-<p>
-  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
-  showcasing the creation of custom tools and layouts.
-  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
-  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
-  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
-  that you choose and so that you can include them into your own building and packaging procedures.
-</p>
-<p>
-More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
-</p>
-            <p>
-              <a href="../samples/index.html#extensions">Related samples</a>
-            </p>
-            <hr>
-          
-        </div>
-    </div>
+<!----><!--]--><!----> <p><a href="../samples#extensions">Related samples</a></p><!--]--><!--]--></div><!--]--><!----><!--]--><!----></div><!--]--><!--]--><!----></main> <footer class="text-foreground border-t mt-16 py-16"><div class="max-w-7xl mx-auto px-6 lg:px-8"><div class="xl:grid xl:grid-cols-2 xl:gap-8"><div class="logo h-10 w-10 text-[1.65rem] flex items-center justify-center rounded-lg text-white font-bold bg-nwoods-primary"><span class="leading-none">Go</span></div> <div class="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 xl:mt-0"><div><h3 class="text-sm/6 font-semibold text-foreground">GoJS</h3> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../samples">Samples</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../learn">Learn</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../api/">API</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../changelog">Changelog</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Support</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/sales" target="_blank" rel="noopener">Buy</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/register" target="_blank" rel="noopener">Register</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Company</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/about" target="_blank" rel="noopener">About Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/consulting" target="_blank" rel="noopener">Consulting</a></li><!----></ul></div></div></div> <div class="mt-12 pt-8 md:flex md:items-center md:justify-between"><div class="flex gap-x-6 md:order-2"><a class="text-foreground/70 hover:text-foreground self-center" href="https://www.npmjs.com/package/gojs" target="_blank" rel="noopener"><span class="sr-only">npm</span> <svg viewBox="0 0 780 250" fill="currentColor" aria-hidden="true" class="size-7"><path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M480,0v200h100V50h50v150h50V50h50v150h50V0H480z
+	 M0,200h100V50h50v150h50V0H0V200z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener"><span class="sr-only">GitHub</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener"><span class="sr-only">Twitter/X</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z"></path></svg></a></div> <p class="mt-8 text-xs/6 text-muted-foreground md:mt-0 md:order-1">© 1998-2026 Northwoods Software</p></div> <!--[-1--><!--]--></div></footer><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_19dmgt3 = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						assets: "/4.0.0"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.DUcLjgjT.js"),
+						import("../_app/immutable/entry/app.uWGY7NCW.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3, 82],
+							data: [null,null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
   </body>
-  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-  <script src="../assets/js/goSamples.js"></script>
 </html>

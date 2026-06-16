@@ -1,0 +1,96 @@
+# GoJS
+
+> GoJS is a JavaScript/TypeScript library for building interactive diagrams and
+> graphs in the browser. It supports templated nodes and links, data binding,
+> many built-in layouts and tools, and SVG/Canvas rendering. This document
+> orients AI coding assistants toward the resources most useful for writing
+> correct GoJS code.
+
+## Install
+
+```bash
+npm install gojs
+```
+
+```js
+import * as go from 'gojs';
+
+const diagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
+```
+
+A script-tag load is also supported (`go` becomes a global):
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
+```
+
+## Idiomatic style (GoJS 4.0+)
+
+- Prefer `new go.Node(...).add(...)` over `go.GraphObject.make(...)` / `$(...)`.
+  The named-constructor + chaining style is strictly better for autocomplete
+  and for AI-generated code.
+- Use typed constants instead of raw strings:
+  `go.Figures.RoundedRectangle`, `go.Arrowheads.Standard`,
+  `go.PanelTypes.Auto`, `go.ToolNames.Dragging`, `go.Builders.Button`,
+  `go.LayerNames.Foreground`.
+- Use `.bindTwoWay(target, source)` and `.bindModel(...)` instead of the
+  4-argument form of `.bind(...)` — the explicit helpers are harder to misuse.
+- In TypeScript, models are generic:
+  `new go.GraphLinksModel<NodeData, LinkData>(nodes, links)`.
+
+## Canonical primer
+
+- [Quick Start](./learn/) — single-page tour of installation,
+  templates, models, bindings, layouts. Start here.
+- [Introduction](./learn/overview) — longer conceptual overview.
+- [Building GraphObjects](./learn/buildingObjects) — shapes, text, panels.
+- [Using Models](./learn/usingModels) — GraphLinksModel vs. TreeModel vs. Model.
+- [Data Binding](./learn/dataBinding) — one-way, two-way, converters.
+
+## HTML docs
+
+- [api/](./api/) — full API reference, HTML.
+- [learn/](./learn/) — introductions, tutorials, conceptual docs.
+- [samples/](./samples/) — live, editable sample diagrams.
+
+## Machine-readable API
+
+- The npm package ships full TypeScript definitions at `release/go.d.ts` — the
+  authoritative, machine-readable API surface, with JSDoc and inline examples. Prefer
+  it for exact signatures, property names, and the typed constants/union types above.
+
+## Changelog
+
+- [changelog](./changelog) — what changed in each release.
+
+## Key concepts (one-line summaries)
+
+- **Diagram** — the top-level container, attached to a host `<div>`.
+- **Model** — holds the data (plain JS objects). You mutate the model via
+  `Diagram.set` or `Model.set`, never directly, so GoJS knows of the changes.
+  Modifying the model updates the Diagram
+- **Template** — a `Node` / `Link` / `Group` with bindings, used as a factory
+  for parts. Assigned to `diagram.nodeTemplate`, etc.
+- **Binding** — declarative link between a data property and a GraphObject
+  property. Created with `.bind()`, `.bindTwoWay()`, `.bindModel()`.
+- **Panel** — a container GraphObject with a layout type (Auto, Vertical,
+  Horizontal, Spot, Table, etc.).
+- **Tool** — a handler for a specific kind of user interaction (dragging,
+  resizing, linking, etc.). Registered on the `ToolManager`.
+- **Layout** — positions nodes automatically. Common: `TreeLayout`,
+  `LayeredDigraphLayout`, `ForceDirectedLayout`, `GridLayout`.
+
+## Common gotchas
+
+- The host `<div>` must have explicit `width` and `height` set by CSS. A collapsed div
+  renders a blank diagram.
+- Except for one-off Parts like legends and titles, do not construct `Node` or `Link`
+  instances and add them directly to a Diagram. Add _data_ to the model;
+  GoJS constructs Nodes and Links from your templates.
+- To modify the model, wrap changes in `diagram.model.commit(m => { ... })`.
+  This ensures a transaction that can be undone via the `UndoManager`.
+- Direct writes to JS objects in `Model.nodeDataArray` will not update the diagram.
+  You must use `Model.set`
+- In `.bind(target, source)`, the **target** is the GraphObject property and
+  the **source** is the data property. `.bind("text", "label")` sets
+  `TextBlock.text` from `data.label`.

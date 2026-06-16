@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * The LinkShiftingTool class lets the user shift the end of a link to be anywhere along the edges of the port;
  * use it in a diagram.toolManager.mouseDownTools list:
@@ -17,7 +17,7 @@ import * as go from 'gojs';
  * myDiagram.toolManager.mouseDownTools.add(new LinkShiftingTool());
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkShifting.html">Link Shifting</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkShifting">Link Shifting</a> sample.
  * @category Tool Extension
  */
 export class LinkShiftingTool extends go.Tool {
@@ -27,36 +27,32 @@ export class LinkShiftingTool extends go.Tool {
     constructor(init) {
         super();
         this.name = 'LinkShifting';
-        this._fromHandleArchetype =
-            new go.Shape({
-                geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
-                fill: null,
-                stroke: 'dodgerblue',
-                background: 'lightblue',
-                cursor: 'pointer',
-                segmentIndex: 0,
-                segmentFraction: 1,
-                segmentOrientation: go.Orientation.Along
-            });
-        this._fromAdornmentTemplate =
-            new go.Adornment(go.Panel.Link)
-                .add(this._fromHandleArchetype)
-                .freezeBindings();
-        this._toHandleArchetype =
-            new go.Shape({
-                geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
-                fill: null,
-                stroke: 'dodgerblue',
-                background: 'lightblue',
-                cursor: 'pointer',
-                segmentIndex: -1,
-                segmentFraction: 1,
-                segmentOrientation: go.Orientation.Along
-            });
-        this._toAdornmentTemplate =
-            new go.Adornment(go.Panel.Link)
-                .add(this._toHandleArchetype)
-                .freezeBindings();
+        this._fromHandleArchetype = new go.Shape({
+            geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
+            fill: null,
+            stroke: 'dodgerblue',
+            background: 'lightblue',
+            cursor: 'pointer',
+            segmentIndex: 0,
+            segmentFraction: 1,
+            segmentOrientation: go.Orientation.Along
+        });
+        this._fromAdornmentTemplate = new go.Adornment(go.Panel.Link)
+            .add(this._fromHandleArchetype)
+            .freezeBindings();
+        this._toHandleArchetype = new go.Shape({
+            geometryString: 'F1 M0 0 L8 0 M8 4 L0 4',
+            fill: null,
+            stroke: 'dodgerblue',
+            background: 'lightblue',
+            cursor: 'pointer',
+            segmentIndex: -1,
+            segmentFraction: 1,
+            segmentOrientation: go.Orientation.Along
+        });
+        this._toAdornmentTemplate = new go.Adornment(go.Panel.Link)
+            .add(this._toHandleArchetype)
+            .freezeBindings();
         this._originalPoints = null;
         this._handle = null;
         this._originalPoints = null;
@@ -74,7 +70,9 @@ export class LinkShiftingTool extends go.Tool {
             throw new Error('LinkShiftingTool.fromHandleArchetype must be a GraphObject');
         this._fromHandleArchetype = value;
         if (value !== null)
-            this._fromAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();
+            this._fromAdornmentTemplate = new go.Adornment(go.Panel.Link)
+                .add(value)
+                .freezeBindings();
         else
             this._fromAdornmentTemplate = null;
     }
@@ -89,7 +87,9 @@ export class LinkShiftingTool extends go.Tool {
             throw new Error('LinkShiftingTool.toHandleArchetype must be a GraphObject');
         this._toHandleArchetype = value;
         if (value !== null)
-            this._toAdornmentTemplate = new go.Adornment(go.Panel.Link).add(value).freezeBindings();
+            this._toAdornmentTemplate = new go.Adornment(go.Panel.Link)
+                .add(value)
+                .freezeBindings();
         else
             this._toAdornmentTemplate = null;
     }
@@ -180,7 +180,7 @@ export class LinkShiftingTool extends go.Tool {
         const diagram = this.diagram;
         if (diagram.isReadOnly || diagram.isModelReadOnly)
             return false;
-        if (!diagram.lastInput.left)
+        if (!this.canStartButton())
             return false;
         let h = this.findToolHandleAt(diagram.firstInput.documentPoint, 'LinkShiftingFrom');
         if (h === null)
@@ -289,7 +289,15 @@ export class LinkShiftingTool extends go.Tool {
         const portang = port.getDocumentAngle();
         const center = port.getDocumentPoint(go.Spot.Center);
         const farpt = pt.copy().offset((pt.x - center.x) * 1000, (pt.y - center.y) * 1000);
-        const portb = new go.Rect(port.getDocumentPoint(go.Spot.TopLeft).subtract(center).rotate(-portang).add(center), port.getDocumentPoint(go.Spot.BottomRight).subtract(center).rotate(-portang).add(center));
+        const portb = new go.Rect(port
+            .getDocumentPoint(go.Spot.TopLeft)
+            .subtract(center)
+            .rotate(-portang)
+            .add(center), port
+            .getDocumentPoint(go.Spot.BottomRight)
+            .subtract(center)
+            .rotate(-portang)
+            .add(center));
         let lp = link.getLinkPointFromPoint(port.part, port, center, farpt, fromend);
         lp = lp.copy().subtract(center).rotate(-portang).add(center);
         const spot = new go.Spot(Math.max(0, Math.min(1, (lp.x - portb.x) / (portb.width || 1))), Math.max(0, Math.min(1, (lp.y - portb.y) / (portb.height || 1))));

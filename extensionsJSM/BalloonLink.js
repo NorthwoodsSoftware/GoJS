@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This custom {@link go.Link} class customizes its {@link go.Shape} to surround the comment node (the from node).
  * If the Shape is filled, it will obscure the comment itself unless the Link is behind the comment node.
@@ -19,7 +19,7 @@ import * as go from 'gojs';
  * rather than the curve at corners along the route, which is always straight.
  * The default value is 10.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/BalloonLink.html">Balloon Links</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/BalloonLink">Balloon Links</a> sample.
  * @category Part Extension
  */
 export class BalloonLink extends go.Link {
@@ -67,7 +67,9 @@ export class BalloonLink extends go.Link {
         if (this.fromNode === null)
             return new go.Geometry();
         // assume the fromNode is the comment and the toNode is the commented-upon node
-        const bb = this.fromNode.actualBounds.copy().addMargin(this.fromNode.margin);
+        const bb = this.fromNode.actualBounds
+            .copy()
+            .addMargin(this.fromNode.margin);
         let pn = this.pointsCount === 0 ? bb.center : this.getPoint(this.pointsCount - 1);
         if (this.toNode !== null && bb.intersectsRect(this.toNode.actualBounds)) {
             pn = this.toNode.actualBounds.center;

@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The RotateMultipleTool class lets the user rotate multiple objects at a time.
@@ -20,7 +20,7 @@ import * as go from 'gojs';
  *
  * Caution: this only works for Groups that do *not* have a Placeholder.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/RotateMultiple.html">Rotate Multiple</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/RotateMultiple">Rotate Multiple</a> sample.
  * @category Tool Extension
  */
 export class RotateMultipleTool extends go.RotatingTool {
@@ -60,7 +60,9 @@ export class RotateMultipleTool extends go.RotatingTool {
     this._centerPoint = diagram.computePartsBounds(diagram.selection).center;
 
     // remember the angle relative to the center point when rotating the whole collection
-    this._initialAngle = this._centerPoint.directionPoint(diagram.lastInput.documentPoint);
+    this._initialAngle = this._centerPoint.directionPoint(
+      diagram.lastInput.documentPoint
+    );
 
     // remember initial angle and distance for each Part
     const infos = new Map<go.Part, PartInfo>();
@@ -131,7 +133,10 @@ export class RotateMultipleTool extends go.RotatingTool {
         const offsetX = partInfo.distance * Math.cos(radAngle + partInfo.placementAngle);
         const offsetY = partInfo.distance * Math.sin(radAngle + partInfo.placementAngle);
         // move part
-        part.location = new go.Point(tool._centerPoint.x + offsetX, tool._centerPoint.y + offsetY);
+        part.location = new go.Point(
+          tool._centerPoint.x + offsetX,
+          tool._centerPoint.y + offsetY
+        );
         // rotate part
         part.rotateObject.angle = partInfo.rotationAngle + newangle;
       }

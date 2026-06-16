@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The LinkLabelDraggingTool class lets the user move a label on a {@link go.Link}.
@@ -20,7 +20,7 @@ import * as go from 'gojs';
  * that is positioned at the {@link go.Link.midPoint} plus some offset.
  * It does not work for labels that have a particular {@link go.GraphObject.segmentIndex}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkLabelDragging.html">Link Label Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkLabelDragging">Link Label Dragging</a> sample.
  * @category Tool Extension
  */
 export class LinkLabelDraggingTool extends go.Tool {
@@ -69,10 +69,8 @@ export class LinkLabelDraggingTool extends go.Tool {
    */
   override canStart(): boolean {
     if (!super.canStart()) return false;
-    const diagram = this.diagram;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-    const e = diagram.lastInput;
-    if (!e.left) return false;
+    if (!this.canStartButton()) return false;
     if (!this.isBeyondDragSize()) return false;
 
     return this.findLabel() !== null;
@@ -160,13 +158,19 @@ export class LinkLabelDraggingTool extends go.Tool {
         link.geometry.getPointAlongPath(lab.segmentFraction)
       );
       const angle = link.geometry.getAngleAlongPath(lab.segmentFraction);
-      const p = new go.Point(last.x - this._offset.x - labpt.x, last.y - this._offset.y - labpt.y);
+      const p = new go.Point(
+        last.x - this._offset.x - labpt.x,
+        last.y - this._offset.y - labpt.y
+      );
       lab.segmentOffset = p.rotate(-angle);
     } else if (idx < -numpts || idx >= numpts) {
       // if the label is a "mid" label, assume it is positioned differently from a label at a particular segment
       const mid = link.midPoint;
       // need to rotate this point to account for the angle of the link segment at the mid-point
-      const p = new go.Point(last.x - this._offset.x - mid.x, last.y - this._offset.y - mid.y);
+      const p = new go.Point(
+        last.x - this._offset.x - mid.x,
+        last.y - this._offset.y - mid.y
+      );
       lab.segmentOffset = p.rotate(-link.midAngle);
     } else {
       // handle the label point being on a partiular segment with a given fraction
@@ -185,7 +189,10 @@ export class LinkLabelDraggingTool extends go.Tool {
       }
       const labx = a.x + (b.x - a.x) * frac;
       const laby = a.y + (b.y - a.y) * frac;
-      const p = new go.Point(last.x - this._offset.x - labx, last.y - this._offset.y - laby);
+      const p = new go.Point(
+        last.x - this._offset.x - labx,
+        last.y - this._offset.y - laby
+      );
       const segangle = idx >= 0 ? a.directionPoint(b) : b.directionPoint(a);
       lab.segmentOffset = p.rotate(-segangle);
     }

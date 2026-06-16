@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -40,7 +40,7 @@
  * but it does temporarily add the {@link box} part to the diagram.
  * This tool does not modify the model or conduct any transaction.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DragZooming.html">Drag Zooming</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/DragZooming">Drag Zooming</a> sample.
  * @category Tool Extension
  */
 class DragZoomingTool extends go.Tool {
@@ -122,14 +122,14 @@ class DragZoomingTool extends go.Tool {
         if (!this.isEnabled)
             return false;
         const diagram = this.diagram;
-        const e = diagram.lastInput;
         // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-        if (!e.left)
+        if (!this.canStartButton())
             return false;
         // don't include the following checks when this tool is running modally
         if (diagram.currentTool !== this) {
             if (!this.isBeyondDragSize())
                 return false;
+            const e = diagram.lastInput;
             // must wait for "delay" milliseconds before that tool can run
             if (e.timestamp - diagram.firstInput.timestamp < this.delay)
                 return false;

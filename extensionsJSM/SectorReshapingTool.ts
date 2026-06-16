@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The SectorReshapingTool class lets the user interactively modify the angles of a "pie"-shaped sector of a circle.
@@ -20,7 +20,7 @@ import * as go from 'gojs';
  * This depends on there being three data properties, "angle", "sweep", and "radius",
  * that hold the needed information to be able to reproduce the sector.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/SectorReshaping.html">Sector Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/SectorReshaping">Sector Reshaping</a> sample.
  * @category Tool Extension
  */
 export class SectorReshapingTool extends go.Tool {
@@ -59,7 +59,10 @@ export class SectorReshapingTool extends go.Tool {
     return this._radiusProperty;
   }
   set radiusProperty(val: string) {
-    if (typeof val !== 'string') throw new Error('SectorReshapingTool.radiusProperty must be the string name of a data property.')
+    if (typeof val !== 'string')
+      throw new Error(
+        'SectorReshapingTool.radiusProperty must be the string name of a data property.'
+      );
     this._radiusProperty = val;
   }
 
@@ -72,7 +75,10 @@ export class SectorReshapingTool extends go.Tool {
     return this._angleProperty;
   }
   set angleProperty(val: string) {
-    if (typeof val !== 'string') throw new Error('SectorReshapingTool.angleProperty must be the string name of a data property.')
+    if (typeof val !== 'string')
+      throw new Error(
+        'SectorReshapingTool.angleProperty must be the string name of a data property.'
+      );
     this._angleProperty = val;
   }
 
@@ -85,7 +91,10 @@ export class SectorReshapingTool extends go.Tool {
     return this._sweepProperty;
   }
   set sweepProperty(val: string) {
-    if (typeof val !== 'string') throw new Error('SectorReshapingTool.sweepProperty must be the string name of a data property.')
+    if (typeof val !== 'string')
+      throw new Error(
+        'SectorReshapingTool.sweepProperty must be the string name of a data property.'
+      );
     this._sweepProperty = val;
   }
 
@@ -112,29 +121,41 @@ export class SectorReshapingTool extends go.Tool {
       if (ad === null) {
         ad = new go.Adornment('Spot').add(
           new go.Placeholder(),
-          new go.Shape('Diamond',
-              { name: 'RADIUS', fill: 'lime', width: 10, height: 10, cursor: 'move' })
-            .bind('alignment', '', d => {
-              const angle = SectorReshapingTool.getAngle(d);
-              const sweep = SectorReshapingTool.getSweep(d);
-              const p = new go.Point(0.5, 0).rotate(angle + sweep / 2);
-              return new go.Spot(0.5 + p.x, 0.5 + p.y);
-            }),
-          new go.Shape('Circle',
-              { name: 'ANGLE', fill: 'lime', width: 8, height: 8, cursor: 'move' })
-            .bind('alignment', '', d => {
-              const angle = SectorReshapingTool.getAngle(d);
-              const p = new go.Point(0.5, 0).rotate(angle);
-              return new go.Spot(0.5 + p.x, 0.5 + p.y);
-            }),
-          new go.Shape('Circle',
-              { name: 'SWEEP', fill: 'lime', width: 8, height: 8, cursor: 'move' })
-            .bind('alignment', '', d => {
-              const angle = SectorReshapingTool.getAngle(d);
-              const sweep = SectorReshapingTool.getSweep(d);
-              const p = new go.Point(0.5, 0).rotate(angle + sweep);
-              return new go.Spot(0.5 + p.x, 0.5 + p.y);
-            })
+          new go.Shape('Diamond', {
+            name: 'RADIUS',
+            fill: 'lime',
+            width: 10,
+            height: 10,
+            cursor: 'move'
+          }).bind('alignment', '', (d) => {
+            const angle = SectorReshapingTool.getAngle(d);
+            const sweep = SectorReshapingTool.getSweep(d);
+            const p = new go.Point(0.5, 0).rotate(angle + sweep / 2);
+            return new go.Spot(0.5 + p.x, 0.5 + p.y);
+          }),
+          new go.Shape('Circle', {
+            name: 'ANGLE',
+            fill: 'lime',
+            width: 8,
+            height: 8,
+            cursor: 'move'
+          }).bind('alignment', '', (d) => {
+            const angle = SectorReshapingTool.getAngle(d);
+            const p = new go.Point(0.5, 0).rotate(angle);
+            return new go.Spot(0.5 + p.x, 0.5 + p.y);
+          }),
+          new go.Shape('Circle', {
+            name: 'SWEEP',
+            fill: 'lime',
+            width: 8,
+            height: 8,
+            cursor: 'move'
+          }).bind('alignment', '', (d) => {
+            const angle = SectorReshapingTool.getAngle(d);
+            const sweep = SectorReshapingTool.getSweep(d);
+            const p = new go.Point(0.5, 0).rotate(angle + sweep);
+            return new go.Spot(0.5 + p.x, 0.5 + p.y);
+          })
         );
         ad.adornedObject = part.locationObject;
         part.addAdornment(this.name, ad);
@@ -142,7 +163,10 @@ export class SectorReshapingTool extends go.Tool {
         ad.location = part.position;
         const ns = part.naturalBounds;
         if (ad.placeholder && ad.placeholder.visible) {
-          ad.placeholder.desiredSize = new go.Size(ns.width * part.scale, ns.height * part.scale);
+          ad.placeholder.desiredSize = new go.Size(
+            ns.width * part.scale,
+            ns.height * part.scale
+          );
         }
         ad.updateTargetBindings();
       }

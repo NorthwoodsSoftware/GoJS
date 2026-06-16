@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This CommandHandler class uses localStorage as the repository for the clipboard,
  * rather than an in-memory global variable.
@@ -81,7 +81,9 @@ export class LocalStorageCommandHandler extends go.CommandHandler {
             try {
                 const clipstr = window.localStorage.getItem(this._StorageKey);
                 const clipfrmt = window.localStorage.getItem(this._FormatKey);
-                if (clipstr === null || clipstr === '' || clipfrmt !== this.diagram.model.dataFormat) {
+                if (clipstr === null ||
+                    clipstr === '' ||
+                    clipfrmt !== this.diagram.model.dataFormat) {
                     return coll;
                 }
                 else {

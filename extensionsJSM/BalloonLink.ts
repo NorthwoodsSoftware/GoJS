@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This custom {@link go.Link} class customizes its {@link go.Shape} to surround the comment node (the from node).
@@ -22,7 +22,7 @@ import * as go from 'gojs';
  * rather than the curve at corners along the route, which is always straight.
  * The default value is 10.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/BalloonLink.html">Balloon Links</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/BalloonLink">Balloon Links</a> sample.
  * @category Part Extension
  */
 export class BalloonLink extends go.Link {
@@ -72,7 +72,9 @@ export class BalloonLink extends go.Link {
   override makeGeometry(): go.Geometry {
     if (this.fromNode === null) return new go.Geometry();
     // assume the fromNode is the comment and the toNode is the commented-upon node
-    const bb = this.fromNode.actualBounds.copy().addMargin(this.fromNode.margin as go.Margin);
+    const bb = this.fromNode.actualBounds
+      .copy()
+      .addMargin(this.fromNode.margin as go.Margin);
 
     let pn = this.pointsCount === 0 ? bb.center : this.getPoint(this.pointsCount - 1);
     if (this.toNode !== null && bb.intersectsRect(this.toNode.actualBounds)) {
@@ -82,7 +84,10 @@ export class BalloonLink extends go.Link {
     }
 
     const base = Math.max(0, this.base);
-    const corner = Math.min(Math.max(0, this.corner), Math.min(bb.width / 2, bb.height / 2));
+    const corner = Math.min(
+      Math.max(0, this.corner),
+      Math.min(bb.width / 2, bb.height / 2)
+    );
     const cornerext = Math.min(base, corner + base / 2);
 
     const fig = new go.PathFigure();
@@ -105,25 +110,57 @@ export class BalloonLink extends go.Link {
         // top left
         fig.add(new go.PathSegment(go.SegmentType.Line, x, y + corner));
         fig.add(
-          new go.PathSegment(go.SegmentType.Arc, 180, 90, x + corner, y + corner, corner, corner)
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            180,
+            90,
+            x + corner,
+            y + corner,
+            corner,
+            corner
+          )
         );
       } else if (prevx < x && prevy === y) {
         // top right
         fig.add(new go.PathSegment(go.SegmentType.Line, x - corner, y));
         fig.add(
-          new go.PathSegment(go.SegmentType.Arc, 270, 90, x - corner, y + corner, corner, corner)
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            270,
+            90,
+            x - corner,
+            y + corner,
+            corner,
+            corner
+          )
         );
       } else if (prevx === x && prevy < y) {
         // bottom right
         fig.add(new go.PathSegment(go.SegmentType.Line, x, y - corner));
         fig.add(
-          new go.PathSegment(go.SegmentType.Arc, 0, 90, x - corner, y - corner, corner, corner)
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            0,
+            90,
+            x - corner,
+            y - corner,
+            corner,
+            corner
+          )
         );
       } else if (prevx > x && prevy === y) {
         // bottom left
         fig.add(new go.PathSegment(go.SegmentType.Line, x + corner, y));
         fig.add(
-          new go.PathSegment(go.SegmentType.Arc, 90, 90, x + corner, y - corner, corner, corner)
+          new go.PathSegment(
+            go.SegmentType.Arc,
+            90,
+            90,
+            x + corner,
+            y - corner,
+            corner,
+            corner
+          )
         );
       } // else if prevx === x && prevy === y, no-op
       prevx = x;
@@ -145,7 +182,10 @@ export class BalloonLink extends go.Link {
         turn(bb.right, bb.bottom);
       } else {
         // pn.y >= bb.top && pn.y <= bb.bottom
-        const y = Math.min(Math.max(pn.y + base / 3, bb.top + corner + base), bb.bottom - corner);
+        const y = Math.min(
+          Math.max(pn.y + base / 3, bb.top + corner + base),
+          bb.bottom - corner
+        );
         start(bb.left, y);
         point(pn.x, pn.y, bb.left, Math.max(y - base, bb.top + corner));
         turn(bb.left, bb.top);
@@ -168,7 +208,10 @@ export class BalloonLink extends go.Link {
         turn(bb.right, bb.top);
       } else {
         // pn.y >= bb.top && pn.y <= bb.bottom
-        const y = Math.min(Math.max(pn.y + base / 3, bb.top + corner + base), bb.bottom - corner);
+        const y = Math.min(
+          Math.max(pn.y + base / 3, bb.top + corner + base),
+          bb.bottom - corner
+        );
         start(bb.right, Math.max(y - base, bb.top + corner));
         point(pn.x, pn.y, bb.right, y);
         turn(bb.right, bb.bottom);
@@ -178,7 +221,10 @@ export class BalloonLink extends go.Link {
       }
     } else {
       // pn.x >= bb.left && pn.x <= bb.right
-      const x = Math.min(Math.max(pn.x + base / 3, bb.left + corner + base), bb.right - corner);
+      const x = Math.min(
+        Math.max(pn.x + base / 3, bb.left + corner + base),
+        bb.right - corner
+      );
       if (pn.y < bb.top) {
         start(Math.max(x - base, bb.left + corner), bb.top);
         point(pn.x, pn.y, x, bb.top);

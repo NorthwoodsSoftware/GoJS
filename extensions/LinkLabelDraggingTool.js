@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -17,7 +17,7 @@
  * that is positioned at the {@link go.Link.midPoint} plus some offset.
  * It does not work for labels that have a particular {@link go.GraphObject.segmentIndex}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkLabelDragging.html">Link Label Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkLabelDragging">Link Label Dragging</a> sample.
  * @category Tool Extension
  */
 class LinkLabelDraggingTool extends go.Tool {
@@ -60,10 +60,8 @@ class LinkLabelDraggingTool extends go.Tool {
     canStart() {
         if (!super.canStart())
             return false;
-        const diagram = this.diagram;
         // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-        const e = diagram.lastInput;
-        if (!e.left)
+        if (!this.canStartButton())
             return false;
         if (!this.isBeyondDragSize())
             return false;

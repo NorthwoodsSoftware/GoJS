@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -47,7 +47,7 @@
  * and {@link go.GraphObject.alignment} properties on each element, along with the Panel's
  * {@link go.Panel.defaultStretch}, {@link go.Panel.defaultAlignment}, and {@link go.Panel.padding} properties.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/PanelLayoutFlow.html">Flow PanelLayout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/PanelLayoutFlow">Flow PanelLayout</a> sample.
  * @category Layout Extension
  */
 class PanelLayoutFlow extends go.PanelLayout {
@@ -103,7 +103,10 @@ class PanelLayoutFlow extends go.PanelLayout {
     measure(panel, width, height, elements, union, minw, minh) {
         const lineBreadths = []; // attach properties on panel
         const lineLengths = [];
-        panel.panelLayoutState = { lineBreadths: lineBreadths, lineLengths: lineLengths };
+        panel.panelLayoutState = {
+            lineBreadths: lineBreadths,
+            lineLengths: lineLengths
+        };
         const pad = panel.padding;
         const wrapx = width + pad.left; // might be Infinity
         const wrapy = height + pad.top;

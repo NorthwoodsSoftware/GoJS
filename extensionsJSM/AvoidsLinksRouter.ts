@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom Router that will cause overlapping segments of Orthogonal or AvoidsNodes links to be routed in parallel,
@@ -29,7 +29,7 @@ import * as go from 'gojs';
  *   myDiagram.routers.add(new AvoidsLinksRouter());
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/AvoidsLinksRouter.html">AvoidsLinksRouter</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/AvoidsLinksRouter">AvoidsLinksRouter</a> sample.
  * @category Router Extension
  */
 export class AvoidsLinksRouter extends go.Router {
@@ -68,7 +68,8 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set linkSpacing(value: number) {
     if (value !== this._linkSpacing) {
-      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.linkSpacing must be a number');
+      if (typeof value !== 'number')
+        throw new Error('AvoidsLinksRouter.linkSpacing must be a number');
       this._linkSpacing = value;
       this.invalidateRouter();
     }
@@ -105,7 +106,8 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set epsilonDistance(value: number) {
     if (value !== this._epsilonDistance) {
-      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.epsilonDistance must be a number');
+      if (typeof value !== 'number')
+        throw new Error('AvoidsLinksRouter.epsilonDistance must be a number');
       this._epsilonDistance = value;
       this.invalidateRouter();
     }
@@ -123,7 +125,8 @@ export class AvoidsLinksRouter extends go.Router {
   }
   set iterations(value: number) {
     if (value !== this._iterations) {
-      if (typeof value !== 'number') throw new Error('AvoidsLinksRouter.iterations must be a number');
+      if (typeof value !== 'number')
+        throw new Error('AvoidsLinksRouter.iterations must be a number');
       this._iterations = value;
       this.invalidateRouter();
     }
@@ -173,8 +176,9 @@ export class AvoidsLinksRouter extends go.Router {
     if (!link.isOrthogonal) return false;
     if (link.pointsCount < 3) return false;
     if (!this._ignoreContainingGroups) {
-      if (link.containingGroup !== (container instanceof go.Group ? container : null)) return false;
-    } 
+      if (link.containingGroup !== (container instanceof go.Group ? container : null))
+        return false;
+    }
     return true;
   }
 
@@ -223,17 +227,23 @@ export class AvoidsLinksRouter extends go.Router {
 
   /** @internal */
   _coord(si: _SegInfo) {
-    return si.vertical ? si.link!.getPoint(si.indexStart).x : si.link!.getPoint(si.indexStart).y;
+    return si.vertical
+      ? si.link!.getPoint(si.indexStart).x
+      : si.link!.getPoint(si.indexStart).y;
   }
 
   /** @internal */
   _columnStart(si: _SegInfo) {
-    return si.vertical ? si.link!.getPoint(si.indexStart).y : si.link!.getPoint(si.indexStart).x;
+    return si.vertical
+      ? si.link!.getPoint(si.indexStart).y
+      : si.link!.getPoint(si.indexStart).x;
   }
 
   /** @internal */
   _columnEnd(si: _SegInfo) {
-    return si.vertical ? si.link!.getPoint(si.indexEnd).y : si.link!.getPoint(si.indexEnd).x;
+    return si.vertical
+      ? si.link!.getPoint(si.indexEnd).y
+      : si.link!.getPoint(si.indexEnd).x;
   }
 
   /** @internal */
@@ -265,7 +275,7 @@ export class AvoidsLinksRouter extends go.Router {
     let enclosingRect = null;
 
     // true if all links in the diagram part of the modified collection, thus we don't need to call findPartsIn
-    const skipBounds = (coll instanceof go.Diagram && links.count === coll.links.count);
+    const skipBounds = coll instanceof go.Diagram && links.count === coll.links.count;
 
     // add segments of links in the "invalid" links Set
     for (const l of links) {
@@ -293,14 +303,18 @@ export class AvoidsLinksRouter extends go.Router {
         seginfo._computeGeo();
 
         found = false;
-        for(const line of this._allsegs) {
-          if(Math.abs(this._coord(line.first()!) - this._coord(seginfo)) < this._epsilonDistance && line.first()!.vertical === vertical) {
+        for (const line of this._allsegs) {
+          if (
+            Math.abs(this._coord(line.first()!) - this._coord(seginfo)) <
+              this._epsilonDistance &&
+            line.first()!.vertical === vertical
+          ) {
             found = true;
             line.add(seginfo);
             break;
           }
         }
-        if(!found) {
+        if (!found) {
           this._allsegs.add(new go.List([seginfo]));
         }
         i = j;
@@ -320,8 +334,11 @@ export class AvoidsLinksRouter extends go.Router {
           q = l.getPoint(j);
           const vertical = this.isApprox(p.x, q.x) && !this.isApprox(p.y, q.y);
           const coord = vertical ? p.x : p.y;
-          for(const line of this._allsegs) {
-            if(Math.abs(this._coord(line.first()!) - coord) < this._epsilonDistance && line.first()!.vertical === vertical) {
+          for (const line of this._allsegs) {
+            if (
+              Math.abs(this._coord(line.first()!) - coord) < this._epsilonDistance &&
+              line.first()!.vertical === vertical
+            ) {
               const seginfo = this._allocSegInfo();
               seginfo.indexStart = i;
               seginfo.indexEnd = j;
@@ -340,18 +357,24 @@ export class AvoidsLinksRouter extends go.Router {
 
     // split sets of segments into those which actually overlap
     for (const line of this._allsegs) {
-      while(line.count > 0) {
+      while (line.count > 0) {
         currentseg = line.pop()!;
         const newline = new go.List([currentseg]);
         found = true;
-        while(found) {
+        while (found) {
           found = false;
           for (const otherseg of newline) {
             for (const seginfo of line) {
               const minI = Math.min(this._columnStart(seginfo), this._columnEnd(seginfo));
               const maxI = Math.max(this._columnStart(seginfo), this._columnEnd(seginfo));
-              const minJ = Math.min(this._columnStart(otherseg), this._columnEnd(otherseg));
-              const maxJ = Math.max(this._columnStart(otherseg), this._columnEnd(otherseg));
+              const minJ = Math.min(
+                this._columnStart(otherseg),
+                this._columnEnd(otherseg)
+              );
+              const maxJ = Math.max(
+                this._columnStart(otherseg),
+                this._columnEnd(otherseg)
+              );
               if (minJ <= maxI && minI <= maxJ && seginfo.link !== otherseg.link) {
                 line.remove(seginfo);
                 newline.push(seginfo);
@@ -369,8 +392,8 @@ export class AvoidsLinksRouter extends go.Router {
   /** @internal */
   adjustOverlaps(positions: any) {
     const gridlines = this._gridlines;
-    for(const line of gridlines) {
-      if(line.size < 2) continue;
+    for (const line of gridlines) {
+      if (line.size < 2) continue;
       const gridline = line.toArray();
       this.sortGridline(gridline);
       const vertical = gridline[0].vertical;
@@ -382,19 +405,38 @@ export class AvoidsLinksRouter extends go.Router {
 
       if (this._avoidsNodes && maxlayer > 0) {
         // find the initial bounding box of the newly routed segments in the gridline
-        let minColumn = Math.min(this._columnStart(gridline[0]), this._columnEnd(gridline[0])); // x if horizontal
-        let maxColumn = Math.max(this._columnStart(gridline[0]), this._columnEnd(gridline[0]));
+        let minColumn = Math.min(
+          this._columnStart(gridline[0]),
+          this._columnEnd(gridline[0])
+        ); // x if horizontal
+        let maxColumn = Math.max(
+          this._columnStart(gridline[0]),
+          this._columnEnd(gridline[0])
+        );
         const minCoord = this._coord(gridline[0]) - (maxlayer * this._linkSpacing) / 2; // x if vertical
         const maxCoord = this._coord(gridline[0]) + (maxlayer * this._linkSpacing) / 2;
         for (let i = 1; i < gridline.length; i++) {
           const seg = gridline[i];
-          minColumn = Math.min(minColumn, Math.min(this._columnStart(seg), this._columnEnd(seg)));
-          maxColumn = Math.max(maxColumn, Math.max(this._columnStart(seg), this._columnEnd(seg)));
+          minColumn = Math.min(
+            minColumn,
+            Math.min(this._columnStart(seg), this._columnEnd(seg))
+          );
+          maxColumn = Math.max(
+            maxColumn,
+            Math.max(this._columnStart(seg), this._columnEnd(seg))
+          );
         }
 
         // if there are node overlaps, find the minimum spacing that will avoid node overlaps with some padding
-        if(vertical) {
-          if (!positions.isUnoccupied(minCoord, minColumn, maxCoord - minCoord, maxColumn - minColumn)) {
+        if (vertical) {
+          if (
+            !positions.isUnoccupied(
+              minCoord,
+              minColumn,
+              maxCoord - minCoord,
+              maxColumn - minColumn
+            )
+          ) {
             const availSpace = positions.maxAvoidsLinksSpaceV(
               minColumn,
               maxColumn,
@@ -404,7 +446,14 @@ export class AvoidsLinksRouter extends go.Router {
             realSpacing = Math.min(this._linkSpacing, (2 * availSpace) / (1 + maxlayer));
           }
         } else {
-          if (!positions.isUnoccupied(minColumn, minCoord, maxColumn - minColumn, maxCoord - minCoord)) {
+          if (
+            !positions.isUnoccupied(
+              minColumn,
+              minCoord,
+              maxColumn - minColumn,
+              maxCoord - minCoord
+            )
+          ) {
             const availSpace = positions.maxAvoidsLinksSpaceH(
               minColumn,
               maxColumn,
@@ -424,7 +473,7 @@ export class AvoidsLinksRouter extends go.Router {
         const newcoord = this._coord(seg) + (i - maxlayer / 2) * realSpacing;
         seg.link.startRoute();
         for (let j = seg.indexStart; j <= seg.indexEnd; j++) {
-          if(vertical) {
+          if (vertical) {
             seg.link.setPoint(j, new go.Point(newcoord, seg.link.getPoint(j).y));
           } else {
             seg.link.setPoint(j, new go.Point(seg.link.getPoint(j).x, newcoord));
@@ -436,7 +485,12 @@ export class AvoidsLinksRouter extends go.Router {
   }
 
   /** @internal */
-  partialSort(arr: Array<any>, start: number, end: number, f: (a: any, b: any) => number) {
+  partialSort(
+    arr: Array<any>,
+    start: number,
+    end: number,
+    f: (a: any, b: any) => number
+  ) {
     const preSorted = arr.slice(0, start);
     const postSorted = arr.slice(end);
     const sorted = arr.slice(start, end).sort(f);
@@ -521,19 +575,27 @@ export class AvoidsLinksRouter extends go.Router {
 
     // sort segments with geo = 0
     if (numGeo0 > 1) {
-      this.partialSort(gridline, 0, n1, (seg1, seg2) => this.endpointComparer(seg1, seg2));
+      this.partialSort(gridline, 0, n1, (seg1, seg2) =>
+        this.endpointComparer(seg1, seg2)
+      );
     }
     // sort segments with geo = 1
     if (numGeo1 > 1) {
-      this.partialSort(gridline, n1, n2, (seg1, seg2) => this.endpointComparer(seg1, seg2));
+      this.partialSort(gridline, n1, n2, (seg1, seg2) =>
+        this.endpointComparer(seg1, seg2)
+      );
     }
     // sort segments with geo = 2
     if (numGeo2 > 1) {
-      this.partialSort(gridline, n2, n3, (seg1, seg2) => this.endpointComparer(seg1, seg2));
+      this.partialSort(gridline, n2, n3, (seg1, seg2) =>
+        this.endpointComparer(seg1, seg2)
+      );
     }
     // sort segments with geo = 3
     if (numGeo3 > 1) {
-      this.partialSort(gridline, n3, n4, (seg1, seg2) => this.endpointComparer(seg1, seg2));
+      this.partialSort(gridline, n3, n4, (seg1, seg2) =>
+        this.endpointComparer(seg1, seg2)
+      );
     }
   }
 
@@ -561,7 +623,7 @@ class _SegInfo {
 
   // generic compute this.geo
   _computeGeo() {
-    if(this.vertical) this._computeGeoV();
+    if (this.vertical) this._computeGeoV();
     else this._computeGeoH();
   }
 
@@ -571,7 +633,11 @@ class _SegInfo {
     // j1 and j2 are the indices of the next orthogonal bends (not necessarily the next point if there are redundant link points)
     let j1 = this.indexStart - 1;
     let j2 = this.indexEnd + 1;
-    while (j1 > 0 && Math.abs(this.link.getPoint(j1).x - this.link.getPoint(j1 - 1).x) < 0.5) j1--;
+    while (
+      j1 > 0 &&
+      Math.abs(this.link.getPoint(j1).x - this.link.getPoint(j1 - 1).x) < 0.5
+    )
+      j1--;
     while (
       j2 < this.link.pointsCount - 1 &&
       Math.abs(this.link.getPoint(j2).x - this.link.getPoint(j2 + 1).x) < 0.5
@@ -604,7 +670,11 @@ class _SegInfo {
     // j1 and j2 are the indices of the next orthogonal bends (not necessarily the next point if there are redundant link points)
     let j1 = this.indexStart - 1;
     let j2 = this.indexEnd + 1;
-    while (j1 > 0 && Math.abs(this.link.getPoint(j1).y - this.link.getPoint(j1 - 1).y) < 0.5) j1--;
+    while (
+      j1 > 0 &&
+      Math.abs(this.link.getPoint(j1).y - this.link.getPoint(j1 - 1).y) < 0.5
+    )
+      j1--;
     while (
       j2 < this.link.pointsCount - 1 &&
       Math.abs(this.link.getPoint(j2).y - this.link.getPoint(j2 + 1).y) < 0.5

@@ -8,15 +8,15 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The ColumnResizingTool class lets the user resize each column of a named Table Panel in a selected Part.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/ColumnResizing.html">Column Resizing</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/ColumnResizing">Column Resizing</a> sample.
  * @category Tool Extension
  */
 export class ColumnResizingTool extends go.Tool {
@@ -57,7 +57,8 @@ export class ColumnResizingTool extends go.Tool {
     return this._handleArchetype;
   }
   set handleArchetype(val: go.GraphObject) {
-    if (!(val instanceof go.GraphObject)) throw new Error('ColumnResizingTool.handleArchetype must be a GraphObject');
+    if (!(val instanceof go.GraphObject))
+      throw new Error('ColumnResizingTool.handleArchetype must be a GraphObject');
     this._handleArchetype = val;
   }
 
@@ -70,7 +71,8 @@ export class ColumnResizingTool extends go.Tool {
     return this._tableName;
   }
   set tableName(val: string) {
-    if (typeof val !== 'string') throw new Error('ColumnResizingTool.tableName must be a string');
+    if (typeof val !== 'string')
+      throw new Error('ColumnResizingTool.tableName must be a string');
     this._tableName = val;
   }
 
@@ -197,7 +199,7 @@ export class ColumnResizingTool extends go.Tool {
 
     const diagram = this.diagram;
     if (diagram.isReadOnly) return false;
-    if (!diagram.lastInput.left) return false;
+    if (!this.canStartButton()) return false;
     const h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
     return h !== null;
   }
@@ -281,7 +283,10 @@ export class ColumnResizingTool extends go.Tool {
     }
     this.doResize(
       coldef,
-      Math.max(0, locpt.x - pad.left - coldef.position - (coldef.total - coldef.actual) - sep / 2)
+      Math.max(
+        0,
+        locpt.x - pad.left - coldef.position - (coldef.total - coldef.actual) - sep / 2
+      )
     );
   }
 

@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom RotatingTool that also supports the user moving the point about which the object is rotated.
@@ -29,7 +29,7 @@ import * as go from 'gojs';
  * additional one named "MovingSpot" that holds the handle for interactively moving the
  * {@link go.RotatingTool.rotationPoint} by changing the {@link go.Part.rotationSpot}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/SpotRotating.html">Spot Rotating</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/SpotRotating">Spot Rotating</a> sample.
  * @category Tool Extension
  */
 export class SpotRotatingTool extends go.RotatingTool {
@@ -40,9 +40,16 @@ export class SpotRotatingTool extends go.RotatingTool {
     super();
     this.name = 'SpotRotating';
     this._originalRotationSpot = go.Spot.Default;
-    this._spotAdornmentTemplate = new go.Adornment('Spot',
-        { locationSpot: go.Spot.Center, cursor: 'move' }).add(
-      new go.Shape('Circle', { fill: 'lightblue', stroke: 'dodgerblue', width: 10, height: 10 }),
+    this._spotAdornmentTemplate = new go.Adornment('Spot', {
+      locationSpot: go.Spot.Center,
+      cursor: 'move'
+    }).add(
+      new go.Shape('Circle', {
+        fill: 'lightblue',
+        stroke: 'dodgerblue',
+        width: 10,
+        height: 10
+      }),
       new go.Shape('Circle', { fill: 'dodgerblue', strokeWidth: 0, width: 4, height: 4 })
     );
     if (init) Object.assign(this, init);
@@ -108,7 +115,7 @@ export class SpotRotatingTool extends go.RotatingTool {
     const diagram = this.diagram;
     if (diagram.isReadOnly) return false;
     if (!diagram.allowRotate) return false;
-    if (!diagram.lastInput.left) return false;
+    if (!this.canStartButton()) return false;
 
     let h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
     if (h !== null) return true;
@@ -122,7 +129,10 @@ export class SpotRotatingTool extends go.RotatingTool {
    */
   override doActivate(): void {
     // might be dragging the spot handle instead of the rotate handle
-    this.handle = this.findToolHandleAt(this.diagram.firstInput.documentPoint, 'RotateSpot');
+    this.handle = this.findToolHandleAt(
+      this.diagram.firstInput.documentPoint,
+      'RotateSpot'
+    );
     if (this.handle !== null) {
       const ad = this.handle.part as go.Adornment;
       if (ad.adornedObject !== null) {
@@ -154,7 +164,11 @@ export class SpotRotatingTool extends go.RotatingTool {
    */
   override doMouseMove(): void {
     if (this.isActive) {
-      if (this.handle !== null && this.handle.part && this.handle.part.category === 'RotateSpot') {
+      if (
+        this.handle !== null &&
+        this.handle.part &&
+        this.handle.part.category === 'RotateSpot'
+      ) {
         // modify part.rotationSpot and this.rotationPoint
         this.shiftRotationPoint();
       } else {
@@ -168,7 +182,11 @@ export class SpotRotatingTool extends go.RotatingTool {
    */
   override doMouseUp(): void {
     if (this.isActive) {
-      if (this.handle !== null && this.handle.part && this.handle.part.category === 'RotateSpot') {
+      if (
+        this.handle !== null &&
+        this.handle.part &&
+        this.handle.part.category === 'RotateSpot'
+      ) {
         // modify part.rotationSpot and this.rotationPoint
         this.shiftRotationPoint();
         this.transactionResult = 'Shifted rotationSpot';

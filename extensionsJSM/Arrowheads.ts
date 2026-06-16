@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 // These are the definitions for all of the predefined arrowheads.
 // You do not need to load this file in order to use arrowheads.
@@ -22,10 +22,11 @@ import * as go from 'gojs';
 
 // Typical usage in a link template:
 //   myDiagram.linkTemplate =
-//     new go.Link().add(
-//       new go.Shape(),
-//       new go.Shape({ toArrow: "Zigzag" })
-//     );
+//     new go.Link()
+//       .add(
+//         new go.Shape(),
+//         new go.Shape({ toArrow: "Zigzag" })
+//       );
 
 go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
 go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');
@@ -39,7 +40,10 @@ go.Shape.defineArrowheadGeometry('BackwardV', 'm 8,0 l -8,4 8,4 0,-1 -6,-3 6,-3 
 go.Shape.defineArrowheadGeometry('OpenTriangle', 'm 0,0 l 8,4 -8,4');
 go.Shape.defineArrowheadGeometry('BackwardOpenTriangle', 'm 8,0 l -8,4 8,4');
 go.Shape.defineArrowheadGeometry('OpenTriangleLine', 'm 0,0 l 8,4 -8,4 m 8.5,0 l 0,-8');
-go.Shape.defineArrowheadGeometry('BackwardOpenTriangleLine', 'm 8,0 l  -8,4 8,4 m -8.5,0 l 0,-8');
+go.Shape.defineArrowheadGeometry(
+  'BackwardOpenTriangleLine',
+  'm 8,0 l  -8,4 8,4 m -8.5,0 l 0,-8'
+);
 
 go.Shape.defineArrowheadGeometry('OpenTriangleTop', 'm 0,0 l 8,4 m 0,4');
 go.Shape.defineArrowheadGeometry('BackwardOpenTriangleTop', 'm 8,0 l -8,4 m 0,4');
@@ -47,7 +51,10 @@ go.Shape.defineArrowheadGeometry('OpenTriangleBottom', 'm 0,8 l 8,-4');
 go.Shape.defineArrowheadGeometry('BackwardOpenTriangleBottom', 'm 0,4 l 8,4');
 
 go.Shape.defineArrowheadGeometry('HalfTriangleTop', 'F1 m 0,0 l 0,4 8,0 z m 0,8');
-go.Shape.defineArrowheadGeometry('BackwardHalfTriangleTop', 'F1 m 8,0 l 0,4 -8,0 z m 0,8');
+go.Shape.defineArrowheadGeometry(
+  'BackwardHalfTriangleTop',
+  'F1 m 8,0 l 0,4 -8,0 z m 0,8'
+);
 go.Shape.defineArrowheadGeometry('HalfTriangleBottom', 'F1 m 0,4 l 0,4 8,-4 z');
 go.Shape.defineArrowheadGeometry('BackwardHalfTriangleBottom', 'F1 m 8,4 l 0,4 -8,-4 z');
 
@@ -57,7 +64,10 @@ go.Shape.defineArrowheadGeometry('BackwardSemiCircle', 'm 4,8 b 90 180 0 -4 4');
 go.Shape.defineArrowheadGeometry('Feather', 'm 0,0 l 3,4 -3,4');
 go.Shape.defineArrowheadGeometry('BackwardFeather', 'm 3,0 l -3,4 3,4');
 go.Shape.defineArrowheadGeometry('DoubleFeathers', 'm 0,0 l 3,4 -3,4 m 3,-8 l 3,4 -3,4');
-go.Shape.defineArrowheadGeometry('BackwardDoubleFeathers', 'm 3,0 l -3,4 3,4 m 3,-8 l -3,4 3,4');
+go.Shape.defineArrowheadGeometry(
+  'BackwardDoubleFeathers',
+  'm 3,0 l -3,4 3,4 m 3,-8 l -3,4 3,4'
+);
 go.Shape.defineArrowheadGeometry(
   'TripleFeathers',
   'm 0,0 l 3,4 -3,4 m 3,-8 l 3,4 -3,4 m 3,-8 l 3,4 -3,4'
@@ -71,12 +81,24 @@ go.Shape.defineArrowheadGeometry('ForwardSlash', 'm 0,8 l 5,-8');
 go.Shape.defineArrowheadGeometry('BackSlash', 'm 0,0 l 5,8');
 go.Shape.defineArrowheadGeometry('DoubleForwardSlash', 'm 0,8 l 4,-8 m -2,8 l 4,-8');
 go.Shape.defineArrowheadGeometry('DoubleBackSlash', 'm 0,0 l 4,8 m -2,-8 l 4,8');
-go.Shape.defineArrowheadGeometry('TripleForwardSlash', 'm 0,8 l 4,-8 m -2,8 l 4,-8 m -2,8 l 4,-8');
-go.Shape.defineArrowheadGeometry('TripleBackSlash', 'm 0,0 l 4,8 m -2,-8 l 4,8 m -2,-8 l 4,8');
+go.Shape.defineArrowheadGeometry(
+  'TripleForwardSlash',
+  'm 0,8 l 4,-8 m -2,8 l 4,-8 m -2,8 l 4,-8'
+);
+go.Shape.defineArrowheadGeometry(
+  'TripleBackSlash',
+  'm 0,0 l 4,8 m -2,-8 l 4,8 m -2,-8 l 4,8'
+);
 
 go.Shape.defineArrowheadGeometry('Fork', 'm 0,4 l 8,0 m -8,0 l 8,-4 m -8,4 l 8,4');
-go.Shape.defineArrowheadGeometry('BackwardFork', 'm 8,4 l -8,0 m 8,0 l -8,-4 m 8,4 l -8,4');
-go.Shape.defineArrowheadGeometry('LineFork', 'm 0,0 l 0,8 m 0,-4 l 8,0 m -8,0 l 8,-4 m -8,4 l 8,4');
+go.Shape.defineArrowheadGeometry(
+  'BackwardFork',
+  'm 8,4 l -8,0 m 8,0 l -8,-4 m 8,4 l -8,4'
+);
+go.Shape.defineArrowheadGeometry(
+  'LineFork',
+  'm 0,0 l 0,8 m 0,-4 l 8,0 m -8,0 l 8,-4 m -8,4 l 8,4'
+);
 go.Shape.defineArrowheadGeometry(
   'BackwardLineFork',
   'm 8,4 l -8,0 m 8,0 l -8,-4 m 8,4 l -8,4 m 8,-8 l 0,8'
@@ -103,9 +125,15 @@ go.Shape.defineArrowheadGeometry('Block', 'F1 m 0,0 l 0,8 8,0 0,-8 z');
 go.Shape.defineArrowheadGeometry('StretchedDiamond', 'F1 m 0,3 l 5,-3 5,3 -5,3 -5,-3 z');
 go.Shape.defineArrowheadGeometry('Diamond', 'F1 m 0,4 l 4,-4 4,4 -4,4 -4,-4 z');
 go.Shape.defineArrowheadGeometry('Chevron', 'F1 m 0,0 l 5,0 3,4 -3,4 -5,0 3,-4 -3,-4 z');
-go.Shape.defineArrowheadGeometry('StretchedChevron', 'F1 m 0,0 l 8,0 3,4 -3,4 -8,0 3,-4 -3,-4 z');
+go.Shape.defineArrowheadGeometry(
+  'StretchedChevron',
+  'F1 m 0,0 l 8,0 3,4 -3,4 -8,0 3,-4 -3,-4 z'
+);
 
-go.Shape.defineArrowheadGeometry('NormalArrow', 'F1 m 0,2 l 4,0 0,-2 4,4 -4,4 0,-2 -4,0 z');
+go.Shape.defineArrowheadGeometry(
+  'NormalArrow',
+  'F1 m 0,2 l 4,0 0,-2 4,4 -4,4 0,-2 -4,0 z'
+);
 go.Shape.defineArrowheadGeometry('X', 'm 0,0 l 8,8 m 0,-8 l -8,8');
 go.Shape.defineArrowheadGeometry(
   'TailedNormalArrow',
@@ -115,7 +143,10 @@ go.Shape.defineArrowheadGeometry(
   'DoubleTriangle',
   'F1 m 0,0 l 4,4 -4,4 0,-8 z  m 4,0 l 4,4 -4,4 0,-8 z'
 );
-go.Shape.defineArrowheadGeometry('BigEndArrow', 'F1 m 0,0 l 5,2 0,-2 3,4 -3,4 0,-2 -5,2 0,-8 z');
+go.Shape.defineArrowheadGeometry(
+  'BigEndArrow',
+  'F1 m 0,0 l 5,2 0,-2 3,4 -3,4 0,-2 -5,2 0,-8 z'
+);
 go.Shape.defineArrowheadGeometry(
   'ConcaveTailArrow',
   'F1 m 0,2 h 4 v -2 l 4,4 -4,4 v -2 h -4 l 2,-2 -2,-2 z'
@@ -136,7 +167,10 @@ go.Shape.defineArrowheadGeometry(
   'BoxArrow',
   'F1 m 0,0 l 4,0 0,2 2,0 0,-2 2,4 -2,4 0,-2 -2,0 0,2 -4,0 0,-8 z'
 );
-go.Shape.defineArrowheadGeometry('TriangleLine', 'F1 m 8,4 l -8,-4 0,8 8,-4 z m 0.5,4 l 0,-8');
+go.Shape.defineArrowheadGeometry(
+  'TriangleLine',
+  'F1 m 8,4 l -8,-4 0,8 8,-4 z m 0.5,4 l 0,-8'
+);
 
 go.Shape.defineArrowheadGeometry(
   'CircleEndedArrow',
@@ -147,7 +181,10 @@ go.Shape.defineArrowheadGeometry(
   'DynamicWidthArrow',
   'F1 m 0,3 l 2,0 2,-1 2,-2 2,4 -2,4 -2,-2 -2,-1 -2,0 0,-2 z'
 );
-go.Shape.defineArrowheadGeometry('EquilibriumArrow', 'm 0,3 l 8,0 -3,-3 m 3,5 l -8,0 3,3');
+go.Shape.defineArrowheadGeometry(
+  'EquilibriumArrow',
+  'm 0,3 l 8,0 -3,-3 m 3,5 l -8,0 3,3'
+);
 go.Shape.defineArrowheadGeometry(
   'FastForward',
   'F1 m 0,0 l 3.5,4 0,-4 3.5,4 0,-4 1,0 0,8 -1,0 0,-4 -3.5,4 0,-4 -3.5,4 0,-8 z'
@@ -177,7 +214,10 @@ go.Shape.defineArrowheadGeometry(
   'DiamondCircle',
   'F1 m 8,4 l -4,4 -4,-4 4,-4 4,4 m 8,0 b 0 360 -4 0 4 z'
 );
-go.Shape.defineArrowheadGeometry('PlusCircle', 'F1 m 8,4 b 0 360 -4 0 4 l -8 0 z m -4 -4 l 0 8');
+go.Shape.defineArrowheadGeometry(
+  'PlusCircle',
+  'F1 m 8,4 b 0 360 -4 0 4 l -8 0 z m -4 -4 l 0 8'
+);
 go.Shape.defineArrowheadGeometry('OpenRightTriangleTop', 'm 8,0 l 0,4 -8,0 m 0,4');
 go.Shape.defineArrowheadGeometry('OpenRightTriangleBottom', 'm 8,8 l 0,-4 -8,0');
 go.Shape.defineArrowheadGeometry('Line', 'm 0,0 l 0,8');

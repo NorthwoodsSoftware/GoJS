@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -19,7 +19,7 @@
  * This layout assumes Links are automatically routed in the way needed by fishbone diagrams,
  * by using the FishboneLink class instead of go.Link.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Fishbone.html">Fishbone Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Fishbone">Fishbone Layout</a> sample.
  * @category Layout Extension
  */
 class FishboneLayout extends go.TreeLayout {
@@ -125,7 +125,7 @@ class FishboneLayout extends go.TreeLayout {
             }
         });
         this.moveParentNodesToDummies();
-        this.network.vertexes.each(v => {
+        this.network.vertexes.each((v) => {
             const w = v;
             if (w.parent === null) {
                 this.shift(w);
@@ -269,7 +269,9 @@ class FishboneLink extends go.Link {
                 // deal with root node being on the "wrong" side
                 const fromnode = this.fromNode;
                 const fromport = this.fromPort;
-                if (fromnode !== null && fromport !== null && fromnode.findLinksInto().count === 0) {
+                if (fromnode !== null &&
+                    fromport !== null &&
+                    fromnode.findLinksInto().count === 0) {
                     // pretend the link is coming from the opposite direction than the declared FromSpot
                     const fromctr = fromport.getDocumentPoint(go.Spot.Center);
                     const fromfar = fromctr.copy();

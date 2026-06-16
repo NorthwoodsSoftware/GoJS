@@ -8,17 +8,17 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This CurvedLinkReshapingTool class allows for a {@link go.Link}'s path to be modified by the user
  * via the dragging of a single tool handle at the middle of the link.
  * Dragging the handle changes the value of {@link go.Link.curviness}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/CurvedLinkReshaping.html">Curved Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/CurvedLinkReshaping">Curved Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class CurvedLinkReshapingTool extends go.LinkReshapingTool {

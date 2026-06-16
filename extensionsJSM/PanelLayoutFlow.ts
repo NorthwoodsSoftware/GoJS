@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom {@link go.PanelLayout} that arranges panel elements in rows or columns.
@@ -50,7 +50,7 @@ import * as go from 'gojs';
  * and {@link go.GraphObject.alignment} properties on each element, along with the Panel's
  * {@link go.Panel.defaultStretch}, {@link go.Panel.defaultAlignment}, and {@link go.Panel.padding} properties.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/PanelLayoutFlow.html">Flow PanelLayout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/PanelLayoutFlow">Flow PanelLayout</a> sample.
  * @category Layout Extension
  */
 export class PanelLayoutFlow extends go.PanelLayout {
@@ -86,7 +86,8 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return this._direction;
   }
   set direction(d: number) {
-    if (d !== 0 && d !== 90 && d !== 180 && d !== 270) throw new Error('bad direction for PanelLayoutFlow: ' + d);
+    if (d !== 0 && d !== 90 && d !== 180 && d !== 270)
+      throw new Error('bad direction for PanelLayoutFlow: ' + d);
     this._direction = d;
   }
 
@@ -102,7 +103,8 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return this._spacing;
   }
   set spacing(s: go.Size) {
-    if (!(s instanceof go.Size)) throw new Error('PanelLayoutFlow.spacing must be a Size');
+    if (!(s instanceof go.Size))
+      throw new Error('PanelLayoutFlow.spacing must be a Size');
     this._spacing = s;
   }
 
@@ -117,7 +119,10 @@ export class PanelLayoutFlow extends go.PanelLayout {
   ): void {
     const lineBreadths = [] as Array<number>; // attach properties on panel
     const lineLengths = [] as Array<number>;
-    (panel as any).panelLayoutState = { lineBreadths: lineBreadths, lineLengths: lineLengths };
+    (panel as any).panelLayoutState = {
+      lineBreadths: lineBreadths,
+      lineLengths: lineLengths
+    };
     const pad = panel.padding as go.Margin;
     const wrapx = width + pad.left; // might be Infinity
     const wrapy = height + pad.top;
@@ -213,7 +218,11 @@ export class PanelLayoutFlow extends go.PanelLayout {
     return a;
   }
 
-  override arrange(panel: go.Panel, elements: Array<go.GraphObject>, union: go.Rect): void {
+  override arrange(
+    panel: go.Panel,
+    elements: Array<go.GraphObject>,
+    union: go.Rect
+  ): void {
     const lineBreadths = (panel as any).panelLayoutState.lineBreadths as Array<number>;
     const lineLengths = (panel as any).panelLayoutState.lineLengths as Array<number>;
     const pad = panel.padding as go.Margin;

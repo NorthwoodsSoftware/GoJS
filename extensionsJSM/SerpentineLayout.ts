@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom {@link go.Layout} that lays out a chain of nodes in a snake-like fashion.
@@ -24,7 +24,7 @@ import * as go from 'gojs';
  *
  * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Serpentine.html">Serpentine Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Serpentine">Serpentine Layout</a> sample.
  * @category Layout Extension
  */
 export class SerpentineLayout extends go.Layout {
@@ -59,7 +59,10 @@ export class SerpentineLayout extends go.Layout {
   }
   set spacing(val: go.Size) {
     if (!this._spacing.equals(val)) {
-      if (!(val instanceof go.Size)) throw new Error('new value for SerpentineLayout.spacing must be a Size, not: ' + val);
+      if (!(val instanceof go.Size))
+        throw new Error(
+          'new value for SerpentineLayout.spacing must be a Size, not: ' + val
+        );
       this._spacing = val;
       this.invalidateLayout();
     }
@@ -76,7 +79,8 @@ export class SerpentineLayout extends go.Layout {
   }
   set wrap(val: number) {
     if (this._wrap !== val) {
-      if (typeof val !== 'number') throw new Error('SerpentineLayout.wrap must be a number');
+      if (typeof val !== 'number')
+        throw new Error('SerpentineLayout.wrap must be a number');
       this._wrap = val;
       this.invalidateLayout();
     }
@@ -92,7 +96,8 @@ export class SerpentineLayout extends go.Layout {
   }
   set root(val: go.Node | null) {
     if (this._root !== val) {
-      if (val !== null && !(val instanceof go.Node)) throw new Error('SerpentinelLayout.root must be a go.Node');
+      if (val !== null && !(val instanceof go.Node))
+        throw new Error('SerpentinelLayout.root must be a go.Node');
       this._root = val;
       this.invalidateLayout();
     }
@@ -108,7 +113,8 @@ export class SerpentineLayout extends go.Layout {
   }
   set leftSpot(val) {
     if (!this._leftSpot.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error('SerpentinelLayout.leftSpot must be a Spot');
+      if (!(val instanceof go.Spot))
+        throw new Error('SerpentinelLayout.leftSpot must be a Spot');
       this._leftSpot = val;
       this.invalidateLayout();
     }
@@ -124,7 +130,8 @@ export class SerpentineLayout extends go.Layout {
   }
   set rightSpot(val) {
     if (!this._rightSpot.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error('SerpentinelLayout.rightSpot must be a Spot');
+      if (!(val instanceof go.Spot))
+        throw new Error('SerpentinelLayout.rightSpot must be a Spot');
       this._rightSpot = val;
       this.invalidateLayout();
     }
@@ -210,7 +217,8 @@ export class SerpentineLayout extends go.Layout {
       }
       let nextnode: go.Node | null = nextlink !== null ? nextlink.toNode : null;
       const orignextnode = nextnode;
-      if (nextnode !== null && nextnode.containingGroup !== null) nextnode = nextnode.containingGroup;
+      if (nextnode !== null && nextnode.containingGroup !== null)
+        nextnode = nextnode.containingGroup;
       const nb = nextnode !== null ? this.getLayoutBounds(nextnode) : new go.Rect();
       if (increasing) {
         node.move(new go.Point(x, y));

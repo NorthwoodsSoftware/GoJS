@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This class implements a zoom slider for GoJS diagrams.
@@ -50,7 +50,7 @@ import * as go from 'gojs';
  * <p class="box">
  * The diagram div's parent element should use `position: relative` to ensure the slider gets positioned properly.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/ZoomSlider.html">Zoom Slider</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/ZoomSlider">Zoom Slider</a> sample.
  * @category Extension
  */
 export class ZoomSlider {
@@ -96,7 +96,8 @@ export class ZoomSlider {
       if (options.size !== undefined) this._size = options.size;
       if (options.buttonSize !== undefined) this._buttonSize = options.buttonSize;
       if (options.alignment !== undefined) this._alignment = options.alignment;
-      if (options.alignmentFocus !== undefined) this._alignmentFocus = options.alignmentFocus;
+      if (options.alignmentFocus !== undefined)
+        this._alignmentFocus = options.alignmentFocus;
       if (options.orientation !== undefined) this._orientation = options.orientation;
       if (options.opacity !== undefined) this._opacity = options.opacity;
     }
@@ -127,7 +128,8 @@ export class ZoomSlider {
   set size(val: number) {
     const old = this._size;
     if (old !== val) {
-      if (typeof val !== 'number') throw new Error('new value for ZoomSlider.size must be a number, not: ' + val);
+      if (typeof val !== 'number')
+        throw new Error('new value for ZoomSlider.size must be a number, not: ' + val);
       this._size = val;
       this.resize();
     }
@@ -143,7 +145,10 @@ export class ZoomSlider {
   set buttonSize(val: number) {
     const old = this._buttonSize;
     if (old !== val) {
-      if (typeof val !== 'number') throw new Error('new value for ZoomSlider.buttonSize must be a number, not: ' + val);
+      if (typeof val !== 'number')
+        throw new Error(
+          'new value for ZoomSlider.buttonSize must be a number, not: ' + val
+        );
       this._buttonSize = val;
       this.resize();
     }
@@ -159,7 +164,9 @@ export class ZoomSlider {
   set alignment(val: go.Spot) {
     const old = this._alignment;
     if (!old.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error('new value for ZoomSlider.alignment must be a Spot, not: ' + val);      this._alignment = val;
+      if (!(val instanceof go.Spot))
+        throw new Error('new value for ZoomSlider.alignment must be a Spot, not: ' + val);
+      this._alignment = val;
       this.realign();
     }
   }
@@ -174,7 +181,11 @@ export class ZoomSlider {
   set alignmentFocus(val: go.Spot) {
     const old = this._alignmentFocus;
     if (!old.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error('new value for ZoomSlider.alignmentFocus must be a Spot, not: ' + val);      this._alignment = val;
+      if (!(val instanceof go.Spot))
+        throw new Error(
+          'new value for ZoomSlider.alignmentFocus must be a Spot, not: ' + val
+        );
+      this._alignment = val;
       this._alignmentFocus = val;
       this.realign();
     }
@@ -209,7 +220,11 @@ export class ZoomSlider {
   set opacity(val: number) {
     const old = this._opacity;
     if (old !== val) {
-      if (typeof val !== 'number' || val < 0 || val > 1) throw new Error('new value for ZoomSlider.opacity must be a number between 0 and 1 inclusive, not: ' + val);
+      if (typeof val !== 'number' || val < 0 || val > 1)
+        throw new Error(
+          'new value for ZoomSlider.opacity must be a number between 0 and 1 inclusive, not: ' +
+            val
+        );
       this._opacity = val;
       if (this._sliderDiv !== null) {
         this._sliderDiv.style.opacity = val.toString();
@@ -286,7 +301,10 @@ export class ZoomSlider {
     if (zoomOutBtn === null || zoomInBtn === null || zoomRangeInput === null) return;
 
     // Set up diagram listener so the slider can be kept in sync with the diagram's scale
-    this.diagram.addDiagramListener('ViewportBoundsChanged', this.updateOnViewportBoundsChanged);
+    this.diagram.addDiagramListener(
+      'ViewportBoundsChanged',
+      this.updateOnViewportBoundsChanged
+    );
 
     // Set up event handlers for buttons and input range slider
     const self = this;
@@ -320,11 +338,14 @@ export class ZoomSlider {
     const zoomRangeContainer = this._zoomSliderRangeCtn;
     const zoomRangeInput = this._zoomSliderRange;
 
-    if (this._sliderDiv === null ||
-        zoomOutBtn === null ||
-        zoomInBtn === null ||
-        zoomRangeContainer === null ||
-        zoomRangeInput === null) return;
+    if (
+      this._sliderDiv === null ||
+      zoomOutBtn === null ||
+      zoomInBtn === null ||
+      zoomRangeContainer === null ||
+      zoomRangeInput === null
+    )
+      return;
 
     if (this.orientation === 'horizontal') {
       sliderWidth = this.size;
@@ -356,7 +377,8 @@ export class ZoomSlider {
 
       zoomRangeInput.style.width = rangeHeight + 'px';
       zoomRangeInput.style.height = sliderWidth + 'px';
-      zoomRangeInput.style.transformOrigin = rangeHeight / 2 + 'px ' + rangeHeight / 2 + 'px';
+      zoomRangeInput.style.transformOrigin =
+        rangeHeight / 2 + 'px ' + rangeHeight / 2 + 'px';
 
       zoomOutBtn.style.width = sliderWidth + 'px';
       zoomOutBtn.style.height = sliderWidth + 'px';
@@ -381,10 +403,13 @@ export class ZoomSlider {
     const zoomInBtn = this._zoomSliderIn;
     const zoomRangeInput = this._zoomSliderRange;
 
-    if (this._sliderDiv === null ||
-        zoomOutBtn === null ||
-        zoomInBtn === null ||
-        zoomRangeInput === null) return;
+    if (
+      this._sliderDiv === null ||
+      zoomOutBtn === null ||
+      zoomInBtn === null ||
+      zoomRangeInput === null
+    )
+      return;
 
     // Need to set the transform of the range input and move the buttons to the correct sides
     if (this.orientation === 'horizontal') {
@@ -472,7 +497,10 @@ export class ZoomSlider {
    */
   remove() {
     // Remove the listener attached to diagram
-    this.diagram.removeDiagramListener('ViewportBoundsChanged', this.updateOnViewportBoundsChanged);
+    this.diagram.removeDiagramListener(
+      'ViewportBoundsChanged',
+      this.updateOnViewportBoundsChanged
+    );
 
     if (this._sliderDiv !== null) {
       this._sliderDiv.innerHTML = '';

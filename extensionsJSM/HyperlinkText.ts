@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 // A "HyperlinkText" is either a TextBlock or a Panel containing a TextBlock that when clicked
 // opens a new browser window with a given or computed URL.
@@ -78,7 +78,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
   // define the tooltip
   const tooltip = go.GraphObject.build<go.Adornment>('ToolTip')
     .add(
-      new go.TextBlock({ name: 'TB', margin: 4 }).bindObject('text', '', obj => {
+      new go.TextBlock({ name: 'TB', margin: 4 }).bindObject('text', '', (obj) => {
         // here OBJ will be in the Adornment, need to get the HyperlinkText/TextBlock
         obj = obj.part.adornedObject;
         let u = obj._url;
@@ -86,7 +86,7 @@ go.GraphObject.defineBuilder('HyperlinkText', (args) => {
         return u;
       })
     )
-    .bindObject('visible', 'text', t => !!t, undefined, 'TB');
+    .bindObject('visible', 'text', (t) => !!t, undefined, 'TB');
 
   // if the text is provided, use a new TextBlock; otherwise assume the TextBlock is provided
   if (typeof text === 'string' || typeof text === 'function' || !anyGraphObjects) {

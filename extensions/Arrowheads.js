@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 // These are the definitions for all of the predefined arrowheads.
@@ -17,10 +17,11 @@
 //   go.Shape.defineArrowheadGeometry("Zigzag", "M0,4 L1,8 3,0 5,8 7,0 8,4");
 // Typical usage in a link template:
 //   myDiagram.linkTemplate =
-//     new go.Link().add(
-//       new go.Shape(),
-//       new go.Shape({ toArrow: "Zigzag" })
-//     );
+//     new go.Link()
+//       .add(
+//         new go.Shape(),
+//         new go.Shape({ toArrow: "Zigzag" })
+//       );
 go.Shape.defineArrowheadGeometry('Standard', 'F1 m 0,0 l 8,4 -8,4 2,-4 z');
 go.Shape.defineArrowheadGeometry('Backward', 'F1 m 8,0 l -2,4 2,4 -8,-4 z');
 go.Shape.defineArrowheadGeometry('Triangle', 'F1 m 0,0 l 8,4.62 -8,4.62 z');

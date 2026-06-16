@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -19,7 +19,7 @@
  * You can set all of the TreeLayout properties that you like,
  * except that for simplicity this code just works for angle === 0 or angle === 90.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Parallel.html">Parallel Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Parallel">Parallel Layout</a> sample.
  * @category Layout Extension
  */
 class ParallelLayout extends go.TreeLayout {
@@ -136,12 +136,22 @@ class ParallelLayout extends go.TreeLayout {
                 continue;
             if (this.isSplit(v.node)) {
                 if (split)
-                    throw new Error('Split node already exists in ' + this + ' -- existing: ' + split + ' new: ' + v.node);
+                    throw new Error('Split node already exists in ' +
+                        this +
+                        ' -- existing: ' +
+                        split +
+                        ' new: ' +
+                        v.node);
                 split = v.node;
             }
             else if (this.isMerge(v.node)) {
                 if (merge)
-                    throw new Error('Merge node already exists in ' + this + ' -- existing: ' + merge + ' new: ' + v.node);
+                    throw new Error('Merge node already exists in ' +
+                        this +
+                        ' -- existing: ' +
+                        merge +
+                        ' new: ' +
+                        v.node);
                 merge = v.node;
             }
         }

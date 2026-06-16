@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This class implements an inspector for GoJS model data objects.
@@ -62,7 +62,7 @@ import * as go from 'gojs';
  * </div>
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DataInspector.html">Data Inspector</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/DataInspector">Data Inspector</a> sample.
  * @category Extension
  */
 export class Inspector {
@@ -93,10 +93,21 @@ export class Inspector {
    * @param diagram - a reference to a GoJS Diagram
    * @param options - an optional JS Object describing options for the inspector
    */
-  constructor(divid: string | HTMLDivElement, diagram: go.Diagram, options?: { [index: string]: any }) {
-    if (!(diagram instanceof go.Diagram)) throw new Error('Inspector constructor diagram must be a Diagram');
-    const mainDiv = divid instanceof HTMLDivElement ? divid : document.getElementById(divid) as HTMLDivElement;
-    if (!(mainDiv instanceof HTMLDivElement)) throw new Error('Inspector constructor not given an HTMLDivElement or its identifier');
+  constructor(
+    divid: string | HTMLDivElement,
+    diagram: go.Diagram,
+    options?: { [index: string]: any }
+  ) {
+    if (!(diagram instanceof go.Diagram))
+      throw new Error('Inspector constructor diagram must be a Diagram');
+    const mainDiv =
+      divid instanceof HTMLDivElement
+        ? divid
+        : (document.getElementById(divid) as HTMLDivElement);
+    if (!(mainDiv instanceof HTMLDivElement))
+      throw new Error(
+        'Inspector constructor not given an HTMLDivElement or its identifier'
+      );
     mainDiv.className = 'inspector';
     mainDiv.innerHTML = '';
     this._div = mainDiv;
@@ -104,12 +115,17 @@ export class Inspector {
     this.tabIndex = 0;
     // Set properties based on options
     if (options) {
-      if (options.inspectSelection !== undefined) this._inspectSelection = options.inspectSelection;
-      if (options.includesOwnProperties !== undefined) this._includesOwnProperties = options.includesOwnProperties;
+      if (options.inspectSelection !== undefined)
+        this._inspectSelection = options.inspectSelection;
+      if (options.includesOwnProperties !== undefined)
+        this._includesOwnProperties = options.includesOwnProperties;
       if (options.properties !== undefined) this._properties = options.properties;
-      if (options.propertyModified !== undefined) this._propertyModified = options.propertyModified;
-      if (options.multipleSelection !== undefined) this._multipleSelection = options.multipleSelection;
-      if (options.showUnionProperties !== undefined) this._showUnionProperties = options.showUnionProperties;
+      if (options.propertyModified !== undefined)
+        this._propertyModified = options.propertyModified;
+      if (options.multipleSelection !== undefined)
+        this._multipleSelection = options.multipleSelection;
+      if (options.showUnionProperties !== undefined)
+        this._showUnionProperties = options.showUnionProperties;
       if (options.showLimit !== undefined) this._showLimit = options.showLimit;
     }
     // Prepare change listeners
@@ -122,7 +138,10 @@ export class Inspector {
     };
     this._diagram.addModelChangedListener(this.inspectOnModelChanged);
     if (this._inspectSelection) {
-      this._diagram.addDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
+      this._diagram.addDiagramListener(
+        'ChangedSelection',
+        this.inspectOnSelectionChanged
+      );
     }
   }
 
@@ -141,15 +160,22 @@ export class Inspector {
   }
   set diagram(val: go.Diagram) {
     if (val !== this._diagram) {
-      if (!(val instanceof go.Diagram)) throw new Error('New Inspector.diagram must be a Diagram');
+      if (!(val instanceof go.Diagram))
+        throw new Error('New Inspector.diagram must be a Diagram');
       // First, unassociate change listeners with current inspected diagram
       this._diagram.removeModelChangedListener(this.inspectOnModelChanged);
-      this._diagram.removeDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
+      this._diagram.removeDiagramListener(
+        'ChangedSelection',
+        this.inspectOnSelectionChanged
+      );
       // Now set the diagram and add the necessary change listeners
       this._diagram = val;
       this._diagram.addModelChangedListener(this.inspectOnModelChanged);
       if (this._inspectSelection) {
-        this._diagram.addDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
+        this._diagram.addDiagramListener(
+          'ChangedSelection',
+          this.inspectOnSelectionChanged
+        );
         this.inspectObject();
       } else {
         this.inspectObject(null);
@@ -176,14 +202,20 @@ export class Inspector {
     return this._inspectSelection;
   }
   set inspectSelection(val: boolean) {
-    val = !!val;  // handle any non-boolean values
+    val = !!val; // handle any non-boolean values
     if (val !== this._inspectSelection) {
       this._inspectSelection = val;
       if (this._inspectSelection) {
-        this._diagram.addDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
+        this._diagram.addDiagramListener(
+          'ChangedSelection',
+          this.inspectOnSelectionChanged
+        );
         this.inspectObject();
       } else {
-        this._diagram.removeDiagramListener('ChangedSelection', this.inspectOnSelectionChanged);
+        this._diagram.removeDiagramListener(
+          'ChangedSelection',
+          this.inspectOnSelectionChanged
+        );
         this.inspectObject(null);
       }
     }
@@ -198,7 +230,7 @@ export class Inspector {
     return this._includesOwnProperties;
   }
   set includesOwnProperties(val: boolean) {
-    val = !!val;  // handle any non-boolean values
+    val = !!val; // handle any non-boolean values
     if (val !== this._includesOwnProperties) {
       this._includesOwnProperties = val;
       this.inspectObject();
@@ -233,7 +265,8 @@ export class Inspector {
   }
   set propertyModified(val: ((a: string, b: string, c: Inspector) => void) | null) {
     if (val !== this._propertyModified) {
-      if (val !== null && typeof val !== 'function') throw new Error('Inspector.propertyModified must be a function or null');
+      if (val !== null && typeof val !== 'function')
+        throw new Error('Inspector.propertyModified must be a function or null');
       this._propertyModified = val;
     }
   }
@@ -247,7 +280,7 @@ export class Inspector {
     return this._multipleSelection;
   }
   set multipleSelection(val: boolean) {
-    val = !!val;  // handle any non-boolean values
+    val = !!val; // handle any non-boolean values
     if (val !== this._multipleSelection) {
       this._multipleSelection = val;
       this.inspectObject();
@@ -263,7 +296,7 @@ export class Inspector {
     return this._showUnionProperties;
   }
   set showUnionProperties(val: boolean) {
-    val = !!val;  // handle any non-boolean values
+    val = !!val; // handle any non-boolean values
     if (val !== this._showUnionProperties) {
       this._showUnionProperties = val;
       this.inspectObject();
@@ -280,7 +313,8 @@ export class Inspector {
   }
   set showLimit(val: number) {
     if (val !== this._showLimit) {
-      if (typeof val !== 'number') throw new Error('Inspector.showLimit must be a number');
+      if (typeof val !== 'number')
+        throw new Error('Inspector.showLimit must be a number');
       this._showLimit = val;
       this.inspectObject();
     }
@@ -383,7 +417,8 @@ export class Inspector {
       it.next();
       inspectedObject = it.value;
       this._inspectedObject = inspectedObject;
-      let data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
+      let data =
+        inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
       if (data) {
         // initial pass to set shared and all
         // Go through all the properties passed in to the inspector and add them to the map, if appropriate:
@@ -391,7 +426,11 @@ export class Inspector {
           const desc = declaredProperties[name];
           if (!this.canShowProperty(name, desc, inspectedObject)) continue;
           const val = this.findValue(name, desc, data);
-          if (val === '' && this._properties[name] && this._properties[name].type === 'checkbox') {
+          if (
+            val === '' &&
+            this._properties[name] &&
+            this._properties[name].type === 'checkbox'
+          ) {
             shared.set(name, false);
             all.set(name, false);
           } else {
@@ -404,8 +443,11 @@ export class Inspector {
           for (const k in data) {
             if (k === '__gohashid') continue; // skip internal GoJS hash property
             if (this.inspectedProperties[k]) continue; // already exists
-            if (declaredProperties[k] &&
-                !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
+            if (
+              declaredProperties[k] &&
+              !this.canShowProperty(k, declaredProperties[k], inspectedObject)
+            )
+              continue;
             shared.set(k, data[k]);
             all.set(k, data[k]);
           }
@@ -417,7 +459,8 @@ export class Inspector {
         inspectedObject = it.value;
         if (inspectedObject) {
           // use either the Part.data or the object itself (for model.modelData)
-          data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
+          data =
+            inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
           if (data) {
             // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
             for (const name in declaredProperties) {
@@ -439,8 +482,11 @@ export class Inspector {
               for (const k in data) {
                 if (k === '__gohashid') continue; // skip internal GoJS hash property
                 if (this.inspectedProperties[k]) continue; // already exists
-                if (declaredProperties[k] &&
-                    !this.canShowProperty(k, declaredProperties[k], inspectedObject)) continue;
+                if (
+                  declaredProperties[k] &&
+                  !this.canShowProperty(k, declaredProperties[k], inspectedObject)
+                )
+                  continue;
                 properties.set(k, data[k]);
               }
             }
@@ -572,14 +618,16 @@ export class Inspector {
     if (this._diagram.isReadOnly || this._diagram.isModelReadOnly) return false;
     if (inspectedObject === null) return false;
     // assume property values that are functions of Objects cannot be edited
-    const data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
+    const data =
+      inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
     const valtype = typeof data[propertyName];
     if (valtype === 'function') return false;
     if (propertyDesc) {
       const prop = propertyDesc as any;
       if (prop.readOnly === true) return false;
       // if "readOnly" is a predicate, make sure it passes or do not show this property
-      if (typeof prop.readOnly === 'function') return !prop.readOnly(inspectedObject, propertyName);
+      if (typeof prop.readOnly === 'function')
+        return !prop.readOnly(inspectedObject, propertyName);
     }
     return true;
   }
@@ -616,7 +664,10 @@ export class Inspector {
 
     const td1 = document.createElement('td');
     let displayName;
-    if (this._properties[propertyName] && this._properties[propertyName].name !== undefined) {
+    if (
+      this._properties[propertyName] &&
+      this._properties[propertyName].name !== undefined
+    ) {
       // name changes the dispaly name shown on inspector
       displayName = this._properties[propertyName].name;
     } else {
@@ -646,7 +697,7 @@ export class Inspector {
       const inputi = (input = document.createElement('input') as HTMLInputElement);
       //?? Capturing pointer here breaks Date picker in Chromium, so this is commented out.
       // if (inputi && inputi.setPointerCapture) {
-      //   inputi.addEventListener('pointerdown', (e) => inputi.setPointerCapture(e.pointerId));
+      //   inputi.addEventListener('pointerdown', e => inputi.setPointerCapture(e.pointerId));
       // }
       inputi.value = this.convertToString(propertyValue);
       if (decProp) {
@@ -681,7 +732,11 @@ export class Inspector {
 
     if (input) {
       input.tabIndex = this.tabIndex++;
-      input.disabled = !this.canEditProperty(propertyName, decProp, this._inspectedObject);
+      input.disabled = !this.canEditProperty(
+        propertyName,
+        decProp,
+        this._inspectedObject
+      );
       td2.appendChild(input);
     }
     tr.appendChild(td2);
@@ -692,12 +747,14 @@ export class Inspector {
 
   /**
    * @hidden @internal
-   * HTML5 color input will only take hex,
-   * so let HTML5 canvas convert the color into hex format.
+   * HTML color input will only take hex,
+   * so let HTML canvas convert the color into hex format.
    * This converts "rgb(255, 0, 0)" into "#FF0000", etc.
    */
   convertToColor(propertyValue: string): string {
-    const ctx: CanvasRenderingContext2D | null = document.createElement('canvas').getContext('2d');
+    const ctx: CanvasRenderingContext2D | null = document
+      .createElement('canvas')
+      .getContext('2d');
     if (ctx === null) return '#000000';
     ctx.fillStyle = propertyValue;
     return ctx.fillStyle;
@@ -794,7 +851,8 @@ export class Inspector {
   ): void {
     select.innerHTML = ''; // clear out anything that was there
     let choices = decProp.choices;
-    if (typeof choices === 'function') choices = choices(this._inspectedObject, propertyName);
+    if (typeof choices === 'function')
+      choices = choices(this._inspectedObject, propertyName);
     if (!Array.isArray(choices)) choices = [];
     decProp.choicesArray = choices; // remember list of actual choice values (not strings)
     for (let i = 0; i < choices.length; i++) {
@@ -814,7 +872,8 @@ export class Inspector {
       type = decProp.type;
     }
     if (type === '') {
-      if (typeof oldval === 'boolean') type = 'boolean'; // infer boolean
+      if (typeof oldval === 'boolean')
+        type = 'boolean'; // infer boolean
       else if (typeof oldval === 'number') type = 'number';
       else if (oldval instanceof go.Point) type = 'point';
       else if (oldval instanceof go.Size) type = 'size';
@@ -887,7 +946,8 @@ export class Inspector {
       }
       const it = diagram.selection.iterator;
       let change = false;
-      if (this._properties[name] && this._properties[name].type === 'checkbox') change = true; // always change checkbox
+      if (this._properties[name] && this._properties[name].type === 'checkbox')
+        change = true; // always change checkbox
       if (
         arr1.length < arr2.length && // i.e Alpha|Beta -> Alpha procs the change
         (!this._properties[name] || // from and to links

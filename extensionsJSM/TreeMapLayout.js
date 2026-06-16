@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This enumeration is used to determine the algorithm for placing nodes in {@link TreeMapLayout}.
  *
@@ -87,7 +87,7 @@ export var TreeMapOrderedStoppingLayout;
 /**
  * A custom {@link go.Layout} that lays out hierarchical data using nested rectangles.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/TreeMap.html">TreeMap Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/TreeMap">TreeMap Layout</a> sample.
  * @category Layout Extension
  */
 export class TreeMapLayout extends go.Layout {
@@ -193,8 +193,10 @@ export class TreeMapLayout extends go.Layout {
     }
     set size(value) {
         // check if both width and height are NaN, as per https://stackoverflow.com/a/16988441
-        if (((this.isNumeric(value.width) && value.width >= 0) || value.width !== value.width) &&
-            ((this.isNumeric(value.height) && value.height >= 0) || value.height !== value.height)) {
+        if (((this.isNumeric(value.width) && value.width >= 0) ||
+            value.width !== value.width) &&
+            ((this.isNumeric(value.height) && value.height >= 0) ||
+                value.height !== value.height)) {
             this._size = value;
             this.invalidateLayout();
         }
@@ -210,7 +212,9 @@ export class TreeMapLayout extends go.Layout {
     }
     set treeMapPlacement(value) {
         if (this.treeMapPlacement !== value &&
-            (value === TreeMapPlacement.SliceAndDice || value === TreeMapPlacement.Ordered || value === TreeMapPlacement.AspectRatio)) {
+            (value === TreeMapPlacement.SliceAndDice ||
+                value === TreeMapPlacement.Ordered ||
+                value === TreeMapPlacement.AspectRatio)) {
             this._treeMapPlacement = value;
             this.invalidateLayout();
         }
@@ -226,7 +230,9 @@ export class TreeMapLayout extends go.Layout {
     }
     set treeMapOrderedPivot(value) {
         if (this.treeMapOrderedPivot !== value &&
-            (value === TreeMapOrderedPivot.Size || value === TreeMapOrderedPivot.Middle || value === TreeMapOrderedPivot.SplitSize)) {
+            (value === TreeMapOrderedPivot.Size ||
+                value === TreeMapOrderedPivot.Middle ||
+                value === TreeMapOrderedPivot.SplitSize)) {
             this._treeMapOrderedPivot = value;
             this.invalidateLayout();
         }
@@ -243,7 +249,8 @@ export class TreeMapLayout extends go.Layout {
     }
     set treeMapOrderedStoppingLayout(value) {
         if (this.treeMapOrderedStoppingLayout !== value &&
-            (value === TreeMapOrderedStoppingLayout.Conical || value === TreeMapOrderedStoppingLayout.Line)) {
+            (value === TreeMapOrderedStoppingLayout.Conical ||
+                value === TreeMapOrderedStoppingLayout.Line)) {
             this._treeMapOrderedStoppingLayout = value;
             this.invalidateLayout();
         }
@@ -295,7 +302,8 @@ export class TreeMapLayout extends go.Layout {
         else {
             h = this.size.height;
         }
-        if (h === 0 || w === 0) { // If size is set to 0 all of the nodes will be 0 sized
+        if (h === 0 || w === 0) {
+            // If size is set to 0 all of the nodes will be 0 sized
             diagram.nodes.each((n) => {
                 n.desiredSize = new go.Size(0, 0);
             });
@@ -338,14 +346,14 @@ export class TreeMapLayout extends go.Layout {
         let placeableFactor = Number.MAX_SAFE_INTEGER;
         // check whether or place vertically or horizontally
         // important note placing "horizontally" will cause nodes to be place vertically on the edge as they are horizontally placed with the rest of the nodes
-        if (this.alternatingOrientation ? horiz : (w > h)) {
+        if (this.alternatingOrientation ? horiz : w > h) {
             let placeableWidth = 0;
             // goes through each node to add them to the array
             while (nodes.length > 0) {
                 let node = nodes[0];
                 let newTotal = placeableTotal + node.data.total;
                 let nodesWidth = newTotal / (h / convertFactor);
-                let nodesRatio = nodesWidth * nodesWidth / node.data.total;
+                let nodesRatio = (nodesWidth * nodesWidth) / node.data.total;
                 // gets the next largest node and checks if adding it will get the aspect ratio closer or farther
                 if (Math.abs(aspectRatio - nodesRatio) < placeableFactor) {
                     placeableFactor = Math.abs(aspectRatio - nodesRatio);
@@ -366,7 +374,7 @@ export class TreeMapLayout extends go.Layout {
             });
             // if any nodes are left they are placed into the remaining area
             if (nodes.length > 0) {
-                this.layoutAspectRatio(nodes, total - placeableTotal, !horiz, x + (placeableWidth * convertFactor), y, w - (placeableWidth * convertFactor), h, l);
+                this.layoutAspectRatio(nodes, total - placeableTotal, !horiz, x + placeableWidth * convertFactor, y, w - placeableWidth * convertFactor, h, l);
             }
         }
         else {
@@ -376,7 +384,7 @@ export class TreeMapLayout extends go.Layout {
                 let node = nodes[0];
                 let newTotal = placeableTotal + node.data.total;
                 let nodesHeight = newTotal / (w / convertFactor);
-                let nodesRatio = (node.data.total / nodesHeight) / nodesHeight;
+                let nodesRatio = node.data.total / nodesHeight / nodesHeight;
                 // gets the next largest node and checks if adding it will get the aspect ratio closer or farther
                 if (Math.abs(aspectRatio - nodesRatio) < placeableFactor) {
                     placeableFactor = Math.abs(aspectRatio - nodesRatio);
@@ -396,7 +404,7 @@ export class TreeMapLayout extends go.Layout {
             });
             // if any nodes are left they are placed into the remaining area
             if (nodes.length > 0) {
-                this.layoutAspectRatio(nodes, total - placeableTotal, !horiz, x, y + (placeableHeight * convertFactor), w, h - (placeableHeight * convertFactor), l);
+                this.layoutAspectRatio(nodes, total - placeableTotal, !horiz, x, y + placeableHeight * convertFactor, w, h - placeableHeight * convertFactor, l);
             }
         }
     }
@@ -423,7 +431,7 @@ export class TreeMapLayout extends go.Layout {
             else if (this.treeMapOrderedPivot === TreeMapOrderedPivot.Size) {
                 // finds the node with the largest total
                 let largestSize = 0;
-                nodes.forEach(node => {
+                nodes.forEach((node) => {
                     if (node.data.total > largestSize) {
                         pivotNode = node;
                         largestSize = node.data.total;
@@ -451,19 +459,20 @@ export class TreeMapLayout extends go.Layout {
             // gets the index of the pivot node
             pivotNode = pivotNode;
             let pivotIndex = nodes.findIndex((x) => {
-                return (x === pivotNode);
+                return x === pivotNode;
             });
             // divides up remaining nodes into L1 (before pivot) and L3 (after pivot)
             let L1 = nodes.slice(0, pivotIndex);
             let L2 = [];
             let L3 = nodes.slice(pivotIndex + 1);
             // calculates total value of L2 which would allow pivot node to be square
-            let targetTotal = (((Math.sqrt((pivotNode.data.total / total) * (w * h))) * h) / (w * h)) * total;
+            let targetTotal = ((Math.sqrt((pivotNode.data.total / total) * (w * h)) * h) / (w * h)) * total;
             let currentTotal = pivotNode.data.total;
             // checks and attempts to add nodes from the start of L3 to L2 to get as close to calculated total as possible
             while (L3.length > 0) {
                 const node = L3[0];
-                if (Math.abs(targetTotal - currentTotal) > Math.abs(targetTotal - (currentTotal + node.data.total))) {
+                if (Math.abs(targetTotal - currentTotal) >
+                    Math.abs(targetTotal - (currentTotal + node.data.total))) {
                     L2.push(L3.shift());
                     currentTotal += node.data.total;
                 }
@@ -540,7 +549,7 @@ export class TreeMapLayout extends go.Layout {
      * @hidden @internal
      */
     layoutNode(horiz, part, x, y, w, h, l) {
-        const spacing = (this.equalSpacing) ? this.layerSpacing : this.layerSpacing / (l * 2);
+        const spacing = this.equalSpacing ? this.layerSpacing : this.layerSpacing / (l * 2);
         // places node on diagram and sets nodes size
         part.moveTo(x + spacing, y + spacing);
         part.desiredSize = new go.Size(Math.max(w - spacing * 2, 1), Math.max(h - spacing * 2, 1));

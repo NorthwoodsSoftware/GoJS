@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom routed {@link go.Link} for showing the distances between a point on one node and a point on another node.
@@ -25,7 +25,7 @@ import * as go from 'gojs';
  * {@link inset}, for leaving room for a text label, and
  * {@link gap}, for distance that the extension line starts from the measured points.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Dimensioning.html">Dimensioning</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Dimensioning">Dimensioning</a> sample.
  * @category Part Extension
  */
 export class DimensioningLink extends go.Link {
@@ -98,7 +98,8 @@ export class DimensioningLink extends go.Link {
   set extension(val: number) {
     const old = this._extension;
     if (old !== val) {
-      if (typeof val !== 'number') throw new Error('DimensioningLink.extension must be a number');
+      if (typeof val !== 'number')
+        throw new Error('DimensioningLink.extension must be a number');
       this._extension = val;
       this.raiseChangedEvent(go.ChangeType.Property, 'extension', this, old, val);
       this.invalidateRoute();
@@ -117,7 +118,8 @@ export class DimensioningLink extends go.Link {
   set inset(val: number) {
     const old = this._inset;
     if (old !== val) {
-      if (typeof val !== 'number' || val < 0) throw new Error('DimensioningLink.inset must be a non-negative number');
+      if (typeof val !== 'number' || val < 0)
+        throw new Error('DimensioningLink.inset must be a non-negative number');
       this._inset = val;
       this.raiseChangedEvent(go.ChangeType.Property, 'inset', this, old, val);
       this.invalidateRoute();
@@ -135,7 +137,8 @@ export class DimensioningLink extends go.Link {
   set gap(val: number) {
     const old = this._gap;
     if (old !== val) {
-      if (typeof val !== 'number' || val < 0) throw new Error('DimensioningLink.gap must be a non-negative number');
+      if (typeof val !== 'number' || val < 0)
+        throw new Error('DimensioningLink.gap must be a non-negative number');
       this._gap = val;
       this.raiseChangedEvent(go.ChangeType.Property, 'gap', this, old, val);
       this.invalidateRoute();
@@ -157,9 +160,25 @@ export class DimensioningLink extends go.Link {
     const toport = this.toPort;
     if (!toport) return false;
     const tospot = this.computeSpot(false);
-    const frompoint = this.getLinkPoint(fromnode, fromport, fromspot, true, true, tonode, toport);
+    const frompoint = this.getLinkPoint(
+      fromnode,
+      fromport,
+      fromspot,
+      true,
+      true,
+      tonode,
+      toport
+    );
     if (!frompoint.isReal()) return false;
-    const topoint = this.getLinkPoint(tonode, toport, tospot, false, true, fromnode, fromport);
+    const topoint = this.getLinkPoint(
+      tonode,
+      toport,
+      tospot,
+      false,
+      true,
+      fromnode,
+      fromport
+    );
     if (!topoint.isReal()) return false;
 
     this.clearPoints();

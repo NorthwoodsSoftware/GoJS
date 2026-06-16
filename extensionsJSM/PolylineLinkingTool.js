@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * The PolylineLinkingTool class the user to draw a new {@link go.Link} by clicking where the route should go,
  * until clicking on a valid target port.
@@ -20,7 +20,7 @@ import * as go from 'gojs';
  * You can customize the {@link go.LinkingTool.archetypeLinkData} to specify property values
  * that can be data-bound by your link template for the Links that are actually created.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/PolylineLinking.html">Polyline Linking</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/PolylineLinking">Polyline Linking</a> sample.
  * @category Tool Extension
  */
 export class PolylineLinkingTool extends go.LinkingTool {
@@ -112,7 +112,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
         if (!this.isActive) {
             this.doActivate();
         }
-        if (this.diagram.lastInput.left) {
+        if (this.canStartButton()) {
             if (this._firstMouseDown) {
                 this._firstMouseDown = false;
                 // disconnect the temporary node/port from the temporary link
@@ -173,7 +173,8 @@ export class PolylineLinkingTool extends go.LinkingTool {
                     // copy the route of saved points, because we're about to recompute it
                     pts = this.temporaryLink.points.copy();
                     // keeps track of how the user is approaching the node/port, used for orthogonal routing
-                    if (pts.elt(this.isForwards ? pts.length - 1 : 0).x === pts.elt(this.isForwards ? pts.length - 2 : 1).x) {
+                    if (pts.elt(this.isForwards ? pts.length - 1 : 0).x ===
+                        pts.elt(this.isForwards ? pts.length - 2 : 1).x) {
                         var linkingVertically = true;
                     }
                     else {
@@ -219,7 +220,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
                 }
                 // save desired route in temporary link;
                 // insertLink will copy the route into the new real Link
-                // Reset portIds to empty string and sets ports to null so the temporary link 
+                // Reset portIds to empty string and sets ports to null so the temporary link
                 // won't be counted towards max to or from links
                 this.temporaryLink.toPortId = '';
                 this.temporaryLink.fromPortId = '';
@@ -250,7 +251,7 @@ export class PolylineLinkingTool extends go.LinkingTool {
         if (!this.isActive)
             return;
         const e = this.diagram.lastInput;
-        if ((e.commandKey === 'z') &&
+        if (e.commandKey === 'z' &&
             this.temporaryLink.points.length > (this.temporaryLink.isOrthogonal ? 4 : 3)) {
             // undo
             // remove a point, and then treat the last one as a temporary one

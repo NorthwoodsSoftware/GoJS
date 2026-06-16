@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The GeometryReshapingTool class allows for a Shape's Geometry to be modified by the user
@@ -23,7 +23,7 @@ import * as go from 'gojs';
  * this will not show any GeometryReshaping {@link go.Adornment}.
  * At the current time this tool does not support adding or removing {@link go.PathSegment}s to the Geometry.
  *
- * If you want to experiment with this extension, try the <a href='../../samples/GeometryReshaping.html'>Geometry Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href='/samples/GeometryReshaping'>Geometry Reshaping</a> sample.
  * @category Tool Extension
  */
 export class GeometryReshapingTool extends go.Tool {
@@ -76,7 +76,8 @@ export class GeometryReshapingTool extends go.Tool {
     return this._handleArchetype;
   }
   set handleArchetype(value: go.GraphObject) {
-    if (!(value instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.handleArchetype must be a GraphObject');
+    if (!(value instanceof go.GraphObject))
+      throw new Error('GeometryReshapingTool.handleArchetype must be a GraphObject');
     this._handleArchetype = value;
   }
 
@@ -88,7 +89,8 @@ export class GeometryReshapingTool extends go.Tool {
     return this._midHandleArchetype;
   }
   set midHandleArchetype(value: go.GraphObject) {
-    if (!(value instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.midHandleArchetype must be a GraphObject');
+    if (!(value instanceof go.GraphObject))
+      throw new Error('GeometryReshapingTool.midHandleArchetype must be a GraphObject');
     this._midHandleArchetype = value;
   }
 
@@ -114,7 +116,8 @@ export class GeometryReshapingTool extends go.Tool {
     return this._resegmentingDistance;
   }
   set resegmentingDistance(val: number) {
-    if (typeof val !== 'number') throw new Error('GeometryReshapingTool.resegmentingDistance must be a number');
+    if (typeof val !== 'number')
+      throw new Error('GeometryReshapingTool.resegmentingDistance must be a number');
     this._resegmentingDistance = val;
   }
 
@@ -126,7 +129,8 @@ export class GeometryReshapingTool extends go.Tool {
     return this._reshapeObjectName;
   }
   set reshapeObjectName(value: string) {
-    if (typeof value !== 'string') throw new Error('GeometryReshapingTool.reshapeObjectName must be a string');
+    if (typeof value !== 'string')
+      throw new Error('GeometryReshapingTool.reshapeObjectName must be a string');
     this._reshapeObjectName = value;
   }
 
@@ -139,7 +143,8 @@ export class GeometryReshapingTool extends go.Tool {
     return this._handle;
   }
   set handle(val: go.GraphObject | null) {
-    if (val !== null && !(val instanceof go.GraphObject)) throw new Error('GeometryReshapingTool.handle must be a GraphObject');
+    if (val !== null && !(val instanceof go.GraphObject))
+      throw new Error('GeometryReshapingTool.handle must be a GraphObject');
     this._handle = val;
   }
 
@@ -180,7 +185,10 @@ export class GeometryReshapingTool extends go.Tool {
       ) {
         const geo = selelt.geometry;
         let adornment = part.findAdornment(this.name);
-        if (adornment === null || this._countHandles(geo) !== adornment.elements.count - 1) {
+        if (
+          adornment === null ||
+          this._countHandles(geo) !== adornment.elements.count - 1
+        ) {
           adornment = this.makeAdornment(selelt);
         }
         if (adornment !== null) {
@@ -291,7 +299,12 @@ export class GeometryReshapingTool extends go.Tool {
     const adornment = new go.Adornment();
     adornment.type = go.Panel.Spot;
     adornment.locationObjectName = 'BODY';
-    adornment.locationSpot = new go.Spot(0, 0, -selelt.strokeWidth / 2, -selelt.strokeWidth / 2);
+    adornment.locationSpot = new go.Spot(
+      0,
+      0,
+      -selelt.strokeWidth / 2,
+      -selelt.strokeWidth / 2
+    );
     let h: any = new go.Shape();
     h.name = 'BODY';
     h.fill = null;
@@ -350,7 +363,10 @@ export class GeometryReshapingTool extends go.Tool {
             h._seg = g;
             adornment.add(h);
           }
-          if (seg.type === go.SegmentType.QuadraticBezier || seg.type === go.SegmentType.Bezier) {
+          if (
+            seg.type === go.SegmentType.QuadraticBezier ||
+            seg.type === go.SegmentType.Bezier
+          ) {
             h = this.makeHandle(selelt, fig, seg);
             if (h !== null) {
               h._typ = 2;
@@ -407,7 +423,7 @@ export class GeometryReshapingTool extends go.Tool {
     const diagram = this.diagram;
     if (diagram.isReadOnly) return false;
     if (!diagram.allowReshape) return false;
-    if (!diagram.lastInput.left) return false;
+    if (!this.canStartButton()) return false;
     const h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
     return h !== null;
   }

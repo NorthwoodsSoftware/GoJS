@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This CommandHandler class allows the user to position selected Parts in a diagram
@@ -32,8 +32,8 @@ import * as go from 'gojs';
  *    myDiagram.commandHandler = new DrawCommandHandler();
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DrawCommandHandler.html">Drawing Commands</a> sample.
- * 
+ * If you want to experiment with this extension, try the <a href="/samples/DrawCommandHandler">Drawing Commands</a> sample.
+ *
  * New in version 3.1 this adds a command to save the model as a text file in the user's local file system,
  * typically in their Downloads folder, {@link saveLocalFile}.
  * And it adds a method for loading a File: {@link loadLocalFile}.
@@ -131,7 +131,8 @@ export class DrawCommandHandler extends go.CommandHandler {
     return this._pasteOffset;
   }
   set pasteOffset(val: go.Point) {
-    if (!(val instanceof go.Point)) throw new Error('DrawCommandHandler.pasteOffset must be a Point, not: ' + val);
+    if (!(val instanceof go.Point))
+      throw new Error('DrawCommandHandler.pasteOffset must be a Point, not: ' + val);
     this._pasteOffset.set(val);
   }
 
@@ -248,7 +249,8 @@ export class DrawCommandHandler extends go.CommandHandler {
     const firstSelection = diagram.selection.first();
     if (!firstSelection) return;
     diagram.startTransaction('aligning Center Y');
-    const centerY = firstSelection.actualBounds.y + firstSelection.actualBounds.height / 2;
+    const centerY =
+      firstSelection.actualBounds.y + firstSelection.actualBounds.height / 2;
     diagram.selection.each((current) => {
       if (current instanceof go.Link) return; // skips over go.Link
       current.moveTo(current.actualBounds.x, centerY - current.actualBounds.height / 2);
@@ -643,7 +645,10 @@ export class DrawCommandHandler extends go.CommandHandler {
   }
 
   private _angleCloseness(a: number, dir: number): number {
-    return Math.min(Math.abs(dir - a), Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a)));
+    return Math.min(
+      Math.abs(dir - a),
+      Math.min(Math.abs(dir + 360 - a), Math.abs(dir - 360 - a))
+    );
   }
 
   /**
@@ -758,7 +763,6 @@ export class DrawCommandHandler extends go.CommandHandler {
     return coll;
   }
 
-
   // Saving and loading Models as files on local file system
 
   /** @hidden @internal */
@@ -797,7 +801,7 @@ export class DrawCommandHandler extends go.CommandHandler {
    * an optional MIME type (defaults to "application/text")
    * @since 3.1
    */
-  public saveLocalFile(options?: { name?: string, mimetype?: string }) {
+  public saveLocalFile(options?: { name?: string; mimetype?: string }) {
     const diagram = this.diagram;
     let name = options?.name;
     if (!name) name = this.defaultFilename();
@@ -810,7 +814,7 @@ export class DrawCommandHandler extends go.CommandHandler {
 
   /**
    * This predicate controls whether or not the user can invoke the {@link saveLocalFile} command.
-   * 
+   *
    * @returns true, by default
    * @since 3.1
    */
@@ -838,8 +842,12 @@ export class DrawCommandHandler extends go.CommandHandler {
    * Setting this property does not raise any events.
    * @since 3.1
    */
-  get localFileType() { return this._localFileType; }
-  set localFileType(t: string) { this._localFileType = t || ''; }
+  get localFileType() {
+    return this._localFileType;
+  }
+  set localFileType(t: string) {
+    this._localFileType = t || '';
+  }
 
   /**
    * This method loads a text file that the user chooses or drops that holds this diagram's model as JSON-formatted text,
@@ -855,7 +863,10 @@ export class DrawCommandHandler extends go.CommandHandler {
    * and perhaps doing other updates after assigning the given Model to the given Diagram.
    * @since 3.1
    */
-  public loadLocalFile(file: File, loader?: ((diagram: go.Diagram, model: go.Model, name: string) => void) | null) {
+  public loadLocalFile(
+    file: File,
+    loader?: ((diagram: go.Diagram, model: go.Model, name: string) => void) | null
+  ) {
     const diagram = this.diagram;
     let type = '';
     let name = file.name;
@@ -868,7 +879,7 @@ export class DrawCommandHandler extends go.CommandHandler {
       diagram.currentCursor = 'progress';
       requestAnimationFrame(() => {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = (e) => {
           if (typeof e.target?.result === 'string') {
             const newmodel = go.Model.fromJson(e.target.result);
             if (loader) {
@@ -897,7 +908,9 @@ export class DrawCommandHandler extends go.CommandHandler {
    * @see {@link localFileInput}
    * @since 3.1
    */
-  get localFileDropElement(): HTMLElement | null { return this._localFileDropElement; }
+  get localFileDropElement(): HTMLElement | null {
+    return this._localFileDropElement;
+  }
   set localFileDropElement(val: HTMLElement | null) {
     const old = this._localFileDropElement;
     if (old != val) {
@@ -930,7 +943,9 @@ export class DrawCommandHandler extends go.CommandHandler {
    * @see {@link localFileDropElement}
    * @since 3.1
    */
-  get localFileInput(): HTMLInputElement | null { return this._localFileInput; }
+  get localFileInput(): HTMLInputElement | null {
+    return this._localFileInput;
+  }
   set localFileInput(val: HTMLInputElement | null) {
     const old = this._localFileInput;
     if (old !== val) {
@@ -954,7 +969,12 @@ export class DrawCommandHandler extends go.CommandHandler {
    *
    * If non-null, the function is called by {@link loadLocalFile}.
    */
-  get loader(): ((diagram: go.Diagram, model: go.Model, name: string) => void) | null { return this._loader; }
-  set loader(func: ((diagram: go.Diagram, model: go.Model, name: string) => void) | null) { this._loader = func; }
-
+  get loader(): ((diagram: go.Diagram, model: go.Model, name: string) => void) | null {
+    return this._loader;
+  }
+  set loader(
+    func: ((diagram: go.Diagram, model: go.Model, name: string) => void) | null
+  ) {
+    this._loader = func;
+  }
 }

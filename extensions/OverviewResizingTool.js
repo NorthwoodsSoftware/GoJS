@@ -7,13 +7,13 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
  * The OverviewResizingTool class lets the user resize the box within an overview.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/OverviewResizing.html">Overview Resizing</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/OverviewResizing">Overview Resizing</a> sample.
  * @category Tool Extension
  */
 class OverviewResizingTool extends go.ResizingTool {

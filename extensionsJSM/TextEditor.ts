@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 // This is the definitions of the predefined text editor used by TextEditingTool
 // when you set or bind TextBlock.editable to true.
@@ -47,38 +47,60 @@ import * as go from 'gojs';
   const TextEditor: go.HTMLInfo = new go.HTMLInfo();
   const textarea = document.createElement('textarea');
 
-  textarea.addEventListener('input', e => {
+  textarea.addEventListener(
+    'input',
+    (e) => {
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
       const tempText = tool.measureTemporaryTextBlock(textarea.value);
       const scale = (textarea as any).textScale;
-      textarea.style.width = 20 + Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) * scale + 'px';
+      textarea.style.width =
+        20 +
+        Math.max(tool.textBlock.measuredBounds.width, tempText.measuredBounds.width) *
+          scale +
+        'px';
       textarea.rows = Math.max(tool.textBlock.lineCount, tempText.lineCount);
-    }, false);
+    },
+    false
+  );
 
-  textarea.addEventListener('keydown', e => {
+  textarea.addEventListener(
+    'keydown',
+    (e) => {
       if (e.isComposing) return;
       const tool = (TextEditor as any).tool;
       if (tool.textBlock === null) return;
       const key = e.key;
-      if (key === 'Enter') { // Enter
+      if (key === 'Enter') {
+        // Enter
         if (tool.textBlock.isMultiline === false) e.preventDefault();
         tool.acceptText(go.TextEditingAccept.Enter);
         return;
-      } else if (key === 'Tab') { // Tab
+      } else if (key === 'Tab') {
+        // Tab
         tool.acceptText(go.TextEditingAccept.Tab);
         e.preventDefault();
         return;
-      } else if (key === 'Escape') { // Esc
+      } else if (key === 'Escape') {
+        // Esc
         tool.doCancel();
         if (tool.diagram !== null) tool.diagram.doFocus();
       }
-    }, false);
+    },
+    false
+  );
 
   // handle focus:
-  textarea.addEventListener('focus', e => {
+  textarea.addEventListener(
+    'focus',
+    (e) => {
       const tool = (TextEditor as any).tool;
-      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None) return;
+      if (
+        !tool ||
+        tool.currentTextEditor === null ||
+        tool.state === go.TextEditingState.None
+      )
+        return;
       if (tool.state === go.TextEditingState.Active) {
         tool.state = go.TextEditingState.Editing;
       }
@@ -86,20 +108,31 @@ import * as go from 'gojs';
         textarea.select();
         textarea.setSelectionRange(0, 9999);
       }
-    }, false);
+    },
+    false
+  );
 
   // Disallow blur.
   // If the textEditingTool blurs and the text is not valid,
   // we do not want focus taken off the element just because a user clicked elsewhere.
-  textarea.addEventListener('blur', e => {
+  textarea.addEventListener(
+    'blur',
+    (e) => {
       const tool = (TextEditor as any).tool;
-      if (!tool || tool.currentTextEditor === null || tool.state === go.TextEditingState.None) return;
+      if (
+        !tool ||
+        tool.currentTextEditor === null ||
+        tool.state === go.TextEditingState.None
+      )
+        return;
       if (typeof textarea.focus === 'function') textarea.focus();
       if (typeof textarea.select === 'function' && tool.selectsTextOnActivate) {
         textarea.select();
         textarea.setSelectionRange(0, 9999);
       }
-    }, false);
+    },
+    false
+  );
 
   TextEditor.valueFunction = () => textarea.value;
 
@@ -108,7 +141,11 @@ import * as go from 'gojs';
   (TextEditor as any).tool = null; // Initialize
 
   // used to be in doActivate
-  TextEditor.show = (textBlock: go.GraphObject | null, diagram: go.Diagram, tool: go.Tool) => {
+  TextEditor.show = (
+    textBlock: go.GraphObject | null,
+    diagram: go.Diagram,
+    tool: go.Tool
+  ) => {
     if (!(textBlock instanceof go.TextBlock)) return;
     if (!diagram || !diagram.div) return;
     if (!(tool instanceof go.TextEditingTool)) return;
@@ -137,11 +174,17 @@ import * as go from 'gojs';
     const left = (loc.x - pos.x) * sc;
     const yCenter = (loc.y - pos.y) * sc; // this is actually the center, used to set style.top
     const valign = textBlock.verticalAlignment;
-    const oneLineHeight = textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
+    const oneLineHeight =
+      textBlock.lineHeight + textBlock.spacingAbove + textBlock.spacingBelow;
     const allLinesHeight = oneLineHeight * textBlock.lineCount * textscale;
-    const center = (0.5 * textheight) - (0.5 * allLinesHeight);
+    const center = 0.5 * textheight - 0.5 * allLinesHeight;
     // add offset to yCenter to get the appropriate position:
-    const yOffset = ((valign.y * textheight) - (valign.y * allLinesHeight) + valign.offsetY) - center - (allLinesHeight / 2);
+    const yOffset =
+      valign.y * textheight -
+      valign.y * allLinesHeight +
+      valign.offsetY -
+      center -
+      allLinesHeight / 2;
 
     textarea.value = textBlock.text;
     // the only way you can mix font and fontSize is if the font inherits and the fontSize overrides
@@ -152,11 +195,11 @@ import * as go from 'gojs';
     textarea.style['position'] = 'absolute';
     textarea.style['zIndex'] = '100';
     textarea.style['font'] = 'inherit';
-    textarea.style['fontSize'] = (textscale * 100) + '%';
+    textarea.style['fontSize'] = textscale * 100 + '%';
     textarea.style['lineHeight'] = 'normal';
     textarea.style['width'] = textwidth + 'px';
-    textarea.style['left'] = ((left - (textwidth / 2) | 0) - paddingsize) + 'px';
-    textarea.style['top'] = (((yCenter + yOffset) | 0) - paddingsize) + 'px';
+    textarea.style['left'] = ((left - textwidth / 2) | 0) - paddingsize + 'px';
+    textarea.style['top'] = ((yCenter + yOffset) | 0) - paddingsize + 'px';
     textarea.style['textAlign'] = textBlock.textAlign;
     textarea.style['margin'] = '0';
     textarea.style['padding'] = paddingsize + 'px';

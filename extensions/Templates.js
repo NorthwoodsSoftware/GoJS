@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 // These are the definitions for all of the predefined templates and tool archetypes.
@@ -67,7 +67,7 @@ function setupSelectionAdornments(diagram) {
     // create the default Adornment for selection
     diagram.nodeSelectionAdornmentTemplate = new go.Adornment(go.Panel.Auto).add(new go.Shape({ fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
         .theme('stroke', 'selection')
-        .theme('strokeWidth', 'selection'), new go.Placeholder({ margin: 1.5 }).theme('margin', 'numbers.selection', '', null, (sw) => sw ? new go.Margin(sw / 2) : 1.5));
+        .theme('strokeWidth', 'selection'), new go.Placeholder({ margin: 1.5 }).theme('margin', 'numbers.selection', '', null, (sw) => (sw ? new go.Margin(sw / 2) : 1.5)));
     // reuse the default Node Adornment for selection
     diagram.groupSelectionAdornmentTemplate = diagram.nodeSelectionAdornmentTemplate;
     // create the default Link Adornment for selection

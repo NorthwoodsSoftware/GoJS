@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -29,7 +29,7 @@
  *    myDiagram.commandHandler = new DrawCommandHandler();
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DrawCommandHandler.html">Drawing Commands</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/DrawCommandHandler">Drawing Commands</a> sample.
  *
  * New in version 3.1 this adds a command to save the model as a text file in the user's local file system,
  * typically in their Downloads folder, {@link saveLocalFile}.
@@ -858,8 +858,12 @@ class DrawCommandHandler extends go.CommandHandler {
      * Setting this property does not raise any events.
      * @since 3.1
      */
-    get localFileType() { return this._localFileType; }
-    set localFileType(t) { this._localFileType = t || ''; }
+    get localFileType() {
+        return this._localFileType;
+    }
+    set localFileType(t) {
+        this._localFileType = t || '';
+    }
     /**
      * This method loads a text file that the user chooses or drops that holds this diagram's model as JSON-formatted text,
      * normally saved via {@link saveLocalFile}.
@@ -887,7 +891,7 @@ class DrawCommandHandler extends go.CommandHandler {
             diagram.currentCursor = 'progress';
             requestAnimationFrame(() => {
                 const reader = new FileReader();
-                reader.onload = e => {
+                reader.onload = (e) => {
                     var _a;
                     if (typeof ((_a = e.target) === null || _a === void 0 ? void 0 : _a.result) === 'string') {
                         const newmodel = go.Model.fromJson(e.target.result);
@@ -918,7 +922,9 @@ class DrawCommandHandler extends go.CommandHandler {
      * @see {@link localFileInput}
      * @since 3.1
      */
-    get localFileDropElement() { return this._localFileDropElement; }
+    get localFileDropElement() {
+        return this._localFileDropElement;
+    }
     set localFileDropElement(val) {
         const old = this._localFileDropElement;
         if (old != val) {
@@ -950,7 +956,9 @@ class DrawCommandHandler extends go.CommandHandler {
      * @see {@link localFileDropElement}
      * @since 3.1
      */
-    get localFileInput() { return this._localFileInput; }
+    get localFileInput() {
+        return this._localFileInput;
+    }
     set localFileInput(val) {
         const old = this._localFileInput;
         if (old !== val) {
@@ -973,6 +981,10 @@ class DrawCommandHandler extends go.CommandHandler {
      *
      * If non-null, the function is called by {@link loadLocalFile}.
      */
-    get loader() { return this._loader; }
-    set loader(func) { this._loader = func; }
+    get loader() {
+        return this._loader;
+    }
+    set loader(func) {
+        this._loader = func;
+    }
 }

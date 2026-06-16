@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 // This file holds definitions of all legacy shape figures -- string values for Shape.figure.
 // The source code for this is at extensionsJSM/Figures.ts.
 // They were built into the library in version 1, but most were removed for v2.0.
@@ -101,8 +101,10 @@ export class FigureParameter {
      */
     static setFigureParameter(figurename, index, figparam) {
         if (!(figparam instanceof FigureParameter))
-            throw new Error('Third argument to FigureParameter.setFigureParameter is not FigureParameter: ' + figparam);
-        if (figparam.defaultValue < figparam.minimum || figparam.defaultValue > figparam.maximum) {
+            throw new Error('Third argument to FigureParameter.setFigureParameter is not FigureParameter: ' +
+                figparam);
+        if (figparam.defaultValue < figparam.minimum ||
+            figparam.defaultValue > figparam.maximum) {
             throw new Error('defaultValue must be between minimum and maximum, not: ' + figparam.defaultValue);
         }
         // const paramObj = (go.Shape as any)['_FigureParameters'];

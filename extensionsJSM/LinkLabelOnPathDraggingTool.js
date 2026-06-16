@@ -7,14 +7,14 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * The LinkLabelOnPathDraggingTool class lets the user move a label on a {@link go.Link} while keeping the label on the link's path.
  * This tool only works when the Link has a label marked by the "_isLinkLabel" property.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkLabelOnPathDragging.html">Link Label On Path Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkLabelOnPathDragging">Link Label On Path Dragging</a> sample.
  * @category Tool Extension
  */
 export class LinkLabelOnPathDraggingTool extends go.Tool {
@@ -56,10 +56,8 @@ export class LinkLabelOnPathDraggingTool extends go.Tool {
     canStart() {
         if (!super.canStart())
             return false;
-        const diagram = this.diagram;
         // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-        const e = diagram.lastInput;
-        if (!e.left)
+        if (!this.canStartButton())
             return false;
         if (!this.isBeyondDragSize())
             return false;

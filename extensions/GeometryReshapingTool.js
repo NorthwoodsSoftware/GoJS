@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
@@ -20,7 +20,7 @@
  * this will not show any GeometryReshaping {@link go.Adornment}.
  * At the current time this tool does not support adding or removing {@link go.PathSegment}s to the Geometry.
  *
- * If you want to experiment with this extension, try the <a href='../../samples/GeometryReshaping.html'>Geometry Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href='/samples/GeometryReshaping'>Geometry Reshaping</a> sample.
  * @category Tool Extension
  */
 class GeometryReshapingTool extends go.Tool {
@@ -161,7 +161,8 @@ class GeometryReshapingTool extends go.Tool {
                 selelt.geometry.type === go.GeometryType.Path) {
                 const geo = selelt.geometry;
                 let adornment = part.findAdornment(this.name);
-                if (adornment === null || this._countHandles(geo) !== adornment.elements.count - 1) {
+                if (adornment === null ||
+                    this._countHandles(geo) !== adornment.elements.count - 1) {
                     adornment = this.makeAdornment(selelt);
                 }
                 if (adornment !== null) {
@@ -337,7 +338,8 @@ class GeometryReshapingTool extends go.Tool {
                         h._seg = g;
                         adornment.add(h);
                     }
-                    if (seg.type === go.SegmentType.QuadraticBezier || seg.type === go.SegmentType.Bezier) {
+                    if (seg.type === go.SegmentType.QuadraticBezier ||
+                        seg.type === go.SegmentType.Bezier) {
                         h = this.makeHandle(selelt, fig, seg);
                         if (h !== null) {
                             h._typ = 2;
@@ -391,7 +393,7 @@ class GeometryReshapingTool extends go.Tool {
             return false;
         if (!diagram.allowReshape)
             return false;
-        if (!diagram.lastInput.left)
+        if (!this.canStartButton())
             return false;
         const h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
         return h !== null;

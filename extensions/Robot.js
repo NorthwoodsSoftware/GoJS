@@ -7,10 +7,12 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
+ * Deprecated in 4.0. Consider using {@link Diagram.emitMouseDown} and related emit... methods instead.
+ *
  * A class for simulating mouse and keyboard input.
  *
  * As a special feature, this supports limited simulation of drag-and-drop between Diagrams,
@@ -35,8 +37,10 @@
  *    myRobot.mouseUp(loc.x + 20, loc.y + 100, 150, options);
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Robot.html">Simulating Input</a> sample.
+ * As of version 3.2, the functionality is built into the {@link Diagram} class using methods whose names start with "emit...".
+ * However, the functionality is duplicated here for compatibility with versions earlier than 3.2.
  * @category Extension
+ * @deprecated See {@link Diagram.emitMouseDown} and related emit... methods
  */
 class Robot {
     /**

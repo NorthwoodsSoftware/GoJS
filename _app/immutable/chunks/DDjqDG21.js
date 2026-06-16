@@ -1,0 +1,1 @@
+import"./DTR9fq_7.js";var e=`https://gojs.net`,t=`/latest`;export{t as n,e as t};

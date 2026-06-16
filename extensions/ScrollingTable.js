@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 // A "ScrollingTable" Panel
@@ -26,7 +26,8 @@
 //     .add(
 //       new go.Shape("Circle", { width: 8, height: 8 })
 //     )
-if (!go.GraphObject.isBuilderDefined || !go.GraphObject.isBuilderDefined('AutoRepeatButton')) {
+if (!go.GraphObject.isBuilderDefined ||
+    !go.GraphObject.isBuilderDefined('AutoRepeatButton')) {
     go.GraphObject.defineBuilder('AutoRepeatButton', (args) => {
         const repeat = go.GraphObject.takeBuilderArgument(args, 50, (x) => typeof x === 'number');
         const delay = go.GraphObject.takeBuilderArgument(args, 500, (x) => typeof x === 'number');
@@ -209,8 +210,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
         const needed = idx > 0 || idx < maxIdx;
         bar.opacity = needed ? 1.0 : 0.5;
         if (thumb) {
-            thumb.height =
-                Math.max((getVisibleRows(table) / table.rowCount) * availh, Math.min(availh, 10) - (thumb instanceof go.Shape ? thumb.strokeWidth : 0));
+            thumb.height = Math.max((getVisibleRows(table) / table.rowCount) * availh, Math.min(availh, 10) - (thumb instanceof go.Shape ? thumb.strokeWidth : 0));
             const spotY = maxIdx === 0 ? 0.5 : idx / maxIdx;
             thumb.alignment = new go.Spot(0.5, Math.min(table.rowCount, spotY, 1), 0, 0);
         }
@@ -222,7 +222,9 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             table.part.ensureBounds();
         const tabh = table.actualBounds.height;
         const pad = table.defaultSeparatorPadding;
-        const rowh = table.elements.count === 0 || table.elements.count < table.topIndex ? 0 : table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
+        const rowh = table.elements.count === 0 || table.elements.count < table.topIndex
+            ? 0
+            : table.elt(table.topIndex).actualBounds.height + pad.top + pad.bottom; // assume each row has same height?
         if (rowh === 0)
             return table.rowCount;
         return Math.min(table.rowCount, Math.floor(tabh / rowh));
@@ -232,7 +234,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             return 0;
         return table.rowCount - getVisibleRows(table);
     }
-    return new go.Panel('Table')
+    return (new go.Panel('Table')
         .attach({
         // in case external code wants to update the scrollbar
         _scrollTable: scrollTable,
@@ -287,8 +289,7 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             e.handled = true;
             incrTableIndex(obj, -1);
         }
-    })
-        .add(new go.Shape('TriangleUp', {
+    }).add(new go.Shape('TriangleUp', {
         strokeWidth: 0,
         desiredSize: new go.Size(8, 5),
         margin: 1
@@ -330,10 +331,9 @@ go.GraphObject.defineBuilder('ScrollingTable', (args) => {
             e.handled = true;
             incrTableIndex(obj, +1);
         }
-    })
-        .add(new go.Shape('TriangleDown', {
+    }).add(new go.Shape('TriangleDown', {
         strokeWidth: 0,
         desiredSize: new go.Size(8, 5),
         margin: 1
-    }))));
+    })))));
 });

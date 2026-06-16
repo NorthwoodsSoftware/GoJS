@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom Router for reducing overlaps between label objects on links by moving them apart with a custom ForceDirectedLayout.
@@ -32,7 +32,7 @@ import * as go from 'gojs';
  *   }));
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkLabelRouter.html">LinkLabelRouter</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkLabelRouter">LinkLabelRouter</a> sample.
  * @category Router Extension
  */
 export class LinkLabelRouter extends go.Router {
@@ -81,7 +81,10 @@ export class LinkLabelRouter extends go.Router {
   set margin(value: go.MarginLike) {
     const old = this._margin;
     if (typeof value === 'number') value = new go.Margin(value);
-    else if (!(value instanceof go.Margin)) throw new Error('LinkLabelRouter.margin must be a Margin or a number, not ' + value);
+    else if (!(value instanceof go.Margin))
+      throw new Error(
+        'LinkLabelRouter.margin must be a Margin or a number, not ' + value
+      );
     if (!old.equals(value)) {
       this._margin.set(value);
       this.invalidateRouter();
@@ -99,7 +102,13 @@ export class LinkLabelRouter extends go.Router {
     if (!obj) return false;
     const link = obj.panel;
     if (link === null) return false;
-    if (obj instanceof go.Shape && (obj.isPanelMain || link.findMainElement() === obj || obj.fromArrow !== 'None' || obj.toArrow !== 'None')) {
+    if (
+      obj instanceof go.Shape &&
+      (obj.isPanelMain ||
+        link.findMainElement() === obj ||
+        obj.fromArrow !== 'None' ||
+        obj.toArrow !== 'None')
+    ) {
       return false;
     } else {
       return true;
@@ -134,7 +143,7 @@ export class LinkLabelRouter extends go.Router {
     this.layout.doLayout(container.links);
     if (this.layout.network === null) return;
 
-    for(const vertex of this.layout.network.vertexes) {
+    for (const vertex of this.layout.network.vertexes) {
       if (!(vertex instanceof LabelVertex)) continue;
       if (vertex.isFixed) continue;
       const object = vertex.object;
@@ -204,7 +213,9 @@ class LabelLayout extends go.ForceDirectedLayout {
     return b1.intersectsRect(b2);
   }
 
-  override makeNetwork(coll: go.Diagram | go.Group | go.Iterable<go.Part>): go.ForceDirectedNetwork {
+  override makeNetwork(
+    coll: go.Diagram | go.Group | go.Iterable<go.Part>
+  ): go.ForceDirectedNetwork {
     const net = new go.ForceDirectedNetwork(this);
 
     let allparts: go.Iterable<go.Part>;
@@ -222,7 +233,8 @@ class LabelLayout extends go.ForceDirectedLayout {
       for (const label of part.elements) {
         if (!this.router!.isLabel(label)) continue;
         const margin = this.router!.margin as go.Margin;
-        const documentBounds = label.getDocumentBounds()
+        const documentBounds = label
+          .getDocumentBounds()
           .offset(label.alignmentFocus.offsetX, label.alignmentFocus.offsetY);
         // add margin to "real" document bounds
         documentBounds.addMargin(margin);

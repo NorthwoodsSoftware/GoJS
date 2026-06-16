@@ -1,791 +1,154 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scheme-light dark:scheme-dark">
   <head>
-    
-    <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-
-<meta name="description" content="A seating chart editor for assigning places at tables." />
-<meta itemprop="description" content="A seating chart editor for assigning places at tables." />
-<meta property="og:description" content="A seating chart editor for assigning places at tables." />
-<meta name="twitter:description" content="A seating chart editor for assigning places at tables." />
-
-
-<link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="../assets/css/style.css">
-<!-- Copyright 1998-2026 by Northwoods Software Corporation. -->
-
-
-<meta itemprop="name" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
-<meta property="og:title" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
-<meta name="twitter:title" content="Seating Chart Diagram Editor Dropping People into Seats at Tables" />
-
-
-<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/seatingchart.png" />
-<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/seatingchart.png" />
-<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/seatingchart.png" />
-
-<meta property="og:url" content="https://gojs.net/latest/samples/seatingChart.html" />
-<meta property="twitter:url" content="https://gojs.net/latest/samples/seatingChart.html" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="og:type" content="website" />
-<meta property="twitter:domain" content="gojs.net" />
-
-    <title>
-      Seating Chart Diagram Editor Dropping People into Seats at Tables | GoJS Diagramming Library
-    </title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f4963" />
+    <!-- Self-hosted variable font. Declared here (not in CSS) so ..
+         resolves the /fonts/ asset under the base path, and preloaded with a matching
+         crossorigin so the @font-face fetch reuses it. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="../fonts/InterVariable.woff2"
+      crossorigin />
+    <style>
+      @font-face {
+        font-family: InterVariable;
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('../fonts/InterVariable.woff2') format('woff2');
+      }
+    </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-S5QK8VSK84');
+    </script>
+    <link href="../_app/immutable/entry/start.DUcLjgjT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DTR9fq_7.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BY_RssUb.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.uWGY7NCW.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/kNaey6uv.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.DBSBeCFO.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DDjqDG21.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/c0gyX4Uy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CxMCXhHm.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CVMOr__I.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.JgNq0TJX.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/241.JU-87ANu.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DzUjTTvJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BVhwz5iQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/lxyaXZko.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BjDsAonG.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="canonical" href="https://gojs.net/latest/samples/seatingChart"/> <meta property="og:type" content="website"/> <meta property="og:site_name" content="GoJS"/> <meta property="og:url" content="https://gojs.net/latest/samples/seatingChart"/> <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/seatingchart.png"/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:site" content="@northwoodsgo"/> <meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/seatingchart.png"/> <!----><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://gojs.net/#organization","name":"Northwoods Software","url":"https://nwoods.com","logo":"https://gojs.net/latest/assets/images/fp/og.png","sameAs":["https://github.com/NorthwoodsSoftware/GoJS","https://twitter.com/northwoodsgo","https://www.npmjs.com/package/gojs"]},{"@type":"SoftwareApplication","@id":"https://gojs.net/latest/#gojs","name":"GoJS","applicationCategory":"DeveloperApplication","operatingSystem":"Web","programmingLanguage":["JavaScript","TypeScript"],"description":"GoJS is a JavaScript and TypeScript library for building interactive diagramming apps - org charts, flowcharts, BPMN, SCADA, UML, and custom visual editors.","url":"https://gojs.net/latest/","publisher":{"@id":"https://gojs.net/#organization"},"offers":{"@type":"Offer","url":"https://nwoods.com/sales","category":"Commercial software license"}}]}</script><!----><!----><!--1cmi4dh--><script>
+    document.documentElement.classList.toggle(
+      'dark',
+      localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  </script><!----><!----><!--340g4e--><meta property="og:title" content="Seating Chart Diagram Editor Dropping People into Seats at Tables | GoJS Diagramming Library"/> <!--[0--><meta name="description" content="A seating chart editor for assigning places at tables."/> <meta property="og:description" content="A seating chart editor for assigning places at tables."/><!--]--><!----><title>Seating Chart Diagram Editor Dropping People into Seats at Tables | GoJS Diagramming Library</title>
+		<link href="../_app/immutable/assets/0.vgO-Uy72.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CodeSnippet.DOo96Xpn.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/TagList.CFKTKwNT.css" rel="stylesheet">
   </head>
-
-  <body>
-    <!-- This top nav is not part of the sample code -->
-    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
-  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
-    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
-       href="../">
-      GoJS
-    </a>
-    <div class="relative">
-      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
-        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div id="topnavList" class="hidden md:block">
-        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
-                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
-          <a href="../learn/">Learn</a>
-          <a href="../samples/">Samples</a>
-          <a href="../intro/">Intro</a>
-          <a href="../api/">API</a>
-          <a href="../download.html">Download</a>
-          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
-          <a id="tc" href="https://nwoods.com/contact.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
-          <a id="tb" href="https://nwoods.com/sales/index.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    // topnav
-    var topButton = document.getElementById("topnavButton");
-    var topnavList = document.getElementById("topnavList");
-    if (topButton && topnavList) {
-      topButton.addEventListener("click", function (e) {
-        topnavList
-          .classList
-          .toggle("hidden");
-        e.stopPropagation();
-      });
-      document.addEventListener("click", function (e) {
-        // if the clicked element isn't the list, close the list
-        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
-          topButton.click();
-        }
-      });
-
-      // set active <a> element
-      var url = window
-        .location
-        .href
-        .toLowerCase();
-      var aTags = topnavList.getElementsByTagName('a');
-      for (var i = 0; i < aTags.length; i++) {
-        var lowerhref = aTags[i]
-          .href
-          .toLowerCase();
-        if (lowerhref.endsWith('.html')) 
-          lowerhref = lowerhref.slice(0, -5);
-        if (url.startsWith(lowerhref)) {
-          aTags[i]
-            .classList
-            .add('active');
-          break;
-        }
-      }
-    }
-  });
-</script>
-    <div class="flex flex-col prose">
-      <div class="w-full max-w-screen-xl mx-auto">
-        <!-- * * * * * * * * * * * * * -->
-        <!-- Start of GoJS sample code -->
-        <script src="../release/go.js"></script>
-
-        
-          <link rel="stylesheet" href="../assets/css/prism.css"/>
-          <script src="../assets/js/prism.js"></script>
-        
-
-        <div id="allSampleContent" class="p-4 w-full">
-          
-            
-            
-
-
-<style>
-  /* Use a Flexbox to make the Palette/Diagram responsive */
-  #myFlexDiv {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
-
-  @media (min-width: 768px) {
-    #myGuests {
-      width: 100px;
-      height: 500px;
-      margin-right: 10px;
-    }
-
-    #myDiagramDiv {
-      height: 500px;
-      flex: 1;
-    }
-  }
-
-  @media (max-width: 767px) {
-    #myGuests {
-      width: 20%;
-      max-width: 100px;
-      height: 500px;
-    }
-
-    #myDiagramDiv {
-      width: 80%;
-      height: 500px;
-      flex: 1;
-    }
-  }
-</style>
-
-<script id="code">
-
-  // Automatically drag people Nodes along with the table Node at which they are seated.
-  class SpecialDraggingTool extends go.DraggingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    computeEffectiveCollection(parts) {
-      const map = super.computeEffectiveCollection(parts);
-      // for each Node representing a table, also drag all of the people seated at that table
-      parts.each(table => {
-        if (isPerson(table)) return; // ignore persons
-        // this is a table Node, find all people Nodes using the same table key
-        for (const nit = table.diagram.nodes; nit.next(); ) {
-          const n = nit.value;
-          if (isPerson(n) && n.data.table === table.data.key) {
-            if (!map.has(n)) map.add(n, new go.DraggingInfo(n.location.copy()));
-          }
-        }
-      });
-      return map;
-    }
-  }
-  // end SpecialDraggingTool
-
-  // Automatically move seated people as a table is rotated, to keep them in their seats.
-  // Note that because people are separate Nodes, rotating a table Node means the people Nodes
-  // are not rotated, so their names (TextBlocks) remain horizontal.
-  class HorizontalTextRotatingTool extends go.RotatingTool {
-    constructor(init) {
-      super();
-      if (init) Object.assign(this, init);
-    }
-
-    rotate(newangle) {
-      super.rotate(newangle);
-      const node = this.adornedObject.part;
-      positionPeopleAtSeats(node);
-    }
-  }
-  // end HorizontalTextRotatingTool
-
-  function init() {
-    // Initialize the main Diagram
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      allowDragOut: true, // to myGuests
-      allowClipboard: false,
-      draggingTool: new SpecialDraggingTool(),
-      rotatingTool: new HorizontalTextRotatingTool(),
-      // For this sample, automatically show the state of the diagram's model on the page
-      ModelChanged: e => {
-        if (e.isTransactionFinished) {
-          document.getElementById('savedModel').innerHTML = myDiagram.model.toJson();
-          if (window.Prism) window.Prism.highlightAll();
-        }
-      },
-      'undoManager.isEnabled': true
-    });
-
-    myDiagram.nodeTemplateMap.add('', // default template, for people
-      new go.Node('Auto', {
-          background: 'transparent',
-          locationSpot: go.Spot.Center,
-          // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-          mouseDragEnter: (e, node, prev) => {
-            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
-            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-          },
-          mouseDragLeave: (e, node, next) => {
-            const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-            highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-          },
-          mouseDrop: (e, node) => {
-            assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
-          }
-        }) // in front of all Tables
-        // when selected is in foreground layer
-        .bindObject('layerName', 'isSelected', s => s ? 'Foreground' : '')
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-        .bind('text', 'key')
-        .add(new go.Shape('Rectangle', { fill: 'blanchedalmond', stroke: null }))
-        .add(
-          new go.Panel('Viewbox', { desiredSize: new go.Size(50, 38) })
-            .add(
-              new go.TextBlock({
-                  margin: 2,
-                  desiredSize: new go.Size(55, NaN),
-                  font: '8pt Verdana, sans-serif',
-                  textAlign: 'center',
-                  stroke: 'darkblue'
-                })
-                .bind('text', '', data => {
-                  let s = data.key;
-                  if (data.plus) s += ' +' + data.plus.toString();
-                  return s;
-                })
-            )
-        )
-    );
-
-    // Create a seat element at a particular alignment relative to the table.
-    function Seat(number, align, focus) {
-      if (typeof align === 'string') align = go.Spot.parse(align);
-      if (!align || !align.isSpot()) align = go.Spot.Right;
-      if (typeof focus === 'string') focus = go.Spot.parse(focus);
-      if (!focus || !focus.isSpot()) focus = align.opposite();
-      return new go.Panel('Spot', {
-          name: number.toString(),
-          alignment: align,
-          alignmentFocus: focus
-        })
-        .add(
-          new go.Shape('Circle', {
-              name: 'SEATSHAPE',
-              desiredSize: new go.Size(40, 40),
-              fill: 'burlywood',
-              stroke: 'white',
-              strokeWidth: 2
-            })
-            .bind('fill')
-        )
-        .add(
-          new go.TextBlock(number.toString(), { font: '10pt Verdana, sans-serif' })
-            .bind('angle', 'angle', n => -n)
-        );
-    }
-
-    function tableStyle(part) {
-      part.background = 'transparent';
-      part.layerName = 'Background'; // behind all Persons
-      part.locationSpot = go.Spot.Center;
-      //HorizontalTextRotatingTool = 'TABLESHAPE',
-      part.rotatable = true;
-      // what to do when a drag-over or a drag-drop occurs on a Node representing a table
-      part.mouseDragEnter = (e, node, prev) => {
-        const dragCopy = node.diagram.toolManager.draggingTool.copiedParts; // could be copied from palette
-        highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, true);
-      };
-      part.mouseDragLeave = (e, node, next) => {
-        const dragCopy = node.diagram.toolManager.draggingTool.copiedParts;
-        highlightSeats(node, dragCopy ? dragCopy : node.diagram.selection, false);
-      };
-      part.mouseDrop = (e, node) => assignPeopleToSeats(node, node.diagram.selection, e.documentPoint);
-      part.bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify);
-      part.bindTwoWay('angle');
-    }
-
-    // various kinds of tables:
-
-    myDiagram.nodeTemplateMap.add('TableR8', // rectangular with 8 seats
-      new go.Node('Spot')
-        .apply(tableStyle)
-        .add(
-          new go.Panel('Spot')
-            .add(
-              new go.Shape('Rectangle', {
-                  name: 'TABLESHAPE',
-                  desiredSize: new go.Size(160, 80),
-                  fill: 'burlywood',
-                  stroke: null
-                })
-                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                .bind('fill'),
-              new go.TextBlock({
-                  editable: true,
-                  font: 'bold 11pt Verdana, sans-serif'
-                })
-                .bindTwoWay('text', 'name')
-                .bind('angle', 'angle', n => -n)
-            ),
-          Seat(1, '0.2 0', '0.5 1'),
-          Seat(2, '0.5 0', '0.5 1'),
-          Seat(3, '0.8 0', '0.5 1'),
-          Seat(4, '1 0.5', '0 0.5'),
-          Seat(5, '0.8 1', '0.5 0'),
-          Seat(6, '0.5 1', '0.5 0'),
-          Seat(7, '0.2 1', '0.5 0'),
-          Seat(8, '0 0.5', '1 0.5')
-        ));
-
-    myDiagram.nodeTemplateMap.add('TableR3', // rectangular with 3 seats in a line
-      new go.Node('Spot')
-        .apply(tableStyle)
-        .add(
-          new go.Panel('Spot')
-            .add(
-              new go.Shape('Rectangle', {
-                  name: 'TABLESHAPE',
-                  desiredSize: new go.Size(160, 60),
-                  fill: 'burlywood',
-                  stroke: null
-                })
-                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                .bind('fill'),
-              new go.TextBlock({
-                  editable: true,
-                  font: 'bold 11pt Verdana, sans-serif'
-                })
-                .bindTwoWay('text', 'name')
-                .bind('angle', 'angle', n => -n)
-            ),
-          Seat(1, '0.2 0', '0.5 1'),
-          Seat(2, '0.5 0', '0.5 1'),
-          Seat(3, '0.8 0', '0.5 1')
-        ));
-
-    myDiagram.nodeTemplateMap.add('TableC8', // circular with 8 seats
-      new go.Node('Spot')
-        .apply(tableStyle)
-        .add(
-          new go.Panel('Spot')
-            .add(
-              new go.Shape('Circle', {
-                  name: 'TABLESHAPE',
-                  desiredSize: new go.Size(120, 120),
-                  fill: 'burlywood',
-                  stroke: null
-                })
-                .bindTwoWay('desiredSize', 'size', go.Size.parse, go.Size.stringify)
-                .bind('fill'),
-              new go.TextBlock({
-                  editable: true,
-                  font: 'bold 11pt Verdana, sans-serif'
-                })
-                .bindTwoWay('text', 'name')
-                .bind('angle', 'angle', n => -n)
-            ),
-          Seat(1, '0.50 0', '0.5 1'),
-          Seat(2, '0.85 0.15', '0.15 0.85'),
-          Seat(3, '1 0.5', '0 0.5'),
-          Seat(4, '0.85 0.85', '0.15 0.15'),
-          Seat(5, '0.50 1', '0.5 0'),
-          Seat(6, '0.15 0.85', '0.85 0.15'),
-          Seat(7, '0 0.5', '1 0.5'),
-          Seat(8, '0.15 0.15', '0.85 0.85')
-        ));
-
-    // what to do when a drag-drop occurs in the Diagram's background
-    myDiagram.mouseDrop = e => {
-      // when the selection is dropped in the diagram's background,
-      // make sure the selected people no longer belong to any table
-      e.diagram.selection.each(n => {
-        if (isPerson(n)) unassignSeat(n.data);
-      });
-    };
-
-    // to simulate a "move" from the Palette, the source Node must be deleted.
-    myDiagram.addDiagramListener('ExternalObjectsDropped', e => {
-      // if any Tables were dropped, don't delete from myGuests
-      if (!e.subject.any(isTable)) {
-        myGuests.commandHandler.deleteSelection();
-      }
-    });
-
-    // put deleted people back in the myGuests diagram
-    myDiagram.addDiagramListener('SelectionDeleted', e => {
-      // no-op if deleted by myGuests' ExternalObjectsDropped listener
-      if (myDiagram.disableSelectionDeleted) return;
-      // e.subject is the myDiagram.selection collection
-      e.subject.each(n => {
-        if (isPerson(n)) {
-          myGuests.model.addNodeData(myGuests.model.copyNodeData(n.data));
-        }
-      });
-    });
-
-    // create some initial tables
-    myDiagram.model = new go.GraphLinksModel({
-      copiesKey: true,
-      nodeDataArray: [
-        { key: 1, category: 'TableR3', name: 'Head 1', guests: {}, loc: '143.5 58' },
-        { key: 2, category: 'TableR3', name: 'Head 2', guests: {}, loc: '324.5 58' },
-        { key: 3, category: 'TableR8', name: '3', guests: {}, loc: '121.5 203.5' },
-        { key: 4, category: 'TableC8', name: '4', guests: {}, loc: '364.5 223.5' }
-      ]
-    }); // this sample does not make use of any links
-
-    // initialize the Palette
-    myGuests = new go.Diagram('myGuests', {
-      layout: new go.GridLayout({
-        sorting: go.GridSorting.Ascending // sort by Node.text value
-      }),
-      allowDragOut: true, // to myDiagram
-      allowMove: false
-    });
-
-    myGuests.nodeTemplateMap = myDiagram.nodeTemplateMap;
-
-    // specify the contents of the Palette
-    myGuests.model = new go.GraphLinksModel({
-      copiesKey: true,
-      nodeDataArray: [
-        { key: 'Tyrion Lannister' },
-        { key: 'Daenerys Targaryen', plus: 3 }, // dragons, of course
-        { key: 'Jon Snow' },
-        { key: 'Stannis Baratheon' },
-        { key: 'Arya Stark' },
-        { key: 'Jorah Mormont' },
-        { key: 'Sandor Clegane' },
-        { key: 'Joffrey Baratheon' },
-        { key: 'Brienne of Tarth' },
-        { key: 'Hodor' }
-      ]
-    });
-
-    myGuests.model.undoManager = myDiagram.model.undoManager; // shared UndoManager!
-
-    // To simulate a "move" from the Diagram back to the Palette, the source Node must be deleted.
-    myGuests.addDiagramListener('ExternalObjectsDropped', e => {
-      // e.subject is the myGuests.selection collection
-      // if the user dragged a Table to the myGuests diagram, cancel the drag
-      if (e.subject.any(isTable)) {
-        myDiagram.currentTool.doCancel();
-        myGuests.currentTool.doCancel();
-        return;
-      }
-      myDiagram.selection.each(n => {
-        if (isPerson(n)) unassignSeat(n.data);
-      });
-      myDiagram.disableSelectionDeleted = true;
-      myDiagram.commandHandler.deleteSelection();
-      myDiagram.disableSelectionDeleted = false;
-      myGuests.selection.each(n => {
-        if (isPerson(n)) unassignSeat(n.data);
-      });
-    });
-
-    go.AnimationManager.defineAnimationEffect(
-      'location',
-      (obj, startValue, endValue, easing, currentTime, duration, animationState) => {
-        obj.location = new go.Point(
-          easing(currentTime, startValue.x, endValue.x - startValue.x, duration),
-          easing(currentTime, startValue.y, endValue.y - startValue.y, duration)
-        );
-      }
-    );
-  } // end init
-
-  function isPerson(n) {
-    return n !== null && n.category === '';
-  }
-
-  function isTable(n) {
-    return n !== null && n.category !== '';
-  }
-
-  // Highlight the empty and occupied seats at a "Table" Node
-  function highlightSeats(node, coll, show) {
-    if (isPerson(node)) {
-      // refer to the person's table instead
-      node = node.diagram.findNodeForKey(node.data.table);
-      if (node === null) return;
-    }
-    const it = coll.iterator;
-    while (it.next()) {
-      const n = it.key;
-      // if dragging a Table, don't do any highlighting
-      if (isTable(n)) return;
-    }
-    const guests = node.data.guests;
-    for (const sit = node.elements; sit.next(); ) {
-      const seat = sit.value;
-      if (seat.name) {
-        const num = parseFloat(seat.name);
-        if (isNaN(num)) continue;
-        const seatshape = seat.findObject('SEATSHAPE');
-        if (!seatshape) continue;
-        if (show) {
-          if (guests[seat.name]) {
-            seatshape.stroke = 'red';
-          } else {
-            seatshape.stroke = 'green';
-          }
-        } else {
-          seatshape.stroke = 'white';
-        }
-      }
-    }
-  }
-
-  // Given a "Table" Node, assign seats for all of the people in the given collection of Nodes;
-  // the optional Point argument indicates where the collection of people may have been dropped.
-  function assignPeopleToSeats(node, coll, pt) {
-    if (isPerson(node)) {
-      // refer to the person's table instead
-      node = node.diagram.findNodeForKey(node.data.table);
-      if (node === null) return;
-    }
-    if (coll.any(isTable)) {
-      // if dragging a Table, don't allow it to be dropped onto another table
-      myDiagram.currentTool.doCancel();
-      return;
-    }
-    // OK -- all Nodes are people, call assignSeat on each person data
-    coll.each(n => assignSeat(node, n.data, pt));
-    positionPeopleAtSeats(node);
-  }
-
-  // Given a "Table" Node, assign one guest data to a seat at that table.
-  // Also handles cases where the guest represents multiple people, because guest.plus > 0.
-  // This tries to assign the unoccupied seat that is closest to the given point in document coordinates.
-  function assignSeat(node, guest, pt) {
-    if (isPerson(node)) {
-      // refer to the person's table instead
-      node = node.diagram.findNodeForKey(node.data.table);
-      if (node === null) return;
-    }
-    if (guest instanceof go.GraphObject) {
-      throw Error('A guest object must not be a GraphObject: ' + guest.toString());
-    }
-    if (!(pt instanceof go.Point)) pt = node.location;
-
-    // in case the guest used to be assigned to a different seat, perhaps at a different table
-    unassignSeat(guest);
-
-    const model = node.diagram.model;
-    const guests = node.data.guests;
-    // iterate over all seats in the Node to find one that is not occupied
-    const closestseatname = findClosestUnoccupiedSeat(node, pt);
-    if (closestseatname) {
-      model.setDataProperty(guests, closestseatname, guest.key);
-      model.setDataProperty(guest, 'table', node.data.key);
-      model.setDataProperty(guest, 'seat', parseFloat(closestseatname));
-    }
-
-    const plus = guest.plus;
-    if (plus) {
-      // represents several people
-      // forget the "plus" info, since next we create N copies of the node/data
-      guest.plus = undefined;
-      model.updateTargetBindings(guest);
-      for (let i = 0; i < plus; i++) {
-        const copy = model.copyNodeData(guest);
-        // don't copy the seat assignment of the first person
-        copy.table = undefined;
-        copy.seat = undefined;
-        model.addNodeData(copy);
-        assignSeat(node, copy, pt);
-      }
-    }
-  }
-
-  // Declare that the guest represented by the data is no longer assigned to a seat at a table.
-  // If the guest had been at a table, the guest is removed from the table's list of guests.
-  function unassignSeat(guest) {
-    if (guest instanceof go.GraphObject) {
-      throw Error('A guest object must not be a GraphObject: ' + guest.toString());
-    }
-    const model = myDiagram.model;
-    // remove from any table that the guest is assigned to
-    if (guest.table) {
-      const table = model.findNodeDataForKey(guest.table);
-      if (table) {
-        const guests = table.guests;
-        if (guests) model.setDataProperty(guests, guest.seat.toString(), undefined);
-      }
-    }
-    model.setDataProperty(guest, 'table', undefined);
-    model.setDataProperty(guest, 'seat', undefined);
-  }
-
-  // Find the name of the unoccupied seat that is closest to the given Point.
-  // This returns null if no seat is available at this table.
-  function findClosestUnoccupiedSeat(node, pt) {
-    if (isPerson(node)) {
-      // refer to the person's table instead
-      node = node.diagram.findNodeForKey(node.data.table);
-      if (node === null) return;
-    }
-    const guests = node.data.guests;
-    let closestseatname = null;
-    let closestseatdist = Infinity;
-    // iterate over all seats in the Node to find one that is not occupied
-    for (const sit = node.elements; sit.next(); ) {
-      const seat = sit.value;
-      if (seat.name) {
-        const num = parseFloat(seat.name);
-        if (isNaN(num)) continue; // not really a "seat"
-        if (guests[seat.name]) continue; // already assigned
-        const seatloc = seat.getDocumentPoint(go.Spot.Center);
-        const seatdist = seatloc.distanceSquaredPoint(pt);
-        if (seatdist < closestseatdist) {
-          closestseatdist = seatdist;
-          closestseatname = seat.name;
-        }
-      }
-    }
-    return closestseatname;
-  }
-
-  // Position the nodes of all of the guests that are seated at this table
-  // to be at their corresponding seat elements of the given "Table" Node.
-  function positionPeopleAtSeats(node) {
-    if (isPerson(node)) {
-      // refer to the person's table instead
-      node = node.diagram.findNodeForKey(node.data.table);
-      if (node === null) return;
-    }
-    const guests = node.data.guests;
-    const model = node.diagram.model;
-    for (let seatname in guests) {
-      const guestkey = guests[seatname];
-      const guestdata = model.findNodeDataForKey(guestkey);
-      positionPersonAtSeat(guestdata);
-    }
-  }
-
-  // Position a single guest Node to be at the location of the seat to which they are assigned.
-  function positionPersonAtSeat(guest) {
-    if (guest instanceof go.GraphObject) {
-      throw Error('A guest object must not be a GraphObject: ' + guest.toString());
-    }
-    if (!guest || !guest.table || !guest.seat) return;
-    const diagram = myDiagram;
-    const table = diagram.findPartForKey(guest.table);
-    const person = diagram.findPartForData(guest);
-    if (table && person) {
-      const seat = table.findObject(guest.seat.toString());
-      const loc = seat.getDocumentPoint(go.Spot.Center);
-      // animate movement, instead of: person.location = loc;
-      const animation = new go.Animation();
-      animation.add(person, 'location', person.location, loc);
-      animation.start();
-    }
-  }
-
-  window.addEventListener('DOMContentLoaded', init);
-</script>
-
-<div id="sample">
-  <div id="myFlexDiv">
-    <div id="myGuests" style="border: solid 1px black"></div>
-
-    <div id="myDiagramDiv" style="border: solid 1px black"></div>
-  </div>
-  This sample demonstrates how a "Person" node can be dropped onto a "Table" node, causing the
-  person to be assigned a position at the closest empty seat at that table. When a person is dropped
-  into the background of the diagram, that person is no longer assigned a seat. People dragged
-  between diagrams are automatically removed from the diagram they came from.
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-foreground focus:outline-2 focus:outline-nwoods-primary">Skip to main content</a> <nav id="navTop" class="sticky top-0 w-full z-30 bg-background border-b"><div class="flex flex-wrap items-center justify-between"><a class="text-white bg-nwoods-primary leading-[calc(var(--topnav-h)-1px)] font-bold my-0 px-3 text-5xl logo " href="../">GoJS</a> <div class="flex items-center mr-2"><div class="relative"><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9 sm:hidden" type="button" aria-label="Navigation" title="Navigation"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></g></svg><!----></button><!--]--><!----> <div id="topnavList" class="hidden sm:block"><div class="absolute right-0 z-30 flex flex-col gap-1 items-end rounded-lg border mr-4 p-4 pl-12 shadow bg-background text-foreground font-semibold sm:relative sm:flex-row sm:gap-2 md:gap-3 lg:gap-4 sm:items-start sm:border-0 sm:p-0 sm:shadow-none sm:bg-inherit"><!--[--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../learn"><!---->Learn<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../samples"><!---->Samples<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../api/index.html"><!---->API<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener"><!---->Forum<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/contact.html" target="_blank" rel="noopener"><!---->Contact<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/sales/index.html" target="_blank" rel="noopener"><!---->Buy<!----></a><!--]--><!--]--> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9" type="button" aria-label="Toggle theme" title="Toggle theme"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dark:hidden"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path></svg> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden dark:block"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"></path></svg> <span class="sr-only">Toggle theme</span><!----></button><!--]--><!----></div></div></div></div></div></nav><!----> <main id="main"><!--[0--><!--[--><div class="w-full"><!--[--><div class="flex flex-col"><div class="flex flex-col"><header class="text-xs py-3 bg-background border-b"><h1 class="text-4xl px-4 max-w-7xl mx-auto m-0 truncate">Seating Chart Diagram Editor Dropping People into Seats at Tables</h1></header><!----> <!--[0--><div class="prose p-4 w-full max-w-7xl mx-auto"><!--[--><!--[0--><!----><p>
+    This sample demonstrates how a "Person" node can be dropped onto a "Table" node, causing the
+    person to be assigned a position at the closest empty seat at that table. When a person is dropped
+    into the background of the diagram, that person is no longer assigned a seat. People dragged
+    between diagrams are automatically removed from the diagram they came from.
+  </p>
   <p>
     "Table" nodes are defined by separate templates, to permit maximum customization of the shapes
     and sizes and positions of the tables and chairs.
   </p>
-
   <p>
     "Person" nodes in the <code>myGuests</code> diagram can also represent a group of people, for
     example a named person plus one whose name might not be known. When such a person is dropped
     onto a table, additional nodes are created in <code>myDiagram</code>. Those people are seated at
     the table if there is room.
   </p>
-
   <p>
     Tables can be moved or rotated. Moving or rotating a table automatically repositions the people
     seated at that table.
   </p>
-
   <p>
     The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either
     diagram and have it automatically handle drags between diagrams, as well as the usual changes
     within the diagram.
-  </p>
-  <div>
-    Diagram Model saved in JSON format, automatically updated after each transaction:
-    <pre class="lang-js"><code id="savedModel"></code></pre>
-  </div>
-</div>
+  </p><!----><!--]--><!--]--></div><!--]--> <div class="mx-4 p-2 rounded-lg border dark:border-transparent bg-card text-card-foreground flex flex-col gap-1"><div class="flex items-center gap-2 px-2"><span class="font-mono mr-auto">Sample: Seating Chart Diagram Editor Dropping People into Seats at Tables</span> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reload sample"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg> <span>Reload</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reset to original code"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> <span>Reset</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Download as HTML file"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> <span>Download</span><!----></button><!--]--><!----></div> <div class="flex flex-col bg-card md:flex-row max-md:gap-1" style="height: 70vh"><div class="flex flex-col min-h-0 min-w-0 md:h-full max-md:w-full! max-md:h-auto max-md:flex-none " style="width: auto; flex: none;"><div class="flex flex-row h-full bg-card"><div class="flex flex-col bg-card"><div class="flex flex-col bg-card"><!--[--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->JS<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->HTML<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->CSS<!----></button><!--]--><!--]--></div><!----></div> <!--[-1--><!--]--></div><!----></div> <!--[-1--><!--]--> <div class="flex-1 flex flex-col min-h-75 md:min-h-0 md:h-full min-w-0 max-md:min-h-50"><div class="flex flex-col h-full"><iframe srcdoc="" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox" title="Preview" class="flex-1 w-full border-none" onload="this.__e=event"></iframe></div><!----></div></div></div></div></div><!----> <!--[0--><div id="allTagDescriptions" class="prose p-4 max-w-7xl mx-auto"><h3 class="text-xl">GoJS Features in this sample</h3> <!--[--><!--[0--><!--[0--><!----><h4>Tools</h4>
+<p>
+  <a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such
+  as mouse and keyboard interactions, in a Diagram. There are many kinds of predefined
+  Tool classes that implement all of the common operations that users do.
+</p>
+<p>
+  For flexibility and simplicity, all input events are canonicalized as
+  <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and redirected by
+  the diagram to go to the
+  <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
+  By default the Diagram.currentTool is an instance of
+  <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the
+  <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
+  The ToolManager implements support for all mode-less tools. The ToolManager is
+  responsible for finding another tool that is ready to run and then making it the new
+  current tool. This causes the new tool to process all of the input events (mouse,
+  keyboard, and touch) until the tool decides that it is finished, at which time the
+  diagram's current tool reverts back to the
+  <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>,
+  which is normally the ToolManager, again.
+</p>
+<p>More information can be found in the <a href="../learn/tools">GoJS learn pages</a>.</p>
+<!----><!--]--><!----> <p><a href="../samples#tools">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>Palette</h4>
+<p>
+  A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of
+  <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a
+  number of <a href="../api/symbols/Part.html" target="api">Part</a>s that can be dragged
+  into the diagram that is being modified by the user. The initialization of a
+  <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the
+  initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  Like Diagrams, you can have more than one Palette on the page at the same time.
+</p>
+<p>
+  More information can be found in the <a href="../learn/palette">GoJS learn pages</a>.
+</p>
+<!----><!--]--><!----> <p><a href="../samples#palette">Related samples</a></p><!--]--><!--]--></div><!--]--><!----><!--]--><!----></div><!--]--><!--]--><!----></main> <footer class="text-foreground border-t mt-16 py-16"><div class="max-w-7xl mx-auto px-6 lg:px-8"><div class="xl:grid xl:grid-cols-2 xl:gap-8"><div class="logo h-10 w-10 text-[1.65rem] flex items-center justify-center rounded-lg text-white font-bold bg-nwoods-primary"><span class="leading-none">Go</span></div> <div class="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 xl:mt-0"><div><h3 class="text-sm/6 font-semibold text-foreground">GoJS</h3> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../samples">Samples</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../learn">Learn</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../api/">API</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../changelog">Changelog</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Support</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/sales" target="_blank" rel="noopener">Buy</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/register" target="_blank" rel="noopener">Register</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Company</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/about" target="_blank" rel="noopener">About Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/consulting" target="_blank" rel="noopener">Consulting</a></li><!----></ul></div></div></div> <div class="mt-12 pt-8 md:flex md:items-center md:justify-between"><div class="flex gap-x-6 md:order-2"><a class="text-foreground/70 hover:text-foreground self-center" href="https://www.npmjs.com/package/gojs" target="_blank" rel="noopener"><span class="sr-only">npm</span> <svg viewBox="0 0 780 250" fill="currentColor" aria-hidden="true" class="size-7"><path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M480,0v200h100V50h50v150h50V50h50v150h50V0H480z
+	 M0,200h100V50h50v150h50V0H0V200z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener"><span class="sr-only">GitHub</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener"><span class="sr-only">Twitter/X</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z"></path></svg></a></div> <p class="mt-8 text-xs/6 text-muted-foreground md:mt-0 md:order-1">© 1998-2026 Northwoods Software</p></div> <!--[-1--><!--]--></div></footer><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_19dmgt3 = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						assets: "/4.0.0"
+					};
 
-          
-        </div>
-        <!-- * * * * * * * * * * * * * -->
-        <!--  End of GoJS sample code  -->
-      </div>
+					const element = document.currentScript.parentElement;
 
-      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
-        <hr/>
-        <h3 class="text-xl">GoJS Features in this sample</h3>
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Tools</h4>
-<p>
-<a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
-There are many kinds of predefined Tool classes that implement all of the common operations that users do.
-</p>
-<p>
-For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
-redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
-By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
-The ToolManager implements support for all mode-less tools.
-The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
-This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
-at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
-</p>
-<p>
-More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
-</p>
-            <p>
-              <a href="../samples/index.html#tools">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Palette</h4>
-<p>
-A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
-can be dragged into the diagram that is being modified by the user.
-The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
-Like Diagrams, you can have more than one Palette on the page at the same time.
-</p>
-<p>
-More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
-</p>
-            <p>
-              <a href="../samples/index.html#palette">Related samples</a>
-            </p>
-            <hr>
-          
-        </div>
-    </div>
+					Promise.all([
+						import("../_app/immutable/entry/start.DUcLjgjT.js"),
+						import("../_app/immutable/entry/app.uWGY7NCW.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3, 241],
+							data: [null,null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
   </body>
-  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-  <script src="../assets/js/goSamples.js"></script>
 </html>

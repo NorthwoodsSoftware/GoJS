@@ -7,14 +7,14 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
  * The NonRealtimeDraggingTool class lets the user drag an image instead of actually moving any selected nodes,
  * until the mouse-up event.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/NonRealtimeDragging.html">Non Realtime Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/NonRealtimeDragging">Non Realtime Dragging</a> sample.
  * @category Tool Extension
  */
 class NonRealtimeDraggingTool extends go.DraggingTool {
@@ -48,9 +48,16 @@ class NonRealtimeDraggingTool extends go.DraggingTool {
         const map = super.computeEffectiveCollection(parts, this.dragOptions);
         if (this.isActive && this._imagePart === null) {
             const bounds = this.diagram.computePartsBounds(map.toKeySet());
-            const offset = this.diagram.lastInput.documentPoint.copy().subtract(bounds.position);
-            this._imagePart = new go.Part({ layerName: 'Tool', opacity: 0.5, locationSpot: new go.Spot(0, 0, offset.x, offset.y) })
-                .add(new go.Picture({ source: this.diagram.makeImageData({ parts: map.toKeySet() }) }));
+            const offset = this.diagram.lastInput.documentPoint
+                .copy()
+                .subtract(bounds.position);
+            this._imagePart = new go.Part({
+                layerName: 'Tool',
+                opacity: 0.5,
+                locationSpot: new go.Spot(0, 0, offset.x, offset.y)
+            }).add(new go.Picture({
+                source: this.diagram.makeImageData({ parts: map.toKeySet() })
+            }));
         }
         return map;
     }

@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * A custom Router for reducing overlaps between label objects on links by moving them apart with a custom ForceDirectedLayout.
  * You can modify the properties of that Layout by setting {@link layoutProps} in the constructor.
@@ -29,7 +29,7 @@ import * as go from 'gojs';
  *   }));
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/LinkLabelRouter.html">LinkLabelRouter</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/LinkLabelRouter">LinkLabelRouter</a> sample.
  * @category Router Extension
  */
 export class LinkLabelRouter extends go.Router {
@@ -95,7 +95,11 @@ export class LinkLabelRouter extends go.Router {
         const link = obj.panel;
         if (link === null)
             return false;
-        if (obj instanceof go.Shape && (obj.isPanelMain || link.findMainElement() === obj || obj.fromArrow !== 'None' || obj.toArrow !== 'None')) {
+        if (obj instanceof go.Shape &&
+            (obj.isPanelMain ||
+                link.findMainElement() === obj ||
+                obj.fromArrow !== 'None' ||
+                obj.toArrow !== 'None')) {
             return false;
         }
         else {
@@ -218,7 +222,8 @@ class LabelLayout extends go.ForceDirectedLayout {
                 if (!this.router.isLabel(label))
                     continue;
                 const margin = this.router.margin;
-                const documentBounds = label.getDocumentBounds()
+                const documentBounds = label
+                    .getDocumentBounds()
                     .offset(label.alignmentFocus.offsetX, label.alignmentFocus.offsetY);
                 // add margin to "real" document bounds
                 documentBounds.addMargin(margin);

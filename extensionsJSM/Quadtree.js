@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * @hidden @internal
  */
@@ -384,7 +384,8 @@ export class Quadtree {
             while (i < root.treeObjects.length) {
                 const index = this._getIndex(root.treeObjects[i].bounds, root);
                 if (index !== -1 &&
-                    !(root.treeObjects[i].bounds.width === 0 || root.treeObjects[i].bounds.height === 0)) {
+                    !(root.treeObjects[i].bounds.width === 0 ||
+                        root.treeObjects[i].bounds.height === 0)) {
                     root.objects.splice(i, 1);
                     const selected = root.nodes[index];
                     if (selected !== null) {

@@ -1,463 +1,153 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scheme-light dark:scheme-dark">
   <head>
-    
-    <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-
-<meta name="description" content="A custom Router that prevents overlaps between labels on links." />
-<meta itemprop="description" content="A custom Router that prevents overlaps between labels on links." />
-<meta property="og:description" content="A custom Router that prevents overlaps between labels on links." />
-<meta name="twitter:description" content="A custom Router that prevents overlaps between labels on links." />
-
-
-<link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="../assets/css/style.css">
-<!-- Copyright 1998-2026 by Northwoods Software Corporation. -->
-
-
-<meta itemprop="name" content="Router Shifting Link Labels to Reduce Overlaps" />
-<meta property="og:title" content="Router Shifting Link Labels to Reduce Overlaps" />
-<meta name="twitter:title" content="Router Shifting Link Labels to Reduce Overlaps" />
-
-
-<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/linklabelrouter.png" />
-<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/linklabelrouter.png" />
-<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/linklabelrouter.png" />
-
-<meta property="og:url" content="https://gojs.net/latest/samples/LinkLabelRouter.html" />
-<meta property="twitter:url" content="https://gojs.net/latest/samples/LinkLabelRouter.html" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="og:type" content="website" />
-<meta property="twitter:domain" content="gojs.net" />
-
-    <title>
-      Router Shifting Link Labels to Reduce Overlaps | GoJS Diagramming Library
-    </title>
-  </head>
-
-  <body>
-    <!-- This top nav is not part of the sample code -->
-    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
-  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
-    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
-       href="../">
-      GoJS
-    </a>
-    <div class="relative">
-      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
-        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div id="topnavList" class="hidden md:block">
-        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
-                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
-          <a href="../learn/">Learn</a>
-          <a href="../samples/">Samples</a>
-          <a href="../intro/">Intro</a>
-          <a href="../api/">API</a>
-          <a href="../download.html">Download</a>
-          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
-          <a id="tc" href="https://nwoods.com/contact.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
-          <a id="tb" href="https://nwoods.com/sales/index.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    // topnav
-    var topButton = document.getElementById("topnavButton");
-    var topnavList = document.getElementById("topnavList");
-    if (topButton && topnavList) {
-      topButton.addEventListener("click", function (e) {
-        topnavList
-          .classList
-          .toggle("hidden");
-        e.stopPropagation();
-      });
-      document.addEventListener("click", function (e) {
-        // if the clicked element isn't the list, close the list
-        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
-          topButton.click();
-        }
-      });
-
-      // set active <a> element
-      var url = window
-        .location
-        .href
-        .toLowerCase();
-      var aTags = topnavList.getElementsByTagName('a');
-      for (var i = 0; i < aTags.length; i++) {
-        var lowerhref = aTags[i]
-          .href
-          .toLowerCase();
-        if (lowerhref.endsWith('.html')) 
-          lowerhref = lowerhref.slice(0, -5);
-        if (url.startsWith(lowerhref)) {
-          aTags[i]
-            .classList
-            .add('active');
-          break;
-        }
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f4963" />
+    <!-- Self-hosted variable font. Declared here (not in CSS) so ..
+         resolves the /fonts/ asset under the base path, and preloaded with a matching
+         crossorigin so the @font-face fetch reuses it. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="../fonts/InterVariable.woff2"
+      crossorigin />
+    <style>
+      @font-face {
+        font-family: InterVariable;
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('../fonts/InterVariable.woff2') format('woff2');
       }
-    }
-  });
-</script>
-    <div class="flex flex-col prose">
-      <div class="w-full max-w-screen-xl mx-auto">
-        <!-- * * * * * * * * * * * * * -->
-        <!-- Start of GoJS sample code -->
-        <script src="../release/go.js"></script>
-
-        
-
-        <div id="allSampleContent" class="p-4 w-full">
-          
-            
-            
-
-<script src="../extensions/AvoidsLinksRouter.js"></script>
-<script src="../extensions/LinkLabelRouter.js"></script>
-<script id="code">
-  function init() {
-    myDiagram = new go.Diagram('myDiagramDiv', { 'undoManager.isEnabled': true });
-
-    myDiagram.routers.add(new AvoidsLinksRouter());
-    myDiagram.routers.add(new LinkLabelRouter());
-
-    // Use some colors for ports
-    portColors = ['black', 'red', 'green', 'gray'];
-    myDiagram.themeManager.set('', {
-      colors: { ports: portColors }
-    });
-
-    const portSize = new go.Size(8, 8);
-
-    // the node template
-    // includes a panel on each side with an itemArray of panels that are ports
-    myDiagram.nodeTemplate =
-      new go.Node('Table', {
-          locationObjectName: 'BODY',
-          locationSpot: go.Spot.Center,
-          selectionObjectName: 'BODY'
-        })
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-        .add(
-          // the body
-          new go.Panel('Auto', {
-              row: 1,
-              column: 1,
-              name: 'BODY',
-              stretch: go.Stretch.Fill
-            })
-            .add(
-              new go.Shape('Rectangle', {
-                fill: 'lightgray',
-                stroke: 'gray',
-                strokeWidth: 0.5,
-                minSize: new go.Size(60, 60)
-              }),
-              new go.TextBlock({
-                  margin: 10,
-                  textAlign: 'center',
-                  font: 'bold 14px Segoe UI,sans-serif',
-                  stroke: '#484848',
-                  editable: true
-                })
-                .bindTwoWay('text', 'name')
-            ), // end Auto Panel body
-
-          // the Panel holding the left port elements, which are themselves Panels,
-          // created for each item in the itemArray, bound to data.leftArray
-          new go.Panel('Vertical', {
-              row: 1,
-              column: 0,
-              itemTemplate:
-                new go.Panel({
-                    fromSpot: go.Spot.Left,
-                    toSpot: go.Spot.Left,
-                    fromLinkable: true,
-                    toLinkable: true,
-                    cursor: 'pointer'
-                  })
-                  .attach({ _side: 'left' })  // internal property to make it easier to tell which side it's on
-                  .bind('portId')
-                  .add(
-                    new go.Shape('Rectangle', {
-                        stroke: null,
-                        strokeWidth: 0,
-                        desiredSize: portSize,
-                        margin: new go.Margin(1, 0)
-                      })
-                      .themeData('fill', 'portColor', 'ports')
-                  ) // end itemTemplate
-            }) // end Vertical Panel
-            .bind('itemArray', 'leftArray'),
-
-          // the Panel holding the top port elements, which are themselves Panels,
-          // created for each item in the itemArray, bound to data.topArray
-          new go.Panel('Horizontal', {
-              row: 0,
-              column: 1,
-              itemTemplate:
-                new go.Panel({
-                    fromSpot: go.Spot.Top,
-                    toSpot: go.Spot.Top,
-                    fromLinkable: true,
-                    toLinkable: true,
-                    cursor: 'pointer'
-                  })
-                  .attach({ _side: 'top' })  // internal property to make it easier to tell which side it's on
-                  .bind('portId')
-                  .add(
-                    new go.Shape('Rectangle', {
-                        stroke: null,
-                        strokeWidth: 0,
-                        desiredSize: portSize,
-                        margin: new go.Margin(0, 1)
-                      })
-                      .themeData('fill', 'portColor', 'ports')
-                  ) // end itemTemplate
-            }) // end Horizontal Panel
-            .bind('itemArray', 'topArray'),
-
-          // the Panel holding the right port elements, which are themselves Panels,
-          // created for each item in the itemArray, bound to data.rightArray
-          new go.Panel('Vertical', {
-              row: 1,
-              column: 2,
-              itemTemplate:
-                new go.Panel({
-                    fromSpot: go.Spot.Right,
-                    toSpot: go.Spot.Right,
-                    fromLinkable: true,
-                    toLinkable: true,
-                    cursor: 'pointer'
-                  })
-                  .attach({ _side: 'right' })  // internal property to make it easier to tell which side it's on
-                  .bind('portId')
-                  .add(
-                    new go.Shape('Rectangle', {
-                        stroke: null,
-                        strokeWidth: 0,
-                        desiredSize: portSize,
-                        margin: new go.Margin(1, 0)
-                      })
-                      .themeData('fill', 'portColor', 'ports')
-                  ) // end itemTemplate
-            }) // end Vertical Panel
-            .bind('itemArray', 'rightArray'),
-
-          // the Panel holding the bottom port elements, which are themselves Panels,
-          // created for each item in the itemArray, bound to data.bottomArray
-          new go.Panel('Horizontal', {
-              row: 2,
-              column: 1,
-              itemTemplate:
-                new go.Panel({
-                  fromSpot: go.Spot.Bottom,
-                  toSpot: go.Spot.Bottom,
-                  fromLinkable: true,
-                  toLinkable: true,
-                  cursor: 'pointer'
-                })
-                .attach({ _side: 'bottom' })  // internal property to make it easier to tell which side it's on
-                .bind('portId')
-                .add(
-                  new go.Shape('Rectangle', {
-                      stroke: null,
-                      strokeWidth: 0,
-                      desiredSize: portSize,
-                      margin: new go.Margin(0, 1)
-                    })
-                    .themeData('fill', 'portColor', 'ports')
-                ) // end itemTemplate
-          }) // end Horizontal Panel
-          .bind('itemArray', 'bottomArray')
-        );
-
-    // an orthogonal link template, reshapable and relinkable
-    myDiagram.linkTemplate =
-      new go.Link({
-          routing: go.Routing.AvoidsNodes,
-          corner: 4,
-          curve: go.Curve.JumpGap,
-          reshapable: true,
-          resegmentable: true,
-          relinkableFrom: true,
-          relinkableTo: true
-        })
-        .bindTwoWay('points')
-        .add(
-          new go.Shape({ stroke: '#2F4F4F', strokeWidth: 1.5 }),
-          new go.Panel("Auto")
-            .add(
-              new go.Shape("RoundedRectangle", { fill: "white" })
-                .bind("fill", "labelColor")
-                .bind("width", "labelWidth")
-                .bind("height", "labelHeight"),
-              new go.TextBlock({
-                  font: "bold 10px Segoe UI,sans-serif",
-                  stroke: '#484848',
-                  margin: 2
-                })
-                .bind("text", "labelText")
-            )
-        );
-
-    myDiagram.toolManager.linkingTool.archetypeLinkData = {
-      labelColor: "lightblue",
-      labelText: "Link Label"
-    }
-
-    // load the diagram from JSON data
-    load();
-  }
-
-  function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById('mySavedModel').value);
-
-    // When copying a node, we need to copy the data that the node is bound to.
-    // This JavaScript object includes properties for the node as a whole, and
-    // four properties that are Arrays holding data for each port.
-    // Those arrays and port data objects need to be copied too.
-    // Thus Model.copiesArrays and Model.copiesArrayObjects both need to be true.
-
-    // Link data includes the names of the to- and from- ports;
-    // so the GraphLinksModel needs to set these property names:
-    // linkFromPortIdProperty and linkToPortIdProperty.
-  }
-
-  window.addEventListener('DOMContentLoaded', init);
-</script>
-
-<div id="sample">
-  <div id="myDiagramDiv" style="width: 600px; height: 500px; border: 1px solid black"></div>
-  <p>
+    </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-S5QK8VSK84');
+    </script>
+    <link href="../_app/immutable/entry/start.DUcLjgjT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DTR9fq_7.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BY_RssUb.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.uWGY7NCW.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/kNaey6uv.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.DBSBeCFO.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DDjqDG21.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/c0gyX4Uy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CxMCXhHm.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CVMOr__I.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.JgNq0TJX.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/176.JbwNrsji.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DzUjTTvJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BVhwz5iQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/lxyaXZko.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BjDsAonG.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="canonical" href="https://gojs.net/latest/samples/LinkLabelRouter"/> <meta property="og:type" content="website"/> <meta property="og:site_name" content="GoJS"/> <meta property="og:url" content="https://gojs.net/latest/samples/LinkLabelRouter"/> <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/linklabelrouter.png"/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:site" content="@northwoodsgo"/> <meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/linklabelrouter.png"/> <!----><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://gojs.net/#organization","name":"Northwoods Software","url":"https://nwoods.com","logo":"https://gojs.net/latest/assets/images/fp/og.png","sameAs":["https://github.com/NorthwoodsSoftware/GoJS","https://twitter.com/northwoodsgo","https://www.npmjs.com/package/gojs"]},{"@type":"SoftwareApplication","@id":"https://gojs.net/latest/#gojs","name":"GoJS","applicationCategory":"DeveloperApplication","operatingSystem":"Web","programmingLanguage":["JavaScript","TypeScript"],"description":"GoJS is a JavaScript and TypeScript library for building interactive diagramming apps - org charts, flowcharts, BPMN, SCADA, UML, and custom visual editors.","url":"https://gojs.net/latest/","publisher":{"@id":"https://gojs.net/#organization"},"offers":{"@type":"Offer","url":"https://nwoods.com/sales","category":"Commercial software license"}}]}</script><!----><!----><!--1cmi4dh--><script>
+    document.documentElement.classList.toggle(
+      'dark',
+      localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  </script><!----><!----><!--ryty38--><meta property="og:title" content="Router Shifting Link Labels to Reduce Overlaps | GoJS Diagramming Library"/> <!--[0--><meta name="description" content="A custom Router that prevents overlaps between labels on links."/> <meta property="og:description" content="A custom Router that prevents overlaps between labels on links."/><!--]--><!----><title>Router Shifting Link Labels to Reduce Overlaps | GoJS Diagramming Library</title>
+		<link href="../_app/immutable/assets/0.vgO-Uy72.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CodeSnippet.DOo96Xpn.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/TagList.CFKTKwNT.css" rel="stylesheet">
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-foreground focus:outline-2 focus:outline-nwoods-primary">Skip to main content</a> <nav id="navTop" class="sticky top-0 w-full z-30 bg-background border-b"><div class="flex flex-wrap items-center justify-between"><a class="text-white bg-nwoods-primary leading-[calc(var(--topnav-h)-1px)] font-bold my-0 px-3 text-5xl logo " href="../">GoJS</a> <div class="flex items-center mr-2"><div class="relative"><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9 sm:hidden" type="button" aria-label="Navigation" title="Navigation"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></g></svg><!----></button><!--]--><!----> <div id="topnavList" class="hidden sm:block"><div class="absolute right-0 z-30 flex flex-col gap-1 items-end rounded-lg border mr-4 p-4 pl-12 shadow bg-background text-foreground font-semibold sm:relative sm:flex-row sm:gap-2 md:gap-3 lg:gap-4 sm:items-start sm:border-0 sm:p-0 sm:shadow-none sm:bg-inherit"><!--[--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../learn"><!---->Learn<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../samples"><!---->Samples<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../api/index.html"><!---->API<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener"><!---->Forum<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/contact.html" target="_blank" rel="noopener"><!---->Contact<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/sales/index.html" target="_blank" rel="noopener"><!---->Buy<!----></a><!--]--><!--]--> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9" type="button" aria-label="Toggle theme" title="Toggle theme"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dark:hidden"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path></svg> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden dark:block"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"></path></svg> <span class="sr-only">Toggle theme</span><!----></button><!--]--><!----></div></div></div></div></div></nav><!----> <main id="main"><!--[0--><!--[--><div class="w-full"><!--[--><div class="flex flex-col"><div class="flex flex-col"><header class="text-xs py-3 bg-background border-b"><h1 class="text-4xl px-4 max-w-7xl mx-auto m-0 truncate">Router Shifting Link Labels to Reduce Overlaps</h1></header><!----> <!--[0--><div class="prose p-4 w-full max-w-7xl mx-auto"><!--[--><!--[0--><!----><p>
     The <a>Diagram.routers</a> <a>List</a> has both the
     <a href="../extensions/LinkLabelRouter.js">Link Label Router</a> and
-    <a href="./AvoidsLinksRouter.html">Avoids Links Router</a>, this way <a>Link</a>s
+    <a href="./AvoidsLinksRouter">Avoids Links Router</a>, this way <a>Link</a>s
     and labels won't overlap allowing the <a>Diagram</a> be more readable.
   </p>
   <p>
-    The <a href="./AvoidsLinksRouter.html">Avoids Links Router</a>
+    The <a href="./AvoidsLinksRouter">Avoids Links Router</a>
     live updates while <a>Node</a>s are being dragged, after the <a>Node</a> is
     released the <a href="../extensions/LinkLabelRouter.js">Link Label Router</a>
     will adjust the labels to prevent overlapping when possible.
   </p>
   <p>See <a href="../extensionsJSM/AvoidsLinksRouter.ts">AvoidsLinksRouter.ts</a> for the TypeScript source.</p>
-  <p>See the <a href="../intro/ports.html">Ports Intro page</a> for an explanation of GoJS ports.</p>
-  <div>
-    <div>
-      <button id="SaveButton" onclick="save()">Save</button>
-      <button onclick="load()">Load</button>
-      Diagram Model saved in JSON format:
-    </div>
-
-    <textarea id="mySavedModel" style="width: 100%; height: 250px">
-      { "class": "GraphLinksModel",
-      "copiesArrays": true,
-      "copiesArrayObjects": true,
-      "linkFromPortIdProperty": "fromPort",
-      "linkToPortIdProperty": "toPort",
-      "nodeDataArray": [
-      {"key":1,"name":"Unit One","loc":"101 204","leftArray":[{"portColor":0,"portId":"left0"}],"topArray":[{"portColor":1,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[{"portColor":3,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
-      {"key":2,"name":"Unit Two","loc":"320 152","leftArray":[{"portColor":0,"portId":"left0"},{"portColor":0,"portId":"left1"},{"portColor":0,"portId":"left2"}],"topArray":[{"portColor":3,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"},{"portColor":3,"portId":"bottom1"},{"portColor":0,"portId":"bottom2"}],"rightArray":[]},
-      {"key":3,"name":"Unit Three","loc":"384 319","leftArray":[{"portColor":0,"portId":"left0"},{"portColor":0,"portId":"left1"},{"portColor":0,"portId":"left2"}],"topArray":[{"portColor":0,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[]},
-      {"key":4,"name":"Unit Four","loc":"138 351","leftArray":[{"portColor":0,"portId":"left0"}],"topArray":[{"portColor":0,"portId":"top0"}],"bottomArray":[{"portColor":2,"portId":"bottom0"}],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
-      {"key":5,"name":"Unit Five","loc":"260 460","leftArray":[],"topArray":[{"portColor":0,"portId":"top0"},{"portColor":1,"portId":"top1"}],"bottomArray":[],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]},
-      {"key":6,"name":"Unit Six","loc":"12 508","leftArray":[],"topArray":[{"portColor":0,"portId":"top0"},{"portColor":1,"portId":"top1"}],"bottomArray":[],"rightArray":[{"portColor":0,"portId":"right0"},{"portColor":0,"portId":"right1"}]}
-      ],
-        "linkDataArray": [
-      {"from":4,"to":2,"fromPort":"top0","toPort":"bottom0","labelText":"Unit 4 to 2","labelColor":"lightblue"},
-      {"from":4,"to":2,"fromPort":"top0","toPort":"bottom0","labelText":"Unit 4 to 2","labelColor":"lightblue"},
-      {"from":3,"to":2,"fromPort":"top0","toPort":"bottom1","labelText":"Unit 3 to 2","labelColor":"lightblue"},
-      {"from":4,"to":3,"fromPort":"right0","toPort":"left0","labelText":"Unit 4 to 3","labelColor":"lightblue"},
-      {"from":4,"to":3,"fromPort":"right1","toPort":"left2","labelText":"Unit 4 to 3","labelColor":"lightblue"},
-      {"from":1,"to":2,"fromPort":"right0","toPort":"left1","labelText":"Unit 1 to 2","labelColor":"lightblue"},
-      {"from":1,"to":2,"fromPort":"right1","toPort":"left2","labelText":"Unit 1 to 2","labelColor":"lightblue"},
-      {"from":6,"to":4,"fromPort":"top1","toPort":"left0","labelText":"Unit 6 to 4","labelColor":"lightblue"},
-      {"from":6,"to":4,"fromPort":"top0","toPort":"left0","labelText":"Unit 6 to 4","labelColor":"lightblue"},
-      {"from":6,"to":5,"fromPort":"right0","toPort":"top0","labelText":"Unit 6 to 5","labelColor":"lightblue"},
-      {"from":6,"to":5,"fromPort":"right1","toPort":"right1","labelText":"Unit 6 to 5","labelColor":"lightblue"},
-      {"from":6,"to":1,"fromPort":"top1","toPort":"bottom0","labelText":"Unit 6 to 1","labelColor":"lightblue"},
-      {"from":6,"to":1,"fromPort":"top1","toPort":"top0","labelText":"Unit 6 to 1","labelColor":"lightblue"},
-      {"from":5,"to":4,"fromPort":"top1","toPort":"bottom0","labelText":"Unit 5 to 4","labelColor":"lightblue"},
-      {"from":5,"to":3,"fromPort":"right0","toPort":"bottom0","labelText":"Unit 5 to 3","labelColor":"lightblue"}
-      ]}
-    </textarea>
-  </div>
-</div>
-
-          
-        </div>
-        <!-- * * * * * * * * * * * * * -->
-        <!--  End of GoJS sample code  -->
-      </div>
-
-      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
-        <hr/>
-        <h3 class="text-xl">GoJS Features in this sample</h3>
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Custom Link Routing</h4>
+  <p>See the <a href="../intro/ports">Ports learn page</a> for an explanation of GoJS ports.</p><!----><!--]--><!--]--></div><!--]--> <div class="mx-4 p-2 rounded-lg border dark:border-transparent bg-card text-card-foreground flex flex-col gap-1"><div class="flex items-center gap-2 px-2"><span class="font-mono mr-auto">Sample: Router Shifting Link Labels to Reduce Overlaps</span> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reload sample"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg> <span>Reload</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reset to original code"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> <span>Reset</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Download as HTML file"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> <span>Download</span><!----></button><!--]--><!----></div> <div class="flex flex-col bg-card md:flex-row max-md:gap-1" style="height: 70vh"><div class="flex flex-col min-h-0 min-w-0 md:h-full max-md:w-full! max-md:h-auto max-md:flex-none " style="width: auto; flex: none;"><div class="flex flex-row h-full bg-card"><div class="flex flex-col bg-card"><div class="flex flex-col bg-card"><!--[--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->JS<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->HTML<!----></button><!--]--><!--]--></div><!----></div> <!--[-1--><!--]--></div><!----></div> <!--[-1--><!--]--> <div class="flex-1 flex flex-col min-h-75 md:min-h-0 md:h-full min-w-0 max-md:min-h-50"><div class="flex flex-col h-full"><iframe srcdoc="" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox" title="Preview" class="flex-1 w-full border-none" onload="this.__e=event"></iframe></div><!----></div></div></div></div></div><!----> <!--[0--><div id="allTagDescriptions" class="prose p-4 max-w-7xl mx-auto"><h3 class="text-xl">GoJS Features in this sample</h3> <!--[--><!--[0--><!--[0--><!----><h4>Custom Link Routing</h4>
 <p>
   Each Link performs a very fast default computation of its desired path, its "route",
-  based only on the properties of the Link and the properties of the port objects that it is connected with.
-  GoJS provides a way to customize link routing by allowing consideration of other Nodes and Links, with the
+  based only on the properties of the Link and the properties of the port objects that it
+  is connected with. GoJS provides a way to customize link routing by allowing
+  consideration of other Nodes and Links, with the
   <a>Router</a> class.
 </p>
 <p>
   Routers work by defining a method, <a>Router.routeLinks</a>, which takes a collection of
-  recently recomputed link routes, plus a collection context that is either a Group or the Diagram.
-  This method is called by the Diagram during the update phase after layouts are performed.
+  recently recomputed link routes, plus a collection context that is either a Group or the
+  Diagram. This method is called by the Diagram during the update phase after layouts are
+  performed.
 </p>
 <p>
-More information can be found in the <a href="../intro/routers.html">GoJS Intro</a>.
+  More information can be found in the <a href="../learn/routers">GoJS learn pages</a>.
 </p>
-            <p>
-              <a href="../samples/index.html#routers">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>GoJS Extensions</h4>
+<!----><!--]--><!----> <p><a href="../samples#routers">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>GoJS Extensions</h4>
 <p>
-  <b>GoJS</b> can be extended in a variety of ways.
-  The most common way to change the standard behavior is to set properties on the <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>, <a href="../api/symbols/Diagram.html" target="api">Diagram</a>, <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>, <a href="../api/symbols/Tool.html" target="api">Tool</a>, or <a href="../api/symbols/Layout.html" target="api">Layout</a>.
-  But when the desired property does not exist, you might need to override methods of CommandHandler, Tool, Layout, Link, or Node.
-  Methods that you can override are documented in the API reference.
-  Various features of GoJS can be overriden, either by replacing a method on an instance (a feature of JavaScript) or by defining a subclass.
-  You should not modify the prototypes of any of the <b>GoJS</b> classes.
-</p>
-<p>
-  In addition to our samples, <b>GoJS</b> provides an <strong><a href="../samples/#extensions">extensions gallery</a></strong>,
-  showcasing the creation of custom tools and layouts.
-  Those classes and samples are written in TypeScript, available at <code>../extensionsJSM/</code>,
-  as ECMAScript/JavaScript modules -- these use the <code>../release/go-module.js</code> library.
-  We recommend that you copy the files that you need into your project, so that you can adjust how they refer to the GoJS library
-  that you choose and so that you can include them into your own building and packaging procedures.
+  <b>GoJS</b> can be extended in a variety of ways. The most common way to change the
+  standard behavior is to set properties on the
+  <a href="../api/symbols/GraphObject.html" target="api">GraphObject</a>,
+  <a href="../api/symbols/Diagram.html" target="api">Diagram</a>,
+  <a href="../api/symbols/CommandHandler.html" target="api">CommandHandler</a>,
+  <a href="../api/symbols/Tool.html" target="api">Tool</a>, or
+  <a href="../api/symbols/Layout.html" target="api">Layout</a>. But when the desired
+  property does not exist, you might need to override methods of CommandHandler, Tool,
+  Layout, Link, or Node. Methods that you can override are documented in the API
+  reference. Various features of GoJS can be overriden, either by replacing a method on an
+  instance (a feature of JavaScript) or by defining a subclass. You should not modify the
+  prototypes of any of the <b>GoJS</b> classes.
 </p>
 <p>
-More information can be found in the <a href="../intro/extensions.html">GoJS Intro</a>.
+  In addition to our samples, <b>GoJS</b> provides an
+  <strong><a href="../samples/#extensions">extensions gallery</a></strong
+  >, showcasing the creation of custom tools and layouts. Those classes and samples are
+  written in TypeScript, available at <code>../extensionsJSM/</code>, as
+  ECMAScript/JavaScript modules -- these use the
+  <code>../release/go-module.js</code> library. We recommend that you copy the files that
+  you need into your project, so that you can adjust how they refer to the GoJS library
+  that you choose and so that you can include them into your own building and packaging
+  procedures.
 </p>
-            <p>
-              <a href="../samples/index.html#extensions">Related samples</a>
-            </p>
-            <hr>
-          
-        </div>
-    </div>
+<p>
+  More information can be found in the <a href="../learn/extensions">GoJS learn pages</a>.
+</p>
+<!----><!--]--><!----> <p><a href="../samples#extensions">Related samples</a></p><!--]--><!--]--></div><!--]--><!----><!--]--><!----></div><!--]--><!--]--><!----></main> <footer class="text-foreground border-t mt-16 py-16"><div class="max-w-7xl mx-auto px-6 lg:px-8"><div class="xl:grid xl:grid-cols-2 xl:gap-8"><div class="logo h-10 w-10 text-[1.65rem] flex items-center justify-center rounded-lg text-white font-bold bg-nwoods-primary"><span class="leading-none">Go</span></div> <div class="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 xl:mt-0"><div><h3 class="text-sm/6 font-semibold text-foreground">GoJS</h3> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../samples">Samples</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../learn">Learn</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../api/">API</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../changelog">Changelog</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Support</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/sales" target="_blank" rel="noopener">Buy</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/register" target="_blank" rel="noopener">Register</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Company</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/about" target="_blank" rel="noopener">About Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/consulting" target="_blank" rel="noopener">Consulting</a></li><!----></ul></div></div></div> <div class="mt-12 pt-8 md:flex md:items-center md:justify-between"><div class="flex gap-x-6 md:order-2"><a class="text-foreground/70 hover:text-foreground self-center" href="https://www.npmjs.com/package/gojs" target="_blank" rel="noopener"><span class="sr-only">npm</span> <svg viewBox="0 0 780 250" fill="currentColor" aria-hidden="true" class="size-7"><path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M480,0v200h100V50h50v150h50V50h50v150h50V0H480z
+	 M0,200h100V50h50v150h50V0H0V200z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener"><span class="sr-only">GitHub</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener"><span class="sr-only">Twitter/X</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z"></path></svg></a></div> <p class="mt-8 text-xs/6 text-muted-foreground md:mt-0 md:order-1">© 1998-2026 Northwoods Software</p></div> <!--[-1--><!--]--></div></footer><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_19dmgt3 = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						assets: "/4.0.0"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.DUcLjgjT.js"),
+						import("../_app/immutable/entry/app.uWGY7NCW.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3, 176],
+							data: [null,null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
   </body>
-  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-  <script src="../assets/js/goSamples.js"></script>
 </html>

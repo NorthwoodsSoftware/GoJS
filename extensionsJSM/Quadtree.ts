@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * @hidden @internal
@@ -40,7 +40,11 @@ class QuadNode<T> {
     this.nodes[0] = new QuadNode<T>(new go.Rect(x + w2, y, w2, h2), this, this.level + 1);
     this.nodes[1] = new QuadNode<T>(new go.Rect(x, y, w2, h2), this, this.level + 1);
     this.nodes[2] = new QuadNode<T>(new go.Rect(x, y + h2, w2, h2), this, this.level + 1);
-    this.nodes[3] = new QuadNode<T>(new go.Rect(x + w2, y + h2, w2, h2), this, this.level + 1);
+    this.nodes[3] = new QuadNode<T>(
+      new go.Rect(x + w2, y + h2, w2, h2),
+      this,
+      this.level + 1
+    );
   }
 
   clear(): void {
@@ -213,7 +217,8 @@ export class Quadtree<T> {
     const horizontalMidpoint = node.bounds.x + node.bounds.width / 2;
     const verticalMidpoint = node.bounds.y + node.bounds.height / 2;
 
-    const topQuadrant = rect.y <= verticalMidpoint && rect.y + rect.height <= verticalMidpoint;
+    const topQuadrant =
+      rect.y <= verticalMidpoint && rect.y + rect.height <= verticalMidpoint;
     const bottomQuadrant = rect.y >= verticalMidpoint;
 
     if (rect.x + rect.width <= horizontalMidpoint) {
@@ -469,7 +474,10 @@ export class Quadtree<T> {
         const index = this._getIndex(root.treeObjects[i].bounds, root);
         if (
           index !== -1 &&
-          !(root.treeObjects[i].bounds.width === 0 || root.treeObjects[i].bounds.height === 0)
+          !(
+            root.treeObjects[i].bounds.width === 0 ||
+            root.treeObjects[i].bounds.height === 0
+          )
         ) {
           root.objects.splice(i, 1);
           const selected = root.nodes[index];
@@ -841,7 +849,13 @@ export class Quadtree<T> {
    * @param width - the width to set the object to, unnecessary if a Rect was given
    * @param height - the height to set the object to, unnecessary if a Rect was given
    */
-  setTo(obj: T, x: number | go.Rect, y?: number, width?: number, height?: number): boolean {
+  setTo(
+    obj: T,
+    x: number | go.Rect,
+    y?: number,
+    width?: number,
+    height?: number
+  ): boolean {
     const treeObj = this._treeObjectMap.get(obj);
     if (treeObj && this.remove(obj)) {
       if (x instanceof go.Rect) {
@@ -1038,7 +1052,8 @@ export class Quadtree<T> {
       // if root is split
       for (const node of root.nodes) {
         if (node !== null) {
-          const [extremes0, extremes1, extremes2, extremes3] = this._findExtremeObjectsHelper(node);
+          const [extremes0, extremes1, extremes2, extremes3] =
+            this._findExtremeObjectsHelper(node);
           if (
             minX == null ||
             (extremes0 !== null && extremes0.bounds.centerX < minX.bounds.centerX)

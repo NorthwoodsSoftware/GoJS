@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 // HTML + JavaScript context menu, made with HTMLInfo
 // This file exposes one instance of HTMLInfo, window.myHTMLLightBox
@@ -60,7 +60,9 @@ import * as go from 'gojs';
     {
       text: 'Paste',
       command: (diagram: go.Diagram) => {
-        diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint);
+        diagram.commandHandler.pasteSelection(
+          diagram.toolManager.contextMenuTool.mouseDownPoint
+        );
       },
       isVisible: (diagram: go.Diagram) =>
         diagram.commandHandler.canPasteSelection(
@@ -136,7 +138,11 @@ import * as go from 'gojs';
 
   let firstTime = true;
 
-  function showContextMenu(obj: go.GraphObject | null, diagram: go.Diagram, tool: go.Tool) {
+  function showContextMenu(
+    obj: go.GraphObject | null,
+    diagram: go.Diagram,
+    tool: go.Tool
+  ) {
     if (firstTime) {
       // We don't want the div acting as a context menu to have a (browser) context menu!
       cmLight.addEventListener(

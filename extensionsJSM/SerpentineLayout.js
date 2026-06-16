@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * A custom {@link go.Layout} that lays out a chain of nodes in a snake-like fashion.
  *
@@ -21,7 +21,7 @@ import * as go from 'gojs';
  *
  * When this layout is the Diagram.layout, it is automatically invalidated when the viewport changes size.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Serpentine.html">Serpentine Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Serpentine">Serpentine Layout</a> sample.
  * @category Layout Extension
  */
 export class SerpentineLayout extends go.Layout {

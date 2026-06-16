@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 // These are the definitions for all of the predefined templates and tool archetypes.
 // The source code for this is at extensionsJSM/Templates.ts.
@@ -125,8 +125,12 @@ export function setupSelectionAdornments(diagram: go.Diagram) {
     new go.Shape({ fill: null, stroke: 'dodgerblue', strokeWidth: 3 })
       .theme('stroke', 'selection')
       .theme('strokeWidth', 'selection'),
-    new go.Placeholder({ margin: 1.5 }).theme('margin', 'numbers.selection', '', null, (sw) =>
-      sw ? new go.Margin(sw / 2) : 1.5
+    new go.Placeholder({ margin: 1.5 }).theme(
+      'margin',
+      'numbers.selection',
+      '',
+      null,
+      (sw) => (sw ? new go.Margin(sw / 2) : 1.5)
     )
   );
 

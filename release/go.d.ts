@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v3.1.10
+ * Type definitions for GoJS v4.0.0
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -20,6 +20,299 @@ export interface ObjectData {
     [index: string]: any;
 }
 /**
+ * Typed constants for GoJS string-based registries.
+ * These provide autocomplete and compile-time checking for values
+ * that are otherwise plain strings.
+ *
+ * @since 4.0
+ * @category Constants
+ */
+/**
+ * All built-in figure names for {@link Shape.figure}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Example:
+ * ```ts
+ * new go.Shape({ figure: go.Figures.RoundedRectangle })
+ * // equivalent to:
+ * new go.Shape({ figure: "RoundedRectangle" })
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const Figures: {
+    readonly None: "None";
+    readonly Rectangle: "Rectangle";
+    readonly Square: "Square";
+    readonly RoundedRectangle: "RoundedRectangle";
+    readonly Border: "Border";
+    readonly RoundedTopRectangle: "RoundedTopRectangle";
+    readonly RoundedBottomRectangle: "RoundedBottomRectangle";
+    readonly RoundedLeftRectangle: "RoundedLeftRectangle";
+    readonly RoundedRightRectangle: "RoundedRightRectangle";
+    readonly Ellipse: "Ellipse";
+    readonly Circle: "Circle";
+    readonly TriangleRight: "TriangleRight";
+    readonly TriangleDown: "TriangleDown";
+    readonly TriangleLeft: "TriangleLeft";
+    readonly TriangleUp: "TriangleUp";
+    readonly Triangle: "Triangle";
+    readonly Diamond: "Diamond";
+    readonly LineH: "LineH";
+    readonly LineV: "LineV";
+    readonly BarH: "BarH";
+    readonly BarV: "BarV";
+    readonly MinusLine: "MinusLine";
+    readonly PlusLine: "PlusLine";
+    readonly XLine: "XLine";
+    readonly LineRight: "LineRight";
+    readonly LineDown: "LineDown";
+    readonly LineLeft: "LineLeft";
+    readonly LineUp: "LineUp";
+    readonly Capsule: "Capsule";
+    readonly Borders: "Borders";
+};
+/**
+ * Union type of all built-in figure name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type FigureName = typeof Figures[keyof typeof Figures];
+/**
+ * All built-in arrowhead names for {@link Shape.toArrow} and {@link Shape.fromArrow}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Example:
+ * ```ts
+ * new go.Shape({ toArrow: go.Arrowheads.Standard })
+ * // equivalent to:
+ * new go.Shape({ toArrow: "Standard" })
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const Arrowheads: {
+    readonly Standard: "Standard";
+    readonly Backward: "Backward";
+    readonly Triangle: "Triangle";
+    readonly BackwardTriangle: "BackwardTriangle";
+    readonly Boomerang: "Boomerang";
+    readonly BackwardBoomerang: "BackwardBoomerang";
+    readonly SidewaysV: "SidewaysV";
+    readonly BackwardV: "BackwardV";
+    readonly OpenTriangle: "OpenTriangle";
+    readonly BackwardOpenTriangle: "BackwardOpenTriangle";
+    readonly OpenTriangleLine: "OpenTriangleLine";
+    readonly BackwardOpenTriangleLine: "BackwardOpenTriangleLine";
+    readonly OpenTriangleTop: "OpenTriangleTop";
+    readonly BackwardOpenTriangleTop: "BackwardOpenTriangleTop";
+    readonly OpenTriangleBottom: "OpenTriangleBottom";
+    readonly BackwardOpenTriangleBottom: "BackwardOpenTriangleBottom";
+    readonly HalfTriangleTop: "HalfTriangleTop";
+    readonly BackwardHalfTriangleTop: "BackwardHalfTriangleTop";
+    readonly HalfTriangleBottom: "HalfTriangleBottom";
+    readonly BackwardHalfTriangleBottom: "BackwardHalfTriangleBottom";
+    readonly ForwardSemiCircle: "ForwardSemiCircle";
+    readonly BackwardSemiCircle: "BackwardSemiCircle";
+    readonly Feather: "Feather";
+    readonly BackwardFeather: "BackwardFeather";
+    readonly DoubleFeathers: "DoubleFeathers";
+    readonly BackwardDoubleFeathers: "BackwardDoubleFeathers";
+    readonly TripleFeathers: "TripleFeathers";
+    readonly BackwardTripleFeathers: "BackwardTripleFeathers";
+    readonly ForwardSlash: "ForwardSlash";
+    readonly BackSlash: "BackSlash";
+    readonly DoubleForwardSlash: "DoubleForwardSlash";
+    readonly DoubleBackSlash: "DoubleBackSlash";
+    readonly TripleForwardSlash: "TripleForwardSlash";
+    readonly TripleBackSlash: "TripleBackSlash";
+    readonly Fork: "Fork";
+    readonly BackwardFork: "BackwardFork";
+    readonly LineFork: "LineFork";
+    readonly BackwardLineFork: "BackwardLineFork";
+    readonly CircleFork: "CircleFork";
+    readonly BackwardCircleFork: "BackwardCircleFork";
+    readonly CircleLineFork: "CircleLineFork";
+    readonly BackwardCircleLineFork: "BackwardCircleLineFork";
+    readonly Circle: "Circle";
+    readonly Block: "Block";
+    readonly StretchedDiamond: "StretchedDiamond";
+    readonly Diamond: "Diamond";
+    readonly Chevron: "Chevron";
+    readonly StretchedChevron: "StretchedChevron";
+    readonly NormalArrow: "NormalArrow";
+    readonly X: "X";
+    readonly TailedNormalArrow: "TailedNormalArrow";
+    readonly DoubleTriangle: "DoubleTriangle";
+    readonly BigEndArrow: "BigEndArrow";
+    readonly ConcaveTailArrow: "ConcaveTailArrow";
+    readonly RoundedTriangle: "RoundedTriangle";
+    readonly SimpleArrow: "SimpleArrow";
+    readonly AccelerationArrow: "AccelerationArrow";
+    readonly BoxArrow: "BoxArrow";
+    readonly TriangleLine: "TriangleLine";
+    readonly CircleEndedArrow: "CircleEndedArrow";
+    readonly DynamicWidthArrow: "DynamicWidthArrow";
+    readonly EquilibriumArrow: "EquilibriumArrow";
+    readonly FastForward: "FastForward";
+    readonly Kite: "Kite";
+    readonly HalfArrowTop: "HalfArrowTop";
+    readonly HalfArrowBottom: "HalfArrowBottom";
+    readonly OpposingDirectionDoubleArrow: "OpposingDirectionDoubleArrow";
+    readonly PartialDoubleTriangle: "PartialDoubleTriangle";
+    readonly LineCircle: "LineCircle";
+    readonly DoubleLineCircle: "DoubleLineCircle";
+    readonly TripleLineCircle: "TripleLineCircle";
+    readonly CircleLine: "CircleLine";
+    readonly DiamondCircle: "DiamondCircle";
+    readonly PlusCircle: "PlusCircle";
+    readonly OpenRightTriangleTop: "OpenRightTriangleTop";
+    readonly OpenRightTriangleBottom: "OpenRightTriangleBottom";
+    readonly Line: "Line";
+    readonly DoubleLine: "DoubleLine";
+    readonly TripleLine: "TripleLine";
+    readonly PentagonArrow: "PentagonArrow";
+};
+/**
+ * Union type of all built-in arrowhead name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type ArrowheadName = typeof Arrowheads[keyof typeof Arrowheads];
+/**
+ * All built-in panel layout type names for the Panel constructor and {@link Panel.type}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Note: You can also use the static properties on {@link Panel}, e.g. `Panel.Auto`, `Panel.Table`.
+ *
+ * Example:
+ * ```ts
+ * new go.Panel(go.PanelTypes.Table, ...)
+ * // equivalent to:
+ * new go.Panel("Table", ...)
+ * // or:
+ * new go.Panel(go.Panel.Table, ...)
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const PanelTypes: {
+    readonly Position: "Position";
+    readonly Horizontal: "Horizontal";
+    readonly Vertical: "Vertical";
+    readonly Spot: "Spot";
+    readonly Auto: "Auto";
+    readonly Table: "Table";
+    readonly Viewbox: "Viewbox";
+    readonly TableRow: "TableRow";
+    readonly TableColumn: "TableColumn";
+    readonly Link: "Link";
+    readonly Grid: "Grid";
+    readonly Graduated: "Graduated";
+};
+/**
+ * Union type of all built-in panel layout type name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type PanelTypeName = typeof PanelTypes[keyof typeof PanelTypes];
+/**
+ * All standard tool names used with {@link ToolManager.findTool} and {@link ToolManager.replaceTool}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Example:
+ * ```ts
+ * myDiagram.toolManager.findTool(go.ToolNames.Dragging)
+ * // equivalent to:
+ * myDiagram.toolManager.findTool("Dragging")
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const ToolNames: {
+    readonly Action: "Action";
+    readonly Relinking: "Relinking";
+    readonly LinkReshaping: "LinkReshaping";
+    readonly Rotating: "Rotating";
+    readonly Resizing: "Resizing";
+    readonly Linking: "Linking";
+    readonly Dragging: "Dragging";
+    readonly DragSelecting: "DragSelecting";
+    readonly Panning: "Panning";
+    readonly ContextMenu: "ContextMenu";
+    readonly TextEditing: "TextEditing";
+    readonly ClickCreating: "ClickCreating";
+    readonly ClickSelecting: "ClickSelecting";
+};
+/**
+ * Union type of all standard tool name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type ToolName = typeof ToolNames[keyof typeof ToolNames];
+/**
+ * All built-in builder names for {@link GraphObject.build} and {@link GraphObject.make}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Example:
+ * ```ts
+ * go.GraphObject.build(go.Builders.Button, { ... })
+ * // equivalent to:
+ * go.GraphObject.build("Button", { ... })
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const Builders: {
+    readonly Button: "Button";
+    readonly TreeExpanderButton: "TreeExpanderButton";
+    readonly SubGraphExpanderButton: "SubGraphExpanderButton";
+    readonly ToolTip: "ToolTip";
+    readonly ContextMenu: "ContextMenu";
+    readonly ContextMenuButton: "ContextMenuButton";
+    readonly PanelExpanderButton: "PanelExpanderButton";
+    readonly CheckBoxButton: "CheckBoxButton";
+    readonly CheckBox: "CheckBox";
+    readonly AutoRepeatButton: "AutoRepeatButton";
+    readonly ToggleSwitch: "ToggleSwitch";
+    readonly Toggle: "Toggle";
+};
+/**
+ * Union type of all built-in builder name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type BuilderName = typeof Builders[keyof typeof Builders];
+/**
+ * All standard layer names used as a {@link Part.layerName} or with {@link Diagram.findLayer}.
+ * Use these constants instead of plain strings for autocomplete and type safety.
+ *
+ * Example:
+ * ```ts
+ * myDiagram.findLayer(go.LayerNames.Background)
+ * // equivalent to:
+ * myDiagram.findLayer("Background")
+ * ```
+ * @since 4.0
+ * @category Constants
+ */
+export declare const LayerNames: {
+    readonly Grid: "Grid";
+    readonly ViewportBackground: "ViewportBackground";
+    readonly Background: "Background";
+    readonly Default: "";
+    readonly Foreground: "Foreground";
+    readonly ViewportForeground: "ViewportForeground";
+    readonly Adornment: "Adornment";
+    readonly Tool: "Tool";
+};
+/**
+ * Union type of all standard tool name strings.
+ * @since 4.0
+ * @category Constants
+ */
+export type LayerName = typeof LayerNames[keyof typeof LayerNames];
+/**
  * This interface is implemented by the {@link List}, {@link Set}, and {@link Map}
  * classes; it provides the {@link iterator} read-only property that returns an {@link Iterator}.
  *
@@ -30,6 +323,9 @@ export interface ObjectData {
  *   const item = it.value;
  * }
  * ```
+ *
+ * Note that GoJS iteration is quite different than ECMAScript iteration.
+ * The GoJS collection classes were defined in GoJS before the ECMAScript collection classes were proposed.
  * @category Collection
  */
 export interface Iterable<T> {
@@ -75,6 +371,9 @@ export interface Iterable<T> {
  * To avoid confusion when dealing with {@link Iterable}s,
  * iterators implement the {@link Iterable.iterator} property
  * by just returning themselves.
+ *
+ * Note that GoJS iteration is quite different than ECMAScript iteration.
+ * The GoJS collection classes were defined in GoJS before the ECMAScript collection classes were proposed.
  * @category Collection
  */
 export interface Iterator<T> extends Iterable<T> {
@@ -306,6 +605,7 @@ export interface IContext {
     moveTo(x: number, y: number): void;
     quadraticCurveTo(a: number, b: number, c: number, d: number): void;
     rect(x: number, y: number, w: number, h: number): void;
+    ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): void;
     restore(): void;
     rotate(angle: number): void;
     save(): void;
@@ -383,7 +683,7 @@ export class List<T> implements Iterable<T> {
      * This class implements the JavaScript `Symbol.iterator`,
      * and can be used with spread syntax or `for ... of` statements.
      */
-    [Symbol.iterator](): IterableIterator<T>;
+    [Symbol.iterator](): ArrayIterator<T>;
     /**
      */
     toString(): string;
@@ -419,6 +719,8 @@ export class List<T> implements Iterable<T> {
     clear(): void;
     /**
      * Returns whether the given value is in this List.
+     * A synonym for {@link has}.
+     *
      * @param val - The value to check.
      * @returns Whether or not the value is contained within the List.
      */
@@ -443,6 +745,8 @@ export class List<T> implements Iterable<T> {
     elt(i: number): T;
     /**
      * Returns the element at the given index.
+     * A synonym for {@link elt}.
+     *
      * @param i - int The index of the element to return.
      * @returns the value at the given index.
      */
@@ -533,6 +837,7 @@ export class List<T> implements Iterable<T> {
     insertAt(i: number, val: T): void;
     /**
      * Removes a given value (if found) from the List.
+     * A synonym for {@link delete}.
      *
      * Be careful not to call this method while iterating over the collection.
      * @param val - The value to remove.
@@ -755,6 +1060,7 @@ export class Set<T> implements Iterable<T> {
     has(val: T): boolean;
     /**
      * Returns whether the given value is in this Set.
+     * A synonym for {@link has}.
      * @param val - The value to check.
      * @returns Whether or not the value is contained within the Set.
      */
@@ -831,6 +1137,7 @@ export class Set<T> implements Iterable<T> {
     delete(val: T): boolean;
     /**
      * Removes a value (if found) from the Set.
+     * A synonym for {@link delete}.
      *
      * Be careful not to call this method while iterating over the collection.
      * @param val - The value to insert.
@@ -1006,6 +1313,7 @@ export class Map<K, V> {
     /**
      * Adds a key-value association to the Map, or replaces the value associated with the key
      * if the key was already present in the map.
+     * A synonym for {@link set}.
      *
      * Be careful not to call this method while iterating over the collection.
      * @param key - The key or index for storing the value in the Map.
@@ -1089,6 +1397,8 @@ export class Map<K, V> {
     has(key: K): boolean;
     /**
      * Returns whether the given key is in this Map.
+     * A synonym for {@link has}.
+     *
      * @param key - The key to look up in the Map.
      * @returns Whether or not the key is contained within the Map.
      */
@@ -1101,6 +1411,8 @@ export class Map<K, V> {
     get(key: K): V | null;
     /**
      * Returns the value associated with a key.
+     * A synonym for {@link get}.
+     *
      * @param key - The key to look up in the Map.
      * @returns The value associated with the given key, or null if not present in the Map.
      */
@@ -1115,6 +1427,7 @@ export class Map<K, V> {
     delete(key: K): boolean;
     /**
      * Removes a key (if found) from the Map.
+     * A synonym for {@link delete}.
      *
      * Be careful not to call this method while iterating over the collection.
      * @param key - The key to insert.
@@ -1459,13 +1772,13 @@ export class Point {
     /**
      * Modify this point to be at the nearest point on an infinite grid,
      * given the grid's origin and size of each grid cell.
-     * @param originx - the top-left point of one of the grid cells
-     * @param originy - the top-left point of one of the grid cells
+     * @param originX - the top-left point of one of the grid cells
+     * @param originY - the top-left point of one of the grid cells
      * @param cellwidth - the size of each grid cell -- must be a real number larger than zero
      * @param cellheight - the size of each grid cell -- must be a real number larger than zero
      * @returns this modified Point
      */
-    snapToGrid(originx: number, originy: number, cellwidth: number, cellheight: number): this;
+    snapToGrid(originX: number, originY: number, cellwidth: number, cellheight: number): this;
     /**
      * Modify this point to be at the nearest point on an infinite grid,
      * given the grid's origin and size of each grid cell.
@@ -2411,174 +2724,295 @@ export class Spot {
      * code looking for a particular point on an element will need to do their
      * own calculations to determine the desired point depending on the
      * circumstances.
-     * @constant
      */
     static readonly None: Spot;
     /**
      * Use this value to indicate that the real spot value is inherited from elsewhere.
-     * @constant
      */
     static readonly Default: Spot;
     /**
      * The specific point at the top-left corner of the bounding rectangle.
-     * @constant
      */
     static readonly TopLeft: Spot;
     /**
      * The specific point at the center of the top side of the bounding rectangle.
-     * @constant
      */
     static readonly TopCenter: Spot;
     /**
      * The specific point at the top-right corner of the bounding rectangle.
-     * @constant
      */
     static readonly TopRight: Spot;
     /**
      * The specific point at the middle of the left side of bounding rectangle.
-     * @constant
      */
     static readonly LeftCenter: Spot;
     /**
      * The specific point at the very center of the bounding rectangle.
-     * @constant
      */
     static readonly Center: Spot;
     /**
      * The specific point at the middle of the right side of bounding rectangle.
-     * @constant
      */
     static readonly RightCenter: Spot;
     /**
      * The specific point at the bottom-left corner of the bounding rectangle.
-     * @constant
      */
     static readonly BottomLeft: Spot;
     /**
      * The specific point at the middle of the bottom side of bounding rectangle.
-     * @constant
      */
     static readonly BottomCenter: Spot;
     /**
      * The specific point at the bottom-right corner of the bounding rectangle.
-     * @constant
      */
     static readonly BottomRight: Spot;
     /**
      * A synonym for {@link Spot.TopCenter}.
-     * @constant
      */
     static readonly MiddleTop: Spot;
     /**
      * A synonym for {@link Spot.LeftCenter}.
-     * @constant
      */
     static readonly MiddleLeft: Spot;
     /**
      * A synonym for {@link Spot.RightCenter}.
-     * @constant
      */
     static readonly MiddleRight: Spot;
     /**
      * A synonym for {@link Spot.BottomCenter}.
-     * @constant
      */
     static readonly MiddleBottom: Spot;
     /**
      * A synonym for {@link Spot.TopCenter}.
-     * @constant
      */
     static readonly Top: Spot;
     /**
      * A synonym for {@link Spot.LeftCenter}.
-     * @constant
      */
     static readonly Left: Spot;
     /**
      * A synonym for {@link Spot.RightCenter}.
-     * @constant
      */
     static readonly Right: Spot;
     /**
      * A synonym for {@link Spot.BottomCenter}.
-     * @constant
      */
     static readonly Bottom: Spot;
     /**
      * The set of points at the top side of the bounding rectangle.
-     * @constant
      */
     static readonly TopSide: Spot;
     /**
      * The set of points at the left side of the bounding rectangle.
-     * @constant
      */
     static readonly LeftSide: Spot;
     /**
      * The set of points at the right side of the bounding rectangle.
-     * @constant
      */
     static readonly RightSide: Spot;
     /**
      * The set of points at the bottom side of the bounding rectangle.
-     * @constant
      */
     static readonly BottomSide: Spot;
     /**
      * The set of points at the top or bottom sides of the bounding rectangle.
-     * @constant
      */
     static readonly TopBottomSides: Spot;
     /**
      * The set of points at the left or right sides of the bounding rectangle.
-     * @constant
      */
     static readonly LeftRightSides: Spot;
     /**
      * The set of points at the top or left sides of the bounding rectangle.
-     * @constant
      */
     static readonly TopLeftSides: Spot;
     /**
      * The set of points at the top or right sides of the bounding rectangle.
-     * @constant
      */
     static readonly TopRightSides: Spot;
     /**
      * The set of points at the left or bottom sides of the bounding rectangle.
-     * @constant
      */
     static readonly BottomLeftSides: Spot;
     /**
      * The set of points at the right or bottom sides of the bounding rectangle.
-     * @constant
      */
     static readonly BottomRightSides: Spot;
     /**
      * The set of points on all sides of the bounding rectangle except top side.
-     * @constant
      */
     static readonly NotTopSide: Spot;
     /**
      * The set of points on all sides of the bounding rectangle except left side.
-     * @constant
      */
     static readonly NotLeftSide: Spot;
     /**
      * The set of points on all sides of the bounding rectangle except right side.
-     * @constant
      */
     static readonly NotRightSide: Spot;
     /**
      * The set of points on all sides of bounding rectangle except bottom side.
-     * @constant
      */
     static readonly NotBottomSide: Spot;
     /**
      * The set of points on all sides of the bounding rectangle.
-     * @constant
      */
     static readonly AllSides: Spot;
+}
+/**
+ * (undocumented)
+ * This efficiently associates an object of type T with a {@link Rect},
+ * and makes it easy to find all objects in the Quadtree that intersect with a given rectangular area.
+ * A Quadtree is a recursive structure forming a tree of Quadtrees partitioning the bounds of this Quadtree.
+ *
+ * @category Collection
+ */
+export class Quadtree<T> {
+    /**
+     * Quadtree Constructor
+     *
+     * @param x bounds.left
+     * @param y bounds.top
+     * @param w bounds.width
+     * @param h bounds.height
+     * @param maxObjects optional max objects this can hold before it splits, default `10`
+     * @param maxLevels optional total max nesting levels of the root Quadtree, default `4`
+     * @param level optional depth level (internal use only, required for subtrees)
+     */
+    constructor(x: number, y: number, w: number, h: number, maxObjects?: number, maxLevels?: number, level?: number);
+    /**
+     * Gets the bounds of this Quadtree.
+     */
+    get bounds(): Rect;
+    /**
+     * Gets the level at which this Quadtree is in the overall Quadtree.
+     * The value is assigned by the constructor; only the root Quadtree should have a level of zero.
+     */
+    get level(): number;
+    /**
+     * True when there are no subtrees.
+     */
+    get isLeaf(): boolean;
+    /**
+     * Clear this Quadtree.
+     * All stored objects, their bounds, and subtrees are removed from this Quadtree.
+     */
+    clear(): void;
+    /**
+     * Remember this Quadtree's objects, clear it, update maxObjects, then reinsert all objects.
+     *
+     * @param maxObjects optional new number of max objects for this Quadtree, default `10`
+     */
+    reinitialize(maxObjects?: number): void;
+    /**
+     * Resize the Quadtree. Should only be called on the root Quadtree.
+     *
+     * @param rect make sure the new bounds is at least as big as this Rect.
+     * @param inflate optional the distance beyond the given RECT to which the bounds should be set, default 200
+     */
+    resize(rect: Rect, inflate?: number): void;
+    /**
+     * Insert an object into the Quadtree with the given bounds.
+     *
+     * If the capacity is exceeded, it will split and add all objects to their corresponding subtrees.
+     *
+     * @param obj Object to be added.
+     * @param bounds Rect bounds for quad tree - this rect is **not** copied, so you may need to
+     * @see {@link setTo}
+     */
+    set(obj: T, bounds: Rect): void;
+    /**
+     * Synonym of {@link set}.
+     */
+    add(obj: T, bounds: Rect): void;
+    /**
+     * Insert an object into the Quadtree with the given bounds.
+     * This is just like {@link set} but takes discrete number arguments instead of a {@link Rect}.
+     *
+     * If the capacity is exceeded, it will split and add all objects to their corresponding subtrees.
+     *
+     * @param obj - Object to be added.
+     * @param x bounds.left
+     * @param y bounds.top
+     * @param w optional width, default zero
+     * @param h optional height, default zero
+     * @see {@link set}
+     */
+    setTo(obj: T, x: number, y: number, w?: number, h?: number): void;
+    /**
+     * Return all objects that could collide with the given area.
+     * Width and height can be zero to use a point.
+     * @param r the Rect specifying the area to search in
+     * @param result a Set to which results will be added and then returned; if not provided, a new one is allocated
+     * @returns optional Set containing all detected objects that is modified and returned
+     * @see {@link findIn}
+     */
+    find(r: Rect, result?: Set<T>): Set<T>;
+    /**
+     * Return all objects that could collide with the given area.
+     * Width and height can be zero to use a point.
+     * This is just like {@link find} but takes discrete number arguments instead of a {@link Rect}.
+     *
+     * @param x
+     * @param y
+     * @param w can be zero
+     * @param h can be zero
+     * @param result a Set to which results will be added and then returned; if not provided, a new one is allocated
+     * @returns optional Set containing all detected objects that is modified and returned
+     * @see {@link find}
+     */
+    findIn(x: number, y: number, w?: number, h?: number, result?: Set<T>): Set<T>;
+    /**
+     * Remove an object from the tree.
+     * If you have to remove many objects, consider clearing the entire tree and rebuilding it or use the `fast` flag to cleanup after the last removal.
+     *
+     * @param obj Object to be removed.
+     * @param fast optional boolean, when true, increases performance temporarily by preventing cleanup of empty subtrees - default: false
+     * @returns Whether or not the object was removed from THIS tree (no recursive check).
+     */
+    delete(obj: T, fast?: boolean): boolean;
+    /**
+     * A synonym of {@link delete}.
+     *
+     * @param obj The object to be removed from this Quadtree
+     * @param fast optional boolean true to increase performance temporarily by preventing cleanup of empty subtrees, default: false
+     * @returns true if the given object was actually removed from this Quadtree
+     */
+    remove(obj: T, fast?: boolean): boolean;
+    /**
+     * Update the bounds of an object already in the tree (shorthand for remove and insert).
+     * If you have to update many objects, consider clearing and rebuilding the
+     * entire tree or use the `fast` flag to cleanup after the last update.
+     *
+     * @param obj Object whose bounds should be updated.
+     * @param rect new bounds
+     * @param fast optional boolean true to increase performance temporarily by preventing cleanup of empty subtrees - default: false
+     * @see {@link moveTo}
+     */
+    move(obj: T, rect: Rect, fast?: boolean): void;
+    /**
+     * Update the bounds of an object already in the tree.
+     * This is just like {@link move} but takes discrete number arguments instead of a {@link Rect}.
+     *
+     * If you have to update many objects, consider clearing and rebuilding the
+     * entire tree or use the `fast` flag to cleanup after the last update.
+     *
+     * @param obj Object whose bounds should be updated
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @param fast optional boolean true to increase performance temporarily by preventing cleanup of empty subtrees - default: false
+     * @see {@link move}
+     */
+    moveTo(obj: T, x: number, y: number, w: number, h: number, fast?: boolean): void;
+    /**
+     * Adds all objects and their bounds to a Map. Convenient for recreating
+     *
+     * @param allObjects an optional Map<t, Rect> to which all information is added, and then returned
+     * @returns The objects from this tree and all subtrees combined.
+     */
+    toMap(allObjects?: Map<T, Rect>): Map<T, Rect>;
 }
 /**
  * This enumeration specifies possible values for {@link Geometry.type}.
@@ -2645,7 +3079,7 @@ export declare enum GeometryStretch {
  * However, a Geometry may be shared by multiple Shapes.
  *
  * It is commonplace to create Geometries using geometry path string syntax:
- * <a href="../../intro/geometry.html">Geometry Path Strings</a>.
+ * <a href="../../learn/geometry">Geometry Path Strings</a>.
  * However it is much more efficient to create Geometries programmatically.
  * One way to do that is illustrated by several of the samples that evaluate JavaScript such as:
  * ```js
@@ -2698,7 +3132,7 @@ export class Geometry {
      *
      * The string produced by this method is a superset of the SVG path
      * string rules that contains some additional GoJS-specific tokens.
-     * See the <a href="../../intro/pictures.html">Introduction page on Geometry Parsing</a> for more details.
+     * See the <a href="../../learn/pictures">Learn page on Geometry Parsing</a> for more details.
      * @param val a Geometry to be rendered as a string
      */
     static stringify(val: Geometry): string;
@@ -2738,7 +3172,7 @@ export class Geometry {
      *   - `F0` (instead of `F`) Denotes that the PathFigure should use the even-odd fill rule instead of the nonzero winding number rule (setting {@link PathFigure.isEvenOdd})
      *   - `U` Denotes that the PathFigure is not shadowed
      *
-     * See the <a href="../../intro/geometry.html">Introduction page on Geometry Parsing</a> for more details.
+     * See the <a href="../../learn/geometry">Learn page on Geometry Parsing</a> for more details.
      * @param str
      * @param filled - whether figures should be filled.
      * If true, all PathFigures in the string will be filled regardless of the presence
@@ -2750,8 +3184,9 @@ export class Geometry {
     /**
      * Computes the Geometry's bounds without adding an origin point, and returns those bounds as a rect.
      * This method does not modify the Geometry or its bounds.
+     * @param result an optional Rect that is modified and returned
      */
-    computeBoundsWithoutOrigin(): Rect;
+    computeBoundsWithoutOrigin(result?: Rect): Rect;
     /**
      * Normalizes the Geometry points in place by ensuring the top-left bounds of the geometry lines up with (0, 0),
      * returning the {@link Point} (x, y) amount it was shifted.
@@ -2952,6 +3387,7 @@ export class Geometry {
      */
     get polygonArea(): number;
     /**
+     * (undocumented)
      * This computes the total length of the sides of this polygonal Geometry.
      * It treats any curved segments as straight lines, however it works correctly for Ellipse geometries.
      */
@@ -3028,7 +3464,7 @@ export class PathFigure {
      * or nonzero winding number fill rule (false).
      * The default value is false, using the nonzero winding number rule.
      *
-     * In <a href="../../intro/geometry.html">Geometry Path Strings</a>, this is set by using "F0" instead of "F" at the beginning of a figure.
+     * In <a href="../../learn/geometry">Geometry Path Strings</a>, this is set by using "F0" instead of "F" at the beginning of a figure.
      * @since 2.3
      */
     get isEvenOdd(): boolean;
@@ -3345,7 +3781,7 @@ export class PathSegment {
  * By default a user-created InputEvent sets {@link button} and {@link buttons} as if the event was a left-click.
  *
  * You can create InputEvents and set the value of {@link Diagram.lastInput} in order to simulate user actions in tools.
- * This can be useful for testing. See the <a href="../../extensions/Robot.html">Robot extension sample</a> for
+ * This can be useful for testing. See the <a href="../../samples/Robot.html">Simulated inputs sample</a> for
  * an example of creating InputEvents to simulate user input.
  */
 export class InputEvent {
@@ -4324,8 +4760,8 @@ export class Transaction {
 /**
  * An UndoManager observes and records model and diagram changes in transactions and
  * supports undo/redo operations.
- * You will need to set the {@link isEnabled} property to true in order for
- * the UndoManager to record changes and for users to perform an undo or a redo.
+ * If you want your users to be able to perform undo and redo,
+ * you will need to first set the {@link isEnabled} property to true.
  *
  * Typically an operation will call {@link startTransaction},
  * make some changes to the {@link Model} and/or {@link Diagram},
@@ -4351,7 +4787,11 @@ export class Transaction {
  * Transactions may be nested.
  * Be sure to call either {@link commitTransaction} or {@link rollbackTransaction}
  * for each call to {@link startTransaction}.
- * Avoid repeated start-commit-start-commit calls as a result of a user's actions.
+ * We recommend that you call {@link Model.commit} or {@link Diagram.commit} to avoid possible situations where
+ * calls to start and commit/rollback are not paired and properly nested.
+ *
+ * Avoid repeated programmatic start-commit-start-commit calls as a result of a user's actions,
+ * because that will be confusing to the user.
  * Instead, start, make all changes, and then commit.
  *
  * If you want to restore the diagram to the state before the latest complete
@@ -4360,7 +4800,7 @@ export class Transaction {
  * If after some number of undo's you start a transaction,
  * all of the history after the current state is discarded,
  * and a new transaction may be recorded.
- * You cannot undo or redo during a transaction.
+ * You cannot undo or redo during a transaction, although you can rollback a nested transaction.
  *
  * Initially each {@link Model} has its own UndoManager.
  * UndoManagers may be shared by multiple Models by replacing
@@ -4368,16 +4808,15 @@ export class Transaction {
  *
  * There are several informational properties:
  *   - {@link isInTransaction} is true when a top-level transaction has been started that has not yet been committed or rolled-back.
- *   - {@link currentTransaction} holds the flattened list of all {@link ChangedEvent}s
- *     that have happened within the current transaction.
+ *   - {@link currentTransaction} holds the flattened list of all {@link ChangedEvent}s that have happened within the current transaction.
  *   - {@link transactionLevel} indicates the current depth of nesting.
- *   - {@link nestedTransactionNames} holds the stack of transaction names supplied to
- *     {@link startTransaction} calls.
- *   - {@link history} holds only complete top-level transactions.
+ *   - {@link nestedTransactionNames} holds the stack of transaction names supplied to {@link startTransaction} calls, perhaps useful for debugging.
  *   - {@link isUndoingRedoing} is true during a call to {@link undo} or {@link redo}.
+ *   - {@link history} holds only complete top-level transactions.
  *   - {@link historyIndex} indicates which {@link Transaction} in the {@link history} is the next to be "undone";
  *     this is decremented by each undo and incremented by each redo.
- *   - {@link transactionToUndo} and {@link transactionToRedo} indicate which {@link Transaction} may be undone or redone next, if any.
+ *   - {@link transactionToUndo} holds the Transaction that an {@link undo} would undo; might be null depending on {@link history} and {@link historyIndex}
+ *   - {@link transactionToRedo} holds the Transaction that an {@link redo} would redo; might be null depending on {@link history} and {@link historyIndex}
  *   - {@link models} returns an iterator over all of the {@link Model}s that this UndoManager is handling.
  *
  * A transaction may not be ongoing when replacing a {@link Diagram.model},
@@ -4418,7 +4857,7 @@ export class UndoManager {
      * The model will also receive notifications about transactions and undo or redo operations.
      *
      * You should not call this method during a transaction.
-     * @param model - A {@link Model} that this UndoManager is managing.
+     * @param model - A {@link Model} that this UndoManager will managing.
      * @see {@link models}
      * @see {@link removeModel}
      */
@@ -4458,16 +4897,19 @@ export class UndoManager {
     /**
      * Commit the current transaction started by a call to {@link startTransaction}.
      *
-     * For convenience, this method is called by {@link Model.commitTransaction} and {@link Diagram.commitTransaction}.
+     * You must have started a transaction previously.
      *
      * If this call stops a top-level transaction,
      * we mark the {@link currentTransaction} as complete ({@link Transaction.isComplete}),
      * we add the {@link Transaction} to the {@link history} list,
      * and we return true.
-     * Committing a transaction when there have been some undos without corresponding
+     *
+     * Committing a top-level transaction when there have been some undos without corresponding
      * redos will throw away the {@link Transaction}s holding changes that happened
-     * after the current state, before adding the new {@link Transaction} to the
-     * {@link history} list.
+     * after the current state, before adding the new {@link Transaction} to the {@link history} list.
+     *
+     * For convenience, this method is called by {@link Model.commitTransaction} and {@link Diagram.commitTransaction}.
+     *
      * @param tname - a short string describing the transaction;
      *        this is recorded as the {@link Transaction.name} and need not be the same as the string passed to {@link startTransaction}.
      *        If the value is an empty string or not supplied, this will use the name given to {@link startTransaction}.
@@ -4479,16 +4921,19 @@ export class UndoManager {
     /**
      * Rollback the current transaction started by a call to {@link startTransaction}, undoing any changes.
      *
-     * For convenience, this method is called by {@link Model.rollbackTransaction} and {@link Diagram.rollbackTransaction}.
+     * You must have started a transaction previously.
      *
      * This undoes and then discards the changes in the {@link currentTransaction}.
-     * You must have started a transaction previously.
+     *
+     * For convenience, this method is called by {@link Model.rollbackTransaction} and {@link Diagram.rollbackTransaction}.
+     *
      * @returns true if ending a top-level transaction.
      * @see {@link startTransaction}
      * @see {@link commitTransaction}
      */
     rollbackTransaction(): boolean;
     /**
+     * (undocumented)
      * After an undo, call this to discard all of the transactions after
      * this point in the history, as indicated by the {@link historyIndex}.
      * This method is called when a transaction occurs after some number of undo's
@@ -4502,6 +4947,20 @@ export class UndoManager {
      * or if an undo or a redo is ongoing.
      */
     discardHistoryAfterIndex(): void;
+    /**
+     * (undocumented)
+     * Combine two consecutive Transactions of the history into one Transaction,
+     * discarding the latter of the two.
+     *
+     * This modifies the {@link history} by deleting the Transaction following the given one,
+     *
+     * This method does nothing if an undo or a redo is ongoing,
+     * or if there are fewer than two transactions in the history.
+     *
+     * @param trans a Transaction in the {@link history}, which must be followed by another one;
+     * if not supplied, defaults to the next-to-last Transaction
+     */
+    combineTransactions(trans?: Transaction): void;
     /**
      * This predicate returns true if you can call {@link undo}.
      * This will return false if {@link isEnabled} is false (as it is by default),
@@ -4608,6 +5067,7 @@ export class UndoManager {
     /**
      * This read-only property returns the whole history, a list of all of the {@link Transaction}s,
      * each representing a transaction with some number of {@link ChangedEvent}s.
+     * The first Transaction is the oldest.
      *
      * You should not modify this List.
      */
@@ -4634,6 +5094,7 @@ export class UndoManager {
     /**
      * This read-only property returns the index into {@link history} for the current undoable {@link Transaction}.
      * The value is -1 if there is no undoable {@link Transaction} to be undone.
+     * The initial value is -1, when no transactions have been committed.
      */
     get historyIndex(): number;
     /**
@@ -4651,7 +5112,7 @@ export class UndoManager {
      * {@link startTransaction} will increment this value;
      * {@link commitTransaction} or {@link rollbackTransaction} will decrement it.
      * When this value is greater than zero, {@link canUndo}
-     * and {@link canRedo} will be false, because
+     * and {@link canRedo} will be false, because a transaction is ongoing and
      * additional logically related model change events may occur.
      */
     get transactionLevel(): number;
@@ -4678,7 +5139,7 @@ export class UndoManager {
  * The currently running tool, {@link Diagram.currentTool}, receives all input events from the {@link Diagram}
  * via canonicalized {@link InputEvent}s.
  * <p class="boxrun">
- * For more discussion, see <a href="../../intro/tools.html">Introduction to Tools</a>.
+ * For more discussion, see <a href="../../learn/tools">Learn page on Tools</a>.
  * See samples that make use of tools in the <a href="../../samples/index.html#tools">samples index</a>.
  *
  * Most tools are "mode-less" tools that are managed by the {@link ToolManager},
@@ -4733,7 +5194,7 @@ export class UndoManager {
  * However you must seriously consider calling the base method in order to gets its default behavior.
  * There may be situations where not calling the base method may cause subtle bugs.
  * But that depends on the method and the tool.
- * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call the base method.
+ * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call the base method.
  * @category Tool
  */
 export abstract class Tool {
@@ -4756,7 +5217,7 @@ export abstract class Tool {
      *
      * By default this method does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param part
      */
@@ -4769,13 +5230,22 @@ export abstract class Tool {
      *
      * By default this method returns {@link isEnabled}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns true if {@link isEnabled} is true and
      * if the {@link Diagram.toolManager} can make this tool the {@link Diagram.currentTool} and
      * then call the {@link doStart} method.
      */
     canStart(): boolean;
+    /**
+     * This method controls for some Tools whether {@link canStart} may return true depending on the button being used.
+     * Normally this returns true if {@link InputEvent.left} is true.
+     * This method may be overridden to consider other buttons, or to ignore which button by just returning true.
+     * @virtual
+     * @returns true, if the left mouse button is being held down
+     * @since 4.0
+     */
+    canStartButton(): boolean;
     /**
      * The Diagram calls this method when this tool becomes the current tool; you should not call this method.
      * Tool implementations should perform their per-use initialization here, such
@@ -4787,7 +5257,7 @@ export abstract class Tool {
      *
      * By default this method does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * If you override this method, it is commonplace to also override {@link doStop} to clean up whatever you set up in this method.
      * @virtual
@@ -4806,7 +5276,7 @@ export abstract class Tool {
      *
      * By default this only sets {@link isActive} to true.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * If you override this method, it is commonplace to also override {@link doDeactivate} to clean up whatever you set up in this method.
      * @virtual
@@ -4824,7 +5294,7 @@ export abstract class Tool {
      *
      * By default this only sets {@link isActive} to false.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * It is commonplace to override this method in order to clean up whatever you have set up in an override of {@link doActivate}.
      * @virtual
@@ -4841,7 +5311,7 @@ export abstract class Tool {
      *
      * By default this method does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * It is commonplace to override this method in order to clean up whatever you have set up in an override of {@link doStart}.
      * @virtual
@@ -4859,7 +5329,7 @@ export abstract class Tool {
      * You will want to override this method even in tools that call {@link startTransaction} and {@link stopTransaction},
      * because the {@link UndoManager} might not be enabled.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doCancel(): void;
@@ -4871,7 +5341,7 @@ export abstract class Tool {
      * This will call {@link doStop} -- you should not call that method directly.
      *
      * If you want to stop the current tool and have it restore the original state, call {@link doCancel}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     stopTool(): void;
@@ -4887,7 +5357,7 @@ export abstract class Tool {
      * By default this method checks {@link isActive}; if that is false it calls {@link canStart}.
      * If that in turn is true, this calls {@link doActivate}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseDown(): void;
@@ -4903,7 +5373,7 @@ export abstract class Tool {
      *
      * By default this method does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseMove(): void;
@@ -4920,7 +5390,7 @@ export abstract class Tool {
      *
      * By default this method just calls {@link stopTool}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseUp(): void;
@@ -4932,46 +5402,29 @@ export abstract class Tool {
      * By default this method does nothing.
      * (But the {@link ToolManager.doMouseWheel} override will call {@link Tool.standardMouseWheel}.)
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseWheel(): void;
     /**
-     * Called by {@link ToolManager.doMouseDown} and {@link ToolManager.doMouseMove},
-     * this method determines whether or not to allow pinch zooming from a multi-touch event.
-     * By default this predicate just returns true.
-     * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * As of version 4, this predicate method is no longer called by the {@link ToolManager}.
+     * Most of the responsibility for pinch zooming has been moved to the {@link PanningTool}.
      * @virtual
-     * @see {@link standardPinchZoomStart}
-     * @see {@link standardPinchZoomMove}
+     * @deprecated
      */
     canStartMultiTouch(): boolean;
     /**
-     * Initiates pinch-zooming on multi-touch devices.
-     *
-     * This is called by {@link ToolManager.doMouseDown} if the {@link Diagram.lastInput} has {@link InputEvent.isMultiTouch}
-     * set to true and {@link canStartMultiTouch} returns true.
-     * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * As of version 4, this method is no longer called by the {@link ToolManager}.
+     * Most of the responsibility for pinch zooming has been moved to the {@link PanningTool}.
      * @virtual
-     * @see {@link canStartMultiTouch}
-     * @see {@link standardPinchZoomMove}
+     * @deprecated
      */
     standardPinchZoomStart(): void;
     /**
-     * Continues pinch-zooming (started by {@link standardPinchZoomStart} on multi-touch devices.
-     *
-     * This is called by {@link ToolManager.doMouseMove} if the {@link Diagram.lastInput} has {@link InputEvent.isMultiTouch}
-     * set to true and {@link canStartMultiTouch} returns true.
-     * By default this calls {@link doCancel} in order to cancel the regular tool behavior caused by the multitouch events.
-     * This then calculates the appropriate zoom level and calls {@link CommandHandler.canResetZoom} to decide
-     * whether to call {@link CommandHandler.resetZoom} to actually set {@link Diagram.scale}.
-     * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * As of version 4, this method is no longer called by the {@link ToolManager}.
+     * Most of the responsibility for pinch zooming has been moved to the {@link PanningTool}.
      * @virtual
-     * @see {@link canStartMultiTouch}
-     * @see {@link standardPinchZoomStart}
+     * @deprecated
      */
     standardPinchZoomMove(): void;
     /**
@@ -4980,7 +5433,7 @@ export abstract class Tool {
      * Implementations of this method can look at {@link Diagram.lastInput} to get the key.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doKeyDown(): void;
@@ -4990,7 +5443,7 @@ export abstract class Tool {
      *
      * By default this method does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doKeyUp(): void;
@@ -5016,7 +5469,7 @@ export abstract class Tool {
      * with calls to `startTransaction` and `stopTransaction`.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the result of the call to rollback or commit the transaction.
      */
@@ -5041,7 +5494,7 @@ export abstract class Tool {
      * The {@link ClickSelectingTool} calls this method in its override of {@link doMouseUp} in order to change the selection.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     standardMouseSelect(): void;
@@ -5083,7 +5536,7 @@ export abstract class Tool {
      * Then the {@link ActionTool}'s {@link doMouseUp} override will raise the standard "click" events.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param navig - An optional custom navigation function to find target objects.
      * This argument is passed to {@link Diagram.findObjectAt}.
@@ -5117,7 +5570,7 @@ export abstract class Tool {
      * according to the value of {@link GraphObject.cursor} and {@link Diagram.defaultCursor}.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     standardMouseOver(): void;
@@ -5139,7 +5592,7 @@ export abstract class Tool {
      * upon mouse wheel events.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     standardMouseWheel(): void;
@@ -5154,7 +5607,7 @@ export abstract class Tool {
      * this method when the mouse has moved beyond the drag size.
      *
      * This method is rarely overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param delay - The delay, in milliseconds.
      * @param event - An optional event that caused this timer. Defaults to {@link Diagram.lastInput}.
@@ -5167,7 +5620,7 @@ export abstract class Tool {
      * This is called when a tool is stopped.
      *
      * This method is rarely overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     cancelWaitAfter(): void;
@@ -5178,7 +5631,7 @@ export abstract class Tool {
      *
      * By default this does nothing.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param event - The event that caused {@link standardWaitAfter}.
      */
@@ -5191,7 +5644,7 @@ export abstract class Tool {
      * not a GraphObject that is nested within Panels within the Adornment.
      *
      * This method is very infrequently overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param p - a Point in document coordinates.
      * @param category - the required {@link Part.category} of the {@link Adornment}.
@@ -5205,7 +5658,7 @@ export abstract class Tool {
      * On touch devices the value is automatically increased to accommodate the unavoidable movement of fingers.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param first - Point in view coordinates, defaults to {@link Diagram.firstInput}'s {@link InputEvent.viewPoint}.
      * @param last - Point in view coordinates, defaults to {@link Diagram.lastInput}'s {@link InputEvent.viewPoint}.
@@ -5411,7 +5864,7 @@ export class ToolManager extends Tool {
      * {@link mouseDownTools}, {@link mouseMoveTools}, or {@link mouseUpTools}.
      * This also sets the various tool properties of this ToolManager
      * to those newly created tools.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @return this
      */
@@ -5428,8 +5881,10 @@ export class ToolManager extends Tool {
      * thereby enabling the mouse-move and mouse-up behaviors and starts
      * detection of a mouse-hold event after {@link holdDelay} milliseconds.
      *
+     * For touch events, the value of {@link gestureBehavior} affects whether this tool will find and start another tool.
+     *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseDown(): void;
@@ -5448,8 +5903,10 @@ export class ToolManager extends Tool {
      *     {@link doWaitAfter} after {@link hoverDelay} milliseconds.
      *   - Sets the {@link Diagram.lastInput} to bubble.
      *
+     * For multi-touch events, the value of {@link gestureBehavior} affects whether this tool will find and start another tool.
+     *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseMove(): void;
@@ -5462,7 +5919,7 @@ export class ToolManager extends Tool {
      * this simulates a right click, enabling context menu functionality and other actions on touch devices.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param event - The event that caused {@link standardWaitAfter}. In this override,
      * if it is a touch event and the {@link Diagram.lastInput} event is not handled ({@link InputEvent.handled} set to false),
@@ -5484,7 +5941,7 @@ export class ToolManager extends Tool {
      * or it calls any {@link Diagram.mouseHold} function for a background mouse-held-down event.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseHover(): void;
@@ -5503,7 +5960,7 @@ export class ToolManager extends Tool {
      * Otherwise this calls {@link hideToolTip}.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doToolTip(): void;
@@ -5515,7 +5972,7 @@ export class ToolManager extends Tool {
      * is positioned relative to the object with the tooltip.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param tooltip
      * @param obj - The GraphObject getting the tooltip; this is null if the tooltip is being shown for the diagram background.
@@ -5532,7 +5989,7 @@ export class ToolManager extends Tool {
      * so that the Placeholder is positioned at the adorned object, the second argument to this method.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * If you override this method to position the tooltip,
      * the tooltip has already been measured but not arranged,
@@ -5556,7 +6013,7 @@ export class ToolManager extends Tool {
      * Hide any tooltip.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     hideToolTip(): void;
@@ -5577,7 +6034,7 @@ export class ToolManager extends Tool {
      * to get ready for a mouse-down and ignore mouse-move and mouse-up events.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseUp(): void;
@@ -5586,7 +6043,7 @@ export class ToolManager extends Tool {
      *
      * By default this just calls {@link Tool.standardMouseWheel}.
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doMouseWheel(): void;
@@ -5594,7 +6051,7 @@ export class ToolManager extends Tool {
      * This just calls {@link CommandHandler.doKeyDown} on the diagram's {@link Diagram.commandHandler}.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doKeyDown(): void;
@@ -5602,7 +6059,7 @@ export class ToolManager extends Tool {
      * This just calls {@link CommandHandler.doKeyUp} on the diagram's {@link Diagram.commandHandler}.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doKeyUp(): void;
@@ -5611,13 +6068,13 @@ export class ToolManager extends Tool {
      * This searches the {@link mouseDownTools}, {@link mouseMoveTools}, and {@link mouseUpTools} lists.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param name - the type of tool, such as "Dragging" or "ClickSelecting".
      * @returns a {@link Tool} whose {@link Tool.name} exactly matches the given name,
      * or null if no such tool is found in any of the three lists.
      */
-    findTool(name: string): Tool | null;
+    findTool(name: ToolName | string): Tool | null;
     /**
      * Replace a mouse tool of a given name with a new tool, or remove an existing tool (if the *newtool* is null).
      * This searches the {@link mouseDownTools}, {@link mouseMoveTools},
@@ -5625,21 +6082,21 @@ export class ToolManager extends Tool {
      * The new tool is inserted into the same list in which the same-named tool is found,
      * at the same position as the old tool.
      * However, if no existing tool with the given name is present, this does **not** add the new tool to any list, since it cannot know where it should be added.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param name - the type of tool, such as "Dragging" or "ClickSelecting".
      * @param newtool - If null, any tool that the search finds will just be removed
      * from the list in which it was found.
      * @returns the old tool that was replaced by the new one; this is null if none was found and the new tool was not added to any mouse tool list
      */
-    replaceTool(name: string, newtool: Tool): Tool | null;
+    replaceTool(name: ToolName | string, newtool: Tool): Tool | null;
     /**
      * (undocumented)
      * @param name
      * @param newtool
      * @param list
      */
-    replaceStandardTool(name: string, newtool: Tool, list: List<Tool>): void;
+    replaceStandardTool(name: ToolName | string, newtool: Tool, list: List<Tool>): void;
     /**
      * This read-only property returns the list of {@link Tool}s that might be started upon a mouse or finger press event.
      * When the ToolManager handles a mouse-down or touch-down event in {@link doMouseDown},
@@ -6149,7 +6606,7 @@ export class DraggingTool extends Tool {
      * and if {@link findDraggablePart} has found a selectable part at the mouse-down point.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -6158,7 +6615,7 @@ export class DraggingTool extends Tool {
      * This is called by {@link canStart} to decide if this tool is ready to run.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     findDraggablePart(): Part | null;
@@ -6167,7 +6624,7 @@ export class DraggingTool extends Tool {
      * This also remembers the selectable {@link currentPart} at the current mouse point.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     standardMouseSelect(): void;
@@ -6198,7 +6655,7 @@ export class DraggingTool extends Tool {
      * This just calls {@link CommandHandler.computeEffectiveCollection} and remains for compatibility.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param parts - A {@link Set | go.Set} or {@link List} of {@link Part}s.
      * @param options - Potential options for the collection computation
@@ -6216,7 +6673,7 @@ export class DraggingTool extends Tool {
      * by calling {@link Transaction.optimize}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the result of the call to rollback or commit the transaction.
      */
@@ -6264,7 +6721,7 @@ export class DraggingTool extends Tool {
      * that may affect the existing non-moved object(s).
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pt - a Point in document coordinates.
      * @param obj - the {@link GraphObject} at the point,
@@ -6279,7 +6736,7 @@ export class DraggingTool extends Tool {
      * that may affect the existing non-moved object(s).
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pt - a Point in document coordinates.
      * @param obj - the {@link GraphObject} where the drop occurred,
@@ -6331,7 +6788,7 @@ export class DraggingTool extends Tool {
      * and the user is holding down the Control key (Option key on Mac).
      *
      * This method may be overridden, although in most cases it is easiest to set {@link Part.copyable}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     mayCopy(): boolean;
@@ -6340,11 +6797,12 @@ export class DraggingTool extends Tool {
      * and some object in the selection is movable.
      *
      * This method may be overridden, although in most cases it is easiest to set {@link Part.movable}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     mayMove(): boolean;
     /**
+     * (undocumented)
      * Return the DraggingTool of the Diagram that is the source of an external drag-and-drop.
      * @returns often null
      */
@@ -6359,7 +6817,7 @@ export class DraggingTool extends Tool {
      * This just calls {@link Diagram.computeMove} and remains for compatibility.
      *
      * This method may be overridden, but should usually be overridden on Diagram.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param n -  the Node or simple Part that is being moved
      * @param newloc - the proposed new location
@@ -6378,12 +6836,12 @@ export class DraggingTool extends Tool {
  * (if any) that are involved with the linking operation.
  * <p class="boxread">
  * For a general discussion of link routing, see:
- * <a href="../../intro/links.html">Introduction to Links</a>,
- * <a href="../../intro/linkLabels.html">Introduction to Link Labels</a>, and
- * <a href="../../intro/connectionPoints.html">Introduction to Link Connection Points</a>.
- * For customizing the linking tools, see <a href="../../intro/tools.html#LinkingAndRelinkingTools">Introduction to the Linking Tools</a>.
- * For customizing the reshaping of Links, see <a href="../../intro/tools.html#LinkReshapingTool">Introduction to the LinkReshapingTool</a>.
- * For a general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * <a href="../../learn/links">Learn page on Links</a>,
+ * <a href="../../learn/linkLabels">Learn page on Link Labels</a>, and
+ * <a href="../../learn/connectionPoints">Learn page on Link Connection Points</a>.
+ * For customizing the linking tools, see <a href="../../learn/tools#LinkingAndRelinkingTools">Learn page on the Linking Tools</a>.
+ * For customizing the reshaping of Links, see <a href="../../learn/tools#LinkReshapingTool">Learn page on the LinkReshapingTool</a>.
+ * For a general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  * @category Tool
  */
 export abstract class LinkingBaseTool extends Tool {
@@ -6510,7 +6968,7 @@ export abstract class LinkingBaseTool extends Tool {
      * this method and the {@link setNoTargetPortProperties} method.
      * But you may want to call this method to get the standard behavior for dynamically adapting
      * the temporary node/port to "act like" the target port.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param realnode
      * @param realport
@@ -6530,7 +6988,7 @@ export abstract class LinkingBaseTool extends Tool {
      * this method and the {@link copyPortProperties} method.
      * But you may want to call this method to get the standard behavior for dynamically adapting
      * the temporary node/port to "act like" it is not connecting with any target port.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param tempnode
      * @param tempport
@@ -6563,7 +7021,7 @@ export abstract class LinkingBaseTool extends Tool {
      * The closest valid port is returned.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param toend - true if looking for a "to" port.
      * @returns a valid port, or null if no such port is near the current mouse point
@@ -6574,10 +7032,10 @@ export abstract class LinkingBaseTool extends Tool {
      * This predicate is true if it is permissible to connect a link from a given node/port.
      * This is called by {@link isValidLink}.
      * <p class="boxread">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromnode
      * @param fromport
@@ -6591,10 +7049,10 @@ export abstract class LinkingBaseTool extends Tool {
      * This predicate is true if it is permissible to connect a link to a given node/port.
      * This is called by {@link isValidLink}.
      * <p class="boxread">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param tonode
      * @param toport
@@ -6610,7 +7068,7 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * This method may be overridden, but we recommend that you call this base method.
      * It is rare that you will want to override this method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromport
      * @param toport
@@ -6622,7 +7080,7 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * This method may be overridden, but we recommend that you call this base method.
      * It is rare that you will want to override this method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromport
      * @param toport
@@ -6634,11 +7092,11 @@ export abstract class LinkingBaseTool extends Tool {
      * When this is called by the {@link RelinkingTool}, that tool sets {@link originalLink}
      * to be the {@link Link} being reconnected.
      * <p class="boxread">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * This method may be overridden, although it is usually much easier to just set {@link linkValidation}
      * or {@link Node.linkValidation} in order to add some application-specific link validation.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromnode - the "from" {@link Node}.
      * @param fromport - the "from" {@link GraphObject} port.
@@ -6664,7 +7122,7 @@ export abstract class LinkingBaseTool extends Tool {
      *
      * This method may be overridden, but we recommend that you call this base method.
      * It is rare that you will want to override this method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param from
      * @param to
@@ -6678,7 +7136,7 @@ export abstract class LinkingBaseTool extends Tool {
      * When relinking, the {@link Link} being considered for reconnection is passed as the fifth argument.
      * The default predicate is null, which is equivalent to simply returning true.
      * <p class="boxread">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * The function, if supplied, must not have any side-effects.
      */
@@ -6735,7 +7193,7 @@ export declare enum LinkingDirection {
  * {@link doActivate} sets up a temporary link and two temporary nodes,
  * one at the start port and one following the mouse.
  * <p class="boxread">
- * For a general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * For a general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  *
  * This tool does not utilize any {@link Adornment}s or tool handles.
  *
@@ -6855,7 +7313,7 @@ export class LinkingTool extends LinkingBaseTool {
      * If it does find a port, it should set {@link isForwards} to declare which direction the new link is being drawn.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns If the {@link direction} is {@link LinkingDirection.Either} or {@link LinkingDirection.ForwardsOnly},
      * this checks the element and its parent {@link Node} by calling {@link LinkingBaseTool.isValidFrom}.
@@ -6917,7 +7375,7 @@ export class LinkingTool extends LinkingBaseTool {
      *
      * This method may be overridden, but we recommend that you call this base method.
      * Usually though it is easiest to just set {@link archetypeLinkData} to control what kind of link is created.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromnode
      * @param fromport - the from-port, or null to use the node itself
@@ -6935,7 +7393,7 @@ export class LinkingTool extends LinkingBaseTool {
      * This method may be overridden.  By default this method does nothing.
      * If you want to successfully perform any side-effects, you will need to set {@link Tool.transactionResult} to a string;
      * otherwise this tool's transaction will be rolled-back.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param fromnode
      * @param fromport - the from-port, or null to use the node itself
@@ -6948,7 +7406,7 @@ export class LinkingTool extends LinkingBaseTool {
  * The RelinkingTool allows the user to reconnect an existing {@link Link}
  * if the {@link Link.relinkableTo} and/or {@link Link.relinkableFrom} properties are true.
  * <p class="boxread">
- * For a general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * For a general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  *
  * By default an instance of this tool is installed as a mouse-down tool in the
  * {@link Diagram.toolManager} as the {@link ToolManager.relinkingTool}.
@@ -6993,7 +7451,7 @@ export class RelinkingTool extends LinkingBaseTool {
      * Create and return an {@link Adornment} that lets the user grab a handle to reconnect one end of the selected link.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param selelt - the {@link GraphObject} of the {@link Link} being relinked.
      * @param toend
@@ -7081,7 +7539,7 @@ export class RelinkingTool extends LinkingBaseTool {
      * from the {@link LinkingBaseTool.originalLink} to the {@link LinkingBaseTool.temporaryLink}.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param reallink
      * @param templink
@@ -7114,7 +7572,7 @@ export class RelinkingTool extends LinkingBaseTool {
      * Modify an existing {@link Link} to connect to a new node and port.
      *
      * This method may be overridden, but we recommend that you call this base method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param existinglink
      * @param newnode - the {@link Node} to connect to or from.
@@ -7130,7 +7588,7 @@ export class RelinkingTool extends LinkingBaseTool {
      * This method may be overridden.  By default this method does nothing.
      * If you want to successfully perform any side-effects, you will need to set {@link Tool.transactionResult} to a string;
      * otherwise this tool's transaction will be rolled-back.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param existinglink
      * @param toend - If true, the user was trying to modify the link's "to" node and port.
@@ -7172,11 +7630,11 @@ export declare enum ReshapingBehavior {
  *
  * <p class="boxread">
  * For a general discussion of link routing, see:
- * <a href="../../intro/links.html">Introduction to Links</a>,
- * <a href="../../intro/linkLabels.html">Introduction to Link Labels</a>, and
- * <a href="../../intro/connectionPoints.html">Introduction to Link Connection Points</a>.
- * For customizing the linking tools, see <a href="../../intro/tools.html#LinkingAndRelinkingTools">Introduction to the Linking Tools</a>.
- * For a general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * <a href="../../learn/links">Learn page on Links</a>,
+ * <a href="../../learn/linkLabels">Learn page on Link Labels</a>, and
+ * <a href="../../learn/connectionPoints">Learn page on Link Connection Points</a>.
+ * For customizing the linking tools, see <a href="../../learn/tools#LinkingAndRelinkingTools">Learn page on the Linking Tools</a>.
+ * For a general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  * @category Tool
  */
 export class LinkReshapingTool extends Tool {
@@ -7220,7 +7678,7 @@ export class LinkReshapingTool extends Tool {
      * if the link is selected and visible and if {@link Part.canReshape} is true.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param part
      */
@@ -7235,7 +7693,7 @@ export class LinkReshapingTool extends Tool {
      * (undocumented)
      * Create and return a {@link GraphObject} that the user can "grab" to relink the selected Link.
      * By default this returns a copy of {@link handleArchetype}, a {@link Shape} that is a small blue rectangle.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pathshape - the {@link GraphObject} path of the link being reshaped.
      * @param idx - the index of the route point to be moved.
@@ -7259,7 +7717,7 @@ export class LinkReshapingTool extends Tool {
      * (undocumented)
      * Create and return a {@link GraphObject} that the user can "grab" to add a segment to the selected Link.
      * By default this returns a copy of {@link midHandleArchetype}, a {@link Shape} that is a small blue diamond.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pathshape - the {@link GraphObject} path of the link being reshaped.
      * @param idx - the index of the route point to be moved.
@@ -7295,7 +7753,7 @@ export class LinkReshapingTool extends Tool {
      * This tool may run when there is a mouse-down event on a reshape handle.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -7318,7 +7776,7 @@ export class LinkReshapingTool extends Tool {
      * by calling {@link Transaction.optimize}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the result of the call to rollback or commit the transaction.
      */
@@ -7331,7 +7789,7 @@ export class LinkReshapingTool extends Tool {
      * (undocumented)
      * If the handle clicked during activation was a resegment handle, return the point at which to start a new segment.
      * By default this returns the center of the handle that was clicked.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the point where resegmenting begins
      */
@@ -7366,7 +7824,7 @@ export class LinkReshapingTool extends Tool {
      * To maintain orthogonality it may need to modify more than one point in the route.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newPoint - the value of the call to {@link computeReshape}.
      */
@@ -7376,7 +7834,7 @@ export class LinkReshapingTool extends Tool {
      * before calling {@link reshape}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param p - the point where the handle is being dragged.
      * @returns Either the same Point p or one constrained by the reshape behavior to be moved
@@ -7384,14 +7842,16 @@ export class LinkReshapingTool extends Tool {
      */
     computeReshape(p: Point): Point;
     /**
-     * This read-only property returns the {@link Point} that was the original location of the handle that is being dragged to reshape the Link.
+     * This property returns the {@link Point} that was the original location of the handle that is being dragged to reshape the Link.
      */
     get originalPoint(): Point;
+    set originalPoint(value: Point);
     /**
-     * This read-only property returns the {@link List} of {@link Point}s that was the original route of the Link that is being reshaped.
+     * This property returns the {@link List} of {@link Point}s that was the original route of the Link that is being reshaped.
      * This List should not be modified; its value is indeterminate until a reshaping has been activated.
      */
     get originalPoints(): List<Point>;
+    set originalPoints(value: List<Point>);
 }
 /**
  * The ResizingTool is used to interactively change the size of a {@link GraphObject}
@@ -7433,8 +7893,8 @@ export class LinkReshapingTool extends Tool {
  * This tool conducts a transaction while the tool is active.
  * A successful resizing will result in a "PartResized" {@link DiagramEvent} and a "Resizing" transaction.
  * <p class="boxread">
- * For a general discussion of the sizing of objects, see: <a href="../../intro/sizing.html">Introduction to the sizing of GraphObjects</a>.
- * For customizing the ResizingTool, see <a href="../../intro/tools.html#ResizingTool">Introduction to the ResizingTool</a>.
+ * For a general discussion of the sizing of objects, see: <a href="../../learn/sizing">Learn page on the sizing of GraphObjects</a>.
+ * For customizing the ResizingTool, see <a href="../../learn/tools#ResizingTool">Learn page on the ResizingTool</a>.
  *
  * If you want to programmatically start a user's resizing of the {@link Part.resizeObject} of an existing selected node,
  * you can set the {@link handle} property to the specific resize handle and then start and activate the tool.
@@ -7474,7 +7934,7 @@ export class ResizingTool extends Tool {
      * four at the corners and four at the middle of each side.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param part
      */
@@ -7485,7 +7945,7 @@ export class ResizingTool extends Tool {
      * The Adornment will be a "Spot" Panel with a {@link Placeholder} and eight copies of {@link handleArchetype}.
      * Each handle will have one of the standard Spots as their {@link GraphObject.alignment}.
      *
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param resizeObj - the {@link GraphObject} being resized.
      */
@@ -7544,7 +8004,7 @@ export class ResizingTool extends Tool {
      * and this tool's adornment's resize handle is at the current mouse point.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -7571,7 +8031,7 @@ export class ResizingTool extends Tool {
      * by calling {@link Transaction.optimize}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the result of the call to rollback or commit the transaction.
      */
@@ -7601,7 +8061,7 @@ export class ResizingTool extends Tool {
      * This modifies its {@link GraphObject.desiredSize} and maybe its {@link Part.location}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newr - a Rectangle in the {@link adornedObject}'s local coordinates, not in document coordinates
      */
@@ -7611,7 +8071,7 @@ export class ResizingTool extends Tool {
      * compute the new {@link Rect}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newPoint - a Point in local coordinates.
      * @param spot - the alignment spot of the handle being dragged.
@@ -7633,7 +8093,7 @@ export class ResizingTool extends Tool {
      * This permits the user to change the behavior dynamically during resizing.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * For example, to always keep the object's original aspect ratio, override this method to return false.
      * When initializing a {@link Diagram}:
@@ -7660,7 +8120,7 @@ export class ResizingTool extends Tool {
      * This is called once when the tool is activated.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     computeMinSize(): Size;
@@ -7671,7 +8131,7 @@ export class ResizingTool extends Tool {
      * This is called once when the tool is activated.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     computeMaxSize(): Size;
@@ -7681,7 +8141,7 @@ export class ResizingTool extends Tool {
      * This is called once when the tool is activated.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     computeCellSize(): Size;
@@ -7742,15 +8202,17 @@ export class ResizingTool extends Tool {
     get oppositePoint(): Point;
     set oppositePoint(value: Point);
     /**
-     * This read-only property returns the {@link Size} that was the original value of the {@link GraphObject.desiredSize}
+     * This property returns the {@link Size} that was the original value of the {@link GraphObject.desiredSize}
      * of the element that is being resized.
      */
     get originalDesiredSize(): Size;
+    set originalDesiredSize(value: Size);
     /**
-     * This read-only property returns the {@link Point} that was the original value of the {@link Part.location}
+     * This property returns the {@link Point} that was the original value of the {@link Part.location}
      * of the Part that is being resized.
      */
     get originalLocation(): Point;
+    set originalLocation(value: Point);
 }
 /**
  * The RotatingTool is used to interactively change the {@link GraphObject.angle} of a {@link GraphObject}
@@ -7786,7 +8248,7 @@ export class ResizingTool extends Tool {
  * This tool conducts a transaction while the tool is active.
  * A successful rotation will result in a "PartRotated" {@link DiagramEvent} and a "Rotating" transaction.
  * <p class="boxread">
- * For customizing the RotatingTool, see <a href="../../intro/tools.html#RotatingTool">Introduction to the RotatingTool</a>.
+ * For customizing the RotatingTool, see <a href="../../learn/tools#RotatingTool">Learn page on the RotatingTool</a>.
  *
  * If you want to programmatically start a user's rotating of the {@link Part.rotateObject} of an existing selected node,
  * you can set the {@link handle} property to the rotate handle and then start and activate the tool.
@@ -7815,7 +8277,7 @@ export class RotatingTool extends Tool {
      * if the part is selected and visible and if {@link Part.canRotate}() is true.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param part - the part.
      */
@@ -7823,7 +8285,7 @@ export class RotatingTool extends Tool {
     /**
      * (undocumented)
      * Create and return an {@link Adornment} that lets the user grab a handle to rotate an object in the selected part.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param rotateObj - the {@link GraphObject} being rotated.
      */
@@ -7875,7 +8337,7 @@ export class RotatingTool extends Tool {
      * and this tool's adornment's rotate handle is at the current mouse point.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -7909,7 +8371,7 @@ export class RotatingTool extends Tool {
      * by calling {@link Transaction.optimize}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns the result of the call to rollback or commit the transaction.
      */
@@ -7933,7 +8395,7 @@ export class RotatingTool extends Tool {
      * This modifies its {@link GraphObject.angle}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newangle - in degrees.
      */
@@ -7948,7 +8410,7 @@ export class RotatingTool extends Tool {
      *
      * This method is called by both {@link doMouseMove} and {@link doMouseUp}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newPoint - in document coordinates.
      * @returns the new angle, in degrees.
@@ -7980,11 +8442,20 @@ export class RotatingTool extends Tool {
     get snapAngleEpsilon(): number;
     set snapAngleEpsilon(value: number);
     /**
-     * This read-only property returns the angle that was the original value of the {@link GraphObject.angle}
+     * This property returns the angle that was the original value of the {@link GraphObject.angle}
      * of the GraphObject that is being rotated.
      * The value is invalid when this tool is not active.
      */
     get originalAngle(): number;
+    set originalAngle(value: number);
+    /**
+     * This property returns the Point that was the original value of the {@link Part.location}
+     * of the Part in which the {@link Part.rotateObject} is being rotated.
+     * The value is invalid when this tool is not active.
+     * @since 4.0
+     */
+    get originalLocation(): Point;
+    set originalLocation(value: Point);
     /**
      * Gets or sets the Point at which the axis of the rotation should be.
      * {@link doActivate} saves here the value returned by the call to {@link computeRotationPoint}.
@@ -7999,8 +8470,8 @@ export class RotatingTool extends Tool {
      *
      * By default this is zero degrees, which locates the Adornment
      * so that it is placed to the right of an un-rotated object.
-     * You can set this to a multiple of 90 degrees to position the rotation handle differently
-     * with respect to the {@link rotationPoint}.
+     * A setting of -90 or 270 degrees will position the rotation handle directly above the rotation point
+     * when the rotated object's angle is zero.
      * @since 2.0
      */
     get handleAngle(): number;
@@ -8015,6 +8486,187 @@ export class RotatingTool extends Tool {
      */
     get handleDistance(): number;
     set handleDistance(value: number);
+}
+/**
+ * The PanningTool supports manual panning, where the user can shift the
+ * {@link Diagram.position} by dragging the mouse.
+ *
+ * This tool is a standard mouse-move tool, the {@link ToolManager.panningTool}.
+ * Although the {@link ToolManager.dragSelectingTool} takes precedence over this tool,
+ * the {@link DragSelectingTool} only starts if there is a delay after a mouse-down event.
+ * If it does not start, then this PanningTool gets a chance to start.
+ *
+ * This tool does not utilize any {@link Adornment}s or tool handles.
+ * This tool does not modify the model or conduct any transaction.
+ *
+ * If you want to programmatically "pan" the diagram, you can just set {@link Diagram.position}
+ * or call methods such as {@link Diagram.scroll}, {@link Diagram.scrollToRect}, or {@link Diagram.centerRect}.
+ * @category Tool
+ */
+export class PanningTool extends Tool {
+    /**
+     * You do not normally need to create an instance of this tool
+     * because one already exists as the {@link ToolManager.panningTool}.
+     *
+     * The {@link Tool.name} of this tool is "Panning".
+     */
+    constructor(init?: Partial<PanningTool>);
+    /**
+     * This tool can run when the diagram allows scrolling and
+     * the mouse has been dragged with the left button far enough away
+     * from the mouse-down point to avoid being a click.
+     *
+     * This method may be overridden.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
+     * @virtual
+     */
+    canStart(): boolean;
+    /**
+     * Capture the mouse, change the diagram cursor to "move", and remember the {@link Diagram.position}.
+     */
+    doActivate(): void;
+    /**
+     * Release the mouse and restore the default diagram cursor.
+     */
+    doDeactivate(): void;
+    /**
+     * Restore the {@link Diagram.position} and {@link Diagram.scale} to what they were when this tool activated.
+     */
+    doCancel(): void;
+    /**
+     * Set various initial properties.
+     */
+    doMouseDown(): void;
+    /**
+     * Modify the {@link Diagram.position} according to how much the mouse has moved.
+     */
+    doMouseMove(): void;
+    /**
+     * Modify the {@link Diagram.position} according to how much the mouse has moved, and stop the tool.
+     */
+    doMouseUp(): void;
+    /**
+     * Called for pointer move and pointer up events, including when multi-touch.
+     * By default this assigns {@link Diagram.position} and, if the value of newscale is
+     * different it sets {@link Diagram.scale} using the scalecenter argument as the {@link Diagram.zoomPoint},
+     * and it ignores the newangle and angle parameters.
+     *
+     * Override this method to customize behavior as the user pans or pinches,
+     * perhaps modifying a selected object instead of Diagram properties.
+     * See the <a href="../../samples/pinchResizing.html">Pinch Rescaling Tool</a> sample for such an example.
+     *
+     * This method does not normally perform a transaction, so if you want to modify some GraphObjects,
+     * you will need to conduct a transaction by calling {@link Tool.startTransaction} in an override of
+     * {@link doActivate} and {@link Tool.stopTransaction} in an override of {@link doDeactivate},
+     * and set {@link Tool.transactionResult} in your override of {@link Tool.doMouseUp}.
+     *
+     * @virtual
+     * @param newposition a proposed new position in document coordinates, computed as the position plus the offset of the pointer or multi-touch center from the previous point
+     * @param newscale a proposed new scale, computed as the originalScale times the factor of the current distance and the initialDistance
+     * @param newangle a proposed new angle, computed as the originalAngle plus the difference between the current angle and the initialAngle
+     * @param dist the distance between the first and second multi-touch points, in viewport coordinates, or zero if not a multi-touch event
+     * @param angle the angle between the first and second multi-touch points
+     * @param scalecenter the middle point between the first and second multi-touch points, in viewport coordinates
+     * @since 4.0
+     */
+    pan(newposition: Point, newscale: number, newangle: number, dist: number, angle: number, scalecenter: Point): void;
+    /**
+     * Gets or sets whether panning actions will allow
+     * events to bubble **instead** of panning in the diagram.
+     *
+     * Set this to true to allow mobile devices to scroll the page with panning gestures on the diagram.
+     * Otherwise, the panning events will be captured and used to pan inside of the diagram.
+     *
+     * The default value is false.
+     */
+    get bubbles(): boolean;
+    set bubbles(value: boolean);
+    /**
+     * This property returns the {@link Point} that was the original value of {@link Diagram.position}
+     * when the panning operation started.
+     * However, custom derivations of the PanningTool might want to allow the movement of objects.
+     */
+    get originalPosition(): Point;
+    set originalPosition(value: Point);
+    /**
+     * Gets or sets the initial mouse or touch point in viewport coordinates.
+     */
+    get initialPosition(): Point;
+    /** @hidden */
+    set initialPosition(value: Point);
+    /**
+     * Gets or sets the minimum distance (in viewport coordinates) that the pointer or center of two multi-touch points
+     * must be moved before starting to move the object (pan the diagram).
+     */
+    get positionDistanceThreshold(): number;
+    /** @hidden */
+    set positionDistanceThreshold(value: number);
+    /**
+     * Gets or sets whether the change in position has ever exceeded the Threshold during this tool's activation.
+     */
+    get startedPanning(): boolean;
+    /** @hidden  */
+    set startedPanning(value: boolean);
+    /**
+     * This property returns the scale that was the original value of {@link Diagram.scale} when the panning operation started.
+     * However, custom derivations of the PanningTool might want to allow the scaling of objects.
+     * @since 4.0
+     */
+    get originalScale(): number;
+    set originalScale(value: number);
+    /**
+     * Gets or sets the initial distance between the first two multi-touch points in viewport coordinates.
+     */
+    get initialDistance(): number;
+    /** @hidden */
+    set initialDistance(value: number);
+    /**
+     * Gets or sets the minimum distance difference (in viewport coordinates) compared to initialDistance
+     * that the two multi-touch points must be before starting to scale the object (zoom the diagram).
+     */
+    get scaleDifferenceThreshold(): number;
+    /** @hidden */
+    set scaleDifferenceThreshold(value: number);
+    /**
+     * Gets or sets the minimum distance (in viewport coordinates) that the two multi-touch points must be
+     * before starting to scale the object (zoom the diagram).
+     */
+    get scaleMinimumThreshold(): number;
+    /** @hidden */
+    set scaleMinimumThreshold(value: number);
+    /**
+     * Gets or sets whether the change in distance has ever exceeded the distanceThreshold during this tool's activation.
+     */
+    get startedScaling(): boolean;
+    /** @hidden  */
+    set startedScaling(value: boolean);
+    /**
+     * This property returns the original angle, which remains unchanged during the standard behavior of this tool
+     * because the diagram coordinate system cannot be rotated.
+     * However, custom derivations of the PanningTool might want to allow the rotation of objects.
+     */
+    get originalAngle(): number;
+    /** @hidden */
+    set originalAngle(value: number);
+    /**
+     * Gets or sets the initial angle between the first two multi-touch points.
+     */
+    get initialAngle(): number;
+    /** @hidden */
+    set initialAngle(value: number);
+    /**
+     * Gets or sets the minimum angle change that the two multi-touch points must rotate
+     * before starting to rotate the object (not applicable to the diagram).
+     */
+    get angleThreshold(): number;
+    /** @hidden */
+    set angleThreshold(value: number);
+    /**
+     * Gets or sets whether the change in angle has ever exceeded the angleThreshold during this tool's activation.
+     */
+    get startedRotating(): boolean;
+    /** @hidden  */
+    set startedRotating(value: boolean);
 }
 /**
  * The ClickSelectingTool selects and deselects {@link Part}s when there is a click.
@@ -8034,7 +8686,7 @@ export class RotatingTool extends Tool {
  * This tool does not utilize any {@link Adornment}s or tool handles.
  * This tool does not modify the model or conduct any transaction.
  *
- * An example customization of this tool is shown in the <a href="../../extensions/TreeMap.html">Tree Map</a> sample,
+ * An example customization of this tool is shown in the <a href="../../samples/TreeMap.html">Tree Map</a> sample,
  * where the {@link Tool.standardMouseSelect} method is overridden to permit the user to cycle through
  * the chain of containing groups, changing the selection on each click to the next containing group.
  *
@@ -8054,7 +8706,7 @@ export class ClickSelectingTool extends Tool {
      * This tool can run whenever a click occurs.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -8097,7 +8749,7 @@ export class ActionTool extends Tool {
      * or if the object is within a {@link Panel} that "isActionable".
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -8153,7 +8805,7 @@ export class ClickCreatingTool extends Tool {
      * and {@link archetypeNodeData} is an object that can be copied and added to the model.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -8174,7 +8826,7 @@ export class ClickCreatingTool extends Tool {
      * This method also raises the "ChangingSelection" and "ChangedSelection" diagram events outside the transaction.
      *
      * This method may be overridden, although it is usually much easier to just set {@link archetypeNodeData}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param loc - a Point in document coordinates.
      * @returns the newly created Part, or null if it failed.
@@ -8227,14 +8879,14 @@ export class ClickCreatingTool extends Tool {
  * Selectable parts are selected when their bounds fall entirely within the rectangle,
  * unless {@link isPartialInclusion} is set to true.
  * <p class="boxread">
- * For customizing the DragSelectingTool, see <a href="../../intro/tools.html#DragSelectingTool">Introduction to the DragSelectingTool</a>.
+ * For customizing the DragSelectingTool, see <a href="../../learn/tools#DragSelectingTool">Learn page on the DragSelectingTool</a>.
  *
  * If you implement your own drag-in-the-background-to-do-something tool, you may need to disable
  * this tool or insert your new tool in the {@link ToolManager.mouseMoveTools} list before this tool,
  * in order for your tool to run.  There are examples of such tools defined in the extensions directory:
- * <a href="../../extensions/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a>,
- * <a href="../../extensions/DragCreating.html">Drag Creating Tool</a>, and
- * <a href="../../extensions/DragZooming.html">Drag Zooming Tool</a>.
+ * <a href="../../samples/RealtimeDragSelecting.html">Realtime Drag Selecting Tool</a>,
+ * <a href="../../samples/DragCreating.html">Drag Creating Tool</a>, and
+ * <a href="../../samples/DragZooming.html">Drag Zooming Tool</a>.
  *
  * If you want to programmatically select some Parts in a rectangular area,
  * you can call {@link selectInRect}.
@@ -8259,7 +8911,7 @@ export class DragSelectingTool extends Tool {
      * the {@link ToolManager.panningTool} to co-exist as mode-less mouse-move tools.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -8288,11 +8940,21 @@ export class DragSelectingTool extends Tool {
      * This just returns a {@link Rect} stretching from the mouse-down point to the current mouse point.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns a {@link Rect} in document coordinates.
      */
     computeBoxBounds(): Rect;
+    /**
+     * This is called by {@link selectInRect} o return a collection of Parts within the given Rect r
+     * that satisfy {@link isPartialInclusion} and whatever other criteria you care about.
+     * Normally this just calls {@link Diagram.findPartsIn}.
+     * Override this to use different criteria than what {@link Diagram.findPartsIn} uses.
+     * @param r an area in document coordinates
+     * @returns a Set<Part>
+     * @since 4.0
+     */
+    findInRect(r: Rect): Set<Part>;
     /**
      * This method is called to select some parts within the area of a given rectangle.
      *
@@ -8304,7 +8966,7 @@ export class DragSelectingTool extends Tool {
      * If the Control key (Command on Mac) and Shift key modifiers are both used, this deselects the parts in the rectangle.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param r - a rectangular bounds in document coordinates.
      */
@@ -8355,76 +9017,6 @@ export class DragSelectingTool extends Tool {
     set box(value: Part | null);
 }
 /**
- * The PanningTool supports manual panning, where the user can shift the
- * {@link Diagram.position} by dragging the mouse.
- *
- * This tool is a standard mouse-move tool, the {@link ToolManager.panningTool}.
- * Although the {@link ToolManager.dragSelectingTool} takes precedence over this tool,
- * the {@link DragSelectingTool} only starts if there is a delay after a mouse-down event.
- * If it does not start, then this PanningTool gets a chance to start.
- *
- * This tool does not utilize any {@link Adornment}s or tool handles.
- * This tool does not modify the model or conduct any transaction.
- *
- * If you want to programmatically "pan" the diagram, you can just set {@link Diagram.position}
- * or call methods such as {@link Diagram.scroll}, {@link Diagram.scrollToRect}, or {@link Diagram.centerRect}.
- * @category Tool
- */
-export class PanningTool extends Tool {
-    /**
-     * You do not normally need to create an instance of this tool
-     * because one already exists as the {@link ToolManager.panningTool}.
-     *
-     * The {@link Tool.name} of this tool is "Panning".
-     */
-    constructor(init?: Partial<PanningTool>);
-    /**
-     * This tool can run when the diagram allows scrolling and
-     * the mouse has been dragged with the left button far enough away
-     * from the mouse-down point to avoid being a click.
-     *
-     * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
-     * @virtual
-     */
-    canStart(): boolean;
-    /**
-     * Capture the mouse, change the diagram cursor to "move", and remember the {@link Diagram.position}.
-     */
-    doActivate(): void;
-    /**
-     * Release the mouse and restore the default diagram cursor.
-     */
-    doDeactivate(): void;
-    /**
-     * Restore the {@link Diagram.position} to what it was when this tool activated.
-     */
-    doCancel(): void;
-    /**
-     * Modify the {@link Diagram.position} according to how much the mouse has moved.
-     */
-    doMouseMove(): void;
-    /**
-     * Modify the {@link Diagram.position} according to how much the mouse has moved.
-     */
-    doMouseUp(): void;
-    /**
-     * Gets or sets whether panning actions will allow
-     * events to bubble **instead** of panning in the diagram.
-     *
-     * Set this to true to allow mobile devices to scroll the page with panning gestures on the diagram.
-     * Otherwise, the panning events will be captured and used to pan inside of the diagram.
-     *
-     * The default value is false.
-     */
-    get bubbles(): boolean;
-    set bubbles(value: boolean);
-    /**
-     * This read-only property returns the {@link Point} that was the original value of {@link Diagram.position} when the panning operation started.
-     */
-    get originalPosition(): Point;
-}
-/**
  * HTMLInfo is used to show and hide custom HTML page elements, such as a context menu, tooltip, or text editor made of HTML.
  *
  * Properties that can be set to an HTMLInfo include:
@@ -8456,7 +9048,7 @@ export class PanningTool extends Tool {
  * <a href="../../samples/customContextMenu.html">Custom Context Menu</a> and
  * <a href="../../samples/htmlLightBoxContextMenu.html">HTML LightBox Context Menu</a> samples, the
  * <a href="../../samples/customTextEditingTool.html">Custom TextEditingTool sample</a>, and the
- * <a href="../../extensions/TextEditor.html">Text Editor implementation extension</a>.
+ * <a href="../../samples/TextEditor.html">Text Editor implementation extension</a>.
  *
  * Here is the outline for typical usage of HTMLInfo as a context menu:
  * ```js
@@ -8487,7 +9079,7 @@ export class PanningTool extends Tool {
  * ```
  *
  * By default, {@link TextEditingTool.defaultTextEditor} is an instance of HTMLInfo.
- * You can see its default implementation details <a href="../../extensions/TextEditor.html">here</a>.
+ * You can see its default implementation details <a href="../../samples/TextEditor.html">here</a>.
  * @category Tool
  */
 export class HTMLInfo {
@@ -8600,7 +9192,7 @@ export class ContextMenuTool extends Tool {
      * On touch devices, a special default context menu will appear even if no object with a context menu is found.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -8609,7 +9201,7 @@ export class ContextMenuTool extends Tool {
      * or return the {@link Diagram} if there is a {@link Diagram.contextMenu}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param obj - Optional GraphObject with which to start searching for a context menu.
      * If null, the Diagram will be used. If no argument is specified, this method will look for an object at the current mouse point.
@@ -8666,7 +9258,7 @@ export class ContextMenuTool extends Tool {
      * This method sets the {@link currentContextMenu}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param contextmenu
      * @param obj - the {@link GraphObject} for which the context menu is being shown;
@@ -8684,7 +9276,7 @@ export class ContextMenuTool extends Tool {
      * so that the Placeholder is positioned at the adorned object, the second argument to this method.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * If you override this method to position the context menu,
      * the context menu has already been measured but not arranged,
@@ -8700,7 +9292,7 @@ export class ContextMenuTool extends Tool {
      * Hide any context menu.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     hideContextMenu(): void;
@@ -8721,7 +9313,7 @@ export class ContextMenuTool extends Tool {
      * * `goCXa` for the HTML `a` tag items
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a>
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a>
      * for how to override methods and how to call this base method.
      * @virtual
      */
@@ -8730,7 +9322,7 @@ export class ContextMenuTool extends Tool {
      * This is the {@link HTMLInfo.hide} method for the {@link defaultTouchContextMenu}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a>
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a>
      * for how to override methods and how to call this base method.
      * @virtual
      */
@@ -8870,8 +9462,8 @@ export declare enum TextEditingState {
  * call {@link CommandHandler.editTextBlock}.
  * That command method is also invoked by the F2 key on the keyboard.
  * <p class="boxread">
- * For a general discussion of text editing validation, see: <a href="../../intro/validation.html#TextEditingValidation">Introduction to Text Validation</a>.
- * For customizing the TextEditingTool, read about {@link HTMLInfo} and see <a href="../../intro/HTMLInteraction.html#TextEditors">Introduction to Text Editors</a>.
+ * For a general discussion of text editing validation, see: <a href="../../learn/validation#TextEditingValidation">Learn page on Text Validation</a>.
+ * For customizing the TextEditingTool, read about {@link HTMLInfo} and see <a href="../../learn/HTMLInteraction#TextEditors">Learn page on Text Editors</a>.
  * @category Tool
  */
 export class TextEditingTool extends Tool {
@@ -8958,7 +9550,7 @@ export class TextEditingTool extends Tool {
      * and {@link HTMLInfo.hide} during {@link doDeactivate}.
      *
      * By default the value is an {@link HTMLInfo}, and the {@link HTMLInfo.mainElement} is an `HTMLTextArea`.
-     * You can see the default implementation details <a href="../../extensions/TextEditor.html">here</a>.
+     * You can see the default implementation details <a href="../../samples/TextEditor.html">here</a>.
      *
      * For typical operation, HTMLInfo implementations should have a way of calling {@link TextEditingTool.acceptText}.
      */
@@ -8979,7 +9571,7 @@ export class TextEditingTool extends Tool {
      * that {@link Part.isSelected}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     canStart(): boolean;
@@ -9024,7 +9616,7 @@ export class TextEditingTool extends Tool {
     /**
      * Finish editing by trying to accept the new text.
      *
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param reason - The reason must be a {@link TextEditingAccept} value.
      */
@@ -9066,7 +9658,7 @@ export class TextEditingTool extends Tool {
      * property may be set to the new string.
      *
      * This method may be overridden, although usually it is sufficient to set {@link textValidation}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param textblock - the {@link TextBlock} that is being edited.
      * @param oldstr - the previous string value.
@@ -9280,7 +9872,7 @@ export class AnimationManager {
     /**
      * Gets or sets whether a default animation is performed on an initial layout.
      *
-     * The default value is true.
+     * The default value is `false` as of 4.0.
      * Changing the value does not affect any ongoing animation.
      * Setting this property does not raise any events.
      */
@@ -9296,7 +9888,7 @@ export class AnimationManager {
      * upon completion it raises the `"AnimationFinished"` Diagram event.
      * You should not modify the properties {@link Animation.runCount} or {@link Animation.reversible} on the default animation.
      *
-     * See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail.
+     * See the <a href="../../learn/animation">Learn page on Animations</a> for more detail.
      * @since 2.1
      */
     get defaultAnimation(): Animation;
@@ -9380,7 +9972,7 @@ export class AnimationManager {
  *
  * The {@link AnimationManager.defaultAnimation} is an instance of this class, and carries out the
  * default animations in GoJS: Model load, layout, expand and collapse, and so on.
- * See the <a href="../../intro/animation.html">Introduction Page on Animations</a> for more detail on the different kinds of animations.
+ * See the <a href="../../learn/animation">Learn page on Animations</a> for more detail on the different kinds of animations.
  *
  * Manual animations are set up by creating an instance of this class, and calling {@link add} at least once, then calling {@link start}.
  * The method {@link add} specifies which objects and which animation effects/properties to animate, plus start and end values for the property.
@@ -9407,7 +9999,7 @@ export class AnimationManager {
  * animation.start();
  * ```
  *
- * See the <a href="../../intro/animation.html">Introduction Page on Animations</a> and the <a href="../../samples/customAnimations.html">Custom Animations sample</a>
+ * See the <a href="../../learn/animation">Learn page on Animations</a> and the <a href="../../samples/customAnimations.html">Custom Animations sample</a>
  * for more example usage of the Animation class.
  *
  * Unlike the {@link AnimationManager.defaultAnimation}, Animations can be started any time,
@@ -9581,35 +10173,29 @@ export class Animation {
     getTemporaryState(obj: GraphObject | Diagram): ObjectData;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseLinear: EasingFunction;
+    static readonly EaseLinear: EasingFunction;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
      * This is the default value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseInOutQuad: EasingFunction;
+    static readonly EaseInOutQuad: EasingFunction;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseInQuad: EasingFunction;
+    static readonly EaseInQuad: EasingFunction;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseOutQuad: EasingFunction;
+    static readonly EaseOutQuad: EasingFunction;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseInExpo: EasingFunction;
+    static readonly EaseInExpo: EasingFunction;
     /**
      * Built-in static function for computing interpolated values. Can be used as a value for {@link Animation.easing}.
-     * @constant
      */
-    static EaseOutExpo: EasingFunction;
+    static readonly EaseOutExpo: EasingFunction;
 }
 /**
  * This enumeration specifices how an animation should be triggered.
@@ -9692,7 +10278,7 @@ export declare enum TriggerStart {
  * * `"strokeDashOffset"` (on Shapes)
  * * `"stroke"` (on Shapes, TextBlocks)
  *
- * Examples of defining additional animation properties are given in the <a href="../../intro/animation.html">Introduction Page on Animations</a>.
+ * Examples of defining additional animation properties are given in the <a href="../../learn/animation">Learn page on Animations</a>.
  * @since 2.1
  */
 export class AnimationTrigger {
@@ -9744,7 +10330,7 @@ export class AnimationTrigger {
      * * `"strokeDashOffset"` (on Shapes)
      * * `"stroke"` (on Shapes, TextBlocks)
      *
-     * Examples of defining additional properties by adding animation effects are given in the <a href="../../intro/animation.html">Introduction Page on Animations</a>.
+     * Examples of defining additional properties by adding animation effects are given in the <a href="../../learn/animation">Learn page on Animations</a>.
      */
     get propertyName(): string;
     set propertyName(value: string);
@@ -9982,7 +10568,7 @@ export class Layer {
      *
      * Instead of position, Parts are placed by setting their {@link GraphObject.alignment} and
      * {@link GraphObject.alignmentFocus} values in the same way they are used in a
-     * [Spot Panel](../../intro/panels.html#Spots).
+     * [Spot Panel](../../learn/panels#Spots).
      * However, the alignment spot, if it is {@link Spot.Default} as it is by default,
      * will be treated as {@link Spot.BottomRight} rather than {@link Spot.Center}
      * as a "Spot" Panel does.
@@ -10004,7 +10590,7 @@ export class Layer {
      * );
      * ```
      *
-     * For example usage, see [Legends and Titles](../../intro/legends.html).
+     * For example usage, see [Legends and Titles](../../learn/legends).
      *
      * Parts in viewport coordinate layers may have unexpected interactions if they are
      * connected to Parts in non-viewport coordinate layers.
@@ -10410,7 +10996,6 @@ export declare enum CollapsePolicy {
  *
  * JavaScript:
  * ```js
- *
  * const myDiagram =
  *   new go.Diagram("myDiagramDiv",  // create a Diagram for the Div HTML element
  *     { // with various property and subproperty settings...
@@ -10471,7 +11056,7 @@ export declare enum CollapsePolicy {
  * The above code is used to make the <a href="../../samples/minimal.html">Minimal sample</a>, a simple example of
  * creating a Diagram and setting its model.
  * <p class="boxread">
- * Read about models on the <a href="../../intro/usingModels.html">Using Models</a> page in the introduction.
+ * Read about models on the <a href="../../learn/usingModels">Using Models</a> page in Learn.
  * A diagram is responsible for scrolling ({@link position}) and zooming ({@link scale}) all of the parts that it shows.
  * Each {@link Part} occupies some area given by its {@link GraphObject.actualBounds}.
  *
@@ -10486,8 +11071,8 @@ export declare enum CollapsePolicy {
  * call either {@link centerRect} or {@link scrollToRect} with the Node's {@link GraphObject.actualBounds},
  * depending on whether or not you want the view to be scrolled if the node is already in view.
  * <p class="boxread">
- * Read in the Introduction about <a href="../../intro/viewport.html">Viewports</a>
- * and the <a href="../../intro/initialView.html">Initial Viewport</a>.
+ * Read in the Learn page about <a href="../../learn/viewport">Viewports</a>
+ * and the <a href="../../learn/initialView">Initial Viewport</a>.
  * You can have the diagram perform automatic layouts of its nodes and links by setting
  * {@link layout} to an instance of the {@link Layout} subclass of your choice.
  * The default {@link layout} is an instance of the {@link Layout} base class that ignores links and
@@ -10503,7 +11088,7 @@ export declare enum CollapsePolicy {
  * You can disable the initial layout by setting {@link Layout.isInitial} to false.
  * You can disable later automatic layouts by setting {@link Layout.isOngoing} to false.
  * <p class="boxread">
- * See the <a href="../../intro/layouts.html">Layouts</a> page in the Introduction for a summary of layout behavior.
+ * See the <a href="../../learn/layouts">Layouts</a> page in Learn for a summary of layout behavior.
  *
  * A diagram maintains a collection of selected parts, the {@link Diagram.selection}.
  * To select a Part you set its {@link Part.isSelected} property to true.
@@ -10517,13 +11102,13 @@ export declare enum CollapsePolicy {
  * to the property {@link Part.copyable}.
  * The {@link Part.canCopy} predicate is false if any of these properties is false.
  * <p class="boxread">
- * See the <a href="../../intro/permissions.html">Permissions</a> page for a more thorough discussion.
+ * See the <a href="../../learn/permissions">Permissions</a> page for a more thorough discussion.
  *
  * The {@link commandHandler} implements various standard commands,
  * such as the {@link CommandHandler.deleteSelection} method and the
  * {@link CommandHandler.canDeleteSelection} predicate.
  * <p class="boxread">
- * See the <a href="../../intro/commands.html">Commands</a> page for a listing of keyboard commands and
+ * See the <a href="../../learn/commands">Commands</a> page for a listing of keyboard commands and
  * the use of commands in general.
  *
  * The diagram supports modular behavior for mouse events by implementing "tools".
@@ -10558,7 +11143,7 @@ export declare enum CollapsePolicy {
  * That tool will keep running until some code replaces the {@link currentTool}.
  * This normally happens when the current tool calls {@link Tool.stopTool}, such as on a mouse-up event.
  * <p class="boxread">
- * See the <a href="../../intro/tools.html">Tools</a> page for a listing of predefined tools and how they operate.
+ * See the <a href="../../learn/tools">Tools</a> page for a listing of predefined tools and how they operate.
  *
  * A diagram raises various {@link DiagramEvent}s when interesting things happen that may have affected the whole diagram.
  * See the documentation for {@link DiagramEvent} for a complete listing.
@@ -10567,7 +11152,7 @@ export declare enum CollapsePolicy {
  * You can also have two Diagrams share a DIV by swapping the {@link div} to `null` on one Diagram and setting it on the other.
  * When permanently removing a Diagram,t o clear any memory used,
  * set the {@link div} to `null` and remove all references to the Diagram. These scenarios are discussed more on the
- * <a href="../../intro/replacingDeleting.html">Replacing Diagrams and Models</a> intro page.
+ * <a href="../../learn/replacingDeleting">Replacing Diagrams and Models</a> learn page.
  * @category Diagram
  */
 export class Diagram {
@@ -10658,8 +11243,8 @@ export class Diagram {
      * when the Diagram is initially created. Using the SVG rendering context is also uncommon,
      * because the default canvas context has considerably greater performance.
      *
-     * For more information, see the intro page on the
-     * <a href="../../intro/SVGContext.html">SVG drawing context</a>.
+     * For more information, see the learn page on the
+     * <a href="../../learn/SVGContext">SVG renderer</a>.
      *
      * Overviews cannot be rendered in SVG.
      * @since 2.3
@@ -10814,6 +11399,81 @@ export class Diagram {
      * @virtual
      */
     doKeyUp(): void;
+    /**
+     * Simulate a mouse down event, typically for regression testing.
+     *
+     * Note that no DOM MouseEvent or PointerEvent is raised.
+     * @param x - the X-coordinate of the mouse point in document coordinates.
+     * @param y - the Y-coordinate of the mouse point in document coordinates.
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitMouseDown(x: number, y: number, time?: number, eventprops?: Partial<InputEvent & {
+        sourceDiagram: Diagram;
+    }>): this;
+    /**
+     * Simulate a mouse move event, typically for regression testing.
+     *
+     * Note that no DOM MouseEvent or PointerEvent is raised.
+     * @param x - the X-coordinate of the mouse point in document coordinates.
+     * @param y - the Y-coordinate of the mouse point in document coordinates.
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitMouseMove(x: number, y: number, time?: number, eventprops?: Partial<InputEvent & {
+        sourceDiagram: Diagram;
+    }>): this;
+    /**
+     * Simulate a mouse up event, typically for regression testing.
+     *
+     * Note that no DOM MouseEvent or PointerEvent is raised.
+     * @param x - the X-coordinate of the mouse point in document coordinates.
+     * @param y - the Y-coordinate of the mouse point in document coordinates.
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitMouseUp(x: number, y: number, time?: number, eventprops?: Partial<InputEvent & {
+        sourceDiagram: Diagram;
+    }>): this;
+    /**
+     * Simulate a mouse wheel event, typically for regression testing.
+     *
+     * Note that no DOM WheelEvent or PointerEvent is raised.
+     * @param delta - non-zero turn
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitMouseWheel(delta: number, time?: number, eventprops?: Partial<InputEvent>): this;
+    /**
+     * Simulate a key down event, typically for regression testing.
+     *
+     * Note that no DOM KeyboardEvent is raised.
+     * @param keyCodeOrKey A simulated KeyboardEvent.keyCode (number) or KeyboardEvent.key (string)
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitKeyDown(keyCodeOrKey: string | number, time?: number, eventprops?: Partial<InputEvent>): this;
+    /**
+     * Simulate a key up event, typically for regression testing.
+     *
+     * Note that no DOM KeyboardEvent is raised.
+     * @param keyCodeOrKey A simulated KeyboardEvent.keyCode (number) or KeyboardEvent.key (string)
+     * @param time - the timestamp of the simulated event, in milliseconds; default zero
+     * @param eventprops - an optional argument providing properties for the InputEvent.
+     * @return this
+     * @since 4.0
+     */
+    emitKeyUp(keyCodeOrKey: string | number, time?: number, eventprops?: Partial<InputEvent>): this;
     /**
      * (undocumented)
      * Focus the Diagram's canvas, allowing it to receive keyboard events.
@@ -11137,7 +11797,7 @@ export class Diagram {
      *
      * The most common reason to call this method when the HTML Div has changed size but the window has not changed size,
      * and the Diagram needs to be notified of this DOM change. See an example of resizing diagrams
-     * <a href="../../intro/resizing.html">here</a>.
+     * <a href="../../learn/resizing">here</a>.
      *
      * Requests that in the near-future the diagram makes sure all GraphObjects are arranged,
      * recomputes the document bounds, updates the scrollbars, and redraws the viewport.
@@ -11276,7 +11936,7 @@ export class Diagram {
      * @param part
      * @see {@link remove}
      */
-    add(part: Part): void;
+    add(part: Part): this;
     /**
      * Removes a {@link Part} from its {@link Layer}, provided the Layer is in this Diagram.
      * Removing a {@link Node} will also remove any Links that are connected with it.
@@ -11285,7 +11945,7 @@ export class Diagram {
      * @param part
      * @see {@link add}
      */
-    remove(part: Part): void;
+    remove(part: Part): this;
     /**
      * This method removes from this Diagram all of the {@link Part}s in a collection.
      * Removing a {@link Node} will also remove any Links that are connected with it.
@@ -11301,7 +11961,7 @@ export class Diagram {
      * @param coll - A {@link List} or {@link Set | go.Set} or {@link Iterator} or Array of {@link Part}s.
      * @param check - Whether to check {@link Part.canDelete} on each part; default value is false.
      */
-    removeParts(coll: Iterable<Part> | Array<Part>, check?: boolean): void;
+    removeParts(coll: Iterable<Part> | Array<Part>, check?: boolean): this;
     /**
      * Make a copy of a collection of {@link Part}s and return them in a {@link Map | go.Map} mapping each original Part to its copy.
      * It may optionally add them to a given {@link Diagram}.
@@ -11339,7 +11999,7 @@ export class Diagram {
      * and any {@link Part.minLocation} and {@link Part.maxLocation}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param n - the Node or simple Part that is being moved
      * @param newloc - the proposed new location
@@ -11396,7 +12056,7 @@ export class Diagram {
      * @see {@link addLayerAfter}
      * @see {@link findLayer}
      */
-    removeLayer(layer: Layer): void;
+    removeLayer(layer: Layer): this;
     /**
      * Finds a layer with a given name.
      * @param name
@@ -11405,7 +12065,7 @@ export class Diagram {
      * @see {@link addLayerAfter}
      * @see {@link removeLayer}
      */
-    findLayer(name: string): Layer | null;
+    findLayer(name: LayerName | string): Layer | null;
     /**
    * Finds a router with a given name in the Diagram's {@link routers} list.
    * By default, the only router is "AvoidsNodes"
@@ -11457,7 +12117,7 @@ export class Diagram {
      * @param listener - a function that takes a {@link ChangedEvent} as its argument.
      * @see {@link addModelChangedListener}
      */
-    removeModelChangedListener(listener: ChangedEventHandler): void;
+    removeModelChangedListener(listener: ChangedEventHandler): this;
     /**
      * Register an event handler that is called when there is a {@link ChangedEvent} because this Diagram
      * or one of its Parts has changed, but not because the Model or any model data has changed.
@@ -11478,7 +12138,7 @@ export class Diagram {
      * @param listener - a function that takes a {@link ChangedEvent} as its argument.
      * @see {@link addChangedListener}
      */
-    removeChangedListener(listener: ChangedEventHandler): void;
+    removeChangedListener(listener: ChangedEventHandler): this;
     /**
      * Undocumented
      */
@@ -11574,11 +12234,11 @@ export class Diagram {
     commit(func: (d: Diagram) => void, tname?: string | null): void;
     /**
      * Update all of the data-bound properties of {@link Node}s and {@link Link}s in this diagram,
-     * without having to call {@link Model.setDataProperty}.
+     * without having to call {@link Model.set}.
      * This copies/converts model data properties to set properties on {@link Part}s.
      * This method does not conduct a transaction, so you need to start and commit one yourself.
      *
-     * It is better to call {@link Model.setDataProperty} to modify data properties,
+     * It is better to call {@link Model.set} to modify data properties,
      * because that will both record changes for undo/redo and will update all bindings
      * that make depend on that property.
      * Simply modifying the data and calling an "update..." method will not be able to record
@@ -11619,7 +12279,7 @@ export class Diagram {
      *
      * It is better to call {@link Model.addNodeData}, {@link Model.removeNodeData},
      * {@link GraphLinksModel.addLinkData}, {@link GraphLinksModel.removeLinkData},
-     * {@link Model.setDataProperty}, and other model methods to add/remove/modify data,
+     * {@link Model.set}, and other model methods to add/remove/modify data,
      * because those methods will both record changes for undo/redo and will update all bindings
      * that make depend on that property.
      * Simply modifying the data and calling an "update..." method will not be able to record
@@ -11744,19 +12404,21 @@ export class Diagram {
     /**
      * Given a Point in document coordinates, return a new Point in viewport coordinates.
      * @param p
+     * @param result optional Point that is modified and returned; if not supplied, return a new Point
      * @returns The given Point converted into View coordinates.
      * @see {@link transformViewToDoc}
      * @see {@link GraphObject.getDocumentPoint}
      */
-    transformDocToView(p: Point): Point;
+    transformDocToView(p: Point, result?: Point): Point;
     /**
      * Given a point in viewport coordinates, return a new Point in document coordinates.
      * @param p
+     * @param result optional Point that is modified and returned; if not supplied, return a new Point
      * @returns The given point converted into Document coordinates.
      * @see {@link transformDocToView}
      * @see {@link GraphObject.getDocumentPoint}
      */
-    transformViewToDoc(p: Point): Point;
+    transformViewToDoc(p: Point, result?: Point): Point;
     /**
      * @deprecated See {@link AutoScale.None}.
      */
@@ -12563,7 +13225,7 @@ export class Diagram {
     set themeManager(value: ThemeManager);
     /**
      * Gets or sets the license key.
-     * Read more about the license key at <a href="../../intro/deployment.html">Deployment</a>.
+     * Read more about the license key at <a href="../../learn/deployment">Deployment</a>.
      * @since 2.0
      */
     static get licenseKey(): string;
@@ -12587,7 +13249,7 @@ export class Diagram {
      * the Diagram property setters will automatically call rebuildParts.
      *
      * It is extremely wasteful to call this method after making some model data changes that you want to
-     * be reflected in the diagram.  Instead, it is better call {@link Model.setDataProperty},
+     * be reflected in the diagram.  Instead, it is better call {@link Model.set},
      * {@link Model.addNodeData}, {@link Model.removeNodeData}, or other model methods.
      * Not only do those methods update efficiently, they also preserve unbound state and support undo/redo.
      */
@@ -12847,7 +13509,7 @@ export class Diagram {
      * If this property is set, its size will always be used to compute the {@link viewportBounds}, even if
      * a {@link div} is also set. It is uncommon to set both this property and a Diagram DIV.
      *
-     * See the intro page on <a href="../../intro/nodeScript.html">GoJS within Node.js</a> for a usage example.
+     * See the learn page on <a href="../../learn/nodeJs">GoJS within Node.js</a> for a usage example.
      *
      * @see {@link viewportBounds}
      * @since 2.0
@@ -13275,7 +13937,7 @@ export class Diagram {
      * @param listener - a function that takes a {@link DiagramEvent} as its argument.
      * @see {@link addDiagramListener}
      */
-    removeDiagramListener(name: DiagramEventName, listener: DiagramEventHandler): void;
+    removeDiagramListener(name: DiagramEventName, listener: DiagramEventHandler): this;
     /**
      * (undocumented)
      * Notify any {@link DiagramEvent} listeners by calling all event handlers registered by {@link addDiagramListener}.
@@ -13354,8 +14016,8 @@ export class Diagram {
      *
      * By default this method returns a snapshot of the visible diagram, but optional arguments give more options.
      * <p class="boxread">
-     * See the page on <a href="../../intro/makingSVG.html">Making SVG</a> for usage examples.
-     * See the <a href="../../samples/minimalSVG.html">Minimal SVG Download sample</a>,
+     * See the page on <a href="../../learn/makingSVG">Making SVG</a> for usage examples.
+     * See the <a href="../../samples/minimalSvg.html">Minimal SVG Download sample</a>,
      * which also demonstrates downloading an SVG file without involving a web server.
      *
      * Note that the resulting SVG DOM is not interactive -- it is a snapshot of this diagram at this time.
@@ -13425,7 +14087,7 @@ export class Diagram {
      * });
      * ```
      * <p class="boxread">
-     * See the page on <a href="../../intro/makingImages.html">Making Images</a> for more usage examples.
+     * See the page on <a href="../../learn/makingImages">Making Images</a> for more usage examples.
      *
      * Note that a returned HTMLImageElement, either returned directly or passed to the callback function,
      * might not yet have the <code>complete</code> property set to true.
@@ -13451,6 +14113,7 @@ export class Diagram {
  * which is used as an argument for methods like {@link Diagram.computeMove}.
  *
  * {@link Diagram.moveParts} constructs a  Map of Parts and DraggingInfo to record each Part's location offset during moves.
+ * @category Tool
  * @since 2.0
  */
 export class DraggingInfo {
@@ -13478,6 +14141,7 @@ export class DraggingInfo {
  * Setting properties on the DraggingTool such as {@link DraggingTool.isGridSnapEnabled}
  * sets the value on the {@link DraggingTool.dragOptions} instance for you.
  * @see {@link DraggingTool.dragOptions}
+ * @category Tool
  * @since 2.0
  */
 export class DraggingOptions {
@@ -13568,14 +14232,6 @@ export interface DiagramRendererOptions {
      * automatically scale to fit within the maxSize, but may be smaller, with a maximum computed scale of 1.
      */
     scale?: number;
-    /**
-     * The maximum size of the created image, as a {@link Size}.
-     * The default value is `(Infinity, Infinity)` for SVG and `(2000, 2000)` for images.
-     * This is typically used when {@link scale} is specified and helps prevent accidental excessive memory usage,
-     * which is especially needed in limited-memory environments.
-     * You cannot use Infinity when providing a maximum size for an image -- consider calling {@link Diagram.makeSvg} instead.
-     */
-    maxSize?: Size;
     /**
      * The position of the diagram, as a {@link Point}.
      * By default this is the position of {@link Diagram.documentBounds} with the {@link Diagram.padding} removed.
@@ -13675,13 +14331,21 @@ export interface ImageRendererOptions extends DiagramRendererOptions {
      * If the type is `"image/jpeg"` then this can be a number from `0` to `1`, inclusive, describing the desired jpeg quality.
      */
     details?: number;
+    /**
+     * The maximum size of the created image, as a {@link Size}.
+     * The default value is `(4000, 4000)` for images.
+     * This is typically used when {@link scale} is specified and helps prevent accidental excessive memory usage,
+     * which is especially needed in limited-memory environments.
+     * You cannot use Infinity when providing a maximum size for an image -- consider calling {@link Diagram.makeSvg} instead.
+     */
+    maxSize?: Size;
 }
 /**
  * Palette extends the Diagram class to allow objects to be dragged and placed onto other Diagrams.
  * Its {@link Diagram.layout} is a {@link GridLayout}.
  * The Palette is {@link Diagram.isReadOnly} but to support drag-and-drop its {@link Diagram.allowDragOut} is true.
  * <p class="box">
- * For more discussion, see <a href="../../intro/palette.html">Introduction to Palettes</a>.
+ * For more discussion, see <a href="../../learn/palette">Learn page on Palettes</a>.
  * See samples that make use of Palettes in the <a href="../../samples/index.html#palette">samples index</a>.
  *
  * You can control the order of Parts in the palette in several manners:
@@ -13723,7 +14387,7 @@ export class Palette extends Diagram {
  * An Overview is a {@link Diagram} that displays all of a different diagram,
  * with a rectangular box showing the viewport displayed by that other diagram.
  * <p class="box">
- * For more discussion, see <a href="../../intro/overview.html">Introduction to Overviews</a>.
+ * For more discussion, see <a href="../../learn/overview">Learn page on Overviews</a>.
  * See samples that make use of Overviews in the <a href="../../samples/index.html#overview">samples index</a>.
  * </p>
  * All you need to do is set {@link Overview.observed}.
@@ -13818,12 +14482,12 @@ export class Overview extends Diagram {
  * However you must seriously consider calling the base method in order to get its default behavior.
  * There may be situations where not calling the base method may cause subtle bugs,
  * but that depends on the method.
- * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call a base method.
+ * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call a base method.
  *
  * There is an example custom CommandHandler in the extensions directory: <a href="../../extensions/DrawCommandHandler.js">DrawCommandHandler.js</a>,
  * which provides alignment commands and additional behaviors for the arrow keys.
  * <p class="boxread">
- * For additional discussion, please read the <a href="../../intro/commands.html">Introduction page on Commands</a>.
+ * For additional discussion, please read the <a href="../../learn/commands">Learn page on Commands</a>.
  * <h3>Keyboard Shortcuts</h3>
  *
  * The CommandHandler implements the following command bindings for keyboard input in {@link doKeyDown}:
@@ -13948,7 +14612,7 @@ export class CommandHandler {
      * By default this method does nothing.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doStart(): void;
@@ -13960,7 +14624,7 @@ export class CommandHandler {
      * By default this method does nothing.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doStop(): void;
@@ -13970,11 +14634,11 @@ export class CommandHandler {
      * If GoJS handles a key-down event as a keyboard command, the underlying event will not bubble.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * There is an example custom CommandHandler in the extensions directory: <a href="../../extensions/DrawCommandHandler.js">DrawCommandHandler.js</a>,
      * which implements additional behaviors for the arrow keys by overriding this method.
-     * For additional discussion, please read the <a href="../../intro/commands.html">Introduction page on Commands</a>.
+     * For additional discussion, please read the <a href="../../learn/commands">Learn page on Commands</a>.
      *
      * Starting in 3.0.7, this uses the value of {@link InputEvent.commandKey}.
      * @virtual
@@ -13984,7 +14648,7 @@ export class CommandHandler {
      * This is called by tools to handle keyboard commands.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     doKeyUp(): void;
@@ -14005,7 +14669,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but probably should not be overridden.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns true.
      * @see {@link stopCommand}
@@ -14019,7 +14683,7 @@ export class CommandHandler {
      * This ignores all parts in temporary layers.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canSelectAll}
      */
@@ -14029,7 +14693,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true if {@link Diagram.allowSelect} is true.
      * @see {@link selectAll}
@@ -14050,7 +14714,7 @@ export class CommandHandler {
      * Changes are performed within a transaction, but the selection events are raised outside the transaction.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canDeleteSelection}
      */
@@ -14060,7 +14724,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if the diagram is not {@link Diagram.isReadOnly},
@@ -14077,7 +14741,7 @@ export class CommandHandler {
      * This also raises the "ClipboardChanged" diagram event.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canCopySelection}
      */
@@ -14087,7 +14751,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if {@link Diagram.allowCopy} is true,
@@ -14101,7 +14765,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl-X` keyboard shortcut.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canCutSelection}
      */
@@ -14111,7 +14775,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if the diagram is not {@link Diagram.isReadOnly},
@@ -14137,7 +14801,7 @@ export class CommandHandler {
      * its containing group (if in a {@link GraphLinksModel}).
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param coll - A collection of {@link Part}s.
      * If the value is null, the clipboard is cleared of all data.
@@ -14152,7 +14816,7 @@ export class CommandHandler {
      * This calls {@link Diagram.copyParts} in order to make a copy of the Parts in the clipboard and add them to this diagram.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns a collection of the newly pasted {@link Part}s,
      * or an empty Set if there was no data in the clipboard.
@@ -14170,7 +14834,7 @@ export class CommandHandler {
      * Changes are performed in a transaction, but the selection events are raised outside the transaction.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pos - Point at which to center the newly pasted parts; if not present the parts are not moved.
      * @see {@link canPasteSelection}
@@ -14181,7 +14845,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param pos - Point at which to center the newly pasted parts; if not present the parts would not be moved.
      * @returns This returns true:
@@ -14197,7 +14861,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl-Z` keyboard shortcut.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canUndo}
      */
@@ -14207,7 +14871,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if the diagram is not {@link Diagram.isReadOnly},
@@ -14221,7 +14885,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl-Y` keyboard shortcut.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canRedo}
      */
@@ -14231,7 +14895,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if the diagram is not {@link Diagram.isReadOnly},
@@ -14245,7 +14909,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl--` and `Numpad--` keyboard shortcuts.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param factor - This defaults to 1/{@link zoomFactor}.  The value should be less than one and greater than zero.
      * @see {@link canDecreaseZoom}
@@ -14256,7 +14920,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param factor - This defaults to 1/{@link zoomFactor}.  The value should be less than one and greater than zero.
      * @returns This returns true if {@link Diagram.allowZoom} is true
@@ -14269,7 +14933,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl-+` and `Numpad-+` keyboard shortcuts.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param factor - This defaults to {@link zoomFactor}.  The value should be greater than one.
      * @see {@link canIncreaseZoom}
@@ -14280,7 +14944,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param factor - This defaults to {@link zoomFactor}.  The value should be greater than one.
      * @returns This returns true if {@link Diagram.allowZoom} is true
@@ -14293,7 +14957,7 @@ export class CommandHandler {
      * This is normally invoked by the `Ctrl-0` keyboard shortcut.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newscale - This defaults to {@link Diagram.defaultScale}, which is normally 1.0.  The value should be greater than zero.
      * @see {@link canResetZoom}
@@ -14304,7 +14968,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param newscale - This defaults to {@link Diagram.defaultScale}, which is normally 1.0.  The value should be greater than zero.
      * @returns This returns true if {@link Diagram.allowZoom} is true.
@@ -14325,7 +14989,7 @@ export class CommandHandler {
      * {@link Diagram.zoomToFit} and {@link Diagram.zoomToRect} do not animate.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param rect a Rect in document bounds that is the intended new viewport bounds.
      * If this is provided, the command will call {@link Diagram.zoomToRect}, otherwise it will call {@link Diagram.zoomToFit}.
@@ -14340,7 +15004,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param rect an optional Rect in document bounds that is the intended new viewport bounds.
      * @returns This returns true if {@link Diagram.allowZoom} is true.
@@ -14361,7 +15025,7 @@ export class CommandHandler {
      * If there is no argument and there is no highlighted or selected Part, this command does nothing.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * @virtual
      * @param part - This defaults to the first highlighted Part of {@link Diagram.highlighteds},
@@ -14376,7 +15040,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param part - This defaults to the first selected Part of {@link Diagram.selection}
      * @returns This returns true if {@link Diagram.allowHorizontalScroll} and {@link Diagram.allowVerticalScroll} are true.
@@ -14395,7 +15059,7 @@ export class CommandHandler {
      * and perhaps also on the {@link Node.wasTreeExpanded} property.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param node - if supplied, ignore the selection and collapse this particular Node subtree.
      * @see {@link canCollapseTree}
@@ -14406,7 +15070,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param node - if supplied, ignore the selection and consider collapsing this particular Node.
      * @see {@link collapseTree}
@@ -14424,7 +15088,7 @@ export class CommandHandler {
      * and perhaps also on the {@link Node.wasTreeExpanded} property.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param node - if supplied, ignore the selection and collapse this particular Node subtree.
      * @see {@link canExpandTree}
@@ -14435,7 +15099,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param node - if supplied, ignore the selection and consider expanding this particular Node.
      * @see {@link expandTree}
@@ -14459,7 +15123,7 @@ export class CommandHandler {
      * Changes are performed in a "Group" transaction, but the selection events are raised outside the transaction.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @see {@link canGroupSelection}
      */
@@ -14469,7 +15133,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns This returns true:
      * if the {@link archetypeGroupData} is not null,
@@ -14488,10 +15152,10 @@ export class CommandHandler {
      * If this CommandHandler has a {@link memberValidation} predicate and if it returns false, this method returns false.
      * Otherwise this will return true.
      * <p class="box">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - this may be null if the node is being added as a top-level node.
      * @param part - a Part, usually a Node, possibly another Group, but not a Link or an Adornment.
@@ -14513,7 +15177,7 @@ export class CommandHandler {
      * Changes are performed in an "Ungroup" transaction, but the selection events are raised outside the transaction.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and consider ungrouping this particular Group.
      * @see {@link canUngroupSelection}
@@ -14524,7 +15188,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and consider ungrouping this particular Group.
      * @returns This returns true:
@@ -14557,7 +15221,7 @@ export class CommandHandler {
      * If you want to remove Parts completely from a Diagram, call {@link Diagram.removeParts}.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param coll - a collection of Parts.
      * @param check - whether to call {@link isValidMember} to confirm that changing the Part to be a top-level Part is valid.
@@ -14576,7 +15240,7 @@ export class CommandHandler {
      * and perhaps also on the {@link Group.wasSubGraphExpanded} property.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and collapse this particular Group.
      * @see {@link canCollapseSubGraph}
@@ -14587,7 +15251,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and consider collapsing this particular Group.
      * @see {@link collapseSubGraph}
@@ -14605,7 +15269,7 @@ export class CommandHandler {
      * and perhaps also on the {@link Group.wasSubGraphExpanded} property.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and expand this particular Group.
      * @see {@link canExpandSubGraph}
@@ -14616,7 +15280,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param group - if supplied, ignore the selection and consider expanding this particular Group.
      * @see {@link expandSubGraph}
@@ -14630,7 +15294,7 @@ export class CommandHandler {
      * You may want to save the new string to the model by using a TwoWay {@link Binding} on the "text" property of your TextBlock.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param textblock - the {@link TextBlock} to start editing.
      * @see {@link canEditTextBlock}
@@ -14641,7 +15305,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param textblock - the {@link TextBlock} to consider editing.
      * @returns This returns true:
@@ -14660,7 +15324,7 @@ export class CommandHandler {
      * defined in order to show anything.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param obj - a GraphObject or Diagram with a contextMenu defined.
      * If none is given, this method will use the first selected object, or else the Diagram.
@@ -14674,7 +15338,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param obj - a GraphObject or Diagram with a contextMenu defined.
      * If none is given, this method will use the first selected object, or else the Diagram.
@@ -14685,7 +15349,7 @@ export class CommandHandler {
      * This command downloads an SVG file that holds a rendering of this diagram.
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param options - an optional Object that satisfies the {@link SvgRendererOptions} interface and may also
      * have an optional "name" property for the name of the downloaded file;
@@ -14701,7 +15365,7 @@ export class CommandHandler {
      *
      * This method may be overridden, but you should consider calling this base method in order to get all of its functionality.
      * This method must not have any side-effects.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param options - an optional Object that satisfies the {@link SvgRendererOptions} interface and may also
      * have an optional "name" property for the name of the downloaded file
@@ -14775,8 +15439,9 @@ export class CommandHandler {
      * is expected to implement the <code>Storage</code> interface.
      *
      * The default value is "memory".
+     * @since 3.1
      */
-    get storageLocation(): 'memory' | 'sessionStorage' | 'localStorage' | 'systemClipboard';
+    get storageLocation(): "memory" | "sessionStorage" | "localStorage" | "systemClipboard";
     set storageLocation(val: 'memory' | 'sessionStorage' | 'localStorage' | 'systemClipboard');
     /**
      * Gets or sets a data object that is copied by {@link groupSelection}
@@ -14795,7 +15460,7 @@ export class CommandHandler {
      * The predicate may be called passing null as the first argument (the Group) --
      * this asks whether it is OK to make the second argument (the Part, but not a Link) a top-level Part of the diagram.
      * <p class="box">
-     * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+     * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
      *
      * The function, if supplied, must not have any side-effects.
      */
@@ -14840,7 +15505,7 @@ export class CommandHandler {
      * with an Object holding its original location Points as the value of the "point" property.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param parts - A {@link Set | go.Set} or {@link List} of {@link Part}s.
      * @param options - Potential options for the collection computation. If not specified, this uses the DraggingTool's drag options.
@@ -14920,7 +15585,8 @@ export class CommandHandler {
      * If {@link focusChanged} is a function, it is called.
      * Otherwise, it updates a live element so that a possible screen reader
      * reads a description of the newly focused GraphObject.
-     * You will want to replace that property with your own update mechanism.
+     * You will want to replace that property with your own update function,
+     * or override {@link describe}.
      *
      * Then it scrolls to the new {@link focus} object if it's out of the viewport.
      *
@@ -14941,7 +15607,7 @@ export class CommandHandler {
     get focusChanged(): ((oldobj: GraphObject | null, newobj: GraphObject | null, cmd: CommandHandler) => void) | null;
     set focusChanged(value: ((oldobj: GraphObject | null, newobj: GraphObject | null, cmd: CommandHandler) => void) | null);
     /**
-     * Gets or sets the <code>id</code> of the HTML element used to hold the description of the current {@link focus}
+     * Gets or sets the <code>id</code> of the HTML element, typically an &ltoutput&gt element, used to hold the description of the current {@link focus}
      * and possibly other state information.
      *
      * The default value is the empty string.  Note that the element must be in the same DOM as the diagram.
@@ -15294,7 +15960,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *
  * It is very common to make use of the static function {@link GraphObject.make} in order to build up
  * a visual tree of GraphObjects.  You can see many examples of this throughout the
- * Introduction, starting at <a href="../../intro/buildingObjects.html">Building Objects</a>,
+ * Learn pages, starting at <a href="../../learn/buildingObjects">Building Objects</a>,
  * and the Samples, starting with <a href="../../samples/minimal.html">Minimal Sample</a>.
  *
  * Since GraphObject is an abstract class, programmers do not create GraphObjects themselves,
@@ -15335,7 +16001,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *     typically means an object will be cropped.
  *
  * <p class="boxread">
- * See <a href="../../intro/sizing.html">the Introduction page on sizing</a>
+ * See <a href="../../learn/sizing">the Learn page on sizing</a>
  * for usage information and examples.
  * <h3>GraphObject Size and Position within Panel</h3>
  * Several GraphObject properties guide the containing {@link Panel} for how to size and position the object within the panel.
@@ -15351,8 +16017,8 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *   - The {@link position} property is used to determine the relative position of GraphObjects when they are elements of a {@link Panel.Position} panel.
  *
  * <p class="boxread">
- * See <a href="../../intro/panels.html">the Introduction page on Panels</a>
- * and <a href="../../intro/tablePanels.html">Table Panels</a> for an overview of the capabilities.
+ * See <a href="../../learn/panels">the Learn page on Panels</a>
+ * and <a href="../../learn/tablePanels">Table Panels</a> for an overview of the capabilities.
  * <h3>Top-level GraphObjects are Parts</h3>
  *
  * A {@link Part} is a derived class of GraphObject representing a top-level object.
@@ -15420,7 +16086,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  * and {@link actionUp} define functions to execute when the GraphObject's {@link isActionable} property
  * is set to true (default false). See the {@link ActionTool} for more detail.
  * <p class="boxread">
- * See <a href="../../intro/events.html">the Introduction page on Events</a> for a more general discussion.
+ * See <a href="../../learn/events">the Learn page on Events</a> for a more general discussion.
  * <h3>GraphObjects as Ports</h3>
  *
  * In GoJS, {@link Link}s can only connect to elements within a {@link Node}
@@ -15443,9 +16109,9 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *   - {@link fromMaxLinks} and {@link toMaxLinks}, to limit the number of links connecting with this port in a particular direction
  *
  * <p class="boxread">
- * See <a href="../../intro/ports.html">the Introduction page on ports</a>
- * and <a href="../../intro/links.html">link routing</a>
- * and <a href="../../intro/connectionPoints.html">link connection points</a>
+ * See <a href="../../learn/ports">the Learn page on ports</a>
+ * and <a href="../../learn/links">link routing</a>
+ * and <a href="../../learn/connectionPoints">link connection points</a>
  * for port usage information and examples.
  * <h3>GraphObjects as labels on a Link</h3>
  *
@@ -15458,7 +16124,7 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *   - {@link segmentOrientation}, how the label should be rotated relative to the angle of the segment
  *
  * <p class="boxread">
- * See <a href="../../intro/linkLabels.html">the Introduction page on link labels</a>
+ * See <a href="../../learn/linkLabels">the Learn page on link labels</a>
  * for examples of how to make use of labels on Links.
  * <h3>Interactive Behavior</h3>
  *
@@ -15468,8 +16134,8 @@ export type MakeAllow<CT extends ConstructorType<CT>, C, E> = (InstanceType<CT> 
  *   - {@link toolTip}, an {@link Adornment}
  *
  * <p class="boxread">
- * For more information, please read <a href="../../intro/contextMenus.html">the Introduction page about Context Menus</a>
- * and <a href="../../intro/tooltips.html">the page about ToolTips</a>.
+ * For more information, please read <a href="../../learn/contextMenus">the Learn page about Context Menus</a>
+ * and <a href="../../learn/tooltips">the page about ToolTips</a>.
  * <p class="boxrun">
  * Also see <a href="../../samples/basic.html">the Basic sample</a>
  * for examples of how to show context menus and tooltips.
@@ -15516,7 +16182,7 @@ export abstract class GraphObject {
      * so that modifications to the Array will not be shared by copies of the CustomLink.
      * Further copies of the Array items might be warranted, depending on their purpose.
      *
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param copy
      */
@@ -15726,7 +16392,7 @@ export abstract class GraphObject {
      * any TextBlock label {@link angle} will be respected. Depending on this value, the effective TextBlock angle will be either
      * fixed or relative to the slope of the path where it is rendered.
      *
-     * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
+     * For examples of how to use this property, see <a href="../../learn/linkLabels">Link Labels</a>.
      * @see {@link segmentFraction}
      * @see {@link segmentIndex}
      * @see {@link segmentOffset}
@@ -15746,7 +16412,7 @@ export abstract class GraphObject {
      * If you do not set this property, the Link will choose a place that is approximately at the
      * mid-point of the link's route.
      *
-     * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
+     * For examples of how to use this property, see <a href="../../learn/linkLabels">Link Labels</a>.
      * @see {@link segmentFraction}
      * @see {@link segmentOffset}
      * @see {@link segmentOrientation}
@@ -15761,7 +16427,7 @@ export abstract class GraphObject {
      *
      * If {@link segmentIndex} is set to NaN, the fractional distance will be calculated along the entire link route.
      *
-     * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
+     * For examples of how to use this property, see <a href="../../learn/linkLabels">Link Labels</a>.
      * @see {@link segmentIndex}
      * @see {@link segmentOffset}
      * @see {@link segmentOrientation}
@@ -15782,7 +16448,7 @@ export abstract class GraphObject {
      * For labels that are near either end of a link, it may be convenient to set the segmentOffset
      * to Point(NaN, NaN). This causes the offset to be half the width and half the height of the label object.
      *
-     * For examples of how to use this property, see <a href="../../intro/linkLabels.html">Link Labels</a>.
+     * For examples of how to use this property, see <a href="../../learn/linkLabels">Link Labels</a>.
      * @see {@link segmentFraction}
      * @see {@link segmentIndex}
      * @see {@link segmentOrientation}
@@ -16287,7 +16953,7 @@ export abstract class GraphObject {
      * where this object should be positioned in a Panel.
      *
      * A {@link Spot.Default} is equivalent to Spot.Center in Spot, Auto, Horizontal, and Vertical panels.
-     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
+     * For examples of alignments in different panels, see the <a href="../../learn/panels">Learn page on Panels</a>.
      *
      * @see {@link alignmentFocus}
      * @see {@link Panel.defaultAlignment}
@@ -16339,7 +17005,7 @@ export abstract class GraphObject {
      * When you want a link label Node to be positioned by its location spot rather than by this alignmentFocus spot,
      * you can set this property to {@link Spot.None}, only on {@link Node}s.
      *
-     * For examples of alignments in different panels, see the <a href="../../intro/panels.html">Introduction page on Panels</a>.
+     * For examples of alignments in different panels, see the <a href="../../learn/panels">Learn page on Panels</a>.
      * @see {@link Panel.alignmentFocusName}
      */
     get alignmentFocus(): Spot;
@@ -16363,7 +17029,7 @@ export abstract class GraphObject {
      * The value should be unique within the {@link Node}.
      * You must not modify this property once this GraphObject is in the visual tree of a Node.
      * <p class="boxread">
-     * See <a href="../../intro/ports.html">the Introduction page on ports</a>
+     * See <a href="../../learn/ports">the Learn page on ports</a>
      * for usage information and examples.
      * @see {@link fromLinkable}
      * @see {@link toLinkable}
@@ -16386,7 +17052,7 @@ export abstract class GraphObject {
      * Depending on the layout, you may be able to disable that behavior, such as by setting {@link ForceDirectedLayout.setsPortSpots},
      * {@link TreeLayout.setsPortSpot}, {@link TreeLayout.setsChildPortSpot}, or {@link LayeredDigraphLayout.setsPortSpots} to false.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -16407,7 +17073,7 @@ export abstract class GraphObject {
      * when determining the route of the link.
      * This value also limits how short the {@link Link.toShortLength} may be drawn.
      *
-     * For examples of how to use this property, see <a href="../../intro/links.html#EndSegmentLengths">Link End Segment Lengths</a>.
+     * For examples of how to use this property, see <a href="../../learn/links#EndSegmentLengths">Link End Segment Lengths</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -16438,7 +17104,7 @@ export abstract class GraphObject {
      * The value of {@link Link.toShortLength}, if not NaN, takes precedence over the value at this port
      * when determining the route of the link.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -16496,7 +17162,7 @@ export abstract class GraphObject {
      * Depending on the layout, you may be able to disable that behavior, such as by setting {@link ForceDirectedLayout.setsPortSpots},
      * {@link TreeLayout.setsPortSpot}, {@link TreeLayout.setsChildPortSpot}, or {@link LayeredDigraphLayout.setsPortSpots} to false.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -16517,7 +17183,7 @@ export abstract class GraphObject {
      * The value of {@link Link.fromEndSegmentLength}, if not NaN, takes precedence over the value at this port
      * when determining the route of the link.
      *
-     * For examples of how to use this property, see <a href="../../intro/links.html#EndSegmentLengths">Link End Segment Lengths</a>.
+     * For examples of how to use this property, see <a href="../../learn/links#EndSegmentLengths">Link End Segment Lengths</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -16548,7 +17214,7 @@ export abstract class GraphObject {
      * The value of {@link Link.fromShortLength}, if not NaN, takes precedence over the value at this port
      * when determining the route of the link.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      *
      * You must set this property on a GraphObject whose {@link portId} is non-null,
      * unless the whole {@link Node} is acting as a single port,
@@ -17134,7 +17800,7 @@ export abstract class GraphObject {
      *
      * Replacing this value will not modify or remove any existing tooltip that is being shown for this object.
      *
-     * Read more about tooltips at <a href="../../intro/tooltips.html">ToolTips</a>.
+     * Read more about tooltips at <a href="../../learn/tooltips">ToolTips</a>.
      */
     get toolTip(): Adornment | HTMLInfo | null;
     set toolTip(value: Adornment | HTMLInfo | null);
@@ -17189,7 +17855,7 @@ export abstract class GraphObject {
      *
      * Replacing this value will not modify or remove any existing context menu that is being shown for this object.
      *
-     * Read more about context menus at <a href="../../intro/contextMenus.html">Context Menus</a>.
+     * Read more about context menus at <a href="../../learn/contextMenus">Context Menus</a>.
      */
     get contextMenu(): Adornment | HTMLInfo | null;
     set contextMenu(value: Adornment | HTMLInfo | null);
@@ -17223,7 +17889,7 @@ export abstract class GraphObject {
      *    // ... rest of the Node template
      * ```
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      *
      * @param targetprop - A string naming the target property on this GraphObject.
      *   This should not be the empty string.
@@ -17236,16 +17902,10 @@ export abstract class GraphObject {
      *   If the function is null or not supplied, no conversion takes place.
      *   This becomes the value of {@link Binding.converter}.
      * @param backconv - Deprecated: call {@link bindTwoWay} instead.
-     *   This is an optional conversion function to convert GraphObject property values back to data values.
-     *   Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay},
-     *   unless the value is undefined.
-     *   Passing a value of null will cause the binding to be TwoWay, but no back-conversion function will be called.
-     *   Passing a value of undefined, or not supplying an argument, produces a OneWay binding.
-     *   This becomes the value of {@link Binding.backConverter}.
      * @returns this GraphObject
      * @since 2.2
      */
-    bind(targetprop?: string, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null): this;
+    bind(targetprop: string, sourceprop?: string, conv?: TargetConversion | null, backconv?: BackConversion | null): this;
     /**
      * Add a data-binding of a property on this GraphObject to a property on a binding source object.
      *
@@ -17267,7 +17927,7 @@ export abstract class GraphObject {
      *    // ...
      * ```
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param binding
      * @returns this GraphObject
      */
@@ -17288,7 +17948,7 @@ export abstract class GraphObject {
      * The first creates a two-way binding because specifying anything for the 4th argument (BackConversion) automatically
      * sets the {@link Binding.mode} to be {@link BindingMode.TwoWay}. However, it requires specifying the middle arguments, which may not be necessary.
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param targetprop - A string naming the target property on this GraphObject.
      *   This should not be the empty string.
      *   This becomes the value of {@link Binding.targetProperty}.
@@ -17319,7 +17979,7 @@ export abstract class GraphObject {
      * Pass null when you do not want a back-conversion function applied when passing a property value from
      * this target GraphObject to the source data object.
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param targetprop - A string naming the target property on this GraphObject.
      *   This should not be the empty string.
      *   This becomes the value of {@link Binding.targetProperty}.
@@ -17353,7 +18013,7 @@ export abstract class GraphObject {
      * Pass null when you do not want a back-conversion function applied when passing a property value from
      * this target GraphObject to the source object.
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param targetprop - A string naming the target property on this target GraphObject.
      *   This should not be the empty string.
      *   This becomes the value of {@link Binding.targetProperty}.
@@ -17379,39 +18039,77 @@ export abstract class GraphObject {
     /**
      * Add a {@link ThemeBinding} from a Theme property to a property on this GraphObject.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Example:
+     * ```
+     * new go.TextBlock()
+     *   // assigns TextBlock.stroke to the value of theme.colors.text
+     *   .theme("stroke", "text")
+     * ```
+     * This calls {@link ThemeManager.findTheme} to get a {@link Theme} object.
+     * Because the target property is "stroke", it will use the Theme's "colors" object, {@link Theme.colors}.
+     * It then retrieves that object's "text" value, which should be a CSS color string or undefined.
+     * Finally it sets the target GraphObject, in this case {@link TextBlock.stroke}.
+     *
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
      * @param sourceprop - A string naming the source property on the theme.
      *   This should not be the empty string.
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
      * @param themeSource - The theme source object to search for the source property.
+     *   Supply a property name if the theme property names are in a sub-object of the Object chosen by the targetprop name.
+     *   See {@link ThemeBinding.themeSource}.
      *   If this argument is null or not supplied, the empty-string is used.
-     * @param conv - An optional side-effect-free function converting the source property to the theme property name.
+     * @param conv - An optional side-effect-free function converting the source property value to the theme property name.
      *   If the function is null or not supplied, no conversion takes place.
      * @param themeconv - An optional side-effect-free function converting the theme value to the value to set the target property.
+     *   See {@link ThemeBinding.themeConverter}.
      *   If the function is null or not supplied, no conversion takes place.
+     *   This is infrequently used.
      * @returns this GraphObject
      * @since 3.0
      */
     theme(targetprop: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion | null, themeconv?: TargetConversion | null): this;
     /**
      * Add a {@link ThemeBinding} from a data property to a property on this GraphObject.
+     * The data property value should be a theme property name.
+     * The theme property value will be the value of that property on the theme source object in the Theme.
+     *
+     * Example:
+     * ```
+     * new go.TextBlock()
+     *   // assigns TextBlock.stroke to the value of theme.colors[data.state]
+     *   .themeData("stroke", "state")
+     * ```
+     * It first gets the bound data object's "state" property value, which should be a theme property name.
+     * This then calls {@link ThemeManager.findTheme} to get a {@link Theme} object.
+     * Because the target property is "stroke", it will use the Theme's "colors" object, {@link Theme.colors}.
+     * It then retrieves that object's property value that was named by "state",
+     * which should be a CSS color string or undefined.
+     * Finally it sets the target GraphObject, in this case {@link TextBlock.stroke}.
+     *
+     * Note that if the data property value were instead an actual CSS color string, you would not use <b>themeData</b>
+     * because you would not be using themes at all, but just call {@link GraphObject.bind} to directly assign
+     * the color to the {@link TextBlock.stroke} property.
      *
      * This is a convenience function for {@link theme} that additionally calls {@link ThemeBinding.ofData} on the created binding.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
-     * @param sourceprop - A string naming the source property on the theme.
+     * @param sourceprop - A string naming the data source property.
      *   This should not be the empty string.
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
      * @param themeSource - The theme source object to search for the source property.
+     *   Supply a property name if the theme property names are in a sub-object of the Object chosen by the targetprop name.
+     *   See {@link ThemeBinding.themeSource}.
      *   If this argument is null or not supplied, the empty-string is used.
-     * @param conv - An optional side-effect-free function converting the source property to the theme property name.
+     * @param conv - An optional side-effect-free function converting the source property value to the theme property name.
      *   If the function is null or not supplied, no conversion takes place.
      * @param themeconv - An optional side-effect-free function converting the theme value to the value to set the target property.
+     *   See {@link ThemeBinding.themeConverter}.
      *   If the function is null or not supplied, no conversion takes place.
+     *   This is infrequently used.
      * @returns this GraphObject
      * @since 3.0
      */
@@ -17419,21 +18117,43 @@ export abstract class GraphObject {
     /**
      * Add a {@link ThemeBinding} from a GraphObject property to a property on this GraphObject.
      *
+     * Example:
+     * ```
+     * new go.TextBlock()
+     *   // assigns TextBlock.stroke to the value of theme.colors[textblock.text]
+     *   // where the textblock.name == "TB1"
+     *   .themeObject("stroke", "text", null, null, null, "TB1")
+     * ```
+     * It first finds the element named "TB1", and gets its "text" property value, which should be a theme property name.
+     * This then calls {@link ThemeManager.findTheme} to get a {@link Theme} object.
+     * Because the target property is "stroke", it will use the Theme's "colors" object, {@link Theme.colors}.
+     * It then retrieves that object's property that was named by the {@link TextBlock.text} property.
+     * Finally it sets the target GraphObject, in this case {@link TextBlock.stroke}.
+     *
+     * Note that if the GraphObject property value were instead an actual CSS color string, you would not use <b>themeObject</b>
+     * because you would not be using themes at all, but just call {@link GraphObject.bindObject} to directly assign
+     * the other element's color to the {@link TextBlock.stroke} property.
+     *
      * This is a convenience function for {@link theme} that additionally calls {@link Binding.ofObject} on the created binding.
      * It passes the `objectSrcname` param to the {@link Binding.ofObject} call.
+     * This is infrequently used.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
-     * @param sourceprop - A string naming the source property on the theme.
+     * @param sourceprop - A string naming the GraphObject source property.
      *   This should not be the empty string.
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
      * @param themeSource - The theme source object to search for the source property.
+     *   Supply a property name if the theme property names are in a sub-object of the Object chosen by the targetprop name.
+     *   See {@link ThemeBinding.themeSource}.
      *   If this argument is null or not supplied, the empty-string is used.
-     * @param conv - An optional side-effect-free function converting the source property to the theme property name.
+     * @param conv - An optional side-effect-free function converting the source property value to the theme property name.
      *   If the function is null or not supplied, no conversion takes place.
      * @param themeconv - An optional side-effect-free function converting the theme value to the value to set the target property.
+     *   See {@link ThemeBinding.themeConverter}.
      *   If the function is null or not supplied, no conversion takes place.
+     *   This is infrequently used.
      * @param objectSrcname - the {@link GraphObject.name} of an element in the visual tree of the bound {@link Panel}
      *   If not supplied, it uses the binding Panel as the source GraphObject.
      * @returns this GraphObject
@@ -17443,20 +18163,41 @@ export abstract class GraphObject {
     /**
      * Add a {@link ThemeBinding} from the shared {@link Model.modelData} to a property on this GraphObject.
      *
+     * Example:
+     * ```
+     * new go.TextBlock()
+     *   // assigns TextBlock.stroke to the value of theme.colors[model.modelData.state]
+     *   .themeModel("stroke", "state")
+     * ```
+     * It first gets the bound data object's "text" property value, which should be a theme property name.
+     * This then calls {@link ThemeManager.findTheme} to get a {@link Theme} object.
+     * Because the target property is "stroke", it will use the Theme's "colors" object, {@link Theme.colors}.
+     * It then retrieves that object's property value that was named by "state",
+     * which should be a CSS color string or undefined.
+     * Finally it sets the target GraphObject, in this case {@link TextBlock.stroke}.
+     *
+     * Note that if the data property value were instead an actual CSS color string, you would not use <b>themeModel</b>
+     * because you would not be using themes at all, but just call {@link GraphObject.bindModel} to directly assign
+     * the color to the {@link TextBlock.stroke} property.
+     *
      * This is a convenience function for {@link theme} that additionally calls {@link Binding.ofModel} on the created binding.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
-     * @param sourceprop - A string naming the source property on the theme.
+     * @param sourceprop - A string naming the shared model data source property.
      *   This should not be the empty string.
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
      * @param themeSource - The theme source object to search for the source property.
+     *   Supply a property name if the theme property names are in a sub-object.
+     *   See {@link ThemeBinding.themeSource}.
      *   If this argument is null or not supplied, the empty-string is used.
-     * @param conv - An optional side-effect-free function converting the source property to the theme property name.
+     * @param conv - An optional side-effect-free function converting the source property value to the theme property name.
      *   If the function is null or not supplied, no conversion takes place.
      * @param themeconv - An optional side-effect-free function converting the theme value to the value to set the target property.
+     *   See {@link ThemeBinding.themeConverter}.
      *   If the function is null or not supplied, no conversion takes place.
+     *   This is infrequently used.
      * @returns this GraphObject
      * @since 3.0
      */
@@ -17728,7 +18469,7 @@ export abstract class GraphObject {
      *    );
      * ```
      * <p class="boxread">
-     * See <a href="../../intro/buildingObjects.html">the Introduction page on building objects</a>
+     * See <a href="../../learn/buildingObjects">the Learn page on building objects</a>
      * for usage information and examples of GraphObject.make.
      * @param cls - a class function or the name of a class in the `go` namespace,
      * or one of several predefined kinds of {@link Panel}s: `"Button"`, `"TreeExpanderButton"`,
@@ -17802,6 +18543,8 @@ export abstract class GraphObject {
      * The function receives as its only argument an Array that is holds all of the arguments that are being
      * passed to {@link GraphObject.make}, which it may modify in order to change the arguments that GraphObject.make receives.
      *
+     * You can determine whether or not a builder name has already been defnied by calling the static function {@link GraphObject.isBuilderDefined}.
+     *
      * Predefined builder names include: `"Button"`, `"TreeExpanderButton"`, `"SubGraphExpanderButton"`,
      * `"PanelExpanderButton"`, and `"ContextMenuButton"`.
      * The implementation of these builders is provided by <a href="../../extensions/Buttons.js">Buttons.js</a>
@@ -17812,7 +18555,9 @@ export abstract class GraphObject {
     static defineBuilder(name: string, func: ((a: Array<any>) => ObjectData)): void;
     /**
      * This static predicate is true if and only if {@link GraphObject.defineBuilder} has been called on the given name.
+     * Such names can be used as the first argument to the static function {@link GraphObject.build}.
      * @param name
+     * @since 3.1
      */
     static isBuilderDefined(name: string): boolean;
     /**
@@ -17991,6 +18736,8 @@ export class Brush {
     static randomColor(min?: number, max?: number): string;
     /**
      * This static function returns true if a given color string is well-formed for drawing.
+     * Such a string can be used as the value of any {@link BrushLike} property, such as
+     * {@link Shape.fill}, {@link Shape.stroke}, {@link TextBlock.stroke}, or {@link GraphObject.background}.
      * @param color - A color string to validate.
      */
     static isValidColor(color: string): boolean;
@@ -18117,10 +18864,6 @@ export class Brush {
  *
  * None of these predefined panel layout classes have their own documentation pages.
  *
- * These panel layouts are included by default in builds of `go.js` and `go-module.js` and their respective debug versions.
- * When building from source, you can optionally exclude all of them except `Position`,
- * `Vertical`, `Auto`, `Link`, and `Grid`.
- *
  * Registering a new PanelLayout is done by calling the static function, {@link Panel.definePanelLayout}:
  *
  * ```js
@@ -18150,10 +18893,6 @@ export abstract class PanelLayout {
      * This class is abstract.  Define your own subclass if you want to implement a custom panel layout.
      */
     constructor();
-    /**
-     * (undocumented)
-     */
-    get classType(): Function;
     /**
      * Given the available size, measure the Panel and
      * determine its expected drawing size.
@@ -18298,7 +19037,9 @@ export declare enum ViewboxStretch {
  * ```js
  * // Either:
  * new go.Panel(go.Panel.Horizontal, ...
- * // Or:
+ * // Or {@link PanelType}, a const of valid string values:
+ * new go.Panel(go.PanelType.Horizontal, ...
+ * // Or a string:
  * new go.Panel("Horizontal", ...
  *
  * // Full example:
@@ -18313,7 +19054,7 @@ export declare enum ViewboxStretch {
  * The first argument may also be an instance of {@link PanelLayout}, if you want to use a custom panel layout.
  *
  * <p class="boxread">
- * For an overview of most Panel types, please read the <a href="../../intro/panels.html">Introduction page on Panels</a>.
+ * For an overview of most Panel types, please read the <a href="../../learn/panels">Learn page on Panels</a>.
  *
  * {@link Panel.Vertical} and {@link Panel.Horizontal} panels are frequently used to position two or more GraphObjects
  * vertically above each other or horizontally next to each other.  Use the {@link GraphObject.alignment} or
@@ -18330,7 +19071,7 @@ export declare enum ViewboxStretch {
  * In {@link Panel.Table} panels you will want to set the {@link GraphObject.row} and {@link GraphObject.column}
  * properties on each element.  The {@link GraphObject.alignment} and {@link GraphObject.stretch} properties are also
  * useful when an element's table cell is larger than that element.
- * <p class="boxrun">Please read the <a href="../../intro/tablePanels.html">Introduction page on Table Panels</a>
+ * <p class="boxrun">Please read the <a href="../../learn/tablePanels">Learn page on Table Panels</a>
  * for more examples and explanation.
  *
  * {@link Panel.TableRow} and {@link Panel.TableColumn} panels can only be used as elements within a {@link Panel.Table} Panel.
@@ -18374,7 +19115,7 @@ export declare enum ViewboxStretch {
  * ```
  *
  * A Grid Panel's elements do not participate in object picking.
- * <p class="boxrun">Please read the <a href="../../intro/grids.html">Introduction page on Grid Patterns</a>
+ * <p class="boxrun">Please read the <a href="../../learn/grids">Learn page on Grid Patterns</a>
  * for more examples and explanation.
  *
  * {@link Panel.Graduated} panels, like Spot and Auto Panels have a "main" element. The other elements within a Graduated Panel
@@ -18398,7 +19139,7 @@ export declare enum ViewboxStretch {
  * Rotating the main shape will not rotate the ticks, just as rotating a Spot Panel's main element
  * won't rotate its children. Rotation should generally be done at the Panel level. Another similarity
  * to Spot Panels is that resizing of a Graduated Panel should generally be done on the main shape.
- * <p class="boxrun">Please read the <a href="../../intro/graduatedPanels.html">Introduction page on Graduated Panels</a>
+ * <p class="boxrun">Please read the <a href="../../learn/graduatedPanels">Learn page on Graduated Panels</a>
  * for more examples and explanation.
  *
  * <h3>Changing and accessing elements of a Panel</h3>
@@ -18437,7 +19178,7 @@ export declare enum ViewboxStretch {
  *     {@link graduatedTickUnit}, and {@link graduatedTickBase} properties.
  *
  * <p class="boxread">
- * For live examples of all Panel types, see the <a href="../../intro/panels.html">Introduction page on Panels.</a>
+ * For live examples of all Panel types, see the <a href="../../learn/panels">Learn page on Panels.</a>
  *
  * <h3>Data Binding</h3>
  *
@@ -18446,8 +19187,8 @@ export declare enum ViewboxStretch {
  * the diagram automatically creates a new Node or Link whose {@link data} property refers to the corresponding
  * node data or link data object.
  * <p class="boxread">
- * For more discussion of data binding, please read the <a href="../../intro/usingModels.html">Introduction page on Models</a>
- * and <a href="../../intro/dataBinding.html">Data Binding</a>.
+ * For more discussion of data binding, please read the <a href="../../learn/usingModels">Learn page on Models</a>
+ * and <a href="../../learn/dataBinding">Data Binding</a>.
  *
  * Panels provide support for automatically creating elements within the Panel based on items in a JavaScript Array.
  * This is achieved by setting or binding the {@link itemArray} property, which acts in a manner similar
@@ -18468,13 +19209,13 @@ export declare enum ViewboxStretch {
  * contents are copied, not shared.  Or more generally, to customize the model's copying processes, you
  * can supply a custom {@link Model.copyNodeDataFunction}.
  * <p class="boxread">
- * For more discussion and examples of item arrays, please read the <a href="../../intro/itemArrays.html">Introduction page on Item Arrays</a>.
+ * For more discussion and examples of item arrays, please read the <a href="../../learn/itemArrays">Learn page on Item Arrays</a>.
  */
 export class Panel extends GraphObject {
     /**
-     * Constructs an empty Panel of the given {@link type}. Default type is {@link Panel.Position}.
-     * The panel type must be one of the {@link PanelLayout} static values such as {@link Panel.Position}.
-     * The string value such as "Auto" may also be used.
+     * Constructs an empty Panel of the given {@link type}. Default type is {@link PanelTypes.Position}.
+     * The panel type must be specified as one of the {@link PanelTypes} constant values
+     * such as {@link PanelTypes.Auto}, or the string value such as "Auto" may also be used.
      *
      * Usage example:
      *
@@ -18501,7 +19242,8 @@ export class Panel extends GraphObject {
     copy(): this;
     /**
      * Gets or sets the type of the Panel, which controls how the Panel's elements are measured and arranged.
-     * The value must be an instance of {@link PanelLayout}.
+     * The value may be a {@link PanelLayout} instance, or a panel-type name string.
+     * See {@link PanelTypes} for the named constants).
      *
      * Predefined values include {@link Panel} instances of built-in PanelLayouts:
      *   - {@link Panel.Position}
@@ -18522,7 +19264,7 @@ export class Panel extends GraphObject {
      * You must not modify this property once the Panel has been measured or the Panel has been added to another Panel.
      */
     get type(): PanelLayout;
-    set type(value: PanelLayout);
+    set type(value: PanelTypeName | string | PanelLayout);
     /**
      * This read-only property returns an iterator over the collection of the {@link GraphObject}s that this panel manages.
      *
@@ -18744,18 +19486,21 @@ export class Panel extends GraphObject {
      * You cannot add a GraphObject to a Panel if that GraphObject is already in a different Panel.
      * @param index
      * @param element - A GraphObject.
+     * @returns this
      */
-    insertAt(index: number, element: GraphObject): void;
+    insertAt(index: number, element: GraphObject): this;
     /**
      * Removes a GraphObject from this Panel's list of elements.
      * @param element - A GraphObject.
+     * @returns this
      */
-    remove(element: GraphObject): void;
+    remove(element: GraphObject): this;
     /**
      * Removes an GraphObject from this Panel's list of elements at the specified index.
      * @param idx
+     * @returns this
      */
-    removeAt(idx: number): void;
+    removeAt(idx: number): this;
     /**
      * For "Table" Panels: This read-only property returns the number of rows.
      * This value is only valid after the Panel has been measured.
@@ -18960,7 +19705,7 @@ export class Panel extends GraphObject {
      * Although you might not be able to replace this data value if this Part was created
      * automatically by the Diagram, you can still modify that data object's properties.
      * Call the appropriate Model method for changing properties that affect the structure of the diagram.
-     * Call {@link Model.setDataProperty} for changing other properties that may be the sources
+     * Call {@link Model.set} for changing other properties that may be the sources
      * of {@link Binding}s on {@link GraphObject} properties that are in the visual tree of this panel/part.
      */
     get data(): any | null;
@@ -19024,7 +19769,7 @@ export class Panel extends GraphObject {
      * in order to assign new property values to the {@link GraphObject}s in this visual tree
      * based on this object's {@link data} property values.
      *
-     * It is better to call {@link Model.setDataProperty} to modify data properties,
+     * It is better to call {@link Model.set} to modify data properties,
      * because that will both record changes for undo/redo and will update all bindings
      * that may depend on that property.
      *
@@ -19094,7 +19839,7 @@ export class Panel extends GraphObject {
      * is not kept as the first item in the itemArray.
      *
      * It is wasteful to call this method after making some model data changes.
-     * It is better to call {@link Model.setDataProperty}, {@link Model.addArrayItem},
+     * It is better to call {@link Model.set}, {@link Model.addArrayItem},
      * {@link Model.insertArrayItem}, or {@link Model.removeArrayItem}, or other model methods.
      * Not only do those methods update efficiently, they also preserve unbound state and support undo/redo.
      */
@@ -19147,7 +19892,7 @@ export class Panel extends GraphObject {
      * For {@link Spot} Panels: Gets or sets whether this Panel's main element clips instead of fills.
      * This assumes that the main element is a Shape.
      * The main Shape element will not paint its stroke, if it has any,
-     * and should have its <a>Shape.strokeWidth</a> set to `0`.
+     * and should have its {@link Shape.strokeWidth} set to `0`.
      *
      * Since 2.2: For {@link Group}s: Gets or sets whether this Group's Placeholder clips its member nodes.
      * For compatibility, if the Group is a {@link Spot} Panel, it will not clip its members.
@@ -19194,6 +19939,10 @@ export class Panel extends GraphObject {
     /**
      * Register a PanelLayout. This is called when making new Panel types.
      * See the <a href="../../samples/panelLayout.html">PanelLayout sample</a> for an example.
+     * PanelLayout names can be used as the first argument to a Panel constructor.
+     *
+     * You can determine whether or not a builder name has already been defnied by calling the static function {@link Panel.isLayoutDefined}.
+     *
      * @param layoutName - Panel name
      * @param layout - instance of the PanelLayout
      * @since 2.0
@@ -19201,7 +19950,9 @@ export class Panel extends GraphObject {
     static definePanelLayout(layoutName: string, layout: PanelLayout): void;
     /**
      * This static predicate is true if and only if {@link Panel.definePanelLayout} has been called on the given name.
+     * Such names can be used as the first argument of the {@link Panel} constructor.
      * @param name
+     * @since 3.1
      */
     static isLayoutDefined(name: string): boolean;
     /**
@@ -19620,8 +20371,7 @@ export class RowColumnDefinition {
      *   If this argument is not supplied, the source property is assumed to be the same as the target property.
      * @param conv - An optional side-effect-free function converting the data property value to the value to set the target property.
      *   If the function is null or not supplied, no conversion takes place.
-     * @param backconv - An optional conversion function to convert property values back to data values.
-     * Specifying this modifies the binding to set its {@link Binding.mode} to be {@link BindingMode.TwoWay}.
+     * @param backconv - Deprecated: call {@link bindTwoWay} instead.
      * @returns this RowColumnDefinition
      * @since 2.2
      */
@@ -19629,7 +20379,7 @@ export class RowColumnDefinition {
     /**
      * Add a data-binding of a property on this RowColumnDefinition to a property on a data object.
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param binding
      * @returns this RowColumnDefinition
      */
@@ -19650,7 +20400,7 @@ export class RowColumnDefinition {
      * The first creates a two-way binding because specifying anything for the 4th argument (BackConversion) automatically
      * sets the {@link Binding.mode} to be {@link BindingMode.TwoWay}. However, it requires specifying the middle arguments, which may not be necessary.
      *
-     * Read more about {@link Binding}s at <a href="../../intro/dataBinding.html">the Introduction page about Data Bindings</a>.
+     * Read more about {@link Binding}s at <a href="../../learn/dataBinding">the Learn page about Data Bindings</a>.
      * @param targetprop - A string naming the target property on this GraphObject.
      *   This should not be the empty string.
      *   This becomes the value of {@link Binding.targetProperty}.
@@ -19671,7 +20421,7 @@ export class RowColumnDefinition {
     /**
      * Add a {@link ThemeBinding} from a Theme property to a property on this RowColumnDefinition.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
      * @param sourceprop - A string naming the source property on the theme.
@@ -19692,7 +20442,7 @@ export class RowColumnDefinition {
      *
      * This is a convenience function for {@link theme} that additionally calls {@link ThemeBinding.ofData} on the created binding.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
      * @param sourceprop - A string naming the source property on the theme.
@@ -19714,7 +20464,7 @@ export class RowColumnDefinition {
      * This is a convenience function for {@link theme} that additionally calls {@link Binding.ofObject} on the created binding.
      * It passes the `objectSrcname` param to the {@link Binding.ofObject} call.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
      * @param sourceprop - A string naming the source property on the theme.
@@ -19737,7 +20487,7 @@ export class RowColumnDefinition {
      *
      * This is a convenience function for {@link theme} that additionally calls {@link Binding.ofModel} on the created binding.
      *
-     * Read more about theming at <a href="../../intro/theming.html">the Introduction page about Themes</a>.
+     * Read more about theming at <a href="../../learn/theming">the Learn page about Themes</a>.
      * @param targetprop - A string naming the target property on the target object.
      *   This should not be the empty string.
      * @param sourceprop - A string naming the source property on the theme.
@@ -19794,7 +20544,7 @@ export class RowColumnDefinition {
  * ```
  * <p class="box">
  * You can see more custom geometry examples and read about geometryString
- * on the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page.</a>
+ * on the <a href="../../learn/geometry">Geometry Path Strings Learn page.</a>
  *
  * When automatically generating a Shape {@link Geometry}, the value of {@link toArrow} takes precedence,
  * then {@link fromArrow}, then {@link figure}. If the value of {@link toArrow} or {@link fromArrow} is "None"
@@ -19814,7 +20564,7 @@ export class RowColumnDefinition {
  * construction of some {@link figure} geometries.
  * Specifically, they often set the {@link spot1}, {@link spot2} for the Shape.
  * These spots determine the "inner area" of an Auto panel when a Shape is the main object.
- * See the <a href="../../intro/panels.html">Auto Panels section of the Panels Introduction page</a> for more details.
+ * See the <a href="../../learn/panels">Auto Panels section of the Panels Learn page</a> for more details.
  *
  * Shapes use their geometric bounds when determining hit testing,
  * but use rectangular bounds when participating in (panel) layouts.
@@ -19902,7 +20652,7 @@ export class Shape extends GraphObject {
      * The property getter simply returns the toString value of the {@link geometry},
      * or the empty string if there is no Geometry value.
      *
-     * See the <a href="../../intro/geometry.html">Geometry Path Strings Introduction page</a> for examples.
+     * See the <a href="../../learn/geometry">Geometry Path Strings Learn page</a> for examples.
      */
     get geometryString(): string;
     set geometryString(value: string);
@@ -20020,9 +20770,10 @@ export class Shape extends GraphObject {
      * {@link figure}, {@link toArrow}, {@link fromArrow}.
      *
      * You can define your own named figures by calling the static function {@link Shape.defineFigureGenerator}.
+     * You can determine whether a string names a defined figure by calling the static function {@link Shape.isFigureDefined}.
      */
-    get figure(): string;
-    set figure(value: string);
+    get figure(): FigureName | string;
+    set figure(value: FigureName | string);
     /**
      * Gets or sets the name of the kind of arrowhead that this shape should take
      * when this shape is an element of a {@link Link}.
@@ -20046,11 +20797,12 @@ export class Shape extends GraphObject {
      * {@link figure}, {@link toArrow}, {@link fromArrow}.
      *
      * You can define your own named arrowheads by calling the static function {@link Shape.defineArrowheadGeometry}.
+     * You can determine whether a string names a defined arrowhead by calling the static function {@link Shape.isArrowheadDefined}.
      *
      * You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.
      */
-    get toArrow(): string;
-    set toArrow(value: string);
+    get toArrow(): ArrowheadName | string;
+    set toArrow(value: ArrowheadName | string);
     /**
      * Gets or sets the name of the kind of arrowhead that this shape should take
      * when this shape is an element of a {@link Link}.
@@ -20075,11 +20827,12 @@ export class Shape extends GraphObject {
      * {@link figure}, {@link toArrow}, {@link fromArrow}.
      *
      * You can define your own named arrowheads by calling the static function {@link Shape.defineArrowheadGeometry}.
+     * You can determine whether a string names a defined arrowhead by calling the static function {@link Shape.isArrowheadDefined}.
      *
      * You can see a copy of all of the built-in arrowhead definitions in this file: <a href="../../extensions/Arrowheads.js">Arrowheads.js</a>.
      */
-    get fromArrow(): string;
-    set fromArrow(value: string);
+    get fromArrow(): ArrowheadName | string;
+    set fromArrow(value: ArrowheadName | string);
     /**
      * Gets or sets the top-left Spot used by some {@link Panel}s for determining where in the shape other objects may be placed.
      * The value is normally {@link Spot.Default}, but you may want to set it to override the value that many {@link figure}s use.
@@ -20217,6 +20970,9 @@ export class Shape extends GraphObject {
      *
      * Generated figures must create a Geometry that is not larger than the supplied width and height.
      * Doing so is an error that may result in unexpected appearances or behaviors.
+     *
+     * You can determine whether or not a builder name has already been defnied by calling the static function {@link Shape.isFigureDefined}.
+     *
      * @param name - a capitalized figure name ("RoundedRectangle"); must not be "" or "None"
      * @param func - A function that takes (Shape,width,height) and returns a Geometry,
      *    or an existing figure generator name for which the new name will be a synonym.
@@ -20224,7 +20980,9 @@ export class Shape extends GraphObject {
     static defineFigureGenerator(name: string, func: string | ((shape: Shape | null, width: number, height: number) => Geometry)): void;
     /**
      * This static predicate is true if and only if {@link Shape.defineFigureGenerator} has been called on the given name.
+     * Such names can be used as the value of {@link figure}.
      * @param name
+     * @since 3.1
      */
     static isFigureDefined(name: string): boolean;
     /**
@@ -20244,13 +21002,18 @@ export class Shape extends GraphObject {
      * If the second argument is a string, it is converted into a {@link Geometry} by calling
      * `go.Geometry.parse(pathstr, false)`,
      * which may throw an error if there are problems with the syntax of the string.
+     *
+     * You can determine whether or not a builder name has already been defnied by calling the static function {@link Shape.isArrowheadDefined}.
+     *
      * @param name - a capitalized arrowhead name ("OpenTriangle"); must not be "" or "None"
      * @param pathstr - a {@link Geometry} or a Geometry path string, e.g. "m 0,0 l 8,4 -8,4"
      */
     static defineArrowheadGeometry(name: string, pathstr: Geometry | string): void;
     /**
      * This static predicate is true if and only if {@link Shape.defineArrowheadGeometry} has been called on the given name.
+     * Such names can be used as the value of {@link toArrow} or {@link fromArrow}.
      * @param name
+     * @since 3.1
      */
     static isArrowheadDefined(name: string): boolean;
 }
@@ -20338,7 +21101,7 @@ export declare enum TextFormat {
  * see the <a href="../../samples/customTextEditingTool.html">Custom TextEditingTool Sample</a>.
  * <p class="boxread">
  * For examples of TextBlock possibilities and functionality,
- * see the <a href="../../intro/textBlocks.html">Introduction page on TextBlocks</a>.
+ * see the <a href="../../learn/textBlocks">Learn page on TextBlocks</a>.
  */
 export class TextBlock extends GraphObject {
     /**
@@ -20493,6 +21256,7 @@ export class TextBlock extends GraphObject {
     set font(value: string);
     /**
      * This static predicate returns true if the given font is a valid font.
+     * Such a string can be used as the value of {@link font}.
      * @param font
      * @since 3.0
      */
@@ -20876,7 +21640,7 @@ export declare enum ImageStretch {
  * the image to fit (or not) in its bounds.
  * <p class="boxread">
  * For examples of sizing and {@link imageStretch},
- * see the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.
+ * see the <a href="../../learn/pictures">Learn page on Pictures</a>.
  *
  * The {@link errorFunction} property allows one to set a function to call when a source fails to load.
  * This is useful in instances where images cannot be guaranteed to work, such as with
@@ -20963,7 +21727,7 @@ export class Picture extends GraphObject {
      * perhaps using a conversion function in order to produce a proper URL.
      *
      * For cross-browser support of SVG sources additional care is needed.
-     * See the final section of the <a href="../../intro/pictures.html">Introduction page on Pictures</a>.
+     * See the final section of the <a href="../../learn/pictures">Learn page on Pictures</a>.
      */
     get source(): string;
     set source(value: string);
@@ -21183,7 +21947,7 @@ export declare enum LayoutConditions {
  * myDiagram.model.addNodeData( { key: "Gamma" } );
  * ```
  * <p class="boxread">
- * See the <a href="../../intro/usingModels.html">Introduction on using Models</a>
+ * See the <a href="../../learn/usingModels">Learn page on using Models</a>
  * for examples and more information.
  * <h3>Layers and Z-ordering</h3>
  *
@@ -21221,7 +21985,7 @@ export declare enum LayoutConditions {
  * For example, the {@link Part.canCopy} predicate is false if any of the three previously named properties is false.
  * Commands and tools will normally call these predicates rather than just looking at Part properties.
  * <p class="boxread">
- * For more discussion about permissions, please read: <a href="../../intro/permissions.html">Permissions</a>.
+ * For more discussion about permissions, please read: <a href="../../learn/permissions">Permissions</a>.
  *
  * As previously mentioned, each {@link Diagram} supports the notion of selected parts.
  * One way of displaying that a part is selected is by modifying the part.
@@ -21254,7 +22018,7 @@ export declare enum LayoutConditions {
  * This can be achieved by setting the {@link selectionObjectName} property,
  * and making sure the desired element has the same {@link GraphObject.name} property value.
  * <p class="boxread">
- * For more discussion about selection, see <a href="../../intro/selection.html">Selection</a>.
+ * For more discussion about selection, see <a href="../../learn/selection">Selection</a>.
  *
  * Similarly the {@link resizeObjectName} and {@link rotateObjectName} properties direct the
  * corresponding {@link ResizingTool} and {@link RotatingTool} to operate on the particular {@link GraphObject}
@@ -21263,7 +22027,7 @@ export declare enum LayoutConditions {
  *
  * Parts are not resizable or rotatable by default: you need to set {@link resizable} and/or {@link rotatable} to true.
  * <p class="boxread">
- * For more discussion about tools, see <a href="../../intro/tools.html">Tools</a>.
+ * For more discussion about tools, see <a href="../../learn/tools">Tools</a>.
  *
  * A Part may be positioned (or a {@link Link} may be routed) by a {@link Layout}.
  * This will happen automatically if {@link Diagram.layout} or {@link Group.layout} are set.
@@ -21296,9 +22060,9 @@ export declare enum LayoutConditions {
  * Then as the nodes are moved, whether manually by the user or automatically by a {@link Layout},
  * the model data is automatically updated with the location.
  * <p class="boxread">
- * For more discussion about related topics, see <a href="../../intro/selection.html">Selection</a>,
- * <a href="../../intro/tools.html">Tools</a>, and
- * <a href="../../intro/permissions.html">Permissions</a>.
+ * For more discussion about related topics, see <a href="../../learn/selection">Selection</a>,
+ * <a href="../../learn/tools">Tools</a>, and
+ * <a href="../../learn/permissions">Permissions</a>.
  *
  * Parts that are templates should have no relationships with other Parts.
  * Only real Parts that are in a Diagram can belong to Groups or have any Adornments.
@@ -21379,7 +22143,7 @@ export class Part extends Panel {
      * based on this this object's {@link data} property values.
      * This method does nothing if {@link data} is null.
      *
-     * It is better to call {@link Model.setDataProperty} to modify data properties,
+     * It is better to call {@link Model.set} to modify data properties,
      * because that will both record changes for undo/redo and will update all bindings
      * that make depend on that property.
      *
@@ -22490,10 +23254,10 @@ export class Part extends Panel {
  * Adornments are not positioned by a {@link Layout} because they are normally positioned
  * according to the Part that they adorn.
  *
- * For more discussion and examples, see <a href="../../intro/selection.html">Selection</a>,
- * <a href="../../intro/tooltips.html">ToolTips</a>,
- * <a href="../../intro/contextMenus.html">Context Menus</a>, and
- * <a href="../../intro/tools.html">Tools</a>.
+ * For more discussion and examples, see <a href="../../learn/selection">Selection</a>,
+ * <a href="../../learn/tooltips">ToolTips</a>,
+ * <a href="../../learn/contextMenus">Context Menus</a>, and
+ * <a href="../../learn/tools">Tools</a>.
  */
 export class Adornment extends Part {
     /**
@@ -22574,7 +23338,7 @@ export declare enum PortSpreading {
  * {@link Group} inherits from Node,
  * enabling nodes to logically contain other nodes and links.
  * <p class="boxread">
- * For a more general discussion of how to define nodes, see <a href="../../intro/nodes.html">Introduction to Nodes</a>.
+ * For a more general discussion of how to define nodes, see <a href="../../learn/nodes">Learn page on Nodes</a>.
  *
  * Although you can create a Node and {@link Diagram.add} it to a Diagram, this does not update the Model.
  * It is more common to create a node by adding a node data object to the model
@@ -22657,7 +23421,7 @@ export declare enum PortSpreading {
  * but it is easier to set the {@link linkValidation} or
  * {@link LinkingBaseTool.linkValidation} functional property.
  * <p class="boxread">
- * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  *
  * Nodes also support the ability to provide logical and physical distinctions in the connection points
  * that links use at a node. These connection objects are called "ports".
@@ -22681,7 +23445,7 @@ export declare enum PortSpreading {
  * for links is a {@link GraphLinksModel} whose {@link GraphLinksModel.linkFromPortIdProperty} and
  * {@link GraphLinksModel.linkToPortIdProperty} have been set to name properties on the link data objects.
  * <p class="boxread">
- * For a more general discussion of ports, see <a href="../../intro/ports.html">Introduction to Ports</a>.
+ * For a more general discussion of ports, see <a href="../../learn/ports">Learn page on Ports</a>.
  *
  * All of the "findLinks..." and "findNodes..." methods mentioned above take an optional port id argument.
  * When no argument is passed, these methods consider all links connecting with the node.
@@ -22708,7 +23472,7 @@ export declare enum PortSpreading {
  * (The "...Spot" and "...Length" properties also exist on {@link Link}, to override for a particular
  * link the default values that come from a port element.)
  * <p class="boxread">
- * For a more general discussion of link points, see <a href="../../intro/connectionPoints.html">Introduction to Link Connection Points</a>.
+ * For a more general discussion of link points, see <a href="../../learn/connectionPoints">Learn page on Link Connection Points</a>.
  *
  * When the graph is tree-structured, you can use several functions for traversing the tree:
  *   - {@link findTreeParentNode}
@@ -22742,17 +23506,17 @@ export declare enum PortSpreading {
  * Set {@link avoidableMargin} to control the area beyond the {@link GraphObject.actualBounds}
  * where AvoidsNodes links should not go.
  * <p class="boxread">
- * For more discussion and examples, see <a href="../../intro/nodes.html">Nodes</a>,
- * <a href="../../intro/ports.html">Ports</a>, and
- * <a href="../../intro/connectionPoints.html">Link Points</a>.
+ * For more discussion and examples, see <a href="../../learn/nodes">Nodes</a>,
+ * <a href="../../learn/ports">Ports</a>, and
+ * <a href="../../learn/connectionPoints">Link Points</a>.
  * <p class="boxread">
- * For more about trees, see <a href="../../intro/trees.html">Trees</a>, and
- * <a href="../../intro/subtrees.html">SubTrees</a>.
+ * For more about trees, see <a href="../../learn/trees">Trees</a>, and
+ * <a href="../../learn/subtrees">SubTrees</a>.
  * <p class="boxread">
  * To customize user-resizing behavior, please read
- * <a href="../../intro/tools.html#ResizingTool">Introduction to the ResizingTool</a>.
+ * <a href="../../learn/tools#ResizingTool">Learn page on the ResizingTool</a>.
  * To customize user-rotating behavior, please read
- * <a href="../../intro/tools.html#RotatingTool">Introduction to the RotatingTool</a>.
+ * <a href="../../learn/tools#RotatingTool">Learn page on the RotatingTool</a>.
  *
  * Only Nodes that are in Diagrams can have connections via Links.
  * Templates should not be connected with Links, be labels of Links, be members of Groups, or have any Adornments.
@@ -22956,6 +23720,7 @@ export class Node extends Part {
      *
      * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
      *                if not provided, a new Set is allocated and returned
+     * @since 3.1
      */
     findSuccessorParts(results?: Set<Part>): Set<Part>;
     /**
@@ -22975,6 +23740,7 @@ export class Node extends Part {
      *
      * @param results - An optional {@link Set} of {@link Node}s and {@link Link}s that is returned;
      *                if not provided, a new Set is allocated and returned
+     * @since 3.1
      */
     findPredecessorParts(results?: Set<Part>): Set<Part>;
     /**
@@ -23406,7 +24172,7 @@ export declare enum Curve {
  * A link can connect to a specific port element in a node, as named by the {@link Link.fromPortId}
  * and {@link Link.toPortId} properties.
  * <p class="boxread">
- * For more discussion, see <a href="../../intro/links.html">Introduction to Links</a>.
+ * For more discussion, see <a href="../../learn/links">Learn page on Links</a>.
  *
  * To add a Link to a Diagram when using a {@link GraphLinksModel} you should do something like:
  * ```js
@@ -23450,7 +24216,7 @@ export declare enum Curve {
  *   - {@link adjusting}
  *
  * <p class="boxread">
- * For more discussion and examples, see <a href="../../intro/links.html">Links</a>.
+ * For more discussion and examples, see <a href="../../learn/links">Links</a>.
  *
  * There are additional properties that affect how the end of the link connects to a port element of a node.
  * There are duplicate properties, ones for the "to" end and ones for the "from" end:
@@ -23465,7 +24231,7 @@ export declare enum Curve {
  * For example, several of the {@link Layout} classes sets these properties on each Link
  * as part of their route computation for links.
  * <p class="boxread">
- * For more discussion and examples, see <a href="../../intro/connectionPoints.html">Link Points</a>.
+ * For more discussion and examples, see <a href="../../learn/connectionPoints">Link Points</a>.
  *
  * Elements other than the main {@link Shape} in the Link may act as decorations on the link, including arrowheads and labels.
  * You can control where they are located along the link route and how they are oriented.
@@ -23479,7 +24245,7 @@ export declare enum Curve {
  * If you do not set the {@link GraphObject.segmentIndex} property, the object is positioned
  * to be at the middle of the link.
  * <p class="boxread">
- * For more discussion and examples, see <a href="../../intro/linkLabels.html">Link Labels</a>.
+ * For more discussion and examples, see <a href="../../learn/linkLabels">Link Labels</a>.
  *
  * **GoJS** makes it easy to add arrowheads to your link template.
  * Just add a {@link Shape} with the appearance properties that you want,
@@ -23518,18 +24284,18 @@ export declare enum Curve {
  * Also, when the user drags a reshape handle such that two adjacent segments end up in a straight line,
  * a segment is removed from the route.
  * <p class="boxread">
- * For more discussion and examples, see <a href="../../intro/links.html">Links</a>,
- * <a href="../../intro/linkLabels.html">Link Labels</a>, and
- * <a href="../../intro/connectionPoints.html">Link Points</a>.
+ * For more discussion and examples, see <a href="../../learn/links">Links</a>,
+ * <a href="../../learn/linkLabels">Link Labels</a>, and
+ * <a href="../../learn/connectionPoints">Link Points</a>.
  * <p class="boxread">
  * To control what links a user may draw or reconnect, please read about
- * <a href="../../intro/validation.html">Validation</a>.
+ * <a href="../../learn/validation">Validation</a>.
  * <p class="boxread">
  * To customize linking and relinking behavior, please read
- * <a href="../../intro/tools.html#LinkingToolAndRelinkingTool">Introduction to the Linking Tools</a>
- * and <a href="../../intro/tools.html#RelinkingTool">Introduction to the RelinkingTool</a>.
+ * <a href="../../learn/tools#LinkingToolAndRelinkingTool">Learn page on the Linking Tools</a>
+ * and <a href="../../learn/tools#RelinkingTool">Learn page on the RelinkingTool</a>.
  * For customizing the reshaping of Links,
- * see <a href="../../intro/tools.html#LinkReshapingTool">Introduction to the LinkReshapingTool</a>.
+ * see <a href="../../learn/tools#LinkReshapingTool">Learn page on the LinkReshapingTool</a>.
  *
  * Only Links that are in Diagrams can have connections with Nodes.
  * Templates should not be connected with Nodes, be members of Groups, or have any Adornments.
@@ -23714,7 +24480,7 @@ export class Link extends Part {
      * {@link LayeredDigraphLayout.setsPortSpots} or {@link TreeLayout.setsPortSpot} or
      * {@link TreeLayout.setsChildPortSpot} is true.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * @see {@link toSpot}
      * @see {@link GraphObject.fromSpot}
      * @see {@link computeSpot}
@@ -23727,7 +24493,7 @@ export class Link extends Part {
      * actually comes from the {@link GraphObject.fromEndSegmentLength} property of the {@link fromPort}.
      * This value also limits how short the {@link fromShortLength} may be drawn.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * @see {@link toEndSegmentLength}
      * @see {@link computeEndSegmentLength}
      * @see {@link GraphObject.fromEndSegmentLength}
@@ -23742,7 +24508,7 @@ export class Link extends Part {
      * The default value is NaN -- the value actually comes from the
      * {@link GraphObject.fromShortLength} property of the {@link fromPort}.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * If you want to move an arrowhead away from the start of the link route,
      * set the arrowhead Shape's {@link GraphObject.segmentOffset}.
      * @see {@link toShortLength}
@@ -23760,7 +24526,7 @@ export class Link extends Part {
      * {@link LayeredDigraphLayout.setsPortSpots} or {@link TreeLayout.setsPortSpot} or
      * {@link TreeLayout.setsChildPortSpot} is true.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * @see {@link fromSpot}
      * @see {@link GraphObject.toSpot}
      * @see {@link computeSpot}
@@ -23773,7 +24539,7 @@ export class Link extends Part {
      * actually comes from the {@link GraphObject.toEndSegmentLength} property of the {@link toPort}.
      * This value also limits how short the {@link toShortLength} may be drawn.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * @see {@link fromEndSegmentLength}
      * @see {@link computeEndSegmentLength}
      * @see {@link GraphObject.toEndSegmentLength}
@@ -23788,7 +24554,7 @@ export class Link extends Part {
      * The default value is NaN -- the value actually comes from the
      * {@link GraphObject.toShortLength} property of the {@link toPort}.
      *
-     * For examples of how to use this property, see <a href="../../intro/connectionPoints.html">Link Connection Points</a>.
+     * For examples of how to use this property, see <a href="../../learn/connectionPoints">Link Connection Points</a>.
      * If you want to move an arrowhead away from the end of the link route,
      * set the arrowhead Shape's {@link GraphObject.segmentOffset}.
      * @see {@link fromShortLength}
@@ -24093,7 +24859,7 @@ export class Link extends Part {
      * All route points are always in document coordinates.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * Overrides of this method may call a number of "protected" methods in order to build the route:
      * {@link clearPoints}, {@link addPoint}, {@link insertPoint}, {@link removePoint}, {@link setPoint}.
@@ -24159,15 +24925,16 @@ export class Link extends Part {
      * or the {@link toPort}'s {@link GraphObject.toEndSegmentLength}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param node
      * @param port - the {@link GraphObject} representing a port on the node.
      * @param spot - a {@link Spot} value describing where the link should connect.
      * @param from - true if the link is coming out of the port; false if going to the port.
+     * @param dir an optional direction; if not supplied, will default to NaN, meaning an unspecified angle instead of degrees from &gt;= zero to &lt;360.
      * @returns a distance in document coordinates; must be a real number, not NaN or infinity.
      */
-    computeEndSegmentLength(node: Node | null, port: GraphObject | null, spot: Spot, from: boolean): number;
+    computeEndSegmentLength(node: Node | null, port: GraphObject | null, spot: Spot, from: boolean, dir?: number): number;
     /**
      * Get the {@link Spot} that describes how the end of the link should connect with the port.
      * Depending on the `from` argument, this will return {@link fromSpot} or {@link toSpot}.
@@ -24175,7 +24942,7 @@ export class Link extends Part {
      * or the {@link toPort}'s {@link GraphObject.toSpot}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param from
      * @param port
@@ -24192,13 +24959,16 @@ export class Link extends Part {
      * By default this will return the center of the other port.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param othernode
      * @param otherport
+     * @param otherspot optional Spot at the other port
+     * @param from optional whether this Link is going out from this port or coming into this port
+     * @param result optional a Point to be modified and returned
      * @returns approximately where the other end of this link might end, in document coordinates
      */
-    computeOtherPoint(othernode: Node, otherport: GraphObject): Point;
+    computeOtherPoint(othernode: Node, otherport: GraphObject, otherspot?: Spot, from?: boolean, result?: Point): Point;
     /**
      * (undocumented)
      * @virtual
@@ -24226,7 +24996,7 @@ export class Link extends Part {
      * Returns the {@link curve}, unless this link is supposed to pretend to be curved, as with reflexive links.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     computeCurve(): Curve;
@@ -24253,7 +25023,7 @@ export class Link extends Part {
      * This calls {@link computeThickness} and also takes any "mid label"'s breadth into account.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns must be a real number, not NaN or infinity
      * @see {@link computeCurviness}
@@ -24277,7 +25047,7 @@ export class Link extends Part {
      * by calling {@link computeSpacing} on each link.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns must be a real number, not NaN or infinity
      * @see {@link computeSpacing}
@@ -24289,7 +25059,7 @@ export class Link extends Part {
      * This is called by {@link computeSpacing}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns a non-negative real number
      */
@@ -24298,7 +25068,7 @@ export class Link extends Part {
      * Returns true if an extra or a different point is needed based on {@link curviness}.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     hasCurviness(): boolean;
@@ -24368,7 +25138,7 @@ export class Link extends Part {
      * The points of the Geometry are in local coordinates, whereas the {@link points} of the link route are in document coordinates.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     makeGeometry(): Geometry;
@@ -24394,7 +25164,7 @@ export class Link extends Part {
      * then it will return {@link LinkAdjusting.End|End}
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * @virtual
      * @since 2.1
@@ -24513,7 +25283,7 @@ export class PositionArray {
  * A Group is a {@link Node} that can contain a subgraph of {@link Node}s and {@link Link}s,
  * which are members of the group.
  * <p class="box">
- * For more discussion, see <a href="../../intro/groups.html">Introduction to Groups</a>.
+ * For more discussion, see <a href="../../learn/groups">Learn page on Groups</a>.
  * See samples that make use of Groups in the <a href="../../samples/index.html#groups">samples index</a>.
  *
  * Although you can create a Group and {@link Diagram.add} it to a Diagram, this does not update the Model.
@@ -24580,7 +25350,7 @@ export class PositionArray {
  * You can override that predicate on CommandHandler, but it is easier to set the {@link memberValidation} or
  * {@link CommandHandler.memberValidation} functional property.
  * <p class="box">
- * For a more general discussion of validation, see <a href="../../intro/validation.html">Introduction to Validation</a>.
+ * For a more general discussion of validation, see <a href="../../learn/validation">Learn page on Validation</a>.
  *
  * The area occupied by the subgraph is represented in the group's visual tree by a {@link Placeholder}.
  * As the group {@link placeholder} grows and shrinks based on the sizes and positions of the member nodes and links,
@@ -24601,7 +25371,7 @@ export class PositionArray {
  * This function must not modify any member relationships or expand or collapse any groups -- the functional property just exists
  * to update the appearance of the Group.
  * <p class="box">
- * For more discussion and examples, see <a href="../../intro/subgraphs.html">SubGraphs</a>.
+ * For more discussion and examples, see <a href="../../learn/groups#SubGraphs">SubGraphs</a>.
  *
  * If you want the user to be able to create a Group out of the currently
  * selected Parts using the {@link CommandHandler.groupSelection} command,
@@ -24611,9 +25381,8 @@ export class PositionArray {
  * using the {@link CommandHandler.ungroupSelection} command,
  * you need to set {@link ungroupable} to true.
  * <p class="box">
- * For more discussion and examples, see <a href="../../intro/groups.html">Groups</a>,
- * <a href="../../intro/subgraphs.html">SubGraphs</a>, and
- * <a href="../../intro/sizedGroups.html">Sized Groups</a>.
+ * For more discussion and examples, see <a href="../../learn/groups">Groups</a> and
+ * <a href="../../learn/sizedGroups">Sized Groups</a>.
  *
  * Only Groups that are in Diagrams can have member Parts or connections via Links.
  * Templates should not be connected with Links, be labels of Links, be members of Groups, have any member Parts, or have any Adornments.
@@ -25049,7 +25818,7 @@ export class Placeholder extends GraphObject {
  * from one of the other predefined layout classes.
  * If you inherit from this base class, you will want to override the {@link doLayout} method.
  * You can call the {@link Part.move} method to re-position a part, including whole groups.
- * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call a base method.
+ * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call a base method.
  * @category Layout
  */
 export class Layout {
@@ -25062,7 +25831,7 @@ export class Layout {
      * Copies properties from this object to the given object, which is of the same class.
      * This is called by {@link copy} and should be overridden for each class that adds properties.
      * There are examples of such overrides in the samples.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param copy
      */
@@ -25199,7 +25968,7 @@ export class Layout {
      * Create a new {@link LayoutNetwork} of {@link LayoutVertex}es and {@link LayoutEdge}s.
      * This may be overridden in Layout subclasses to create instances of subclasses of
      * {@link LayoutNetwork}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @returns a new {@link LayoutNetwork}.
      */
@@ -25209,7 +25978,7 @@ export class Layout {
      * This should be called by {@link doLayout} when this layout uses a {@link network}.
      * This method calls {@link createNetwork} to allocate the network.
      * This may be overridden in Layout subclasses to customize the initialization.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param coll - A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
      * @returns normally the value of a call to {@link createNetwork} initialized by vertexes and edges corresponding to the *coll* argument.
@@ -25220,7 +25989,7 @@ export class Layout {
      * This should be called by {@link doLayout} when this layout uses a {@link network}.
      * This calls {@link commitLayout} to actually set {@link Node} positions and route {@link Link}s.
      * This performs the changes within a transaction.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     updateParts(): void;
@@ -25250,7 +26019,7 @@ export class Layout {
      * }
      * ```
      *
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitLayout(): void;
@@ -25291,7 +26060,7 @@ export class Layout {
      * Examples are provided in the Extensions directory.
      *
      * If this Layout belongs to a Diagram, the argument must be either the same Diagram or must denote Parts that belong to the Diagram.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param coll - A {@link Diagram} or a {@link Group} or a collection of {@link Part}s.
      */
@@ -25417,14 +26186,14 @@ export class LayoutNetwork {
     /**
      * Allocate a new instance of {@link LayoutVertex}.
      * This is overridden in LayoutNetwork subclasses to create instances of subclasses of {@link LayoutVertex}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     createVertex(): LayoutVertex;
     /**
      * Allocate a new instance of {@link LayoutEdge}.
      * This is overridden in LayoutNetwork subclasses to create instances of subclasses of {@link LayoutEdge}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     createEdge(): LayoutEdge;
@@ -25666,7 +26435,7 @@ export class LayoutVertex {
      * To make the most common cases look right, the Node's {@link Part.locationObject}
      * is centered.  Thus iconic nodes will have the center of the icon be positioned
      * according to the center of this vertex, ignoring any labels.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     commit(): void;
@@ -25791,7 +26560,7 @@ export class LayoutEdge {
     /**
      * Commits the route of this edge to the corresponding {@link Link}, if any.
      * By default this does nothing.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     commit(): void;
@@ -26114,10 +26883,11 @@ export declare enum BindingMode {
  * Your simple node template might be like:
  * ```js
  *   myDiagram.nodeTemplate =
- *     new go.Node("Vertical").add(
- *       new go.Picture("path/to/icon.jpg", { width: 32, height: 32 }),
- *       new go.TextBlock({ font: "bold 11pt sans-serif" })
- *         .bind("text", "say")
+ *     new go.Node("Vertical")
+ *       .add(
+ *         new go.Picture("path/to/icon.jpg", { width: 32, height: 32 }),
+ *         new go.TextBlock({ font: "bold 11pt sans-serif" })
+ *           .bind("text", "say")
  *     )
  * ```
  *
@@ -26325,7 +27095,7 @@ export declare enum BindingMode {
  *
  * And if your node template included something like:
  * ```js
- *     new go.Panel("Vertical", {
+ *   new go.Panel("Vertical", {
  *       itemTemplate:
  *         new go.Panel()
  *           .add(
@@ -26333,7 +27103,7 @@ export declare enum BindingMode {
  *               .bindTwoWay("text", "")
  *           )
  *     })
- *       .bind("itemArray", "items")
+ *     .bind("itemArray", "items")
  * ```
  *
  * Then the user would be able to edit any of the {@link TextBlock}s, causing the item Array to be modified,
@@ -26570,6 +27340,7 @@ export class Binding {
 /**
  * A ThemeBinding describes how to automatically set a property on a {@link GraphObject}
  * to a value of a property in a {@link Theme}.
+ * ThemeBindings are just like regular Bindings, except they add a step to lookup a name in a Theme.
  * The target property name and the data source property name must be strings.
  * All name matching is case-sensitive.
  *
@@ -26585,7 +27356,8 @@ export class Binding {
  * ```js
  *   myDiagram.nodeTemplate =
  *     new go.Node("Auto").add(
- *       new go.Shape().theme("fill" , "primary"),
+ *       new go.Shape()
+ *         .theme("fill" , "primary"),
  *       new go.TextBlock("Hello", { font: "bold 11pt sans-serif" })
  *     );
  * ```
@@ -26614,7 +27386,7 @@ export class Binding {
  * Bindings will be shared by all copies of the template's GraphObjects.
  *
  * For more information about bindings see {@link Binding} documentation.
- * For more information on theming, see the <a href="../../intro/theming.html">Theming intro page</a>.
+ * For more information on theming, see the <a href="../../learn/theming">Theming learn page</a>.
  * @since 3.0
  * @category Model
  */
@@ -26634,13 +27406,14 @@ export class ThemeBinding extends Binding {
      */
     constructor(targetprop?: string, sourceprop?: string, themeSource?: string | null, conv?: TargetConversion, themeConverter?: TargetConversion);
     /**
-     * Gets or sets the source object on a Theme for a lookup.
+     * Gets or sets the source sub-object on a Theme for a lookup.
      *
-     * This can be used to refine where in the Theme to look, sometimes useful to avoid the need for a conversion function.
+     * This can be used to refine where in the Theme to look,
+     * sometimes useful to avoid the need for a conversion function.
      * ```js
      * {
      *   colors: {
-     *     sex: {
+     *     gender: {
      *       M: 'blue',
      *       F: 'pink'
      *     }
@@ -26648,10 +27421,13 @@ export class ThemeBinding extends Binding {
      * }
      * ...
      * myDiagram.nodeTemplate =
-     *   new go.Node("Auto").add(
-     *     new go.Shape().themeData("fill", "sex", "sex"),  // lookup the "sex" data value in the "sex" Theme object
-     *     ...
-     *   )
+     *   new go.Node("Auto")
+     *     .add(
+     *       new go.Shape()
+     *         // assign Shape.fill to theme.colors.gender[data.sex]
+     *         .themeData("fill", "sex", "gender"),
+     *       ...
+     *     )
      * ```
      * @defaultValue `''` -- the theme will be be searched without any additional object constraint
      */
@@ -26698,11 +27474,11 @@ export type Key = string | number | undefined;
  * @category Model
  * @since 2.1
  */
-export interface IncrementalData {
+export interface IncrementalData<NodeDataType extends ObjectData = ObjectData, LinkDataType extends ObjectData = ObjectData, SharedDataType extends ObjectData = ObjectData> {
     /**
      * Object containing the modified {@link Model.modelData}.
      */
-    modelData?: ObjectData;
+    modelData?: SharedDataType;
     /**
      * Array of node keys added. Any key included will also be included in the modifiedNodeData array.
      */
@@ -26710,7 +27486,7 @@ export interface IncrementalData {
     /**
      * Array of node data objects modified.
      */
-    modifiedNodeData?: Array<ObjectData>;
+    modifiedNodeData?: Array<NodeDataType>;
     /**
      * Array of node keys deleted.
      */
@@ -26722,7 +27498,7 @@ export interface IncrementalData {
     /**
      * Array of link data objects modified.
      */
-    modifiedLinkData?: Array<ObjectData>;
+    modifiedLinkData?: Array<LinkDataType>;
     /**
      * Array of link keys deleted.
      */
@@ -26739,7 +27515,7 @@ export interface IncrementalData {
  * A Diagram constructs Parts for its {@link Diagram.model}'s data by copying templates.
  * Templates are {@link Panel}s of {@link GraphObject}s that get some property values from the model data,
  * accessible via the {@link Panel.data} property, using data {@link Binding}.
- * See <a href="../../intro/usingModels.html">Using Models</a> and <a href="../../intro/dataBinding.html">Data Binding</a> for an introduction.
+ * See <a href="../../learn/usingModels">Using Models</a> and <a href="../../learn/dataBinding">Data Binding</a> for an introduction.
  *
  * This Model class only supports holding an array of node data
  * and interpreting properties on that data to be able to refer to them
@@ -26784,7 +27560,7 @@ export interface IncrementalData {
  * These methods have names that start with "set", "add", "insert", or "remove".
  *
  * For the latter case, when setting an application-specific property, typically for data binding,
- * and to support undo/redo, call {@link setDataProperty}.
+ * and to support undo/redo, call {@link set}.
  *
  * The {@link copyNodeData} method can be called to make a shallow copy of a node data object.
  * However, if some of those property values are Arrays that want not to be shared but to be copied,
@@ -26795,7 +27571,7 @@ export interface IncrementalData {
  * newly shallow-copied objects of the original array.
  *
  * Each model raises {@link ChangedEvent}s that you can follow by registering a listener via {@link addChangedListener}.
- * Read more at the Introduction page: <a href="../../intro/changedEvents.html">Changed Events</a>.
+ * Read more at the Learn page: <a href="../../learn/changedEvents">Changed Events</a>.
  *
  * Each model comes with its own {@link UndoManager} that is initially not enabled.
  * You will need to set {@link UndoManager.isEnabled} to true in order for the
@@ -26843,7 +27619,7 @@ export interface IncrementalData {
  * Note how this method is a regular instance method, whereas {@link Model.fromJson} is a static function.
  * @category Model
  */
-export class Model {
+export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType extends ObjectData = ObjectData> {
     /**
      * You probably don't want to call this constructor, because this class
      * does not support links (relationships between nodes) or groups (nodes and links and subgraphs as nodes):
@@ -26851,23 +27627,23 @@ export class Model {
      * @param nodedataarray - an optional Array containing JavaScript objects to be represented by {@link Part}s.
      * @param init - Optional initialization properties.
      */
-    constructor(nodedataarray?: Array<ObjectData>, init?: Partial<Model>);
+    constructor(nodedataarray?: Array<NodeDataType>, init?: Partial<Model<NodeDataType>>);
     /**
      * You probably don't want to call this constructor, because this class
      * does not support links (relationships between nodes) or groups (nodes and links and subgraphs as nodes):
      * instead, create instances of a subclass such as {@link GraphLinksModel} or {@link TreeModel}.
      * @param init - Optional initialization properties.
      */
-    constructor(init?: Partial<Model>);
+    constructor(init?: Partial<Model<NodeDataType>>);
     /**
      * Copies properties from this model to the given model, which must be of the same class.
      * This is called by {@link copy}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param copy
      */
-    protected cloneProtected(copy: this): void;
+    protected cloneProtected(copy: Model<NodeDataType>): void;
     /**
      * Creates a shallow copy of this Model and returns it.
      * <em>The data are not copied:</em> {@link nodeDataArray}, {@link modelData},
@@ -26876,7 +27652,7 @@ export class Model {
      * @virtual
      * @returns an empty copy of the model with the same properties, other than data
      */
-    copy(): Model;
+    copy(): Model<NodeDataType>;
     /**
      * Clear out all references to any model data.
      * This also clears out the {@link UndoManager}, so this operation is not undoable.
@@ -26921,7 +27697,7 @@ export class Model {
      * @see {@link toIncrementalJson}
      * @since 2.1
      */
-    toIncrementalData(e: ChangedEvent): IncrementalData | null;
+    toIncrementalData(e: ChangedEvent): IncrementalData<NodeDataType> | null;
     /**
      * Deeply copy an object or array and return the new object.
      * This is typically called on a {@link nodeDataArray} or {@link GraphLinksModel.linkDataArray} or data objects within them.
@@ -26932,7 +27708,7 @@ export class Model {
      * It will not handle instances of `Diagram`, `Layer`, `GraphObject`, `Tool`, `CommandHandler`, `AnimationManager` or subclasses or related classes.
      *
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * Only override this method when the default behavior doesn't suit the data.
      * @virtual
      * @param obj
@@ -27147,13 +27923,13 @@ export class Model {
      * {@link Brush} (but not for brush patterns), and for {@link Geometry}.
      *
      * At the current time one cannot have a {@link Diagram} as a binding target.
-     * Calling {@link setDataProperty} will work to change a property value, but there are no target bindings in any Diagrams to be updated.
+     * Calling {@link set} will work to change a property value, but there are no target bindings in any Diagrams to be updated.
      * Because the binding mechanism is unavailable for this object, we recommend that when you want to save a model
      * that you explicitly set properties on this object just before calling {@link toJson}.
      * When loading a model, call {@link Model.fromJson} and explicitly get the properties that you want to set on a Diagram.
      */
-    get modelData(): ObjectData;
-    set modelData(value: ObjectData);
+    get modelData(): SharedDataType;
+    set modelData(value: SharedDataType);
     /**
      * Register an event handler that is called when there is a ChangedEvent.
      *
@@ -27190,13 +27966,13 @@ export class Model {
      * @param oldparam - an optional value that helps describe the older value.
      * @param newparam - an optional value that helps describe the newer value.
      */
-    raiseChangedEvent(change: ChangeType, propertyname: string | ((obj: ObjectData, val: any) => any), obj: ObjectData, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
+    raiseChangedEvent(change: ChangeType, propertyname: string | ((obj: any, val: any) => any), obj: ObjectData, oldval: any, newval: any, oldparam?: any, newparam?: any): void;
     /**
      * Call this method to notify about a data property having changed value.
      * This constructs a {@link ChangedEvent} and calls all Changed listeners.
      *
      * You should call this method only if the property value actually changed.
-     * This method is called by {@link setDataProperty}.
+     * This method is called by {@link set}.
      * @param data - the data object whose property changed value.
      * @param propertyname - the name of the property, or a function that takes an Object and returns the property value.
      * @param oldval - the previous or old value for the property.
@@ -27204,7 +27980,7 @@ export class Model {
      * @param oldparam - an optional value additionally describing the old value.
      * @param newparam - an optional value additionally describing the new value.
      */
-    raiseDataChanged(data: ObjectData, propertyname: string | ((obj: ObjectData, val: any) => any), oldval: any, newval: any, oldparam?: any, newparam?: any): void;
+    raiseDataChanged(data: ObjectData, propertyname: string | ((obj: any, val: any) => any), oldval: any, newval: any, oldparam?: any, newparam?: any): void;
     /**
      * Gets or sets the {@link UndoManager} for this Model.
      *
@@ -27233,6 +28009,8 @@ export class Model {
      * For more permanent disabling of the {@link UndoManager}, set {@link UndoManager.isEnabled} to false.
      *
      * This property is also set when setting {@link Diagram.skipsUndoManager}.
+     * Note that setting {@link skipsUndoManager} to true for a nested transaction will prevent model changes from being recorded,
+     * but if {@link Diagram.skipsUndoManager} is still false during an outer transaction, any Diagram changes will still be recorded.
      * Setting this property does not raise a {@link ChangedEvent}.
      */
     get skipsUndoManager(): boolean;
@@ -27277,17 +28055,21 @@ export class Model {
      * ```js
      * model.commit(m => m.addNodeData({ counter: myCounter++ }), "Added Node");
      * ```
+     *
+     * Note that setting {@link skipsUndoManager} to true for a nested transaction will prevent model changes from being recorded,
+     * but if {@link Diagram.skipsUndoManager} is still false during an outer transaction, any Diagram changes will still be recorded.
+     *
      * @param func - the function to call as the transaction body
      * @param tname - a descriptive name for the transaction, or null to temporarily set {@link skipsUndoManager} to true;
      *        if no string transaction name is given, an empty string is used as the transaction name
      */
-    commit(func: (m: Model) => void, tname?: string | null): void;
+    commit(func: (m: Model<NodeDataType>) => void, tname?: string | null): void;
     /**
      * Find a {@link Part} corresponding to the given data and
      * call its {@link Panel.updateTargetBindings} method, in each {@link Diagram}
      * that uses this Model.
      *
-     * Caution: setting a data property without calling {@link setDataProperty}
+     * Caution: setting a data property without calling {@link set}
      * and then calling this updateTargetBindings method will update GraphObjects that are bound to the property,
      * but such data settings will not be recorded in the UndoManager and therefore will not be undone/redone,
      * causing an inconsistency between the GraphObjects and the part data.
@@ -27311,9 +28093,11 @@ export class Model {
      * and if you want this property to be a function, you will need to assign this property to your desired function
      * immediately after creating the model, including when it is created by {@link Model.fromJson}.
      * @see {@link getKeyForNodeData}
+     * @see {@link GraphLinksModel.linkFromKeyProperty}
+     * @see {@link GraphLinksModel.linkToKeyProperty}
      */
-    get nodeKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set nodeKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get nodeKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    set nodeKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * Given a node data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -27324,7 +28108,7 @@ export class Model {
      * @see {@link setKeyForNodeData}
      * @see {@link findNodeDataForKey}
      */
-    getKeyForNodeData(nodedata: ObjectData): Key;
+    getKeyForNodeData(nodedata: NodeDataType): Key;
     /**
      * Change the unique key of a given node data that is already in this model.
      * The new key value must be unique -- i.e. not in use by another node data object.
@@ -27340,7 +28124,7 @@ export class Model {
      * @see {@link nodeKeyProperty}
      * @see {@link getKeyForNodeData}
      */
-    setKeyForNodeData(nodedata: ObjectData, key: Key): void;
+    setKeyForNodeData(nodedata: NodeDataType, key: Key): void;
     /**
      * Gets or sets a function that returns a unique id number or string for a node data object.
      * This function is called by {@link makeNodeDataKeyUnique}
@@ -27372,8 +28156,8 @@ export class Model {
      * If a node data object is already in the model and you want to change its key value,
      * call {@link setKeyForNodeData} with a new and unique key.
      */
-    get makeUniqueKeyFunction(): ((model: Model, data: ObjectData) => Key) | null;
-    set makeUniqueKeyFunction(value: ((model: Model, data: ObjectData) => Key) | null);
+    get makeUniqueKeyFunction(): ((model: Model<NodeDataType>, data: NodeDataType) => Key) | null;
+    set makeUniqueKeyFunction(value: ((model: Model<NodeDataType>, data: NodeDataType) => Key) | null);
     /**
      * Decide if a given node data object is in this model, using reference equality.
      *
@@ -27384,7 +28168,7 @@ export class Model {
      * @param nodedata - a JavaScript object represented by a node, group, or non-link; if null, this predicate will return false
      * @returns true if it is a node data object in this model; false otherwise.
      */
-    containsNodeData(nodedata: ObjectData | null): boolean;
+    containsNodeData(nodedata: NodeDataType | null): boolean;
     /**
      * Given a number or string, find the node data object in this model
      * that uses the given value as its unique key.
@@ -27394,7 +28178,7 @@ export class Model {
      * @see {@link containsNodeData}
      * @see {@link getKeyForNodeData}
      */
-    findNodeDataForKey(key: Key): ObjectData | null;
+    findNodeDataForKey(key: Key): NodeDataType | null;
     /**
      * Gets or sets the array of node data objects that correspond to {@link Node}s,
      * {@link Group}s, or non-Link {@link Part}s in the {@link Diagram}.
@@ -27415,8 +28199,8 @@ export class Model {
      * that there are any new nodes or that any nodes have been deleted.
      * Instead you should call {@link addNodeData} or {@link removeNodeData}.
      */
-    get nodeDataArray(): Array<ObjectData>;
-    set nodeDataArray(value: Array<ObjectData>);
+    get nodeDataArray(): Array<NodeDataType>;
+    set nodeDataArray(value: Array<NodeDataType>);
     /**
      * This method is called when a node data object is added to the model to make sure that
      * {@link getKeyForNodeData} returns a unique key value.
@@ -27433,7 +28217,7 @@ export class Model {
      * call {@link setKeyForNodeData} and give it a new unique key value.
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      */
-    makeNodeDataKeyUnique(nodedata: ObjectData): void;
+    makeNodeDataKeyUnique(nodedata: NodeDataType): void;
     /**
      * When you want to add a node or group to the diagram,
      * call this method with a new data object.
@@ -27445,12 +28229,12 @@ export class Model {
      * To add or remove an object or value from an item array, call {@link insertArrayItem} or {@link removeArrayItem}.
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      */
-    addNodeData(nodedata: ObjectData): void;
+    addNodeData(nodedata: NodeDataType): void;
     /**
      * Add to this model all of the node data held in an Array or in an {@link Iterable} of node data objects.
      * @param coll - a collection of node data objects to add to the {@link nodeDataArray}
      */
-    addNodeDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
+    addNodeDataCollection(coll: Iterable<NodeDataType> | Array<NodeDataType>): void;
     /**
      * When you want to remove a node or group from the diagram,
      * call this method with an existing data object.
@@ -27472,17 +28256,17 @@ export class Model {
      * To add or remove an object or value from an item array, call {@link insertArrayItem} or {@link removeArrayItem}.
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      */
-    removeNodeData(nodedata: ObjectData): void;
+    removeNodeData(nodedata: NodeDataType): void;
     /**
      * Remove from this model all of the node data held in an Array or in an {@link Iterable} of node data objects.
      * @param coll - a collection of node data objects to remove from the {@link nodeDataArray}
      */
-    removeNodeDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
+    removeNodeDataCollection(coll: Iterable<NodeDataType> | Array<NodeDataType>): void;
     /**
      * Take an Array of node data objects and update {@link nodeDataArray} without replacing
      * the Array and without replacing any existing node data objects that are identified by key.
      *
-     * For node data objects that have the same key value, this makes calls to {@link setDataProperty}
+     * For node data objects that have the same key value, this makes calls to {@link set}
      * to update the existing node data object.
      * For new keys, this calls {@link cloneDeep} to copy the data and then {@link addNodeData} to add a new node to the model.
      * For existing nodes that have keys that are not present in the given Array,
@@ -27497,7 +28281,7 @@ export class Model {
      * @param arr
      * @since 2.1
      */
-    mergeNodeDataArray(arr: Array<ObjectData>): void;
+    mergeNodeDataArray(arr: Array<NodeDataType>): void;
     /**
      * Gets or sets a function that makes a copy of a node data object.
      *
@@ -27513,8 +28297,8 @@ export class Model {
      * and that Array needs to be copied rather than shared.
      * Often the objects that are in the Array also need to be copied.
      */
-    get copyNodeDataFunction(): ((data: ObjectData, model: Model) => ObjectData) | null;
-    set copyNodeDataFunction(value: ((data: ObjectData, model: Model) => ObjectData) | null);
+    get copyNodeDataFunction(): ((data: NodeDataType, model: Model<NodeDataType>) => NodeDataType) | null;
+    set copyNodeDataFunction(value: ((data: NodeDataType, model: Model<NodeDataType>) => NodeDataType) | null);
     /**
      * Gets or sets whether the default behavior for {@link copyNodeData} or {@link GraphLinksModel.copyLinkData}
      * makes copies of property values that are Arrays.
@@ -27603,7 +28387,7 @@ export class Model {
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      * @see {@link addNodeData}
      */
-    copyNodeData(nodedata: ObjectData): ObjectData;
+    copyNodeData(nodedata: NodeDataType): NodeDataType;
     /**
      * (undocumented)
      * This function (if not null) is called towards the end of {@link Diagram.copyParts}
@@ -27613,8 +28397,8 @@ export class Model {
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
-    get afterCopyFunction(): ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null;
-    set afterCopyFunction(value: ((map: Map<ObjectData, ObjectData>, destModel: Model, srcModel: Model) => void) | null);
+    get afterCopyFunction(): ((map: Map<NodeDataType, NodeDataType>, destModel: Model<NodeDataType>, srcModel: Model<NodeDataType>) => void) | null;
+    set afterCopyFunction(value: ((map: Map<NodeDataType, NodeDataType>, destModel: Model<NodeDataType>, srcModel: Model<NodeDataType>) => void) | null);
     /**
      * Change the value of some property of a node data, a link data, an item data, or the {@link Model.modelData},
      * given a string naming the property and the new value,
@@ -27624,7 +28408,7 @@ export class Model {
      * This calls {@link raiseDataChanged} to notify about the change.
      *
      * Note that it is insufficient to modify an item Array (for example by pushing a new item onto the Array) and
-     * then calling `setDataProperty(data, "items", data.items)` because the value of
+     * then calling `set(data, "items", data.items)` because the value of
      * `data.items` is still the same reference.
      * Instead you will want to call {@link insertArrayItem}, {@link addArrayItem}, or {@link removeArrayItem}.
      *
@@ -27641,19 +28425,19 @@ export class Model {
      * @param val - the new value for the property.
      * @see {@link set} a synonym of this method
      */
-    setDataProperty(data: ObjectData, propname: string, val: any): void;
+    set(data: ObjectData, propname: string, val: any): void;
     /**
-     * A synonym for {@link setDataProperty}
+     * A synonym for {@link set}
      * @param data - a JavaScript object typically the value of a {@link Panel.data} and represented by a Node, Link, Group, simple Part,
      *                      or item in a {@link Panel.itemArray}; or this model's {@link modelData}.
      * @param propname - a string that is not null or the empty string.
      * @param val - the new value for the property.
-     * @see {@link setDataProperty}
+     * @see {@link set}
      */
-    set(data: ObjectData, propname: string, val: any): void;
+    setDataProperty(data: ObjectData, propname: string, val: any): void;
     /**
      * This is similar to <code>Object.assign</code>,
-     * but safely calls {@link setDataProperty} for each property other than a key property.
+     * but safely calls {@link set} for each property other than a key property.
      * This does not delete any properties on the DATA object,
      * although properties may be set to undefined if they are set that way on the PROPS object.
      * @param data - a data object
@@ -27720,8 +28504,8 @@ export class Model {
      * @see {@link getCategoryForNodeData}
      * @see {@link setCategoryForNodeData}
      */
-    get nodeCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
-    set nodeCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
+    get nodeCategoryProperty(): string | ((a: NodeDataType, b?: string) => string);
+    set nodeCategoryProperty(value: string | ((a: NodeDataType, b?: string) => string));
     /**
      * Find the category of a given node data, a string naming the node template
      * or group template or part template
@@ -27730,7 +28514,7 @@ export class Model {
      * @see {@link nodeCategoryProperty}
      * @see {@link setCategoryForNodeData}
      */
-    getCategoryForNodeData(nodedata: ObjectData): string;
+    getCategoryForNodeData(nodedata: NodeDataType): string;
     /**
      * Change the category of a given node data, a string naming the node template
      * or group template or part template
@@ -27751,7 +28535,7 @@ export class Model {
      * @see {@link nodeCategoryProperty}
      * @see {@link getCategoryForNodeData}
      */
-    setCategoryForNodeData(nodedata: ObjectData, cat: string): void;
+    setCategoryForNodeData(nodedata: NodeDataType, cat: string): void;
 }
 /**
  * GraphLinksModels support links between nodes and grouping nodes and links into subgraphs.
@@ -27858,13 +28642,7 @@ export class Model {
  * call the {@link setGroupKeyForNodeData} method.
  * @category Model
  */
-export class GraphLinksModel extends Model {
-    /**
-     * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values
-     * for the {@link Model.nodeDataArray} and {@link GraphLinksModel.linkDataArray} properties.
-     * @param nodedataarray - an optional Array containing JavaScript objects to be represented by Nodes.
-     * @param linkdataarray - an optional Array containing JavaScript objects to be represented by Links.
-     */
+export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkDataType extends ObjectData = ObjectData, SharedDataType extends ObjectData = ObjectData> extends Model<NodeDataType, SharedDataType> {
     /**
      * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values
      * for the {@link Model.nodeDataArray} and {@link GraphLinksModel.linkDataArray} properties.
@@ -27872,13 +28650,16 @@ export class GraphLinksModel extends Model {
      * @param linkdataarray - an optional Array containing JavaScript objects to be represented by Links.
      * @param init - optional initialization properties.
      */
-    constructor(nodedataarray?: Array<ObjectData>, linkdataarray?: Array<ObjectData>, init?: Partial<GraphLinksModel>);
+    constructor(nodedataarray?: Array<NodeDataType>, linkdataarray?: Array<LinkDataType>, init?: Partial<GraphLinksModel<NodeDataType, LinkDataType>>);
     /**
      * This constructs an empty GraphLinksModel unless one provides arguments as the initial data array values
      * for the {@link Model.nodeDataArray} and {@link GraphLinksModel.linkDataArray} properties.
      * @param init - optional initialization properties.
      */
-    constructor(init?: Partial<GraphLinksModel>);
+    constructor(init?: Partial<GraphLinksModel<NodeDataType, LinkDataType>>);
+    /**
+     */
+    copy(): GraphLinksModel<NodeDataType, LinkDataType>;
     /**
      * Gets or sets a data object that will be copied and added to the model as a new node data each time there
      * is a link reference (either the "to" or the "from" of a link data) to a node key that does not yet exist in the model.
@@ -27888,8 +28669,8 @@ export class GraphLinksModel extends Model {
      * When adding or modifying a link data if there is a "from" or "to" key value for which {@link Model.findNodeDataForKey} returns null,
      * it will call {@link Model.copyNodeData} on this property value and {@link Model.addNodeData} on the result.
      */
-    get archetypeNodeData(): ObjectData | null;
-    set archetypeNodeData(value: ObjectData | null);
+    get archetypeNodeData(): NodeDataType | null;
+    set archetypeNodeData(value: NodeDataType | null);
     /**
      * Gets or sets the name of the data property that returns
      * the key of the node data that the link data is coming from.
@@ -27909,8 +28690,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getFromKeyForLinkData}
      * @see {@link setFromKeyForLinkData}
      */
-    get linkFromKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set linkFromKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get linkFromKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    set linkFromKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * from which this link is connected.
@@ -27920,7 +28701,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkFromKeyProperty}
      * @see {@link setFromKeyForLinkData}
      */
-    getFromKeyForLinkData(linkdata: ObjectData): Key;
+    getFromKeyForLinkData(linkdata: LinkDataType): Key;
     /**
      * Change the node key that the given link data references as the
      * source of the link.
@@ -27930,7 +28711,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkFromKeyProperty}
      * @see {@link getFromKeyForLinkData}
      */
-    setFromKeyForLinkData(linkdata: ObjectData, key: Key): void;
+    setFromKeyForLinkData(linkdata: LinkDataType, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns
      * the key of the node data that the link data is going to,
@@ -27950,8 +28731,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getToKeyForLinkData}
      * @see {@link setToKeyForLinkData}
      */
-    get linkToKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set linkToKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get linkToKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    set linkToKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
      * to which this link is connected.
@@ -27961,7 +28742,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkToKeyProperty}
      * @see {@link setToKeyForLinkData}
      */
-    getToKeyForLinkData(linkdata: ObjectData): Key;
+    getToKeyForLinkData(linkdata: LinkDataType): Key;
     /**
      * Change the node key that the given link data references as the
      * destination of the link.
@@ -27971,7 +28752,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkToKeyProperty}
      * @see {@link getToKeyForLinkData}
      */
-    setToKeyForLinkData(linkdata: ObjectData, key: Key): void;
+    setToKeyForLinkData(linkdata: LinkDataType, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns
      * the optional parameter naming a "port" element on the node that the link data is connected from.
@@ -27991,8 +28772,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getFromPortIdForLinkData}
      * @see {@link setFromPortIdForLinkData}
      */
-    get linkFromPortIdProperty(): string | ((a: ObjectData, b?: string) => string);
-    set linkFromPortIdProperty(value: string | ((a: ObjectData, b?: string) => string));
+    get linkFromPortIdProperty(): string | ((a: LinkDataType, b?: string) => string);
+    set linkFromPortIdProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
      * from which this link is connected.
@@ -28002,7 +28783,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkFromPortIdProperty}
      * @see {@link setFromPortIdForLinkData}
      */
-    getFromPortIdForLinkData(linkdata: ObjectData): string;
+    getFromPortIdForLinkData(linkdata: LinkDataType): string;
     /**
      * Change the information that the given link data uses to identify the
      * particular "port" that the link is coming from.
@@ -28012,7 +28793,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkFromPortIdProperty}
      * @see {@link getFromPortIdForLinkData}
      */
-    setFromPortIdForLinkData(linkdata: ObjectData, portname: string): void;
+    setFromPortIdForLinkData(linkdata: LinkDataType, portname: string): void;
     /**
      * Gets or sets the name of the data property that returns
      * the optional parameter naming a "port" element on the node that the link data is connected to.
@@ -28032,8 +28813,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getToPortIdForLinkData}
      * @see {@link setToPortIdForLinkData}
      */
-    get linkToPortIdProperty(): string | ((a: ObjectData, b?: string) => string);
-    set linkToPortIdProperty(value: string | ((a: ObjectData, b?: string) => string));
+    get linkToPortIdProperty(): string | ((a: LinkDataType, b?: string) => string);
+    set linkToPortIdProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
      * to which this link is connected.
@@ -28043,7 +28824,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkToPortIdProperty}
      * @see {@link setToPortIdForLinkData}
      */
-    getToPortIdForLinkData(linkdata: ObjectData): string;
+    getToPortIdForLinkData(linkdata: LinkDataType): string;
     /**
      * Change the information that the given link data uses to identify the
      * particular "port" that the link is going to.
@@ -28053,7 +28834,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkToPortIdProperty}
      * @see {@link getToPortIdForLinkData}
      */
-    setToPortIdForLinkData(linkdata: ObjectData, portname: string): void;
+    setToPortIdForLinkData(linkdata: LinkDataType, portname: string): void;
     /**
      * Gets or sets the name of the data property that returns
      * an array of keys of node data that are labels on that link data.
@@ -28074,8 +28855,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getLabelKeysForLinkData}
      * @see {@link setLabelKeysForLinkData}
      */
-    get linkLabelKeysProperty(): string | ((a: ObjectData, b?: Array<Key>) => Array<Key>);
-    set linkLabelKeysProperty(value: string | ((a: ObjectData, b?: Array<Key>) => Array<Key>));
+    get linkLabelKeysProperty(): string | ((a: LinkDataType, b?: Array<Key>) => Array<Key>);
+    set linkLabelKeysProperty(value: string | ((a: LinkDataType, b?: Array<Key>) => Array<Key>));
     /**
      * Gets an Array of node key values that identify node data acting as labels on the given link data.
      *
@@ -28087,7 +28868,7 @@ export class GraphLinksModel extends Model {
      * @see {@link addLabelKeyForLinkData}
      * @see {@link removeLabelKeyForLinkData}
      */
-    getLabelKeysForLinkData(linkdata: ObjectData): Array<Key>;
+    getLabelKeysForLinkData(linkdata: LinkDataType): Array<Key>;
     /**
      * Replaces an Array of node key values that identify node data acting as labels on the given link data.
      *
@@ -28099,7 +28880,7 @@ export class GraphLinksModel extends Model {
      * @see {@link addLabelKeyForLinkData}
      * @see {@link removeLabelKeyForLinkData}
      */
-    setLabelKeysForLinkData(linkdata: ObjectData, arr: Array<Key>): void;
+    setLabelKeysForLinkData(linkdata: LinkDataType, arr: Array<Key>): void;
     /**
      * Adds a node key value that identifies a node data acting as a new label node on the given link data.
      *
@@ -28109,7 +28890,7 @@ export class GraphLinksModel extends Model {
      * @see {@link removeLabelKeyForLinkData}
      * @see {@link setLabelKeysForLinkData}
      */
-    addLabelKeyForLinkData(linkdata: ObjectData, key: Key): void;
+    addLabelKeyForLinkData(linkdata: LinkDataType, key: Key): void;
     /**
      * Removes a node key value that identifies a node data acting as a former label node on the given link data.
      *
@@ -28122,13 +28903,13 @@ export class GraphLinksModel extends Model {
      * @see {@link addLabelKeyForLinkData}
      * @see {@link setLabelKeysForLinkData}
      */
-    removeLabelKeyForLinkData(linkdata: ObjectData, key: Key): void;
+    removeLabelKeyForLinkData(linkdata: LinkDataType, key: Key): void;
     /**
      * Gets or sets the array of link data objects that correspond to {@link Link}s in the {@link Diagram}.
      * The initial value is an empty Array.
      */
-    get linkDataArray(): Array<ObjectData>;
-    set linkDataArray(value: Array<ObjectData>);
+    get linkDataArray(): Array<LinkDataType>;
+    set linkDataArray(value: Array<LinkDataType>);
     /**
      * Gets or sets the name of the data property that returns a unique id number or string for each link data object.
      * The value may also be a function taking two arguments, where the first argument will be a link data object.
@@ -28146,8 +28927,8 @@ export class GraphLinksModel extends Model {
      * immediately after creating the model, including when it is created by {@link Model.fromJson}.
      * @see {@link getKeyForLinkData}
      */
-    get linkKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set linkKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get linkKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    set linkKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * Given a link data object return its unique key: a number or a string.
      * This returns undefined if there is no key value.
@@ -28160,7 +28941,7 @@ export class GraphLinksModel extends Model {
      * @see {@link setKeyForLinkData}
      * @see {@link findLinkDataForKey}
      */
-    getKeyForLinkData(linkdata: ObjectData): Key;
+    getKeyForLinkData(linkdata: LinkDataType): Key;
     /**
      * Change the unique key of a given link data that is already in this model.
      * The new key value must be unique -- i.e. not in use by another link data object.
@@ -28175,7 +28956,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkKeyProperty}
      * @see {@link getKeyForLinkData}
      */
-    setKeyForLinkData(linkdata: ObjectData, key: Key): void;
+    setKeyForLinkData(linkdata: LinkDataType, key: Key): void;
     /**
      * Gets or sets a function that returns a unique id number or string for a link data object.
      * This function is called by {@link makeLinkDataKeyUnique}
@@ -28194,8 +28975,8 @@ export class GraphLinksModel extends Model {
      * If a link data object is already in the model and you want to change its key value,
      * call {@link setKeyForLinkData} with a new and unique key.
      */
-    get makeUniqueLinkKeyFunction(): ((a: GraphLinksModel, b: ObjectData) => Key) | null;
-    set makeUniqueLinkKeyFunction(value: ((a: GraphLinksModel, b: ObjectData) => Key) | null);
+    get makeUniqueLinkKeyFunction(): ((a: GraphLinksModel<NodeDataType, LinkDataType>, b: LinkDataType) => Key) | null;
+    set makeUniqueLinkKeyFunction(value: ((a: GraphLinksModel<NodeDataType, LinkDataType>, b: LinkDataType) => Key) | null);
     /**
      * Given a number or string, find the link data object in this model
      * that uses the given value as its unique key.
@@ -28209,7 +28990,7 @@ export class GraphLinksModel extends Model {
      * @see {@link containsLinkData}
      * @see {@link getKeyForLinkData}
      */
-    findLinkDataForKey(key: Key): ObjectData | null;
+    findLinkDataForKey(key: Key): LinkDataType | null;
     /**
      * This method is called when a link data object is added to the model to make sure that
      * {@link getKeyForLinkData} returns a unique key value.
@@ -28226,7 +29007,7 @@ export class GraphLinksModel extends Model {
      * call {@link setKeyForLinkData} and give it a new unique key value.
      * @param linkdata - a JavaScript object represented by a link
      */
-    makeLinkDataKeyUnique(linkdata: ObjectData): void;
+    makeLinkDataKeyUnique(linkdata: LinkDataType): void;
     /**
      * Decide if a given link data object is in this model, using reference equality.
      *
@@ -28242,7 +29023,7 @@ export class GraphLinksModel extends Model {
      * @see {@link addLinkData}
      * @see {@link removeLinkData}
      */
-    containsLinkData(linkdata: ObjectData | null): boolean;
+    containsLinkData(linkdata: LinkDataType | null): boolean;
     /**
      * When you want to add a link to the diagram, call this method with a new data object.
      * This will add that data to the {@link linkDataArray} and
@@ -28256,12 +29037,12 @@ export class GraphLinksModel extends Model {
      * @param linkdata - a JavaScript object represented by a link.
      * @see {@link removeLinkData}
      */
-    addLinkData(linkdata: ObjectData): void;
+    addLinkData(linkdata: LinkDataType): void;
     /**
      * Add to this model all of the link data held in an Array or in an {@link Iterable} of link data objects.
      * @param coll - a collection of link data objects to add to the {@link linkDataArray}
      */
-    addLinkDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
+    addLinkDataCollection(coll: Iterable<LinkDataType> | Array<LinkDataType>): void;
     /**
      * When you want to remove a link from the diagram, call this method with an existing link data object.
      * This will remove that data object from the {@link linkDataArray} and
@@ -28278,18 +29059,18 @@ export class GraphLinksModel extends Model {
      * @param linkdata - a JavaScript object represented by a link.
      * @see {@link addLinkData}
      */
-    removeLinkData(linkdata: ObjectData): void;
+    removeLinkData(linkdata: LinkDataType): void;
     /**
      * Remove from this model all of the link data held in an Array or in an {@link Iterable} of link data objects.
      * @param coll - a collection of link data objects to remove from the {@link linkDataArray}
      */
-    removeLinkDataCollection(coll: Iterable<ObjectData> | Array<ObjectData>): void;
+    removeLinkDataCollection(coll: Iterable<LinkDataType> | Array<LinkDataType>): void;
     /**
      * Take an Array of link data objects and update {@link linkDataArray} without replacing
      * the Array and without replacing any existing link data objects that are identified by key.
      * This depends on {@link linkKeyProperty} being a non-empty string.
      *
-     * For link data objects that have the same key value, this makes calls to {@link setDataProperty}
+     * For link data objects that have the same key value, this makes calls to {@link set}
      * to update the existing link data object.
      * For new keys, this calls {@link cloneDeep} to copy the data and then {@link addLinkData} to add a new link to the model.
      * For existing links that have keys that are not present in the given Array,
@@ -28304,7 +29085,7 @@ export class GraphLinksModel extends Model {
      * @param arr
      * @since 2.1
      */
-    mergeLinkDataArray(arr: Array<ObjectData>): void;
+    mergeLinkDataArray(arr: Array<LinkDataType>): void;
     /**
      * Gets or sets a function that makes a copy of a link data object.
      *
@@ -28313,8 +29094,8 @@ export class GraphLinksModel extends Model {
      * This property value may be null in order to cause {@link copyLinkData} to make a shallow copy of a JavaScript Object.
      * The default value is null.
      */
-    get copyLinkDataFunction(): ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null;
-    set copyLinkDataFunction(value: ((a: ObjectData, b: GraphLinksModel) => ObjectData) | null);
+    get copyLinkDataFunction(): ((a: LinkDataType, b: GraphLinksModel<NodeDataType, LinkDataType>) => LinkDataType) | null;
+    set copyLinkDataFunction(value: ((a: LinkDataType, b: GraphLinksModel<NodeDataType, LinkDataType>) => LinkDataType) | null);
     /**
      * Make a copy of a link data object.
      * This uses the value of {@link copyLinkDataFunction} to actually perform the copy,
@@ -28326,7 +29107,7 @@ export class GraphLinksModel extends Model {
      * @param linkdata - a JavaScript object represented by a link.
      * @see {@link addLinkData}
      */
-    copyLinkData(linkdata: ObjectData): ObjectData;
+    copyLinkData(linkdata: LinkDataType): LinkDataType;
     /**
      * Gets or sets the name of the boolean property on node data that indicates
      * whether the data should be represented as a group of nodes and links or as a simple node.
@@ -28344,8 +29125,8 @@ export class GraphLinksModel extends Model {
      * and if you want this property to be a function, you will need to assign this property to your desired function
      * immediately after creating the model, including when it is created by {@link Model.fromJson}.
      */
-    get nodeIsGroupProperty(): string | ((a: ObjectData, b?: boolean) => boolean);
-    set nodeIsGroupProperty(value: string | ((a: ObjectData, b?: boolean) => boolean));
+    get nodeIsGroupProperty(): string | ((a: NodeDataType, b?: boolean) => boolean);
+    set nodeIsGroupProperty(value: string | ((a: NodeDataType, b?: boolean) => boolean));
     /**
      * See if the given node data should be represented as a group or as a simple node.
      *
@@ -28354,7 +29135,7 @@ export class GraphLinksModel extends Model {
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      * @see {@link nodeIsGroupProperty}
      */
-    isGroupForNodeData(nodedata: ObjectData): boolean;
+    isGroupForNodeData(nodedata: NodeDataType): boolean;
     /**
      * Gets or sets the name of the property on node data that specifies
      * the string or number key of the group data that "owns" that node data.
@@ -28375,8 +29156,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getGroupKeyForNodeData}
      * @see {@link setGroupKeyForNodeData}
      */
-    get nodeGroupKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set nodeGroupKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get nodeGroupKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    set nodeGroupKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * If there is a container group for the given node data, return the group's key.
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
@@ -28384,7 +29165,7 @@ export class GraphLinksModel extends Model {
      * @see {@link nodeGroupKeyProperty}
      * @see {@link setGroupKeyForNodeData}
      */
-    getGroupKeyForNodeData(nodedata: ObjectData): Key;
+    getGroupKeyForNodeData(nodedata: NodeDataType): Key;
     /**
      * Change the container group for the given node data, given a key for the new group.
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
@@ -28392,14 +29173,14 @@ export class GraphLinksModel extends Model {
      * @see {@link nodeGroupKeyProperty}
      * @see {@link getGroupKeyForNodeData}
      */
-    setGroupKeyForNodeData(nodedata: ObjectData, key: Key): void;
+    setGroupKeyForNodeData(nodedata: NodeDataType, key: Key): void;
     /**
      * This override also makes sure any copied node data does not have a reference to the containing group.
      * @virtual
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      * @see {@link Model.copyNodeData}
      */
-    copyNodeData(nodedata: ObjectData): ObjectData;
+    copyNodeData(nodedata: NodeDataType): NodeDataType;
     /**
      * This override changes the value of some property of a node data, a link data, or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -28411,12 +29192,11 @@ export class GraphLinksModel extends Model {
      *                      or item in a {@link Panel.itemArray}; or this model's {@link modelData}.
      * @param propname - a string that is not null or the empty string.
      * @param val - the new value for the property.
-     * @see {@link Model.setDataProperty}
      */
-    setDataProperty(data: ObjectData, propname: string, val: any): void;
+    set(data: ObjectData, propname: string, val: any): void;
     /**
      * This override is similar to <code>Object.assign</code>,
-     * but safely calls {@link setDataProperty} for each property other than a key property.
+     * but safely calls {@link set} for each property other than a key property.
      * @param data - a data object
      * @param props - an Object holding various properties whose values are to be assigned to the DATA object
      */
@@ -28439,8 +29219,8 @@ export class GraphLinksModel extends Model {
      * @see {@link getCategoryForLinkData}
      * @see {@link setCategoryForLinkData}
      */
-    get linkCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
-    set linkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
+    get linkCategoryProperty(): string | ((a: LinkDataType, b?: string) => string);
+    set linkCategoryProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * Find the category of a given link data, a string naming the link template
      * that the {@link Diagram} should use to represent the link data.
@@ -28448,7 +29228,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkCategoryProperty}
      * @see {@link setCategoryForLinkData}
      */
-    getCategoryForLinkData(linkdata: ObjectData): string;
+    getCategoryForLinkData(linkdata: LinkDataType): string;
     /**
      * Change the category of a given link data, a string naming the link template
      * that the {@link Diagram} should use to represent the link data.
@@ -28464,7 +29244,7 @@ export class GraphLinksModel extends Model {
      * @see {@link linkCategoryProperty}
      * @see {@link getCategoryForLinkData}
      */
-    setCategoryForLinkData(linkdata: ObjectData, cat: string): void;
+    setCategoryForLinkData(linkdata: LinkDataType, cat: string): void;
 }
 /**
  * TreeModels support tree-structured graphs of nodes and links.
@@ -28495,18 +29275,21 @@ export class GraphLinksModel extends Model {
  * and that would require the use of {@link GraphLinksModel}.
  * @category Model
  */
-export class TreeModel extends Model {
+export class TreeModel<NodeDataType extends ObjectData = ObjectData, SharedDataType extends ObjectData = ObjectData> extends Model<NodeDataType, SharedDataType> {
     /**
      * This constructs an empty TreeModel unless one provides arguments as the initial data array values
      * @param nodedataarray - an optional Array containing JavaScript objects to be represented by {@link Part}s.
      * @param init - Optional initialization properties.
      */
-    constructor(nodedataarray?: Array<ObjectData>, init?: Partial<TreeModel>);
+    constructor(nodedataarray?: Array<NodeDataType>, init?: Partial<TreeModel<NodeDataType>>);
     /**
      * for the {@link Model.nodeDataArray} property.
      * @param init - Optional initialization properties.
      */
-    constructor(init?: Partial<TreeModel>);
+    constructor(init?: Partial<TreeModel<NodeDataType>>);
+    /**
+     */
+    copy(): TreeModel<NodeDataType>;
     /**
      * Gets or sets the name of the property on node data that specifies
      * the string or number key of the node data that acts as the "parent" for this "child" node data.
@@ -28524,8 +29307,8 @@ export class TreeModel extends Model {
      * @see {@link getParentKeyForNodeData}
      * @see {@link setParentKeyForNodeData}
      */
-    get nodeParentKeyProperty(): string | ((a: ObjectData, b?: Key) => Key);
-    set nodeParentKeyProperty(value: string | ((a: ObjectData, b?: Key) => Key));
+    get nodeParentKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    set nodeParentKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * If there is a parent node for the given node data, return the parent's key.
      * @param nodedata - a JavaScript object represented by a node.
@@ -28533,7 +29316,7 @@ export class TreeModel extends Model {
      * @see {@link nodeParentKeyProperty}
      * @see {@link setParentKeyForNodeData}
      */
-    getParentKeyForNodeData(nodedata: ObjectData): Key;
+    getParentKeyForNodeData(nodedata: NodeDataType): Key;
     /**
      * Change the parent node for the given node data, given a key for the new parent, or undefined if there should be no parent.
      * @param nodedata - a JavaScript object represented by a node.
@@ -28541,7 +29324,7 @@ export class TreeModel extends Model {
      * @see {@link nodeParentKeyProperty}
      * @see {@link getParentKeyForNodeData}
      */
-    setParentKeyForNodeData(nodedata: ObjectData, key: Key): void;
+    setParentKeyForNodeData(nodedata: NodeDataType, key: Key): void;
     /**
      * Gets or sets the name of the data property that returns a string describing that node data's parent link's category.
      * The value may also be a function taking two arguments, where the first argument will be a node data object.
@@ -28560,8 +29343,8 @@ export class TreeModel extends Model {
      * @see {@link getParentLinkCategoryForNodeData}
      * @see {@link setParentLinkCategoryForNodeData}
      */
-    get parentLinkCategoryProperty(): string | ((a: ObjectData, b?: string) => string);
-    set parentLinkCategoryProperty(value: string | ((a: ObjectData, b?: string) => string));
+    get parentLinkCategoryProperty(): string | ((a: NodeDataType, b?: string) => string);
+    set parentLinkCategoryProperty(value: string | ((a: NodeDataType, b?: string) => string));
     /**
      * Find the category for the parent link of a given child node data, a string naming the link template
      * that the {@link Diagram} should use to represent the link.
@@ -28569,7 +29352,7 @@ export class TreeModel extends Model {
      * @see {@link parentLinkCategoryProperty}
      * @see {@link setParentLinkCategoryForNodeData}
      */
-    getParentLinkCategoryForNodeData(childdata: ObjectData): string;
+    getParentLinkCategoryForNodeData(childdata: NodeDataType): string;
     /**
      * Change the category for the parent link of a given child node data, a string naming the link template
      * that the {@link Diagram} should use to represent the link.
@@ -28585,13 +29368,13 @@ export class TreeModel extends Model {
      * @see {@link parentLinkCategoryProperty}
      * @see {@link getParentLinkCategoryForNodeData}
      */
-    setParentLinkCategoryForNodeData(childdata: ObjectData, cat: string): void;
+    setParentLinkCategoryForNodeData(childdata: NodeDataType, cat: string): void;
     /**
      * This override also makes sure any copied node data does not have a reference to a parent node.
      * @virtual
      * @param nodedata - a JavaScript object represented by a node, group, or non-link.
      */
-    copyNodeData(nodedata: ObjectData): ObjectData;
+    copyNodeData(nodedata: NodeDataType): NodeDataType;
     /**
      * This override changes the value of some property of a node data or an item data, given a string naming the property
      * and the new value, in a manner that can be undone/redone and that automatically updates any bindings.
@@ -28602,9 +29385,8 @@ export class TreeModel extends Model {
      *                      or item in a {@link Panel.itemArray}; or this model's {@link modelData}.
      * @param propname - a string that is not null or the empty string.
      * @param val - the new value for the property.
-     * @see {@link Model.setDataProperty}
      */
-    setDataProperty(data: ObjectData, propname: string, val: any): void;
+    set(data: ObjectData, propname: string, val: any): void;
 }
 /**
  * This enumeration specifies how nodes should be spaced in the ring.
@@ -28740,7 +29522,7 @@ export class CircularLayout extends Layout {
     commitLayout(): void;
     /**
      * Commit the position of all vertex nodes.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitNodes(): void;
@@ -28748,7 +29530,7 @@ export class CircularLayout extends Layout {
      * Commit the position and routing of all edge links.
      * This is called by {@link commitLayout}.
      * This is only called if {@link Layout.isRouting} is true.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitLinks(): void;
@@ -29130,7 +29912,7 @@ export class ForceDirectedLayout extends Layout {
      *
      * This calls the {@link commitNodes} and {@link commitLinks} methods, the latter only if {@link isRouting} is true.
      * You should not call this method -- it is a "protected virtual" method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      */
     commitLayout(): void;
     /**
@@ -29138,7 +29920,7 @@ export class ForceDirectedLayout extends Layout {
      *
      * This is called by {@link commitLayout}.
      * See also {@link commitLinks}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitNodes(): void;
@@ -29148,7 +29930,7 @@ export class ForceDirectedLayout extends Layout {
      * This is called by {@link commitLayout}.
      * This is only called if {@link Layout.isRouting} is true.
      * See also {@link commitNodes}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitLinks(): void;
@@ -29162,7 +29944,7 @@ export class ForceDirectedLayout extends Layout {
      *
      * The two vertexes connected by the edge E are acted upon by a force of proportional to
      * `springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))` divided by the distance between the vertexes.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param e
      * @returns Returns the stiffness of the edge representing a link,
@@ -29174,7 +29956,7 @@ export class ForceDirectedLayout extends Layout {
      * Returns the length of the spring representing an edge.
      * The two vertexes connected by the edge E are acted upon by a force of proportional to
      * `springStiffness(E) * (getNodeDistance(E.fromVertex, E.toVertex) - springLength(E))` divided by the distance between the vertexes.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param e
      * @returns Returns the length of the edge representing a link,
@@ -29190,7 +29972,7 @@ export class ForceDirectedLayout extends Layout {
      * The electrical forces between two vertexes decrease by the square of the distance between them.
      * Vertexes that are more than {@link infinityDistance} apart are assumed to have no electrical charge effect on each other.
      *
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param v
      */
@@ -29202,7 +29984,7 @@ export class ForceDirectedLayout extends Layout {
      * Used to define an external electrical field at a point independent of the vertex charges.
      * A vertex L is acted upon by a force in the X direction of proportional to
      * `electricalFieldX(L.center.x, L.center.y) * electricalCharge(L)`.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param x
      * @param y
@@ -29216,7 +29998,7 @@ export class ForceDirectedLayout extends Layout {
      * Used to define an external electrical field at a point independent of the vertex charges.
      * A vertex L is acted upon by a force in the Y direction of proportional to
      * `electricalFieldY(L.center.x, L.center.y) * electricalCharge(L)`.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param x
      * @param y
@@ -29227,7 +30009,7 @@ export class ForceDirectedLayout extends Layout {
      * Returns the mass of the vertex,
      * the value of {@link ForceDirectedVertex.mass} if it's a number,
      * or else the value of {@link defaultGravitationalMass}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param v
      */
@@ -29239,7 +30021,7 @@ export class ForceDirectedLayout extends Layout {
      * Used to define an external gravitational field at a point independent of the vertex masses.
      * A vertex L is acted upon by a force in the X direction of proportional to
      * `gravitationalFieldX(L.center.x, L.center.y) * gravitationalMass(L)`.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param x
      * @param y
@@ -29253,7 +30035,7 @@ export class ForceDirectedLayout extends Layout {
      * Used to define an external gravitational field at a point independent of the vertex masses.
      * A vertex L is acted upon by a force in the Y direction of proportional to
      * `gravitationalFieldY(L.center.x, L.center.y) * gravitationalMass(L)`.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param x
      * @param y
@@ -29264,7 +30046,7 @@ export class ForceDirectedLayout extends Layout {
      * This predicate returns true if the vertex should not be moved
      * by the layout algorithm but still have an effect on nearby and connected vertexes.
      * The default implementation returns {@link ForceDirectedVertex.isFixed}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param v
      * @returns returns true if the node should not be moved by the layout algorithm.
@@ -29336,21 +30118,26 @@ export class ForceDirectedLayout extends Layout {
     set epsilonDistance(value: number);
     /**
      * Gets or sets a threshold for the distance beyond which the electrical charge forces may be ignored.
-     * The default value is 1000.
-     * The value must be larger than 1.
+     * If NaN, there is no distance cutoff and all vertices contribute to electrical forces (via Barnes-Hut approximation).
+     * Setting a finite value can be useful for incremental layouts where you want to limit the influence of distant nodes.
+     * The default value is Infinity.
+     * If set, the value must be larger than 1.
      */
     get infinityDistance(): number;
     set infinityDistance(value: number);
     /**
      * Gets or sets how far a vertex may be moved in an iteration.
-     * The default value is 10.
+     * A large value will generally produce the highest-qaulity layout, though it may
+     * cause nodes to move unnecessarily far during incremental operations.
+     * The default value is Infinity.
      */
     get moveLimit(): number;
     set moveLimit(value: number);
     /**
      * Gets or sets a random number generator.
-     * The default value is Math, which results in calling Math.random().
-     * Change this to null in order to use an instance of an internal repeatable pseudo-random number generator,
+     * The default value uses cryptographically secure random numbers via `crypto.getRandomValues()`.
+     * Set this to `Math` to use `Math.random()` instead,
+     * or set this to null in order to use an instance of an internal repeatable pseudo-random number generator,
      * which will become the new value of this property.
      *
      * The new value must be either null or an Object with a method named "random" taking zero arguments
@@ -29418,6 +30205,16 @@ export class ForceDirectedLayout extends Layout {
      */
     get prelayoutSpread(): number;
     set prelayoutSpread(value: number);
+    /**
+     * Gets or sets the Barnes-Hut theta threshold for the force-directed layout.
+     * This controls the trade-off between accuracy and performance in the Barnes-Hut approximation.
+     * Lower values (closer to 0) give more accurate force calculations but are slower.
+     * Higher values give faster but less accurate results.
+     * The default value is 1.5.
+     * @since 4.0
+     */
+    get theta(): number;
+    set theta(value: number);
 }
 /**
  * This class represents an abstract graph of {@link ForceDirectedVertex}es and {@link ForceDirectedEdge}s
@@ -29800,7 +30597,7 @@ export class LayeredDigraphLayout extends Layout {
      * if L is a link from node U to node V, then U.layer > V.layer.
      *
      * This method can be overridden to customize how nodes are assigned layers.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * By default, this does the appropriate assignments given the value of {@link layeringOption}.
      * @virtual
      */
@@ -29856,7 +30653,7 @@ export class LayeredDigraphLayout extends Layout {
      *
      * This calls the {@link commitNodes} and {@link commitLinks} methods, the latter only if {@link isRouting} is true.
      * You should not call this method -- it is a "protected virtual" method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      */
     commitLayout(): void;
     /**
@@ -29864,7 +30661,7 @@ export class LayeredDigraphLayout extends Layout {
      *
      * This is called by {@link commitLayout}.
      * See also {@link commitLinks}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitNodes(): void;
@@ -29885,7 +30682,7 @@ export class LayeredDigraphLayout extends Layout {
      * This is called by {@link commitLayout}.
      * This is only called if {@link Layout.isRouting} is true.
      * See also {@link commitNodes}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitLinks(): void;
@@ -30525,7 +31322,7 @@ export declare enum TreeLayerStyle {
 /**
  * This layout positions nodes of a tree-structured graph in layers (rows or columns).
  * <p class="boxrun">
- * For a discussion and examples of the most commonly used properties, see <a href="../../intro/trees.html">Trees</a> page in the Introduction.
+ * For a discussion and examples of the most commonly used properties, see <a href="../../learn/trees">Trees</a> page in Learn.
  * If you want to experiment interactively with most of the properties, try the <a href="../../samples/tLayout.html">Tree Layout</a> sample.
  * See samples that make use of TreeLayout in the <a href="../../samples/index.html#treelayout">samples index</a>.
  *
@@ -30638,7 +31435,7 @@ export class TreeLayout extends Layout {
      * by the time this method is called.
      * It is more common to override {@link assignTreeVertexValues} in order to
      * modify a property or two to customize the layout at that node.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * When the {@link TreeVertex.alignment} is {@link TreeAlignment.BusBranching},
      * this will modify the {@link TreeVertex.angle} appropriately depending on which
@@ -30655,7 +31452,7 @@ export class TreeLayout extends Layout {
      * This method is called after values have been inherited from other
      * {@link TreeVertex}es, so you can examine and modify the
      * values of related tree nodes.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      *
      * However, when {@link TreeVertex.alignment} is {@link TreeAlignment.BusBranching},
      * changing the {@link TreeVertex.sorting} or
@@ -30698,7 +31495,7 @@ export class TreeLayout extends Layout {
      * are set to reserve space for those associated objects.
      * This method should not walk the tree, since it is called for each
      * {@link TreeVertex} in an indeterminate order.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param v
      */
@@ -30708,7 +31505,7 @@ export class TreeLayout extends Layout {
      *
      * This method should not walk the tree, since it is called for each
      * {@link TreeVertex} in an indeterminate order.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param v
      */
@@ -30724,6 +31521,7 @@ export class TreeLayout extends Layout {
      */
     customAlignment(v: TreeVertex, offx: number, offy: number, subw: number, subh: number): Array<number>;
     /**
+     * (undocumented)
      * Get the amount of space to insert between a child vertex and its parent spine
      * when the parent's {@link TreeVertex.alignment} is Bus or BusBranching.
      *
@@ -30739,6 +31537,7 @@ export class TreeLayout extends Layout {
      */
     computeBusNodeSpacing(child: TreeVertex): number;
     /**
+     * (undocumented)
      * Get the amound of space to leave between the sibling child vertexes and this last odd vertex
      * when the parent's {@link TreeVertex.alignment} is Bus or BusBranching.
      *
@@ -30761,7 +31560,7 @@ export class TreeLayout extends Layout {
      * bounds are known.
      * The {@link arrangement} and {@link arrangementSpacing} and {@link Layout.arrangementOrigin}
      * properties affect this method's behavior.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     arrangeTrees(): void;
@@ -30771,7 +31570,7 @@ export class TreeLayout extends Layout {
      *
      * This calls the {@link commitNodes} and {@link commitLinks} methods, the latter only if {@link isRouting} is true.
      * You should not call this method -- it is a "protected virtual" method.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      */
     commitLayout(): void;
     /**
@@ -30779,7 +31578,7 @@ export class TreeLayout extends Layout {
      *
      * This is called by {@link commitLayout}.
      * See also {@link commitLinks}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitNodes(): void;
@@ -30802,16 +31601,18 @@ export class TreeLayout extends Layout {
      * This is called by {@link commitLayout}.
      * This is only called if {@link Layout.isRouting} is true.
      * See also {@link commitNodes}.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      */
     protected commitLinks(): void;
     /**
+     * (undocumented)
      * @virtual
      * @param v
      */
     computeLayerSpacing(v: TreeVertex): number;
     /**
+     * (undocumented)
      * @virtual
      * @param v
      */
@@ -32002,7 +32803,7 @@ export class Themes {
 /**
  * This class is responsible for managing a Diagram's theming (or multiple Diagrams, if shared).
  * <p class="box">
- * For more discussion, see <a href="../../intro/theming.html">Introduction to Theming</a>.
+ * For more discussion, see <a href="../../learn/theming">Learn page on Theming</a>.
  * </p>
  * Your templates can make use of the values held by the current {@link Theme} by calling
  * {@link GraphObject.theme} or {@link GraphObject.themeData} or {@link GraphObject.themeModel} methods,
@@ -32189,14 +32990,14 @@ export class ThemeManager {
     /**
      * Make sure this ThemeManager knows about a {@link Diagram} for which it should handle theming.
      * @param diagram - A {@link Diagram} that this ThemeManager is theming.
-     * @return this
+     * @returns this
      * @see {@link removeDiagram}
      */
     addDiagram(diagram: Diagram): this;
     /**
      * Inform this ThemeManager that it will no longer handle theming for a given diagram.
      * @param diagram - A {@link Diagram} that this ThemeManager should no longer theme.
-     * @return this
+     * @returns this
      * @see {@link addDiagram}
      */
     removeDiagram(diagram: Diagram): this;
@@ -32207,7 +33008,7 @@ export class ThemeManager {
      * If passed `system`, this method will create/update the {@link preferredColorScheme} theme.
      * @param themeName - which theme to change, or the empty string to update the default theme
      * @param props - a partial Theme object to merge into the given theme or add as a new theme
-     * @return this
+     * @returns this
      */
     set(themeName: string, props: Partial<Theme>): this;
     /**
@@ -32222,7 +33023,7 @@ export class ThemeManager {
      * ```
      *
      * This method may be overridden to search Themes in different orders.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the Learn page on <a href="../../learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @virtual
      * @param prop - a property to search for in the Theme,
      *   also accepting '.'-separated paths, an array of strings representing a path, or an index to an array element
@@ -32592,3 +33393,155 @@ export class AvoidsNodesRouter extends Router {
 
 
 
+
+export declare const go: {
+  readonly version: string;
+  readonly Group: typeof Group;
+  readonly List: typeof List;
+  readonly Set: typeof Set;
+  readonly Map: typeof Map;
+  readonly Point: typeof Point;
+  readonly Size: typeof Size;
+  readonly Rect: typeof Rect;
+  readonly Margin: typeof Margin;
+  readonly Spot: typeof Spot;
+  readonly Quadtree: typeof Quadtree;
+  readonly Geometry: typeof Geometry;
+  readonly PathFigure: typeof PathFigure;
+  readonly PathSegment: typeof PathSegment;
+  readonly InputEvent: typeof InputEvent;
+  readonly DiagramEvent: typeof DiagramEvent;
+  readonly ChangedEvent: typeof ChangedEvent;
+  readonly Model: typeof Model;
+  readonly GraphLinksModel: typeof GraphLinksModel;
+  readonly TreeModel: typeof TreeModel;
+  readonly Binding: typeof Binding;
+  readonly ThemeBinding: typeof ThemeBinding;
+  readonly Transaction: typeof Transaction;
+  readonly UndoManager: typeof UndoManager;
+  readonly CommandHandler: typeof CommandHandler;
+  readonly Tool: typeof Tool;
+  readonly DraggingTool: typeof DraggingTool;
+  readonly DraggingInfo: typeof DraggingInfo;
+  readonly DraggingOptions: typeof DraggingOptions;
+  readonly LinkingBaseTool: typeof LinkingBaseTool;
+  readonly LinkingTool: typeof LinkingTool;
+  readonly RelinkingTool: typeof RelinkingTool;
+  readonly LinkReshapingTool: typeof LinkReshapingTool;
+  readonly ResizingTool: typeof ResizingTool;
+  readonly RotatingTool: typeof RotatingTool;
+  readonly ClickSelectingTool: typeof ClickSelectingTool;
+  readonly ActionTool: typeof ActionTool;
+  readonly ClickCreatingTool: typeof ClickCreatingTool;
+  readonly HTMLInfo: typeof HTMLInfo;
+  readonly ContextMenuTool: typeof ContextMenuTool;
+  readonly DragSelectingTool: typeof DragSelectingTool;
+  readonly PanningTool: typeof PanningTool;
+  readonly TextEditingTool: typeof TextEditingTool;
+  readonly ToolManager: typeof ToolManager;
+  readonly Animation: typeof Animation;
+  readonly AnimationManager: typeof AnimationManager;
+  readonly AnimationTrigger: typeof AnimationTrigger;
+  readonly Layer: typeof Layer;
+  readonly Diagram: typeof Diagram;
+  readonly Palette: typeof Palette;
+  readonly Overview: typeof Overview;
+  readonly Brush: typeof Brush;
+  readonly GraphObject: typeof GraphObject;
+  readonly Panel: typeof Panel;
+  readonly RowColumnDefinition: typeof RowColumnDefinition;
+  readonly Shape: typeof Shape;
+  readonly TextBlock: typeof TextBlock;
+  readonly Picture: typeof Picture;
+  readonly Part: typeof Part;
+  readonly Adornment: typeof Adornment;
+  readonly Node: typeof Node;
+  readonly Link: typeof Link;
+  readonly Placeholder: typeof Placeholder;
+  readonly Layout: typeof Layout;
+  readonly LayoutNetwork: typeof LayoutNetwork;
+  readonly LayoutVertex: typeof LayoutVertex;
+  readonly LayoutEdge: typeof LayoutEdge;
+  readonly GridLayout: typeof GridLayout;
+  readonly PanelLayout: typeof PanelLayout;
+  readonly CircularLayout: typeof CircularLayout;
+  readonly CircularNetwork: typeof CircularNetwork;
+  readonly CircularVertex: typeof CircularVertex;
+  readonly CircularEdge: typeof CircularEdge;
+  readonly ForceDirectedLayout: typeof ForceDirectedLayout;
+  readonly ForceDirectedNetwork: typeof ForceDirectedNetwork;
+  readonly ForceDirectedVertex: typeof ForceDirectedVertex;
+  readonly ForceDirectedEdge: typeof ForceDirectedEdge;
+  readonly LayeredDigraphLayout: typeof LayeredDigraphLayout;
+  readonly LayeredDigraphNetwork: typeof LayeredDigraphNetwork;
+  readonly LayeredDigraphVertex: typeof LayeredDigraphVertex;
+  readonly LayeredDigraphEdge: typeof LayeredDigraphEdge;
+  readonly TreeLayout: typeof TreeLayout;
+  readonly TreeNetwork: typeof TreeNetwork;
+  readonly TreeVertex: typeof TreeVertex;
+  readonly TreeEdge: typeof TreeEdge;
+  readonly Themes: typeof Themes;
+  readonly ThemeManager: typeof ThemeManager;
+  readonly Router: typeof Router;
+  readonly AnimationStyle: typeof AnimationStyle;
+  readonly AutoScale: typeof AutoScale;
+  readonly Curve: typeof Curve;
+  readonly CycleMode: typeof CycleMode;
+  readonly Flip: typeof Flip;
+  readonly ImageStretch: typeof ImageStretch;
+  readonly LayoutConditions: typeof LayoutConditions;
+  readonly LinkAdjusting: typeof LinkAdjusting;
+  readonly Orientation: typeof Orientation;
+  readonly PortSpreading: typeof PortSpreading;
+  readonly Routing: typeof Routing;
+  readonly ScrollMode: typeof ScrollMode;
+  readonly CollapsePolicy: typeof CollapsePolicy;
+  readonly Sizing: typeof Sizing;
+  readonly TriggerStart: typeof TriggerStart;
+  readonly Stretch: typeof Stretch;
+  readonly TextFormat: typeof TextFormat;
+  readonly TextOverflow: typeof TextOverflow;
+  readonly ViewboxStretch: typeof ViewboxStretch;
+  readonly Wrap: typeof Wrap;
+  readonly BrushType: typeof BrushType;
+  readonly ColorSpace: typeof ColorSpace;
+  readonly GeometryStretch: typeof GeometryStretch;
+  readonly GeometryType: typeof GeometryType;
+  readonly SegmentType: typeof SegmentType;
+  readonly BindingMode: typeof BindingMode;
+  readonly ChangeType: typeof ChangeType;
+  readonly CircularArrangement: typeof CircularArrangement;
+  readonly CircularDirection: typeof CircularDirection;
+  readonly CircularNodeDiameterFormula: typeof CircularNodeDiameterFormula;
+  readonly CircularSorting: typeof CircularSorting;
+  readonly GridAlignment: typeof GridAlignment;
+  readonly GridArrangement: typeof GridArrangement;
+  readonly GridSorting: typeof GridSorting;
+  readonly LayeredDigraphAggressive: typeof LayeredDigraphAggressive;
+  readonly LayeredDigraphAlign: typeof LayeredDigraphAlign;
+  readonly LayeredDigraphCycleRemove: typeof LayeredDigraphCycleRemove;
+  readonly LayeredDigraphInit: typeof LayeredDigraphInit;
+  readonly LayeredDigraphLayering: typeof LayeredDigraphLayering;
+  readonly LayeredDigraphPack: typeof LayeredDigraphPack;
+  readonly TreeAlignment: typeof TreeAlignment;
+  readonly TreeArrangement: typeof TreeArrangement;
+  readonly TreeCompaction: typeof TreeCompaction;
+  readonly TreeLayerStyle: typeof TreeLayerStyle;
+  readonly TreePath: typeof TreePath;
+  readonly TreeSorting: typeof TreeSorting;
+  readonly TreeStyle: typeof TreeStyle;
+  readonly GestureMode: typeof GestureMode;
+  readonly LinkingDirection: typeof LinkingDirection;
+  readonly ReshapingBehavior: typeof ReshapingBehavior;
+  readonly TextEditingAccept: typeof TextEditingAccept;
+  readonly TextEditingStarting: typeof TextEditingStarting;
+  readonly TextEditingState: typeof TextEditingState;
+  readonly WheelMode: typeof WheelMode;
+  readonly Figures: typeof Figures;
+  readonly Arrowheads: typeof Arrowheads;
+  readonly PanelTypes: typeof PanelTypes;
+  readonly ToolNames: typeof ToolNames;
+  readonly Builders: typeof Builders;
+  readonly LayerNames: typeof LayerNames;
+};
+export default go;

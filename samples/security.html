@@ -1,829 +1,187 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scheme-light dark:scheme-dark">
   <head>
-    
-    <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"/>
-
-<meta name="description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors." />
-<meta itemprop="description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors." />
-<meta property="og:description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors." />
-<meta name="twitter:description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors." />
-
-
-<link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="../assets/css/style.css">
-<!-- Copyright 1998-2026 by Northwoods Software Corporation. -->
-
-
-<meta itemprop="name" content="Security Monitor Dashboard" />
-<meta property="og:title" content="Security Monitor Dashboard" />
-<meta name="twitter:title" content="Security Monitor Dashboard" />
-
-
-<meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/security.png" />
-<meta itemprop="image" content="https://gojs.net/latest/assets/images/screenshots/security.png" />
-<meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/security.png" />
-
-<meta property="og:url" content="https://gojs.net/latest/samples/security.html" />
-<meta property="twitter:url" content="https://gojs.net/latest/samples/security.html" />
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta property="og:type" content="website" />
-<meta property="twitter:domain" content="gojs.net" />
-
-    <title>
-      Security Monitor Dashboard | GoJS Diagramming Library
-    </title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f4963" />
+    <!-- Self-hosted variable font. Declared here (not in CSS) so ..
+         resolves the /fonts/ asset under the base path, and preloaded with a matching
+         crossorigin so the @font-face fetch reuses it. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="../fonts/InterVariable.woff2"
+      crossorigin />
+    <style>
+      @font-face {
+        font-family: InterVariable;
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('../fonts/InterVariable.woff2') format('woff2');
+      }
+    </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S5QK8VSK84"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-S5QK8VSK84');
+    </script>
+    <link href="../_app/immutable/entry/start.DUcLjgjT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DTR9fq_7.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BY_RssUb.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.uWGY7NCW.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/kNaey6uv.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/xihTtKlq.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.DBSBeCFO.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DDjqDG21.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/c0gyX4Uy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CxMCXhHm.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CVMOr__I.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.JgNq0TJX.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/243.CdxKiHZi.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DzUjTTvJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BVhwz5iQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/lxyaXZko.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BjDsAonG.js" rel="modulepreload">
+		<!--12qhfyh--><link rel="canonical" href="https://gojs.net/latest/samples/security"/> <meta property="og:type" content="website"/> <meta property="og:site_name" content="GoJS"/> <meta property="og:url" content="https://gojs.net/latest/samples/security"/> <meta property="og:image" content="https://gojs.net/latest/assets/images/screenshots/security.png"/> <meta name="twitter:card" content="summary_large_image"/> <meta name="twitter:site" content="@northwoodsgo"/> <meta name="twitter:image" content="https://gojs.net/latest/assets/images/screenshots/security.png"/> <!----><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://gojs.net/#organization","name":"Northwoods Software","url":"https://nwoods.com","logo":"https://gojs.net/latest/assets/images/fp/og.png","sameAs":["https://github.com/NorthwoodsSoftware/GoJS","https://twitter.com/northwoodsgo","https://www.npmjs.com/package/gojs"]},{"@type":"SoftwareApplication","@id":"https://gojs.net/latest/#gojs","name":"GoJS","applicationCategory":"DeveloperApplication","operatingSystem":"Web","programmingLanguage":["JavaScript","TypeScript"],"description":"GoJS is a JavaScript and TypeScript library for building interactive diagramming apps - org charts, flowcharts, BPMN, SCADA, UML, and custom visual editors.","url":"https://gojs.net/latest/","publisher":{"@id":"https://gojs.net/#organization"},"offers":{"@type":"Offer","url":"https://nwoods.com/sales","category":"Commercial software license"}}]}</script><!----><!----><!--1cmi4dh--><script>
+    document.documentElement.classList.toggle(
+      'dark',
+      localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+    );
+  </script><!----><!----><!--15hfq0z--><meta property="og:title" content="Security Monitor Dashboard | GoJS Diagramming Library"/> <!--[0--><meta name="description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors."/> <meta property="og:description" content="Example of a security dashboard made with GoJS. Diagram for monitoring live video feeds and swipe access doors."/><!--]--><!----><title>Security Monitor Dashboard | GoJS Diagramming Library</title>
+		<link href="../_app/immutable/assets/0.vgO-Uy72.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CodeSnippet.DOo96Xpn.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/TagList.CFKTKwNT.css" rel="stylesheet">
   </head>
-
-  <body>
-    <!-- This top nav is not part of the sample code -->
-    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
-  <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
-    <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
-       href="../">
-      GoJS
-    </a>
-    <div class="relative">
-      <button id="topnavButton" class="h-[calc(var(--topnav-h)_-_1px)] px-2 m-0 text-gray-900 bg-inherit shadow-none md:hidden hover:!bg-inherit hover:!text-nwoods-accent hover:!shadow-none" aria-label="Navigation">
-        <svg class="h-7 w-7 block" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div id="topnavList" class="hidden md:block">
-        <div class="absolute right-0 z-30 flex flex-col items-end rounded border border-gray-200 p-4 pl-12 shadow bg-white text-gray-900 font-semibold
-                    md:flex-row md:space-x-4 md:items-start md:border-0 md:p-0 md:shadow-none md:bg-inherit">
-          <a href="../learn/">Learn</a>
-          <a href="../samples/">Samples</a>
-          <a href="../intro/">Intro</a>
-          <a href="../api/">API</a>
-          <a href="../download.html">Download</a>
-          <a href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener">Forum</a>
-          <a id="tc" href="https://nwoods.com/contact.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/contact.html', 'contact');">Contact</a>
-          <a id="tb" href="https://nwoods.com/sales/index.html"
-            target="_blank" rel="noopener" onclick="getOutboundLink('https://nwoods.com/sales/index.html', 'buy');">Buy</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    // topnav
-    var topButton = document.getElementById("topnavButton");
-    var topnavList = document.getElementById("topnavList");
-    if (topButton && topnavList) {
-      topButton.addEventListener("click", function (e) {
-        topnavList
-          .classList
-          .toggle("hidden");
-        e.stopPropagation();
-      });
-      document.addEventListener("click", function (e) {
-        // if the clicked element isn't the list, close the list
-        if (!topnavList.classList.contains("hidden") && !e.target.closest("#topnavList")) {
-          topButton.click();
-        }
-      });
-
-      // set active <a> element
-      var url = window
-        .location
-        .href
-        .toLowerCase();
-      var aTags = topnavList.getElementsByTagName('a');
-      for (var i = 0; i < aTags.length; i++) {
-        var lowerhref = aTags[i]
-          .href
-          .toLowerCase();
-        if (lowerhref.endsWith('.html')) 
-          lowerhref = lowerhref.slice(0, -5);
-        if (url.startsWith(lowerhref)) {
-          aTags[i]
-            .classList
-            .add('active');
-          break;
-        }
-      }
-    }
-  });
-</script>
-    <div class="flex flex-col prose">
-      <div class="w-full max-w-screen-xl mx-auto">
-        <!-- * * * * * * * * * * * * * -->
-        <!-- Start of GoJS sample code -->
-        <script src="../release/go.js"></script>
-
-        
-
-        <div id="allSampleContent" class="p-4 w-full">
-          
-            
-            
-
-<script src="../extensions/SectorReshapingTool.js"></script>
-
-<script id="code">
-  const scaleMult = 2.5;
-  let currentScale = 1 * scaleMult;
-
-  function init() {
-    // clear the output log, some browsers will save text in textareas
-    document.getElementById('outputLog').innerText = '';
-
-    myDiagram = new go.Diagram('myDiagramDiv', {
-      contentAlignment: go.Spot.Center,
-      initialAutoScale: go.AutoScale.Uniform,
-      allowClipboard: false,
-      allowCopy: false,
-      'grid.gridCellSize': new go.Size(1, 1),
-      'draggingTool.isGridSnapEnabled': true,
-      'toolManager.hoverDelay': 350, // changes delay for tooltips
-      'animationManager.isInitial': false
-    });
-
-    // install the SectorReshapingTool as a mouse-down tool
-    myDiagram.toolManager.mouseDownTools.add(new SectorReshapingTool());
-
-    // the background image, a floor plan
-    myDiagram.add(
-      new go.Part({ // this Part is not bound to any model data
-          layerName: 'Background',
-          position: new go.Point(0, 0),
-          selectable: false,
-          pickable: false
-        })
-        .add(
-          new go.Picture("images/officeFloorPlan.png", { width: 2833, height: 1333 })
-        ));
-
-    // Doors represent an access-controlled door (eg, by keycard). They open and close automatically when simulated persons use them.
-    myDiagram.nodeTemplateMap.add('door',
-      new go.Node({
-          resizeObjectName: 'DOOR',
-          locationSpot: go.Spot.Left,
-          pickable: false,
-          selectable: false
-        })
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-        .bindTwoWay('angle', 'ang')
-        .add(
-          new go.Shape({
-            name: 'DOOR',
-            strokeWidth: 1,
-            fill: 'rgb(0,255,0)',
-            height: 9,
-            width: 50
-          })
-          .bind('width')
-          .bind('height')
-        ));
-
-    // Cameras represent a security camera's visible area
-    myDiagram.nodeTemplateMap.add('camera',
-      new go.Node('Spot', {
-          isInDocumentBounds: false,
-          isShadowed: true,
-          shadowOffset: new go.Point(2,2),
-          shadowColor: 'black',
-          locationSpot: go.Spot.Center,
-          locationObjectName: 'LAMP',
-          selectionObjectName: 'LAMP',
-          selectionAdorned: false,
-          toolTip:
-            new go.Adornment('Auto')
-              .add(
-                new go.Shape('RoundedRectangle', {
-                  fill: 'white'
-                }),
-                new go.TextBlock('Live', { margin: 6 })
-                  .bind('text', 'status')
-              )
-        })
-        .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringify)
-        .add(
-          new go.Panel('Spot', { name: 'LAMP' })
-            .add(
-              new go.Shape({ // arc
-                  name: 'ARC',
-                  fill: 'skyblue',
-                  strokeWidth: 5,
-                  opacity: 0.5,
-                  shadowVisible: false
-                })
-                .bindObject('stroke', 'isSelected', s => s ? 'blue' : null)
-                .bind('fill', 'status', s => s !== 'Live' ? 'red' : 'skyblue')
-                .bind('geometry', '', makeSector),
-              new go.Shape('Circle', { name: 'SHAPE', width: 6, height: 6 }),
-              new go.TextBlock('!', {
-                  alignmentFocus: new go.Spot(1, 0, -30, -30),
-                  font: '64pt Arial',
-                  stroke: 'red',
-                  shadowVisible: true
-                })
-                .bind('visible', 'status', s => s!== 'Live')
-            ),
-          new go.TextBlock({
-              alignment: new go.Spot(0.5, 0.5, 0, 3),
-              alignmentFocus: go.Spot.Top,
-              stroke: 'blue',
-              background: 'rgba(255,255,255,0.3)'
-            })
-            .bindTwoWay('alignment', 'spot', go.Spot.parse, go.Spot.stringify)
-            .bind('text', 'name')
-        ));
-
-    // This code keeps certain parts at a constant size in the viewport, by
-    // adjusting for any scaling done by zooming in or out.
-    let origscale = NaN;
-    myDiagram.addDiagramListener('InitialLayoutCompleted', e => {
-      origscale = myDiagram.scale;
-    });
-    myDiagram.addDiagramListener('ViewportBoundsChanged', e => {
-      if (isNaN(origscale)) return;
-      var newscale = myDiagram.scale;
-      if (e.subject.scale === newscale) return; // optimization: don't scale Nodes when just scrolling/panning
-      myDiagram.skipsUndoManager = true;
-      myDiagram.startTransaction('scale Nodes');
-      currentScale = scaleMult * origscale / newscale;
-      myDiagram.parts.each(p => {
-        if (p.layerName !== 'Adornment') return; // don't scale background image
-        p.scale = currentScale;
-      });
-      myDiagram.commitTransaction('scale Nodes');
-      myDiagram.skipsUndoManager = false;
-    });
-
-    // Create the Diagram's Model
-    loadModel();
-    // Toggle random events on
-    toggleEvents();
-
-    // palette
-    myPalette = new go.Palette('myPaletteDiv', {
-      layout: new go.GridLayout({
-        cellSize: new go.Size(1, 1),
-        wrappingColumn: 1
-      }),
-      'dragSelectingTool.isEnabled': false,
-      hasHorizontalScrollbar: false,
-      hasVerticalScrollbar: false,
-      allowHorizontalScroll: false,
-      allowVerticalScroll: false,
-      allowZoom: false,
-      contentAlignment: go.Spot.Center,
-      'toolManager.hoverDelay': myDiagram.toolManager.hoverDelay,
-      scale: 0.6,
-      scrollMode: go.Diagram.InfiniteScroll,
-      nodeTemplate: myDiagram.nodeTemplate, // shared with the main Diagram
-      nodeTemplateMap: myDiagram.nodeTemplateMap, // shared with the main Diagram
-      model: new go.GraphLinksModel({
-        nodeDataArray: [
-          { category: 'camera', sweep: 90, radius: 90, angle: 315, status: 'Live' },
-          { category: 'camera', sweep: 90, radius: 90, angle: 315, status: 'Offline' }
-        ]
-      })
-    });
-
-    // center the elements in the palette, this is needed because the "center"
-    // of the camera is technically the black circle
-    myPalette.addDiagramListener('InitialLayoutCompleted', () => {
-      myPalette.nodes.each(n => {
-        const p = n.position.copy();
-        p.x -= n.getDocumentBounds().width / 2 * myPalette.scale;
-        n.position = p;
-      });
-    });
-
-    // link each camera to a "Live" video feed
-    myDiagram.addDiagramListener("InitialLayoutCompleted", e => {
-        myDiagram.nodes.each(linkCam);
-    });
-
-    // unlink deleted cameras
-    myDiagram.addDiagramListener('SelectionDeleting', e => {
-      // the DiagramEvent.subject is the collection of Parts about to be deleted
-      // reverse to put back in the same order for load
-      [... e.subject].reverse().forEach(part => {
-        if (part.category !== 'camera') return;
-        if (part.data?._cameraDiv?.firstChild?.src) {
-          camIMGs.unshift(part.data._cameraDiv.firstChild.src);
-        }
-        part.data._cameraDiv.remove();
-      });
-    });
-
-    // highlight current camera
-    let prevSelection = null;
-    myDiagram.addDiagramListener('ChangedSelection', e => {
-      if (prevSelection) {
-        prevSelection.each(part => { // undo old highlights
-          if (!part) return;
-          if (part.category !== 'camera') return;
-          if (!part.data._cameraDiv) return;
-
-          part.data._cameraDiv.style.borderColor = 'rgba(0,0,0,0)';
-        });
-      }
-      prevSelection = e.subject.copy();
-
-      e.subject.each(part => { // highlight currently selected
-        if (!part) return;
-        if (part.category !== 'camera') return;
-        if (!part.data._cameraDiv) linkCam(part);
-
-        part.data._cameraDiv.style.borderColor = 'white';
-      });
-    });
-
-    /** "malfunctioning" camera(s) **/
-
-    // set camera 1 to offline
-    const cam = myDiagram.findNodeForKey(1);
-    const date = new Date();
-    date.setHours(date.getHours() * (Math.random() * 0.5 + 0.25));
-    myDiagram.model.setDataProperty(cam.data, 'status', `Camera offline since ${date.toLocaleString()}`);
-
-    // alternate opacity of all "malfunctioning" cameras
-    let cur_op = 0.4;
-    setInterval(() => {
-      cur_op = cur_op !== 0.4 ? 0.4 : 0.63;
-      myDiagram.nodes.each(n => {
-        if (n.data.category !== 'camera') return;
-        if (n.data.status === 'Live') return;
-        const arc = n.findObject('ARC');
-        myDiagram.model.setDataProperty(arc, 'opacity', cur_op);
-      });
-    }, 650);
-
-    saveModel(); // update model to match random camera status
-  }
-
-  window.addEventListener('DOMContentLoaded', init);
-
-  function makeSector(data) {
-    // Geometry converter for the node's "LAMP" Shape
-    var radius = SectorReshapingTool.getRadius(data);
-    var angle = SectorReshapingTool.getAngle(data);
-    var sweep = SectorReshapingTool.getSweep(data);
-    var start = new go.Point(radius, 0).rotate(angle);
-    var geo = new go.Geometry()
-      .add(
-        new go.PathFigure(radius + start.x, radius + start.y) // start point
-          .add(
-            new go.PathSegment(
-              go.SegmentType.Arc,
-              angle, sweep, // angles
-              radius, radius, radius, radius
-            )
-          )
-          .add(new go.PathSegment(go.SegmentType.Line, radius, radius).close())
-      )
-      .add(new go.PathFigure(0, 0)) // make sure the Geometry always includes the whole circle
-      .add(new go.PathFigure(2 * radius, 2 * radius)); // even if only a small sector is "lit"
-    return geo;
-  }
-
-  const camIMGs = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/01_01_RIMG0002.jpg/1200px-01_01_RIMG0002.jpg?20201006124235',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/2000_core-repository02_hg.jpg/180px-2000_core-repository02_hg.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/2000_core-repository03_hg.jpg/180px-2000_core-repository03_hg.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/2019-06_arolsen_archives_01.jpg/180px-2019-06_arolsen_archives_01.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Albert_Schr%C3%B6der_Raum_mit_Aktenschrank.jpg/180px-Albert_Schr%C3%B6der_Raum_mit_Aktenschrank.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/AMVB.JPG/135px-AMVB.JPG',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Archiv_hlavn%C3%ADho_m%C4%9Bsta_Prahy%2C_archiv%C3%A1lie.jpg/135px-Archiv_hlavn%C3%ADho_m%C4%9Bsta_Prahy%2C_archiv%C3%A1lie.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Archiv_hlavn%C3%ADho_m%C4%9Bsta_Prahy%2C_spisy_okresn%C3%ADho_soudu_Kr%C3%A1lovsk%C3%A9_Vinohrady.jpg/180px-Archiv_hlavn%C3%ADho_m%C4%9Bsta_Prahy%2C_spisy_okresn%C3%ADho_soudu_Kr%C3%A1lovsk%C3%A9_Vinohrady.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/AMVB.JPG/135px-AMVB.JPG',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Benutzersaal_des_Evangelischen_Zentralarchivs_in_Berlin.jpg/180px-Benutzersaal_des_Evangelischen_Zentralarchivs_in_Berlin.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Stanford%2C_California%2C_United_States_Post_Office%2C_interior%2C_March_2019.jpg/1200px-Stanford%2C_California%2C_United_States_Post_Office%2C_interior%2C_March_2019.jpg?20190618001927',
-    'https://upload.wikimedia.org/wikipedia/commons/5/5f/Office_interior_in_Tamil_Nadu.jpg?20131024091005',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Centralia%2C_WA_-_main_post_office_interior_04.jpg/1200px-Centralia%2C_WA_-_main_post_office_interior_04.jpg?20120914040255',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Chehalis_Post_Office_interior_02.jpg/1200px-Chehalis_Post_Office_interior_02.jpg?20150127045910',
-    'https://upload.wikimedia.org/wikipedia/commons/1/14/Peles_Castle_Interior_-_Queens_Office_%281%29.jpg?20221112191528',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Ticket_Office_Interior_-_geograph.org.uk_-_3967333.jpg/640px-Ticket_Office_Interior_-_geograph.org.uk_-_3967333.jpg'
-  ]
-  // link the given node to a new camera feed
-  function linkCam(node) {
-    if (!node) return;
-    if (node.category !== 'camera') return;
-    const feedDiv = document.getElementById('cameraFeeds');
-
-    const div = document.createElement('div');
-    div.className = 'cameraDiv';
-    feedDiv.appendChild(div);
-    node.data._cameraDiv = div; // starts with "_" to prevent the property from being saved in JSON
-
-    if (node.data.status === 'Live' && camIMGs[0]) {
-      const img = document.createElement('img');
-      div.appendChild(img)
-      img.src = camIMGs[0];
-      img.draggable = false;
-      camIMGs.splice(0,1);
-      img.style = 'width: 100%; height: 100%; object-fit: cover;';
-      img.style.userSelect = 'none';
-    } else {
-      if (node.data.status === 'Live') { // no more feeds
-        myDiagram.model.setDataProperty(node.data, 'status', 'No video feed');
-      }
-
-      const div2 = document.createElement('div');
-      div2.className = 'innerCamera';
-      div.appendChild(div2);
-      const text = document.createElement('p');
-      text.className = 'cameraLabel';
-      text.innerHTML = 'NO SIGNAL';
-      div2.appendChild(text);
-    }
-
-    div.onclick = () => {
-      myDiagram.select(node);
-      myDiagram.focus();
-    };
-  }
-
-  function loadModel() {
-    // this way the SelectionDeleting event is triggered and the camera feed is correctly cleared
-    myDiagram.selectCollection(myDiagram.nodes);
-    myDiagram.commandHandler.deleteSelection();
-
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-  }
-
-  function saveModel() {
-    let text = myDiagram.model.toJson();
-    document.getElementById("mySavedModel").value = text;
-  }
-
-  // create an event popup, with log message
-  function createEvent(node, diaTxt, logTxt) {
-    // output log
-    const elem = document.getElementById('outputLog');
-    elem.value = `${new Date().toLocaleString()} ${logTxt}\r\n` + (elem.value || elem.innerText || '');
-
-    // add the text animation
-    const p =
-      new go.Part('Auto', { pickable: false, layerName: 'Adornment', scale: currentScale })
-        .add(
-          new go.Shape('RoundedRectangle', { fill: 'white' }),
-          new go.TextBlock(diaTxt, { margin: 8 })
-        );
-    myDiagram.add(p);
-
-    // position for doors, location for cameras
-    const isDoor = node.data.category === 'door';
-    const pos2 = (isDoor ? node.position.copy() : node.location.copy());
-    if (isDoor) {
-      pos2.x += node.getDocumentBounds().width;
-    } else {
-      pos2.y -= 25;
-    }
-    pos2.x += 10;
-    pos2.y -= 20;
-    const pos1 = pos2.copy();
-    pos1.y += 40;
-
-    const anim3 = new go.Animation();
-    anim3.easing = go.Animation.EaseOutExpo;
-    anim3.duration = 2000;
-    anim3.add(p, (isDoor ? 'position' : 'location'), pos1, pos2);
-    anim3.finished = () => myDiagram.remove(p);
-    anim3.start();
-  }
-
-  // open the specified door
-  const doorTriggers = {}; // map of door nodes to animation count
-  function openDoor(node) {
-    if (node.data.category !== 'door') return;
-    if (doorTriggers[node.key]) return;
-
-    const data = node.data;
-    const door = node.findObject('DOOR');
-    const randomUserId = 1000 + parseInt(Math.random() * 2500);
-
-    // multiple nodes can be modified by a single animation,
-    // however since each one here has a different duration
-    // they use separate Animations
-
-    // animate door color
-    const animColor = new go.Animation();
-    animColor.easing = go.Animation.EaseOutExpo;
-    animColor.duration = 1350;
-    animColor.add(door, 'fill', door.fill, 'rgb(255,0,0)');
-
-    // animate door opening
-    const anim = new go.Animation();
-    const originalWidth =  door.width;
-    anim.add(door, 'width', door.width, Math.max(0, door.width * 0.2 - door.strokeWidth));
-    anim.easing = go.Animation.EaseOutExpo;
-    anim.duration = 1000;
-    anim.finished = () => {
-      // reset color
-      const animColor2 = new go.Animation();
-      animColor2.easing = go.Animation.EaseOutExpo;
-      animColor2.duration = 1350;
-      animColor2.add(door, 'fill', 'rgb(255,0,0)', 'rgb(0,255,0)');
-
-      // close door
-      const anim2 = new go.Animation();
-      anim2.add(door, 'width', door.width, originalWidth);
-      anim2.easing = go.Animation.EaseOutExpo;
-      anim2.duration = 500;
-      anim2.finished = () => { doorTriggers[node.key] = false; }
-
-      anim2.start();
-      animColor2.start();
-    };
-    doorTriggers[node.key] = true;
-
-    // diagram text popup and event log
-    createEvent(node, `Opened by USER ${randomUserId}`, `USER ${randomUserId} opened ${data.key}`);
-
-    anim.start();
-    animColor.start();
-  }
-
-  // open the specified camera
-  const cameraTriggers = {} // map of camera nodes to how many times they have been triggered
-  triggerCamera = function (node) {
-    if (node?.data?.category !== 'camera') return;
-    if (node.data.status !== 'Live') return; // don't animate "broken" cameras
-
-    const data = node.data;
-    const light = node.findObject('ARC');
-
-    // animations
-
-    // animate door color
-    const animColor = new go.Animation();
-    animColor.easing = go.Animation.EaseOutExpo;
-    animColor.duration = 750;
-    animColor.add(light, 'fill', light.fill, 'rgb(255,255,0)');
-
-    animColor.finished = () => {
-      cameraTriggers[node]--;
-      if (cameraTriggers[node]) return;
-
-      setTimeout(() => {
-        const animColor2 = new go.Animation();
-        // reset color
-        animColor2.easing = go.Animation.EaseOutExpo;
-        animColor2.duration = animColor.duration * 1.2;
-        animColor2.add(light, 'fill', light.fill, myDiagram.nodeTemplateMap.get('camera').findObject('ARC').fill);
-        animColor2.start();
-      }, 250); // let the camera stay yellow before changing back
-    };
-    if (isNaN(cameraTriggers[node])) cameraTriggers[node] = 1;
-    else cameraTriggers[node]++;
-
-    // diagram text popup and event log
-    createEvent(node, `Motion detected`, `MOTION on cam ${[... document.getElementById('cameraFeeds').children].indexOf(node.data._cameraDiv) + 1}`);
-
-    animColor.start();
-  }
-
-  // emit random events
-  let _timeout = null;
-  let _prevNode = null;
-  function toggleEvents() {
-    if (!_timeout) { // start
-      const doEvent = () => {
-        // pick a random door/camera
-        let pickRand = () => [... myDiagram.nodes][parseInt(Math.random() * myDiagram.nodes.count)];
-        let node = pickRand();
-        // reduce chance of picking the same node twice in a row
-        if (node === _prevNode) node = pickRand();
-        _prevNode = node;
-
-        if (node.category === 'door') {
-          openDoor(node);
-        } else {
-          triggerCamera(node);
-        }
-        // call this function again after a random amount of time
-        _timeout = setTimeout(() => {
-          doEvent();
-        }, 600 + Math.random()*1150);
-      }
-      doEvent();
-    } else { // stop
-      clearInterval(_timeout);
-      _timeout = null;
-    }
-  }
-</script>
-
-<div id="sample">
-  <div style="width: 100%; display: flex;border: solid 1px black;">
-    <div
-      id="myPaletteDiv"
-      style="width: 100px; height: 600px; background: whitesmoke; border-right: solid 1px black;">
-    </div>
-    <div id="myDiagramDiv" style="height: 600px; flex-grow: 1;"></div>
-  </div>
-
-  <p>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-foreground focus:outline-2 focus:outline-nwoods-primary">Skip to main content</a> <nav id="navTop" class="sticky top-0 w-full z-30 bg-background border-b"><div class="flex flex-wrap items-center justify-between"><a class="text-white bg-nwoods-primary leading-[calc(var(--topnav-h)-1px)] font-bold my-0 px-3 text-5xl logo " href="../">GoJS</a> <div class="flex items-center mr-2"><div class="relative"><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9 sm:hidden" type="button" aria-label="Navigation" title="Navigation"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></g></svg><!----></button><!--]--><!----> <div id="topnavList" class="hidden sm:block"><div class="absolute right-0 z-30 flex flex-col gap-1 items-end rounded-lg border mr-4 p-4 pl-12 shadow bg-background text-foreground font-semibold sm:relative sm:flex-row sm:gap-2 md:gap-3 lg:gap-4 sm:items-start sm:border-0 sm:p-0 sm:shadow-none sm:bg-inherit"><!--[--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../learn"><!---->Learn<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../samples"><!---->Samples<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="../api/index.html"><!---->API<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://forum.nwoods.com/c/gojs/11" target="_blank" rel="noopener"><!---->Forum<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/contact.html" target="_blank" rel="noopener"><!---->Contact<!----></a><!--]--><!--[0--><a data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" href="https://nwoods.com/sales/index.html" target="_blank" rel="noopener"><!---->Buy<!----></a><!--]--><!--]--> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground size-9" type="button" aria-label="Toggle theme" title="Toggle theme"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="dark:hidden"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path></svg> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden dark:block"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"></path></svg> <span class="sr-only">Toggle theme</span><!----></button><!--]--><!----></div></div></div></div></div></nav><!----> <main id="main"><!--[0--><!--[--><div class="w-full"><!--[--><div class="flex flex-col"><div class="flex flex-col"><header class="text-xs py-3 bg-background border-b"><h1 class="text-4xl px-4 max-w-7xl mx-auto m-0 truncate">Security Monitor Dashboard</h1></header><!----> <!--[0--><div class="prose p-4 w-full max-w-7xl mx-auto"><!--[--><!--[0--><!----><p>
     This sample demonstrates a security dashboard built with GoJS. <a>Node</a>s are used to represent the doors and
     cameras. When hovering over the camera a <a>Tooltip</a> will show its status. You can make new cameras
     by dragging one into the <a>Diagram</a> from the <a>Palette</a>. Then it can be rotated, resized, and have the field
-    of view changed using the <a href="../samples/SectorReshaping.html">Sector Reshaping Tool</a>.
+    of view changed using the <a href="../samples/SectorReshaping">Sector Reshaping Tool</a>.
   </p>
   <p>
     This sample simulates doors opening and cameras detecting motion. This information is conveyed via <a>Animation</a>s in the
     Diagram and an "Event Log" in the HTML below.
   </p>
-
   <p>
     Because of this sample's complexity, it is meant for a demonstration of several GoJS features, rather than a starting point for your own project.
     We are happy to help you begin a proof-of-concept for your own project if you have similar needs.
-  </p>
-
-  <div class="w-full flex flex-wrap">
-    <div class="flex-1 min-w-[500px] mb-4 mr-2">
-      Clicking a (simulated) video feed below will highlight the corresponding camera in the Diagram. A single camera is offline to demonstrate a signal connection error.
-      <div id="cameraFeeds" class="border border-black w-full min-h-[100px] bg-[#1f4963] grid grid-cols-4"></div>
-    </div>
-    <div class="flex-none w-[500px] min-h-[200px] flex flex-col mb-4">
-      Event Log
-      <textarea id="outputLog" style="width: 100%; height: 100%;resize: none;" autocomplete="off"></textarea>
-    </div>
-  </div>
-
-
-
-  <br>
-  <button onclick="saveModel()">Save</button>
-  <button onclick="loadModel()">Load</button>
-  <br>
-  <textarea id="mySavedModel" style="width: 90%;height: 400px" autocomplete="off">
-{ "class": "GraphLinksModel",
-  "nodeDataArray": [
-{"category":"door","loc":"535 641.85","ang":270,"width":62.7,"height":15,"key":"sub office 1"},
-{"category":"door","loc":"588.45 665","width":56.1,"height":15,"key":"office 1"},
-{"category":"door","loc":"721.8 738","key":"bath 1","width":48.4,"height":15},
-{"category":"door","loc":"942.4 664","key":"office 2","width":57.2,"height":15},
-{"category":"door","loc":"401.45 942","key":"main entrance","width":100.1,"height":15},
-{"loc":"715 1125.35","category":"door","key":"lounge 1","ang":270,"width":62.7,"height":15},
-{"loc":"721.2 1007","category":"door","key":"storage 1","width":61.6,"height":15},
-{"loc":"1119.25 738","category":"door","key":"meeting 1","width":60.5,"height":15},
-{"loc":"1607.2 407","category":"door","key":"meeting 2","width":61.6,"height":15},
-{"loc":"2133 671.2","category":"door","key":"office 3","ang":90,"width":61.6,"height":15},
-{"loc":"2310 669.65","category":"door","key":"second entrance","ang":90,"width":62.7,"height":15},
-{"loc":"1996.25 407","category":"door","key":"lounge 2","width":60.5,"height":15},
-{"loc":"1808.75 561","category":"door","key":"bath 2","width":49.5,"height":15},
-{"loc":"1898.7 561","category":"door","key":"bath 3","width":50.6,"height":15},
-{"loc":"2310 947.15","category":"door","key":"sub office 4","ang":90,"width":62.7,"height":15},
-{"loc":"2133 935.35","category":"door","key":"sub office 2","ang":270,"width":62.7,"height":15},
-{"loc":"2133 949.2","category":"door","key":"sub office 3","ang":90,"width":61.6,"height":15},
-{"loc":"2285.8 1018","category":"door","key":"sub office 5","width":61.6,"height":15,"ang":180},
-{"loc":"2310 568.75","category":"door","key":"office 4","width":60.5,"height":15,"ang":90},
-{"loc":"2310 451.1","category":"door","key":"storage 2","ang":90,"width":63.8,"height":15},
-{"loc":"2310 371.25","category":"door","key":"meeting 3","ang":270,"width":60.5,"height":15},
-{"status":"Camera offline since 6/30/2025, 11:06:17 AM","loc":"546 675","category":"camera","sweep":90,"radius":160,"key":1},
-{"status":"Live","loc":"704 1194","category":"camera","sweep":90,"radius":280,"key":2,"angle":180},
-{"status":"Live","loc":"1937 683","category":"camera","sweep":92,"radius":111,"key":3,"angle":179},
-{"status":"Live","loc":"2460 663","category":"camera","sweep":90,"radius":128,"key":4,"angle":90},
-{"status":"Live","loc":"524 674","category":"camera","sweep":90,"radius":162,"key":5,"angle":90},
-{"category":"camera","sweep":90,"radius":430,"angle":180,"status":"Live","key":-27,"loc":"2117 1167"},
-{"category":"camera","sweep":90,"radius":475,"angle":90,"status":"Live","key":-28,"loc":"1577 142"},
-{"category":"camera","sweep":90,"radius":430,"angle":90,"status":"Live","key":-29,"loc":"867 150"},
-{"category":"camera","sweep":90,"radius":225,"angle":180,"status":"Live","key":-30,"loc":"1236 998"},
-{"category":"camera","sweep":90,"radius":270,"angle":90,"status":"Live","key":-31,"loc":"1937 118"},
-{"category":"camera","sweep":90,"radius":210,"angle":270,"status":"Live","key":-32,"loc":"1968 370"},
-{"category":"camera","sweep":90,"radius":282,"angle":360,"status":"Live","key":-33,"loc":"2328 120"},
-{"category":"camera","sweep":90,"radius":145,"angle":270,"status":"Live","key":-34,"loc":"1970 643"}
-],
-  "linkDataArray": []}
-  </textarea>
-</div>
-
-
-<style>
-  .cameraDiv {
-    float: left;
-    border: 4px solid;
-    border-color: rgba(0,0,0,0);
-    aspect-ratio: 16 / 9;
-  }
-
-  .innerCamera {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background: rgb(64,64,64);
-  }
-
-  .cameraLabel {
-    user-select: none;
-    margin: 0;
-    color: white;
-  }
-</style>
-          
-        </div>
-        <!-- * * * * * * * * * * * * * -->
-        <!--  End of GoJS sample code  -->
-      </div>
-
-      <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
-        <hr/>
-        <h3 class="text-xl">GoJS Features in this sample</h3>
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Animation</h4>
+  </p><!----><!--]--><!--]--></div><!--]--> <div class="mx-4 p-2 rounded-lg border dark:border-transparent bg-card text-card-foreground flex flex-col gap-1"><div class="flex items-center gap-2 px-2"><span class="font-mono mr-auto">Sample: Security Monitor Dashboard</span> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reload sample"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg> <span>Reload</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Reset to original code"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> <span>Reset</span><!----></button><!--]--><!----> <!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5" type="button" title="Download as HTML file"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> <span>Download</span><!----></button><!--]--><!----></div> <div class="flex flex-col bg-card md:flex-row max-md:gap-1" style="height: 70vh"><div class="flex flex-col min-h-0 min-w-0 md:h-full max-md:w-full! max-md:h-auto max-md:flex-none " style="width: auto; flex: none;"><div class="flex flex-row h-full bg-card"><div class="flex flex-col bg-card"><div class="flex flex-col bg-card"><!--[--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->JS<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->HTML<!----></button><!--]--><!--[-1--><button data-slot="button" class="not-prose cursor-pointer focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-foreground text-sm font-medium focus-visible:ring-3 active:not-aria-[haspopup]:translate-y-px aria-invalid:ring-3 [&amp;_svg:not([class*='size-'])]:size-4 group/button inline-flex shrink-0 items-center justify-center whitespace-nowrap transition-all outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:shrink-0 hover:bg-muted hover:text-foreground dark:hover:bg-muted/50 aria-expanded:bg-muted aria-expanded:text-foreground h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2" type="button"><!---->CSS<!----></button><!--]--><!--]--></div><!----></div> <!--[-1--><!--]--></div><!----></div> <!--[-1--><!--]--> <div class="flex-1 flex flex-col min-h-75 md:min-h-0 md:h-full min-w-0 max-md:min-h-50"><div class="flex flex-col h-full"><iframe srcdoc="" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox" title="Preview" class="flex-1 w-full border-none" onload="this.__e=event"></iframe></div><!----></div></div></div></div></div><!----> <!--[0--><div id="allTagDescriptions" class="prose p-4 max-w-7xl mx-auto"><h3 class="text-xl">GoJS Features in this sample</h3> <!--[--><!--[0--><!--[0--><!----><h4>Animation</h4>
 <p>
-  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the ability to create arbitrary animations.
+  <b>GoJS</b> offers several built-in animations, enabled by default, as well as the
+  ability to create arbitrary animations.
 </p>
 <p>
-  The <a href="../api/symbols/Diagram.html#animationManager" target="api">Diagram.animationManager</a> handles animations within a <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
-  The <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a> automatically sets up and dispatches default animations, and has properties to customize and disable them.
-  Custom animations are possible by creating instances of <a href="../api/symbols/Animation.html" target="api">Animation</a> or <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>.
-  More information can be found in the <a href="../intro/animation.html">GoJS Intro</a>.
+  The
+  <a href="../api/symbols/Diagram.html#animationManager" target="api"
+    >Diagram.animationManager</a
+  >
+  handles animations within a
+  <a href="../api/symbols/Diagram.html" target="api">Diagram</a>. The
+  <a href="../api/symbols/AnimationManager.html" target="api">AnimationManager</a>
+  automatically sets up and dispatches default animations, and has properties to customize
+  and disable them. Custom animations are possible by creating instances of
+  <a href="../api/symbols/Animation.html" target="api">Animation</a> or
+  <a href="../api/symbols/AnimationTrigger.html" target="api">AnimationTrigger</a>. More
+  information can be found in the <a href="../learn/animation">GoJS learn pages</a>.
 </p>
-            <p>
-              <a href="../samples/index.html#animation">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Geometry Path Strings</h4>
+<!----><!--]--><!----> <p><a href="../samples#animation">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>Geometry Path Strings</h4>
 <p>
-The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
-whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape properties control the colors and appearance of the shape.
-For common shape figures, there are predefined geometries that can be used by setting <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>.
-However one can also define custom geometries.
-</p>
-<p>
-One can construct any Geometry by allocating and initializing a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s.
-But you may find that using the string representation of a Geometry is easier to write and save in a database.
-Use the static method <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a> property to transform a geometry path string into a <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
-</p>
-<p>
-More information can be found in the <a href="../intro/geometry.html">GoJS Intro</a>.
-</p>
-            <p>
-              <a href="../samples/index.html#geometries">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>Palette</h4>
-<p>
-A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
-can be dragged into the diagram that is being modified by the user.
-The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
-Like Diagrams, you can have more than one Palette on the page at the same time.
+  The <b>GoJS</b> <a href="../api/symbols/Geometry.html" target="api">Geometry</a> class
+  controls the "shape" of a <a href="../api/symbols/Shape.html" target="api">Shape</a>,
+  whereas the <a href="../api/symbols/Shape.html#fill" target="api">Shape.fill</a> and
+  <a href="../api/symbols/Shape.html#stroke" target="api">Shape.stroke</a> and other shape
+  properties control the colors and appearance of the shape. For common shape figures,
+  there are predefined geometries that can be used by setting
+  <a href="../api/symbols/Shape.html#figure" target="api">Shape.figure</a>. However one
+  can also define custom geometries.
 </p>
 <p>
-More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
-</p>
-            <p>
-              <a href="../samples/index.html#palette">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>ToolTips</h4>
-<p>
-A tooltip is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shown when the mouse hovers over an object that has its <a href="../api/symbols/GraphObject.html#toolTip" target="api">GraphObject.toolTip</a> set.
-The tooltip part is bound to the same data as the part itself.
+  One can construct any Geometry by allocating and initializing a
+  <a href="../api/symbols/Geometry.html" target="api">Geometry</a> of at least one
+  <a href="../api/symbols/PathFigure.html" target="api">PathFigure</a> holding some
+  <a href="../api/symbols/PathSegment.html" target="api">PathSegment</a>s. But you may
+  find that using the string representation of a Geometry is easier to write and save in a
+  database. Use the static method
+  <a href="../api/symbols/Geometry.html#parse" target="api">Geometry.parse</a> or the
+  <a href="../api/symbols/Shape.html#geometryString" target="api">Shape.geometryString</a>
+  property to transform a geometry path string into a
+  <a href="../api/symbols/Geometry.html" target="api">Geometry</a> object.
 </p>
 <p>
-It is typical to implement a tooltip as a "ToolTip" Panel holding a <a href="../api/symbols/TextBlock.html" target="api">TextBlock</a> or a Panel of TextBlocks and other objects.
-Each "ToolTip" is just an "Auto" Panel <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed, and where the border is a rectangular <a href="../api/symbols/Shape.html" target="api">Shape</a> with a light gray fill.
-However you can implement the tooltip as any arbitrarily complicated Adornment.
+  More information can be found in the <a href="../learn/geometry">GoJS learn pages</a>.
+</p>
+<!----><!--]--><!----> <p><a href="../samples#geometries">Related samples</a></p><!--]--><!--[-1--><!--]--><!--[0--><!--[0--><!----><h4>Palette</h4>
+<p>
+  A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of
+  <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a
+  number of <a href="../api/symbols/Part.html" target="api">Part</a>s that can be dragged
+  into the diagram that is being modified by the user. The initialization of a
+  <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the
+  initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
+  Like Diagrams, you can have more than one Palette on the page at the same time.
 </p>
 <p>
-More information can be found in the <a href="../intro/tooltips.html">GoJS Intro</a>.
+  More information can be found in the <a href="../learn/palette">GoJS learn pages</a>.
 </p>
-            <p>
-              <a href="../samples/index.html#tooltips">Related samples</a>
-            </p>
-            <hr>
-          
-        <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-          
-            <h4>SCADA Diagrams</h4>
+<!----><!--]--><!----> <p><a href="../samples#palette">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>ToolTips</h4>
+<p>
+  A tooltip is an <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that
+  is shown when the mouse hovers over an object that has its
+  <a href="../api/symbols/GraphObject.html#toolTip" target="api">GraphObject.toolTip</a>
+  set. The tooltip part is bound to the same data as the part itself.
+</p>
+<p>
+  It is typical to implement a tooltip as a "ToolTip" Panel holding a
+  <a href="../api/symbols/TextBlock.html" target="api">TextBlock</a> or a Panel of
+  TextBlocks and other objects. Each "ToolTip" is just an "Auto" Panel
+  <a href="../api/symbols/Adornment.html" target="api">Adornment</a> that is shadowed, and
+  where the border is a rectangular
+  <a href="../api/symbols/Shape.html" target="api">Shape</a> with a light gray fill.
+  However you can implement the tooltip as any arbitrarily complicated Adornment.
+</p>
+<p>
+  More information can be found in the <a href="../learn/tooltips">GoJS learn pages</a>.
+</p>
+<!----><!--]--><!----> <p><a href="../samples#tooltips">Related samples</a></p><!--]--><!--[0--><!--[0--><!----><h4>SCADA Diagrams</h4>
 <p>
   SCADA (supervisory control and data acquisition) diagrams are used to display, control, and supervise machines and processes. GoJS is used worldwide to build human-machine interface diagrams in monitoring and control software. GoJS SCADA applications include power plant and refinery monitoring, heavy industry management, building security monitoring, and more.
-</p>
-            <p>
-              <a href="../samples/index.html#scada">Related samples</a>
-            </p>
-            <hr>
-          
-        </div>
-    </div>
+</p><!----><!--]--><!----> <p><a href="../samples#scada">Related samples</a></p><!--]--><!--]--></div><!--]--><!----><!--]--><!----></div><!--]--><!--]--><!----></main> <footer class="text-foreground border-t mt-16 py-16"><div class="max-w-7xl mx-auto px-6 lg:px-8"><div class="xl:grid xl:grid-cols-2 xl:gap-8"><div class="logo h-10 w-10 text-[1.65rem] flex items-center justify-center rounded-lg text-white font-bold bg-nwoods-primary"><span class="leading-none">Go</span></div> <div class="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 xl:mt-0"><div><h3 class="text-sm/6 font-semibold text-foreground">GoJS</h3> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../samples">Samples</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../learn">Learn</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../api/">API</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="../changelog">Changelog</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Support</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/sales" target="_blank" rel="noopener">Buy</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/register" target="_blank" rel="noopener">Register</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://forum.nwoods.com/c/gojs" target="_blank" rel="noopener">Forum</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/app/activate.aspx?sku=gojs" target="_blank" rel="noopener">Activate</a></li><!----></ul></div> <div><h2 class="text-sm/6 font-semibold text-foreground">Company</h2> <ul class="list-none mt-6 space-y-1"><li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com" target="_blank" rel="noopener">Northwoods</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/about" target="_blank" rel="noopener">About Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/contact" target="_blank" rel="noopener">Contact Us</a></li><!----> <li><a class="text-sm/6 text-foreground/70 hover:text-foreground" href="https://nwoods.com/consulting" target="_blank" rel="noopener">Consulting</a></li><!----></ul></div></div></div> <div class="mt-12 pt-8 md:flex md:items-center md:justify-between"><div class="flex gap-x-6 md:order-2"><a class="text-foreground/70 hover:text-foreground self-center" href="https://www.npmjs.com/package/gojs" target="_blank" rel="noopener"><span class="sr-only">npm</span> <svg viewBox="0 0 780 250" fill="currentColor" aria-hidden="true" class="size-7"><path d="M240,250h100v-50h100V0H240V250z M340,50h50v100h-50V50z M480,0v200h100V50h50v150h50V50h50v150h50V0H480z
+	 M0,200h100V50h50v150h50V0H0V200z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://github.com/NorthwoodsSoftware/GoJS" target="_blank" rel="noopener"><span class="sr-only">GitHub</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></a> <a class="text-foreground/70 hover:text-foreground" href="https://twitter.com/northwoodsgo" target="_blank" rel="noopener"><span class="sr-only">Twitter/X</span> <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-6"><path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z"></path></svg></a></div> <p class="mt-8 text-xs/6 text-muted-foreground md:mt-0 md:order-1">© 1998-2026 Northwoods Software</p></div> <!--[-1--><!--]--></div></footer><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_19dmgt3 = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						assets: "/4.0.0"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.DUcLjgjT.js"),
+						import("../_app/immutable/entry/app.uWGY7NCW.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 3, 243],
+							data: [null,null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
   </body>
-  <!--  This script is part of the gojs.net website, and is not needed to run the sample -->
-  <script src="../assets/js/goSamples.js"></script>
 </html>

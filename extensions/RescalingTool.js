@@ -7,7 +7,7 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 // A custom Tool to change the scale of an object in a Part.
@@ -15,16 +15,16 @@
  * A custom tool for rescaling an object.
  *
  * Install the RescalingTool as a mouse-down tool by calling:
- * myDiagram.toolManager.mouseDownTools.add(new RescalingTool());
+ * `myDiagram.toolManager.mouseDownTools.add(new RescalingTool());`
  *
  * Normally it would not make sense for the same object to be both resizable and rescalable.
  *
  * Note that there is no <code>Part.rescaleObjectName</code> property and there is no <code>Part.rescalable</code> property.
  * So although you cannot customize any Node to affect this tool, you can set
- * <a>RescalingTool.rescaleObjectName</a> and set <a>RescalingTool.isEnabled</a> to control
+ * {@link RescalingTool.rescaleObjectName} and set {@link RescalingTool.isEnabled} to control
  * whether objects are rescalable and when.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Rescaling.html">Rescaling</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Rescaling">Rescaling</a> sample.
  * @category Tool Extension
  */
 class RescalingTool extends go.Tool {
@@ -32,17 +32,17 @@ class RescalingTool extends go.Tool {
         super();
         this.name = 'Rescaling';
         this._rescaleObjectName = '';
-        this._handleArchetype =
-            new go.Shape({
-                alignment: go.Spot.BottomRight,
-                width: 8, height: 8,
-                fill: 'lightblue', stroke: 'dodgerblue',
-                cursor: 'nwse-resize'
-            });
-        this._adornmentTemplate =
-            new go.Adornment(go.Panel.Spot)
-                .add(new go.Placeholder(), this._handleArchetype)
-                .freezeBindings();
+        this._handleArchetype = new go.Shape({
+            alignment: go.Spot.BottomRight,
+            width: 8,
+            height: 8,
+            fill: 'lightblue',
+            stroke: 'dodgerblue',
+            cursor: 'nwse-resize'
+        });
+        this._adornmentTemplate = new go.Adornment(go.Panel.Spot)
+            .add(new go.Placeholder(), this._handleArchetype)
+            .freezeBindings();
         // internal state
         this._adornedObject = null;
         this._handle = null;
@@ -77,15 +77,16 @@ class RescalingTool extends go.Tool {
      *       { width: 8, height: 8, stroke: "green", fill: "transparent" })
      * ```
      */
-    get handleArchetype() { return this._handleArchetype; }
+    get handleArchetype() {
+        return this._handleArchetype;
+    }
     set handleArchetype(val) {
         if (!(val instanceof go.GraphObject))
             return;
         this._handleArchetype = val;
-        this._adornmentTemplate =
-            new go.Adornment(go.Panel.Spot)
-                .add(new go.Placeholder(), val)
-                .freezeBindings();
+        this._adornmentTemplate = new go.Adornment(go.Panel.Spot)
+            .add(new go.Placeholder(), val)
+            .freezeBindings();
     }
     /**
      * This property returns the {@link go.GraphObject} that is the tool handle being dragged by the user.
@@ -163,7 +164,7 @@ class RescalingTool extends go.Tool {
         const diagram = this.diagram;
         if (diagram === null || diagram.isReadOnly)
             return false;
-        if (!diagram.lastInput.left)
+        if (!this.canStartButton())
             return false;
         const h = this.findToolHandleAt(diagram.firstInput.documentPoint, this.name);
         return h !== null;
@@ -254,7 +255,7 @@ class RescalingTool extends go.Tool {
      *
      * This method is called by both {@link doMouseMove} and {@link doMouseUp}.
      * This method may be overridden.
-     * Please read the Introduction page on <a href="../../intro/extensions.html">Extensions</a> for how to override methods and how to call this base method.
+     * Please read the learn page on <a href="/learn/extensions">Extensions</a> for how to override methods and how to call this base method.
      * @param newPoint - in document coordinates
      */
     computeScale(newPoint) {

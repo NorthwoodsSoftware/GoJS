@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This class implements an inspector for GoJS model data objects.
  * The constructor takes three arguments:
@@ -59,7 +59,7 @@ import * as go from 'gojs';
  * </div>
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DataInspector.html">Data Inspector</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/DataInspector">Data Inspector</a> sample.
  * @category Extension
  */
 export class Inspector {
@@ -85,7 +85,9 @@ export class Inspector {
         this.multipleProperties = {};
         if (!(diagram instanceof go.Diagram))
             throw new Error('Inspector constructor diagram must be a Diagram');
-        const mainDiv = divid instanceof HTMLDivElement ? divid : document.getElementById(divid);
+        const mainDiv = divid instanceof HTMLDivElement
+            ? divid
+            : document.getElementById(divid);
         if (!(mainDiv instanceof HTMLDivElement))
             throw new Error('Inspector constructor not given an HTMLDivElement or its identifier');
         mainDiv.className = 'inspector';
@@ -385,7 +387,9 @@ export class Inspector {
                     if (!this.canShowProperty(name, desc, inspectedObject))
                         continue;
                     const val = this.findValue(name, desc, data);
-                    if (val === '' && this._properties[name] && this._properties[name].type === 'checkbox') {
+                    if (val === '' &&
+                        this._properties[name] &&
+                        this._properties[name].type === 'checkbox') {
                         shared.set(name, false);
                         all.set(name, false);
                     }
@@ -415,7 +419,8 @@ export class Inspector {
                 inspectedObject = it.value;
                 if (inspectedObject) {
                     // use either the Part.data or the object itself (for model.modelData)
-                    data = inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
+                    data =
+                        inspectedObject instanceof go.Part ? inspectedObject.data : inspectedObject;
                     if (data) {
                         // Go through all the properties passed in to the inspector and add them to properties to add, if appropriate:
                         for (const name in declaredProperties) {
@@ -614,7 +619,8 @@ export class Inspector {
         const tr = document.createElement('tr');
         const td1 = document.createElement('td');
         let displayName;
-        if (this._properties[propertyName] && this._properties[propertyName].name !== undefined) {
+        if (this._properties[propertyName] &&
+            this._properties[propertyName].name !== undefined) {
             // name changes the dispaly name shown on inspector
             displayName = this._properties[propertyName].name;
         }
@@ -644,7 +650,7 @@ export class Inspector {
             const inputi = (input = document.createElement('input'));
             //?? Capturing pointer here breaks Date picker in Chromium, so this is commented out.
             // if (inputi && inputi.setPointerCapture) {
-            //   inputi.addEventListener('pointerdown', (e) => inputi.setPointerCapture(e.pointerId));
+            //   inputi.addEventListener('pointerdown', e => inputi.setPointerCapture(e.pointerId));
             // }
             inputi.value = this.convertToString(propertyValue);
             if (decProp) {
@@ -686,12 +692,14 @@ export class Inspector {
     }
     /**
      * @hidden @internal
-     * HTML5 color input will only take hex,
-     * so let HTML5 canvas convert the color into hex format.
+     * HTML color input will only take hex,
+     * so let HTML canvas convert the color into hex format.
      * This converts "rgb(255, 0, 0)" into "#FF0000", etc.
      */
     convertToColor(propertyValue) {
-        const ctx = document.createElement('canvas').getContext('2d');
+        const ctx = document
+            .createElement('canvas')
+            .getContext('2d');
         if (ctx === null)
             return '#000000';
         ctx.fillStyle = propertyValue;

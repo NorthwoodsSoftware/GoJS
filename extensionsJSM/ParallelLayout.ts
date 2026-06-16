@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom {@link go.TreeLayout} that can be used for laying out stylized flowcharts.
@@ -22,7 +22,7 @@ import * as go from 'gojs';
  * You can set all of the TreeLayout properties that you like,
  * except that for simplicity this code just works for angle === 0 or angle === 90.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Parallel.html">Parallel Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Parallel">Parallel Layout</a> sample.
  * @category Layout Extension
  */
 export class ParallelLayout extends go.TreeLayout {
@@ -56,7 +56,8 @@ export class ParallelLayout extends go.TreeLayout {
     return this._splitNode;
   }
   set splitNode(val: go.Node | null) {
-    if (val !== null && !(val instanceof go.Node)) throw new Error('ParallelLayout.splitNode must be a go.Node');
+    if (val !== null && !(val instanceof go.Node))
+      throw new Error('ParallelLayout.splitNode must be a go.Node');
     this._splitNode = val;
   }
 
@@ -67,7 +68,8 @@ export class ParallelLayout extends go.TreeLayout {
     return this._mergeNode;
   }
   set mergeNode(val: go.Node | null) {
-    if (val !== null && !(val instanceof go.Node)) throw new Error('ParallelLayout.mergeNode must be a go.Node');
+    if (val !== null && !(val instanceof go.Node))
+      throw new Error('ParallelLayout.mergeNode must be a go.Node');
     this._mergeNode = val;
   }
 
@@ -144,10 +146,26 @@ export class ParallelLayout extends go.TreeLayout {
       const v = it.value;
       if (!v.node) continue;
       if (this.isSplit(v.node)) {
-        if (split) throw new Error('Split node already exists in ' + this + ' -- existing: ' + split + ' new: ' + v.node);
+        if (split)
+          throw new Error(
+            'Split node already exists in ' +
+              this +
+              ' -- existing: ' +
+              split +
+              ' new: ' +
+              v.node
+          );
         split = v.node;
       } else if (this.isMerge(v.node)) {
-        if (merge) throw new Error('Merge node already exists in ' + this + ' -- existing: ' + merge + ' new: ' + v.node);
+        if (merge)
+          throw new Error(
+            'Merge node already exists in ' +
+              this +
+              ' -- existing: ' +
+              merge +
+              ' new: ' +
+              v.node
+          );
         merge = v.node;
       }
     }
@@ -272,8 +290,8 @@ export class ParallelLayout extends go.TreeLayout {
                 ? go.Spot.Top
                 : go.Spot.Bottom
               : swtch
-              ? go.Spot.RightSide
-              : go.Spot.Right;
+                ? go.Spot.RightSide
+                : go.Spot.Right;
           }
           if (this.setsChildPortSpot) link.toSpot = go.Spot.Left;
         } else if (this.angle === 90) {
@@ -283,8 +301,8 @@ export class ParallelLayout extends go.TreeLayout {
                 ? go.Spot.Left
                 : go.Spot.Right
               : swtch
-              ? go.Spot.BottomSide
-              : go.Spot.Bottom;
+                ? go.Spot.BottomSide
+                : go.Spot.Bottom;
           }
           if (this.setsChildPortSpot) link.toSpot = go.Spot.Top;
         }
@@ -331,7 +349,8 @@ export class ParallelLayout extends go.TreeLayout {
       while (oit.next()) {
         const link = oit.value;
         // if connects internal with external node, it isn't a loop-back link
-        if (link.toNode && link.toNode.containingGroup !== mergeNode.containingGroup) continue;
+        if (link.toNode && link.toNode.containingGroup !== mergeNode.containingGroup)
+          continue;
         if (this.angle === 0) {
           if (this.setsPortSpot) link.fromSpot = go.Spot.TopBottomSides;
           if (this.setsChildPortSpot) link.toSpot = go.Spot.TopBottomSides;

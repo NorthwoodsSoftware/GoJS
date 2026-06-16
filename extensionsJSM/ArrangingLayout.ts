@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom Layout that provides one way to have a layout of layouts.
@@ -58,7 +58,7 @@ import * as go from 'gojs';
  * to lay out connected subnetworks, don't use this ArrangingLayout at all --
  * just use whatever Layout you would have assigned to {@link primaryLayout}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Arranging.html">Arranging Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Arranging">Arranging Layout</a> sample.
  * @category Layout Extension
  */
 export class ArrangingLayout extends go.Layout {
@@ -94,7 +94,8 @@ export class ArrangingLayout extends go.Layout {
     super.cloneProtected(copy);
     copy._filter = this._filter;
     if (this._primaryLayout !== null) copy._primaryLayout = this._primaryLayout.copy();
-    if (this._arrangingLayout !== null) copy._arrangingLayout = this._arrangingLayout.copy();
+    if (this._arrangingLayout !== null)
+      copy._arrangingLayout = this._arrangingLayout.copy();
     if (this._sideLayout !== null) copy._sideLayout = this._sideLayout.copy();
     copy._side = this._side.copy();
     copy._spacing = this._spacing.copy();
@@ -162,7 +163,11 @@ export class ArrangingLayout extends go.Layout {
       while (git.next()) {
         const grp = git.key;
         const ginfo = git.value;
-        this.moveSubgraph(ginfo.parts, ginfo.bounds, new go.Rect(grp.position, grp.desiredSize));
+        this.moveSubgraph(
+          ginfo.parts,
+          ginfo.bounds,
+          new go.Rect(grp.position, grp.desiredSize)
+        );
       }
       bounds = diagram.computePartsBounds(groups.toKeySet()); // not maincoll due to links without real bounds
     } else {
@@ -218,7 +223,11 @@ export class ArrangingLayout extends go.Layout {
    * @param maincoll
    * @param sidecoll
    */
-  splitParts(coll: go.Set<go.Part>, maincoll: go.Set<go.Part>, sidecoll: go.Set<go.Part>) {
+  splitParts(
+    coll: go.Set<go.Part>,
+    maincoll: go.Set<go.Part>,
+    sidecoll: go.Set<go.Part>
+  ) {
     // first consider all Nodes
     const pred = this.filter;
     coll.each((p) => {
@@ -278,7 +287,11 @@ export class ArrangingLayout extends go.Layout {
    * @param sideColl - the Nodes and Links filtered out to be laid out by sideLayout
    * @param mainBounds - the area occupied by the nodes and links of the main layout, after it was performed
    */
-  prepareSideLayout(sideLayout: go.Layout, sideColl: go.Set<go.Part>, mainBounds: go.Rect) {
+  prepareSideLayout(
+    sideLayout: go.Layout,
+    sideColl: go.Set<go.Part>,
+    mainBounds: go.Rect
+  ) {
     // by default this is a no-op
   }
 
@@ -291,7 +304,11 @@ export class ArrangingLayout extends go.Layout {
    * @param mainbounds - the area occupied by the results of the main layouts
    * @param sidebounds - the area occupied by the results of the sideLayout
    */
-  moveSideCollection(sidecoll: go.Set<go.Part>, mainbounds: go.Rect, sidebounds: go.Rect) {
+  moveSideCollection(
+    sidecoll: go.Set<go.Part>,
+    mainbounds: go.Rect,
+    sidebounds: go.Rect
+  ) {
     const diagram = this.diagram;
     if (!diagram) return;
     let pos: go.Point | null = null;
@@ -316,13 +333,25 @@ export class ArrangingLayout extends go.Layout {
         mainbounds.centerY - sidebounds.height / 2
       );
     } else if (this.side.includesSide(go.Spot.BottomSide)) {
-      pos = new go.Point(mainbounds.x, mainbounds.y + mainbounds.height + this.spacing.height);
+      pos = new go.Point(
+        mainbounds.x,
+        mainbounds.y + mainbounds.height + this.spacing.height
+      );
     } else if (this.side.includesSide(go.Spot.RightSide)) {
-      pos = new go.Point(mainbounds.x + mainbounds.width + this.spacing.width, mainbounds.y);
+      pos = new go.Point(
+        mainbounds.x + mainbounds.width + this.spacing.width,
+        mainbounds.y
+      );
     } else if (this.side.includesSide(go.Spot.TopSide)) {
-      pos = new go.Point(mainbounds.x, mainbounds.y - sidebounds.height - this.spacing.height);
+      pos = new go.Point(
+        mainbounds.x,
+        mainbounds.y - sidebounds.height - this.spacing.height
+      );
     } else if (this.side.includesSide(go.Spot.LeftSide)) {
-      pos = new go.Point(mainbounds.x - sidebounds.width - this.spacing.width, mainbounds.y);
+      pos = new go.Point(
+        mainbounds.x - sidebounds.width - this.spacing.width,
+        mainbounds.y
+      );
     }
     if (pos !== null) {
       diagram.moveParts(sidecoll, pos.subtract(sidebounds.position));
@@ -343,7 +372,10 @@ export class ArrangingLayout extends go.Layout {
   }
   set filter(val: ((part: go.Part) => boolean) | null) {
     if (this._filter !== val) {
-      if (val && typeof val !== 'function') throw new Error('new value for ArrangingLayout.filter must be a function, not: ' + val);
+      if (val && typeof val !== 'function')
+        throw new Error(
+          'new value for ArrangingLayout.filter must be a function, not: ' + val
+        );
       this._filter = val;
       this.invalidateLayout();
     }
@@ -364,17 +396,19 @@ export class ArrangingLayout extends go.Layout {
   }
   set side(val: go.Spot) {
     if (!this._side.equals(val)) {
-      if (!(val instanceof go.Spot) ||
-          !(
-            val.isSide() ||
-            val.equals(go.Spot.Top) ||
-            val.equals(go.Spot.Right) ||
-            val.equals(go.Spot.Bottom) ||
-            val.equals(go.Spot.Left)
-          )
-        ) {
+      if (
+        !(val instanceof go.Spot) ||
+        !(
+          val.isSide() ||
+          val.equals(go.Spot.Top) ||
+          val.equals(go.Spot.Right) ||
+          val.equals(go.Spot.Bottom) ||
+          val.equals(go.Spot.Left)
+        )
+      ) {
         throw new Error(
-          'new value for ArrangingLayout.side must be a side or middle-side Spot, not: ' + val
+          'new value for ArrangingLayout.side must be a side or middle-side Spot, not: ' +
+            val
         );
       }
       this._side = val.copy();
@@ -391,7 +425,10 @@ export class ArrangingLayout extends go.Layout {
   }
   set spacing(val: go.Size) {
     if (!this._spacing.equals(val)) {
-      if (!(val instanceof go.Size)) throw new Error('new value for ArrangingLayout.spacing must be a Size, not: ' + val);
+      if (!(val instanceof go.Size))
+        throw new Error(
+          'new value for ArrangingLayout.spacing must be a Size, not: ' + val
+        );
       this._spacing = val.copy();
       this.invalidateLayout();
     }
@@ -407,7 +444,8 @@ export class ArrangingLayout extends go.Layout {
   }
   set primaryLayout(val: go.Layout) {
     if (this._primaryLayout !== val) {
-      if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      if (!(val instanceof go.Layout))
+        throw new Error('layout does not inherit from go.Layout: ' + val);
       this._primaryLayout = val;
       this.invalidateLayout();
     }
@@ -424,7 +462,8 @@ export class ArrangingLayout extends go.Layout {
   }
   set arrangingLayout(val: go.Layout | null) {
     if (this._arrangingLayout !== val) {
-      if (val && !(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      if (val && !(val instanceof go.Layout))
+        throw new Error('layout does not inherit from go.Layout: ' + val);
       this._arrangingLayout = val;
       this.invalidateLayout();
     }
@@ -440,7 +479,8 @@ export class ArrangingLayout extends go.Layout {
   }
   set sideLayout(val: go.Layout) {
     if (this._sideLayout !== val) {
-      if (!(val instanceof go.Layout)) throw new Error('layout does not inherit from go.Layout: ' + val);
+      if (!(val instanceof go.Layout))
+        throw new Error('layout does not inherit from go.Layout: ' + val);
       this._sideLayout = val;
       this.invalidateLayout();
     }

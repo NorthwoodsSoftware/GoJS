@@ -7,13 +7,13 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /**
  * The ResizeMultipleTool class lets the user resize multiple objects at once.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/ResizeMultiple.html">Resize Multiple</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/ResizeMultiple">Resize Multiple</a> sample.
  * @category Tool Extension
  */
 class ResizeMultipleTool extends go.ResizingTool {

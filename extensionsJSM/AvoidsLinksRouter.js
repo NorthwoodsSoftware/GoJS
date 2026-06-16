@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * A custom Router that will cause overlapping segments of Orthogonal or AvoidsNodes links to be routed in parallel,
  * while minimizing resulting crossings between links.
@@ -26,7 +26,7 @@ import * as go from 'gojs';
  *   myDiagram.routers.add(new AvoidsLinksRouter());
  * ```
  *
- * If you want to experiment with this extension, try the <a href="../../samples/AvoidsLinksRouter.html">AvoidsLinksRouter</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/AvoidsLinksRouter">AvoidsLinksRouter</a> sample.
  * @category Router Extension
  */
 export class AvoidsLinksRouter extends go.Router {
@@ -211,15 +211,21 @@ export class AvoidsLinksRouter extends go.Router {
     }
     /** @internal */
     _coord(si) {
-        return si.vertical ? si.link.getPoint(si.indexStart).x : si.link.getPoint(si.indexStart).y;
+        return si.vertical
+            ? si.link.getPoint(si.indexStart).x
+            : si.link.getPoint(si.indexStart).y;
     }
     /** @internal */
     _columnStart(si) {
-        return si.vertical ? si.link.getPoint(si.indexStart).y : si.link.getPoint(si.indexStart).x;
+        return si.vertical
+            ? si.link.getPoint(si.indexStart).y
+            : si.link.getPoint(si.indexStart).x;
     }
     /** @internal */
     _columnEnd(si) {
-        return si.vertical ? si.link.getPoint(si.indexEnd).y : si.link.getPoint(si.indexEnd).x;
+        return si.vertical
+            ? si.link.getPoint(si.indexEnd).y
+            : si.link.getPoint(si.indexEnd).x;
     }
     /** @internal */
     nextOrthoBend(link, index) {
@@ -250,7 +256,7 @@ export class AvoidsLinksRouter extends go.Router {
         let currentseg = this._allocSegInfo();
         let enclosingRect = null;
         // true if all links in the diagram part of the modified collection, thus we don't need to call findPartsIn
-        const skipBounds = (coll instanceof go.Diagram && links.count === coll.links.count);
+        const skipBounds = coll instanceof go.Diagram && links.count === coll.links.count;
         // add segments of links in the "invalid" links Set
         for (const l of links) {
             if (!this.isRoutable(l, coll))
@@ -279,7 +285,9 @@ export class AvoidsLinksRouter extends go.Router {
                 seginfo._computeGeo();
                 found = false;
                 for (const line of this._allsegs) {
-                    if (Math.abs(this._coord(line.first()) - this._coord(seginfo)) < this._epsilonDistance && line.first().vertical === vertical) {
+                    if (Math.abs(this._coord(line.first()) - this._coord(seginfo)) <
+                        this._epsilonDistance &&
+                        line.first().vertical === vertical) {
                         found = true;
                         line.add(seginfo);
                         break;
@@ -309,7 +317,8 @@ export class AvoidsLinksRouter extends go.Router {
                     const vertical = this.isApprox(p.x, q.x) && !this.isApprox(p.y, q.y);
                     const coord = vertical ? p.x : p.y;
                     for (const line of this._allsegs) {
-                        if (Math.abs(this._coord(line.first()) - coord) < this._epsilonDistance && line.first().vertical === vertical) {
+                        if (Math.abs(this._coord(line.first()) - coord) < this._epsilonDistance &&
+                            line.first().vertical === vertical) {
                             const seginfo = this._allocSegInfo();
                             seginfo.indexStart = i;
                             seginfo.indexEnd = j;
@@ -548,7 +557,8 @@ class _SegInfo {
         // j1 and j2 are the indices of the next orthogonal bends (not necessarily the next point if there are redundant link points)
         let j1 = this.indexStart - 1;
         let j2 = this.indexEnd + 1;
-        while (j1 > 0 && Math.abs(this.link.getPoint(j1).x - this.link.getPoint(j1 - 1).x) < 0.5)
+        while (j1 > 0 &&
+            Math.abs(this.link.getPoint(j1).x - this.link.getPoint(j1 - 1).x) < 0.5)
             j1--;
         while (j2 < this.link.pointsCount - 1 &&
             Math.abs(this.link.getPoint(j2).x - this.link.getPoint(j2 + 1).x) < 0.5) {
@@ -587,7 +597,8 @@ class _SegInfo {
         // j1 and j2 are the indices of the next orthogonal bends (not necessarily the next point if there are redundant link points)
         let j1 = this.indexStart - 1;
         let j2 = this.indexEnd + 1;
-        while (j1 > 0 && Math.abs(this.link.getPoint(j1).y - this.link.getPoint(j1 - 1).y) < 0.5)
+        while (j1 > 0 &&
+            Math.abs(this.link.getPoint(j1).y - this.link.getPoint(j1 - 1).y) < 0.5)
             j1--;
         while (j2 < this.link.pointsCount - 1 &&
             Math.abs(this.link.getPoint(j2).y - this.link.getPoint(j2 + 1).y) < 0.5) {

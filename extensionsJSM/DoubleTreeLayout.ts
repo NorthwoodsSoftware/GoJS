@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * Perform two TreeLayouts, one going rightwards and one going leftwards.
@@ -27,7 +27,7 @@ import * as go from 'gojs';
  *
  * If there is no root node, all nodes are involved in cycles, so the first given node is chosen.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/doubleTree.html">Double Tree</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/doubleTree">Double Tree</a> sample.
  * @category Layout Extension
  */
 export class DoubleTreeLayout extends go.Layout {
@@ -55,7 +55,10 @@ export class DoubleTreeLayout extends go.Layout {
   }
   set vertical(value: boolean) {
     if (this._vertical !== value) {
-      if (typeof value !== 'boolean') throw new Error('new value for DoubleTreeLayout.vertical must be a boolean value.');
+      if (typeof value !== 'boolean')
+        throw new Error(
+          'new value for DoubleTreeLayout.vertical must be a boolean value.'
+        );
       this._vertical = value;
       this.invalidateLayout();
     }
@@ -74,7 +77,9 @@ export class DoubleTreeLayout extends go.Layout {
   set directionFunction(value: (node: go.Node) => boolean) {
     if (this._directionFunction !== value) {
       if (typeof value !== 'function') {
-        throw new Error('new value for DoubleTreeLayout.directionFunction must be a function taking a node data object and returning a boolean.');
+        throw new Error(
+          'new value for DoubleTreeLayout.directionFunction must be a function taking a node data object and returning a boolean.'
+        );
       }
       this._directionFunction = value;
       this.invalidateLayout();
@@ -246,7 +251,8 @@ export class DoubleTreeLayout extends go.Layout {
    */
   protected isPositiveDirection(child: go.Node): boolean {
     const f = this.directionFunction;
-    if (!f) throw new Error('No DoubleTreeLayout.directionFunction supplied on the layout');
+    if (!f)
+      throw new Error('No DoubleTreeLayout.directionFunction supplied on the layout');
     return f(child);
   }
 }

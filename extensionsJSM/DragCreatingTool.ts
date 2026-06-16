@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The DragCreatingTool lets the user create a new node by dragging in the background
@@ -41,7 +41,7 @@ import * as go from 'gojs';
  * but it does temporarily add the {@link box} Part to the diagram.
  * This tool does conduct a transaction when inserting the new node.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/DragCreating.html">Drag Creating</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/DragCreating">Drag Creating</a> sample.
  * @category Tool Extension
  */
 export class DragCreatingTool extends go.Tool {
@@ -102,7 +102,8 @@ export class DragCreatingTool extends go.Tool {
     return this._delay;
   }
   set delay(val: number) {
-    if (typeof val !== 'number') throw new Error('DragCreatingTool.delay must be a number');
+    if (typeof val !== 'number')
+      throw new Error('DragCreatingTool.delay must be a number');
     this._delay = val;
   }
 
@@ -136,12 +137,12 @@ export class DragCreatingTool extends go.Tool {
     if (diagram.isReadOnly || diagram.isModelReadOnly) return false;
     if (!diagram.allowInsert) return false;
 
-    const e = diagram.lastInput;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-    if (!e.left) return false;
+    if (!this.canStartButton()) return false;
     // don't include the following checks when this tool is running modally
     if (diagram.currentTool !== this) {
       if (!this.isBeyondDragSize()) return false;
+      const e = diagram.lastInput;
       // must wait for "delay" milliseconds before that tool can run
       if (e.timestamp - diagram.firstInput.timestamp < this.delay) return false;
     }

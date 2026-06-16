@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The GuidedDraggingTool class makes guidelines visible as the parts are dragged around a diagram
@@ -42,7 +42,7 @@ import * as go from 'gojs';
  * The maximum distance at which another Part might affect the alignment of the dragged Part is controlled by the
  * {@link searchDistance} property.  This tends to be a large value.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/GuidedDragging.html">Guided Dragging</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/GuidedDragging">Guided Dragging</a> sample.
  * @category Tool Extension
  */
 export class GuidedDraggingTool extends go.DraggingTool {
@@ -81,7 +81,11 @@ export class GuidedDraggingTool extends go.DraggingTool {
     this._showsGuides = true;
 
     const partProperties = { layerName: 'Tool', isInDocumentBounds: false };
-    const shapeProperties = { stroke: 'magenta', strokeDashArray: [4, 4], isGeometryPositioned: true };
+    const shapeProperties = {
+      stroke: 'magenta',
+      strokeDashArray: [4, 4],
+      isGeometryPositioned: true
+    };
 
     // temporary parts for horizonal guidelines
     this._guidelineHTop = new go.Part(partProperties).add(
@@ -135,7 +139,10 @@ export class GuidedDraggingTool extends go.DraggingTool {
     return this._guideSnapDistance;
   }
   set guideSnapDistance(val: number) {
-    if (typeof val !== 'number' || isNaN(val) || val < 0) throw new Error('new value for GuidedDraggingTool.guideSnapDistance must be a non-negative number');
+    if (typeof val !== 'number' || isNaN(val) || val < 0)
+      throw new Error(
+        'new value for GuidedDraggingTool.guideSnapDistance must be a non-negative number'
+      );
     this._guideSnapDistance = val;
   }
 
@@ -149,7 +156,10 @@ export class GuidedDraggingTool extends go.DraggingTool {
     return this._searchDistance;
   }
   set searchDistance(val: number) {
-    if (typeof val !== 'number' || isNaN(val) || val <= 0) throw new Error('new value for GuidedDraggingTool.searchDistance must be a positive number.');
+    if (typeof val !== 'number' || isNaN(val) || val <= 0)
+      throw new Error(
+        'new value for GuidedDraggingTool.searchDistance must be a positive number.'
+      );
     this._searchDistance = val;
   }
 
@@ -159,25 +169,36 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is true.
    */
-  get isRealtimeSnapEnabled(): boolean { return this._isRealtimeSnapEnabled; }
-  set isRealtimeSnapEnabled(val: boolean) { this._isRealtimeSnapEnabled = !!val; }
+  get isRealtimeSnapEnabled(): boolean {
+    return this._isRealtimeSnapEnabled;
+  }
+  set isRealtimeSnapEnabled(val: boolean) {
+    this._isRealtimeSnapEnabled = !!val;
+  }
 
   /**
    * Gets or sets whether snapping to guidelines provided by nearby Parts is enabled.
    *
    * The default value is true.
    */
-  get isGuidelineSnapEnabled(): boolean { return this._isGuidelineSnapEnabled; }
-  set isGuidelineSnapEnabled(val: boolean) { this._isGuidelineSnapEnabled = !!val; }
+  get isGuidelineSnapEnabled(): boolean {
+    return this._isGuidelineSnapEnabled;
+  }
+  set isGuidelineSnapEnabled(val: boolean) {
+    this._isGuidelineSnapEnabled = !!val;
+  }
 
   /**
    * Gets or sets whether snapping to have equal space on both sides of the moved Part is enabled.
    *
    * The default value is true.
    */
-  get isEqualSpacingSnapEnabled(): boolean { return this._isEqualSpacingSnapEnabled; }
-  set isEqualSpacingSnapEnabled(val: boolean) { this._isEqualSpacingSnapEnabled = !!val; }
-
+  get isEqualSpacingSnapEnabled(): boolean {
+    return this._isEqualSpacingSnapEnabled;
+  }
+  set isEqualSpacingSnapEnabled(val: boolean) {
+    this._isEqualSpacingSnapEnabled = !!val;
+  }
 
   /**
    * Gets or sets whether the guidelines are shown or not.
@@ -188,80 +209,124 @@ export class GuidedDraggingTool extends go.DraggingTool {
    *
    * The default value is true.
    */
-  get showsGuides(): boolean { return this._showsGuides; }
-  set showsGuides(val: boolean) { this._showsGuides = !!val; }
+  get showsGuides(): boolean {
+    return this._showsGuides;
+  }
+  set showsGuides(val: boolean) {
+    this._showsGuides = !!val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's top lines up with a stationary Part.
    * This defaults to a horizontal magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineHTop(): go.Part | null { return this._guidelineHTop; }
-  set guidelineHTop(val: go.Part | null) { this._guidelineHTop = val; }
+  get guidelineHTop(): go.Part | null {
+    return this._guidelineHTop;
+  }
+  set guidelineHTop(val: go.Part | null) {
+    this._guidelineHTop = val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's center lines up with a stationary Part.
    * This defaults to a horizontal magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineHCenter(): go.Part | null { return this._guidelineHCenter; }
-  set guidelineHCenter(val: go.Part | null) { this._guidelineHCenter = val; }
+  get guidelineHCenter(): go.Part | null {
+    return this._guidelineHCenter;
+  }
+  set guidelineHCenter(val: go.Part | null) {
+    this._guidelineHCenter = val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's bottom lines up with a stationary Part.
    * This defaults to a horizontal magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineHBottom(): go.Part | null { return this._guidelineHBottom; }
-  set guidelineHBottom(val: go.Part | null) { this._guidelineHBottom = val; }
+  get guidelineHBottom(): go.Part | null {
+    return this._guidelineHBottom;
+  }
+  set guidelineHBottom(val: go.Part | null) {
+    this._guidelineHBottom = val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's left side lines up with a stationary Part.
    * This defaults to a vertical magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineVLeft(): go.Part | null { return this._guidelineVLeft; }
-  set guidelineVLeft(val: go.Part | null) { this._guidelineVLeft = val; }
+  get guidelineVLeft(): go.Part | null {
+    return this._guidelineVLeft;
+  }
+  set guidelineVLeft(val: go.Part | null) {
+    this._guidelineVLeft = val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's center lines up with a stationary Part.
    * This defaults to a vertical magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineVCenter(): go.Part | null { return this._guidelineVCenter; }
-  set guidelineVCenter(val: go.Part | null) { this._guidelineVCenter = val; }
+  get guidelineVCenter(): go.Part | null {
+    return this._guidelineVCenter;
+  }
+  set guidelineVCenter(val: go.Part | null) {
+    this._guidelineVCenter = val;
+  }
 
   /**
    * Gets or sets the Part to show when the moved Part's right side lines up with a stationary Part.
    * This defaults to a vertical magenta dashed line.  Set this to null to not show anything for this case.
    * */
-  get guidelineVRight(): go.Part | null { return this._guidelineVRight; }
-  set guidelineVRight(val: go.Part | null) { this._guidelineVRight = val; }
+  get guidelineVRight(): go.Part | null {
+    return this._guidelineVRight;
+  }
+  set guidelineVRight(val: go.Part | null) {
+    this._guidelineVRight = val;
+  }
 
   /**
    * Gets or sets the Part to show on the left side when the moved Part leaves nearly the same spacing left and right
    * between this Part and the nearest Parts on either side of it.
    * This defaults to a vertical cyan dashed line.  Set this to null to not show anything for this case.
    * */
-  get guideHSpacingLeft(): go.Part | null { return this._guideHSpacingLeft; }
-  set guideHSpacingLeft(val: go.Part | null) { this._guideHSpacingLeft = val; }
+  get guideHSpacingLeft(): go.Part | null {
+    return this._guideHSpacingLeft;
+  }
+  set guideHSpacingLeft(val: go.Part | null) {
+    this._guideHSpacingLeft = val;
+  }
   /**
    * Gets or sets the Part to show on the right side when the moved Part leaves nearly the same spacing left and right
    * between this Part and the nearest Parts on either side of it.
    * This defaults to a vertical cyan dashed line.  Set this to null to not show anything for this case.
    * */
-  get guideHSpacingRight(): go.Part | null { return this._guideHSpacingRight; }
-  set guideHSpacingRight(val: go.Part | null) { this._guideHSpacingRight = val; }
+  get guideHSpacingRight(): go.Part | null {
+    return this._guideHSpacingRight;
+  }
+  set guideHSpacingRight(val: go.Part | null) {
+    this._guideHSpacingRight = val;
+  }
 
   /**
    * Gets or sets the Part to show above when the moved Part leaves nearly the same spacing above and below
    * between this Part and the nearest Parts above and below it.
    * This defaults to a vertical cyan dashed line.  Set this to null to not show anything for this case.
    * */
-  get guideVSpacingTop(): go.Part | null { return this._guideVSpacingTop; }
-  set guideVSpacingTop(val: go.Part | null) { this._guideVSpacingTop = val; }
+  get guideVSpacingTop(): go.Part | null {
+    return this._guideVSpacingTop;
+  }
+  set guideVSpacingTop(val: go.Part | null) {
+    this._guideVSpacingTop = val;
+  }
   /**
    * Gets or sets the Part to show below when the moved Part leaves nearly the same spacing above and below
    * between this Part and the nearest Parts above and below it.
    * This defaults to a vertical cyan dashed line.  Set this to null to not show anything for this case.
    * */
-  get guideVSpacingBottom(): go.Part | null { return this._guideVSpacingBottom; }
-  set guideVSpacingBottom(val: go.Part | null) { this._guideVSpacingBottom = val; }
+  get guideVSpacingBottom(): go.Part | null {
+    return this._guideVSpacingBottom;
+  }
+  set guideVSpacingBottom(val: go.Part | null) {
+    this._guideVSpacingBottom = val;
+  }
 
   /**
    * Removes all of the guidelines from the grid.
@@ -437,12 +502,22 @@ export class GuidedDraggingTool extends go.DraggingTool {
       }
       if (this.isEqualSpacingSnapEnabled) {
         // look for something on the left side that overlaps vertically
-        if (otherBounds.right <= objBounds.x && (!closestLeft || otherBounds.right > closestLeftX) && otherBounds.y < objBounds.bottom && otherBounds.bottom > objBounds.top) {
+        if (
+          otherBounds.right <= objBounds.x &&
+          (!closestLeft || otherBounds.right > closestLeftX) &&
+          otherBounds.y < objBounds.bottom &&
+          otherBounds.bottom > objBounds.top
+        ) {
           closestLeft = other;
           closestLeftX = otherBounds.right;
         }
         // look for something on the right side that overlaps vertically
-        if (otherBounds.x >= objBounds.right && (!closestRight || otherBounds.x < closestRightX) && otherBounds.y < objBounds.bottom && otherBounds.bottom > objBounds.top) {
+        if (
+          otherBounds.x >= objBounds.right &&
+          (!closestRight || otherBounds.x < closestRightX) &&
+          otherBounds.y < objBounds.bottom &&
+          otherBounds.bottom > objBounds.top
+        ) {
           closestRight = other;
           closestRightX = otherBounds.x;
         }
@@ -511,14 +586,24 @@ export class GuidedDraggingTool extends go.DraggingTool {
       }
       if (this.isEqualSpacingSnapEnabled) {
         // look for something on the left side that overlaps vertically
-        if (this.guideVSpacingTop && otherBounds.bottom <= objBounds.y &&
-            (!closestTop || otherBounds.bottom > closestTopY) && otherBounds.x < objBounds.right && otherBounds.right > objBounds.x) {
+        if (
+          this.guideVSpacingTop &&
+          otherBounds.bottom <= objBounds.y &&
+          (!closestTop || otherBounds.bottom > closestTopY) &&
+          otherBounds.x < objBounds.right &&
+          otherBounds.right > objBounds.x
+        ) {
           closestTop = other;
           closestTopY = otherBounds.bottom;
         }
         // look for something on the right side that overlaps vertically
-        if (this.guideVSpacingBottom && otherBounds.y >= objBounds.bottom &&
-            (!closestBottom || otherBounds.y < closestBottomY) && otherBounds.x < objBounds.right && otherBounds.right > objBounds.x) {
+        if (
+          this.guideVSpacingBottom &&
+          otherBounds.y >= objBounds.bottom &&
+          (!closestBottom || otherBounds.y < closestBottomY) &&
+          otherBounds.x < objBounds.right &&
+          otherBounds.right > objBounds.x
+        ) {
           closestBottom = other;
           closestBottomY = otherBounds.y;
         }
@@ -534,19 +619,23 @@ export class GuidedDraggingTool extends go.DraggingTool {
     if (closestTop && closestBottom) {
       const dxTop = objBounds.y - closestTopY;
       const dxBottom = closestBottomY - objBounds.bottom;
-      if (dxTop >= 0 && dxBottom >= 0 && Math.abs(dxBottom - dxTop) < 2*marginOfError) {
+      if (dxTop >= 0 && dxBottom >= 0 && Math.abs(dxBottom - dxTop) < 2 * marginOfError) {
         verticalSpacing = true;
         if (snap) {
-          snapy = part.actualBounds.y + (dxBottom - dxTop)/2;
+          snapy = part.actualBounds.y + (dxBottom - dxTop) / 2;
         }
-        if (guide) {  // show equal vertical spacing guidelines
+        if (guide) {
+          // show equal vertical spacing guidelines
           if (this.guideVSpacingTop) {
             const minx = Math.min(closestTop.actualBounds.x, objBounds.x);
             const maxx = Math.max(closestTop.actualBounds.right, objBounds.right);
             this.guideVSpacingTop.position = new go.Point(minx - 10, closestTopY);
             this.guideVSpacingTop.findObject('V')!.height = dxTop;
             this.guideVSpacingTop.findObject('H')!.width = maxx - minx + 20;
-            this.guideVSpacingTop.findObject('V')!.position = new go.Point(objBounds.x + objBounds.width*3/4 - minx + 10, 0);
+            this.guideVSpacingTop.findObject('V')!.position = new go.Point(
+              objBounds.x + (objBounds.width * 3) / 4 - minx + 10,
+              0
+            );
             this.diagram.add(this.guideVSpacingTop);
           }
           if (this.guideVSpacingBottom) {
@@ -555,8 +644,14 @@ export class GuidedDraggingTool extends go.DraggingTool {
             this.guideVSpacingBottom.position = new go.Point(minx - 10, objBounds.bottom);
             this.guideVSpacingBottom.findObject('V')!.height = dxBottom;
             this.guideVSpacingBottom.findObject('H')!.width = maxx - minx + 20;
-            this.guideVSpacingBottom.findObject('V')!.position = new go.Point(objBounds.x + objBounds.width*3/4 - minx + 10, 0);
-            this.guideVSpacingBottom.findObject('H')!.position = new go.Point(0, dxBottom);
+            this.guideVSpacingBottom.findObject('V')!.position = new go.Point(
+              objBounds.x + (objBounds.width * 3) / 4 - minx + 10,
+              0
+            );
+            this.guideVSpacingBottom.findObject('H')!.position = new go.Point(
+              0,
+              dxBottom
+            );
             this.diagram.add(this.guideVSpacingBottom);
           }
         }
@@ -567,7 +662,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
       const bestBounds = bestVPart.locationObject.getDocumentBounds();
       // line extends from x0 to x2
       const x0 = Math.min(objBounds.x, bestBounds.x) - 10;
-      const x2 = Math.max(objBounds.x + objBounds.width, bestBounds.x + bestBounds.width) + 10;
+      const x2 =
+        Math.max(objBounds.x + objBounds.width, bestBounds.x + bestBounds.width) + 10;
       // find bestObj's desired Y
       const bestPoint = new go.Point().setRectSpot(bestBounds, bestVOtherSpot);
       if (bestVSpot === go.Spot.Center) {
@@ -606,19 +702,23 @@ export class GuidedDraggingTool extends go.DraggingTool {
     if (closestLeft && closestRight) {
       const dxLeft = objBounds.x - closestLeftX;
       const dxRight = closestRightX - objBounds.right;
-      if (dxLeft >= 0 && dxRight >= 0 && Math.abs(dxRight - dxLeft) < 2*marginOfError) {
+      if (dxLeft >= 0 && dxRight >= 0 && Math.abs(dxRight - dxLeft) < 2 * marginOfError) {
         horizontalSpacing = true;
         if (snap) {
-          snapx = part.actualBounds.x + (dxRight - dxLeft)/2;
+          snapx = part.actualBounds.x + (dxRight - dxLeft) / 2;
         }
-        if (guide) {  // show equal horizontal spacing guidelines
+        if (guide) {
+          // show equal horizontal spacing guidelines
           if (this.guideHSpacingLeft) {
             const miny = Math.min(closestLeft.actualBounds.y, objBounds.y);
             const maxy = Math.max(closestLeft.actualBounds.bottom, objBounds.bottom);
             this.guideHSpacingLeft.position = new go.Point(closestLeftX, miny - 10);
             this.guideHSpacingLeft.findObject('H')!.width = dxLeft;
             this.guideHSpacingLeft.findObject('V')!.height = maxy - miny + 20;
-            this.guideHSpacingLeft.findObject('H')!.position = new go.Point(0, objBounds.y + objBounds.height*3/4 - miny + 10);
+            this.guideHSpacingLeft.findObject('H')!.position = new go.Point(
+              0,
+              objBounds.y + (objBounds.height * 3) / 4 - miny + 10
+            );
             this.diagram.add(this.guideHSpacingLeft);
           }
           if (this.guideHSpacingRight) {
@@ -627,7 +727,10 @@ export class GuidedDraggingTool extends go.DraggingTool {
             this.guideHSpacingRight.position = new go.Point(objBounds.right, miny - 10);
             this.guideHSpacingRight.findObject('H')!.width = dxRight;
             this.guideHSpacingRight.findObject('V')!.height = maxy - miny + 20;
-            this.guideHSpacingRight.findObject('H')!.position = new go.Point(0, objBounds.y + objBounds.height*3/4 - miny + 10);
+            this.guideHSpacingRight.findObject('H')!.position = new go.Point(
+              0,
+              objBounds.y + (objBounds.height * 3) / 4 - miny + 10
+            );
             this.guideHSpacingRight.findObject('V')!.position = new go.Point(dxRight, 0);
             this.diagram.add(this.guideHSpacingRight);
           }
@@ -639,7 +742,8 @@ export class GuidedDraggingTool extends go.DraggingTool {
       const bestBounds = bestHPart.locationObject.getDocumentBounds();
       // line extends from y0 to y2
       const y0 = Math.min(objBounds.y, bestBounds.y) - 10;
-      const y2 = Math.max(objBounds.y + objBounds.height, bestBounds.y + bestBounds.height) + 10;
+      const y2 =
+        Math.max(objBounds.y + objBounds.height, bestBounds.y + bestBounds.height) + 10;
       // find bestObj's desired X
       const bestPoint = new go.Point().setRectSpot(bestBounds, bestHOtherSpot);
       if (bestHSpot === go.Spot.Center) {
@@ -680,6 +784,5 @@ export class GuidedDraggingTool extends go.DraggingTool {
       part.moveTo(snapx, snapy);
       this.invalidateLinks(part);
     }
-
   }
 }

@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The FreehandDrawingTool allows the user to draw a shape using the mouse.
@@ -27,7 +27,7 @@ import * as go from 'gojs';
  * The Shape used during the drawing operation can be customized by setting {@link temporaryShape}.
  * The node data added to the model can be customized by setting {@link archetypePartData}.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/FreehandDrawing.html">Freehand Drawing</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/FreehandDrawing">Freehand Drawing</a> sample.
  * @category Tool Extension
  */
 export class FreehandDrawingTool extends go.Tool {
@@ -57,7 +57,8 @@ export class FreehandDrawingTool extends go.Tool {
   }
   set temporaryShape(val: go.Shape) {
     if (this._temporaryShape !== val) {
-      if (!(val instanceof go.Shape)) throw new Error('FreehandDrawingTool.temporaryShape must be a Shape')
+      if (!(val instanceof go.Shape))
+        throw new Error('FreehandDrawingTool.temporaryShape must be a Shape');
       val.name = 'SHAPE';
       const panel = this._temporaryShape.panel;
       if (panel !== null) {
@@ -154,7 +155,10 @@ export class FreehandDrawingTool extends go.Tool {
       const g = new go.Geometry().add(f); // the Shape.geometry consists of a single PathFigure
       shape.geometry = g;
       // position the Shape's Part, accounting for the strokeWidth
-      part.location = new go.Point(viewpt.x - shape.strokeWidth / 2, viewpt.y - shape.strokeWidth / 2);
+      part.location = new go.Point(
+        viewpt.x - shape.strokeWidth / 2,
+        viewpt.y - shape.strokeWidth / 2
+      );
       this.diagram.add(part);
     }
 
@@ -218,8 +222,8 @@ export class FreehandDrawingTool extends go.Tool {
       if (this.temporaryShape.geometry !== null) {
         const geo = this.temporaryShape.geometry.copy();
         const pos = geo.normalize();
-        pos.x = viewpt.x - pos.x - this.temporaryShape.strokeWidth/2;
-        pos.y = viewpt.y - pos.y - this.temporaryShape.strokeWidth/2;
+        pos.x = viewpt.x - pos.x - this.temporaryShape.strokeWidth / 2;
+        pos.y = viewpt.y - pos.y - this.temporaryShape.strokeWidth / 2;
 
         diagram.startTransaction(this.name);
         // create the node data for the model

@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This class implements a zoom slider for GoJS diagrams.
  * The constructor takes two arguments:
@@ -47,7 +47,7 @@ import * as go from 'gojs';
  * <p class="box">
  * The diagram div's parent element should use `position: relative` to ensure the slider gets positioned properly.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/ZoomSlider.html">Zoom Slider</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/ZoomSlider">Zoom Slider</a> sample.
  * @category Extension
  */
 export class ZoomSlider {
@@ -195,7 +195,8 @@ export class ZoomSlider {
         const old = this._opacity;
         if (old !== val) {
             if (typeof val !== 'number' || val < 0 || val > 1)
-                throw new Error('new value for ZoomSlider.opacity must be a number between 0 and 1 inclusive, not: ' + val);
+                throw new Error('new value for ZoomSlider.opacity must be a number between 0 and 1 inclusive, not: ' +
+                    val);
             this._opacity = val;
             if (this._sliderDiv !== null) {
                 this._sliderDiv.style.opacity = val.toString();
@@ -320,7 +321,8 @@ export class ZoomSlider {
             zoomRangeContainer.style.height = rangeHeight + 'px';
             zoomRangeInput.style.width = rangeHeight + 'px';
             zoomRangeInput.style.height = sliderWidth + 'px';
-            zoomRangeInput.style.transformOrigin = rangeHeight / 2 + 'px ' + rangeHeight / 2 + 'px';
+            zoomRangeInput.style.transformOrigin =
+                rangeHeight / 2 + 'px ' + rangeHeight / 2 + 'px';
             zoomOutBtn.style.width = sliderWidth + 'px';
             zoomOutBtn.style.height = sliderWidth + 'px';
         }

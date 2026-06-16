@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 import { Quadtree } from './Quadtree.js';
 
 /**
@@ -42,7 +42,7 @@ export enum PackShape {
    * {@link PackedLayout.size} is expected to be square, and {@link PackedLayout.hasCircularNodes}
    * will be assumed 'true'. Please see {@link PackedLayout.packShape} for more details.
    */
-  Spiral = 2,
+  Spiral = 2
 }
 
 /**
@@ -77,7 +77,7 @@ export enum PackMode {
    * The {@link PackedLayout.spacing} property will not be respected in this mode,
    * and will not do anything if set.
    */
-  ExpandToFit,
+  ExpandToFit
 }
 
 /**
@@ -100,7 +100,7 @@ export enum SortMode {
   /**
    * Nodes will be sorted by their area.
    */
-  Area,
+  Area
 }
 
 /**
@@ -123,7 +123,7 @@ export enum SortOrder {
    *
    * Does nothing if {@link PackedLayout.sortMode} is set to {@link SortMode.None}.
    */
-  Ascending,
+  Ascending
 }
 
 /**
@@ -173,7 +173,7 @@ enum Orientation {
   NE,
   NW,
   SW,
-  SE,
+  SE
 }
 
 /**
@@ -200,7 +200,12 @@ class Fit {
    * @param s1 - the segment that the placement was made relative to
    * @param s2 - the second segment that the placement was made relative to, if the fit is a skip fit
    */
-  constructor(bounds: go.Rect, cost: number, s1: ListNode<Segment>, s2?: ListNode<Segment>) {
+  constructor(
+    bounds: go.Rect,
+    cost: number,
+    s1: ListNode<Segment>,
+    s2?: ListNode<Segment>
+  ) {
     this.bounds = bounds;
     this.cost = cost;
     this.s1 = s1;
@@ -220,7 +225,7 @@ class Fit {
  * Nodes with 0 width or height cannot be packed, so they are treated by this
  * layout as having a width or height of 0.1 instead.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/PackedLayout.html">PackedLayout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/PackedLayout">PackedLayout</a> sample.
  * @category Layout Extension
  */
 export class PackedLayout extends go.Layout {
@@ -229,7 +234,9 @@ export class PackedLayout extends go.Layout {
   /** @hidden @internal */ private _packMode: PackMode;
   /** @hidden @internal */ private _sortMode: SortMode;
   /** @hidden @internal */ private _sortOrder: SortOrder;
-  /** @hidden @internal */ private _comparer: ((a: go.Node, b: go.Node) => number) | undefined;
+  /** @hidden @internal */ private _comparer:
+    | ((a: go.Node, b: go.Node) => number)
+    | undefined;
   /** @hidden @internal */ private _aspectRatio: number;
   /** @hidden @internal */ private _size: go.Size;
   /** @hidden @internal */ private _defaultSize: go.Size;
@@ -331,8 +338,12 @@ export class PackedLayout extends go.Layout {
     return this._packShape;
   }
   set packShape(value: PackShape) {
-    if (this.packShape !== value &&
-        (value === PackShape.Elliptical || value === PackShape.Rectangular || value === PackShape.Spiral)) {
+    if (
+      this.packShape !== value &&
+      (value === PackShape.Elliptical ||
+        value === PackShape.Rectangular ||
+        value === PackShape.Spiral)
+    ) {
       this._packShape = value;
       this.invalidateLayout();
     }
@@ -349,8 +360,12 @@ export class PackedLayout extends go.Layout {
     return this._packMode;
   }
   set packMode(value: PackMode) {
-    if (this.packMode !== value &&
-        (value === PackMode.AspectOnly || value === PackMode.Fit || value === PackMode.ExpandToFit)) {
+    if (
+      this.packMode !== value &&
+      (value === PackMode.AspectOnly ||
+        value === PackMode.Fit ||
+        value === PackMode.ExpandToFit)
+    ) {
       this._packMode = value;
       this.invalidateLayout();
     }
@@ -366,8 +381,10 @@ export class PackedLayout extends go.Layout {
     return this._sortMode;
   }
   set sortMode(value: SortMode) {
-    if (this.sortMode !== value &&
-        (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area)) {
+    if (
+      this.sortMode !== value &&
+      (value === SortMode.None || value === SortMode.MaxSide || value === SortMode.Area)
+    ) {
       this._sortMode = value;
       this.invalidateLayout();
     }
@@ -383,8 +400,10 @@ export class PackedLayout extends go.Layout {
     return this._sortOrder;
   }
   set sortOrder(value: SortOrder) {
-    if (this.sortOrder !== value &&
-        (value === SortOrder.Descending || value === SortOrder.Ascending)) {
+    if (
+      this.sortOrder !== value &&
+      (value === SortOrder.Descending || value === SortOrder.Ascending)
+    ) {
       this._sortOrder = value;
       this.invalidateLayout();
     }
@@ -464,8 +483,10 @@ export class PackedLayout extends go.Layout {
       this._fillViewport = true;
       this.invalidateLayout();
     } else if (
-      this.isNumeric(value.width) && value.width >= 0 &&
-      this.isNumeric(value.height) && value.height >= 0
+      this.isNumeric(value.width) &&
+      value.width >= 0 &&
+      this.isNumeric(value.height) &&
+      value.height >= 0
     ) {
       this._size = value;
       this.invalidateLayout();
@@ -669,7 +690,8 @@ export class PackedLayout extends go.Layout {
     let targetWidth = this.size.width !== 0 ? this.size.width : 1;
     let targetHeight = this.size.height !== 0 ? this.size.height : 1;
     if (this._fillViewport && this.diagram !== null) {
-      targetWidth = this.diagram.viewportBounds.width !== 0 ? this.diagram.viewportBounds.width : 1;
+      targetWidth =
+        this.diagram.viewportBounds.width !== 0 ? this.diagram.viewportBounds.width : 1;
       targetHeight =
         this.diagram.viewportBounds.height !== 0 ? this.diagram.viewportBounds.height : 1;
     } else if (this._fillViewport) {
@@ -705,7 +727,8 @@ export class PackedLayout extends go.Layout {
         this.packShape === PackShape.Spiral
       ) {
         const targetDiameter = Math.max(targetWidth, targetHeight);
-        const oldDiameter = targetDiameter === targetWidth ? bounds0.width : bounds0.height;
+        const oldDiameter =
+          targetDiameter === targetWidth ? bounds0.width : bounds0.height;
         const newDiameter =
           targetDiameter === targetWidth ? this._bounds.width : this._bounds.height;
 
@@ -718,7 +741,8 @@ export class PackedLayout extends go.Layout {
         const paddingX = (targetWidth - bounds0.width) / dx;
         const paddingY = (targetHeight - bounds0.height) / dy;
 
-        this._fixedSizeModeSpacing = Math.abs(paddingX) > Math.abs(paddingY) ? paddingX : paddingY;
+        this._fixedSizeModeSpacing =
+          Math.abs(paddingX) > Math.abs(paddingY) ? paddingX : paddingY;
       }
 
       if (this.packMode === PackMode.Fit) {
@@ -738,7 +762,12 @@ export class PackedLayout extends go.Layout {
 
     // move the nodes and calculate the actualBounds property
     if (this.arrangesToOrigin) {
-      this._actualBounds = new go.Rect(this.arrangementOrigin.x, this.arrangementOrigin.y, 0, 0);
+      this._actualBounds = new go.Rect(
+        this.arrangementOrigin.x,
+        this.arrangementOrigin.y,
+        0,
+        0
+      );
     }
     const nodeBounds = new Array<go.Rect>(nodes.length);
     for (let i = 0; i < nodes.length; i++) {
@@ -792,7 +821,9 @@ export class PackedLayout extends go.Layout {
       const dc = dx * dx + dy * dy;
       if (dc) {
         const x = 0.5 + ((db *= db) - (da *= da)) / (2 * dc);
-        const y = Math.sqrt(Math.max(0, 2 * da * (db + dc) - (db -= dc) * db - da * da)) / (2 * dc);
+        const y =
+          Math.sqrt(Math.max(0, 2 * da * (db + dc) - (db -= dc) * db - da * da)) /
+          (2 * dc);
         c.x = ax + x * dx + y * dy - c.width / 2;
         c.y = ay + x * dy - y * dx - c.height / 2;
       } else {
@@ -821,7 +852,9 @@ export class PackedLayout extends go.Layout {
       const ab = ar + br;
       const dx = (a.centerX * br + b.centerX * ar) / ab;
       const dy = ((a.centerY * br + b.centerY * ar) / ab) * aspect;
-      return shape === PackShape.Elliptical ? dx * dx + dy * dy : Math.max(dx * dx, dy * dy);
+      return shape === PackShape.Elliptical
+        ? dx * dx + dy * dy
+        : Math.max(dx * dx, dy * dy);
     }
 
     const sideSpacing = (this.spacing + this._fixedSizeModeSpacing) / 2;
@@ -863,17 +896,17 @@ export class PackedLayout extends go.Layout {
       do {
         if (sj <= sk) {
           if (intersects(j.data, r3)) {
-            (n2 = frontChain.removeBetween(n1, j)), i--;
+            ((n2 = frontChain.removeBetween(n1, j)), i--);
             continue pack;
           }
-          (sj += j.data.width / 2), (j = j.next);
+          ((sj += j.data.width / 2), (j = j.next));
         } else {
           if (intersects(k.data, r3)) {
             frontChain.removeBetween(k, n2);
-            (n1 = k), i--;
+            ((n1 = k), i--);
             continue pack;
           }
-          (sk += k.data.width / 2), (k = k.prev);
+          ((sk += k.data.width / 2), (k = k.prev));
         }
       } while (j !== k.next);
 
@@ -887,7 +920,7 @@ export class PackedLayout extends go.Layout {
         while ((n3 = n3.next) !== n2) {
           const ca = score(n3);
           if (ca < aa) {
-            (n1 = n3), (aa = ca);
+            ((n1 = n3), (aa = ca));
           }
         }
         n2 = n1.next;
@@ -1022,7 +1055,8 @@ export class PackedLayout extends go.Layout {
 
         let hasIntersections = true; // set initially to true to make skip fit checking work when onlyCheckSkipFits = true
         if (!onlyCheckSkipFits) {
-          hasIntersections = this.fastFitHasIntersections(fit) || this.fitHasIntersections(fit);
+          hasIntersections =
+            this.fastFitHasIntersections(fit) || this.fitHasIntersections(fit);
           if (!hasIntersections) {
             bestFit = fit;
             continue;
@@ -1035,7 +1069,10 @@ export class PackedLayout extends go.Layout {
           !fit.s1.data.p1Concave &&
           (fit.s1.next.data.p1Concave || fit.s1.next.next.data.p1Concave)
         ) {
-          let [nextSegment, usePreviousSegment] = this.findNextOrientedSegment(fit, fit.s1.next);
+          let [nextSegment, usePreviousSegment] = this.findNextOrientedSegment(
+            fit,
+            fit.s1.next
+          );
           let nextSegmentTouchesFit = false;
           while (hasIntersections && nextSegment !== null) {
             fit.bounds = this.rectAgainstMultiSegment(
@@ -1044,11 +1081,18 @@ export class PackedLayout extends go.Layout {
               bounds.width,
               bounds.height
             );
-            hasIntersections = this.fastFitHasIntersections(fit) || this.fitHasIntersections(fit);
-            nextSegmentTouchesFit = this.segmentIsOnFitPerimeter(nextSegment.data, fit.bounds);
+            hasIntersections =
+              this.fastFitHasIntersections(fit) || this.fitHasIntersections(fit);
+            nextSegmentTouchesFit = this.segmentIsOnFitPerimeter(
+              nextSegment.data,
+              fit.bounds
+            );
 
             if (hasIntersections || !nextSegmentTouchesFit) {
-              [nextSegment, usePreviousSegment] = this.findNextOrientedSegment(fit, nextSegment);
+              [nextSegment, usePreviousSegment] = this.findNextOrientedSegment(
+                fit,
+                nextSegment
+              );
             }
           }
 
@@ -1103,16 +1147,23 @@ export class PackedLayout extends go.Layout {
     const targetOrientation = (orientation + 1) % 4;
 
     while (!this.segmentIsMinOrMax(lastSegment.data)) {
-      const usePreviousSegment = lastSegment.data.isHorizontal === fit.s1.data.isHorizontal;
+      const usePreviousSegment =
+        lastSegment.data.isHorizontal === fit.s1.data.isHorizontal;
 
       let lastOrientation: Orientation;
       if (usePreviousSegment) {
-        lastOrientation = this.segmentOrientation(lastSegment.data, lastSegment.next.data);
+        lastOrientation = this.segmentOrientation(
+          lastSegment.data,
+          lastSegment.next.data
+        );
         if (lastSegment.next.data.p1Concave) {
           lastOrientation = (lastOrientation + 1) % 4;
         }
       } else {
-        lastOrientation = this.segmentOrientation(lastSegment.prev.data, lastSegment.data);
+        lastOrientation = this.segmentOrientation(
+          lastSegment.prev.data,
+          lastSegment.data
+        );
         if (lastSegment.data.p1Concave) {
           lastOrientation = (lastOrientation + 1) % 4;
         }
@@ -1277,7 +1328,10 @@ export class PackedLayout extends go.Layout {
     const cost1 = this.placementCost(r);
     const cost2 = this.placementCost(r.setTo(x2, y2, width, height));
     let cost3 = Infinity;
-    if (coordIsX && (this._center.x - (x1 + width / 2)) * (this._center.x - (x2 + width / 2)) < 0) {
+    if (
+      coordIsX &&
+      (this._center.x - (x1 + width / 2)) * (this._center.x - (x2 + width / 2)) < 0
+    ) {
       cost3 = this.placementCost(r.setTo(this._center.x - width / 2, y1, width, height));
     } else if (
       !coordIsX &&
@@ -1289,8 +1343,8 @@ export class PackedLayout extends go.Layout {
     return cost3 < cost2 && cost3 < cost1
       ? r
       : cost2 < cost1
-      ? r.setTo(x2, y2, width, height)
-      : r.setTo(x1, y1, width, height);
+        ? r.setTo(x2, y2, width, height)
+        : r.setTo(x1, y1, width, height);
   }
 
   /**
@@ -1422,13 +1476,19 @@ export class PackedLayout extends go.Layout {
         shortened0Precond);
     if (extended0) {
       // extend s0
-      [s0.data.x2, s0.data.y2] = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds);
+      [s0.data.x2, s0.data.y2] = this.cornerFromRect(
+        (testOrientation + 3) % 4,
+        fit.bounds
+      );
       this._tree.setTo(s0.data, this.rectFromSegment(s0.data));
       nextConvexCornerOrientation = (testOrientation + 3) % 4;
       this.updateMinMaxSegments(s0.data);
     } else {
       if (shortened0) {
-        [s0.data.x2, s0.data.y2] = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds);
+        [s0.data.x2, s0.data.y2] = this.cornerFromRect(
+          (testOrientation + 1) % 4,
+          fit.bounds
+        );
         this._tree.setTo(s0.data, this.rectFromSegment(s0.data));
       }
       const newSegment = new Segment(s0.data.x2, s0.data.y2, cornerX, cornerY, true);
@@ -1503,7 +1563,10 @@ export class PackedLayout extends go.Layout {
 
     [cornerX, cornerY] = this.cornerFromRect(testOrientation, fit.bounds);
 
-    if (this.approxEqual(cornerX, sNext.data.x1) && this.approxEqual(cornerY, sNext.data.y1)) {
+    if (
+      this.approxEqual(cornerX, sNext.data.x1) &&
+      this.approxEqual(cornerY, sNext.data.y1)
+    ) {
       // extend sNext
       if (
         s0.data.isHorizontal === sNext.data.isHorizontal &&
@@ -1519,7 +1582,10 @@ export class PackedLayout extends go.Layout {
         lastConvexCornerOrientation = nextConvexCornerOrientation; // no additional segments need to be added
         this.updateMinMaxSegments(s0.data);
       } else {
-        [sNext.data.x1, sNext.data.y1] = this.cornerFromRect((testOrientation + 1) % 4, fit.bounds);
+        [sNext.data.x1, sNext.data.y1] = this.cornerFromRect(
+          (testOrientation + 1) % 4,
+          fit.bounds
+        );
         this._tree.setTo(sNext.data, this.rectFromSegment(sNext.data));
         lastConvexCornerOrientation = (testOrientation + 1) % 4;
         this.updateMinMaxSegments(sNext.data);
@@ -1543,7 +1609,13 @@ export class PackedLayout extends go.Layout {
       this.updateMinMaxSegments(s0.data);
     } else if (!this.pointIsFitCorner(sNext.data.x1, sNext.data.y1, fit.bounds)) {
       // add concave segment
-      const newSegment = new Segment(cornerX, cornerY, sNext.data.x1, sNext.data.y1, false);
+      const newSegment = new Segment(
+        cornerX,
+        cornerY,
+        sNext.data.x1,
+        sNext.data.y1,
+        false
+      );
       if (this.pointIsOnFitPerimeter(sNext.data.x1, sNext.data.y1, fit.bounds)) {
         sNext.data.p1Concave = true;
       } else {
@@ -1567,14 +1639,20 @@ export class PackedLayout extends go.Layout {
     } else {
       // if (this.pointIsOnFitPerimeter(sNext.data.x1, sNext.data.y1, fit.bounds))
       // shorten existing segment
-      [sNext.data.x1, sNext.data.y1] = this.cornerFromRect((testOrientation + 3) % 4, fit.bounds);
+      [sNext.data.x1, sNext.data.y1] = this.cornerFromRect(
+        (testOrientation + 3) % 4,
+        fit.bounds
+      );
       sNext.data.p1Concave = true;
       this._tree.setTo(sNext.data, this.rectFromSegment(sNext.data));
       lastConvexCornerOrientation = (testOrientation + 3) % 4;
     }
 
     while (nextConvexCornerOrientation !== lastConvexCornerOrientation) {
-      [cornerX, cornerY] = this.cornerFromRect((nextConvexCornerOrientation + 3) % 4, fit.bounds);
+      [cornerX, cornerY] = this.cornerFromRect(
+        (nextConvexCornerOrientation + 3) % 4,
+        fit.bounds
+      );
       const newSegment = new Segment(s0.data.x2, s0.data.y2, cornerX, cornerY, false);
       s0 = segments.insertAfter(newSegment, s0);
       this._tree.add(newSegment, this.rectFromSegment(newSegment));
@@ -1614,16 +1692,28 @@ export class PackedLayout extends go.Layout {
   private updateMinMaxSegments(s: Segment) {
     const centerX = (s.x1 + s.x2) / 2;
     const centerY = (s.y1 + s.y2) / 2;
-    if (this._minXSegment && centerX < (this._minXSegment.x1 + this._minXSegment.x2) / 2) {
+    if (
+      this._minXSegment &&
+      centerX < (this._minXSegment.x1 + this._minXSegment.x2) / 2
+    ) {
       this._minXSegment = s;
     }
-    if (this._minYSegment && centerY < (this._minYSegment.y1 + this._minYSegment.y2) / 2) {
+    if (
+      this._minYSegment &&
+      centerY < (this._minYSegment.y1 + this._minYSegment.y2) / 2
+    ) {
       this._minYSegment = s;
     }
-    if (this._maxXSegment && centerX > (this._maxXSegment.x1 + this._maxXSegment.x2) / 2) {
+    if (
+      this._maxXSegment &&
+      centerX > (this._maxXSegment.x1 + this._maxXSegment.x2) / 2
+    ) {
       this._maxXSegment = s;
     }
-    if (this._maxYSegment && centerY > (this._maxYSegment.y1 + this._maxYSegment.y2) / 2) {
+    if (
+      this._maxYSegment &&
+      centerY > (this._maxYSegment.y1 + this._maxYSegment.y2) / 2
+    ) {
       this._maxYSegment = s;
     }
   }
@@ -1876,7 +1966,7 @@ export class PackedLayout extends go.Layout {
 
 /**
  * @hidden @internal
- * Class for a node in a {{@link CircularDoublyLinkedList}.
+ * Class for a node in a {@link CircularDoublyLinkedList}.
  * Stores a pointer to the previous and next node.
  */
 class ListNode<T> {
@@ -2065,7 +2155,7 @@ function enclose(circles: Array<Circle | go.Point>): go.Rect {
   while (i < n) {
     p = circles[i];
     if (e !== null && enclosesWeak(e, p)) ++i;
-    else (e = encloseBasis((B = extendBasis(B, p)))), (i = 0);
+    else ((e = encloseBasis((B = extendBasis(B, p)))), (i = 0));
   }
 
   if (e !== null) {
@@ -2088,7 +2178,10 @@ function circleToRect(c: Circle): go.Rect {
 /**
  * @hidden @internal
  */
-function extendBasis(B: Array<Circle | go.Point>, p: Circle | go.Point): Array<Circle | go.Point> {
+function extendBasis(
+  B: Array<Circle | go.Point>,
+  p: Circle | go.Point
+): Array<Circle | go.Point> {
   if (enclosesWeakAll(p, B)) return [p];
 
   // If we get here then B must have at least one element.
@@ -2200,7 +2293,11 @@ function encloseBasis2(a: Circle | go.Point, b: Circle | go.Point): Circle {
 /**
  * @hidden @internal
  */
-function encloseBasis3(a: Circle | go.Point, b: Circle | go.Point, c: Circle | go.Point): Circle {
+function encloseBasis3(
+  a: Circle | go.Point,
+  b: Circle | go.Point,
+  c: Circle | go.Point
+): Circle {
   const ar = a instanceof Circle ? a.r : 0;
   const br = b instanceof Circle ? b.r : 0;
   const cr = c instanceof Circle ? c.r : 0;

@@ -8,16 +8,16 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This custom {@link go.Link} class customizes its route to go parallel to other links connecting the same ports,
  * if the link is not orthogonal and is not Bezier curved.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/ParallelRoute.html">Parallel Route Links</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/ParallelRoute">Parallel Route Links</a> sample.
  * @category Part Extension
  */
 export class ParallelRouteLink extends go.Link {

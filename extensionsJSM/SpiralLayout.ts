@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * A custom {@link go.Layout} that lays out a chain of nodes in a spiral.
@@ -19,7 +19,7 @@ import * as go from 'gojs';
  * This layout assumes the graph is a chain of {@link go.Node}s,
  * {@link spacing} controls the spacing between nodes.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Spiral.html">Spiral Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Spiral">Spiral Layout</a> sample.
  * @category Layout Extension
  */
 export class SpiralLayout extends go.Layout {
@@ -45,7 +45,8 @@ export class SpiralLayout extends go.Layout {
   }
   set radius(val: number) {
     if (this._radius !== val) {
-      if (typeof val !== 'number') throw new Error('new value ofr SpiralLayout.radius must be a number, not ' + val);
+      if (typeof val !== 'number')
+        throw new Error('new value ofr SpiralLayout.radius must be a number, not ' + val);
       this._radius = val;
       this.invalidateLayout();
     }
@@ -61,7 +62,10 @@ export class SpiralLayout extends go.Layout {
   }
   set spacing(val: number) {
     if (this._spacing !== val) {
-      if (typeof val !== 'number') throw new Error('new value for SpiralLayout.spacing must be a number, not: ' + val);
+      if (typeof val !== 'number')
+        throw new Error(
+          'new value for SpiralLayout.spacing must be a number, not: ' + val
+        );
       this._spacing = val;
       this.invalidateLayout();
     }

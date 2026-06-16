@@ -8,16 +8,16 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * Given a root {@link go.Node}, this arranges connected nodes in concentric rings,
  * layered by the minimum link distance from the root.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/radial.html">Radial Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/radial">Radial Layout</a> sample.
  * @category Layout Extension
  */
 export class RadialLayout extends go.Layout {
@@ -40,7 +40,8 @@ export class RadialLayout extends go.Layout {
     return this._root;
   }
   set root(value: go.Node | null) {
-    if (value !== null && !(value instanceof go.Node)) throw new Error('RadiallLayout.root must be a go.Node');
+    if (value !== null && !(value instanceof go.Node))
+      throw new Error('RadiallLayout.root must be a go.Node');
     if (this._root !== value) {
       this._root = value;
       this.invalidateLayout();
@@ -57,7 +58,10 @@ export class RadialLayout extends go.Layout {
   }
   set layerThickness(value: number) {
     if (this._layerThickness !== value) {
-      if (typeof value !== 'number' || isNaN(value)) throw new Error('new value for RadialLayout.layerThickness must be a real number');
+      if (typeof value !== 'number' || isNaN(value))
+        throw new Error(
+          'new value for RadialLayout.layerThickness must be a real number'
+        );
       this._layerThickness = value;
       this.invalidateLayout();
     }
@@ -73,7 +77,10 @@ export class RadialLayout extends go.Layout {
   }
   set maxLayers(value: number) {
     if (this._maxLayers !== value) {
-      if (typeof value !== 'number' || isNaN(value) || value < 0) throw new Error('new value for RadialLayout.maxLayers must be a non-negative number');
+      if (typeof value !== 'number' || isNaN(value) || value < 0)
+        throw new Error(
+          'new value for RadialLayout.maxLayers must be a non-negative number'
+        );
       this._maxLayers = value;
       this.invalidateLayout();
     }
@@ -134,7 +141,10 @@ export class RadialLayout extends go.Layout {
     }
 
     const rootvert = this.network.findVertex(this.root) as RadialVertex;
-    if (rootvert === null) throw new Error('RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on');
+    if (rootvert === null)
+      throw new Error(
+        'RadialLayout.root must be a Node in the LayoutNetwork that the RadialLayout is operating on'
+      );
 
     this.arrangementOrigin = this.initialOrigin(this.arrangementOrigin);
     this.findDistances(rootvert);
@@ -341,6 +351,7 @@ export class RadialLayout extends go.Layout {
 
 /**
  * RadialVertex, a LayoutVertex that holds additional info
+ * @category Layout Extension
  * @unindexed
  */
 export class RadialVertex extends go.LayoutVertex {

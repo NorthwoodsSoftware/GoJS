@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 /**
  * This {@link go.Layout} positions non-Link Parts into a table according to the values of
  * {@link go.GraphObject.row}, {@link go.GraphObject.column}, {@link go.GraphObject.rowSpan}, {@link go.GraphObject.columnSpan},
@@ -31,7 +31,7 @@ import * as go from 'gojs';
  * nor background ({@link go.RowColumnDefinition.background} and {@link go.RowColumnDefinition.coversSeparators} properties).
  * There is no support for {@link go.RowColumnDefinition.sizing}, either.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Table.html">Table Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Table">Table Layout</a> sample.
  * @category Layout Extension
  */
 export class TableLayout extends go.Layout {
@@ -276,13 +276,15 @@ export class TableLayout extends go.Layout {
                 break;
         }
         const str = this.defaultStretch;
-        if (horizontal === undefined && (str === go.Stretch.Horizontal || str === go.Stretch.Fill)) {
+        if (horizontal === undefined &&
+            (str === go.Stretch.Horizontal || str === go.Stretch.Fill)) {
             horizontal = true;
         }
         else {
             horizontal = false;
         }
-        if (vertical === undefined && (str === go.Stretch.Vertical || str === go.Stretch.Fill)) {
+        if (vertical === undefined &&
+            (str === go.Stretch.Vertical || str === go.Stretch.Fill)) {
             vertical = true;
         }
         else {
@@ -449,7 +451,9 @@ export class TableLayout extends go.Layout {
                     //    the row/column should use the largest measured size of any
                     //    GraphObject contained, constrained by mins and maxes
                     if (child.rowSpan === 1 &&
-                        (realheight || stretch === go.Stretch.None || stretch === go.Stretch.Horizontal)) {
+                        (realheight ||
+                            stretch === go.Stretch.None ||
+                            stretch === go.Stretch.Horizontal)) {
                         const def = this.getRowDefinition(i);
                         amt = Math.max(mheight - def.actual, 0);
                         if (amt > rowleft)
@@ -543,7 +547,8 @@ export class TableLayout extends go.Layout {
                         w = colHerald.actual + colleft;
                     else {
                         w =
-                            /*colHerald.actual +*/ (nosizeCols[child.column] / desiredColTotal) *
+                            /*colHerald.actual +*/ (nosizeCols[child.column] /
+                                desiredColTotal) *
                                 originalcolleft;
                     }
                 }
@@ -829,7 +834,10 @@ export class TableLayout extends go.Layout {
                 if (!rowcol[i][j])
                     continue;
                 const colHerald = this.getColumnDefinition(j);
-                x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop(firstColumn);
+                x =
+                    originx +
+                        colHerald.position +
+                        colHerald.computeEffectiveSpacingTop(firstColumn);
                 const cell = rowcol[i][j];
                 const len = cell.length;
                 for (let k = 0; k < len; k++) {
@@ -906,7 +914,8 @@ export class TableLayout extends go.Layout {
                     const margh = marg.top + marg.bottom;
                     const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
                     if (
-                    /* isNaN(child.resizeObject.desiredSize.width) && */ stretch === go.Stretch.Fill ||
+                    /* isNaN(child.resizeObject.desiredSize.width) && */ stretch ===
+                        go.Stretch.Fill ||
                         stretch === go.Stretch.Horizontal) {
                         width = Math.max(colwidth - margw, 0);
                     }
@@ -914,7 +923,8 @@ export class TableLayout extends go.Layout {
                         width = this.getLayoutBounds(child).width;
                     }
                     if (
-                    /* isNaN(child.resizeObject.desiredSize.height) && */ stretch === go.Stretch.Fill ||
+                    /* isNaN(child.resizeObject.desiredSize.height) && */ stretch ===
+                        go.Stretch.Fill ||
                         stretch === go.Stretch.Vertical) {
                         height = Math.max(rowheight - margh, 0);
                     }

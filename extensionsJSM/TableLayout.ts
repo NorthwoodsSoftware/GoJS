@@ -8,10 +8,10 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * This {@link go.Layout} positions non-Link Parts into a table according to the values of
@@ -34,7 +34,7 @@ import * as go from 'gojs';
  * nor background ({@link go.RowColumnDefinition.background} and {@link go.RowColumnDefinition.coversSeparators} properties).
  * There is no support for {@link go.RowColumnDefinition.sizing}, either.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/Table.html">Table Layout</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/Table">Table Layout</a> sample.
  * @category Layout Extension
  */
 export class TableLayout extends go.Layout {
@@ -63,7 +63,8 @@ export class TableLayout extends go.Layout {
   }
   set defaultAlignment(val: go.Spot) {
     if (!this._defaultAlignment.equals(val)) {
-      if (!(val instanceof go.Spot)) throw new Error('new defaultAlignment value is not a Spot');
+      if (!(val instanceof go.Spot))
+        throw new Error('new defaultAlignment value is not a Spot');
       this._defaultAlignment = val;
       this.invalidateLayout();
     }
@@ -293,12 +294,18 @@ export class TableLayout extends go.Layout {
     }
 
     const str = this.defaultStretch;
-    if (horizontal === undefined && (str === go.Stretch.Horizontal || str === go.Stretch.Fill)) {
+    if (
+      horizontal === undefined &&
+      (str === go.Stretch.Horizontal || str === go.Stretch.Fill)
+    ) {
       horizontal = true;
     } else {
       horizontal = false;
     }
-    if (vertical === undefined && (str === go.Stretch.Vertical || str === go.Stretch.Fill)) {
+    if (
+      vertical === undefined &&
+      (str === go.Stretch.Vertical || str === go.Stretch.Fill)
+    ) {
       vertical = true;
     } else {
       vertical = false;
@@ -339,14 +346,20 @@ export class TableLayout extends go.Layout {
    * By default this method does nothing.
    * @virtual
    */
-  protected beforeMeasure(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void {}
+  protected beforeMeasure(
+    parts: go.List<go.Part>,
+    rowcol: Array<Array<Array<any>>>
+  ): void {}
 
   /**
    * Override this method in order to perform some operations after arranging.
    * By default this method does nothing.
    * @virtual
    */
-  protected afterArrange(parts: go.List<go.Part>, rowcol: Array<Array<Array<any>>>): void {}
+  protected afterArrange(
+    parts: go.List<go.Part>,
+    rowcol: Array<Array<Array<any>>>
+  ): void {}
 
   /**
    * @hidden @internal
@@ -489,7 +502,9 @@ export class TableLayout extends go.Layout {
           //    GraphObject contained, constrained by mins and maxes
           if (
             child.rowSpan === 1 &&
-            (realheight || stretch === go.Stretch.None || stretch === go.Stretch.Horizontal)
+            (realheight ||
+              stretch === go.Stretch.None ||
+              stretch === go.Stretch.Horizontal)
           ) {
             const def = this.getRowDefinition(i);
             amt = Math.max(mheight - def.actual, 0);
@@ -589,7 +604,8 @@ export class TableLayout extends go.Layout {
           if (desiredColTotal === 0) w = colHerald.actual + colleft;
           else {
             w =
-              /*colHerald.actual +*/ ((nosizeCols as any)[child.column] / desiredColTotal) *
+              /*colHerald.actual +*/ ((nosizeCols as any)[child.column] /
+                desiredColTotal) *
               originalcolleft;
           }
         } else {
@@ -700,20 +716,32 @@ export class TableLayout extends go.Layout {
       switch (stretch) {
         case go.Stretch.Fill:
           if (actualSizeColumns[colHerald.index] !== 0) {
-            allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+            allowedSize.width = Math.min(
+              allowedSize.width,
+              actualSizeColumns[colHerald.index]
+            );
           }
           if (actualSizeRows[rowHerald.index] !== 0) {
-            allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+            allowedSize.height = Math.min(
+              allowedSize.height,
+              actualSizeRows[rowHerald.index]
+            );
           }
           break;
         case go.Stretch.Horizontal:
           if (actualSizeColumns[colHerald.index] !== 0) {
-            allowedSize.width = Math.min(allowedSize.width, actualSizeColumns[colHerald.index]);
+            allowedSize.width = Math.min(
+              allowedSize.width,
+              actualSizeColumns[colHerald.index]
+            );
           }
           break;
         case go.Stretch.Vertical:
           if (actualSizeRows[rowHerald.index] !== 0) {
-            allowedSize.height = Math.min(allowedSize.height, actualSizeRows[rowHerald.index]);
+            allowedSize.height = Math.min(
+              allowedSize.height,
+              actualSizeRows[rowHerald.index]
+            );
           }
           break;
       }
@@ -844,7 +872,11 @@ export class TableLayout extends go.Layout {
   /**
    * @hidden @internal
    */
-  arrangeTable(children: go.List<go.Part>, union: go.Size, rowcol: Array<Array<any>>): void {
+  arrangeTable(
+    children: go.List<go.Part>,
+    union: go.Size,
+    rowcol: Array<Array<any>>
+  ): void {
     const originx = this.arrangementOrigin.x;
     const originy = this.arrangementOrigin.y;
     let x = 0.0;
@@ -858,7 +890,7 @@ export class TableLayout extends go.Layout {
     }
     let firstRow = 0;
     let firstColumn = 0;
-    
+
     let ll = this.columnCount;
     for (let i = 0; i < ll; i++) {
       if (this._colDefs[i] === undefined) continue;
@@ -871,7 +903,7 @@ export class TableLayout extends go.Layout {
       firstRow = i;
       break;
     }
-    
+
     const additionalSpan = new go.Size();
     // Find cell space and arrange objects:
     for (let i = 0; i < lrow; i++) {
@@ -883,7 +915,10 @@ export class TableLayout extends go.Layout {
         // foreach column j in row i...
         if (!rowcol[i][j]) continue;
         const colHerald = this.getColumnDefinition(j);
-        x = originx + colHerald.position + colHerald.computeEffectiveSpacingTop(firstColumn);
+        x =
+          originx +
+          colHerald.position +
+          colHerald.computeEffectiveSpacingTop(firstColumn);
         const cell = rowcol[i][j];
         const len = cell.length;
 
@@ -967,7 +1002,8 @@ export class TableLayout extends go.Layout {
           const margh = marg.top + marg.bottom;
           const stretch = this.getEffectiveTableStretch(child, rowHerald, colHerald);
           if (
-            /* isNaN(child.resizeObject.desiredSize.width) && */ stretch === go.Stretch.Fill ||
+            /* isNaN(child.resizeObject.desiredSize.width) && */ stretch ===
+              go.Stretch.Fill ||
             stretch === go.Stretch.Horizontal
           ) {
             width = Math.max(colwidth - margw, 0);
@@ -975,7 +1011,8 @@ export class TableLayout extends go.Layout {
             width = this.getLayoutBounds(child).width;
           }
           if (
-            /* isNaN(child.resizeObject.desiredSize.height) && */ stretch === go.Stretch.Fill ||
+            /* isNaN(child.resizeObject.desiredSize.height) && */ stretch ===
+              go.Stretch.Fill ||
             stretch === go.Stretch.Vertical
           ) {
             height = Math.max(rowheight - margh, 0);

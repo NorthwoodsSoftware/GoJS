@@ -8,80 +8,80 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
 /* eslint comma-dangle: 'off' */
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
-   * The default light theme used by {@link ThemeManager}.
-   *
-   * Defined as the following:
-   * ```ts
-   * {
-   *   colors: {
-   *     text: '#0a0a0a',  // Neutral 950
-   *     comment: '#ca8a04',  // Yellow 600
-   *     link: '#0a0a0a',  // Neutral 950
-   *     group: '#a3a3a344',  // Neutral 400, partially transparent
-   *     outline: '#a3a3a3',  // Neutral 400
-   *     selection: '#0ea5e9',  // Sky 500
-   *     div: '#fff',
-   *     gridMinor: '#e5e5e5',  // Neutral 200
-   *     gridMajor: '#a3a3a3',  // Neutral 400
-   *     overviewBox: '#c026d3',  // Fuschia 600
-   *     tempLink: '#2563eb',  // Blue 600
-   *     tempPort: '#c026d3',  // Fuschia 600
-   *     adornmentFill: '#0ea5e9',  // Sky 500
-   *     adornmentStroke: '#1e40af',  // Blue 800
-   *     dragSelect: '#c026d3'  // Fuschia 600
-   *   },
-   *   fonts: {
-   *     normal: '10pt sans-serif',
-   *     bold: 'bold 12pt sans-serif'
-   *   },
-   *   numbers: {
-   *     group: 1,  // group strokeWidth
-   *     selection: 3  // selection strokeWidth
-   *   },
-   *   margins: {
-   *     group: new Margin(5)  // group padding
-   *   },
-   *   arrowheads: {
-   *     toArrow: 'Standard'
-   *   }
-   * }
-   * ```
-   */
+ * The default light theme used by {@link ThemeManager}.
+ *
+ * Defined as the following:
+ * ```ts
+ * {
+ *   colors: {
+ *     text: '#0a0a0a',  // Neutral 950
+ *     comment: '#ca8a04',  // Yellow 600
+ *     link: '#0a0a0a',  // Neutral 950
+ *     group: '#a3a3a344',  // Neutral 400, partially transparent
+ *     outline: '#a3a3a3',  // Neutral 400
+ *     selection: '#0ea5e9',  // Sky 500
+ *     div: '#fff',
+ *     gridMinor: '#e5e5e5',  // Neutral 200
+ *     gridMajor: '#a3a3a3',  // Neutral 400
+ *     overviewBox: '#c026d3',  // Fuschia 600
+ *     tempLink: '#2563eb',  // Blue 600
+ *     tempPort: '#c026d3',  // Fuschia 600
+ *     adornmentFill: '#0ea5e9',  // Sky 500
+ *     adornmentStroke: '#1e40af',  // Blue 800
+ *     dragSelect: '#c026d3'  // Fuschia 600
+ *   },
+ *   fonts: {
+ *     normal: '10pt sans-serif',
+ *     bold: 'bold 12pt sans-serif'
+ *   },
+ *   numbers: {
+ *     group: 1,  // group strokeWidth
+ *     selection: 3  // selection strokeWidth
+ *   },
+ *   margins: {
+ *     group: new Margin(5)  // group padding
+ *   },
+ *   arrowheads: {
+ *     toArrow: 'Standard'
+ *   }
+ * }
+ * ```
+ */
 export const Light: go.Theme = {
   colors: {
-    text: '#0a0a0a',  // Neutral 950
-    comment: '#ca8a04',  // Yellow 600
-    link: '#0a0a0a',  // Neutral 950
-    group: '#a3a3a344',  // Neutral 400, partially transparent
-    outline: '#a3a3a3',  // Neutral 400
-    selection: '#0ea5e9',  // Sky 500
+    text: '#0a0a0a', // Neutral 950
+    comment: '#ca8a04', // Yellow 600
+    link: '#0a0a0a', // Neutral 950
+    group: '#a3a3a344', // Neutral 400, partially transparent
+    outline: '#a3a3a3', // Neutral 400
+    selection: '#0ea5e9', // Sky 500
     div: '#fff',
-    gridMinor: '#e5e5e5',  // Neutral 200
-    gridMajor: '#a3a3a3',  // Neutral 400
-    overviewBox: '#c026d3',  // Fuschia 600
-    tempLink: '#2563eb',  // Blue 600
-    tempPort: '#c026d3',  // Fuschia 600
-    adornmentFill: '#0ea5e9',  // Sky 500
-    adornmentStroke: '#1e40af',  // Blue 800
-    dragSelect: '#c026d3'  // Fuschia 600
+    gridMinor: '#e5e5e5', // Neutral 200
+    gridMajor: '#a3a3a3', // Neutral 400
+    overviewBox: '#c026d3', // Fuschia 600
+    tempLink: '#2563eb', // Blue 600
+    tempPort: '#c026d3', // Fuschia 600
+    adornmentFill: '#0ea5e9', // Sky 500
+    adornmentStroke: '#1e40af', // Blue 800
+    dragSelect: '#c026d3' // Fuschia 600
   },
   fonts: {
     normal: '10pt sans-serif',
     bold: 'bold 12pt sans-serif'
   },
   numbers: {
-    group: 1,  // group strokeWidth
-    selection: 3  // selection strokeWidth
+    group: 1, // group strokeWidth
+    selection: 3 // selection strokeWidth
   },
   margins: {
-    group: new go.Margin(5)  // group padding
+    group: new go.Margin(5) // group padding
   },
   arrowheads: {
     toArrow: 'Standard'
@@ -131,21 +131,21 @@ export const Light: go.Theme = {
 export const Dark: go.Theme = {
   // some info is duplicated from the Light theme in case that isn't used as a default
   colors: {
-    text: '#f5f5f5',  // Neutral 100
-    comment: '#facc15',  // Yellow 400
-    link: '#f5f5f5',  // Neutral 100
-    group: '#a3a3a388',  // Neutral 400, partially transparent
-    outline: '#a3a3a3',  // Neutral 400
-    selection: '#38bdf8',  // Sky 400
-    div: '#171717',  // Neutral 900
-    gridMinor: '#262626',  // Neutral 800
-    gridMajor: '#404040',  // Neutral 700
-    overviewBox: '#e879f9',  // Fuschia 400
-    tempLink: '#60a5fa',  // Blue 400
-    tempPort: '#e879f9',  // Fuschia 400
-    adornmentFill: '#38bdf8',  // Sky 400
-    adornmentStroke: '#2563eb',  // Blue 600
-    dragSelect: '#e879f9'  // Fuschia 400
+    text: '#f5f5f5', // Neutral 100
+    comment: '#facc15', // Yellow 400
+    link: '#f5f5f5', // Neutral 100
+    group: '#a3a3a388', // Neutral 400, partially transparent
+    outline: '#a3a3a3', // Neutral 400
+    selection: '#38bdf8', // Sky 400
+    div: '#171717', // Neutral 900
+    gridMinor: '#262626', // Neutral 800
+    gridMajor: '#404040', // Neutral 700
+    overviewBox: '#e879f9', // Fuschia 400
+    tempLink: '#60a5fa', // Blue 400
+    tempPort: '#e879f9', // Fuschia 400
+    adornmentFill: '#38bdf8', // Sky 400
+    adornmentStroke: '#2563eb', // Blue 600
+    dragSelect: '#e879f9' // Fuschia 400
   },
   fonts: {
     normal: '10pt sans-serif',
@@ -221,22 +221,22 @@ export const Modern: go.Theme = {
     tempPort: '#ec4899', // Pink 500
     adornmentFill: '#ec4899', // Pink 500
     adornmentStroke: '#831843', // Pink 900
-    dragSelect: '#ec4899', // Pink 500
+    dragSelect: '#ec4899' // Pink 500
   },
   fonts: {
     normal: '10pt sans-serif',
-    bold: 'bold 12pt sans-serif',
+    bold: 'bold 12pt sans-serif'
   },
   numbers: {
     group: 1,
-    selection: 3,
+    selection: 3
   },
   margins: {
-    group: new go.Margin(5),
+    group: new go.Margin(5)
   },
   arrowheads: {
-    toArrow: 'Standard',
-  },
+    toArrow: 'Standard'
+  }
 };
 
 /**
@@ -297,22 +297,22 @@ export const ModernDark: go.Theme = {
     tempPort: '#f472b6', // Pink 400
     adornmentFill: '#f472b6', // Pink 400
     adornmentStroke: '#9d174d', // Pink 800
-    dragSelect: '#f472b6', // Pink 400
+    dragSelect: '#f472b6' // Pink 400
   },
   fonts: {
     normal: '10pt sans-serif',
-    bold: 'bold 12pt sans-serif',
+    bold: 'bold 12pt sans-serif'
   },
   numbers: {
     group: 1,
-    selection: 3,
+    selection: 3
   },
   margins: {
-    group: new go.Margin(5),
+    group: new go.Margin(5)
   },
   arrowheads: {
-    toArrow: 'Standard',
-  },
+    toArrow: 'Standard'
+  }
 };
 
 /**
@@ -372,7 +372,7 @@ export const Tailwind: go.Theme = {
       700: '#334155',
       800: '#1e293b',
       900: '#0f172a',
-      950: '#020617',
+      950: '#020617'
     },
     gray: {
       50: '#f9fafb',
@@ -385,7 +385,7 @@ export const Tailwind: go.Theme = {
       700: '#374151',
       800: '#1f2937',
       900: '#111827',
-      950: '#030712',
+      950: '#030712'
     },
     zinc: {
       50: '#fafafa',
@@ -398,7 +398,7 @@ export const Tailwind: go.Theme = {
       700: '#3f3f46',
       800: '#27272a',
       900: '#18181b',
-      950: '#09090b',
+      950: '#09090b'
     },
     neutral: {
       50: '#fafafa',
@@ -411,7 +411,7 @@ export const Tailwind: go.Theme = {
       700: '#404040',
       800: '#262626',
       900: '#171717',
-      950: '#0a0a0a',
+      950: '#0a0a0a'
     },
     stone: {
       50: '#fafaf9',
@@ -424,7 +424,7 @@ export const Tailwind: go.Theme = {
       700: '#44403c',
       800: '#292524',
       900: '#1c1917',
-      950: '#0c0a09',
+      950: '#0c0a09'
     },
     red: {
       50: '#fef2f2',
@@ -437,7 +437,7 @@ export const Tailwind: go.Theme = {
       700: '#b91c1c',
       800: '#991b1b',
       900: '#7f1d1d',
-      950: '#450a0a',
+      950: '#450a0a'
     },
     orange: {
       50: '#fff7ed',
@@ -450,7 +450,7 @@ export const Tailwind: go.Theme = {
       700: '#c2410c',
       800: '#9a3412',
       900: '#7c2d12',
-      950: '#431407',
+      950: '#431407'
     },
     amber: {
       50: '#fffbeb',
@@ -463,7 +463,7 @@ export const Tailwind: go.Theme = {
       700: '#b45309',
       800: '#92400e',
       900: '#78350f',
-      950: '#451a03',
+      950: '#451a03'
     },
     yellow: {
       50: '#fefce8',
@@ -476,7 +476,7 @@ export const Tailwind: go.Theme = {
       700: '#a16207',
       800: '#854d0e',
       900: '#713f12',
-      950: '#422006',
+      950: '#422006'
     },
     lime: {
       50: '#f7fee7',
@@ -489,7 +489,7 @@ export const Tailwind: go.Theme = {
       700: '#4d7c0f',
       800: '#3f6212',
       900: '#365314',
-      950: '#1a2e05',
+      950: '#1a2e05'
     },
     green: {
       50: '#f0fdf4',
@@ -502,7 +502,7 @@ export const Tailwind: go.Theme = {
       700: '#15803d',
       800: '#166534',
       900: '#14532d',
-      950: '#052e16',
+      950: '#052e16'
     },
     emerald: {
       50: '#ecfdf5',
@@ -515,7 +515,7 @@ export const Tailwind: go.Theme = {
       700: '#047857',
       800: '#065f46',
       900: '#064e3b',
-      950: '#022c22',
+      950: '#022c22'
     },
     teal: {
       50: '#f0fdfa',
@@ -528,7 +528,7 @@ export const Tailwind: go.Theme = {
       700: '#0f766e',
       800: '#115e59',
       900: '#134e4a',
-      950: '#042f2e',
+      950: '#042f2e'
     },
     cyan: {
       50: '#ecfeff',
@@ -541,7 +541,7 @@ export const Tailwind: go.Theme = {
       700: '#0e7490',
       800: '#155e75',
       900: '#164e63',
-      950: '#083344',
+      950: '#083344'
     },
     sky: {
       50: '#f0f9ff',
@@ -554,7 +554,7 @@ export const Tailwind: go.Theme = {
       700: '#0369a1',
       800: '#075985',
       900: '#0c4a6e',
-      950: '#082f49',
+      950: '#082f49'
     },
     blue: {
       50: '#eff6ff',
@@ -567,7 +567,7 @@ export const Tailwind: go.Theme = {
       700: '#1d4ed8',
       800: '#1e40af',
       900: '#1e3a8a',
-      950: '#172554',
+      950: '#172554'
     },
     indigo: {
       50: '#eef2ff',
@@ -580,7 +580,7 @@ export const Tailwind: go.Theme = {
       700: '#4338ca',
       800: '#3730a3',
       900: '#312e81',
-      950: '#1e1b4b',
+      950: '#1e1b4b'
     },
     violet: {
       50: '#f5f3ff',
@@ -593,7 +593,7 @@ export const Tailwind: go.Theme = {
       700: '#6d28d9',
       800: '#5b21b6',
       900: '#4c1d95',
-      950: '#2e1065',
+      950: '#2e1065'
     },
     purple: {
       50: '#faf5ff',
@@ -606,7 +606,7 @@ export const Tailwind: go.Theme = {
       700: '#7e22ce',
       800: '#6b21a8',
       900: '#581c87',
-      950: '#3b0764',
+      950: '#3b0764'
     },
     fuchsia: {
       50: '#fdf4ff',
@@ -619,7 +619,7 @@ export const Tailwind: go.Theme = {
       700: '#a21caf',
       800: '#86198f',
       900: '#701a75',
-      950: '#4a044e',
+      950: '#4a044e'
     },
     pink: {
       50: '#fdf2f8',
@@ -632,7 +632,7 @@ export const Tailwind: go.Theme = {
       700: '#be185d',
       800: '#9d174d',
       900: '#831843',
-      950: '#500724',
+      950: '#500724'
     },
     rose: {
       50: '#fff1f2',
@@ -645,9 +645,9 @@ export const Tailwind: go.Theme = {
       700: '#be123c',
       800: '#9f1239',
       900: '#881337',
-      950: '#4c0519',
-    },
-  },
+      950: '#4c0519'
+    }
+  }
 };
 
 /**
@@ -666,7 +666,7 @@ export const OpenColor: go.Theme = {
       6: '#868e96',
       7: '#495057',
       8: '#343a40',
-      9: '#212529',
+      9: '#212529'
     },
     red: {
       0: '#fff5f5',
@@ -678,7 +678,7 @@ export const OpenColor: go.Theme = {
       6: '#fa5252',
       7: '#f03e3e',
       8: '#e03131',
-      9: '#c92a2a',
+      9: '#c92a2a'
     },
     pink: {
       0: '#fff0f6',
@@ -690,7 +690,7 @@ export const OpenColor: go.Theme = {
       6: '#e64980',
       7: '#d6336c',
       8: '#c2255c',
-      9: '#a61e4d',
+      9: '#a61e4d'
     },
     grape: {
       0: '#f8f0fc',
@@ -702,7 +702,7 @@ export const OpenColor: go.Theme = {
       6: '#be4bdb',
       7: '#ae3ec9',
       8: '#9c36b5',
-      9: '#862e9c',
+      9: '#862e9c'
     },
     violet: {
       0: '#f3f0ff',
@@ -714,7 +714,7 @@ export const OpenColor: go.Theme = {
       6: '#7950f2',
       7: '#7048e8',
       8: '#6741d9',
-      9: '#5f3dc4',
+      9: '#5f3dc4'
     },
     indigo: {
       0: '#edf2ff',
@@ -726,7 +726,7 @@ export const OpenColor: go.Theme = {
       6: '#4c6ef5',
       7: '#4263eb',
       8: '#3b5bdb',
-      9: '#364fc7',
+      9: '#364fc7'
     },
     blue: {
       0: '#e7f5ff',
@@ -738,7 +738,7 @@ export const OpenColor: go.Theme = {
       6: '#228be6',
       7: '#1c7ed6',
       8: '#1971c2',
-      9: '#1864ab',
+      9: '#1864ab'
     },
     cyan: {
       0: '#e3fafc',
@@ -750,7 +750,7 @@ export const OpenColor: go.Theme = {
       6: '#15aabf',
       7: '#1098ad',
       8: '#0c8599',
-      9: '#0b7285',
+      9: '#0b7285'
     },
     teal: {
       0: '#e6fcf5',
@@ -762,7 +762,7 @@ export const OpenColor: go.Theme = {
       6: '#12b886',
       7: '#0ca678',
       8: '#099268',
-      9: '#087f5b',
+      9: '#087f5b'
     },
     green: {
       0: '#ebfbee',
@@ -774,7 +774,7 @@ export const OpenColor: go.Theme = {
       6: '#40c057',
       7: '#37b24d',
       8: '#2f9e44',
-      9: '#2b8a3e',
+      9: '#2b8a3e'
     },
     lime: {
       0: '#f4fce3',
@@ -786,7 +786,7 @@ export const OpenColor: go.Theme = {
       6: '#82c91e',
       7: '#74b816',
       8: '#66a80f',
-      9: '#5c940d',
+      9: '#5c940d'
     },
     yellow: {
       0: '#fff9db',
@@ -798,7 +798,7 @@ export const OpenColor: go.Theme = {
       6: '#fab005',
       7: '#f59f00',
       8: '#f08c00',
-      9: '#e67700',
+      9: '#e67700'
     },
     orange: {
       0: '#fff4e6',
@@ -810,7 +810,7 @@ export const OpenColor: go.Theme = {
       6: '#fd7e14',
       7: '#f76707',
       8: '#e8590c',
-      9: '#d9480f',
-    },
-  },
+      9: '#d9480f'
+    }
+  }
 };

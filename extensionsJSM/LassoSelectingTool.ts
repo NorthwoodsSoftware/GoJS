@@ -8,19 +8,19 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
- * This replacement for the <a>DragSelectingTool</a> operates similarly but instead of drawing a rectangular area
+ * This replacement for the {@link DragSelectingTool} operates similarly but instead of drawing a rectangular area
  * where Parts may be selected, follows the mouse to draw a polygon.
  *
- * Instead of the <a>DragSelectingTool.box</a> this tool has the <a>LassoSelectingTool.shape</a>
- * whose <a>Shape.fill</a> and <a>Shape.stroke</a> may be styled.
+ * Instead of the {@link DragSelectingTool.box} this tool has the {@link LassoSelectingTool.shape}
+ * whose {@link Shape.fill} and {@link Shape.stroke} may be styled.
  *
- * Install by replacing the <a>CommandHandler.dragSelectingTool</a>.  For example:
+ * Install by replacing the {@link CommandHandler.dragSelectingTool}.  For example:
  * ```js
  * new go.Diagram("myDiagramDiv", {
  *   dragSelectingTool: new LassoSelectingTool(),
@@ -37,7 +37,12 @@ export class LassoSelectingTool extends go.Tool {
   constructor(init?: Partial<LassoSelectingTool>) {
     super();
     // this is the Shape that is shown during a drawing operation
-    this._shape = new go.Shape({ name: 'SHAPE', fill: "rgba(256,0,256,0.1)", stroke: "magenta", strokeWidth: 1.5 });
+    this._shape = new go.Shape({
+      name: 'SHAPE',
+      fill: 'rgba(256,0,256,0.1)',
+      stroke: 'magenta',
+      strokeWidth: 1.5
+    });
     // the Shape has to be inside a temporary Part that is used during the drawing operation
     new go.Part({ layerName: 'Tool', selectable: false }).add(this._shape);
     this._delay = 175;
@@ -51,7 +56,9 @@ export class LassoSelectingTool extends go.Tool {
    * The default value is a simple Shape drawing a translucent polygon.
    * The shape may not be null.
    */
-  get shape(): go.Shape { return this._shape; }
+  get shape(): go.Shape {
+    return this._shape;
+  }
   set shape(val: go.Shape) {
     if (this._shape !== val && val !== null) {
       val.name = 'SHAPE';
@@ -70,8 +77,12 @@ export class LassoSelectingTool extends go.Tool {
    * The default value is 175 milliseconds.
    * Setting this property does not raise any events.
    */
-  get delay(): number { return this._delay; }
-  set delay(value: number) { this._delay = value; }
+  get delay(): number {
+    return this._delay;
+  }
+  set delay(value: number) {
+    this._delay = value;
+  }
 
   /**
    */
@@ -79,12 +90,12 @@ export class LassoSelectingTool extends go.Tool {
     if (!this.isEnabled) return false;
     const diagram = this.diagram;
     if (!diagram.allowSelect) return false;
-    const e = diagram.lastInput;
     // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-    if (!e.left) return false;
+    if (!this.canStartButton()) return false;
     // don't include the following checks when this tool is running modally
     if (diagram.currentTool !== this) {
       if (!this.isBeyondDragSize()) return false;
+      const e = diagram.lastInput;
       // must wait for "delay" milliseconds before that tool can run
       if (e.timestamp - diagram.firstInput.timestamp < this.delay) return false;
       // don't start if we're over a selectable part
@@ -215,16 +226,22 @@ export class LassoSelectingTool extends go.Tool {
     if (!diagram || shp.part?.diagram !== diagram) return;
     const e = diagram.lastInput;
     const temp = new go.Rect();
-    const parts = diagram.findPartsIn(shp.part.actualBounds, false /*this.isPartialInclusion*/);
-    if (e.meta || e.control) {  // toggle or deselect
-      if (e.shift) {  // deselect only
+    const parts = diagram.findPartsIn(
+      shp.part.actualBounds,
+      false /*this.isPartialInclusion*/
+    );
+    if (e.meta || e.control) {
+      // toggle or deselect
+      if (e.shift) {
+        // deselect only
         const it = parts.iterator;
         while (it.next()) {
           const p = it.value;
           p.selectionObject.getDocumentBounds(temp);
           if (p.isSelected && shp.polygonContainsRect(temp)) p.isSelected = false;
         }
-      } else {  // toggle selectedness of parts
+      } else {
+        // toggle selectedness of parts
         const it = parts.iterator;
         while (it.next()) {
           const tp = it.value;
@@ -232,14 +249,16 @@ export class LassoSelectingTool extends go.Tool {
           if (shp.polygonContainsRect(temp)) tp.isSelected = !tp.isSelected;
         }
       }
-    } else if (e.shift) {  // extend selection only
+    } else if (e.shift) {
+      // extend selection only
       const it = parts.iterator;
       while (it.next()) {
         const ep = it.value;
         ep.selectionObject.getDocumentBounds(temp);
         if (!ep.isSelected && shp.polygonContainsRect(temp)) ep.isSelected = true;
       }
-    } else {  // select parts, and unselect all other previously selected parts
+    } else {
+      // select parts, and unselect all other previously selected parts
       // this tries to avoid deselecting and then reselecting any Part
       const tounselect = new go.List<go.Part>();
       const sit = diagram.selection.iterator;

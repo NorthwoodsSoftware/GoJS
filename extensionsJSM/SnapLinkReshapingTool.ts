@@ -8,17 +8,17 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
 
-import * as go from 'gojs';
+import go from 'gojs';
 
 /**
  * The SnapLinkReshapingTool class lets the user snap link reshaping handles to the nearest grid point.
  * If {@link avoidsNodes} is true and the link is orthogonal,
  * it also avoids reshaping the link so that any adjacent segments cross over any avoidable nodes.
  *
- * If you want to experiment with this extension, try the <a href="../../samples/SnapLinkReshaping.html">Snap Link Reshaping</a> sample.
+ * If you want to experiment with this extension, try the <a href="/samples/SnapLinkReshaping">Snap Link Reshaping</a> sample.
  * @category Tool Extension
  */
 export class SnapLinkReshapingTool extends go.LinkReshapingTool {
@@ -54,7 +54,10 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
     return this._gridCellSize;
   }
   set gridCellSize(val: go.Size) {
-    if (!(val instanceof go.Size)) throw new Error('new value for SnapLinkReshapingTool.gridCellSize must be a Size, not: ' + val);
+    if (!(val instanceof go.Size))
+      throw new Error(
+        'new value for SnapLinkReshapingTool.gridCellSize must be a Size, not: ' + val
+      );
     this._gridCellSize = val.copy();
   }
 
@@ -67,7 +70,10 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
     return this._gridOrigin;
   }
   set gridOrigin(val: go.Point) {
-    if (!(val instanceof go.Point)) throw new Error('new value for SnapLinkReshapingTool.gridOrigin must be a Point, not: ' + val);
+    if (!(val instanceof go.Point))
+      throw new Error(
+        'new value for SnapLinkReshapingTool.gridOrigin must be a Point, not: ' + val
+      );
     this._gridOrigin = val.copy();
   }
 
@@ -115,8 +121,10 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
       this._safePoint = this.diagram.lastInput.documentPoint.copy();
       const link = this.adornedLink;
       const idx = this.handle.segmentIndex;
-      this._prevSegHoriz = Math.abs(link.getPoint(idx - 1).y - link.getPoint(idx).y) < 0.5;
-      this._nextSegHoriz = Math.abs(link.getPoint(idx + 1).y - link.getPoint(idx).y) < 0.5;
+      this._prevSegHoriz =
+        Math.abs(link.getPoint(idx - 1).y - link.getPoint(idx).y) < 0.5;
+      this._nextSegHoriz =
+        Math.abs(link.getPoint(idx + 1).y - link.getPoint(idx).y) < 0.5;
     }
   }
 
@@ -136,7 +144,8 @@ export class SnapLinkReshapingTool extends go.LinkReshapingTool {
       // first, find the grid to which we should snap
       let cell = this.gridCellSize;
       let orig = this.gridOrigin;
-      if (!cell.isReal() || cell.width === 0 || cell.height === 0) cell = diagram.grid.gridCellSize;
+      if (!cell.isReal() || cell.width === 0 || cell.height === 0)
+        cell = diagram.grid.gridCellSize;
       if (!orig.isReal()) orig = diagram.grid.gridOrigin;
       // second, compute the closest grid point
       pt = p.copy().snapToGrid(orig.x, orig.y, cell.width, cell.height);

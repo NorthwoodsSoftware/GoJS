@@ -7,9 +7,9 @@
  * Note that the API for this class may change with any version, even point releases.
  * If you intend to use an extension in production, you should copy the code to your own source directory.
  * Extensions can be found in the GoJS kit under the extensions or extensionsJSM folders.
- * See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+ * See the Extensions learn page (https://gojs.net/learn/extensions) for more information.
  */
-import * as go from 'gojs';
+import go from 'gojs';
 // These are the definitions for all of the predefined buttons.
 // You do not need to load this file in order to use buttons.
 // A 'Button' is a Panel that has a Shape surrounding some content
@@ -23,11 +23,6 @@ import * as go from 'gojs';
 //      .add(
 //        new go.TextBlock('Click me!')
 //      )
-// or:
-//    $('Button',
-//      $(go.TextBlock, 'Click me!'),  // the content is just the text label
-//      { click: (e, obj) => alert('I was clicked') }
-//    )
 // Note that a button click event handler is not invoked upon a click if isEnabledObject() returns false.
 go.GraphObject.defineBuilder('Button', (args) => {
     // default colors for 'Button' shape
@@ -69,11 +64,11 @@ go.GraphObject.defineBuilder('Button', (args) => {
     })
         .attach({
         // save these values for the mouseEnter and mouseLeave event handlers
-        '_buttonFillNormal': undefined,
-        '_buttonStrokeNormal': undefined,
-        '_buttonFillOver': buttonFillOver,
-        '_buttonStrokeOver': buttonStrokeOver,
-        '_buttonFillDisabled': buttonFillDisabled
+        _buttonFillNormal: undefined,
+        _buttonStrokeNormal: undefined,
+        _buttonFillOver: buttonFillOver,
+        _buttonStrokeOver: buttonStrokeOver,
+        _buttonFillDisabled: buttonFillDisabled
     })
         .add(new go.Shape('RoundedRectangle', // the border
     {
@@ -125,8 +120,8 @@ go.GraphObject.defineBuilder('TreeExpanderButton', (args) => {
     const button = go.GraphObject.build('Button');
     button.attach({
         // set these values for the isTreeExpanded binding conversion
-        '_treeExpandedFigure': 'MinusLine',
-        '_treeCollapsedFigure': 'PlusLine',
+        _treeExpandedFigure: 'MinusLine',
+        _treeCollapsedFigure: 'PlusLine',
         // assume initially not visible because there are no links coming out
         visible: false
     });
@@ -140,7 +135,9 @@ go.GraphObject.defineBuilder('TreeExpanderButton', (args) => {
         // bind the Shape.figure to the Node.isTreeExpanded value using this converter:
         .bindObject('figure', 'isTreeExpanded', (exp, shape) => {
         const but = shape.panel;
-        return exp ? but['_treeExpandedFigure'] : but['_treeCollapsedFigure'];
+        return exp
+            ? but['_treeExpandedFigure']
+            : but['_treeCollapsedFigure'];
     }));
     // bind the button visibility to whether it's not a leaf node
     button.bindObject('visible', 'isTreeLeaf', (leaf) => !leaf);
@@ -181,8 +178,8 @@ go.GraphObject.defineBuilder('SubGraphExpanderButton', (args) => {
     const button = go.GraphObject.build('Button');
     button.attach({
         // set these values for the isSubGraphExpanded binding conversion
-        '_subGraphExpandedFigure': 'MinusLine',
-        '_subGraphCollapsedFigure': 'PlusLine'
+        _subGraphExpandedFigure: 'MinusLine',
+        _subGraphCollapsedFigure: 'PlusLine'
     });
     button.add(new go.Shape('MinusLine', // default value for isSubGraphExpanded is true  // the icon
     {
@@ -228,9 +225,10 @@ go.GraphObject.defineBuilder('SubGraphExpanderButton', (args) => {
 // This is just an "Auto" Adornment that can hold some contents within a light gray, shadowed box.
 // Typical usage:
 //   toolTip:
-//     go.GraphObject.build("ToolTip").add(
-//       new go.TextBlock(. . .)
-//     )
+//     go.GraphObject.build("ToolTip")
+//       .add(
+//         new go.TextBlock(. . .)
+//       )
 go.GraphObject.defineBuilder('ToolTip', (args) => new go.Adornment('Auto', {
     isShadowed: true,
     shadowColor: 'rgba(0, 0, 0, .4)',
@@ -239,8 +237,7 @@ go.GraphObject.defineBuilder('ToolTip', (args) => new go.Adornment('Auto', {
         const mgr = e.diagram.toolManager;
         mgr.extendToolTip(mgr.toolTipDuration);
     }
-})
-    .add(new go.Shape('RoundedRectangle', {
+}).add(new go.Shape('RoundedRectangle', {
     name: 'Border',
     parameter1: 1,
     fill: '#f5f5f5',
@@ -251,22 +248,16 @@ go.GraphObject.defineBuilder('ToolTip', (args) => new go.Adornment('Auto', {
 // This is just a "Vertical" Adornment that can hold some "ContextMenuButton"s.
 // Typical usage:
 //   contextMenu:
-//     go.GraphObject.build("ContextMenu").add(
-//       go.GraphObject.build("ContextMenuButton",
-//           { click: . . .}).add(
-//         new go.TextBlock(. . .)
-//       ),
-//       go.GraphObject.build("ContextMenuButton", . . .).add(. . .)
-//     )
-// or:
-//   contextMenu:
-//     $("ContextMenu",
-//       $("ContextMenuButton",
-//         $(go.TextBlock, . . .),
-//         { click: . . .}
-//       ),
-//       $("ContextMenuButton", . . .), ...)
-//     )
+//     go.GraphObject.build("ContextMenu")
+//       .add(
+//         go.GraphObject.build("ContextMenuButton",
+//             { click: . . . })
+//           .add(
+//             new go.TextBlock(. . .)
+//           ),
+//         go.GraphObject.build("ContextMenuButton", . . .)
+//           .add(. . .)
+//       )
 go.GraphObject.defineBuilder('ContextMenu', (args) => new go.Adornment('Vertical', {
     background: '#f5f5f5',
     isShadowed: true,
@@ -290,12 +281,6 @@ go.GraphObject.defineBuilder('ContextMenu', (args) => new go.Adornment('Vertical
 //   .add(
 //     new go.TextBlock(text)
 //   )
-// or:
-// $('ContextMenuButton',
-//   $(go.TextBlock, text),
-//   { click: (e, obj) => alert('Command for ' + obj.part.adornedPart) },
-//   new go.Binding('visible', '', data => ... whether OK to perform Command ...)
-// )
 go.GraphObject.defineBuilder('ContextMenuButton', (args) => {
     const button = go.GraphObject.build('Button');
     button.stretch = go.Stretch.Horizontal;
@@ -315,17 +300,18 @@ go.GraphObject.defineBuilder('ContextMenuButton', (args) => {
 // You can only control the visibility of one element in a Part at a time,
 // although that element might be an arbitrarily complex Panel.
 // Typical usage:
-//   new go.Panel(. . .).add(
-//     . . .,
-//     go.GraphObject.build('PanelExpanderButton', {}, 'COLLAPSIBLE'),
-//     . . .,
-//     new go.Panel({ name: 'COLLAPSIBLE' })
-//       .add(
-//         . . . stuff to be hidden or shown as the PanelExpanderButton is clicked . . .
-//       )
-//     ),
-//     . . .
-//   )
+//   new go.Panel(. . .)
+//     .add(
+//       . . .,
+//       go.GraphObject.build('PanelExpanderButton', {}, 'COLLAPSIBLE'),
+//       . . .,
+//       new go.Panel({ name: 'COLLAPSIBLE' })
+//         .add(
+//           . . . stuff to be hidden or shown as the PanelExpanderButton is clicked . . .
+//         )
+//       ),
+//       . . .
+//     )
 // or:
 //   $(go.Panel, . . .,
 //     . . .,
@@ -342,17 +328,18 @@ go.GraphObject.defineBuilder('PanelExpanderButton', (args) => {
     const button = go.GraphObject.build('Button');
     button.attach({
         // set these values for the button's look
-        '_buttonExpandedFigure': 'M0 0 M0 6 L4 2 8 6 M8 8',
-        '_buttonCollapsedFigure': 'M0 0 M0 2 L4 6 8 2 M8 8',
+        _buttonExpandedFigure: 'M0 0 M0 6 L4 2 8 6 M8 8',
+        _buttonCollapsedFigure: 'M0 0 M0 2 L4 6 8 2 M8 8',
         'ButtonBorder.fill': 'rgba(0, 0, 0, 0)',
-        '_buttonFillNormal': 'rgba(0, 0, 0, 0)',
+        _buttonFillNormal: 'rgba(0, 0, 0, 0)',
         'ButtonBorder.stroke': null,
-        '_buttonStrokeNormal': null,
-        '_buttonFillOver': 'rgba(0, 0, 0, .2)',
-        '_buttonStrokeOver': null
+        _buttonStrokeNormal: null,
+        _buttonFillOver: 'rgba(0, 0, 0, .2)',
+        _buttonStrokeOver: null
     });
-    button.add(new go.Shape({ name: 'ButtonIcon', strokeWidth: 2 })
-        .bindObject('geometryString', 'visible', (vis) => vis ? button['_buttonExpandedFigure'] : button['_buttonCollapsedFigure'], undefined, eltname));
+    button.add(new go.Shape({ name: 'ButtonIcon', strokeWidth: 2 }).bindObject('geometryString', 'visible', (vis) => vis
+        ? button['_buttonExpandedFigure']
+        : button['_buttonCollapsedFigure'], undefined, eltname));
     const border = button.findObject('ButtonBorder');
     if (border instanceof go.Shape) {
         border.stroke = null;
@@ -456,16 +443,15 @@ go.GraphObject.defineBuilder('CheckBox', (args) => {
         mouseEnter: button.mouseEnter,
         mouseLeave: button.mouseLeave,
         click: button.click
-    })
-        .attach({
+    }).attach({
         // transfer CheckBoxButton properties over to this new CheckBox panel
-        '_buttonFillNormal': button['_buttonFillNormal'],
-        '_buttonStrokeNormal': button['_buttonStrokeNormal'],
-        '_buttonFillOver': button['_buttonFillOver'],
-        '_buttonStrokeOver': button['_buttonStrokeOver'],
-        '_buttonFillDisabled': button['_buttonFillDisabled'],
+        _buttonFillNormal: button['_buttonFillNormal'],
+        _buttonStrokeNormal: button['_buttonStrokeNormal'],
+        _buttonFillOver: button['_buttonFillOver'],
+        _buttonStrokeOver: button['_buttonStrokeOver'],
+        _buttonFillDisabled: button['_buttonFillDisabled'],
         // also save original Button behavior, for potential use in a Panel.click event handler
-        '_buttonClick': button.click
+        _buttonClick: button.click
     });
     box.add(button);
     // avoid potentially conflicting event handlers on the 'CheckBoxButton'
@@ -547,41 +533,53 @@ go.GraphObject.defineBuilder('ToggleSwitch', function (args) {
     // process the one required string argument for this kind of button
     const propname = go.GraphObject.takeBuilderArgument(args);
     if (!propname)
-        throw new Error("ToggleSwitch must be data-bound to a property name, not: " + propname);
+        throw new Error('ToggleSwitch must be data-bound to a property name, not: ' + propname);
     // process an optional boolean argument, true to indicate vertical instead of horizontal
-    const vertical = go.GraphObject.takeBuilderArgument(args, false, v => (typeof v === "boolean"));
+    const vertical = go.GraphObject.takeBuilderArgument(args, false, (v) => typeof v === 'boolean');
     // default initial colors
-    const ButtonFillOff = "gray";
-    const ButtonBorderOff = "transparent";
-    const ButtonIconFillOff = "white";
-    const ButtonFillOn = "green";
-    const ButtonBorderOn = "transparent";
-    const ButtonIconFillOn = "white";
-    const button = new go.Panel("Auto", { width: vertical ? 15 : 28, height: vertical ? 28 : 15 })
+    const ButtonFillOff = 'gray';
+    const ButtonBorderOff = 'transparent';
+    const ButtonIconFillOff = 'white';
+    const ButtonFillOn = 'green';
+    const ButtonBorderOn = 'transparent';
+    const ButtonIconFillOn = 'white';
+    const button = new go.Panel('Auto', {
+        width: vertical ? 15 : 28,
+        height: vertical ? 28 : 15
+    })
         .attach({
-        "_buttonFillOff": ButtonFillOff,
-        "_buttonBorderOff": ButtonBorderOff,
-        "_buttonIconFillOff": ButtonIconFillOff,
-        "_buttonFillOn": ButtonFillOn,
-        "_buttonBorderOn": ButtonBorderOn,
-        "_buttonIconFillOn": ButtonIconFillOn,
+        // remember the colors on the toggle switch panel, so that they can be individually customized
+        _buttonFillOff: ButtonFillOff,
+        _buttonBorderOff: ButtonBorderOff,
+        _buttonIconFillOff: ButtonIconFillOff,
+        _buttonFillOn: ButtonFillOn,
+        _buttonBorderOn: ButtonBorderOn,
+        _buttonIconFillOn: ButtonIconFillOn
     })
-        .add(new go.Shape("Capsule", {
-        name: "ButtonBorder",
-        fill: ButtonFillOff, stroke: ButtonBorderOff, strokeWidth: 1
+        .add(new go.Shape('Capsule', {
+        name: 'ButtonBorder',
+        fill: ButtonFillOff,
+        stroke: ButtonBorderOff,
+        strokeWidth: 1
     })
-        .bind("fill", propname, (b, shp) => b ? shp.panel["_buttonFillOn"] : shp.panel["_buttonFillOff"])
-        .bind("stroke", propname, (b, shp) => b ? shp.panel["_buttonBorderOn"] : shp.panel["_buttonBorderOff"]))
-        .add(new go.Shape("Circle", {
-        name: "ButtonIcon",
-        width: 11, height: 11,
-        fill: ButtonIconFillOff, stroke: null,
+        .bind('fill', propname, (b, shp) => b ? shp.panel['_buttonFillOn'] : shp.panel['_buttonFillOff'])
+        .bind('stroke', propname, (b, shp) => b ? shp.panel['_buttonBorderOn'] : shp.panel['_buttonBorderOff']))
+        .add(new go.Shape('Circle', {
+        name: 'ButtonIcon',
+        width: 11,
+        height: 11,
+        fill: ButtonIconFillOff,
+        stroke: null,
         alignment: vertical ? go.Spot.Bottom : go.Spot.Left
     })
-        .bind("fill", propname, (b, shp) => b ? shp.panel["_buttonIconFillOn"] : shp.panel["_buttonIconFillOff"])
-        .bind("alignment", propname, b => b
-        ? (vertical ? go.Spot.Top : go.Spot.Right)
-        : (vertical ? go.Spot.Bottom : go.Spot.Left)));
+        .bind('fill', propname, (b, shp) => b ? shp.panel['_buttonIconFillOn'] : shp.panel['_buttonIconFillOff'])
+        .bind('alignment', propname, (b) => b
+        ? vertical
+            ? go.Spot.Top
+            : go.Spot.Right
+        : vertical
+            ? go.Spot.Bottom
+            : go.Spot.Left));
     button.click = function (e, btn) {
         if (!btn.isEnabledObject())
             return;
@@ -627,7 +625,7 @@ go.GraphObject.defineBuilder('Toggle', function (args) {
     })
         .attach({
         // also save original Button behavior, for potential use in a Panel.click event handler
-        '_buttonClick': button.click
+        _buttonClick: button.click
     })
         .add(button);
     // avoid potentially conflicting event handlers on the 'ToggleSwitch'
