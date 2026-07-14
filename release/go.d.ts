@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v4.0.0
+ * Type definitions for GoJS v4.0.2
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -4575,7 +4575,7 @@ export class ChangedEvent {
      * when no particular model or diagram applies.
      */
     get model(): Model | null;
-    set model(value: Model | null);
+    set model(value: Model<any, any> | null);
     /**
      * Gets or sets the {@link Diagram} that was modified.
      * When this property is non-null, the {@link model} property will be null.
@@ -4861,7 +4861,7 @@ export class UndoManager {
      * @see {@link models}
      * @see {@link removeModel}
      */
-    addModel(model: Model): void;
+    addModel(model: Model<any, any>): void;
     /**
      * Inform this UndoManager that it will no longer be receiving {@link ChangedEvent}s
      * when the given {@link Model} is changed.
@@ -4874,7 +4874,7 @@ export class UndoManager {
      * @see {@link models}
      * @see {@link addModel}
      */
-    removeModel(model: Model): void;
+    removeModel(model: Model<any, any>): void;
     /**
      * Begin a transaction, where the changes are held by a {@link Transaction} object
      * as the value of {@link currentTransaction}.
@@ -8292,7 +8292,7 @@ export class RotatingTool extends Tool {
     makeAdornment(rotateObj: GraphObject): Adornment | null;
     /**
      * Gets or sets a small GraphObject that is copied as a rotation handle for the selected part.
-     * By default this is a {@link Shape} that is a small yellow circle.
+     * By default this is a {@link Shape} that is a small blue circle.
      * Setting this property does not raise any events.
      *
      * Here is an example of changing the default handle to be green "X":
@@ -11303,7 +11303,7 @@ export class Diagram {
      * @virtual
      * @param elem
      */
-    setScrollWidth(elem?: HTMLElement): void;
+    setScrollWidth(elem?: HTMLElement): number;
     /**
      * This static function gets the {@link Diagram} that is attached to an HTML DIV element.
      * @param div
@@ -13217,7 +13217,7 @@ export class Diagram {
      * It is an error to replace the Diagram.model while a transaction is in progress.
      */
     get model(): Model;
-    set model(value: Model);
+    set model(value: Model<any, any>);
     /**
      * Gets or sets the {@link ThemeManager} for this Diagram.
      */
@@ -14369,7 +14369,7 @@ export class Palette extends Diagram {
      * }
      * ```
      */
-    constructor(div?: Element | string, init?: Partial<Palette & DiagramInitOptions>);
+    constructor(div?: Element | string, init?: Partial<Palette> | DiagramInitOptions);
     /**
      * @param init - A JavaScript object specifying optional initialization properties object.
      * Can specify Palette properties, and Palette sub-properties, just as when initializing a Diagram.
@@ -14381,7 +14381,7 @@ export class Palette extends Diagram {
      * }
      * ```
      */
-    constructor(init?: Partial<Palette & DiagramInitOptions>);
+    constructor(init?: Partial<Palette> | DiagramInitOptions);
 }
 /**
  * An Overview is a {@link Diagram} that displays all of a different diagram,
@@ -14416,11 +14416,11 @@ export class Overview extends Diagram {
     * can then be set later on.
     * @param init - Optional initialization properties.
     */
-    constructor(div?: Element | string, init?: Partial<Overview & DiagramInitOptions>);
+    constructor(div?: Element | string, init?: Partial<Overview> | DiagramInitOptions);
     /**
     * @param init - Optional initialization properties.
     */
-    constructor(init?: Partial<Overview & DiagramInitOptions>);
+    constructor(init?: Partial<Overview> | DiagramInitOptions);
     /**
      * Gets or sets the {@link Diagram} for which this Overview is
      * displaying a model and showing its viewport into that model.
@@ -27849,7 +27849,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * @param model - an optional model to be modified; if not supplied, it constructs and returns a new model whose name is specified by the "class" property.
      * @returns the supplied or created model loaded with data from the given string.
      */
-    static fromJson(s: string | ObjectData, model?: Model | null): Model;
+    static fromJson(s: string | ObjectData, model?: Model<any, any> | null): Model;
     /**
      * (undocumented)
      * Convert the Array value of 'points' to a List of Points.
