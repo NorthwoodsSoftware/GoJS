@@ -1,1 +1,0 @@
-import{K as e}from"./BY_RssUb.js";var t=e({isDark:typeof document<`u`&&document.documentElement.classList.contains(`dark`),hasSidebar:!1});export{t};

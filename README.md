@@ -56,11 +56,13 @@ You can install the GoJS library using npm:
 $ npm install gojs
 ```
 
-The samples, extensions, and documentation can be installed by running:
+The extensions are published separately in the `gojs-extensions` package:
 
 ```html
-$ npm create gojs-kit
+$ npm install gojs-extensions
 ```
+
+The samples and documentation are not on npm; they are available in the GitHub repository and on the website.
 
 You can use the GitHub repository to quickly [search through all of the sources](https://github.com/NorthwoodsSoftware/GoJS-Samples/search?q=setDataProperty&type=Code).
 
@@ -75,19 +77,19 @@ Diagrams are built by creating one or more templates, with desired properties da
 
 <script>
   const myDiagram = new go.Diagram('myDiagramDiv', {
-    // create a Diagram for the HTML Div element
+    // create a Diagram for the HTML div element
     'undoManager.isEnabled': true // enable undo & redo
   });
 
   // define a simple Node template
   // the Shape will automatically surround the TextBlock
-  myDiagram.nodeTemplate = new go.Node('Auto').add(
-    // add a Shape and a TextBlock to this "Auto" Panel
-    new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
-      .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
-    new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text
-      .bind('text', 'key') // TextBlock.text is bound to Node.data.key
-  );
+  myDiagram.nodeTemplate = new go.Node('Auto')
+    .add(  // add a Shape and a TextBlock to this "Auto" Panel
+      new go.Shape('RoundedRectangle', { strokeWidth: 0, fill: 'white' }) // no border; default fill is white
+        .bind('fill', 'color'), // Shape.fill is bound to Node.data.color
+      new go.TextBlock({ margin: 8, font: 'bold 14px sans-serif', stroke: '#333' }) // some room around the text
+        .bind('text', 'key') // TextBlock.text is bound to Node.data.key
+    );
 
   // but use the default Link template, by not setting Diagram.linkTemplate
 
@@ -116,6 +118,14 @@ The user can now click on nodes or links to select them, copy-and-paste them, dr
 [<img width="200" height="200" src="https://gojs.net/latest/assets/images/screenshots/minimal.png">](https://gojs.net/latest/samples/minimal.html)
 
 _Click the above image to see the interactive GoJS Diagram_
+
+<h2>Using GoJS with AI coding assistants</h2>
+
+GoJS publishes an [llms.txt](https://gojs.net/llms.txt) primer that orients LLMs and coding agents
+(Claude, Copilot, Cursor, etc.) toward correct, idiomatic GoJS 4.0+ code — typed constants
+(`go.Figures`, `go.Arrowheads`, …), the fluent `new go.Node(...).add(...)` API, generic models, and
+common gotchas. The full, machine-readable TypeScript API surface ships in this package as
+`gojs/release/go.d.ts`.
 
 <h2>Support</h2>
 

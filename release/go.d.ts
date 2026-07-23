@@ -1,5 +1,5 @@
 /*
- * Type definitions for GoJS v4.0.2
+ * Type definitions for GoJS v4.0.3
  * Project: https://gojs.net
  * Definitions by: Northwoods Software <https://github.com/NorthwoodsSoftware>
  * Definitions: https://github.com/NorthwoodsSoftware/GoJS
@@ -28096,7 +28096,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * @see {@link GraphLinksModel.linkFromKeyProperty}
      * @see {@link GraphLinksModel.linkToKeyProperty}
      */
-    get nodeKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    get nodeKeyProperty(): string | ((a: any, b?: Key) => Key);
     set nodeKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * Given a node data object return its unique key: a number or a string.
@@ -28156,7 +28156,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * If a node data object is already in the model and you want to change its key value,
      * call {@link setKeyForNodeData} with a new and unique key.
      */
-    get makeUniqueKeyFunction(): ((model: Model<NodeDataType>, data: NodeDataType) => Key) | null;
+    get makeUniqueKeyFunction(): ((model: Model<any>, data: any) => Key) | null;
     set makeUniqueKeyFunction(value: ((model: Model<NodeDataType>, data: NodeDataType) => Key) | null);
     /**
      * Decide if a given node data object is in this model, using reference equality.
@@ -28297,7 +28297,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * and that Array needs to be copied rather than shared.
      * Often the objects that are in the Array also need to be copied.
      */
-    get copyNodeDataFunction(): ((data: NodeDataType, model: Model<NodeDataType>) => NodeDataType) | null;
+    get copyNodeDataFunction(): ((data: any, model: Model<any>) => NodeDataType) | null;
     set copyNodeDataFunction(value: ((data: NodeDataType, model: Model<NodeDataType>) => NodeDataType) | null);
     /**
      * Gets or sets whether the default behavior for {@link copyNodeData} or {@link GraphLinksModel.copyLinkData}
@@ -28397,7 +28397,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * The second argument to the function is this Model, the destination model for the copied parts.
      * The third argument to the function is the source Model, of the original data objects.
      */
-    get afterCopyFunction(): ((map: Map<NodeDataType, NodeDataType>, destModel: Model<NodeDataType>, srcModel: Model<NodeDataType>) => void) | null;
+    get afterCopyFunction(): ((map: Map<any, any>, destModel: Model<any>, srcModel: Model<any>) => void) | null;
     set afterCopyFunction(value: ((map: Map<NodeDataType, NodeDataType>, destModel: Model<NodeDataType>, srcModel: Model<NodeDataType>) => void) | null);
     /**
      * Change the value of some property of a node data, a link data, an item data, or the {@link Model.modelData},
@@ -28504,7 +28504,7 @@ export class Model<NodeDataType extends ObjectData = ObjectData, SharedDataType 
      * @see {@link getCategoryForNodeData}
      * @see {@link setCategoryForNodeData}
      */
-    get nodeCategoryProperty(): string | ((a: NodeDataType, b?: string) => string);
+    get nodeCategoryProperty(): string | ((a: any, b?: string) => string);
     set nodeCategoryProperty(value: string | ((a: NodeDataType, b?: string) => string));
     /**
      * Find the category of a given node data, a string naming the node template
@@ -28690,7 +28690,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getFromKeyForLinkData}
      * @see {@link setFromKeyForLinkData}
      */
-    get linkFromKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    get linkFromKeyProperty(): string | ((a: any, b?: Key) => Key);
     set linkFromKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
@@ -28731,7 +28731,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getToKeyForLinkData}
      * @see {@link setToKeyForLinkData}
      */
-    get linkToKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    get linkToKeyProperty(): string | ((a: any, b?: Key) => Key);
     set linkToKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * From a link data retrieve a value uniquely identifying the node data
@@ -28772,7 +28772,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getFromPortIdForLinkData}
      * @see {@link setFromPortIdForLinkData}
      */
-    get linkFromPortIdProperty(): string | ((a: LinkDataType, b?: string) => string);
+    get linkFromPortIdProperty(): string | ((a: any, b?: string) => string);
     set linkFromPortIdProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
@@ -28813,7 +28813,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getToPortIdForLinkData}
      * @see {@link setToPortIdForLinkData}
      */
-    get linkToPortIdProperty(): string | ((a: LinkDataType, b?: string) => string);
+    get linkToPortIdProperty(): string | ((a: any, b?: string) => string);
     set linkToPortIdProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * From a link data retrieve a value identifying the port object of the node
@@ -28855,7 +28855,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getLabelKeysForLinkData}
      * @see {@link setLabelKeysForLinkData}
      */
-    get linkLabelKeysProperty(): string | ((a: LinkDataType, b?: Array<Key>) => Array<Key>);
+    get linkLabelKeysProperty(): string | ((a: any, b?: Array<Key>) => Array<Key>);
     set linkLabelKeysProperty(value: string | ((a: LinkDataType, b?: Array<Key>) => Array<Key>));
     /**
      * Gets an Array of node key values that identify node data acting as labels on the given link data.
@@ -28927,7 +28927,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * immediately after creating the model, including when it is created by {@link Model.fromJson}.
      * @see {@link getKeyForLinkData}
      */
-    get linkKeyProperty(): string | ((a: LinkDataType, b?: Key) => Key);
+    get linkKeyProperty(): string | ((a: any, b?: Key) => Key);
     set linkKeyProperty(value: string | ((a: LinkDataType, b?: Key) => Key));
     /**
      * Given a link data object return its unique key: a number or a string.
@@ -28975,7 +28975,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * If a link data object is already in the model and you want to change its key value,
      * call {@link setKeyForLinkData} with a new and unique key.
      */
-    get makeUniqueLinkKeyFunction(): ((a: GraphLinksModel<NodeDataType, LinkDataType>, b: LinkDataType) => Key) | null;
+    get makeUniqueLinkKeyFunction(): ((a: GraphLinksModel<any, any>, b: any) => Key) | null;
     set makeUniqueLinkKeyFunction(value: ((a: GraphLinksModel<NodeDataType, LinkDataType>, b: LinkDataType) => Key) | null);
     /**
      * Given a number or string, find the link data object in this model
@@ -29094,7 +29094,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * This property value may be null in order to cause {@link copyLinkData} to make a shallow copy of a JavaScript Object.
      * The default value is null.
      */
-    get copyLinkDataFunction(): ((a: LinkDataType, b: GraphLinksModel<NodeDataType, LinkDataType>) => LinkDataType) | null;
+    get copyLinkDataFunction(): ((a: any, b: GraphLinksModel<any, any>) => LinkDataType) | null;
     set copyLinkDataFunction(value: ((a: LinkDataType, b: GraphLinksModel<NodeDataType, LinkDataType>) => LinkDataType) | null);
     /**
      * Make a copy of a link data object.
@@ -29125,7 +29125,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * and if you want this property to be a function, you will need to assign this property to your desired function
      * immediately after creating the model, including when it is created by {@link Model.fromJson}.
      */
-    get nodeIsGroupProperty(): string | ((a: NodeDataType, b?: boolean) => boolean);
+    get nodeIsGroupProperty(): string | ((a: any, b?: boolean) => boolean);
     set nodeIsGroupProperty(value: string | ((a: NodeDataType, b?: boolean) => boolean));
     /**
      * See if the given node data should be represented as a group or as a simple node.
@@ -29156,7 +29156,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getGroupKeyForNodeData}
      * @see {@link setGroupKeyForNodeData}
      */
-    get nodeGroupKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    get nodeGroupKeyProperty(): string | ((a: any, b?: Key) => Key);
     set nodeGroupKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * If there is a container group for the given node data, return the group's key.
@@ -29219,7 +29219,7 @@ export class GraphLinksModel<NodeDataType extends ObjectData = ObjectData, LinkD
      * @see {@link getCategoryForLinkData}
      * @see {@link setCategoryForLinkData}
      */
-    get linkCategoryProperty(): string | ((a: LinkDataType, b?: string) => string);
+    get linkCategoryProperty(): string | ((a: any, b?: string) => string);
     set linkCategoryProperty(value: string | ((a: LinkDataType, b?: string) => string));
     /**
      * Find the category of a given link data, a string naming the link template
@@ -29307,7 +29307,7 @@ export class TreeModel<NodeDataType extends ObjectData = ObjectData, SharedDataT
      * @see {@link getParentKeyForNodeData}
      * @see {@link setParentKeyForNodeData}
      */
-    get nodeParentKeyProperty(): string | ((a: NodeDataType, b?: Key) => Key);
+    get nodeParentKeyProperty(): string | ((a: any, b?: Key) => Key);
     set nodeParentKeyProperty(value: string | ((a: NodeDataType, b?: Key) => Key));
     /**
      * If there is a parent node for the given node data, return the parent's key.
@@ -29343,7 +29343,7 @@ export class TreeModel<NodeDataType extends ObjectData = ObjectData, SharedDataT
      * @see {@link getParentLinkCategoryForNodeData}
      * @see {@link setParentLinkCategoryForNodeData}
      */
-    get parentLinkCategoryProperty(): string | ((a: NodeDataType, b?: string) => string);
+    get parentLinkCategoryProperty(): string | ((a: any, b?: string) => string);
     set parentLinkCategoryProperty(value: string | ((a: NodeDataType, b?: string) => string));
     /**
      * Find the category for the parent link of a given child node data, a string naming the link template
